@@ -166,7 +166,7 @@ INSTANTIATE_TEST_SUITE_P(
             true, false, false,
             IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION,
             IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE,
-            IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE},
+            u"You can use it across Google products"},
         // Test strings for the update views.
         DelegateStringsTestCase{
             false, true, false,

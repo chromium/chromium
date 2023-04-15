@@ -69,7 +69,7 @@ void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
     const std::string& store_number_input = args[2].GetString();
     DemoSetupController* demo_setup_controller =
         WizardController::default_controller()->demo_setup_controller();
-    demo_setup_controller->set_retailer_name(retailer_name_input);
+    demo_setup_controller->SetAndCanonicalizeRetailerName(retailer_name_input);
     demo_setup_controller->set_store_number(store_number_input);
 
     exit_callback_.Run(Result::COMPLETED);

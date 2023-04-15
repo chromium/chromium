@@ -51,7 +51,7 @@ StreamingCpuProbe::StreamingCpuProbe(
     : CpuProbe(sampling_interval, std::move(sampling_callback)),
       samples_(std::move(samples)),
       callback_(std::move(callback)) {
-  DCHECK_GT(samples_.size(), 0u);
+  CHECK_GT(samples_.size(), 0u);
 }
 
 StreamingCpuProbe::~StreamingCpuProbe() {

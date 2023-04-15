@@ -59,6 +59,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -85,6 +86,9 @@ constexpr int kMouseDragUIDelayInMs = 200;
 // ET_GESTURE_LONG_PRESS delay, which is too long for this case, e.g., about
 // 650ms.
 constexpr int kTouchLongpressDelayInMs = 300;
+
+// For touch initiated dragging, shift the curcor anchor point by the following:
+static const int kTouchDragImageVerticalOffset = 25;
 
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kDragDropAppIconScale = 1.2f;
@@ -714,7 +718,8 @@ void AppListItemView::SetUIState(UIState ui_state) {
       if (item_weak_) {
         ItemIsNewInstallChanged();
       }
-      if (ui_state_ == UI_STATE_DRAGGING) {
+      if (ui_state_ == UI_STATE_DRAGGING ||
+          ui_state_ == UI_STATE_TOUCH_DRAGGING) {
         GetWidget()->SetCursor(ui::mojom::CursorType::kNull);
         ScaleAppIcon(false);
       }
@@ -730,6 +735,13 @@ void AppListItemView::SetUIState(UIState ui_state) {
       }
       break;
     case UI_STATE_DROPPING_IN_FOLDER:
+      break;
+    case UI_STATE_TOUCH_DRAGGING:
+      title_->SetVisible(false);
+      if (new_install_dot_) {
+        new_install_dot_->SetVisible(false);
+      }
+      ScaleAppIcon(false);
       break;
   }
   ui_state_ = ui_state;
@@ -766,7 +778,9 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
   settings.SetTransitionDuration(
       base::Milliseconds((kDragDropAppIconScaleTransitionInMs)));
-  settings.SetTweenType(gfx::Tween::EASE_OUT_2);
+  settings.SetTweenType(app_list_features::IsDragAndDropRefactorEnabled()
+                            ? gfx::Tween::ACCEL_20_DECEL_100
+                            : gfx::Tween::EASE_OUT_2);
   if (scale_up) {
     if (is_folder_) {
       const gfx::Rect bounds(layer()->bounds().size());
@@ -1285,7 +1299,7 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
   }
 }
 
-bool AppListItemView::MaybeStartDrag(const gfx::Point& location) {
+bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
   DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
 
   int drag_operations = GetDragOperations(location);
@@ -1296,8 +1310,10 @@ bool AppListItemView::MaybeStartDrag(const gfx::Point& location) {
     return false;
   }
 
+  SetUIState(UI_STATE_TOUCH_DRAGGING);
   auto data = std::make_unique<ui::OSExchangeData>();
-  WriteDragData(location, data.get());
+  WriteDragData(location - gfx::Vector2d(0, kTouchDragImageVerticalOffset),
+                data.get());
 
   gfx::Point widget_location(location);
   views::View::ConvertPointToWidget(this, &widget_location);
@@ -1325,7 +1341,8 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (touch_dragging_ && drag_state_ != DragState::kNone) {
-        if (is_drag_and_drop_enabled && MaybeStartDrag(event->location())) {
+        if (is_drag_and_drop_enabled &&
+            MaybeStartTouchDrag(event->location())) {
           event->SetHandled();
         } else {
           grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);

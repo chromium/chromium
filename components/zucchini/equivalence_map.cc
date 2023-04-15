@@ -325,6 +325,7 @@ void OffsetMapper::PruneEquivalencesAndSortBySource(
     if (current->length == 0) {
       continue;
     }
+    offset_t current_src_end = current->src_end();
 
     // A "reaper" is an equivalence after |current| that overlaps with it, but
     // is longer, and so truncates |current|.  For example:
@@ -342,12 +343,13 @@ void OffsetMapper::PruneEquivalencesAndSortBySource(
     auto next = current + 1;
     for (; next != equivalences->end(); ++next) {
       DCHECK_GE(next->src_offset, current->src_offset);
-      if (next->src_offset >= current->src_end())
+      if (next->src_offset >= current_src_end) {
         break;  // No more overlap.
+      }
 
       if (current->length < next->length) {
         // |next| is better: So it is a reaper that shrinks |current|.
-        offset_t delta = current->src_end() - next->src_offset;
+        offset_t delta = current_src_end - next->src_offset;
         current->length -= delta;
         next_is_reaper = true;
         break;
@@ -363,20 +365,17 @@ void OffsetMapper::PruneEquivalencesAndSortBySource(
       // Shrink all equivalences that overlap with |current|. These are all
       // worse (same length or shorter), since no reaper is found.
       for (auto reduced = current + 1; reduced != next; ++reduced) {
-        //                Clipping Case 1:     Clipping Case 2:
-        // |current|        cccccccc             cccccccc
-        // |reduced|             rrrrr             rrrr
-        // New |reduced|            rr             (empty)
-        // |delta|          3                    6
-        // |capped_delta|   3                    4
-        offset_t delta = current->src_end() - reduced->src_offset;
+        offset_t delta = current_src_end - reduced->src_offset;
         offset_t capped_delta = std::min(reduced->length, delta);
+        // Use |capped_delta| so length is >= 0 always.
         reduced->length -= capped_delta;
-        // For Case 1, below is same as adding |delta|. For Case 2, offsets
-        // become irrelevant. However, |dst_offset + delta| may create an offset
-        // outside the file, or even overflow. So for robustness,
-        // |capped_delta| is used.
-        reduced->src_offset += capped_delta;
+        // Truncate while preserving sort order re. |src_offset|. This is same
+        // as |reduced->src_offset += delta|.
+        reduced->src_offset = current_src_end;
+        // If the range becomes empty, |+= delta| may cause new |dst_offset| to
+        // overflow (although the value won't get used). To prevent this (for
+        // robustness), use |+= capped_delta|, which is identical to |+= delta|
+        // if the range remains non-empty.
         reduced->dst_offset += capped_delta;
       }
     }

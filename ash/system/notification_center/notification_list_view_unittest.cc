@@ -6,6 +6,7 @@
 
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -23,7 +24,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/notification_view.h"
 #include "ui/views/test/views_test_utils.h"
 
 using message_center::MessageCenter;
@@ -34,10 +34,11 @@ namespace ash {
 
 namespace {
 
-class TestNotificationView : public message_center::NotificationView {
+class TestNotificationView : public AshNotificationView {
  public:
-  TestNotificationView(const message_center::Notification& notification)
-      : NotificationView(notification) {
+  explicit TestNotificationView(
+      const message_center::Notification& notification)
+      : AshNotificationView(notification, /*shown_in_popup=*/false) {
     layer()->GetAnimator()->set_preemption_strategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   }
@@ -47,7 +48,7 @@ class TestNotificationView : public message_center::NotificationView {
 
   ~TestNotificationView() override = default;
 
-  // message_center::NotificationView:
+  // AshNotificationView:
   void UpdateCornerRadius(int top_radius, int bottom_radius) override {
     top_radius_ = top_radius;
     bottom_radius_ = bottom_radius;
@@ -207,6 +208,13 @@ class NotificationListViewTest : public AshTestBase,
 
   gfx::Rect GetMessageViewBounds(size_t index) const {
     return message_list_view()->children()[index]->bounds();
+  }
+
+  // Start sliding the message view at the given index in the list.
+  void StartSliding(size_t index) {
+    auto* message_view = GetMessageViewAt(index);
+    message_view->set_slide_amount(1);
+    message_view->OnSlideChanged(/*in_progress=*/true);
   }
 
   void FinishSlideOutAnimation() { base::RunLoop().RunUntilIdle(); }
@@ -433,6 +441,7 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
   int previous_height = message_list_view()->GetPreferredSize().height();
   gfx::Rect bounds0 = GetMessageViewBounds(0);
   gfx::Rect bounds1 = GetMessageViewBounds(1);
+  gfx::Rect bounds2 = GetMessageViewBounds(2);
 
   MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
   FinishSlideOutAnimation();
@@ -448,7 +457,10 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  EXPECT_EQ(bounds0, GetMessageViewBounds(0));
+  // The remaining notification keeps the smaller vertical size of the last
+  // notification in the original list, but shifts position.
+  EXPECT_EQ(bounds2.size(), GetMessageViewBounds(0).size());
+  EXPECT_EQ(bounds0.origin(), GetMessageViewBounds(0).origin());
 
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
   FinishSlideOutAnimation();
@@ -720,34 +732,8 @@ TEST_P(ParameterizedNotificationListViewTest, NotificationAddedInSortedOrder) {
   EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
 }
 
-// Tests only with NotificationsRefresh enabled.
-class RefreshedNotificationListView : public NotificationListViewTest {
- public:
-  RefreshedNotificationListView() = default;
-  RefreshedNotificationListView(const RefreshedNotificationListView&) = delete;
-  RefreshedNotificationListView& operator=(
-      const RefreshedNotificationListView&) = delete;
-  ~RefreshedNotificationListView() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(features::kNotificationsRefresh);
-    NotificationListViewTest::SetUp();
-  }
-
-  // Start sliding the message view at the given index in the list.
-  void StartSliding(size_t index) {
-    auto* message_view = GetMessageViewAt(index);
-    message_view->set_slide_amount(1);
-    message_view->OnSlideChanged(/*in_progress=*/true);
-  }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-};
-
 // Tests that preferred size changes upon toggle of expand/collapse.
-TEST_F(RefreshedNotificationListView, PreferredSizeChangesOnToggle) {
+TEST_F(NotificationListViewTest, PreferredSizeChangesOnToggle) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -781,7 +767,7 @@ TEST_F(RefreshedNotificationListView, PreferredSizeChangesOnToggle) {
 
 // Tests that expanding a notification while a different notification is
 // expanding is handled gracefully.
-TEST_F(RefreshedNotificationListView, TwoExpandsInARow) {
+TEST_F(NotificationListViewTest, TwoExpandsInARow) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -821,7 +807,7 @@ TEST_F(RefreshedNotificationListView, TwoExpandsInARow) {
 }
 
 // Tests that collapsing/expanding is reversible.
-TEST_F(RefreshedNotificationListView, ReverseExpand) {
+TEST_F(NotificationListViewTest, ReverseExpand) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -848,7 +834,7 @@ TEST_F(RefreshedNotificationListView, ReverseExpand) {
 }
 
 // Tests that destroying during a collapse animation does not crash.
-TEST_F(RefreshedNotificationListView, DestroyMessageListViewDuringCollapse) {
+TEST_F(NotificationListViewTest, DestroyMessageListViewDuringCollapse) {
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
@@ -861,7 +847,7 @@ TEST_F(RefreshedNotificationListView, DestroyMessageListViewDuringCollapse) {
 
 // Tests that closing a notification while its collapse animation is ongoing
 // works properly.
-TEST_F(RefreshedNotificationListView, RemoveNotificationDuringCollapse) {
+TEST_F(NotificationListViewTest, RemoveNotificationDuringCollapse) {
   auto id1 = AddNotification(/*pinned=*/false, /*expandable=*/true);
   CreateMessageListView();
   auto* message_view = GetMessageViewAt(0);
@@ -887,7 +873,7 @@ TEST_F(RefreshedNotificationListView, RemoveNotificationDuringCollapse) {
 // Tests that expanding a notification at various stages while it is being
 // closed does not result in an animation.
 // TODO(crbug.com/1292775): Test is flaky.
-TEST_F(RefreshedNotificationListView,
+TEST_F(NotificationListViewTest,
        DISABLED_CollapseDuringCloseResultsInNoCollapseAnimation) {
   auto id1 = AddNotification(/*pinned=*/false, /*expandable=*/true);
   AddNotification(/*pinned=*/false, /*expandable=*/true);
@@ -925,7 +911,7 @@ TEST_F(RefreshedNotificationListView,
 // Tests that collapsing a notification while it is being moved automatically
 // completes both animations.
 // TODO(crbug.com/1292816): Test is flaky.
-TEST_F(RefreshedNotificationListView, DISABLED_CollapseDuringMoveNoAnimation) {
+TEST_F(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
   auto to_be_removed_notification =
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   auto to_be_collapsed_notification =
@@ -961,7 +947,7 @@ TEST_F(RefreshedNotificationListView, DISABLED_CollapseDuringMoveNoAnimation) {
 
 // Tests that moving a notification while it is already collapsing completes
 // both animations.
-TEST_F(RefreshedNotificationListView, MoveDuringCollapseNoAnimation) {
+TEST_F(NotificationListViewTest, MoveDuringCollapseNoAnimation) {
   auto to_be_removed_notification =
       AddNotification(/*pinned=*/false, /*expandable=*/true);
   auto to_be_collapsed_notification =
@@ -991,7 +977,7 @@ TEST_F(RefreshedNotificationListView, MoveDuringCollapseNoAnimation) {
       to_be_collapsed_message_view_container->GetPreferredSize().height());
 }
 
-TEST_F(RefreshedNotificationListView, SlideNotification) {
+TEST_F(NotificationListViewTest, SlideNotification) {
   // Show message list with four notifications.
   auto id0 = AddNotification();
   auto id1 = AddNotification();

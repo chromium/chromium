@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Omnibox.AcceptedKeywordSuggestion"
-    enum="OmniboxEnteredKeywordMode2" expires_after="2023-08-08">
+    enum="OmniboxEnteredKeywordMode2" expires_after="2023-10-08">
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.AssistedQueryStats.Length" units="chars"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1238,22 +1238,6 @@ chromium-metrics-reviews@google.com.
       variants="OmniboxAutocompleteUpdateSlice"/>
 </histogram>
 
-<histogram name="Omnibox.NumEvents" enum="UsedOmnibox"
-    expires_after="2023-09-17">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <improvement direction="HIGHER_IS_BETTER"/>
-  <summary>
-    The number of times users used the omnibox to go somewhere.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.NumTypedTerms" units="terms"
     expires_after="2023-08-20">
   <owner>jdonnelly@chromium.org</owner>
@@ -1519,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SearchboxStats.Length" units="chars"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2176,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2191,7 +2175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileType" enum="SuggestTileType"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2205,7 +2189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.SelectedTileIndex" units="position"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2307,7 +2291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ToggleSuggestionGroupId.On" enum="SuggestionGroupId"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>mahmadi@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2319,7 +2303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.URLNavigationScheme" enum="NavigationScheme"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2335,6 +2319,30 @@ chromium-metrics-reviews@google.com.
 
     Due to a bug, recorded paste-and-go actions through M-88 (inclusive).
     Excluded in M-89+.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.URLScoringModelExecuted.ElapsedTime" units="ms"
+    expires_after="2024-04-14">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time it takes to execute the URL scoring model for all the
+    eligible matches. Emitted when all the providers are done and there is at
+    least one eligible match for model execution.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.URLScoringModelExecuted.Matches" units="counts"
+    expires_after="2024-04-14">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of matches the URL scoring model was executed for. Emitted when
+    all the providers are done and there is at least one eligible match for
+    model execution.
   </summary>
 </histogram>
 

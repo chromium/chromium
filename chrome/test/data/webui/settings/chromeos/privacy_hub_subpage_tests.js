@@ -160,6 +160,10 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     assertTrue(getMicrophoneCrToggle().disabled);
     // With the HW switch being active the tooltip should be visible.
     assertFalse(getMicrophoneTooltip().hidden);
+    // Ensure that the tooltip has the intended content.
+    assertEquals(
+        privacyHubSubpage.i18n('microphoneHwToggleTooltip'),
+        getMicrophoneTooltip().tooltipText.trim());
 
     mediaDevices.popDevice();
   });

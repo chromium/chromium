@@ -16,15 +16,15 @@
         <span>[[engine.displayName]]</span>
       </div>
       <div class="keyword-column">[[engine.keyword]]</div>
-      <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
+      <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
           title="$i18n{moreActions}" focus-row-control focus-type="menu">
       </cr-icon-button>
       <cr-action-menu role-description="$i18n{menu}">
-        <button class="dropdown-item" on-click="onManageTap_"
+        <button class="dropdown-item" on-click="onManageClick_"
             id="manage">
           $i18n{searchEnginesManageExtension}
         </button>
-        <button class="dropdown-item" on-click="onDisableTap_"
+        <button class="dropdown-item" on-click="onDisableClick_"
             id="disable">
           $i18n{disable}
         </button>

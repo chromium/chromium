@@ -488,20 +488,15 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
           extension->id());
   ASSERT_TRUE(background_page);
 
-  static constexpr char kScript[] =
-      "setIcon(%s).then(function(arg) {"
-      "  domAutomationController.send(arg);"
-      "});";
+  static constexpr char kScript[] = "setIcon(%s);";
 
   const std::string histogram_name =
       "Extensions.DynamicExtensionActionIconWasVisible";
   {
     base::HistogramTester histogram_tester;
-    std::string result;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        background_page->host_contents(),
-        base::StringPrintf(kScript, "invisibleImageData"), &result));
-    EXPECT_EQ("Icon not sufficiently visible.", result);
+    EXPECT_EQ("Icon not sufficiently visible.",
+              EvalJs(background_page->host_contents(),
+                     base::StringPrintf(kScript, "invisibleImageData")));
     // The icon should not have changed.
     EXPECT_TRUE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
@@ -511,11 +506,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   {
     base::HistogramTester histogram_tester;
-    std::string result;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        background_page->host_contents(),
-        base::StringPrintf(kScript, "visibleImageData"), &result));
-    EXPECT_EQ("", result);
+    EXPECT_EQ("", EvalJs(background_page->host_contents(),
+                         base::StringPrintf(kScript, "visibleImageData")));
     // The icon should have changed.
     EXPECT_FALSE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
@@ -958,12 +950,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   EXPECT_TRUE(tab);
 
   // Verify that the browser action turned the background color red.
-  const std::string script =
-      "window.domAutomationController.send(document.body.style."
-      "backgroundColor);";
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(tab, script, &result));
-  EXPECT_EQ(result, "red");
+  const std::string script = "document.body.style.backgroundColor;";
+  EXPECT_EQ(content::EvalJs(tab, script), "red");
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,

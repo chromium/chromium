@@ -45,6 +45,7 @@ import org.chromium.components.payments.AndroidPaymentAppFactory;
 public class AutofillPaymentMethodsFragment
         extends PreferenceFragmentCompat implements PersonalDataManager.PersonalDataManagerObserver,
                                                     FragmentHelpAndFeedbackLauncher {
+    private static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -127,6 +128,29 @@ public class AutofillPaymentMethodsFragment
                 return true;
             });
             getPreferenceScreen().addPreference(fidoAuthSwitch);
+        }
+
+        // TODO(crbug.com/1427216): Confirm with Product on the order of the toggles.
+        // TODO(crbug.com/1427216): Check biometric eligibilty before showing this toggle.
+        // We don't show the Reauth toggle when Autofill credit card is disabled.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
+                && PersonalDataManager.isAutofillCreditCardEnabled()) {
+            ChromeSwitchPreference mandatoryReauthSwitch =
+                    new ChromeSwitchPreference(getStyledContext(), null);
+            mandatoryReauthSwitch.setTitle(
+                    R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label);
+            mandatoryReauthSwitch.setSummary(
+                    R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
+            mandatoryReauthSwitch.setChecked(
+                    PersonalDataManager.isAutofillPaymentMethodsMandatoryReauthEnabled());
+            mandatoryReauthSwitch.setKey(PREF_MANDATORY_REAUTH);
+            mandatoryReauthSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+                assert preference.getKey().equals(PREF_MANDATORY_REAUTH);
+                // TODO(crbug.com/1427216): Invoke device authenticator when toggle is clicked.
+                PersonalDataManager.setAutofillPaymentMethodsMandatoryReauth((boolean) newValue);
+                return true;
+            });
+            getPreferenceScreen().addPreference(mandatoryReauthSwitch);
         }
 
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {

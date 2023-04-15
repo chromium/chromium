@@ -42,7 +42,8 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
-void LeakDetectionDelegate::StartLeakCheck(const PasswordForm& credentials) {
+void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
+                                           const PasswordForm& credentials) {
   if (client_->IsIncognito())
     return;
 
@@ -61,7 +62,7 @@ void LeakDetectionDelegate::StartLeakCheck(const PasswordForm& credentials) {
   helper_.reset();
   if (leak_check_) {
     is_leaked_timer_ = std::make_unique<base::ElapsedTimer>();
-    leak_check_->Start(credentials.url, credentials.username_value,
+    leak_check_->Start(initiator, credentials.url, credentials.username_value,
                        credentials.password_value);
   }
 }

@@ -19,11 +19,13 @@ mojom("common_mojom") {
         {
           mojom = "os_crypt_async.mojom.Encryptor"
           cpp = "::os_crypt_async::Encryptor"
+          default_constructible = false
           move_only = true
         },
         {
           mojom = "os_crypt_async.mojom.Key"
           cpp = "::os_crypt_async::Encryptor::Key"
+          default_constructible = false
           move_only = true
         },
       ]

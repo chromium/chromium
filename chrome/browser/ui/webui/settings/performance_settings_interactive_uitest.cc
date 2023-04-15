@@ -31,12 +31,6 @@ constexpr char kCheckJsElementIsNotChecked[] =
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "30s"}}},
-         {performance_manager::features::kBatterySaverModeAvailable, {}}},
-        {});
-
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     SetUpFakeBatterySampler();
     InteractiveBrowserTest::SetUp();
@@ -44,6 +38,9 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetHighEfficiencyModeEnabled(true);
     embedded_test_server()->StartAcceptingConnections();
   }
 
@@ -70,7 +67,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto ClickElement(const ui::ElementIdentifier& contents_id,
-                    DeepQuery element) {
+                    const DeepQuery& element) {
     return Steps(MoveMouseTo(contents_id, element), ClickMouse());
   }
 
@@ -112,11 +109,11 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     toggle_selection_change.test_function =
         is_checked ? kCheckJsElementIsChecked : kCheckJsElementIsNotChecked;
 
-    return WaitForStateChange(contents_id, std::move(toggle_selection_change));
+    return WaitForStateChange(contents_id, toggle_selection_change);
   }
 
   auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
-                              DeepQuery element) {
+                              const DeepQuery& element) {
     StateChange element_renders;
     element_renders.event = kElementRenders;
     element_renders.where = element;
@@ -124,10 +121,9 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     element_renders.test_function =
         "(el) => { return el.clientWidth > 0 && el.clientHeight > 0; }";
 
-    return WaitForStateChange(contents_id, std::move(element_renders));
+    return WaitForStateChange(contents_id, element_renders);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
       sampling_source_;
   raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
@@ -261,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       // Wait for the iron-collapse animation to finish so that the battery
       // saver radio buttons will show on screen
       WaitForStateChange(kPerformanceSettingsPage,
-                         std::move(iron_collapse_finish_animating)),
+                         iron_collapse_finish_animating),
 
       // Change Battery Saver Setting to turn on when unplugged
       ClickElement(kPerformanceSettingsPage, turn_on_when_unplugged_button),

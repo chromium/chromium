@@ -45,11 +45,11 @@ dialog:popover-open {
 
 /* This rule matches popovers (dialog or not) that are currently open as a
    popover. */
-:popover-open:not(dialog), dialog:popover-open:not([open]) {
+[popover]:popover-open:not(dialog), dialog:popover-open:not([open]) {
   overlay: auto !important;
 }
 
-:popover-open::backdrop {
+[popover]:popover-open::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
   inset: 0;

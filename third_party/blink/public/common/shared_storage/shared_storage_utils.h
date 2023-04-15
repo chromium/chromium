@@ -65,6 +65,10 @@ BLINK_COMMON_EXPORT bool IsValidSharedStorageValueStringLength(size_t length);
 BLINK_COMMON_EXPORT void LogSharedStorageWorkletError(
     SharedStorageWorkletErrorType error_type);
 
+// Whether `privateAggregation` should be exposed to `SharedStorageWorklet`
+// scope.
+BLINK_COMMON_EXPORT bool ShouldDefinePrivateAggregationInSharedStorage();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_SHARED_STORAGE_UTILS_H_

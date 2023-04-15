@@ -17,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
-#include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
 
 namespace content {
 class CONTENT_EXPORT SmartCardReaderTrackerImpl

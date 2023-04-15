@@ -23,5 +23,6 @@ per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resou
 per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_apps_page/OWNERS
 per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_apps_page/app_notifications_page/OWNERS
 per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_bluetooth_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_files_page/OWNERS
 per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_languages_page/OWNERS
 per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/os_printing_page/OWNERS

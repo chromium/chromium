@@ -32,7 +32,7 @@ source_set("find_bar") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/resources:menu_shadow",

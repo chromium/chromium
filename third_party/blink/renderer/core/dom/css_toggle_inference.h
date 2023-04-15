@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -84,19 +85,31 @@ class CORE_EXPORT CSSToggleInference final
   //
   // This role information is somewhat expensive to rebuild, and is
   // information that does *not* change when toggle state changes.
-  CSSToggleRole RoleForElement(blink::Element* element);
+  CSSToggleRole RoleForElement(const blink::Element* element);
 
-  // TODO(dbaron): Add a separate API here for property (e.g., state)
-  // information that *does* sometimes change when toggle state is
-  // changed.
+  // Return the toggle name associated with an element's role.
+  //
+  // ToggleNameForElement should return g_null_atom in exactly the same
+  // cases that RoleForElement returns CSSToggleRole::kNone or
+  // CSSToggleRole::kTree.
+  AtomicString ToggleNameForElement(const blink::Element* element);
+
+  // TODO(https://crbug.com/1250716): Add a separate API here for
+  // property (e.g., state) information that *does* sometimes change
+  // when toggle state is changed.
 
  private:
   void RebuildIfNeeded();
   void Rebuild();
 
+  struct ElementData {
+    CSSToggleRole role;
+    AtomicString toggle_name;
+  };
+
   bool needs_rebuild_ = true;
   Member<Document> document_;
-  HeapHashMap<Member<Element>, CSSToggleRole> element_roles_;
+  HeapHashMap<Member<const Element>, ElementData> element_data_;
 };
 
 }  // namespace blink

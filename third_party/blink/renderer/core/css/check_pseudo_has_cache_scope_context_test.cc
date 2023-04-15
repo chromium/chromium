@@ -86,7 +86,7 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
     const CSSSelector* selector = nullptr;
     for (selector = selector_list->First();
          selector && selector->GetPseudoType() != CSSSelector::kPseudoHas;
-         selector = selector->TagHistory()) {
+         selector = selector->NextSimpleSelector()) {
     }
     if (!selector) {
       ADD_FAILURE() << "Failed : " << query_name << " (Cannot find :has() in "

@@ -97,7 +97,6 @@ class LayoutTreeAsText {
                                 const LayoutObject&,
                                 LayoutAsTextBehavior);
   static void WriteLayers(WTF::TextStream&,
-                          const PaintLayer* root_layer,
                           PaintLayer*,
                           int indent = 0,
                           LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal,

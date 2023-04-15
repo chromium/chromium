@@ -65,7 +65,8 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
   signin::IdentityManager* GetIdentityManager();
 
   void RequestAccessToken(AccessTokenFetcher::TokenCallback callback);
-  void PreparePayload(const std::string& username,
+  void PreparePayload(LeakDetectionInitiator initiator,
+                      const std::string& username,
                       const std::string& password,
                       SingleLeakRequestDataCallback callback);
 
@@ -132,10 +133,12 @@ void LeakDetectionCheckImpl::RequestPayloadHelper::RequestAccessToken(
 }
 
 void LeakDetectionCheckImpl::RequestPayloadHelper::PreparePayload(
+    LeakDetectionInitiator initiator,
     const std::string& username,
     const std::string& password,
     SingleLeakRequestDataCallback callback) {
-  PrepareSingleLeakRequestData(username, password, std::move(callback));
+  PrepareSingleLeakRequestData(initiator, username, password,
+                               std::move(callback));
 }
 
 void LeakDetectionCheckImpl::RequestPayloadHelper::OnGotAccessToken(
@@ -192,7 +195,8 @@ bool LeakDetectionCheckImpl::HasAccountForRequest(
           !identity_manager->GetAccountsWithRefreshTokens().empty());
 }
 
-void LeakDetectionCheckImpl::Start(const GURL& url,
+void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
+                                   const GURL& url,
                                    std::u16string username,
                                    std::u16string password) {
   DCHECK(payload_helper_);
@@ -210,7 +214,7 @@ void LeakDetectionCheckImpl::Start(const GURL& url,
     payload_helper_->OnGotAccessToken(/*access_token=*/absl::nullopt);
   }
   payload_helper_->PreparePayload(
-      base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
+      initiator, base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
       base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

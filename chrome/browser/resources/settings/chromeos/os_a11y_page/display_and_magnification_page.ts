@@ -33,7 +33,7 @@ import {getTemplate} from './display_and_magnification_page.html.js';
 const SettingsDisplayAndMagnificationElementBase = DeepLinkingMixin(
     RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsDisplayAndMagnificationElement extends
+export class SettingsDisplayAndMagnificationElement extends
     SettingsDisplayAndMagnificationElementBase {
   static get is() {
     return 'settings-display-and-magnification-page';
@@ -184,13 +184,13 @@ class SettingsDisplayAndMagnificationElement extends
                   'screenMagnifierDescriptionOff');
   }
 
-  private onDisplayTap_(): void {
+  private onDisplayClick_(): void {
     Router.getInstance().navigateTo(
         routes.DISPLAY,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
-  private onAppearanceTap_(): void {
+  private onAppearanceClick_(): void {
     chrome.send('showBrowserAppearanceSettings');
   }
 }

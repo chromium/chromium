@@ -8,6 +8,7 @@
 
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -26,8 +27,10 @@
 class SidePanelToolbarContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        companion::features::kSidePanelCompanion);
+    scoped_feature_list_.InitWithFeatures(
+        {companion::features::kSidePanelCompanion,
+         features::kSidePanelCompanionDefaultPinned},
+        {});
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);

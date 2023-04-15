@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Bookmark, ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';
-
-// TODO(crbug.com/1305967): Remove this interface when test_util.js is
-// migrated to TypeScript.
-interface TestBookmarksElement extends HTMLElement {
-  bookmarks: Bookmark[];
-}
 
 chrome.test.runTests([
   /**
@@ -70,7 +64,7 @@ chrome.test.runTests([
    */
   function testFollowBookmark() {
     const viewer = document.body.querySelector('pdf-viewer')!;
-    const bookmarkContent = createBookmarksForTest() as TestBookmarksElement;
+    const bookmarkContent = createBookmarksForTest();
     bookmarkContent.bookmarks = viewer.bookmarks;
     document.body.appendChild(bookmarkContent);
 

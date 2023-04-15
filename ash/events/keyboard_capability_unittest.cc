@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 #include <memory>
 
@@ -12,9 +12,11 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/prefs/pref_service.h"
 #include "device/udev_linux/fake_udev_loader.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -26,10 +28,47 @@ namespace ash {
 namespace {
 
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayoutAttributeName[] = "function_row_physmap";
+
+constexpr char kKbdTopRowLayoutUnspecified[] = "";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
 constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
+
+// A tag that should fail parsing for the top row layout.
+constexpr char kKbdTopRowLayoutInvalidTag[] = "X";
+
+// A default example of the layout string read from the function_row_physmap
+// sysfs attribute. The values represent the scan codes for each position
+// in the top row, which maps to F-Keys.
+constexpr char kKbdDefaultCustomTopRowLayout[] =
+    "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
+
+// A tag that should fail parsing for the top row custom scan code string.
+constexpr char kKbdInvalidCustomTopRowLayout[] = "X X X";
+
+enum CustomTopRowScanCode : uint32_t {
+  kPreviousTrack = 0x90,
+  kFullscreen = 0x91,
+  kOverview = 0x92,
+  kScreenshot = 0x93,
+  kScreenBrightnessDown = 0x94,
+  kScreenBrightnessUp = 0x95,
+  kPrivacyScreenToggle = 0x96,
+  kKeyboardBacklightDown = 0x97,
+  kKeyboardBacklightUp = 0x98,
+  kNextTrack = 0x99,
+  kPlayPause = 0x9A,
+  kMicrophoneMute = 0x9B,
+  kKeyboardBacklightToggle = 0x9E,
+  kVolumeMute = 0xA0,
+  kVolumeDown = 0xAE,
+  kVolumeUp = 0xB0,
+  kForward = 0xE9,
+  kBack = 0xEA,
+  kRefresh = 0xE7,
+};
 
 constexpr int kDeviceId1 = 5;
 constexpr int kDeviceId2 = 10;
@@ -78,7 +117,8 @@ class FakeDeviceManager {
   // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
   // fake udev.
   void AddFakeKeyboard(const ui::InputDevice& fake_keyboard,
-                       const std::string& layout) {
+                       const std::string& layout,
+                       bool has_custom_top_row = false) {
     fake_keyboard_devices_.push_back(fake_keyboard);
 
     ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
@@ -87,7 +127,11 @@ class FakeDeviceManager {
 
     std::map<std::string, std::string> sysfs_properties;
     std::map<std::string, std::string> sysfs_attributes;
-    sysfs_properties[kKbdTopRowPropertyName] = layout;
+    if (has_custom_top_row) {
+      sysfs_attributes[kKbdTopRowLayoutAttributeName] = layout;
+    } else {
+      sysfs_properties[kKbdTopRowPropertyName] = layout;
+    }
     fake_udev_.Reset();
     fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
                              /*subsystem=*/"input", /*devnode=*/absl::nullopt,
@@ -370,6 +414,76 @@ TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
   EXPECT_FALSE(keyboard_capability_->IsTopRowKey(ui::KeyboardCode::VKEY_A));
 }
 
+TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
+  ui::InputDevice external_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard1");
+  external_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(external_keyboard));
+
+  ui::InputDevice internal_keyboard_layout1(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  internal_keyboard_layout1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout1,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(internal_keyboard_layout1));
+
+  ui::InputDevice internal_keyboard_layout2(
+      /*id=*/3, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard3");
+  internal_keyboard_layout2.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout2,
+                                          kKbdTopRowLayout2Tag);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(internal_keyboard_layout2));
+
+  ui::InputDevice internal_keyboard_layout_custom(
+      /*id=*/4, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard4");
+  internal_keyboard_layout_custom.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout_custom,
+                                          kKbdDefaultCustomTopRowLayout,
+                                          /*has_custom_top_row=*/true);
+  EXPECT_FALSE(
+      keyboard_capability_->HasGlobeKey(internal_keyboard_layout_custom));
+
+  ui::InputDevice internal_keyboard_wilco(
+      /*id=*/5, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard5");
+  internal_keyboard_wilco.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_wilco,
+                                          kKbdTopRowLayoutWilcoTag);
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(internal_keyboard_wilco));
+
+  ui::InputDevice internal_keyboard_drallion(
+      /*id=*/6, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard6");
+  internal_keyboard_drallion.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_drallion,
+                                          kKbdTopRowLayoutDrallionTag);
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(internal_keyboard_drallion));
+}
+
+TEST_F(KeyboardCapabilityTest, TestHasCalculatorKey) {
+  ui::InputDevice internal_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  internal_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasCalculatorKey(internal_keyboard));
+
+  ui::InputDevice external_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  external_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_TRUE(keyboard_capability_->HasCalculatorKey(external_keyboard));
+}
+
 class ModifierKeyTest : public KeyboardCapabilityTest,
                         public testing::WithParamInterface<
                             std::tuple<ui::DeviceCapabilities,
@@ -553,6 +667,364 @@ TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
 
   EXPECT_FALSE(keyboard_capability_->HasKeyEvent(
       ui::KeyboardCode::VKEY_ASSISTANT, test_keyboard_2));
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardUnspecified) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          kKbdTopRowLayoutUnspecified);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault,
+      keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardInvalidLayoutTag) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          kKbdTopRowLayoutInvalidTag);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceUnknown,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault,
+      keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_TRUE(!keyboard_capability_->GetTopRowScanCodes(input_device) ||
+              keyboard_capability_->GetTopRowScanCodes(input_device)->empty());
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardInvalidCustomLayout) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(
+      input_device, kKbdInvalidCustomTopRowLayout, /*has_custom_top_row=*/true);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault,
+      keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardLayout1External) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_UNKNOWN,
+                               "External Chrome Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout1Tag,
+                                          /*has_custom_top_row=*/false);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1,
+            keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardLayout2External) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_UNKNOWN,
+                               "External Chrome Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout2Tag,
+                                          /*has_custom_top_row=*/false);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2,
+            keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardCustomLayout) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Custom Layout Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          kKbdDefaultCustomTopRowLayout,
+                                          /*has_custom_top_row=*/true);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom,
+      keyboard_capability_->GetTopRowLayout(input_device));
+
+  const auto* top_row_scan_codes_ptr =
+      keyboard_capability_->GetTopRowScanCodes(input_device);
+  ASSERT_TRUE(top_row_scan_codes_ptr);
+  const auto& top_row_scan_codes = *top_row_scan_codes_ptr;
+
+  // Basic inspection to match kKbdDefaultCustomTopRowLayout
+  EXPECT_EQ(15u, top_row_scan_codes.size());
+
+  for (size_t i = 0; i < top_row_scan_codes.size(); i++) {
+    EXPECT_EQ(i + 1, top_row_scan_codes[i]);
+  }
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardWilcoTopRowLayout) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          kKbdTopRowLayoutWilcoTag,
+                                          /*has_custom_top_row=*/false);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutWilco,
+            keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
+}
+
+TEST_F(KeyboardCapabilityTest, IdentifyKeyboardDrallionTopRowLayout) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          kKbdTopRowLayoutDrallionTag,
+                                          /*has_custom_top_row=*/false);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+            keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_EQ(
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion,
+      keyboard_capability_->GetTopRowLayout(input_device));
+  EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
+}
+
+TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout1Tag,
+                                          /*has_custom_top_row=*/false);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(
+        ui::kLayout1TopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(input_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+
+  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
+  for (const auto action_key : ui::kLayout1TopRowActionKeys) {
+    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
+                                 input_device, action_key));
+    expected_fkey =
+        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
+  }
+}
+
+TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout2Tag,
+                                          /*has_custom_top_row=*/false);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(
+        ui::kLayout2TopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(input_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+
+  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
+  for (const auto action_key : ui::kLayout2TopRowActionKeys) {
+    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
+                                 input_device, action_key));
+    expected_fkey =
+        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
+  }
+}
+
+TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
+  ui::InputDevice wilco_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(wilco_device,
+                                          kKbdTopRowLayoutWilcoTag,
+                                          /*has_custom_top_row=*/false);
+  ui::InputDevice drallion_device(kDeviceId2, ui::INPUT_DEVICE_INTERNAL,
+                                  "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(drallion_device,
+                                          kKbdTopRowLayoutDrallionTag,
+                                          /*has_custom_top_row=*/false);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(
+        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(wilco_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+    EXPECT_EQ(
+        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(drallion_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+
+  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
+  for (const auto action_key : ui::kLayoutWilcoDrallionTopRowActionKeys) {
+    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
+                                 wilco_device, action_key));
+    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
+                                 drallion_device, action_key));
+    expected_fkey =
+        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
+  }
+}
+
+class TopRowLayoutCustomTest
+    : public KeyboardCapabilityTest,
+      public testing::WithParamInterface<std::vector<ui::TopRowActionKey>> {
+ public:
+  void SetUp() override {
+    KeyboardCapabilityTest::SetUp();
+    top_row_action_keys_ = GetParam();
+    custom_layout_string_.clear();
+
+    std::vector<std::string> custom_scan_codes;
+    custom_scan_codes.reserve(top_row_action_keys_.size());
+    for (const auto& action_key : top_row_action_keys_) {
+      const uint32_t scan_code = ConvertTopRowActionKeyToScanCode(action_key);
+      custom_scan_codes.push_back(
+          base::ToLowerASCII(base::HexEncode(&scan_code, 1)));
+    }
+
+    custom_layout_string_ = base::JoinString(custom_scan_codes, " ");
+  }
+
+  uint32_t ConvertTopRowActionKeyToScanCode(ui::TopRowActionKey action_key) {
+    switch (action_key) {
+      case ui::TopRowActionKey::kBack:
+        return CustomTopRowScanCode::kBack;
+      case ui::TopRowActionKey::kForward:
+        return CustomTopRowScanCode::kForward;
+      case ui::TopRowActionKey::kRefresh:
+        return CustomTopRowScanCode::kRefresh;
+      case ui::TopRowActionKey::kFullscreen:
+        return CustomTopRowScanCode::kFullscreen;
+      case ui::TopRowActionKey::kOverview:
+        return CustomTopRowScanCode::kOverview;
+      case ui::TopRowActionKey::kScreenshot:
+        return CustomTopRowScanCode::kScreenshot;
+      case ui::TopRowActionKey::kScreenBrightnessDown:
+        return CustomTopRowScanCode::kScreenBrightnessDown;
+      case ui::TopRowActionKey::kScreenBrightnessUp:
+        return CustomTopRowScanCode::kScreenBrightnessUp;
+      case ui::TopRowActionKey::kMicrophoneMute:
+        return CustomTopRowScanCode::kMicrophoneMute;
+      case ui::TopRowActionKey::kVolumeMute:
+        return CustomTopRowScanCode::kVolumeMute;
+      case ui::TopRowActionKey::kVolumeDown:
+        return CustomTopRowScanCode::kVolumeDown;
+      case ui::TopRowActionKey::kVolumeUp:
+        return CustomTopRowScanCode::kVolumeUp;
+      case ui::TopRowActionKey::kKeyboardBacklightToggle:
+        return CustomTopRowScanCode::kKeyboardBacklightToggle;
+      case ui::TopRowActionKey::kKeyboardBacklightDown:
+        return CustomTopRowScanCode::kKeyboardBacklightDown;
+      case ui::TopRowActionKey::kKeyboardBacklightUp:
+        return CustomTopRowScanCode::kKeyboardBacklightUp;
+      case ui::TopRowActionKey::kNextTrack:
+        return CustomTopRowScanCode::kNextTrack;
+      case ui::TopRowActionKey::kPreviousTrack:
+        return CustomTopRowScanCode::kPreviousTrack;
+      case ui::TopRowActionKey::kPlayPause:
+        return CustomTopRowScanCode::kPlayPause;
+      case ui::TopRowActionKey::kLauncher:
+      case ui::TopRowActionKey::kUnknown:
+      case ui::TopRowActionKey::kNone:
+        return 0;
+    }
+  }
+
+ protected:
+  std::vector<ui::TopRowActionKey> top_row_action_keys_;
+  std::string custom_layout_string_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TopRowLayoutCustomTest,
+    testing::ValuesIn(std::vector<std::vector<ui::TopRowActionKey>>{
+        // Test with full 15 key set.
+        {
+            ui::TopRowActionKey::kBack,
+            ui::TopRowActionKey::kForward,
+            ui::TopRowActionKey::kRefresh,
+            ui::TopRowActionKey::kFullscreen,
+            ui::TopRowActionKey::kOverview,
+            ui::TopRowActionKey::kScreenshot,
+            ui::TopRowActionKey::kScreenBrightnessDown,
+            ui::TopRowActionKey::kScreenBrightnessUp,
+            ui::TopRowActionKey::kMicrophoneMute,
+            ui::TopRowActionKey::kVolumeMute,
+            ui::TopRowActionKey::kVolumeDown,
+            ui::TopRowActionKey::kVolumeUp,
+            ui::TopRowActionKey::kKeyboardBacklightToggle,
+            ui::TopRowActionKey::kKeyboardBacklightDown,
+            ui::TopRowActionKey::kKeyboardBacklightUp,
+        },
+        // Test the remaining untested set of keys.
+        {
+            ui::TopRowActionKey::kOverview,
+            ui::TopRowActionKey::kScreenshot,
+            ui::TopRowActionKey::kScreenBrightnessDown,
+            ui::TopRowActionKey::kScreenBrightnessUp,
+            ui::TopRowActionKey::kMicrophoneMute,
+            ui::TopRowActionKey::kVolumeMute,
+            ui::TopRowActionKey::kVolumeDown,
+            ui::TopRowActionKey::kVolumeUp,
+            ui::TopRowActionKey::kKeyboardBacklightToggle,
+            ui::TopRowActionKey::kKeyboardBacklightDown,
+            ui::TopRowActionKey::kKeyboardBacklightUp,
+            ui::TopRowActionKey::kNextTrack,
+            ui::TopRowActionKey::kPreviousTrack,
+            ui::TopRowActionKey::kPlayPause,
+        },
+        // Tests with a small subset of the possible keys.
+        {
+            ui::TopRowActionKey::kBack,
+            ui::TopRowActionKey::kForward,
+            ui::TopRowActionKey::kRefresh,
+        },
+        {
+            ui::TopRowActionKey::kMicrophoneMute,
+            ui::TopRowActionKey::kVolumeMute,
+            ui::TopRowActionKey::kVolumeDown,
+            ui::TopRowActionKey::kVolumeUp,
+            ui::TopRowActionKey::kKeyboardBacklightToggle,
+        }}));
+
+TEST_P(TopRowLayoutCustomTest, TopRowLayout) {
+  ui::InputDevice keyboard(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                           "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(keyboard, custom_layout_string_,
+                                          /*has_custom_top_row=*/true);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(base::Contains(top_row_action_keys_, action_key),
+              keyboard_capability_->HasTopRowActionKey(keyboard, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+
+  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
+  for (const auto action_key : top_row_action_keys_) {
+    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
+                                 keyboard, action_key));
+    expected_fkey =
+        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
+  }
 }
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 дзень таму}one{# дзень таму}few{# дні таму}many{# дзён таму}other{# дня таму}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 дзень таму}one{# дзень таму}few{# дні таму}many{# дзён таму}other{# дня таму}}</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Злева направа</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1398853756734560583">Разгарнуць</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 месяц таму}one{# месяц таму}few{# месяцы таму}many{# месяцаў таму}other{# месяца таму}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 хвіліна і }one{# хвіліна і }few{# хвіліны і }many{# хвілін і }other{# хвіліны і }}</translation>
 <translation id="1643823602425662293">Апавяшчэнне</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Відарыс</translation>
 <translation id="4565377596337484307">Схаваць пароль</translation>
 <translation id="4588090240171750605">Прагартаць управа</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 год таму}one{# год таму}few{# гады таму}many{# год таму}other{# года таму}}</translation>
 <translation id="4724120544754982507">Цэнтр апавяшчэнняў. Непрачытаных апавяшчэнняў: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">нумар</translation>
 <translation id="4746179598275229723">Пашырэнне адмацавана</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8394908167088220973">Прайграць або прыпыніць медыяфайл</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1г}one{#г}few{#г}many{#г}other{#г}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Файл <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>
 <translation id="8725488761726303204">+ яшчэ <ph name="NUMBER" /></translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Ідзе адпраўка...</translation>
 <translation id="8876215549894133151">Фармат:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="8996630695507351249">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 с}one{# с}few{# с}many{# с}other{# с}}</translation>
 <translation id="9059834730836941392">Згарнуць апавяшчэнне</translation>
 <translation id="9170848237812810038">&amp;Адрабіць</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="944069440740578670">Непрачытаныя апавяшчэнні</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 секунду таму}one{# секунду таму}few{# секунды таму}many{# секунд таму}other{# секунды таму}}</translation>
 </translationbundle>

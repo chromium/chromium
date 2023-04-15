@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // On ChromeOS, Sync-the-feature gets started automatically once a primary
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Sign in to a primary account, but don't enable Sync-the-feature.
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Turn on Sync-the-feature.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // Turn off Sync-the-feature again.
   // Note: Turning Sync off without signing out isn't actually exposed to the
   // user, so this generally shouldn't happen. Still best to cover it here.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Turn on Sync-the-feature.
   secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Turn on Sync-the-feature.
   secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 araw ang nakalipas}one{# araw ang nakalipas}other{# na araw ang nakalipas}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 minuto}one{# minuto}other{# na minuto}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 Araw ang Nakalipas}one{# Araw ang Nakalipas}other{# na Araw ang Nakalipas}}</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1243314992276662751">I-upload</translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Kaliwa papuntang Kanan</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1398853756734560583">I-maximize</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 Minuto ang Nakalipas}one{# Minuto ang Nakalipas}other{# na Minuto ang Nakalipas}}</translation>
 <translation id="1450753235335490080">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 Buwan ang Nakalipas}one{# Buwan ang Nakalipas}other{# na Buwan ang Nakalipas}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto at }one{# minuto at }other{# na minuto at }}</translation>
 <translation id="1643823602425662293">Notification</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Larawan</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4588090240171750605">Mag-scroll Pakanan</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 Taon ang Nakalipas}one{# Taon ang Nakalipas}other{# na Taon ang Nakalipas}}</translation>
 <translation id="4724120544754982507">Notification Center, <ph name="UNREAD_NOTIFICATION_COUNT" /> (na) hindi pa nababasang notification</translation>
 <translation id="4729257764711776855">numero</translation>
 <translation id="4746179598275229723">Na-unpin ang extension</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8394908167088220973">I-Play/I-Pause ang Media</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 taon}one{# taon}other{# na taon}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> File (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> pa</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Ipinapadala...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 Oras ang Nakalipas}one{# Oras ang Nakalipas}other{# na Oras ang Nakalipas}}</translation>
 <translation id="8996630695507351249">Tiyaking nakakonekta ang <ph name="TARGET_DEVICE_NAME" /> sa internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 segundo}one{# segundo}other{# na segundo}}</translation>
 <translation id="9059834730836941392">I-collapse ang notification</translation>
 <translation id="9170848237812810038">&amp;I-undo</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="944069440740578670">Mga Hindi Pa Nababasang Notification</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 Segundo ang Nakalipas}one{# Segundo ang Nakalipas}other{# Segundo ang Nakalipas}}</translation>
 </translationbundle>

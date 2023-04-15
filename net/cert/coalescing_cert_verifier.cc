@@ -433,11 +433,11 @@ void CoalescingCertVerifier::SetConfig(const CertVerifier::Config& config) {
   IncrementGenerationAndMakeCurrentJobsUnjoinable();
 }
 
-void CoalescingCertVerifier::AddObserver(Observer* observer) {
+void CoalescingCertVerifier::AddObserver(CertVerifier::Observer* observer) {
   verifier_->AddObserver(observer);
 }
 
-void CoalescingCertVerifier::RemoveObserver(Observer* observer) {
+void CoalescingCertVerifier::RemoveObserver(CertVerifier::Observer* observer) {
   verifier_->RemoveObserver(observer);
 }
 

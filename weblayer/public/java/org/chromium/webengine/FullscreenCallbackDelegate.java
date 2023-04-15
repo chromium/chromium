@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.chromium.webengine.interfaces.IFullscreenCallbackDelegate;
+import org.chromium.webengine.interfaces.IFullscreenClient;
 
 /**
  * {@link FullscreenCallbackDelegate} notifies registered {@Link FullscreenCallback} of fullscreen
@@ -31,10 +32,11 @@ class FullscreenCallbackDelegate extends IFullscreenCallbackDelegate.Stub {
     }
 
     @Override
-    public void onEnterFullscreen() {
+    public void onEnterFullscreen(IFullscreenClient iFullscreenClient) {
         mHandler.post(() -> {
             if (mFullscreenCallback != null) {
-                mFullscreenCallback.onEnterFullscreen(mWebEngine, mTab);
+                mFullscreenCallback.onEnterFullscreen(
+                        mWebEngine, mTab, new FullscreenClient(iFullscreenClient));
             }
         });
     }

@@ -13,7 +13,7 @@ namespace extensions {
 using IncognitoManifestKeys = api::incognito::ManifestKeys;
 
 IncognitoInfo::IncognitoInfo(api::incognito::IncognitoMode mode) : mode(mode) {
-  DCHECK_NE(api::incognito::INCOGNITO_MODE_NONE, mode);
+  DCHECK_NE(api::incognito::IncognitoMode::kNone, mode);
 }
 
 IncognitoInfo::~IncognitoInfo() = default;
@@ -22,14 +22,14 @@ IncognitoInfo::~IncognitoInfo() = default;
 bool IncognitoInfo::IsSplitMode(const Extension* extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
-  return info->mode == api::incognito::INCOGNITO_MODE_SPLIT;
+  return info->mode == api::incognito::IncognitoMode::kSplit;
 }
 
 // static
 bool IncognitoInfo::IsIncognitoAllowed(const Extension* extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
-  return info->mode != api::incognito::INCOGNITO_MODE_NOT_ALLOWED;
+  return info->mode != api::incognito::IncognitoMode::kNotAllowed;
 }
 
 IncognitoHandler::IncognitoHandler() = default;
@@ -45,12 +45,12 @@ bool IncognitoHandler::Parse(Extension* extension, std::u16string* error) {
   api::incognito::IncognitoMode mode = manifest_keys.incognito;
 
   // This will be the case if the manifest key was omitted.
-  if (mode == api::incognito::INCOGNITO_MODE_NONE) {
+  if (mode == api::incognito::IncognitoMode::kNone) {
     // Extensions and Chrome apps default to spanning mode. Hosted and legacy
     // packaged apps default to split mode.
     mode = extension->is_hosted_app() || extension->is_legacy_packaged_app()
-               ? api::incognito::INCOGNITO_MODE_SPLIT
-               : api::incognito::INCOGNITO_MODE_SPANNING;
+               ? api::incognito::IncognitoMode::kSplit
+               : api::incognito::IncognitoMode::kSpanning;
   }
 
   extension->SetManifestData(IncognitoManifestKeys::kIncognito,

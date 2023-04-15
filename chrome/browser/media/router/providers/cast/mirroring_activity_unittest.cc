@@ -533,4 +533,18 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
   RunUntilIdle();
 }
 
+TEST_F(MirroringActivityTest, Pause) {
+  MakeActivity();
+
+  EXPECT_CALL(*mirroring_service_, Pause()).Times(testing::Exactly(1));
+  activity_->Pause();
+}
+
+TEST_F(MirroringActivityTest, Play) {
+  MakeActivity();
+
+  EXPECT_CALL(*mirroring_service_, Resume()).Times(testing::Exactly(1));
+  activity_->Play();
+}
+
 }  // namespace media_router

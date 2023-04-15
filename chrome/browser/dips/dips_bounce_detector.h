@@ -207,6 +207,7 @@ class DIPSBounceDetector {
 
   // Returns the set of sites in the current (server) redirect chain. If the
   // navigation started with a client redirect, that site is also included.
+  // Redirectors matching the initial or end site are omitted.
   std::set<std::string> GetRedirectors(
       const DIPSNavigationStart& navigation_start,
       DIPSNavigationHandle* navigation_handle);

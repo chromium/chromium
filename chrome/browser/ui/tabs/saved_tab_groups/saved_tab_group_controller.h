@@ -26,6 +26,17 @@ class SavedTabGroupController {
   // removes it. Stops Listening to all tabs.
   virtual void UnsaveGroup(const tab_groups::TabGroupId& group_id) = 0;
 
+  // Pauses listening to the Tab Group in the TabStrip, but maintains the
+  // connection between the two.
+  virtual void PauseTrackingLocalTabGroup(
+      const tab_groups::TabGroupId& group_id) = 0;
+
+  // Resumes listening to a paused Tab Group. The WebContentses in the local
+  // group must match the order they were in when the group tracking was paused.
+  virtual void ResumeTrackingLocalTabGroup(
+      const base::GUID& saved_group_guid,
+      const tab_groups::TabGroupId& group_id) = 0;
+
   // Stops listening to the Tab Group in the TabStrip. Removes the local tab
   // group id and web content tokens.
   virtual void DisconnectLocalTabGroup(

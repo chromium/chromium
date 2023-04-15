@@ -201,14 +201,18 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
-  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id)) {
+  base::Time check_time =
+      time_override_for_testing_.value_or(base::Time::Now());
+
+  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id,
+                               check_time)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kThrottled);
     return;
   }
 
   auto load_observer = std::make_unique<PreUpdateWebContentsObserver>(
       base::BindOnce(&ManifestUpdateManager::StartManifestCheckAfterPageLoad,
-                     weak_factory_.GetWeakPtr(), *app_id,
+                     weak_factory_.GetWeakPtr(), *app_id, check_time,
                      web_contents->GetWeakPtr()),
       web_contents, hang_update_checks_for_testing_);
 
@@ -226,6 +230,7 @@ ManifestUpdateManager::UpdateStage::~UpdateStage() = default;
 
 void ManifestUpdateManager::StartManifestCheckAfterPageLoad(
     const AppId& app_id,
+    base::Time check_time,
     base::WeakPtr<content::WebContents> web_contents) {
   auto update_stage_it = update_stages_.find(app_id);
   DCHECK(update_stage_it != update_stages_.end());
@@ -251,7 +256,7 @@ void ManifestUpdateManager::StartManifestCheckAfterPageLoad(
     std::move(load_finished_callback_).Run();
 
   command_scheduler_->ScheduleManifestUpdateCheck(
-      url, app_id, web_contents,
+      url, app_id, check_time, web_contents,
       base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
                      weak_factory_.GetWeakPtr(), web_contents, url, app_id));
 }
@@ -340,11 +345,11 @@ void ManifestUpdateManager::StartManifestWriteAfterWindowsClosed(
                      weak_factory_.GetWeakPtr()));
 }
 
-bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {
+bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id,
+                                             base::Time check_time) {
   absl::optional<base::Time> last_check_time = GetLastUpdateCheckTime(app_id);
-  base::Time now = time_override_for_testing_.value_or(base::Time::Now());
   if (last_check_time.has_value() &&
-      now < *last_check_time + kDelayBetweenChecks &&
+      check_time < *last_check_time + kDelayBetweenChecks &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           kDisableManifestUpdateThrottle)) {
     return true;
@@ -376,12 +381,13 @@ void ManifestUpdateManager::OnWebAppInstallManagerDestroyed() {
 // Throttling updates to at most once per day is consistent with Android.
 // See |UPDATE_INTERVAL| in WebappDataStorage.java.
 bool ManifestUpdateManager::MaybeConsumeUpdateCheck(const GURL& origin,
-                                                    const AppId& app_id) {
-  if (IsUpdateConsumed(app_id))
+                                                    const AppId& app_id,
+                                                    base::Time check_time) {
+  if (IsUpdateConsumed(app_id, check_time)) {
     return false;
+  }
 
-  base::Time now = time_override_for_testing_.value_or(base::Time::Now());
-  SetLastUpdateCheckTime(origin, app_id, now);
+  SetLastUpdateCheckTime(origin, app_id, check_time);
   return true;
 }
 

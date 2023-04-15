@@ -31,6 +31,8 @@ class ParentAccessUIHandlerDelegate {
   virtual void SetDeclined() = 0;
   // Indicates to the delegate that the request was canceled.
   virtual void SetCanceled() = 0;
+  // Indicates to the delegate that making a request is disabled.
+  virtual void SetDisabled() = 0;
   // Indicates to the delegate that an error occurred.
   virtual void SetError() = 0;
 };

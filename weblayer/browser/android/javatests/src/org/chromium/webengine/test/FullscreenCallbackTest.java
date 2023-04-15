@@ -21,6 +21,7 @@ import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.webengine.FullscreenCallback;
+import org.chromium.webengine.FullscreenClient;
 import org.chromium.webengine.Tab;
 import org.chromium.webengine.WebEngine;
 
@@ -71,7 +72,8 @@ public class FullscreenCallbackTest {
         runOnUiThreadBlocking(() -> {
             mTab.setFullscreenCallback(new FullscreenCallback() {
                 @Override
-                public void onEnterFullscreen(WebEngine webEngine, Tab tab) {
+                public void onEnterFullscreen(
+                        WebEngine webEngine, Tab tab, FullscreenClient fullscreenClient) {
                     Assert.assertEquals(mWebEngine, webEngine);
                     Assert.assertEquals(mTab, tab);
                     enterFullscreenLatch.countDown();
@@ -103,7 +105,8 @@ public class FullscreenCallbackTest {
         runOnUiThreadBlocking(() -> {
             mTab.setFullscreenCallback(new FullscreenCallback() {
                 @Override
-                public void onEnterFullscreen(WebEngine webEngine, Tab tab) {
+                public void onEnterFullscreen(
+                        WebEngine webEngine, Tab tab, FullscreenClient fullscreenClient) {
                     Assert.assertEquals(mWebEngine, webEngine);
                     Assert.assertEquals(mTab, tab);
                     enterFullscreenLatch.countDown();
@@ -128,5 +131,38 @@ public class FullscreenCallbackTest {
         exitFullscreenLatch.await();
         mActivityTestRule.setTabActiveAndWait(mWebEngine, mTab);
         Assert.assertFalse(reenterFullscreenLatch.await(3L, TimeUnit.SECONDS));
+    }
+
+    @Test
+    @SmallTest
+    public void fullscreenCanBeExitedViaClient() throws Exception {
+        CountDownLatch enterFullscreenLatch = new CountDownLatch(1);
+        CountDownLatch exitFullscreenLatch = new CountDownLatch(1);
+        runOnUiThreadBlocking(() -> {
+            mTab.setFullscreenCallback(new FullscreenCallback() {
+                @Override
+                public void onEnterFullscreen(
+                        WebEngine webEngine, Tab tab, FullscreenClient fullscreenClient) {
+                    Assert.assertEquals(mWebEngine, webEngine);
+                    Assert.assertEquals(mTab, tab);
+                    enterFullscreenLatch.countDown();
+
+                    fullscreenClient.exitFullscreen();
+                }
+
+                @Override
+                public void onExitFullscreen(WebEngine webEngine, Tab tab) {
+                    Assert.assertEquals(mWebEngine, webEngine);
+                    Assert.assertEquals(mTab, tab);
+                    exitFullscreenLatch.countDown();
+                }
+            });
+        });
+        // requestFullscreen()-js function expects to be invoked by an actual click.
+        ClickUtils.mouseSingleClickView(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getFragmentContainerView(), 1, 1);
+
+        enterFullscreenLatch.await();
+        exitFullscreenLatch.await();
     }
 }

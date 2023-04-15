@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -23,9 +22,8 @@ class Browser;
 
 // Key command actions are converted to Chrome commands and sent to these
 // handlers.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, FindInPageCommands>
-        dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands, FindInPageCommands>
+    dispatcher;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksCommandsHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;

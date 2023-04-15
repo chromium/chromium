@@ -138,10 +138,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
 
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
-  LayoutUnit ComputeReplacedLogicalWidth(
-      ShouldComputePreferred = kComputeActual) const override;
-  LayoutUnit ComputeReplacedLogicalHeight(
-      LayoutUnit estimated_used_width = LayoutUnit()) const override;
   void UpdateLayout() override;
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;

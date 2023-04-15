@@ -35,10 +35,6 @@
 #include <malloc.h>
 #endif
 
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-#include <windows.h>
-#endif
-
 using allocator_shim::AllocatorDispatch;
 
 namespace {
@@ -202,42 +198,6 @@ partition_alloc::ThreadSafePartitionRoot* AlignedAllocator() {
   return g_aligned_root.Get();
 }
 
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-bool IsRunning32bitEmulatedOnArm64() {
-  using IsWow64Process2Function = decltype(&IsWow64Process2);
-
-  IsWow64Process2Function is_wow64_process2 =
-      reinterpret_cast<IsWow64Process2Function>(::GetProcAddress(
-          ::GetModuleHandleA("kernel32.dll"), "IsWow64Process2"));
-  if (!is_wow64_process2)
-    return false;
-  USHORT process_machine;
-  USHORT native_machine;
-  bool retval = is_wow64_process2(::GetCurrentProcess(), &process_machine,
-                                  &native_machine);
-  if (!retval)
-    return false;
-  if (native_machine == IMAGE_FILE_MACHINE_ARM64)
-    return true;
-  return false;
-}
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-// The number of bytes to add to every allocation. Ordinarily zero, but set to 8
-// when emulating an x86 on ARM64 to avoid a bug in the Windows x86 emulator.
-size_t g_extra_bytes;
-#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-
-// TODO(brucedawson): Remove this when https://crbug.com/1151455 is fixed.
-PA_ALWAYS_INLINE size_t MaybeAdjustSize(size_t size) {
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-  return base::CheckAdd(size, g_extra_bytes).ValueOrDie();
-#else   // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-  return size;
-#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
-}
-
 void* AllocateAlignedMemory(size_t alignment, size_t size) {
   // Memory returned by the regular allocator *always* respects |kAlignment|,
   // which is a power of two, and any valid alignment is also a power of two. So
@@ -300,8 +260,7 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
-      g_alloc_flags, MaybeAdjustSize(size),
-      partition_alloc::PartitionPageSize());
+      g_alloc_flags, size, partition_alloc::PartitionPageSize());
 }
 
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
@@ -309,8 +268,8 @@ void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
-      partition_alloc::AllocFlags::kReturnNull | g_alloc_flags,
-      MaybeAdjustSize(size), partition_alloc::PartitionPageSize());
+      partition_alloc::AllocFlags::kReturnNull | g_alloc_flags, size,
+      partition_alloc::PartitionPageSize());
 }
 
 void* PartitionCalloc(const AllocatorDispatch*,
@@ -319,8 +278,7 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   const size_t total =
-      partition_alloc::internal::base::CheckMul(n, MaybeAdjustSize(size))
-          .ValueOrDie();
+      partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
   return Allocator()->AllocWithFlagsNoHooks(
       partition_alloc::AllocFlags::kZeroFill | g_alloc_flags, total,
       partition_alloc::PartitionPageSize());
@@ -357,7 +315,6 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
   partition_alloc::ScopedDisallowAllocations guard{};
   void* new_ptr = nullptr;
   if (size > 0) {
-    size = MaybeAdjustSize(size);
     new_ptr = AllocateAlignedMemory(alignment, size);
   } else {
     // size == 0 and address != null means just "free(address)".
@@ -397,8 +354,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
 #endif  // BUILDFLAG(IS_APPLE)
 
   return Allocator()->ReallocWithFlags(
-      partition_alloc::AllocFlags::kNoHooks | g_alloc_flags, address,
-      MaybeAdjustSize(size), "");
+      partition_alloc::AllocFlags::kNoHooks | g_alloc_flags, address, size, "");
 }
 
 #if BUILDFLAG(IS_CAST_ANDROID)
@@ -612,11 +568,7 @@ void ConfigurePartitions(
   if (!split_main_partition) {
     switch (use_alternate_bucket_distribution) {
       case AlternateBucketDistribution::kDefault:
-        current_root->SwitchToDefaultBucketDistribution();
-        current_aligned_root->SwitchToDefaultBucketDistribution();
-        break;
-      case AlternateBucketDistribution::kCoarser:
-        // We are already using the coarse distribution when we create a root.
+        // We start in the 'default' case.
         break;
       case AlternateBucketDistribution::kDenser:
         current_root->SwitchToDenserBucketDistribution();
@@ -708,11 +660,7 @@ void ConfigurePartitions(
 
   switch (use_alternate_bucket_distribution) {
     case AlternateBucketDistribution::kDefault:
-      g_root.Get()->SwitchToDefaultBucketDistribution();
-      g_aligned_root.Get()->SwitchToDefaultBucketDistribution();
-      break;
-    case AlternateBucketDistribution::kCoarser:
-      // We are already using the coarse distribution when we create a root.
+      // We start in the 'default' case.
       break;
     case AlternateBucketDistribution::kDenser:
       g_root.Get()->SwitchToDenserBucketDistribution();
@@ -739,16 +687,6 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   base::internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
 #endif  // BUILDFLAG(USE_STARSCAN)
-
-#if BUILDFLAG(IS_WIN)
-// Call this as soon as possible during startup.
-void ConfigurePartitionAlloc() {
-#if defined(ARCH_CPU_X86)
-  if (IsRunning32bitEmulatedOnArm64())
-    g_extra_bytes = 8;
-#endif  // defined(ARCH_CPU_X86)
-}
-#endif  // BUILDFLAG(IS_WIN)
 }  // namespace allocator_shim
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {

@@ -27,12 +27,12 @@
 [
     Exposed=Window
 ] interface OfflineAudioContext : BaseAudioContext {
-    [CallWith=ExecutionContext, RaisesException, Measure] constructor(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate);
-    [CallWith=ExecutionContext, RaisesException, Measure] constructor(OfflineAudioContextOptions options);
+    [HighEntropy, CallWith=ExecutionContext, RaisesException, Measure] constructor(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate);
+    [HighEntropy, CallWith=ExecutionContext, RaisesException, Measure] constructor(OfflineAudioContextOptions options);
     // Offline rendering
     attribute EventHandler oncomplete;
     readonly attribute unsigned long length;
-    [CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering();
+    [HighEntropy, CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering();
     [RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext, MeasureAs=OfflineAudioContextSuspend] Promise<void> suspend(double suspendTime);
     [RaisesException, MeasureAs=OfflineAudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<void> resume();
 };

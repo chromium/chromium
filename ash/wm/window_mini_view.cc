@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/window_preview_view.h"
@@ -70,8 +71,11 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     // Always put the backdrop view under other children.
     backdrop_view_ = AddChildViewAt(std::make_unique<views::View>(), 0);
     backdrop_view_->SetPaintToLayer();
-    backdrop_view_->SetBackground(
-        views::CreateThemedSolidBackground(cros_tokens::kCrosSysScrim));
+    backdrop_view_->SetBackground(views::CreateThemedSolidBackground(
+        chromeos::features::IsJellyrollEnabled()
+            ? cros_tokens::kCrosSysScrim
+            : static_cast<ui::ColorId>(
+                  kColorAshControlBackgroundColorInactive)));
 
     ui::Layer* layer = backdrop_view_->layer();
     layer->SetFillsBoundsOpaquely(false);
@@ -96,8 +100,7 @@ void WindowMiniView::SetShowPreview(bool show) {
   }
 
   if (!show) {
-    RemoveChildView(preview_view_);
-    delete preview_view_;
+    RemoveChildViewT(preview_view_);
     preview_view_ = nullptr;
     return;
   }
@@ -185,7 +188,10 @@ WindowMiniView::WindowMiniView(aura::Window* source_window, int border_inset)
   gfx::Insets header_insets(0);
   if (chromeos::features::IsJellyrollEnabled()) {
     header_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysHeader, /*top_radius=*/kWindowMiniViewCornerRadius,
+        chromeos::features::IsJellyrollEnabled()
+            ? cros_tokens::kCrosSysHeader
+            : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
+        /*top_radius=*/kWindowMiniViewCornerRadius,
         /*bottom_radius=*/0, /*for_border_thickness=*/0));
     header_insets = kHeaderInsets;
   }

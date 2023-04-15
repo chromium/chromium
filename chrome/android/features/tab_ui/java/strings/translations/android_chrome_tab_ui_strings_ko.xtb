@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
-<translation id="1181037720776840403">삭제</translation>
 <translation id="125153950246128346">다른 탭을 보려면 탭하세요.</translation>
 <translation id="1403228085774130835">Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다.</translation>
 <translation id="1455506303394048917">시크릿 탭의 활동 내역이 기기에서 삭제됩니다.</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">이제 <ph name="SOURCE_WEBSITE" />에서 <ph name="CURRENT_PRICE" />에 판매됨</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{탭 그룹 해제}other{탭 그룹 해제}}</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개를 그룹에서 삭제합니다.}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개를 그룹에서 삭제합니다.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{북마크 탭}other{북마크 탭}}</translation>
-<translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
-<translation id="257674075312929031">그룹화</translation>
 <translation id="2613747923081026172">그룹 만들기</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
 <translation id="266935134738038806">사이트 방문</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
 <translation id="5846292395804797011">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 그룹 닫기</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
-<translation id="6040143037577758943">닫기</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">다중 선택 모드 숨기기</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{탭 공유}other{탭 공유}}</translation>
 <translation id="7129458170538955174">매장에 관한 정보가 절반 높이로 열림</translation>
-<translation id="7151209024774799310">그룹에서 탭 삭제</translation>
 <translation id="7204204600596740190">다중 선택 모드</translation>
 <translation id="7326879924029668159">반품 정책 등 확인하기</translation>
 <translation id="7352298686197644113">열려 있는 탭의 상품 중 가격이 더 낮은 상품을 확인합니다.</translation>

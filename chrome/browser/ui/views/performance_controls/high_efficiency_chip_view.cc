@@ -23,24 +23,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 
 // The duration that the chip should be expanded for.
 constexpr base::TimeDelta kChipAnimationDuration = base::Seconds(12);
-// The delay before the IPH should be potentially shown. This should be less
-// than kChipAnimationDuration but longer than kIconLabelAnimationDurationMs.
-constexpr base::TimeDelta kIPHDelayDuration = base::Seconds(1);
-
-// We want this to show up before the chip finishes animating.
-static_assert(kIPHDelayDuration < kChipAnimationDuration);
 
 }  // namespace
 
@@ -126,13 +120,6 @@ void HighEfficiencyChipView::UpdateImpl() {
       AnimateOut();
       ResetSlideAnimation(false);
     }
-
-    if (performance_manager::features::kHighEfficiencyModeDefaultState.Get()) {
-      // Delay the IPH to ensure the chip is not animating when it appears.
-      timer_.Start(FROM_HERE, kIPHDelayDuration,
-                   base::BindOnce(&HighEfficiencyChipView::MaybeShowIPH,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    }
   } else {
     AnimateOut();
     ResetSlideAnimation(false);
@@ -150,10 +137,6 @@ void HighEfficiencyChipView::OnExecuting(
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
 
-  // If the IPH is currently open, close it before opening the dialog.
-  browser_view->CloseFeaturePromo(
-      feature_engagement::kIPHHighEfficiencyInfoModeFeature);
-
   // Open the dialog bubble.
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
       PageActionIconType::kHighEfficiency);
@@ -165,32 +148,13 @@ void HighEfficiencyChipView::OnExecuting(
 }
 
 const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
-  return features::IsChromeRefresh2023() ? kHighEfficiencyChromeRefreshIcon
-                                         : kHighEfficiencyIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kHighEfficiencyChromeRefreshIcon
+             : kHighEfficiencyIcon;
 }
 
 views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
   return bubble_;
-}
-
-void HighEfficiencyChipView::MaybeShowIPH() {
-  if (browser_->window() != nullptr) {
-    bool const promo_shown = browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHHighEfficiencyInfoModeFeature, {},
-        base::BindOnce(&HighEfficiencyChipView::OnIPHClosed,
-                       weak_ptr_factory_.GetWeakPtr()));
-    // While the IPH is showing, pause the animation of the chip so it doesn't
-    // animate closed.
-    if (promo_shown) {
-      PauseAnimation();
-      SetHighlighted(true);
-    }
-  }
-}
-
-void HighEfficiencyChipView::OnIPHClosed() {
-  SetHighlighted(false);
-  UnpauseAnimation();
 }
 
 void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {

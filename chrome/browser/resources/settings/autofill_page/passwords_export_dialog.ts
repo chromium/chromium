@@ -204,7 +204,7 @@ export class PasswordsExportDialogElement extends
             'passwords-export-dialog-close', {bubbles: true, composed: true})));
   }
 
-  private onExportTap_() {
+  private onExportClick_() {
     // <if expr="is_chromeos">
     if (loadTimeData.getBoolean('useSystemAuthenticationForPasswordManager')) {
       this.exportPasswords_();
@@ -267,7 +267,7 @@ export class PasswordsExportDialogElement extends
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
    */
-  private onCancelButtonTap_() {
+  private onCancelButtonClick_() {
     this.close();
   }
 
@@ -275,7 +275,7 @@ export class PasswordsExportDialogElement extends
    * Handler for tapping the 'cancel' button on the progress dialog. It should
    * cancel the export and dismiss the dialog.
    */
-  private onCancelProgressButtonTap_() {
+  private onCancelProgressButtonClick_() {
     this.passwordManager_.cancelExportPasswords();
     this.close();
   }

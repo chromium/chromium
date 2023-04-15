@@ -180,11 +180,6 @@ class FakeChromeUserManager : public ChromeUserManager {
       const AffiliationIDSet& user_affiliation_ids) override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
-  void CacheRemovedUser(const std::string& user_email,
-                        user_manager::UserRemovalReason) override;
-  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
-  GetRemovedUserCache() const override;
-  void MarkReporterInitialized() override;
 
   void set_ephemeral_mode_config(EphemeralModeConfig ephemeral_mode_config) {
     fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
@@ -269,10 +264,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // User avatar managers.
   UserImageManagerMap user_image_managers_;
-
-  // Fake cache of removed users. Used for reporting testing.
-  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
-      removed_user_cache_;
 };
 
 }  // namespace ash

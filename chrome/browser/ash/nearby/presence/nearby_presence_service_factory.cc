@@ -13,7 +13,10 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_impl.h"
+#include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -74,10 +77,13 @@ KeyedService* NearbyPresenceServiceFactory::BuildServiceInstanceFor(
   // TODO(b/276344576): add the NearbyPresence feature flag.
 
   VLOG(1) << __func__ << ": creating NearbyPresenceService.";
-  return new NearbyPresenceServiceImpl();
+  return new NearbyPresenceServiceImpl(
+      Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 void NearbyPresenceServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {}
+    user_prefs::PrefRegistrySyncable* registry) {
+  RegisterNearbyPresencePrefs(registry);
+}
 
 }  // namespace ash::nearby::presence

@@ -194,6 +194,18 @@ std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
   return base::JoinString(text, u" ");
 }
 
+bool MatchHasSideTypeAndRenderType(
+    const AutocompleteMatch& match,
+    omnibox::GroupConfig_SideType side_type,
+    omnibox::GroupConfig_RenderType render_type,
+    const omnibox::GroupConfigMap& suggestion_groups_map) {
+  omnibox::GroupId group_id =
+      match.suggestion_group_id.value_or(omnibox::GROUP_INVALID);
+  return base::Contains(suggestion_groups_map, group_id) &&
+         suggestion_groups_map.at(group_id).side_type() == side_type &&
+         suggestion_groups_map.at(group_id).render_type() == render_type;
+}
+
 std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
                                         RealboxHandler::FocusState state) {
   switch (state) {
@@ -223,10 +235,34 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
 
 std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
-    bookmarks::BookmarkModel* bookmark_model) {
+    bookmarks::BookmarkModel* bookmark_model,
+    const omnibox::GroupConfigMap& suggestion_groups_map) {
   std::vector<omnibox::mojom::AutocompleteMatchPtr> matches;
   int line = 0;
   for (const AutocompleteMatch& match : result) {
+    // Skip the primary column horizontal matches. This check guards against
+    // this unexpected scenario as the UI expects the primary column matches to
+    // be vertical ones.
+    if (MatchHasSideTypeAndRenderType(
+            match, omnibox::GroupConfig_SideType_DEFAULT_PRIMARY,
+            omnibox::GroupConfig_RenderType_HORIZONTAL,
+            suggestion_groups_map)) {
+      continue;
+    }
+
+    // Skip the secondary column horizontal matches that are not entities or do
+    // not have images. This check guards against this unexpected scenario as
+    // the UI expects the secondary column horizontal matches to be entity
+    // suggestions with images.
+    if (MatchHasSideTypeAndRenderType(
+            match, omnibox::GroupConfig_SideType_SECONDARY,
+            omnibox::GroupConfig_RenderType_HORIZONTAL,
+            suggestion_groups_map) &&
+        (match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
+         !match.image_url.is_valid())) {
+      continue;
+    }
+
     omnibox::mojom::AutocompleteMatchPtr mojom_match =
         omnibox::mojom::AutocompleteMatch::New();
     mojom_match->allowed_to_be_default_match =
@@ -274,6 +310,7 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value());
+
     // The realbox only supports one action and priority is given to the actions
     // instead of the switch to tab button.
     if (match.has_tab_match.value_or(false) &&
@@ -325,7 +362,8 @@ omnibox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
   return omnibox::mojom::AutocompleteResult::New(
       input,
       CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
-      CreateAutocompleteMatches(result, bookmark_model));
+      CreateAutocompleteMatches(result, bookmark_model,
+                                result.suggestion_groups_map()));
 }
 
 std::string GetBase64UrlVariations(Profile* profile) {
@@ -510,7 +548,7 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
 
   source->AddBoolean(
       "showSecondarySide",
-      base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest));
+      base::FeatureList::IsEnabled(omnibox::kRealboxSecondaryZeroSuggest));
 }
 
 // static

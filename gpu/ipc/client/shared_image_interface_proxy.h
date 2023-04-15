@@ -98,11 +98,31 @@ class SharedImageInterfaceProxy {
   void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage);
 
  private:
+  struct SharedImageInfo {
+    SharedImageInfo();
+    ~SharedImageInfo();
+
+    SharedImageInfo(SharedImageInfo&&);
+    SharedImageInfo& operator=(SharedImageInfo&&);
+
+    SharedImageInfo(const SharedImageInfo&) = delete;
+    SharedImageInfo& operator=(const SharedImageInfo&) = delete;
+
+    int ref_count = 0;
+    uint32_t usage = 0;
+    std::vector<SyncToken> destruction_sync_tokens;
+  };
+
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,
                           size_t* shm_offset,
                           bool* done_with_shm) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void AddMailbox(const Mailbox& mailbox, uint32_t usage)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Returns true if it's first time mailbox was added.
+  [[nodiscard]] bool AddMailboxOrAddReference(const Mailbox& mailbox,
+                                              uint32_t usage)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const raw_ptr<GpuChannelHost> host_;
@@ -116,7 +136,7 @@ class SharedImageInterfaceProxy {
   // The offset into |upload_buffer_| at which data is no longer used.
   size_t upload_buffer_offset_ GUARDED_BY(lock_) = 0;
 
-  base::flat_map<Mailbox, uint32_t> mailbox_to_usage_ GUARDED_BY(lock_);
+  base::flat_map<Mailbox, SharedImageInfo> mailbox_infos_ GUARDED_BY(lock_);
 };
 
 }  // namespace gpu

@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -45,6 +46,7 @@ constexpr char16_t kUsername2[] = u"bob";
 constexpr char16_t kPassword1[] = u"f00b4r";
 constexpr char16_t kPassword2[] = u"s3cr3t";
 
+using ::testing::_;
 using ::testing::ByMove;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -85,7 +87,7 @@ LeakCheckCredential MakeLeakCheckCredential(base::StringPiece16 username,
 struct MockBulkLeakCheck : BulkLeakCheck {
   MOCK_METHOD(void,
               CheckCredentials,
-              (std::vector<LeakCheckCredential> credentials),
+              (LeakDetectionInitiator, std::vector<LeakCheckCredential>),
               (override));
   MOCK_METHOD(size_t, GetPendingChecksCount, (), (const override));
 };
@@ -158,7 +160,10 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
   std::vector<LeakCheckCredential> credentials;
-  EXPECT_CALL(*leak_check, CheckCredentials).WillOnce(MoveArg(&credentials));
+  EXPECT_CALL(
+      *leak_check,
+      CheckCredentials(LeakDetectionInitiator::kBulkSyncedPasswordsCheck, _))
+      .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
   adapter().StartBulkLeakCheck();
@@ -183,7 +188,10 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
   std::vector<LeakCheckCredential> credentials;
-  EXPECT_CALL(*leak_check, CheckCredentials).WillOnce(MoveArg(&credentials));
+  EXPECT_CALL(
+      *leak_check,
+      CheckCredentials(LeakDetectionInitiator::kBulkSyncedPasswordsCheck, _))
+      .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
   adapter().StartBulkLeakCheck(kKey, &data);
@@ -206,7 +214,10 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
   std::vector<LeakCheckCredential> credentials;
-  EXPECT_CALL(*leak_check, CheckCredentials).WillOnce(MoveArg(&credentials));
+  EXPECT_CALL(
+      *leak_check,
+      CheckCredentials(LeakDetectionInitiator::kBulkSyncedPasswordsCheck, _))
+      .WillOnce(MoveArg<1>(&credentials));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
   adapter().StartBulkLeakCheck();
@@ -288,7 +299,8 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
   EXPECT_CALL(*leak_check,
-              CheckCredentials(CredentialsAre(std::cref(expected))));
+              CheckCredentials(LeakDetectionInitiator::kEditCheck,
+                               CredentialsAre(std::cref(expected))));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
   CredentialUIEntry original_credential(password),

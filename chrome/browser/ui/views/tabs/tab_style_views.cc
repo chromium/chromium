@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -49,23 +48,6 @@ constexpr ShapeModifier kNoLowerLeftArc = 0x01;
 // Exclude the lower right arc.
 constexpr ShapeModifier kNoLowerRightArc = 0x02;
 
-void DrawHighlight(gfx::Canvas* canvas,
-                   const SkPoint& p,
-                   SkScalar radius,
-                   SkColor color) {
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-  const SkColor4f colors[2] = {
-      SkColor4f::FromColor(color),
-      SkColor4f::FromColor(SkColorSetA(color, SK_AlphaTRANSPARENT))};
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setShader(cc::PaintShader::MakeRadialGradient(
-      p, radius, colors, nullptr, 2, SkTileMode::kClamp));
-  canvas->sk_canvas()->drawRect(
-      SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
-      flags);
-}
-
 // Updates a target value, returning true if it changed.
 template <class T>
 bool UpdateValue(T* dest, const T& src) {
@@ -77,31 +59,31 @@ bool UpdateValue(T* dest, const T& src) {
 }
 
 // Tab style implementation for the GM2 refresh (Chrome 69).
-class GM2TabStyle : public TabStyleViews {
+class GM2TabStyleViews : public TabStyleViews {
  public:
-  explicit GM2TabStyle(Tab* tab);
-  GM2TabStyle(const GM2TabStyle&) = delete;
-  GM2TabStyle& operator=(const GM2TabStyle&) = delete;
+  explicit GM2TabStyleViews(Tab* tab);
+  ~GM2TabStyleViews() override = default;
+  GM2TabStyleViews(const GM2TabStyleViews&) = delete;
+  GM2TabStyleViews& operator=(const GM2TabStyleViews&) = delete;
 
   const Tab* tab() const { return tab_; }
 
  protected:
   // TabStyle:
-  SkPath GetPath(
-      PathType path_type,
-      float scale,
-      bool force_active = false,
-      RenderUnits render_units = RenderUnits::kPixels) const override;
+  SkPath GetPath(TabStyle::PathType path_type,
+                 float scale,
+                 bool force_active = false,
+                 TabStyle::RenderUnits render_units =
+                     TabStyle::RenderUnits::kPixels) const override;
   gfx::Insets GetContentsInsets() const override;
   float GetZValue() const override;
   float GetActiveOpacity() const override;
   TabActive GetApparentActiveState() const override;
   TabStyle::TabColors CalculateColors() const override;
-  float GetSelectedTabOpacity() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
   void SetHoverLocation(const gfx::Point& location) override;
-  void ShowHover(ShowHoverStyle style) override;
-  void HideHover(HideHoverStyle style) override;
+  void ShowHover(TabStyle::ShowHoverStyle style) override;
+  void HideHover(TabStyle::HideHoverStyle style) override;
 
   // Painting helper functions:
   virtual SkColor GetTabBackgroundColor(TabActive active) const;
@@ -114,12 +96,12 @@ class GM2TabStyle : public TabStyleViews {
 
  private:
   // Gets the bounds for the leading and trailing separators for a tab.
-  SeparatorBounds GetSeparatorBounds(float scale) const;
+  TabStyle::SeparatorBounds GetSeparatorBounds(float scale) const;
 
   // Returns the opacities of the separators. If |for_layout| is true, returns
   // the "layout" opacities, which ignore the effects of surrounding tabs' hover
   // effects and consider only the current tab's state.
-  SeparatorOpacities GetSeparatorOpacities(bool for_layout) const;
+  TabStyle::SeparatorOpacities GetSeparatorOpacities(bool for_layout) const;
 
   // Returns a single separator's opacity based on whether it is the
   // logically |leading| separator. |for_layout| has the same meaning as in
@@ -140,7 +122,7 @@ class GM2TabStyle : public TabStyleViews {
   bool IsHoverActive() const;
 
   // Returns the progress (0 to 1) of the hover animation.
-  double GetHoverAnimationValue() const;
+  double GetHoverAnimationValue() const override;
 
   // Returns the opacity of the hover effect that should be drawn, which may not
   // be the same as GetHoverAnimationValue.
@@ -156,7 +138,7 @@ class GM2TabStyle : public TabStyleViews {
   // there are anti-aliasing artifacts in the overlapped lower arc region. This
   // returns how to modify the tab shape to eliminate the lower arcs on the
   // right or left based on the state of the adjacent tab(s).
-  ShapeModifier GetShapeModifier(PathType path_type) const;
+  ShapeModifier GetShapeModifier(TabStyle::PathType path_type) const;
 
   // Painting helper functions:
   void PaintInactiveTabBackground(gfx::Canvas* canvas) const;
@@ -169,19 +151,23 @@ class GM2TabStyle : public TabStyleViews {
                               bool paint_hover_effect,
                               absl::optional<int> fill_id,
                               int y_inset) const;
+  void PaintBackgroundHover(gfx::Canvas* canvas,
+                            const SkPoint& p,
+                            SkScalar radius,
+                            SkColor color) const;
   void PaintBackgroundStroke(gfx::Canvas* canvas,
                              TabActive active,
                              SkColor stroke_color) const;
   void PaintSeparators(gfx::Canvas* canvas) const;
 
   // Given a tab of width |width|, returns the radius to use for the corners.
-  static float GetTopCornerRadiusForWidth(int width);
+  float GetTopCornerRadiusForWidth(int width) const;
 
   // Scales |bounds| by scale and aligns so that adjacent tabs meet up exactly
   // during painting.
-  static gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
-                                        float scale,
-                                        int stroke_thickness);
+  gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
+                                 float scale,
+                                 int stroke_thickness) const;
 
   const raw_ptr<const Tab> tab_;
 
@@ -190,7 +176,7 @@ class GM2TabStyle : public TabStyleViews {
 
 // GM2TabStyle -----------------------------------------------------------------
 
-GM2TabStyle::GM2TabStyle(Tab* tab)
+GM2TabStyleViews::GM2TabStyleViews(Tab* tab)
     : tab_(tab),
       hover_controller_((tab && gfx::Animation::ShouldRenderRichAnimation())
                             ? new GlowHoverController(tab)
@@ -199,10 +185,10 @@ GM2TabStyle::GM2TabStyle(Tab* tab)
   // repurposing CONTEXT_BUTTON_MD.
 }
 
-SkPath GM2TabStyle::GetPath(PathType path_type,
-                            float scale,
-                            bool force_active,
-                            RenderUnits render_units) const {
+SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
+                                 float scale,
+                                 bool force_active,
+                                 TabStyle::RenderUnits render_units) const {
   CHECK(tab());
   const int stroke_thickness = GetStrokeThickness(force_active);
 
@@ -212,7 +198,7 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
   gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(tab_->bounds(), scale, stroke_thickness);
 
-  if (path_type == PathType::kInteriorClip) {
+  if (path_type == TabStyle::PathType::kInteriorClip) {
     // When there is a separator, animate the clip to account for it, in sync
     // with the separator's fading.
     // TODO(pkasting): Consider crossfading the favicon instead of animating
@@ -232,7 +218,7 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
 
   // Compute |extension| as the width outside the separators.  This is a fixed
   // value equal to the normal corner radius.
-  const float extension = GetCornerRadius() * scale;
+  const float extension = tab_style()->GetCornerRadius() * scale;
 
   // Calculate the bounds of the actual path.
   const float left = aligned_bounds.x();
@@ -251,20 +237,21 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
   // Path-specific adjustments:
   const float stroke_adjustment = stroke_thickness * scale;
   bool extend_to_top = false;
-  if (path_type == PathType::kInteriorClip) {
+  if (path_type == TabStyle::PathType::kInteriorClip) {
     // Inside of the border runs |stroke_thickness| inside the outer edge.
     tab_left += stroke_adjustment;
     tab_right -= stroke_adjustment;
     tab_top += stroke_adjustment;
     top_radius -= stroke_adjustment;
-  } else if (path_type == PathType::kFill || path_type == PathType::kBorder) {
+  } else if (path_type == TabStyle::PathType::kFill ||
+             path_type == TabStyle::PathType::kBorder) {
     tab_left += 0.5f * stroke_adjustment;
     tab_right -= 0.5f * stroke_adjustment;
     tab_top += 0.5f * stroke_adjustment;
     top_radius -= 0.5f * stroke_adjustment;
     tab_bottom -= 0.5f * stroke_adjustment;
     bottom_radius -= 0.5f * stroke_adjustment;
-  } else if (path_type == PathType::kHitTest) {
+  } else if (path_type == TabStyle::PathType::kHitTest) {
     // Outside border needs to draw its bottom line a stroke width above the
     // bottom of the tab, to line up with the stroke that runs across the rest
     // of the bottom of the tab bar (when strokes are enabled).
@@ -288,10 +275,10 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
 
   SkPath path;
 
-  if (path_type == PathType::kInteriorClip) {
+  if (path_type == TabStyle::PathType::kInteriorClip) {
     // Clip path is a simple rectangle.
     path.addRect(tab_left, tab_top, tab_right, tab_bottom);
-  } else if (path_type == PathType::kHighlight) {
+  } else if (path_type == TabStyle::PathType::kHighlight) {
     // The path is a round rect inset by the focus ring thickness. The
     // radius is also adjusted by the inset.
     const float inset = views::FocusRing::kDefaultHaloThickness +
@@ -393,8 +380,9 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
     // ┌─╯         ╰─┓
     path.lineTo(right, extended_bottom);
 
-    if (path_type != PathType::kBorder)
+    if (path_type != TabStyle::PathType::kBorder) {
       path.close();
+    }
   }
 
   // Convert path to be relative to the tab origin.
@@ -403,22 +391,23 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
   path.offset(-origin.x(), -origin.y());
 
   // Possibly convert back to DIPs.
-  if (render_units == RenderUnits::kDips && scale != 1.0f)
+  if (render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
     path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
+  }
 
   return path;
 }
 
-gfx::Insets GM2TabStyle::GetContentsInsets() const {
+gfx::Insets GM2TabStyleViews::GetContentsInsets() const {
   const int stroke_thickness = GetStrokeThickness();
-  const int horizontal_inset = GetContentsHorizontalInsetSize();
+  const int horizontal_inset = tab_style()->GetContentsHorizontalInsetSize();
   return gfx::Insets::TLBR(
       stroke_thickness, horizontal_inset,
       stroke_thickness + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
       horizontal_inset);
 }
 
-float GM2TabStyle::GetZValue() const {
+float GM2TabStyleViews::GetZValue() const {
   CHECK(tab());
   // This will return values so that inactive tabs can be sorted in the
   // following order:
@@ -452,18 +441,18 @@ float GM2TabStyle::GetZValue() const {
   return sort_value;
 }
 
-float GM2TabStyle::GetActiveOpacity() const {
+float GM2TabStyleViews::GetActiveOpacity() const {
   CHECK(tab());
   if (tab_->IsActive())
     return 1.0f;
   if (tab_->IsSelected())
-    return GetSelectedTabOpacity();
+    return tab_style()->GetSelectedTabOpacity();
   if (tab_->mouse_hovered())
     return GetHoverOpacity();
   return 0.0f;
 }
 
-TabActive GM2TabStyle::GetApparentActiveState() const {
+TabActive GM2TabStyleViews::GetApparentActiveState() const {
   // In some cases, inactive tabs may have background more like active tabs than
   // inactive tabs, so colors should be adapted to ensure appropriate contrast.
   // In particular, text should have plenty of contrast in all cases, so switch
@@ -472,7 +461,7 @@ TabActive GM2TabStyle::GetApparentActiveState() const {
   return GetActiveOpacity() > 0.5f ? TabActive::kActive : TabActive::kInactive;
 }
 
-TabStyle::TabColors GM2TabStyle::CalculateColors() const {
+TabStyle::TabColors GM2TabStyleViews::CalculateColors() const {
   CHECK(tab());
   const TabActive active = GetApparentActiveState();
   const SkColor foreground_color =
@@ -490,11 +479,7 @@ TabStyle::TabColors GM2TabStyle::CalculateColors() const {
           close_button_focus_ring_color};
 }
 
-float GM2TabStyle::GetSelectedTabOpacity() const {
-  return kDefaultSelectedTabOpacity;
-}
-
-void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {
+void GM2TabStyleViews::PaintTab(gfx::Canvas* canvas) const {
   CHECK(tab());
   absl::optional<int> active_tab_fill_id;
   int active_tab_y_inset = 0;
@@ -520,7 +505,7 @@ void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {
   }
 }
 
-void GM2TabStyle::SetHoverLocation(const gfx::Point& location) {
+void GM2TabStyleViews::SetHoverLocation(const gfx::Point& location) {
   CHECK(tab());
   // There's a "glow" that gets drawn over inactive tabs based on the mouse's
   // location. There is no glow for the active tab so don't update the hover
@@ -529,33 +514,34 @@ void GM2TabStyle::SetHoverLocation(const gfx::Point& location) {
     hover_controller_->SetLocation(location);
 }
 
-void GM2TabStyle::ShowHover(ShowHoverStyle style) {
+void GM2TabStyleViews::ShowHover(TabStyle::ShowHoverStyle style) {
   CHECK(tab());
   if (!hover_controller_)
     return;
 
-  if (style == ShowHoverStyle::kSubtle) {
+  if (style == TabStyle::ShowHoverStyle::kSubtle) {
     hover_controller_->SetSubtleOpacityScale(
         tab_->controller()->GetHoverOpacityForRadialHighlight());
   }
   hover_controller_->Show(style);
 }
 
-void GM2TabStyle::HideHover(HideHoverStyle style) {
+void GM2TabStyleViews::HideHover(TabStyle::HideHoverStyle style) {
   CHECK(tab());
   if (hover_controller_)
     hover_controller_->Hide(style);
 }
 
-TabStyle::SeparatorBounds GM2TabStyle::GetSeparatorBounds(float scale) const {
+TabStyle::SeparatorBounds GM2TabStyleViews::GetSeparatorBounds(
+    float scale) const {
   CHECK(tab());
   const gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(tab_->bounds(), scale, GetStrokeThickness());
-  const int corner_radius = GetCornerRadius() * scale;
-  gfx::SizeF separator_size(GetSeparatorSize());
+  const int corner_radius = tab_style()->GetCornerRadius() * scale;
+  gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
   separator_size.Scale(scale);
 
-  SeparatorBounds separator_bounds;
+  TabStyle::SeparatorBounds separator_bounds;
 
   separator_bounds.leading =
       gfx::RectF(aligned_bounds.x() + corner_radius,
@@ -575,7 +561,7 @@ TabStyle::SeparatorBounds GM2TabStyle::GetSeparatorBounds(float scale) const {
   return separator_bounds;
 }
 
-TabStyle::SeparatorOpacities GM2TabStyle::GetSeparatorOpacities(
+TabStyle::SeparatorOpacities GM2TabStyleViews::GetSeparatorOpacities(
     bool for_layout) const {
   // Adjacent slots should be visually separated from each other. This can be
   // achieved in multiple ways:
@@ -600,7 +586,8 @@ TabStyle::SeparatorOpacities GM2TabStyle::GetSeparatorOpacities(
   return {leading_opacity, trailing_opacity};
 }
 
-float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
+float GM2TabStyleViews::GetSeparatorOpacity(bool for_layout,
+                                            bool leading) const {
   CHECK(tab());
   // If the current tab is active, never show the separator.
   if (tab_->IsActive())
@@ -685,7 +672,7 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
   return GetHoverInterpolatedSeparatorOpacity(for_layout, adjacent_tab);
 }
 
-float GM2TabStyle::GetHoverInterpolatedSeparatorOpacity(
+float GM2TabStyleViews::GetHoverInterpolatedSeparatorOpacity(
     bool for_layout,
     const Tab* other_tab) const {
   CHECK(tab());
@@ -695,52 +682,54 @@ float GM2TabStyle::GetHoverInterpolatedSeparatorOpacity(
   // hover animation value, otherwise the separator on this tab will disappear
   // while that tab is being dragged.
   auto adjacent_hover_value = [for_layout](const Tab* other_tab) {
-    if (for_layout || !other_tab || other_tab->IsActive())
+    if (for_layout || !other_tab || other_tab->IsActive()) {
       return 0.0f;
-    auto* tab_style = static_cast<const GM2TabStyle*>(other_tab->tab_style());
-    return static_cast<float>(tab_style->GetHoverAnimationValue());
+    }
+    return static_cast<float>(
+        other_tab->tab_style_views()->GetHoverAnimationValue());
   };
   const float hover_value = GetHoverAnimationValue();
   return 1.0f - std::max(hover_value, adjacent_hover_value(other_tab));
 }
 
-bool GM2TabStyle::ShouldExtendHitTest() const {
+bool GM2TabStyleViews::ShouldExtendHitTest() const {
   const views::Widget* widget = tab_->GetWidget();
   return widget->IsMaximized() || widget->IsFullscreen();
 }
 
-bool GM2TabStyle::IsHoverActive() const {
+bool GM2TabStyleViews::IsHoverActive() const {
   if (!hover_controller_)
     return false;
   return hover_controller_->ShouldDraw();
 }
 
-double GM2TabStyle::GetHoverAnimationValue() const {
+double GM2TabStyleViews::GetHoverAnimationValue() const {
   if (!hover_controller_)
     return 0.0;
   return hover_controller_->GetAnimationValue();
 }
 
-float GM2TabStyle::GetHoverOpacity() const {
+float GM2TabStyleViews::GetHoverOpacity() const {
   CHECK(tab());
   // Opacity boost varies on tab width.  The interpolation is nonlinear so
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
-  const float range_start = static_cast<float>(GetStandardWidth());
+  const float range_start = static_cast<float>(tab_style()->GetStandardWidth());
   constexpr float kWidthForMaxHoverOpacity = 32.0f;
   const float value_in_range = static_cast<float>(tab_->width());
-  const float t = base::clamp(
+  const float t = std::clamp(
       (value_in_range - range_start) / (kWidthForMaxHoverOpacity - range_start),
       0.0f, 1.0f);
   return tab_->controller()->GetHoverOpacityForTab(t * t);
 }
 
-float GM2TabStyle::GetThrobValue() const {
+float GM2TabStyleViews::GetThrobValue() const {
   const bool is_selected = tab_->IsSelected();
-  double val = is_selected ? GetSelectedTabOpacity() : 0;
+  double val = is_selected ? tab_style()->GetSelectedTabOpacity() : 0;
 
   if (IsHoverActive()) {
-    const float kSelectedTabThrobScale = 0.95f - GetSelectedTabOpacity();
+    const float kSelectedTabThrobScale =
+        0.95f - tab_style()->GetSelectedTabOpacity();
     const float opacity = GetHoverOpacity();
     const float offset =
         is_selected ? (kSelectedTabThrobScale * opacity) : opacity;
@@ -750,7 +739,7 @@ float GM2TabStyle::GetThrobValue() const {
   return val;
 }
 
-int GM2TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
+int GM2TabStyleViews::GetStrokeThickness(bool should_paint_as_active) const {
   CHECK(tab());
   absl::optional<tab_groups::TabGroupId> group = tab_->group();
   if (group.has_value() && tab_->IsActive())
@@ -762,7 +751,7 @@ int GM2TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
   return 0;
 }
 
-bool GM2TabStyle::ShouldPaintTabBackgroundColor(
+bool GM2TabStyleViews::ShouldPaintTabBackgroundColor(
     TabActive active,
     bool has_custom_background) const {
   CHECK(tab());
@@ -780,7 +769,7 @@ bool GM2TabStyle::ShouldPaintTabBackgroundColor(
       ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
 }
 
-SkColor GM2TabStyle::GetTabBackgroundColor(TabActive active) const {
+SkColor GM2TabStyleViews::GetTabBackgroundColor(TabActive active) const {
   CHECK(tab());
   SkColor color = tab_->controller()->GetTabBackgroundColor(
       active, BrowserFrameActiveState::kUseCurrent);
@@ -788,11 +777,12 @@ SkColor GM2TabStyle::GetTabBackgroundColor(TabActive active) const {
   return color;
 }
 
-ShapeModifier GM2TabStyle::GetShapeModifier(PathType path_type) const {
+ShapeModifier GM2TabStyleViews::GetShapeModifier(
+    TabStyle::PathType path_type) const {
   CHECK(tab());
   ShapeModifier shape_modifier = kNone;
-  if (path_type == PathType::kFill && tab_->IsSelected() && !IsHoverActive() &&
-      !tab_->IsActive()) {
+  if (path_type == TabStyle::PathType::kFill && tab_->IsSelected() &&
+      !IsHoverActive() && !tab_->IsActive()) {
     auto check_adjacent_tab = [](const Tab* tab, int offset,
                                  ShapeModifier modifier) {
       const Tab* adjacent_tab = tab->controller()->GetAdjacentTab(tab, offset);
@@ -807,7 +797,7 @@ ShapeModifier GM2TabStyle::GetShapeModifier(PathType path_type) const {
   return shape_modifier;
 }
 
-void GM2TabStyle::PaintInactiveTabBackground(gfx::Canvas* canvas) const {
+void GM2TabStyleViews::PaintInactiveTabBackground(gfx::Canvas* canvas) const {
   CHECK(tab());
   PaintTabBackground(canvas, TabActive::kInactive,
                      tab_->controller()->GetCustomBackgroundId(
@@ -815,10 +805,10 @@ void GM2TabStyle::PaintInactiveTabBackground(gfx::Canvas* canvas) const {
                      0);
 }
 
-void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
-                                     TabActive active,
-                                     absl::optional<int> fill_id,
-                                     int y_inset) const {
+void GM2TabStyleViews::PaintTabBackground(gfx::Canvas* canvas,
+                                          TabActive active,
+                                          absl::optional<int> fill_id,
+                                          int y_inset) const {
   CHECK(tab());
   // |y_inset| is only set when |fill_id| is being used.
   DCHECK(!y_inset || fill_id.has_value());
@@ -840,14 +830,15 @@ void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
   PaintSeparators(canvas);
 }
 
-void GM2TabStyle::PaintTabBackgroundFill(gfx::Canvas* canvas,
-                                         TabActive active,
-                                         bool paint_hover_effect,
-                                         absl::optional<int> fill_id,
-                                         int y_inset) const {
+void GM2TabStyleViews::PaintTabBackgroundFill(gfx::Canvas* canvas,
+                                              TabActive active,
+                                              bool paint_hover_effect,
+                                              absl::optional<int> fill_id,
+                                              int y_inset) const {
   CHECK(tab());
-  const SkPath fill_path = GetPath(PathType::kFill, canvas->image_scale(),
-                                   active == TabActive::kActive);
+  const SkPath fill_path =
+      GetPath(TabStyle::PathType::kFill, canvas->image_scale(),
+              active == TabActive::kActive);
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float scale = canvas->UndoDeviceScaleFactor();
 
@@ -876,15 +867,32 @@ void GM2TabStyle::PaintTabBackgroundFill(gfx::Canvas* canvas,
     const SkScalar kMinHoverRadius = 16;
     const SkScalar radius =
         std::max(SkFloatToScalar(tab_->width() / 4.f), kMinHoverRadius);
-    DrawHighlight(canvas, hover_location, radius * scale,
-                  SkColorSetA(GetTabBackgroundColor(TabActive::kActive),
-                              hover_controller_->GetAlpha()));
+    PaintBackgroundHover(canvas, hover_location, radius * scale,
+                         SkColorSetA(GetTabBackgroundColor(TabActive::kActive),
+                                     hover_controller_->GetAlpha()));
   }
 }
 
-void GM2TabStyle::PaintBackgroundStroke(gfx::Canvas* canvas,
-                                        TabActive active,
-                                        SkColor stroke_color) const {
+void GM2TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
+                                            const SkPoint& p,
+                                            SkScalar radius,
+                                            SkColor color) const {
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  const SkColor4f colors[2] = {
+      SkColor4f::FromColor(color),
+      SkColor4f::FromColor(SkColorSetA(color, SK_AlphaTRANSPARENT))};
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setShader(cc::PaintShader::MakeRadialGradient(
+      p, radius, colors, nullptr, 2, SkTileMode::kClamp));
+  canvas->sk_canvas()->drawRect(
+      SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
+      flags);
+}
+
+void GM2TabStyleViews::PaintBackgroundStroke(gfx::Canvas* canvas,
+                                             TabActive active,
+                                             SkColor stroke_color) const {
   CHECK(tab());
   const bool is_active = active == TabActive::kActive;
   const int stroke_thickness = GetStrokeThickness(is_active);
@@ -903,7 +911,7 @@ void GM2TabStyle::PaintBackgroundStroke(gfx::Canvas* canvas,
   canvas->DrawPath(outer_path, flags);
 }
 
-void GM2TabStyle::PaintSeparators(gfx::Canvas* canvas) const {
+void GM2TabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
   const auto separator_opacities = GetSeparatorOpacities(false);
   if (!separator_opacities.left && !separator_opacities.right)
     return;
@@ -929,34 +937,32 @@ void GM2TabStyle::PaintSeparators(gfx::Canvas* canvas) const {
   canvas->DrawRect(separator_bounds.trailing, flags);
 }
 
-// static
-float GM2TabStyle::GetTopCornerRadiusForWidth(int width) {
+float GM2TabStyleViews::GetTopCornerRadiusForWidth(int width) const {
   // Get the width of the top of the tab by subtracting the width of the outer
   // corners.
-  const int ideal_radius = GetCornerRadius();
+  const int ideal_radius = tab_style()->GetCornerRadius();
   const int top_width = width - ideal_radius * 2;
 
   // To maintain a round-rect appearance, ensure at least one third of the top
   // of the tab is flat.
   const float radius = top_width / 3.f;
-  return base::clamp<float>(radius, 0, ideal_radius);
+  return std::clamp<float>(radius, 0, ideal_radius);
 }
 
-// static
-gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
-                                            float scale,
-                                            int stroke_thickness) {
+gfx::RectF GM2TabStyleViews::ScaleAndAlignBounds(const gfx::Rect& bounds,
+                                                 float scale,
+                                                 int stroke_thickness) const {
   // Convert to layout bounds.  We must inset the width such that the right edge
   // of one tab's layout bounds is the same as the left edge of the next tab's;
   // this way the two tabs' separators will be drawn at the same coordinate.
   gfx::RectF aligned_bounds(bounds);
-  const int corner_radius = GetCornerRadius();
+  const int corner_radius = tab_style()->GetCornerRadius();
   // Note: This intentionally doesn't subtract TABSTRIP_TOOLBAR_OVERLAP from the
   // bottom inset, because we want to pixel-align the bottom of the stroke, not
   // the bottom of the overlap.
-  auto layout_insets =
-      gfx::InsetsF::TLBR(stroke_thickness, corner_radius, stroke_thickness,
-                         corner_radius + GetSeparatorSize().width());
+  auto layout_insets = gfx::InsetsF::TLBR(
+      stroke_thickness, corner_radius, stroke_thickness,
+      corner_radius + tab_style()->GetSeparatorSize().width());
   aligned_bounds.Inset(layout_insets);
 
   // Scale layout bounds from DIP to px.
@@ -977,16 +983,19 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
   return aligned_bounds;
 }
 
-class GM3TabStyle : public GM2TabStyle {
+class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
  public:
-  explicit GM3TabStyle(Tab* tab);
+  explicit ChromeRefresh2023TabStyleViews(Tab* tab);
+  ~ChromeRefresh2023TabStyleViews() override = default;
   SkColor GetTabBackgroundColor(TabActive active) const override;
   int GetStrokeThickness(bool should_paint_as_active = false) const override;
 };
 
-GM3TabStyle::GM3TabStyle(Tab* tab) : GM2TabStyle(tab) {}
+ChromeRefresh2023TabStyleViews::ChromeRefresh2023TabStyleViews(Tab* tab)
+    : GM2TabStyleViews(tab) {}
 
-SkColor GM3TabStyle::GetTabBackgroundColor(TabActive active) const {
+SkColor ChromeRefresh2023TabStyleViews::GetTabBackgroundColor(
+    TabActive active) const {
   CHECK(tab());
   const auto* cp = tab()->GetWidget()->GetColorProvider();
   DCHECK(cp);
@@ -1004,7 +1013,8 @@ SkColor GM3TabStyle::GetTabBackgroundColor(TabActive active) const {
       tab()->controller()->ShouldPaintAsActiveFrame())]);
 }
 
-int GM3TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
+int ChromeRefresh2023TabStyleViews::GetStrokeThickness(
+    bool should_paint_as_active) const {
   CHECK(tab());
   if (tab()->group().has_value() && tab()->IsActive()) {
     return TabGroupUnderline::kStrokeThickness;
@@ -1057,27 +1067,29 @@ ui::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
   return ValidStrings();
 }
 
-// TabStyle --------------------------------------------------------------------
+// TabStyleViews ---------------------------------------------------------------
+
+TabStyleViews::TabStyleViews() : tab_style_(TabStyle::Get()) {}
 
 TabStyleViews::~TabStyleViews() = default;
 
 // static
 std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
-  // If refresh is turned on use GM3 styling.
+  // If refresh is turned on use ChromeRefresh styling.
   if (features::IsChromeRefresh2023()) {
-    return std::make_unique<GM3TabStyle>(tab);
+    return std::make_unique<ChromeRefresh2023TabStyleViews>(tab);
   }
-  return std::make_unique<GM2TabStyle>(tab);
+  return std::make_unique<GM2TabStyleViews>(tab);
 }
 
+// static
 std::unique_ptr<TabStyleViews> TabStyleViews::Create() {
   return TabStyleViews::CreateForTab(nullptr);
 }
 
-// static
-int TabStyleViews::GetMinimumActiveWidth() {
-  int min_active_width =
-      TabCloseButton::GetGlyphSize() + GetContentsHorizontalInsetSize() * 2;
+int TabStyleViews::GetMinimumActiveWidth() const {
+  int min_active_width = TabCloseButton::GetGlyphSize() +
+                         tab_style()->GetContentsHorizontalInsetSize() * 2;
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     return std::max(
         min_active_width,
@@ -1088,15 +1100,15 @@ int TabStyleViews::GetMinimumActiveWidth() {
   return min_active_width;
 }
 
-// static
-int TabStyleViews::GetMinimumInactiveWidth() {
+int TabStyleViews::GetMinimumInactiveWidth() const {
   // Allow tabs to shrink until they appear to be 16 DIP wide excluding
   // outer corners.
   constexpr int kInteriorWidth = 16;
   // The overlap contains the trailing separator that is part of the interior
   // width; avoid double-counting it.
-  int min_inactive_width =
-      kInteriorWidth - GetSeparatorSize().width() + GetTabOverlap();
+  int min_inactive_width = kInteriorWidth -
+                           tab_style()->GetSeparatorSize().width() +
+                           tab_style()->GetTabOverlap();
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     return std::max(min_inactive_width,

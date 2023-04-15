@@ -103,6 +103,10 @@ void CrxCache::RemoveAll(const std::string& id) {
             return result;
 #endif
         }());
+    for (base::FilePath file_path = file_enum.Next(); !file_path.empty();
+         file_path = file_enum.Next()) {
+      base::DeleteFile(file_path);
+    }
   }
 }
 

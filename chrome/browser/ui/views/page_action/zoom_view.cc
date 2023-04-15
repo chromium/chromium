@@ -10,11 +10,11 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/zoom/zoom_controller.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -82,7 +82,7 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
 
     // The icon is hidden when the zoom level is default.
 
-    if (features::IsChromeRefresh2023()) {
+    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
       icon_ =
           zoom_controller && zoom_controller->GetZoomRelativeToDefault() ==
                                  zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM

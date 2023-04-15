@@ -24,7 +24,7 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class FullSystemLock;
+class AllAppsLock;
 class WebAppInstallFinalizer;
 class WebAppCommandScheduler;
 class WebAppUiManager;
@@ -189,7 +189,7 @@ class ExternallyManagedAppManager {
       std::vector<ExternalInstallOptions> desired_apps_install_options,
       ExternalInstallSource install_source,
       SynchronizeCallback callback,
-      FullSystemLock& lock);
+      AllAppsLock& lock);
 
   void InstallForSynchronizeCallback(
       ExternalInstallSource source,

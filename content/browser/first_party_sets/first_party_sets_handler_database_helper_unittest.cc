@@ -115,7 +115,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesLeft) {
       UnorderedElementsAre(foo, member2, member3));
 }
 
-TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
+TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PrimaryChanged) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite member1(GURL("https://member1.test"));
@@ -149,7 +149,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
        {member2, net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
-  // Expected diff: "https://member3.test" changed owner.
+  // Expected diff: "https://member3.test" changed primary.
   EXPECT_THAT(
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
@@ -157,7 +157,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
       UnorderedElementsAre(member3));
 }
 
-TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
+TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PrimaryLeft) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite bar(GURL("https://bar.test"));
@@ -180,7 +180,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
       /*aliases=*/{});
 
   // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
-  // "https://bar.test" changed owner.
+  // "https://bar.test" changed primary.
   // It would be valid to only have example.test in the diff, but our logic
   // isn't sophisticated enough yet to know that foo.test and bar.test don't
   // need to be included in the result.
@@ -191,7 +191,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
       UnorderedElementsAre(example, foo, bar));
 }
 
-TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerMemberRotate) {
+TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PrimaryMemberRotate) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite foo(GURL("https://foo.test"));
 
@@ -211,9 +211,9 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerMemberRotate) {
         net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
       /*aliases=*/{});
 
-  // Expected diff: "https://example.test" and "https://foo.test" changed owner.
-  // It would be valid to not include example.test and foo.test in the result,
-  // but our logic isn't sophisticated enough yet to know that.ß
+  // Expected diff: "https://example.test" and "https://foo.test" changed
+  // primary. It would be valid to not include example.test and foo.test in the
+  // result, but our logic isn't sophisticated enough yet to know that.ß
   EXPECT_THAT(
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
@@ -355,7 +355,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyMemberLeft) {
               UnorderedElementsAre(member2));
 }
 
-TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyOwnerLeft) {
+TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyPrimaryLeft) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite member1(GURL("https://member1.test"));
   net::SchemefulSite member2(GURL("https://member2.test"));
@@ -377,7 +377,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyOwnerLeft) {
   });
 
   // Expected diff: "https://example.test" left FPSs, "https://member1.test" and
-  // "https://member2.test" changed owner.
+  // "https://member2.test" changed primary.
   // It would be valid to only have example.test in the diff, but our logic
   // isn't sophisticated enough yet to know that member1.test and member2.test
   // don't need to be included in the result.

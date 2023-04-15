@@ -174,14 +174,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+    await fetch("/redeem", {privateToken: {version: 1,
                                          operation: 'token-redemption'}});
-    await fetch("/sign", {privateToken: {type: 'private-state-token',
-                                       version: 1,
+    await fetch("/sign", {privateToken: {version: 1,
                                        operation: 'send-redemption-record',
                                        issuers: [$1]}});
     return "Success"; })(); )";
@@ -214,7 +211,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     let request = new XMLHttpRequest();
     request.open('GET', '/issue');
     request.setPrivateToken({
-      type: 'private-state-token',
       version: 1,
       operation: 'token-request'
     });
@@ -227,7 +223,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     request = new XMLHttpRequest();
     request.open('GET', '/redeem');
     request.setPrivateToken({
-      type: 'private-state-token',
       version: 1,
       operation: 'token-redemption'
     });
@@ -240,7 +235,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     request = new XMLHttpRequest();
     request.open('GET', '/sign');
     request.setPrivateToken({
-      type: 'private-state-token',
       version: 1,
       operation: 'send-redemption-record',
       issuers: [$1]
@@ -274,11 +268,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+    await fetch("/redeem", {privateToken: {version: 1,
                                          operation: 'token-redemption'}});
     return "Success";
   })())";
@@ -303,8 +295,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
   };
 
   execute_op_via_iframe("/sign", JsReplace(
-                                     R"({"type": "private-state-token",
-              "version": 1,
+                                     R"({"version": 1,
               "operation": "send-redemption-record",
               "issuers": [$1]})",
                                      IssuanceOriginFromHost("a.test")));
@@ -352,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   fail_to_execute_op_via_iframe("/redeem", R"({"type": "token-redemption"})");
   command = JsReplace(R"(
   (async () => {
-    return document.hasRedemptionRecord($1, 'private-state-token');
+    return document.hasRedemptionRecord($1);
   })();)",
                       IssuanceOriginFromHost("a.test"));
   EXPECT_EQ(false, EvalJs(shell(), command));
@@ -361,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   command = JsReplace(R"(
   (async () => {
     return await document.hasPrivateToken($1, 'private-state-token')
-    || document.hasRedemptionRecord($1, 'private-state-token');
+    || document.hasRedemptionRecord($1);
   })();)",
                       IssuanceOriginFromHost("a.test"));
   EXPECT_EQ(false, EvalJs(shell(), command));
@@ -378,8 +369,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {
 
   std::string command = JsReplace(R"(
   (async () => {
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
     return await document.hasPrivateToken($1, 'private-state-token');
   })();)",
@@ -407,8 +397,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // This sign operation will fail, because we don't have a redemption record in
   // storage, a prerequisite. However, the failure shouldn't be fatal.
   std::string command = JsReplace(R"((async () => {
-      await fetch("/sign", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+      await fetch("/sign", {privateToken: {version: 1,
                                          operation: 'send-redemption-record',
                                          issuers: [$1]}});
       return "Success";
@@ -439,14 +428,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+    await fetch("/redeem", {privateToken: {version: 1,
                                          operation: 'token-redemption'}});
-    await fetch("/sign", {privateToken: {type: 'private-state-token',
-                                       version: 1,
+    await fetch("/sign", {privateToken: {version: 1,
                                        operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return "Success"; })(); )";
@@ -503,14 +489,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+    await fetch("/redeem", {privateToken: {version: 1,
                                          operation: 'token-redemption'}});
-    await fetch("/sign", {privateToken: {type: 'private-state-token',
-                                       version: 1,
+    await fetch("/sign", {privateToken: {version: 1,
                                        operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return "Success"; })(); )";
@@ -561,7 +544,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   EXPECT_THAT(
       EvalJs(shell(), JsReplace(
                           R"(fetch($1, {privateToken: {
-                                            type: 'private-state-token',
                                             version: 1,
                                             operation: 'token-request'}})
                    .then(() => "Unexpected success!")
@@ -573,7 +555,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   EXPECT_THAT(
       EvalJs(shell(), JsReplace(
                           R"(fetch($1, {privateToken: {
-                                         type: 'private-state-token',
                                          version: 1,
                                          operation: 'send-redemption-record',
                  issuers: ['https://nonexistent-issuer.example']}})
@@ -601,7 +582,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   EXPECT_EQ("InvalidStateError",
             EvalJs(shell(), JsReplace(
                                 R"(fetch($1, {privateToken: {
-                                            type: 'private-state-token',
                                             version: 1,
                                             operation: 'token-redemption'}})
                    .then(() => "Unexpected success!")
@@ -635,8 +615,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
   EXPECT_EQ("TypeError", EvalJs(shell(),
                                 R"(fetch("/cross-site/b.test/issue", {
                                      redirect: 'error',
-                                     privateToken: {type: 'private-state-token',
-                                                  version: 1,
+                                     privateToken: {version: 1,
                                                   operation: 'token-request'}
                                    })
                                    .then(() => "Unexpected success!")
@@ -651,7 +630,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
   // should fail:
   EXPECT_EQ("OperationError", EvalJs(shell(),
                                      R"(fetch("/redeem", {privateToken: {
-                                            type: 'private-state-token',
                                             version: 1,
                                             operation: 'token-redemption'}})
                    .then(() => "Unexpected success!")
@@ -674,8 +652,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
       GURL(IssuanceOriginFromHost("a.test")).Resolve("/issue");
   EXPECT_THAT(EvalJs(shell(), JsReplace(R"(fetch($1, {
   mode: 'no-cors',
-                  privateToken: {type: 'private-state-token',
-                               version: 1,
+                  privateToken: {version: 1,
                                operation: 'token-request'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.message);)",
@@ -706,8 +683,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OperationsRequireSecureContext) {
 
   // 1. Confirm that the Fetch interface doesn't work:
   std::string command =
-      R"(fetch("/issue", {privateToken: {type: 'private-state-token',
-                                       version: 1,
+      R"(fetch("/issue", {privateToken: {version: 1,
                                        operation: 'token-request'}})
            .catch(error => error.message);)";
   EXPECT_THAT(EvalJs(shell(), command).ExtractString(),
@@ -746,8 +722,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IssuanceRequiresKeys) {
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command = R"(
-    fetch('/issue', {privateToken: {type: 'private-state-token',
-                                  version: 1,
+    fetch('/issue', {privateToken: {version: 1,
                                   operation: 'token-request'}})
     .then(() => 'Success').catch(err => err.name); )";
 
@@ -774,8 +749,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { privateToken: { type: 'private-state-token',
-                        version: 1, operation: 'token-request' } })
+        { privateToken: { version: 1, operation: 'token-request' } })
         .then(()=>'Success').catch(err => err.name); )"));
 
   // Expect one access of issue.
@@ -793,8 +767,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossOriginIssuanceWorks) {
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(R"(
-            fetch($1, { privateToken: { type: 'private-state-token',
-                                      version: 1,
+            fetch($1, { privateToken: { version: 1,
                                       operation: 'token-request' } })
             .then(()=>'Success'); )",
                                 server_.GetURL("sub1.b.test", "/issue"))));
@@ -813,8 +786,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossSiteIssuanceWorks) {
   // because it sets the port correctly.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
-            fetch($1, { privateToken: { type: 'private-state-token',
-                                      version: 1,
+            fetch($1, { privateToken: { version: 1,
                                       operation: 'token-request' } })
             .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
@@ -850,8 +822,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   }
 
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(
-            fetch('/issue', { privateToken: { type: 'private-state-token',
-                                            version: 1,
+            fetch('/issue', { privateToken: { version: 1,
                                             operation: 'token-request' } })
             .then(() => 'Success').catch(error => error.name); )"));
 
@@ -875,7 +846,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command = R"(fetch($1, {privateToken: {
-                                          type: 'private-state-token',
                                           version: 1,
                                           operation: 'token-request'}})
                              .then(() => "Success")
@@ -919,7 +889,6 @@ IN_PROC_BROWSER_TEST_F(
 
   std::string command = R"(fetch($1, {mode: 'no-cors',
                                       privateToken: {
-                                          type: 'private-state-token',
                                           version: 1,
                                           operation: 'token-request'}})
                              .then(() => "Success")
@@ -958,8 +927,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
 
   std::string command =
-      R"(fetch($1, {privateToken: {type: 'private-state-token',
-                                 version: 1,
+      R"(fetch($1, {privateToken: {version: 1,
                                  operation: 'token-request'}})
            .catch(error => error.name);)";
 
@@ -988,8 +956,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command =
-      R"(fetch("/issue", {privateToken: {type: 'private-state-token',
-                                       version: 1,
+      R"(fetch("/issue", {privateToken: {version: 1,
                                        operation: 'token-request'}})
                              .then(() => "Success")
                              .catch(error => error.name);)";
@@ -1003,8 +970,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
 
   // Redemption from a page with a file:// top frame origin should fail.
-  command = R"(fetch($1, {privateToken: {type: 'private-state-token',
-                                       version: 1,
+  command = R"(fetch($1, {privateToken: {version: 1,
                                        operation: 'token-redemption'}})
                  .catch(error => error.name);)";
   EXPECT_EQ(
@@ -1073,7 +1039,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                               JsReplace(R"(
                               fetch($1, {mode: 'no-cors',
                                          privateToken: {
-                                             type: 'private-state-token',
                                              version: 1,
                                              operation: 'token-request'}
                                          }).then(()=>'Success');)",
@@ -1097,8 +1062,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IssuanceWithAbsentKeyFails) {
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   std::string command =
-      R"(fetch($1, {privateToken: {type: 'private-state-token',
-                                                   version: 1,
+      R"(fetch($1, {privateToken: {version: 1,
                                                    operation: 'token-request'}})
                              .then(() => "Success")
                              .catch(error => error.name);)";
@@ -1139,7 +1103,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                               JsReplace(R"(
                               fetch($1, {mode: 'no-cors',
                                          privateToken: {
-                                             type: 'private-state-token',
                                              version: 1,
                                              operation: 'send-redemption-record',
                                              issuers: [
@@ -1158,8 +1121,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresKeys) {
 
   EXPECT_EQ("InvalidStateError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
@@ -1177,8 +1139,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresTokens) {
 
   EXPECT_EQ("OperationError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
@@ -1198,16 +1159,14 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("OperationError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
@@ -1227,16 +1186,14 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
   EXPECT_EQ("Success", EvalJs(shell(), R"(fetch('/issue',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
   // Send a redemption request to the issuance endpoint, which should error out
   // for the obvious reason that it isn't an issuance request:
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )"));
@@ -1255,24 +1212,21 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1291,24 +1245,21 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success'); )",
@@ -1331,24 +1282,21 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // succeed.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success').catch(err => err.name); )",
@@ -1378,16 +1326,14 @@ IN_PROC_BROWSER_TEST_F(
   // https://b.test:<PORT>.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/issue"))));
@@ -1397,7 +1343,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { privateToken: { mode: 'cors',
-                        type: 'private-state-token',
                         version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
@@ -1405,8 +1350,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'send-redemption-record',
                         issuers: [$1],
         } }).then(()=>'Success');)",
@@ -1423,8 +1367,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'send-redemption-record',
                         issuers: [$1],
         } }).then(()=>'Success');)",
@@ -1457,8 +1400,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/issue',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
@@ -1467,16 +1409,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
-          privateToken: { type: 'private-state-token',
-                        version: 1,
+          privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'send-redemption-record',
                         issuers: [$1]
         } })
@@ -1494,8 +1434,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'send-redemption-record',
                         issuers: [$1]
         } })
@@ -1532,8 +1471,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/issue',
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
@@ -1543,8 +1481,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
-          privateToken: { type: 'private-state-token',
-                        version: 1,
+          privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
 
@@ -1562,14 +1499,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   std::string command = R"(
   (async () => {
     try {
-      await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                          version: 1,
+      await fetch("/issue", {privateToken: {version: 1,
                                           operation: 'token-request'}});
-      await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                           version: 1,
+      await fetch("/redeem", {privateToken: {version: 1,
                                            operation: 'token-redemption'}});
       await fetch("/sign", {privateToken: {
-        type: 'private-state-token',
         version: 1,
         operation: 'send-redemption-record',
         issuers: [$1]}  // b.test, set below
@@ -1617,14 +1551,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
   const std::string trust_token_fetch_snippet = R"(
   (async () => {
     if (navigator.serviceWorker.controller === null) return "NotServiceWorker";
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+    await fetch("/redeem", {privateToken: {version: 1,
                                          operation: 'token-redemption'}});
-    await fetch("/sign", {privateToken: {type: 'private-state-token',
-                                       version: 1,
+    await fetch("/sign", {privateToken: {version: 1,
                                        operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return "TTSuccess"; })(); )";
@@ -1658,24 +1589,21 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionLimit) {
   // issue options.batch_size many tokens
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success'); )",
@@ -1683,8 +1611,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionLimit) {
   // third redemption should fail
   EXPECT_EQ("Error",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { privateToken: { type: 'private-state-token',
-                        version: 1,
+        { privateToken: { version: 1,
                         operation: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success')
@@ -1723,18 +1650,15 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   std::string command = R"(
   (async () => {
-    await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                        version: 1,
+    await fetch("/issue", {privateToken: {version: 1,
                                         operation: 'token-request'}});
-    await fetch("/redeem", {privateToken: {type: 'private-state-token',
-                                         version: 1,
+    await fetch("/redeem", {privateToken: {version: 1,
                                          operation: 'token-redemption'}});
     return "Success"; })(); )";
   ASSERT_EQ("Success", EvalJs(shell(), command));
 
   command = R"(
-    fetch("/sign", {privateToken: {type: 'private-state-token',
-                                 version: 1,
+    fetch("/sign", {privateToken: {version: 1,
                                  operation: 'send-redemption-record',
                                  issuers: []}})
     .then(() => 'Success')

@@ -620,7 +620,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
       return 0;
     }
 #if BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs) &&
+    if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
         browser_view_->immersive_mode_controller()->IsEnabled()) {
       return 0;
     }
@@ -725,7 +725,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 #if BUILDFLAG(IS_MAC)
     // The tab strip is hosted in a separate widget in immersive fullscreen on
     // macOS.
-    if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs) &&
+    if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
         browser_view_->immersive_mode_controller()->IsEnabled()) {
       return false;
     }
@@ -926,12 +926,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #endif
 
   // High Efficiency mode is default off but is available to turn on
-  if (!performance_manager::features::kHighEfficiencyModeDefaultState.Get() &&
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyModeAvailable)) {
-    high_efficiency_opt_in_iph_controller_ =
-        std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
-  }
+  high_efficiency_opt_in_iph_controller_ =
+      std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
 }
 
 BrowserView::~BrowserView() {
@@ -1067,6 +1063,13 @@ bool BrowserView::UsesImmersiveFullscreenMode() const {
   return base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
          (!GetIsWebAppType() ||
           base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs));
+}
+
+bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
+  return (GetSupportsTabStrip() &&
+          base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
+          base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) &&
+         !GetIsWebAppType();
 }
 #endif
 
@@ -1751,13 +1754,27 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
       (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
       (ShouldUseImmersiveFullscreenForUrl(url) &&
        !profiles::IsPublicSession())) {
-    // |exclusive_access_bubble_.reset()| will trigger callback for current
-    // bubble with |ExclusiveAccessBubbleHideReason::kInterrupted| if available.
-    exclusive_access_bubble_.reset();
     if (bubble_first_hide_callback) {
       std::move(bubble_first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
     }
+
+    // If we intend to close the bubble but it has already been deleted no
+    // action is needed.
+    if (!exclusive_access_bubble_) {
+      return;
+    }
+
+    // `HideImmediately()` will trigger a callback for the current bubble with
+    // `ExclusiveAccessBubbleHideReason::kInterrupted` if available.
+    exclusive_access_bubble_->HideImmediately();
+
+    // Perform the destroy async. State updates in the exclusive access bubble
+    // view may call back into this method. This otherwise results in premature
+    // deletion of the bubble view and UAFs. See crbug.com/1426521.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&BrowserView::DestroyAnyExclusiveAccessBubble,
+                                  GetAsWeakPtr()));
     return;
   }
 
@@ -3440,7 +3457,7 @@ views::View* BrowserView::CreateMacOverlayView() {
   overlay_view_ = overlay_view.get();
   overlay_widget_->GetRootView()->AddChildView(std::move(overlay_view));
 
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) {
+  if (UsesImmersiveFullscreenTabbedMode()) {
     // Create the tab overlay widget as a child of overlay_widget_.
     tab_overlay_widget_ = create_overlay_widget(overlay_widget_);
     std::unique_ptr<TabContainerOverlayView> tab_overlay_view =
@@ -4508,6 +4525,14 @@ bool BrowserView::MaybeShowFeaturePromo(
         body_text_replacements,
     user_education::FeaturePromoController::BubbleCloseCallback
         close_callback) {
+  // Trying to show a promo before the browser is initialized can result in a
+  // failure to retrieve accelerators, which can cause issues for screen reader
+  // users.
+  if (!initialized_) {
+    LOG(ERROR) << "Attempting to show IPH " << iph_feature.name
+               << " before browser initialization; IPH will not be shown.";
+    return false;
+  }
   return feature_promo_controller_ &&
          feature_promo_controller_->MaybeShowPromo(
              iph_feature, body_text_replacements, std::move(close_callback));

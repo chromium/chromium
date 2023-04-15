@@ -101,6 +101,12 @@ public class UrlConstants {
     public static final String MY_ACTIVITY_URL_IN_HISTORY =
             "https://myactivity.google.com/myactivity/?utm_source=chrome_h";
 
+    public static final String GOOGLE_SEARCH_HISTORY_URL_IN_QD =
+            "https://myactivity.google.com/product/search?utm_source=chrome_qd";
+
+    public static final String MY_ACTIVITY_URL_IN_QD =
+            "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
+
     public static final String EXPLORE_HOST = "explore";
     public static final String EXPLORE_URL = "chrome-native://explore/";
     public static final String CHROME_DINO_URL = "chrome://dino/";

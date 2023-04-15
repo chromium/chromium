@@ -34,9 +34,6 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // Parses the bytes in |data| and, on success, puts a new CRLSet in
   // |out_crl_set| and returns true.
   static bool Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set);
-  // Same as the above, but stores the string |data| in the resulting CRLSet.
-  static bool ParseAndStoreUnparsedData(std::string data,
-                                        scoped_refptr<CRLSet>* out_crl_set);
 
   // CheckSPKI checks whether the given SPKI has been listed as blocked.
   //   spki_hash: the SHA256 of the SubjectPublicKeyInfo of the certificate.
@@ -70,8 +67,6 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // by the same source are given strictly monotonically increasing sequence
   // numbers.
   uint32_t sequence() const;
-
-  const std::string& unparsed_crl_set() const;
 
   // CRLList contains a map of (issuer SPKI hash, revoked serial numbers)
   // pairs.
@@ -130,12 +125,6 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // limited_subjects_ is a map from the SHA256 hash of an X.501 subject name
   // to a list of allowed SPKI hashes for certificates with that subject name.
   std::unordered_map<std::string, std::vector<std::string>> limited_subjects_;
-
-  // A string that holds the unparsed version of the CRLSet. Only populated in
-  // the case that the OOP CertVerifier is enabled.
-  // TODO(crbug.com/1046728): temporary until the network service doesn't need
-  // to know about CRLSets.
-  std::string unparsed_crl_set_;
 };
 
 }  // namespace net

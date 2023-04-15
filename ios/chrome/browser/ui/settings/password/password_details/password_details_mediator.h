@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
 namespace password_manager {
@@ -24,6 +25,15 @@ class PrefService;
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;
 
+// Provides PasswordManagerClient (per-tab object) on-demand, so there's no need
+// to worry about tabs being closed.
+class PasswordManagerClientProvider {
+ public:
+  virtual ~PasswordManagerClientProvider() = default;
+
+  virtual password_manager::PasswordManagerClient* GetAny() = 0;
+};
+
 // This mediator fetches and organises the credentials for its consumer.
 @interface PasswordDetailsMediator
     : NSObject <PasswordDetailsTableViewControllerDelegate>
@@ -38,9 +48,9 @@ class IOSChromePasswordCheckManager;
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
-             supportMoveToAccount:(BOOL)supportMoveToAccount
-            passwordManagerClient:
-                (password_manager::PasswordManagerClient*)passwordManagerClient
+                          context:(DetailsContext)context
+    passwordManagerClientProvider:
+        (PasswordManagerClientProvider*)passwordManagerClientProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

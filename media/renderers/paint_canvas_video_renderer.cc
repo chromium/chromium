@@ -925,8 +925,14 @@ class VideoTextureBacking : public cc::TextureBacking {
         raster_context_provider_->RasterInterface();
     if (sk_image_) {
       GrGLTextureInfo texture_info;
-      if (!sk_image_->getBackendTexture(/*flushPendingGrContextIO=*/true)
-               .getGLTextureInfo(&texture_info)) {
+      GrBackendTexture texture;
+      if (!SkImages::GetBackendTextureFromImage(
+              sk_image_, &texture,
+              /*flushPendingGrContextIO=*/true)) {
+        DLOG(ERROR) << "Failed to get backend texture for VideoTextureBacking.";
+        return false;
+      }
+      if (!texture.getGLTextureInfo(&texture_info)) {
         DLOG(ERROR) << "Failed to getGLTextureInfo for VideoTextureBacking.";
         return false;
       }
@@ -939,9 +945,14 @@ class VideoTextureBacking : public cc::TextureBacking {
   }
 
   void FlushPendingSkiaOps() override {
-    if (!raster_context_provider_ || !sk_image_)
+    if (!raster_context_provider_ || !sk_image_) {
       return;
-    sk_image_->flushAndSubmit(raster_context_provider_->GrContext());
+    }
+    GrDirectContext* ctx = raster_context_provider_->GrContext();
+    if (!ctx) {
+      return;
+    }
+    ctx->flushAndSubmit(sk_image_);
   }
 
  private:

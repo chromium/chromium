@@ -13,7 +13,11 @@ test(function() {
         var entry = entries[i];
         var serialized = JSON.parse(JSON.stringify(entry));
         for (var attr in entry) {
-            if (typeof entry[attr] != 'function') {
+            if (typeof entry[attr] != 'function' &&
+              // - PerformanceEntry.source is a Window object which is not
+              //   serializable.
+              // - Performance{Mark|Measure}.detail may be a live object
+              !(entry[attr] instanceof Window) && attr !== 'detail') {
                 var assertMethod = assert_equals
                 if (Array.isArray(serialized[attr]) && Array.isArray(entry[attr])) {
                   assertMethod = assert_array_equals

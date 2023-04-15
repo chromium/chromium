@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+
 namespace ash::quick_start {
 
 // A `struct` to store the information related to a device's Wifi Credentials.
@@ -29,7 +32,7 @@ struct WifiCredentials {
   bool is_hidden;
 
   // The Security Type of the Wifi Network.
-  std::string security_type;
+  ash::quick_start::mojom::WifiSecurityType security_type;
 };
 
 }  // namespace ash::quick_start

@@ -12,6 +12,36 @@
 namespace mojo {
 
 // static
+SkBitmap StructTraits<ui::mojom::CursorDataView, ui::Cursor>::bitmap(
+    const ui::Cursor& c) {
+  if (c.type() != ui::mojom::CursorType::kCustom) {
+    return SkBitmap();
+  }
+
+  return c.custom_bitmap();
+}
+
+// static
+gfx::Point StructTraits<ui::mojom::CursorDataView, ui::Cursor>::hotspot(
+    const ui::Cursor& c) {
+  if (c.type() != ui::mojom::CursorType::kCustom) {
+    return gfx::Point();
+  }
+
+  return c.custom_hotspot();
+}
+
+// static
+float StructTraits<ui::mojom::CursorDataView, ui::Cursor>::image_scale_factor(
+    const ui::Cursor& c) {
+  if (c.type() != ui::mojom::CursorType::kCustom) {
+    return 1.0f;
+  }
+
+  return c.image_scale_factor();
+}
+
+// static
 bool StructTraits<ui::mojom::CursorDataView, ui::Cursor>::Read(
     ui::mojom::CursorDataView data,
     ui::Cursor* out) {

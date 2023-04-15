@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
+#include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -154,6 +155,15 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
   return AudioTrackRecorder::CodecId::kLast;
 }
 
+bool CanSupportVideoType(const String& type) {
+  return EqualIgnoringASCIICase(type, "video/webm") ||
+         EqualIgnoringASCIICase(type, "video/x-matroska");
+}
+
+bool CanSupportAudioType(const String& type) {
+  return EqualIgnoringASCIICase(type, "audio/webm");
+}
+
 }  // anonymous namespace
 
 MediaRecorderHandler::MediaRecorderHandler(
@@ -167,9 +177,8 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
   if (type.empty())
     return true;
 
-  const bool video = EqualIgnoringASCIICase(type, "video/webm") ||
-                     EqualIgnoringASCIICase(type, "video/x-matroska");
-  const bool audio = !video && EqualIgnoringASCIICase(type, "audio/webm");
+  const bool video = CanSupportVideoType(type);
+  const bool audio = !video && CanSupportAudioType(type);
   if (!video && !audio)
     return false;
 
@@ -214,8 +223,6 @@ bool MediaRecorderHandler::Initialize(
     MediaStreamDescriptor* media_stream,
     const String& type,
     const String& codecs,
-    uint32_t audio_bits_per_second,
-    uint32_t video_bits_per_second,
     AudioTrackRecorder::BitrateMode audio_bitrate_mode) {
   DCHECK(IsMainThread());
   // Save histogram data so we can see how much MediaStream Recorder is used.
@@ -252,8 +259,6 @@ bool MediaRecorderHandler::Initialize(
   DCHECK(recorder);
   recorder_ = recorder;
 
-  audio_bits_per_second_ = audio_bits_per_second;
-  video_bits_per_second_ = video_bits_per_second;
   audio_bitrate_mode_ = audio_bitrate_mode;
   return true;
 }
@@ -262,7 +267,10 @@ AudioTrackRecorder::BitrateMode MediaRecorderHandler::AudioBitrateMode() {
   return audio_bitrate_mode_;
 }
 
-bool MediaRecorderHandler::Start(int timeslice) {
+bool MediaRecorderHandler::Start(int timeslice,
+                                 const String& type,
+                                 uint32_t audio_bits_per_second,
+                                 uint32_t video_bits_per_second) {
   DCHECK(IsMainThread());
   DCHECK(!recording_);
   DCHECK(media_stream_);
@@ -277,6 +285,9 @@ bool MediaRecorderHandler::Start(int timeslice) {
 
   timeslice_ = base::Milliseconds(timeslice);
   slice_origin_timestamp_ = base::TimeTicks::Now();
+
+  audio_bits_per_second_ = audio_bits_per_second;
+  video_bits_per_second_ = video_bits_per_second;
 
   video_tracks_ = media_stream_->VideoComponents();
   audio_tracks_ = media_stream_->AudioComponents();
@@ -295,6 +306,16 @@ bool MediaRecorderHandler::Start(int timeslice) {
 
   if (!use_video_tracks && !use_audio_tracks) {
     LOG(WARNING) << __func__ << ": no tracks to be recorded.";
+    return false;
+  }
+
+  // For each track in tracks, if the User Agent cannot record the track using
+  // the current configuration, abort. See step 13 in
+  // https://w3c.github.io/mediacapture-record/MediaRecorder.html#dom-mediarecorder-start
+  if (!use_video_tracks && CanSupportVideoType(type)) {
+    return false;
+  }
+  if (!use_audio_tracks && CanSupportAudioType(type)) {
     return false;
   }
 

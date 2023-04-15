@@ -100,7 +100,8 @@ void SmartCardResourceManager::ReaderChanged(
   ReaderAdded(std::move(reader_info));
 }
 
-void SmartCardResourceManager::Error(SmartCardResponseCode response_code) {
+void SmartCardResourceManager::Error(
+    device::mojom::blink::SmartCardError error) {
   tracking_started_ = false;
   // TODO(crbug.com/1386175):
   // * Put existing SmartCardReader instances into an invalid state.
@@ -169,8 +170,8 @@ void SmartCardResourceManager::FinishGetReaders(
   DCHECK(get_readers_promises_.Contains(resolver));
   get_readers_promises_.erase(resolver);
 
-  if (result->is_response_code()) {
-    auto* error = SmartCardError::Create(result->get_response_code());
+  if (result->is_error()) {
+    auto* error = SmartCardError::Create(result->get_error());
     resolver->Reject(error);
     return;
   }
@@ -185,7 +186,7 @@ void SmartCardResourceManager::FinishGetReaders(
 
 void SmartCardResourceManager::UpdateReadersCache(
     mojom::blink::SmartCardGetReadersResultPtr result) {
-  if (result->is_response_code()) {
+  if (result->is_error()) {
     return;
   }
 

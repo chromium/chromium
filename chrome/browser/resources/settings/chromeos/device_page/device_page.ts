@@ -7,7 +7,10 @@
  * peripheral settings.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './audio.js';
 import './display.js';
 import './keyboard.js';
@@ -31,7 +34,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
+import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -42,6 +45,7 @@ import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+import {SettingsPerDeviceKeyboardRemapKeysElement} from './per_device_keyboard_remap_keys.js';
 
 interface SettingsDevicePageElement {
   $: {
@@ -211,6 +215,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       mice: {
         type: Array,
       },
+
+      mousePolicies: {
+        type: Object,
+      },
     };
   }
 
@@ -228,6 +236,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   protected keyboardPolicies: KeyboardPolicies;
   protected touchpads: Touchpad[];
   protected mice: Mouse[];
+  protected mousePolicies: MousePolicies;
   private browserProxy_: DevicePageBrowserProxy;
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
@@ -354,6 +363,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.mice = mice;
   }
 
+  onMousePoliciesUpdated(mousePolicies: MousePolicies): void {
+    this.mousePolicies = mousePolicies;
+  }
+
   private getPointersTitle_(): string {
     // For the purposes of the title, we call pointing sticks mice. The user
     // will know what we mean, and otherwise we'd get too many possible titles.
@@ -373,77 +386,77 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
    */
-  private onPointersTap_() {
+  private onPointersClick_() {
     Router.getInstance().navigateTo(routes.POINTERS);
   }
 
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
    */
-  private onPerDeviceKeyboardTap_() {
+  private onPerDeviceKeyboardClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
   }
 
   /**
    * Handler for tapping the Mouse settings menu item.
    */
-  private onPerDeviceMouseTap_() {
+  private onPerDeviceMouseClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
   }
 
   /**
    * Handler for tapping the Touchpad settings menu item.
    */
-  private onPerDeviceTouchpadTap_() {
+  private onPerDeviceTouchpadClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_TOUCHPAD);
   }
 
   /**
    * Handler for tapping the Pointing stick settings menu item.
    */
-  private onPerDevicePointingStickTap_() {
+  private onPerDevicePointingStickClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_POINTING_STICK);
   }
 
   /**
    * Handler for tapping the Keyboard settings menu item.
    */
-  private onKeyboardTap_() {
+  private onKeyboardClick_() {
     Router.getInstance().navigateTo(routes.KEYBOARD);
   }
 
   /**
    * Handler for tapping the Stylus settings menu item.
    */
-  private onStylusTap_() {
+  private onStylusClick_() {
     Router.getInstance().navigateTo(routes.STYLUS);
   }
 
   /**
    * Handler for tapping the Display settings menu item.
    */
-  private onDisplayTap_() {
+  private onDisplayClick_() {
     Router.getInstance().navigateTo(routes.DISPLAY);
   }
 
   /**
    * Handler for tapping the Audio settings menu item.
    */
-  private onAudioTap_() {
+  private onAudioClick_() {
     Router.getInstance().navigateTo(routes.AUDIO);
   }
 
   /**
    * Handler for tapping the Storage settings menu item.
    */
-  private onStorageTap_() {
+  private onStorageClick_() {
     Router.getInstance().navigateTo(routes.STORAGE);
   }
 
   /**
    * Handler for tapping the Power settings menu item.
    */
-  private onPowerTap_() {
+  private onPowerClick_() {
     Router.getInstance().navigateTo(routes.POWER);
   }
 
@@ -494,6 +507,11 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     return this.hasPointingStick_ && this.isDeviceSettingsSplitEnabled_;
   }
 
+  protected restoreDefaults(): void {
+    const remapKeysPage = this.shadowRoot!.querySelector('#remap-keys') as
+        SettingsPerDeviceKeyboardRemapKeysElement;
+    remapKeysPage.restoreDefaults();
+  }
   /**
    * Leaves the pointer subpage if all pointing devices are detached.
    */

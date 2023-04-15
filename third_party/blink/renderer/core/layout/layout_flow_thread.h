@@ -124,7 +124,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
                                   Vector<gfx::QuadF>&,
                                   MapCoordinatesFlags mode = 0);
 
-  void AddOutlineRects(Vector<PhysicalRect>&,
+  void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
@@ -140,6 +140,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;
+  virtual void UpdateLogicalWidth() = 0;
 
   bool HasColumnSets() const {
     NOT_DESTROYED();

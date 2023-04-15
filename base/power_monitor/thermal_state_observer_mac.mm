@@ -12,6 +12,8 @@
 #include <IOKit/pwr_mgt/IOPMLibDefs.h>
 #include <notify.h>
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/power_monitor/power_monitor.h"
@@ -40,11 +42,16 @@ NSProcessInfoThermalStateToDeviceThermalState(
 
 namespace base {
 
+struct ThermalStateObserverMac::ObjCStorage {
+  id thermal_state_update_observer_ = nil;
+};
+
 ThermalStateObserverMac::ThermalStateObserverMac(
     StateUpdateCallback state_update_callback,
     SpeedLimitUpdateCallback speed_limit_update_callback,
-    const char* power_notification_key) NS_AVAILABLE_MAC(10_10_3)
-    : power_notification_key_(power_notification_key) {
+    const char* power_notification_key)
+    : power_notification_key_(power_notification_key),
+      objc_storage_(std::make_unique<ObjCStorage>()) {
   auto on_state_change_block = ^(NSNotification* notification) {
     auto state = PowerThermalObserver::DeviceThermalState::kUnknown;
     // |thermalState| is basically a scale of power usage and its associated
@@ -61,11 +68,12 @@ ThermalStateObserverMac::ThermalStateObserverMac(
     state_update_callback.Run(state);
   };
 
-  thermal_state_update_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:NSProcessInfoThermalStateDidChangeNotification
-                  object:nil
-                   queue:nil
-              usingBlock:on_state_change_block];
+  objc_storage_->thermal_state_update_observer_ =
+      [[NSNotificationCenter defaultCenter]
+          addObserverForName:NSProcessInfoThermalStateDidChangeNotification
+                      object:nil
+                       queue:nil
+                  usingBlock:on_state_change_block];
 
   auto on_speed_change_block = ^() {
     int speed_limit = GetCurrentSpeedLimit();
@@ -89,12 +97,12 @@ ThermalStateObserverMac::ThermalStateObserverMac(
 
 ThermalStateObserverMac::~ThermalStateObserverMac() {
   [[NSNotificationCenter defaultCenter]
-      removeObserver:thermal_state_update_observer_];
+      removeObserver:objc_storage_->thermal_state_update_observer_];
   notify_cancel(speed_limit_notification_token_);
 }
 
 PowerThermalObserver::DeviceThermalState
-ThermalStateObserverMac::GetCurrentThermalState() NS_AVAILABLE_MAC(10_10_3) {
+ThermalStateObserverMac::GetCurrentThermalState() {
   if (state_for_testing_ != PowerThermalObserver::DeviceThermalState::kUnknown)
     return state_for_testing_;
   NSProcessInfoThermalState nsinfo_state =

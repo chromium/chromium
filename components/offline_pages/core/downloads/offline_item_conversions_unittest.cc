@@ -40,7 +40,7 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
   offline_page_item.file_missing_time = base::Time::Now();
 
   OfflineItem offline_item =
-      OfflineItemConversions::CreateOfflineItem(offline_page_item, true);
+      OfflineItemConversions::CreateOfflineItem(offline_page_item);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
   EXPECT_EQ(kTestUrl, offline_item.url);
@@ -59,21 +59,10 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
   EXPECT_TRUE(offline_item.progress.max.has_value());
   EXPECT_EQ(100, offline_item.progress.max.value());
   EXPECT_EQ(OfflineItemProgressUnit::PERCENTAGE, offline_item.progress.unit);
-  EXPECT_TRUE(offline_item.is_suggested);
   EXPECT_TRUE(offline_item.is_openable);
   EXPECT_TRUE(offline_item.externally_removed);
   EXPECT_EQ(FailState::NO_FAILURE, offline_item.fail_state);
   EXPECT_EQ(PendingState::NOT_PENDING, offline_item.pending_state);
-
-  // Flag the item as suggested when creating the OfflineItem. Then check that
-  // only is_suggested information changed.
-  OfflineItem offline_item_p2p =
-      OfflineItemConversions::CreateOfflineItem(offline_page_item, false);
-  EXPECT_FALSE(offline_item_p2p.is_suggested);
-
-  // Change offline_item_p2p to match offline_item and check that it does.
-  offline_item_p2p.is_suggested = true;
-  EXPECT_EQ(offline_item, offline_item_p2p);
 }
 
 TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
@@ -111,7 +100,6 @@ TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
   EXPECT_EQ(0, offline_item.progress.value);
   EXPECT_FALSE(offline_item.progress.max.has_value());
   EXPECT_EQ(OfflineItemProgressUnit::PERCENTAGE, offline_item.progress.unit);
-  EXPECT_FALSE(offline_item.is_suggested);
   EXPECT_EQ(FailState::NETWORK_FAILED, offline_item.fail_state);
   EXPECT_EQ(PendingState::NOT_PENDING, offline_item.pending_state);
 

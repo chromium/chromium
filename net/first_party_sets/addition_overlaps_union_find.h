@@ -28,7 +28,7 @@ class NET_EXPORT AdditionOverlapsUnionFind {
   // Unions the two given sets together if they are in disjoint sets, and does
   // nothing if they are non-disjoint.
   // Unions are non-commutative for First-Party Sets; this method always chooses
-  // the set with the lesser index as the owner.
+  // the set with the lesser index as the primary.
   // Both set indices (set_x, set_y) must be in the range [0, num_sets) where
   // num_sets is the argument given to the constructor.
   // If Union is called when num_sets = 0, then this will crash.

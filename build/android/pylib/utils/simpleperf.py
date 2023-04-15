@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import contextlib
+import logging
 import os
 import shutil
 import subprocess
@@ -10,7 +11,7 @@ import sys
 import tempfile
 
 from devil import devil_env
-from devil.android import device_signal
+from devil.android import device_signal, device_errors
 from devil.android.sdk import version_codes
 from pylib import constants
 
@@ -157,8 +158,8 @@ def InstallSimpleperf(device, package_name):
 
 @contextlib.contextmanager
 def RunSimpleperf(device, device_simpleperf_path, package_name,
-                  process_specifier, thread_specifier, profiler_args,
-                  host_out_path):
+                  process_specifier, thread_specifier, events,
+                  profiler_args, host_out_path):
   pid = _GetSpecifiedPID(device, package_name, process_specifier)
   tid = _GetSpecifiedTID(device, pid, thread_specifier)
   if pid is None and tid is None:
@@ -168,15 +169,33 @@ def RunSimpleperf(device, device_simpleperf_path, package_name,
   profiler_args = list(profiler_args)
   if profiler_args and profiler_args[0] == 'record':
     profiler_args.pop(0)
+  profiler_args.extend(('-e', events))
   if '--call-graph' not in profiler_args and '-g' not in profiler_args:
     profiler_args.append('-g')
   if '-f' not in profiler_args:
     profiler_args.extend(('-f', '1000'))
+
   device_out_path = '/data/local/tmp/perf.data'
+  should_remove_device_out_path = True
   if '-o' in profiler_args:
     device_out_path = profiler_args[profiler_args.index('-o') + 1]
+    should_remove_device_out_path = False
   else:
     profiler_args.extend(('-o', device_out_path))
+
+  # Remove the default output to avoid confusion if simpleperf opts not
+  # to update the file.
+  file_exists = True
+  try:
+      device.adb.Shell('readlink -e ' + device_out_path)
+  except device_errors.AdbCommandFailedError:
+    file_exists = False
+  if file_exists:
+    logging.warning('%s output file already exists on device', device_out_path)
+    if not should_remove_device_out_path:
+      raise RuntimeError('Specified output file \'{}\' already exists, not '
+                         'continuing'.format(device_out_path))
+  device.adb.Shell('rm -f ' + device_out_path)
 
   if tid:
     profiler_args.extend(('-t', str(tid)))
@@ -196,7 +215,18 @@ def RunSimpleperf(device, device_simpleperf_path, package_name,
                    quiet=True)
     if completed:
       adb_shell_simpleperf_process.wait()
-      device.PullFile(device_out_path, host_out_path)
+      ret = adb_shell_simpleperf_process.returncode
+      if ret == 0:
+        # Successfully gathered a profile
+        device.PullFile(device_out_path, host_out_path)
+      else:
+        logging.warning(
+            'simpleperf exited unusually, expected exit 0, got %d', ret
+        )
+        stdout, stderr = adb_shell_simpleperf_process.communicate()
+        logging.info('stdout: \'%s\', stderr: \'%s\'', stdout, stderr)
+        raise RuntimeError('simpleperf exited with unexpected code {} '
+                           '(run with -vv for full stdout/stderr)'.format(ret))
 
 
 def ConvertSimpleperfToPprof(simpleperf_out_path, build_directory,

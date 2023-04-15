@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
@@ -284,7 +285,7 @@ public class HistoryUITest {
     @SmallTest
     public void testOpenItem() throws Exception {
         clickItem(2);
-        Assert.assertThat(shadowOf(mActivity).peekNextStartedActivity(),
+        assertThat(shadowOf(mActivity).peekNextStartedActivity(),
                 allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())));
     }
 
@@ -297,7 +298,7 @@ public class HistoryUITest {
         performMenuAction(R.id.selection_mode_open_in_incognito);
         Intent intent = shadowOf(mActivity).getNextStartedActivity();
 
-        Assert.assertThat(intent, hasData(mItem1.getUrl()));
+        assertThat(intent, hasData(mItem1.getUrl()));
         Assert.assertEquals(intent.getSerializableExtra(IntentHandler.EXTRA_ADDITIONAL_URLS),
                 Arrays.asList(mItem2.getUrl().getSpec()));
     }
@@ -583,7 +584,7 @@ public class HistoryUITest {
 
         TextView emptyView =
                 mHistoryManager.getSelectableListLayout().findViewById(R.id.empty_view);
-        Assert.assertThat(emptyView.getText(),
+        assertThat(emptyView.getText(),
                 is("Can’t find that page. Check your spelling or try a web search."));
     }
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -20,7 +21,7 @@ namespace device {
 
 // This class wraps an instance of udev_monitor, watching for devices that are
 // added and removed from the system. This class has sequence affinity.
-class UdevWatcher {
+class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevWatcher {
  public:
   class Observer {
    public:

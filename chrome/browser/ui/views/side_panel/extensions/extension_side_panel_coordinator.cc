@@ -258,8 +258,8 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
     return std::move(global_entry_view_);
   }
 
-  host_ =
-      ExtensionViewHostFactory::CreateSidePanelHost(side_panel_url_, browser_);
+  host_ = ExtensionViewHostFactory::CreateSidePanelHost(
+      side_panel_url_, browser_, /*web_contents=*/nullptr);
 
   // Handle the containing view calling window.close();
   // The base::Unretained() below is safe because this object owns `host_`, so

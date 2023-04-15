@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   using AdvertEventStream = EventStream<base::span<const uint8_t, kAdvertSize>>;
 
   Discovery(
-      CableRequestType request_type,
+      FidoRequestType request_type,
       network::mojom::NetworkContext* network_context,
       absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   static std::vector<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
-  const CableRequestType request_type_;
+  const FidoRequestType request_type_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
   const absl::optional<UnpairedKeys> qr_keys_;
   const std::vector<UnpairedKeys> extension_keys_;

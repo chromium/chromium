@@ -45,8 +45,10 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewNewInvalidateHeuristic);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicSchedulerForDraw);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicSchedulerForClients);
 #if BUILDFLAG(IS_APPLE)
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kMacCAOverlayQuad);
-VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kMacCAOverlayQuadMaxNum;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCALayerNewLimit);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kCALayerNewLimitDefault;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
+    kCALayerNewLimitManyVideos;
 #endif
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,7 +34,6 @@ class TabCloseButton;
 class TabSlotController;
 class TabIcon;
 struct TabSizeInfo;
-class TabStyleViews;
 
 namespace gfx {
 class Animation;
@@ -165,8 +165,11 @@ class Tab : public gfx::AnimationDelegate,
   bool mouse_hovered() const { return mouse_hovered_; }
 
   // Returns the TabStyle associated with this tab.
-  TabStyleViews* tab_style() { return tab_style_.get(); }
-  const TabStyleViews* tab_style() const { return tab_style_.get(); }
+  TabStyleViews* tab_style_views() { return tab_style_views_.get(); }
+  const TabStyleViews* tab_style_views() const {
+    return tab_style_views_.get();
+  }
+  const TabStyle* tab_style() const { return tab_style_views_->tab_style(); }
 
   // Returns the text to show in a tab's tooltip: The contents |title|, followed
   // by a break, followed by a localized string describing the |alert_state|.
@@ -229,7 +232,7 @@ class Tab : public gfx::AnimationDelegate,
 
   TabRendererData data_;
 
-  std::unique_ptr<TabStyleViews> tab_style_;
+  std::unique_ptr<TabStyleViews> tab_style_views_;
 
   // True if the tab is being animated closed.
   bool closing_ = false;

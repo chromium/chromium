@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 135 tests; 45 PASS, 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL computed display of <input type=reset> with display: inline assert_equals: expected "inline" but got "inline-block"
 FAIL computed display of <input type=button> with display: inline assert_equals: expected "inline" but got "inline-block"
 FAIL computed display of <input type=submit> with display: inline assert_equals: expected "inline" but got "inline-block"
@@ -80,11 +80,11 @@ PASS computed display of <input type=button> with display: contents
 PASS computed display of <input type=submit> with display: contents
 PASS computed display of <input type=color> with display: contents
 PASS computed display of <button type=submit> with display: contents
-FAIL computed display of <input type=reset> with display: flow assert_not_equals: display: flow is not supported got disallowed value ""
-FAIL computed display of <input type=button> with display: flow assert_not_equals: display: flow is not supported got disallowed value ""
-FAIL computed display of <input type=submit> with display: flow assert_not_equals: display: flow is not supported got disallowed value ""
-FAIL computed display of <input type=color> with display: flow assert_not_equals: display: flow is not supported got disallowed value ""
-FAIL computed display of <button type=submit> with display: flow assert_not_equals: display: flow is not supported got disallowed value ""
+PASS computed display of <input type=reset> with display: flow
+PASS computed display of <input type=button> with display: flow
+PASS computed display of <input type=submit> with display: flow
+PASS computed display of <input type=color> with display: flow
+PASS computed display of <button type=submit> with display: flow
 PASS computed display of <input type=reset> with display: flow-root
 PASS computed display of <input type=button> with display: flow-root
 PASS computed display of <input type=submit> with display: flow-root

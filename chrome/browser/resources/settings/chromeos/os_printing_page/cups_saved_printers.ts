@@ -192,7 +192,7 @@ export class SettingsCupsSavedPrintersElement extends
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(target);
   }
 
-  private onEditTap_(): void {
+  private onEditClick_(): void {
     // Event is caught by 'settings-cups-printers'.
     const editCupsPrinterDetailsEvent =
         new CustomEvent('edit-cups-printer-details', {
@@ -203,7 +203,7 @@ export class SettingsCupsSavedPrintersElement extends
     this.closeActionMenu_();
   }
 
-  private onRemoveTap_(): void {
+  private onRemoveClick_(): void {
     this.browserProxy_.removeCupsPrinter(
         this.activePrinter!.printerId, this.activePrinter!.printerName);
     recordSettingChange();
@@ -212,7 +212,7 @@ export class SettingsCupsSavedPrintersElement extends
     this.closeActionMenu_();
   }
 
-  private onShowMoreTap_(): void {
+  private onShowMoreClick_(): void {
     this.hasShowMoreBeenTapped_ = true;
   }
 

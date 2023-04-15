@@ -20,6 +20,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -34,7 +35,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
-#include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -185,7 +185,7 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   GetURL(&url);
 
   if (url.SchemeIs(content::kChromeUIScheme))
-    return (features::IsChromeRefresh2023())
+    return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
                ? &omnibox::kProductChromeRefreshIcon
                : &omnibox::kProductIcon;
 

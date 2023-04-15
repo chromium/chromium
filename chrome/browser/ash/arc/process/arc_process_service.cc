@@ -43,7 +43,8 @@ using ::base::ProcessId;
 
 namespace {
 
-static constexpr char kInitName[] = "/init";
+static constexpr char kInitNameP[] = "/init";
+static constexpr char kInitNameR[] = "/system/bin/init";
 static constexpr bool kNotFocused = false;
 static constexpr int64_t kNoActivityTimeInfo = 0L;
 
@@ -57,7 +58,7 @@ base::ProcessId GetArcInitProcessId(
     }
     // TODO(nya): Add more constraints to avoid mismatches.
     const std::string& process_name = entry.cmd_line_args()[0];
-    if (process_name == kInitName) {
+    if (process_name == kInitNameP || process_name == kInitNameR) {
       return entry.pid();
     }
   }

@@ -79,8 +79,9 @@ class NdkVideoEncoderAcceleratorTest
       loop_.Quit();
   }
 
-  void NotifyError(VideoEncodeAccelerator::Error error) override {
-    error_ = error;
+  void NotifyErrorStatus(const EncoderStatus& status) override {
+    CHECK(!status.is_ok());
+    error_status_ = status;
     if (!OnError())
       loop_.Quit();
   }
@@ -215,7 +216,7 @@ class NdkVideoEncoderAcceleratorTest
     BitstreamBufferMetadata md;
   };
   std::vector<Output> outputs_;
-  absl::optional<VideoEncodeAccelerator::Error> error_;
+  absl::optional<EncoderStatus> error_status_;
   size_t input_buffer_size_ = 0;
   int32_t last_buffer_id_ = 0;
   std::vector<uint8_t> resize_buff_;
@@ -231,7 +232,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
   Run();
   EXPECT_GE(id_to_buffer_.size(), 1u);
   accelerator_.reset();
-  EXPECT_FALSE(error_.has_value());
+  EXPECT_FALSE(error_status_.has_value());
 }
 
 TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
@@ -251,7 +252,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
 
   Run();
   EXPECT_EQ(outputs_.size(), 0u);
-  EXPECT_TRUE(error_.has_value());
+  EXPECT_TRUE(error_status_.has_value());
 }
 
 TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
@@ -281,7 +282,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   }
 
   Run();
-  EXPECT_FALSE(error_.has_value());
+  EXPECT_FALSE(error_status_.has_value());
   EXPECT_GE(outputs_.size(), total_frames_count);
   // Here we'd like to test that an output with at `key_frame_index`
   // has a keyframe flag set to true, but because MediaCodec

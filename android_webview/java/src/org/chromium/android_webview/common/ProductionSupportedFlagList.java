@@ -27,6 +27,7 @@ import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.base.UiAndroidFeatures;
 
 /**
  * List of experimental features/flags supported for user devices. Add features/flags to this list
@@ -157,12 +158,11 @@ public final class ProductionSupportedFlagList {
                             .ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME,
                     "When enabled, Android Autofill ViewStructures contain an additional "
                             + "hierarchy level."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_SPLIT_CREDIT_CARD_NUMBERS_CAUTIOUSLY,
+                    "Split credit card numbers over multiple fields more cautiously."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
                     "Enable Autofill for frame-transcending forms (forms whose fields live in "
                             + "different frames)."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_MIN3_FIELD_TYPES_FOR_LOCAL_HEURISTICS,
-                    "Require at least 3 distinct field types for local heuristics to return "
-                            + "classifications."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
@@ -327,6 +327,8 @@ public final class ProductionSupportedFlagList {
                             + "instances of the image are outside of the "
                             + "viewport."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
+            Flag.baseFeature(BlinkFeatures.DELAY_OUT_OF_VIEWPORT_LAZY_IMAGES,
+                    "Delays out-of-viewport lazy loaded images."),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
                     "This changes event propagation for disabled form controls."),
             Flag.baseFeature(ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
@@ -407,6 +409,13 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                     "When enabled, WebView exports trace events to the Android Perfetto service."
                             + " This works only for Android Q+."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SAFE_BROWSING_SAFE_MODE,
+                    "Enable doing a JNI call to check safe browsing safe mode status "
+                            + "before doing a safe browsing check."),
+            Flag.baseFeature(UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE,
+                    "Enables converting trackpad click gestures to mouse events"
+                            + " in order for them to be interpreted similar to a desktop"
+                            + " experience (i.e. double-click to select word.)"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

@@ -146,6 +146,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
       {"moreActions", IDS_SETTINGS_MORE_ACTIONS},
       {"ok", IDS_OK},
+      {"opensInNewTab", IDS_OS_SETTINGS_OPENS_IN_NEW_TAB_A11Y_LABEL},
       {"restart", IDS_SETTINGS_RESTART},
       {"save", IDS_SAVE},
       {"searchResultBubbleText", IDS_SEARCH_RESULT_BUBBLE_TEXT},

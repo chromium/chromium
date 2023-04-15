@@ -476,6 +476,7 @@
     "block",
     // The order must match the order found in IsDisplayInside().
     "flow-root",
+    "flow",
     "table",
     "flex",
     "grid",
@@ -1423,6 +1424,10 @@
     // normal
     // always
 
+    // scroll-timeline-attachment
+    // view-timeline-attachment
+    "defer",
+    "ancestor",
 
     // containment
     // paint

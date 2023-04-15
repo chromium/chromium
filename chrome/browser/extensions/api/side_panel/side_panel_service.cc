@@ -107,17 +107,26 @@ void SidePanelService::SetOptions(const Extension& extension,
     tab_id = *options.tab_id;
   TabPanelOptions& extension_panel_options = panels_[extension.id()];
   auto it = extension_panel_options.find(tab_id);
-  if (it == extension_panel_options.end()) {
+
+  // Create the options if they don't exist, otherwise update them.
+  if (it != extension_panel_options.end()) {
+    update_existing_options(it->second);
+  } else {
+    // The default value for the optional enabled option is true. This default
+    // is applied when the supplied option is being inserted for the first time.
+    if (!options.enabled.has_value()) {
+      options.enabled = true;
+    }
+
     // If there is no entry for the default tab, merge `options` into the
     // manifest-specified options.
     if (tab_id == SessionID::InvalidValue().id()) {
       extension_panel_options[tab_id] = GetPanelOptionsFromManifest(extension);
       update_existing_options(extension_panel_options[tab_id]);
     } else {
+      // Update an existing option.
       extension_panel_options[tab_id] = std::move(options);
     }
-  } else {
-    update_existing_options(it->second);
   }
 
   for (auto& observer : observers_) {

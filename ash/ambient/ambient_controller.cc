@@ -14,7 +14,6 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_video_ui_launcher.h"
-#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
@@ -139,11 +138,6 @@ bool IsUserAmbientModeEnabled() {
          pref_service->GetBoolean(ambient::prefs::kAmbientModeEnabled);
 }
 
-bool IsAmbientModeAllowed() {
-  return ash::features::IsAmbientModeManagedScreensaverEnabled() ||
-         AmbientClient::Get()->IsAmbientModeAllowed();
-}
-
 bool IsAmbientModeManagedScreensaverEnabled() {
   // TODO(fahadmansoor): Consider adding additional client side checks to
   // keep behavior consistent with the consumer ambient mode.
@@ -235,6 +229,12 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
       kManagedScreensaverImageRefreshInterval.InSeconds());
+
+  if (ash::features::IsScreenSaverDurationEnabled()) {
+    registry->RegisterIntegerPref(
+        ambient::prefs::kAmbientModeRunningDurationMinutes,
+        kDefaultScreenSaverDuration.InMinutes());
+  }
 }
 
 AmbientController::AmbientController(
@@ -404,7 +404,7 @@ void AmbientController::OnLockStateChanged(bool locked) {
 
 void AmbientController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (!IsAmbientModeAllowed() || GetPrimaryUserPrefService() != pref_service) {
+  if (GetPrimaryUserPrefService() != pref_service) {
     return;
   }
 
@@ -413,17 +413,25 @@ void AmbientController::OnActiveUserPrefServiceChanged(
   if (pref_change_registrar_)
     return;
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
+  bool ambient_mode_allowed = AmbientClient::Get()->IsAmbientModeAllowed();
+  bool managed_screensaver_flag_enabled =
+      ash::features::IsAmbientModeManagedScreensaverEnabled();
 
-  pref_change_registrar_->Add(
-      ambient::prefs::kAmbientModeEnabled,
-      base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
+  if (ambient_mode_allowed || managed_screensaver_flag_enabled) {
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(pref_service);
+  }
 
-  OnEnabledPrefChanged();
+  if (ambient_mode_allowed) {
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeEnabled,
+        base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
 
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    OnEnabledPrefChanged();
+  }
+
+  if (managed_screensaver_flag_enabled) {
     pref_change_registrar_->Add(
         ambient::prefs::kAmbientModeManagedScreensaverEnabled,
         base::BindRepeating(
@@ -654,6 +662,15 @@ void AmbientController::ToggleInSessionUi() {
     CloseUi();
 }
 
+void AmbientController::SetScreenSaverDuration(int minutes) {
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->Set(ambient::prefs::kAmbientModeRunningDurationMinutes,
+                    base::Value(minutes));
+}
+
 bool AmbientController::IsShown() const {
   return ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown ||
          ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview;
@@ -807,10 +824,6 @@ void AmbientController::OnEnabledPrefChanged() {
       return;
     }
     DVLOG(1) << "Ambient mode enabled";
-    // TODO(b/274165045): Remove this temporary way of circulating the video
-    // theme throughout the system once the hub supports the video theme. This
-    // is just for experimentation purposes until then.
-    SetUiSettingsForExperimentation();
 
     AddAmbientModeUserSettingsPolicyPrefObservers();
 
@@ -1111,6 +1124,7 @@ void AmbientController::StopScreensaver() {
     ambient_ui_launcher_->Finalize();
     return;
   }
+  weather_refresher_.reset();
   DCHECK(ambient_photo_controller_);
   ambient_photo_controller_->StopScreenUpdate();
 }
@@ -1141,21 +1155,15 @@ void AmbientController::MaybeStartScreenSaver() {
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartRefreshingImages();
+    // TODO(b/274164306): Move `weather_refresher_` to `AmbientUiLauncher`
+    // implementation for slideshow and animation themes.
+    weather_refresher_ = ambient_weather_controller_->CreateScopedRefresher();
   }
 }
 
 AmbientUiSettings AmbientController::GetCurrentUiSettings() const {
   CHECK(GetPrimaryUserPrefService());
   return AmbientUiSettings::ReadFromPrefService(*GetPrimaryUserPrefService());
-}
-
-void AmbientController::SetUiSettingsForExperimentation() {
-  if (features::IsTimeOfDayScreenSaverEnabled()) {
-    CHECK(GetPrimaryUserPrefService());
-    AmbientUiSettings(AmbientTheme::kVideo,
-                      features::kTimeOfDayScreenSaverVideo.Get())
-        .WriteToPrefService(*GetPrimaryUserPrefService());
-  }
 }
 
 void AmbientController::MaybeDismissUIOnMouseMove() {

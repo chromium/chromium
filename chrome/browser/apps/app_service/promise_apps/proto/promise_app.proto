@@ -1,0 +1,55 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+// This file is a mirror of the proto file maintained in the server code base at
+// go/promise-app-proto. Changes should be made by updating the server code
+// base and then copying the result to Chromium.
+
+message PromiseAppRequest {
+  // The language-country identifier for the user in language in
+  // "language_COUNTRY" format (eg. "en_US").
+  // Must match one of the valid Google recognised codes. See:
+  // //i18n/identifiers/languagecodeconverter.h
+  // Note: this should ideally be the user's preferred language, if absent
+  // use the language specified by the UI. The server will attempt to find the
+  // best match for this language from the content it has access to, but does
+  // not guarantee the returned content will be readable for this locale.
+  optional string language = 1;
+
+  // PackageId for the installable app that the information is being requested
+  // for. This is always "platform:primary_key", for example
+  // "android:com.spotify.music" or "web:http://manifest/id"
+  optional string package_id = 2;
+}
+
+// Outbound response for the Promise App endpoint.
+message PromiseAppResponse {
+  // The name of the requested app.
+  optional string name = 1;
+
+  // The Icon for the requested app.
+  repeated Icon icons = 2;
+
+  // PackageId for the installable app that the information is being requested
+  // for. This is always "platform:primary_key", for example
+  // "android:com.spotify.music" or "web:http://manifest/id"
+  optional string package_id = 3;
+
+  message Icon {
+    // Url to query to get the icon.
+    optional string url = 1;
+    // Width of the icon in pixels.
+    optional int32 width_in_pixels = 2;
+    // Mime type of the icon.
+    optional string mime_type = 3;
+    // Whether or not we have permission from the platform to mask the icon.
+    optional bool is_masking_allowed = 4;
+  }
+}

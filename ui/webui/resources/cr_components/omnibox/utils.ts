@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '//resources/js/assert_ts.js';
 import {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
+import {SideType} from './omnibox.mojom-webui.js';
 
 /** Converts a String16 to a JavaScript String. */
 export function decodeString16(str: String16|null): string {
@@ -25,4 +28,16 @@ export function mojoString16(str: string): String16 {
  */
 export function mojoTimeTicks(timeTicks: number): TimeTicks {
   return {internalValue: BigInt(Math.floor(timeTicks * 1000))};
+}
+
+/** Converts a side type to a string to be used in CSS. */
+export function sideTypeToClass(sideType: SideType): string {
+  switch (sideType) {
+    case SideType.kDefaultPrimary:
+      return 'primary-side';
+    case SideType.kSecondary:
+      return 'secondary-side';
+    default:
+      assertNotReached('Unexpected side type');
+  }
 }

@@ -643,10 +643,6 @@ class PLATFORM_EXPORT ImageDecoder {
   // is needed if `sk_image_color_space_` is not an exact representation of
   // `embedded_color_profile_`.
   std::unique_ptr<ColorProfileTransform> embedded_to_sk_image_transform_;
-
-  wtf_size_t metrics_frame_index_ = kNotFound;
-  base::TimeDelta metrics_time_delta_;
-  bool metrics_first_ = true;
 };
 
 }  // namespace blink

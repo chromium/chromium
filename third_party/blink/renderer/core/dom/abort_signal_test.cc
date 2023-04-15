@@ -24,19 +24,6 @@ namespace blink {
 
 namespace {
 
-enum class TestType { kRemoveEnabled, kCompositionEnabled, kNoFeatures };
-
-const char* TestTypeToString(TestType test_type) {
-  switch (test_type) {
-    case TestType::kRemoveEnabled:
-      return "RemoveEnabled";
-    case TestType::kCompositionEnabled:
-      return "CompositionEnabled";
-    case TestType::kNoFeatures:
-      return "NoFeatures";
-  }
-}
-
 class TestEventListener : public NativeEventListener {
  public:
   TestEventListener() = default;
@@ -46,29 +33,9 @@ class TestEventListener : public NativeEventListener {
 
 }  // namespace
 
-class AbortSignalTest : public PageTestBase,
-                        public ::testing::WithParamInterface<TestType> {
+class AbortSignalTest : public PageTestBase {
  public:
-  AbortSignalTest() {
-    switch (GetParam()) {
-      case TestType::kRemoveEnabled:
-        feature_list_.InitWithFeatures(
-            {features::kAbortSignalHandleBasedRemoval},
-            {features::kAbortSignalComposition});
-        break;
-      case TestType::kCompositionEnabled:
-        feature_list_.InitWithFeatures(
-            {features::kAbortSignalComposition},
-            {features::kAbortSignalHandleBasedRemoval});
-        break;
-      case TestType::kNoFeatures:
-        feature_list_.InitWithFeatures(
-            {}, {features::kAbortSignalHandleBasedRemoval,
-                 features::kAbortSignalComposition});
-        break;
-    }
-    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
-  }
+  AbortSignalTest() = default;
 
   void SetUp() override {
     PageTestBase::SetUp();
@@ -91,10 +58,9 @@ class AbortSignalTest : public PageTestBase,
   Persistent<AbortController> controller_;
   Persistent<AbortSignal> signal_;
   Persistent<AbortSignal::AlgorithmHandle> abort_handle_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(AbortSignalTest, AbortAlgorithmRuns) {
+TEST_F(AbortSignalTest, AbortAlgorithmRuns) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
       WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
@@ -110,7 +76,7 @@ TEST_P(AbortSignalTest, AbortAlgorithmRuns) {
   EXPECT_EQ(count, 1);
 }
 
-TEST_P(AbortSignalTest, AbortAlgorithmHandleRemoved) {
+TEST_F(AbortSignalTest, AbortAlgorithmHandleRemoved) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
       WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
@@ -118,10 +84,10 @@ TEST_P(AbortSignalTest, AbortAlgorithmHandleRemoved) {
   signal_->RemoveAlgorithm(abort_handle_.Get());
 
   SignalAbort();
-  EXPECT_EQ(count, GetParam() == TestType::kRemoveEnabled ? 0 : 1);
+  EXPECT_EQ(count, 0);
 }
 
-TEST_P(AbortSignalTest, AbortAlgorithmHandleGCed) {
+TEST_F(AbortSignalTest, AbortAlgorithmHandleGCed) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
       WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
@@ -130,10 +96,10 @@ TEST_P(AbortSignalTest, AbortAlgorithmHandleGCed) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   SignalAbort();
-  EXPECT_EQ(count, GetParam() == TestType::kRemoveEnabled ? 0 : 1);
+  EXPECT_EQ(count, 0);
 }
 
-TEST_P(AbortSignalTest, RegisteredSignalAlgorithmRuns) {
+TEST_F(AbortSignalTest, RegisteredSignalAlgorithmRuns) {
   int count = 0;
   Persistent<TestEventListener> listener =
       MakeGarbageCollected<TestEventListener>();
@@ -150,7 +116,7 @@ TEST_P(AbortSignalTest, RegisteredSignalAlgorithmRuns) {
   EXPECT_EQ(count, 1);
 }
 
-TEST_P(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
+TEST_F(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
   int count = 0;
   Persistent<TestEventListener> listener =
       MakeGarbageCollected<TestEventListener>();
@@ -164,18 +130,43 @@ TEST_P(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   SignalAbort();
-  EXPECT_EQ(count, GetParam() == TestType::kRemoveEnabled ? 0 : 1);
+  EXPECT_EQ(count, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         AbortSignalTest,
-                         testing::Values(TestType::kRemoveEnabled,
-                                         TestType::kNoFeatures),
-                         [](const testing::TestParamInfo<TestType>& info) {
-                           return TestTypeToString(info.param);
-                         });
+namespace {
 
-class AbortSignalCompositionTest : public AbortSignalTest {};
+enum class TestType { kCompositionEnabled, kNoFeatures };
+
+const char* TestTypeToString(TestType test_type) {
+  switch (test_type) {
+    case TestType::kCompositionEnabled:
+      return "CompositionEnabled";
+    case TestType::kNoFeatures:
+      return "NoFeatures";
+  }
+}
+
+}  // namespace
+
+class AbortSignalCompositionTest
+    : public AbortSignalTest,
+      public ::testing::WithParamInterface<TestType> {
+ public:
+  AbortSignalCompositionTest() {
+    switch (GetParam()) {
+      case TestType::kCompositionEnabled:
+        feature_list_.InitWithFeatures({features::kAbortSignalComposition}, {});
+        break;
+      case TestType::kNoFeatures:
+        feature_list_.InitWithFeatures({}, {features::kAbortSignalComposition});
+        break;
+    }
+    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_P(AbortSignalCompositionTest, CanAbort) {
   EXPECT_TRUE(signal_->CanAbort());

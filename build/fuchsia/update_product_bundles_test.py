@@ -216,12 +216,13 @@ class TestUpdateProductBundles(unittest.TestCase):
     mock_sequence.attach_mock(mock_update_repo, 'update_repo_list')
     mock_sequence.attach_mock(mock_ffx, 'run_ffx_command')
 
-    update_product_bundles.download_product_bundle('some-bundle')
+    update_product_bundles.download_product_bundle('some-bundle', None)
 
     mock_sequence.assert_has_calls([
         mock.call.update_repo_list(),
         mock.call.run_ffx_command(
-            ('product-bundle', 'get', 'some-bundle', '--force-repo'))
+            ('product-bundle', 'get', 'some-bundle', '--force-repo'),
+            configs=None)
     ])
 
   @mock.patch('common.run_ffx_command')

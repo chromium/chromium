@@ -25,6 +25,7 @@ CastMessagePortSenderImpl::CastMessagePortSenderImpl(
 CastMessagePortSenderImpl::~CastMessagePortSenderImpl() = default;
 
 void CastMessagePortSenderImpl::MaybeClose() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // We may be called multiple times, but only want to close once.
   if (is_closed_) {
     return;
@@ -45,11 +46,13 @@ void CastMessagePortSenderImpl::MaybeClose() {
 
 void CastMessagePortSenderImpl::SetClient(
     openscreen::cast::MessagePort::Client& client) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(2) << __func__;
   client_ = &client;
 }
 
 void CastMessagePortSenderImpl::ResetClient() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_ = nullptr;
   MaybeClose();
 }
@@ -58,6 +61,7 @@ void CastMessagePortSenderImpl::PostMessage(
     const std::string& sender_id,
     const std::string& message_namespace,
     const std::string& message) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(3) << __func__;
   if (!message_port_) {
     return;

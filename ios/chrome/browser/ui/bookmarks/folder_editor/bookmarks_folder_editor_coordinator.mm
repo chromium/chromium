@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -37,13 +38,10 @@
   BookmarksFolderEditorViewController* _viewController;
   // Coordinator to show the folder chooser UI.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
-  // `_parentFolderNode` is only used when a new folder is added. The new
-  // folder should be added in `_parentFolderNode`. If `_parentFolderNode` is
-  // `nullptr`, then the new folder needs to be added in the default folder.
+  // Parent folder to `_folderNode`. Should never be `nullptr`.
   const bookmarks::BookmarkNode* _parentFolderNode;
-  // If `_folderNode` is set, the user is editing an existing folder and
-  // `_parentFolderNode` should be `nullptr`. If `_folderNode` is not set, the
-  // user is adding a new folder.
+  // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
+  // the user is editing an existing folder.
   const bookmarks::BookmarkNode* _folderNode;
 }
 
@@ -74,9 +72,11 @@
                                 folderNode:
                                     (const bookmarks::BookmarkNode*)folder {
   DCHECK(folder);
+  DCHECK(folder->parent());
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _folderNode = folder;
+    _parentFolderNode = folder->parent();
   }
   return self;
 }
@@ -84,7 +84,8 @@
 - (void)start {
   [super start];
   // TODO(crbug.com/1402758): Create a mediator.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   bookmarks::BookmarkModel* model =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
@@ -104,13 +105,9 @@
       self.browser->GetCommandDispatcher(), SnackbarCommands);
 
   if (_baseNavigationController) {
-    DCHECK(_parentFolderNode);
-    DCHECK(!_folderNode);
     [_baseNavigationController pushViewController:_viewController animated:YES];
   } else {
     DCHECK(!_navigationController);
-    DCHECK(!_parentFolderNode);
-    DCHECK(_folderNode);
     _navigationController = [[BookmarkNavigationController alloc]
         initWithRootViewController:_viewController];
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -128,19 +125,24 @@
   [self stopBookmarksFolderChooserCoordinator];
 
   DCHECK(_viewController);
-  if (_baseNavigationController) {
-    DCHECK_EQ(self.baseNavigationController.topViewController, _viewController);
-    [_baseNavigationController popViewControllerAnimated:YES];
-  } else if (_navigationController) {
+  if (_navigationController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
     _navigationController = nil;
-  } else {
+  } else if (_baseNavigationController &&
+             _baseNavigationController.presentingViewController) {
+    // If `_baseNavigationController.presentingViewController` is `nil` then
+    // the parent coordinator (who owns the `_baseNavigationController`) has
+    // already been dismissed. In this case `_baseNavigationController` itself
+    // is no longer being presented and this coordinator was dismissed as well.
+    DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
+    [_baseNavigationController popViewControllerAnimated:YES];
+  } else if (!_baseNavigationController) {
     // If there is no `_baseNavigationController` and `_navigationController`,
     // the view controller has been already dismissed. See
     // `presentationControllerDidDismiss:` and
     // `bookmarksFolderEditorDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
-    // `nullptr`.
+    // `nil`.
     DCHECK(!self.baseViewController.presentedViewController);
   }
   [_viewController disconnect];
@@ -184,7 +186,6 @@
   // Deleting the folder is only allowed when the user is editing an existing
   // folder.
   DCHECK(_folderNode);
-  DCHECK(!_parentFolderNode);
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
 

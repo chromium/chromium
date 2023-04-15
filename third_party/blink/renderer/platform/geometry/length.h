@@ -46,11 +46,18 @@ struct PixelsAndPercent {
 
 class CalculationExpressionNode;
 class CalculationValue;
+class Length;
+
+PLATFORM_EXPORT extern const Length& g_auto_length;
+PLATFORM_EXPORT extern const Length& g_none_length;
 
 class PLATFORM_EXPORT Length {
   DISALLOW_NEW();
 
  public:
+  // Initializes global instances.
+  static void Initialize();
+
   enum class ValueRange { kAll, kNonNegative };
 
   // FIXME: This enum makes it hard to tell in general what values may be
@@ -138,7 +145,7 @@ class PLATFORM_EXPORT Length {
     return Length(number, kFixed);
   }
   static Length Fixed() { return Length(kFixed); }
-  static Length Auto() { return Length(kAuto); }
+  static const Length& Auto() { return g_auto_length; }
   static Length FillAvailable() { return Length(kFillAvailable); }
   static Length MinContent() { return Length(kMinContent); }
   static Length MaxContent() { return Length(kMaxContent); }
@@ -146,7 +153,7 @@ class PLATFORM_EXPORT Length {
   static Length ExtendToZoom() { return Length(kExtendToZoom); }
   static Length DeviceWidth() { return Length(kDeviceWidth); }
   static Length DeviceHeight() { return Length(kDeviceHeight); }
-  static Length None() { return Length(kNone); }
+  static const Length& None() { return g_none_length; }
   static Length FitContent() { return Length(kFitContent); }
   static Length Content() { return Length(kContent); }
   template <typename NUMBER_TYPE>

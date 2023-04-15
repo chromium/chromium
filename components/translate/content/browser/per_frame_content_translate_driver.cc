@@ -352,7 +352,6 @@ void PerFrameContentTranslateDriver::StartLanguageDetection() {
                          weak_pointer_factory_.GetWeakPtr(),
                          capture_begin_time)),
       ui::AXMode::kWebContents,
-      /* exclude_offscreen= */ false,
       /* max_nodes= */ 5000,
       /* timeout= */ {});
 

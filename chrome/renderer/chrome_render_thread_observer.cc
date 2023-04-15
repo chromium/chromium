@@ -32,6 +32,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "chrome/common/url_constants.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/child/child_thread.h"
@@ -127,11 +128,6 @@ void ChromeRenderThreadObserver::ChromeOSListener::BindOnIOThread(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-chrome::mojom::DynamicParams* GetDynamicConfigParams() {
-  static base::NoDestructor<chrome::mojom::DynamicParams> dynamic_params;
-  return dynamic_params.get();
-}
-
 ChromeRenderThreadObserver::ChromeRenderThreadObserver()
     : visited_link_reader_(new visitedlink::VisitedLinkReader) {
   // Configure modules that need access to resources.
@@ -141,10 +137,15 @@ ChromeRenderThreadObserver::ChromeRenderThreadObserver()
 
 ChromeRenderThreadObserver::~ChromeRenderThreadObserver() {}
 
-// static
-const chrome::mojom::DynamicParams&
-ChromeRenderThreadObserver::GetDynamicParams() {
-  return *GetDynamicConfigParams();
+chrome::mojom::DynamicParams ChromeRenderThreadObserver::GetDynamicParams()
+    const {
+  {
+    base::AutoLock lock(dynamic_params_lock_);
+    if (dynamic_params_) {
+      return *dynamic_params_;
+    }
+  }
+  return chrome::mojom::DynamicParams();
 }
 
 void ChromeRenderThreadObserver::RegisterMojoInterfaces(
@@ -180,7 +181,8 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
 
 void ChromeRenderThreadObserver::SetConfiguration(
     chrome::mojom::DynamicParamsPtr params) {
-  *GetDynamicConfigParams() = std::move(*params);
+  base::AutoLock lock(dynamic_params_lock_);
+  dynamic_params_ = std::move(params);
 }
 
 void ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest(

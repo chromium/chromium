@@ -4,7 +4,10 @@
 
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 
+#include <memory>
+
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 

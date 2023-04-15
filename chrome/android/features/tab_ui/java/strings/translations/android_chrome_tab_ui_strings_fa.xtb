@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
-<translation id="1181037720776840403">حذف</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
 <translation id="1403228085774130835">‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوی اصلی Chrome پیدا کنید</translation>
 <translation id="1455506303394048917">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد.</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{لغو گروه‌بندی برگه}one{لغو گروه‌بندی برگه}other{لغو گروه‌بندی برگه‌ها}}</translation>
 <translation id="2277224997687551299">ویرایش نام گروه</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{برداشتن <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده از گروه.}one{برداشتن <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده از گروه.}other{برداشتن <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده از گروه.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{نشانک‌گذاری برگه}one{نشانک‌گذاری برگه}other{نشانک‌گذاری برگه‌ها}}</translation>
-<translation id="2479148705183875116">رفتن به تنظیمات</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
-<translation id="257674075312929031">گروه</translation>
 <translation id="2613747923081026172">ایجاد گروه</translation>
 <translation id="2662028055331606429">رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">دیدن سایت</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">برای گروه‌بندی برگه‌ها، آن‌ها را بکشید</translation>
 <translation id="5846292395804797011">بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="NUMBER_OF_TABS" /> برگه</translation>
 <translation id="5972844218283131174">لغوانتخاب همه</translation>
-<translation id="6040143037577758943">بستن</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">پنهان کردن حالت چندانتخابی</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{هم‌رسانی برگه}one{هم‌رسانی برگه}other{هم‌رسانی برگه‌ها}}</translation>
 <translation id="7129458170538955174">اطلاعات مربوط به این فروشگاه به‌صورت نیمه باز شده است</translation>
-<translation id="7151209024774799310">برداشتن برگه‌ها از گروه</translation>
 <translation id="7204204600596740190">حالت چندانتخابی</translation>
 <translation id="7326879924029668159">دیدن خط‌مشی برگرداندن و موارد دیگر</translation>
 <translation id="7352298686197644113">ببینید کدام مورد در برگه‌های باز قیمت کمتری دارد</translation>

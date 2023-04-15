@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ວັນ​ກ່ອນ​ນີ້}other{ # ວັນ​ກ່ອນ​ນີ້}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 ນາທີກ່ອນນີ້}other{# ນາທີກ່ອນນີ້}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 ແມັດ}other{# ແມັດ}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 ມື້ກ່ອນ}other{# ມື້ກ່ອນ}}</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1243314992276662751">ອັບ​ໂຫຼດ</translation>
 <translation id="1266864766717917324">ບໍ່ສາມາດແບ່ງປັນ <ph name="CONTENT_TYPE" /> ໄດ້</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">ຊ້າຍຫາຂວາ</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1398853756734560583">ຂະຫຍາຍໃຫຍ່</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 ນາທີກ່ອນ}other{# ນາທີກ່ອນ}}</translation>
 <translation id="1450753235335490080">ບໍ່ສາມາດແບ່ງປັນ <ph name="CONTENT_TYPE" /> ໄດ້</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 ເດືອນກ່ອນ}other{# ເດືອນກ່ອນ}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 ນາ​ທີ​ ແລະ }other{# ນາ​ທີ ​ແລະ }}</translation>
 <translation id="1643823602425662293">ການແຈ້ງເຕືອນ</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">ຮູບ​</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4588090240171750605">ເລື່ອນໄປທາງຂວາ</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 ປີກ່ອນ}other{# ປີກ່ອນ}}</translation>
 <translation id="4724120544754982507">ສູນການແຈ້ງເຕືອນ, <ph name="UNREAD_NOTIFICATION_COUNT" /> ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="4729257764711776855">ເບີໂທ</translation>
 <translation id="4746179598275229723">ຖອນໝຸດສ່ວນຂະຫຍາຍແລ້ວ</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">ກຳລັງສົ່ງ...</translation>
 <translation id="8876215549894133151">ຮູບແບບ:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 ຊົ່ວໂມງກ່ອນ}other{# ຊົ່ວໂມງກ່ອນ}}</translation>
 <translation id="8996630695507351249">ກວດໃຫ້ແນ່ໃຈວ່າ <ph name="TARGET_DEVICE_NAME" /> ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດ.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 ວິ​ນາ​ທີ}other{# ວິ​ນາ​ທີ}}</translation>
 <translation id="9059834730836941392">ຫຍໍ້ການແຈ້ງເຕືອນລົງ</translation>
 <translation id="9170848237812810038">ບໍ່ເຮັດ</translation>
 <translation id="932327136139879170">ບ້ານ</translation>
 <translation id="944069440740578670">ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 ວິນາທີກ່ອນ}other{# ວິນາທີກ່ອນ}}</translation>
 </translationbundle>

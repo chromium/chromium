@@ -13,10 +13,9 @@ namespace extensions {
 
 namespace {
 
-using api::feedback_private::LOG_SOURCE_MESSAGES;
-using api::feedback_private::LOG_SOURCE_UILATEST;
-using api::feedback_private::ReadLogSourceResult;
+using api::feedback_private::LogSource;
 using api::feedback_private::ReadLogSourceParams;
+using api::feedback_private::ReadLogSourceResult;
 
 constexpr int kMaxReadersPerSource =
     LogSourceAccessManager::kMaxReadersPerSource;
@@ -38,36 +37,36 @@ TEST_F(LogSourceAccessManagerTest, MaxNumberOfOpenLogSourcesSameExtension) {
   // Open 10 readers for LOG_SOURCE_MESSAGES from the same extension.
   ReadLogSourceParams messages_params;
   messages_params.incremental = false;
-  messages_params.source = LOG_SOURCE_MESSAGES;
+  messages_params.source = LogSource::kMessages;
   for (size_t i = 0; i < kMaxReadersPerSource; ++i) {
     EXPECT_TRUE(manager.FetchFromSource(messages_params, extension_id,
                                         base::BindOnce(&DummyCallback)))
         << base::StringPrintf("Unable to read from log source with i=%zu", i);
     EXPECT_EQ(i + 1,
-              manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
+              manager.GetNumActiveResourcesForSource(LogSource::kMessages));
   }
-  EXPECT_EQ(0U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+  EXPECT_EQ(0U, manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
 
   // Open 10 readers for LOG_SOURCE_UILATEST from the same extension.
   ReadLogSourceParams ui_latest_params;
   ui_latest_params.incremental = false;
-  ui_latest_params.source = LOG_SOURCE_UILATEST;
+  ui_latest_params.source = LogSource::kUiLatest;
   for (size_t i = 0; i < kMaxReadersPerSource; ++i) {
     EXPECT_TRUE(manager.FetchFromSource(ui_latest_params, extension_id,
                                         base::BindOnce(&DummyCallback)))
         << base::StringPrintf("Unable to read from log source with i=%zu", i);
     EXPECT_EQ(i + 1,
-              manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+              manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
   }
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kMessages));
 
   // Can't open more readers for LOG_SOURCE_MESSAGES or LOG_SOURCE_UILATEST.
   EXPECT_FALSE(manager.FetchFromSource(messages_params, extension_id,
                                        base::BindOnce(&DummyCallback)));
   EXPECT_FALSE(manager.FetchFromSource(ui_latest_params, extension_id,
                                        base::BindOnce(&DummyCallback)));
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kMessages));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
 
   // Wait for all asynchronous operations to complete.
   base::RunLoop().RunUntilIdle();
@@ -85,7 +84,7 @@ TEST_F(LogSourceAccessManagerTest,
   // Open 10 readers for LOG_SOURCE_MESSAGES from different extensions.
   ReadLogSourceParams messages_params;
   messages_params.incremental = false;
-  messages_params.source = LOG_SOURCE_MESSAGES;
+  messages_params.source = LogSource::kMessages;
   for (size_t i = 0; i < kMaxReadersPerSource; ++i, ++count) {
     EXPECT_TRUE(manager.FetchFromSource(
         messages_params, base::StringPrintf("extension %d", count),
@@ -94,14 +93,14 @@ TEST_F(LogSourceAccessManagerTest,
                "Unable to read from log source with i=%zu and count=%d", i,
                count);
     EXPECT_EQ(i + 1,
-              manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
+              manager.GetNumActiveResourcesForSource(LogSource::kMessages));
   }
-  EXPECT_EQ(0U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+  EXPECT_EQ(0U, manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
 
   // Open 10 readers for LOG_SOURCE_UILATEST from different extensions.
   ReadLogSourceParams ui_latest_params;
   ui_latest_params.incremental = false;
-  ui_latest_params.source = LOG_SOURCE_UILATEST;
+  ui_latest_params.source = LogSource::kUiLatest;
   for (size_t i = 0; i < kMaxReadersPerSource; ++i, ++count) {
     EXPECT_TRUE(manager.FetchFromSource(
         ui_latest_params, base::StringPrintf("extension %d", count),
@@ -110,23 +109,23 @@ TEST_F(LogSourceAccessManagerTest,
                "Unable to read from log source with i=%zu and count=%d", i,
                count);
     EXPECT_EQ(i + 1,
-              manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+              manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
   }
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kMessages));
 
   // Can't open more readers for LOG_SOURCE_MESSAGES.
   EXPECT_FALSE(manager.FetchFromSource(
       messages_params, base::StringPrintf("extension %d", count),
       base::BindOnce(&DummyCallback)));
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kMessages));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
 
   // Can't open more readers for LOG_SOURCE_UILATEST.
   EXPECT_FALSE(manager.FetchFromSource(
       ui_latest_params, base::StringPrintf("extension %d", count),
       base::BindOnce(&DummyCallback)));
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_MESSAGES));
-  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LOG_SOURCE_UILATEST));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kMessages));
+  EXPECT_EQ(10U, manager.GetNumActiveResourcesForSource(LogSource::kUiLatest));
 
   // Wait for all asynchronous operations to complete.
   base::RunLoop().RunUntilIdle();

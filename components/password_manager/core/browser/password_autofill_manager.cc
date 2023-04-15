@@ -502,10 +502,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->GetDeviceAuthenticator();
       // Note: this is currently only implemented on Android, Mac and Windows.
       // For other platforms, the `authenticator` will be null.
-      if (!password_manager_util::CanUseBiometricAuth(
-              authenticator.get(),
-              device_reauth::DeviceAuthRequester::kAutofillSuggestion,
-              password_client_)) {
+      if (!password_manager_util::CanUseBiometricAuth(authenticator.get(),
+                                                      password_client_)) {
         bool success = FillSuggestion(
             GetUsernameFromSuggestion(suggestion.main_text.value),
             suggestion.frontend_id);

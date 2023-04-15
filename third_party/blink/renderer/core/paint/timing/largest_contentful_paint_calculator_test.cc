@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/trace_event_analyzer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -17,6 +18,12 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
+
+namespace {
+constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
+
+constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
+}  // namespace
 
 class LargestContentfulPaintCalculatorTest : public RenderingTest {
  public:
@@ -34,13 +41,10 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetImagePaintTimingDetector()->ResetCallbackManager(
         mock_image_callback_manager_);
-    trace_event::EnableTracing(TRACE_DISABLED_BY_DEFAULT("loading"));
+    trace_analyzer::Start(kTraceCategories);
   }
 
-  void TearDown() override {
-    RenderingTest::TearDown();
-    trace_event::DisableTracing();
-  }
+  void TearDown() override { RenderingTest::TearDown(); }
 
   ImagePaintTimingDetector* GetImagePaintTimingDetector() {
     return &GetFrame()
@@ -155,6 +159,22 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImage) {
   UpdateAllLifecyclePhasesForTest();
   SimulateImagePresentationPromise();
 
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  using trace_analyzer::Query;
+  Query q = Query::EventNameIs(kLCPCandidate);
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ(kTraceCategories, events[0]->category);
+
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
+
+  ASSERT_TRUE(events[0]->HasDictArg("data"));
+  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  EXPECT_TRUE(arg_dict.FindDouble("imageLoadStart").has_value());
+  EXPECT_TRUE(arg_dict.FindDouble("imageLoadEnd").has_value());
+  EXPECT_TRUE(arg_dict.FindDouble("imageDiscoveryTime").has_value());
+
   EXPECT_EQ(LargestReportedSize(), 15000u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.8f);
   EXPECT_EQ(CountCandidates(), 1u);
@@ -171,6 +191,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleText) {
   EXPECT_GT(LargestReportedSize(), 0u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.0f);
   EXPECT_EQ(CountCandidates(), 1u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
@@ -188,6 +209,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
 
   EXPECT_GT(LargestReportedSize(), 9u);
   EXPECT_EQ(CountCandidates(), 2u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
@@ -207,6 +229,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.0f);
   EXPECT_EQ(CountCandidates(), 1u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, TextLargerImage) {
@@ -221,6 +244,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, TextLargerImage) {
 
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_EQ(CountCandidates(), 1u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, TextSmallerImage) {
@@ -237,6 +261,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, TextSmallerImage) {
   EXPECT_GT(LargestReportedSize(), 9u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.0f);
   EXPECT_EQ(CountCandidates(), 1u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
@@ -262,6 +287,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.08f);
   EXPECT_EQ(CountCandidates(), 1u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
@@ -289,6 +315,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
   // The LCP should not move after removal.
   EXPECT_GT(LargestReportedSize(), 50u);
   EXPECT_EQ(CountCandidates(), 2u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, NoPaint) {
@@ -299,6 +326,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, NoPaint) {
   UpdateLargestContentfulPaintCandidate();
   EXPECT_EQ(LargestReportedSize(), 0u);
   EXPECT_EQ(CountCandidates(), 0u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
@@ -317,6 +345,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
 
   EXPECT_EQ(LargestReportedSize(), 0u);
   EXPECT_EQ(CountCandidates(), 0u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
@@ -338,6 +367,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
   EXPECT_EQ(LargestReportedSize(), 9u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 16.0f);
   EXPECT_EQ(CountCandidates(), 1u);
+  trace_analyzer::Stop();
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest,
@@ -359,6 +389,7 @@ TEST_F(LargestContentfulPaintCalculatorTest,
 
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.32f);
+  trace_analyzer::Stop();
 }
 
 }  // namespace blink

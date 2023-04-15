@@ -711,7 +711,7 @@ void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
 
   if (results.field_trial_triggered) {
     client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::kRemoteZeroSuggestFeature);
+        metrics::OmniboxEventProto_Feature_REMOTE_ZERO_SUGGEST_FEATURE);
   }
 
   // Add all the SuggestResults to the map. We display all ZeroSuggest search

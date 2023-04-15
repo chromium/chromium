@@ -76,10 +76,18 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
   return GetProfileInfo(EMAIL_ADDRESS);
 }
 
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::
+    GetProfileDescriptionForMigrationPrompt() const {
+  return ::autofill::GetProfileSummaryForMigrationPrompt(profile_, locale_);
+}
+
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
     const {
-  if (is_migration_to_account_ ||
-      (IsProfileAnAccountProfile() && !original_profile_.has_value())) {
+  if (is_migration_to_account_) {
+    return l10n_util::GetStringUTF16(
+        IDS_IOS_AUTOFILL_MIGRATE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE);
+  }
+  if (IsProfileAnAccountProfile() && !original_profile_.has_value()) {
     DCHECK(syncing_user_email_);
     return l10n_util::GetStringFUTF16(
         IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE,

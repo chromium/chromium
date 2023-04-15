@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_accessibility_service_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
+#include "chrome/browser/fast_checkout/fast_checkout_delegate_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
@@ -104,23 +105,41 @@ bool ContainsEmailFormWithSignature(
 }
 }  // namespace
 
+// No virtual functions of `client` must be called in the constructor.
 FastCheckoutClientImpl::FastCheckoutClientImpl(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<FastCheckoutClientImpl>(*web_contents),
-      autofill_client_(
-          autofill::ContentAutofillClient::FromWebContents(web_contents)),
+    autofill::ContentAutofillClient* client)
+    : autofill_client_(client),
       fetcher_(FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext())),
+          client->GetWebContents().GetBrowserContext())),
       personal_data_helper_(
-          std::make_unique<FastCheckoutPersonalDataHelperImpl>(web_contents)),
+          std::make_unique<FastCheckoutPersonalDataHelperImpl>(
+              &client->GetWebContents())),
       trigger_validator_(std::make_unique<FastCheckoutTriggerValidatorImpl>(
           autofill_client_,
           fetcher_,
           personal_data_helper_.get())),
       accessibility_service_(
-          std::make_unique<FastCheckoutAccessibilityServiceImpl>()) {}
+          std::make_unique<FastCheckoutAccessibilityServiceImpl>()) {
+  driver_factory_observation_.Observe(
+      autofill_client_->GetAutofillDriverFactory());
+}
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
+
+void FastCheckoutClientImpl::OnContentAutofillDriverFactoryDestroyed(
+    autofill::ContentAutofillDriverFactory& factory) {
+  driver_factory_observation_.Reset();
+}
+
+void FastCheckoutClientImpl::OnContentAutofillDriverCreated(
+    autofill::ContentAutofillDriverFactory& factory,
+    autofill::ContentAutofillDriver& driver) {
+  auto* manager =
+      static_cast<autofill::BrowserAutofillManager*>(driver.autofill_manager());
+  manager->set_fast_checkout_delegate(
+      std::make_unique<FastCheckoutDelegateImpl>(
+          &autofill_client_->GetWebContents(), this));
+}
 
 bool FastCheckoutClientImpl::TryToStart(
     const GURL& url,
@@ -173,7 +192,9 @@ void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
 void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
                                            bool allow_further_runs) {
   ukm::builders::Autofill_FastCheckoutRunOutcome run_outcome_builder(
-      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
+      autofill_client_->GetWebContents()
+          .GetPrimaryMainFrame()
+          ->GetPageUkmSourceId());
   run_outcome_builder.SetRunOutcome(static_cast<int64_t>(run_outcome));
   run_outcome_builder.SetRunId(run_id_);
   run_outcome_builder.Record(ukm::UkmRecorder::Get());
@@ -189,7 +210,9 @@ void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
         }
       }
       ukm::builders::Autofill_FastCheckoutFormStatus form_status_builder(
-          GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
+          autofill_client_->GetWebContents()
+              .GetPrimaryMainFrame()
+              ->GetPageUkmSourceId());
       form_status_builder.SetFilled(filling_state == FillingState::kFilled);
       form_status_builder.SetFormSignature(
           autofill::HashFormSignature(form_signature));
@@ -248,7 +271,8 @@ bool FastCheckoutClientImpl::IsRunning() const {
 
 std::unique_ptr<FastCheckoutController>
 FastCheckoutClientImpl::CreateFastCheckoutController() {
-  return std::make_unique<FastCheckoutControllerImpl>(&GetWebContents(), this);
+  return std::make_unique<FastCheckoutControllerImpl>(
+      &autofill_client_->GetWebContents(), this);
 }
 
 void FastCheckoutClientImpl::OnHidden() {
@@ -571,7 +595,7 @@ void FastCheckoutClientImpl::A11yAnnounce(
 void FastCheckoutClientImpl::OnAutofillManagerDestroyed(
     autofill::AutofillManager& manager) {
   if (IsRunning()) {
-    if (GetWebContents().IsBeingDestroyed()) {
+    if (autofill_client_->GetWebContents().IsBeingDestroyed()) {
       OnRunComplete(FastCheckoutRunOutcome::kTabClosed);
     } else {
       OnRunComplete(FastCheckoutRunOutcome::kAutofillManagerDestroyed);

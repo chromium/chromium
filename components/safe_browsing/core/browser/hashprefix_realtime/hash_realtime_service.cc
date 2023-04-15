@@ -6,11 +6,13 @@
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -19,6 +21,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -71,7 +74,10 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
 class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
  public:
   using OnCompletedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&, int, int)>;
+      base::OnceCallback<void(const absl::optional<std::string>&,
+                              int,
+                              int,
+                              scoped_refptr<net::HttpResponseHeaders>)>;
 
   explicit ObliviousHttpClient(OnCompletedCallback callback)
       : callback_(std::move(callback)) {}
@@ -79,7 +85,7 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
   ~ObliviousHttpClient() override {
     if (!called_) {
       std::move(callback_).Run(absl::nullopt, net::ERR_FAILED,
-                               /*response_code=*/0);
+                               /*response_code=*/0, /*headers=*/nullptr);
     }
   }
 
@@ -92,20 +98,22 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
     called_ = true;
     if (status->is_net_error()) {
       std::move(callback_).Run(absl::nullopt, status->get_net_error(),
-                               /*response_code=*/0);
+                               /*response_code=*/0, /*headers=*/nullptr);
     } else if (status->is_outer_response_error_code()) {
-      std::move(callback_).Run(absl::nullopt,
-                               net::ERR_HTTP_RESPONSE_CODE_FAILURE,
-                               status->get_outer_response_error_code());
+      std::move(callback_).Run(
+          absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+          status->get_outer_response_error_code(), /*headers=*/nullptr);
     } else {
       DCHECK(status->is_inner_response());
       if (status->get_inner_response()->response_code != net::HTTP_OK) {
-        std::move(callback_).Run(absl::nullopt,
-                                 net::ERR_HTTP_RESPONSE_CODE_FAILURE,
-                                 status->get_inner_response()->response_code);
+        std::move(callback_).Run(
+            absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+            status->get_inner_response()->response_code,
+            std::move(status->get_inner_response()->headers));
       } else {
-        std::move(callback_).Run(status->get_inner_response()->response_body,
-                                 net::OK, net::HTTP_OK);
+        std::move(callback_).Run(
+            status->get_inner_response()->response_body, net::OK, net::HTTP_OK,
+            std::move(status->get_inner_response()->headers));
       }
     }
   }
@@ -217,13 +225,16 @@ std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
 
 void HashRealTimeService::SearchCache(
     std::set<std::string> hash_prefixes,
+    bool skip_logging,
     std::vector<std::string>* out_missing_hash_prefixes,
     std::vector<V5::FullHash>* out_cached_full_hashes) const {
-  SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.HPRT.GetCache.Time");
+  if (!skip_logging) {
+    SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.HPRT.GetCache.Time");
+  }
   auto cached_results =
       cache_manager_
           ? cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
-                hash_prefixes)
+                hash_prefixes, skip_logging)
           : std::unordered_map<std::string, std::vector<V5::FullHash>>();
   for (const auto& hash_prefix : hash_prefixes) {
     auto cached_result_it = cached_results.find(hash_prefix);
@@ -238,6 +249,22 @@ void HashRealTimeService::SearchCache(
       out_missing_hash_prefixes->push_back(hash_prefix);
     }
   }
+}
+
+void HashRealTimeService::LogSearchCacheWithNoQueryParamsMetric(
+    const GURL& url) const {
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  GURL url_without_query_params = url.ReplaceComponents(replacements);
+  std::vector<std::string> hash_prefixes_that_would_be_requested;
+  std::vector<V5::FullHash>
+      full_hashes_that_would_be_cached;  // this out parameter is not used
+  SearchCache(GetHashPrefixesSet(url_without_query_params),
+              /*skip_logging=*/true, &hash_prefixes_that_would_be_requested,
+              &full_hashes_that_would_be_cached);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.HPRT.CacheHitAllPrefixesIfNoQueryParams",
+      hash_prefixes_that_would_be_requested.empty());
 }
 
 void HashRealTimeService::StartLookup(
@@ -255,10 +282,11 @@ void HashRealTimeService::StartLookup(
   // Search local cache.
   std::vector<std::string> hash_prefixes_to_request;
   std::vector<V5::FullHash> cached_full_hashes;
-  SearchCache(GetHashPrefixesSet(url), &hash_prefixes_to_request,
-              &cached_full_hashes);
+  SearchCache(GetHashPrefixesSet(url), /*skip_logging=*/false,
+              &hash_prefixes_to_request, &cached_full_hashes);
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHitAllPrefixes",
                             hash_prefixes_to_request.empty());
+  LogSearchCacheWithNoQueryParamsMetric(url);
   // If all the prefixes are in the cache, no need to send a request. Return
   // early with the cached results.
   if (hash_prefixes_to_request.empty()) {
@@ -335,7 +363,7 @@ void HashRealTimeService::OnGetOhttpKey(
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
     absl::optional<std::string> key) {
-  // TODO(crbug.com/1407283): Add a histogram to log the key fetch result.
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.HasOhttpKey", key.has_value());
   if (!key.has_value()) {
     backoff_operator_->ReportError();
     response_callback_task_runner->PostTask(
@@ -355,6 +383,8 @@ void HashRealTimeService::OnGetOhttpKey(
   ohttp_request->key_config = key.value();
   ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
   ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
+  ohttp_request->timeout_duration =
+      base::Seconds(kLookupTimeoutDurationInSeconds);
 
   mojo::PendingReceiver<network::mojom::ObliviousHttpClient> pending_receiver;
   get_network_context_.Run()->GetViaObliviousHttp(
@@ -366,7 +396,8 @@ void HashRealTimeService::OnGetOhttpKey(
           url, std::move(hash_prefixes_in_request),
           std::move(result_full_hashes), request_start_time,
           std::move(response_callback_task_runner),
-          std::move(response_callback), locally_cached_results_threat_type)),
+          std::move(response_callback), locally_cached_results_threat_type,
+          key.value())),
       std::move(pending_receiver));
 }
 
@@ -378,11 +409,15 @@ void HashRealTimeService::OnOhttpComplete(
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
+    std::string ohttp_key,
     const absl::optional<std::string>& response_body,
     int net_error,
-    int response_code) {
-  // TODO(crbug.com/1407283): Notify ohttp_key_service_ if the error is key
-  // related.
+    int response_code,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  if (headers) {
+    ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
+  }
+
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
   OnURLLoaderComplete(
@@ -489,12 +524,121 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
   return response;
 }
 
+void HashRealTimeService::LogTemporaryUnmatchedFullHashesDebugInfo(
+    const std::unique_ptr<V5::SearchHashesResponse>& response,
+    const std::set<std::string>& requested_hash_prefixes_set) const {
+  auto replace_embedded_nulls = [](std::string hash) {
+    // DumpWithoutCrashing does not allow embedded nulls. We replace any
+    // embedded nulls with a dummy different character (X).
+    std::replace(hash.begin(), hash.end(), '\0', 'X');
+    return hash;
+  };
+
+  static crash_reporter::CrashKeyString<64> full_hash_crash_key(
+      "hprt-full-hash");
+  static crash_reporter::CrashKeyString<32> full_hash_size_crash_key(
+      "hprt-full-hash-size");
+  bool found_unmatched_full_hashes = false;
+  for (const auto& full_hash : response->full_hashes()) {
+    if (!base::Contains(
+            requested_hash_prefixes_set,
+            hash_realtime_utils::GetHashPrefix(full_hash.full_hash()))) {
+      found_unmatched_full_hashes = true;
+      full_hash_crash_key.Set(replace_embedded_nulls(full_hash.full_hash()));
+      full_hash_size_crash_key.Set(
+          base::NumberToString(full_hash.full_hash().length()));
+      // There may be multiple full hashes that don't match, but just one is
+      // sufficient for debugging purposes.
+      break;
+    }
+  }
+  if (!found_unmatched_full_hashes) {
+    return;
+  }
+
+  using ArrayItemKey8 = crash_reporter::CrashKeyString<8>;
+  static ArrayItemKey8 prefix_crash_keys[] = {
+      {"hprt-prefix-0", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-1", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-2", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-3", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-4", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-5", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-6", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-7", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-8", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-9", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-10", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-11", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-12", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-13", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-14", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-15", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-16", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-17", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-18", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-19", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-20", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-21", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-22", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-23", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-24", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-25", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-26", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-27", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-28", ArrayItemKey8::Tag::kArray},
+      {"hprt-prefix-29", ArrayItemKey8::Tag::kArray},
+  };
+
+  static crash_reporter::CrashKeyString<32>
+      num_requested_prefixes_hash_crash_key("hprt-num-requested-prefixes");
+  static crash_reporter::CrashKeyString<4> some_prefix_size_too_big_crash_key(
+      "hprt-some-prefix-size-too-big");
+  static crash_reporter::CrashKeyString<4> some_prefix_size_too_small_crash_key(
+      "hprt-some-prefix-size-too-small");
+  some_prefix_size_too_big_crash_key.Set("F");
+  some_prefix_size_too_small_crash_key.Set("F");
+  num_requested_prefixes_hash_crash_key.Set(
+      base::NumberToString(requested_hash_prefixes_set.size()));
+  size_t i = 0;
+  for (const auto& requested_hash_prefix : requested_hash_prefixes_set) {
+    if (i >= std::size(prefix_crash_keys)) {
+      // We should only ever have up to 30 hash prefixes (same as the size of
+      // |prefix_crash_keys|). |hprt-num-requested-prefixes| will identify if
+      // there are times where that's not the case.
+      break;
+    }
+    if (requested_hash_prefix.length() > 4) {
+      some_prefix_size_too_big_crash_key.Set("T");
+    }
+    if (requested_hash_prefix.length() < 4) {
+      some_prefix_size_too_small_crash_key.Set("T");
+    }
+    prefix_crash_keys[i].Set(replace_embedded_nulls(requested_hash_prefix));
+    ++i;
+  }
+
+  base::debug::DumpWithoutCrashing();
+
+  // Clear all the crash keys.
+  full_hash_crash_key.Clear();
+  full_hash_size_crash_key.Clear();
+  for (auto& prefix_crash_key : prefix_crash_keys) {
+    prefix_crash_key.Clear();
+  }
+  num_requested_prefixes_hash_crash_key.Clear();
+  some_prefix_size_too_big_crash_key.Clear();
+  some_prefix_size_too_small_crash_key.Clear();
+}
+
 void HashRealTimeService::RemoveUnmatchedFullHashes(
     std::unique_ptr<V5::SearchHashesResponse>& response,
     const std::vector<std::string>& requested_hash_prefixes) const {
   size_t initial_full_hashes_count = response->full_hashes_size();
   std::set<std::string> requested_hash_prefixes_set(
       requested_hash_prefixes.begin(), requested_hash_prefixes.end());
+  LogTemporaryUnmatchedFullHashesDebugInfo(response,
+                                           requested_hash_prefixes_set);
   auto* mutable_full_hashes = response->mutable_full_hashes();
   mutable_full_hashes->erase(
       std::remove_if(

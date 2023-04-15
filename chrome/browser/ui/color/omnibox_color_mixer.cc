@@ -32,8 +32,7 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
           features::ChromeRefresh2023Level::kLevel2 ||
       base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
 
-  // Apply omnibox text color updates only to non-themed clients.
-  if (!gm3_text_color_enabled || key.custom_theme) {
+  if (!gm3_text_color_enabled) {
     return;
   }
 
@@ -94,6 +93,84 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
   mixer[kColorOmniboxTextDimmed] = {selected_text_color_dimmed};
 }
 
+void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
+                                  const ui::ColorProviderManager::Key& key) {
+  const bool cr2023_icons_colors_enabled =
+      features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
+
+  if (!cr2023_icons_colors_enabled) {
+    return;
+  }
+
+  mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorPageActionIconPressed] = {
+      ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
+  mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
+  mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorPageActionIcon] = {ui::kColorSysOnSurfaceSubtle};
+}
+
+// Apply updates to the Omnibox "expanded state" color tokens per CR2023 spec.
+void ApplyCR2023OmniboxExpandedStateColors(
+    ui::ColorMixer& mixer,
+    const ui::ColorProviderManager::Key& key) {
+  const bool cr2023_expanded_state_colors_enabled =
+      features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors);
+
+  if (!cr2023_expanded_state_colors_enabled) {
+    return;
+  }
+
+  // Update omnibox popup background color.
+  mixer[kColorOmniboxResultsBackground] = {ui::kColorSysBase};
+
+  // Update suggestion hover fill colors.
+  mixer[kColorOmniboxResultsBackgroundHovered] = ui::SelectBasedOnDarkInput(
+      kColorOmniboxResultsBackground,
+      SkColorSetA(static_cast<SkColor>(0x4F4F4F), SK_AlphaOPAQUE),
+      ui::kColorSysInverseOnSurface);
+  mixer[kColorOmniboxResultsBackgroundSelected] = {
+      kColorOmniboxResultsBackgroundHovered};
+
+  // Update URL link color.
+  mixer[kColorOmniboxResultsUrl] = {ui::kColorSysPrimary};
+
+  // Update keyword mode icon & text color.
+  mixer[kColorOmniboxKeywordSelected] = {kColorOmniboxResultsUrl};
+
+  // Update keyword mode separator color.
+  mixer[kColorOmniboxKeywordSeparator] = {ui::kColorSysTonalOutline};
+
+  // Update suggest text and separator dim color.
+  mixer[kColorOmniboxResultsTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxResultsTextDimmedSelected] = {
+      kColorOmniboxResultsTextDimmed};
+
+  // Update suggestion vector icon color.
+  mixer[kColorOmniboxResultsIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxResultsIconSelected] = {kColorOmniboxResultsIcon};
+}
+
+// Apply updates to the Omnibox color tokens per CR2023 guidelines.
+void ApplyOmniboxCR2023Colors(ui::ColorMixer& mixer,
+                              const ui::ColorProviderManager::Key& key) {
+  // Do not apply CR2023 Omnibox colors to clients using high-contrast
+  // mode or a custom theme.
+  // TODO(khalidpeer): Roll out CR2023 color updates for high-contrast clients.
+  // TODO(khalidpeer): Roll out CR2023 color updates for themed clients.
+  if (ShouldApplyHighContrastColors(key) || key.custom_theme) {
+    return;
+  }
+  ApplyGM3OmniboxTextColor(mixer, key);
+  ApplyCR2023OmniboxExpandedStateColors(mixer, key);
+  ApplyCR2023OmniboxIconColors(mixer, key);
+}
+
 }  // namespace
 
 void AddOmniboxColorMixer(ui::ColorProvider* provider,
@@ -132,6 +209,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxKeywordSelected] =
       ui::SelectBasedOnDarkInput(kColorToolbarBackgroundSubtleEmphasis,
                                  gfx::kGoogleGrey100, kColorOmniboxResultsUrl);
+  mixer[kColorOmniboxKeywordSeparator] = {kColorOmniboxText};
 
   // Bubble outline colors.
   mixer[kColorOmniboxBubbleOutline] = ui::SelectBasedOnDarkInput(
@@ -292,6 +370,20 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxAnswerIconGM3Foreground] = ui::SelectBasedOnDarkInput(
       kColorToolbar, SkColorSetRGB(194, 231, 255), SkColorSetRGB(4, 30, 73));
 
-  // Override omnibox text color per GM3 spec.
-  ApplyGM3OmniboxTextColor(mixer, key);
+  // location bar icon colors.
+  mixer[kColorPageInfoBackground] = {kColorToolbar};
+  // Literal constants are `kOmniboxOpacityHovered` and
+  // `kOmniboxOpacitySelected`. This is so that we can more cleanly use the
+  // colors in the inkdrop instead of handling themes and non-themes separately
+  // in-code as they have different opacity requirements.
+  mixer[kColorPageInfoIconHover] = {
+      ui::SetAlpha(kColorOmniboxText, std::ceil(0.10f * 255.0f))};
+  mixer[kColorPageInfoIconPressed] = {
+      ui::SetAlpha(kColorOmniboxText, std::ceil(0.16f * 255.0f))};
+  mixer[kColorPageActionIconHover] = {kColorPageInfoIconHover};
+  mixer[kColorPageActionIconPressed] = {kColorPageInfoIconPressed};
+  mixer[kColorPageActionIcon] = {kColorOmniboxResultsIcon};
+
+  // Override omnibox colors per CR2023 spec.
+  ApplyOmniboxCR2023Colors(mixer, key);
 }

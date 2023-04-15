@@ -51,27 +51,27 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 
 }  // namespace
 
-@interface SnapshotGenerator ()<CRWWebStateObserver>
-
-// The unique ID for the web state.
-@property(nonatomic, copy) NSString* tabID;
-
-// The associated web state.
-@property(nonatomic, assign) web::WebState* webState;
-
+@interface SnapshotGenerator () <CRWWebStateObserver>
 @end
 
 @implementation SnapshotGenerator {
+  // The associated WebState.
+  web::WebState* _webState;
+
+  // Bridge object allowing to observe the WebState.
   std::unique_ptr<web::WebStateObserver> _webStateObserver;
+
+  // The unique ID for WebState's snapshot.
+  __strong NSString* _snapshotIdentifier;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-                           tabID:(NSString*)tabID {
+              snapshotIdentifier:(NSString*)snapshotIdentifier {
   if ((self = [super init])) {
     DCHECK(webState);
-    DCHECK(tabID);
+    DCHECK(snapshotIdentifier.length);
     _webState = webState;
-    _tabID = tabID;
+    _snapshotIdentifier = [snapshotIdentifier copy];
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
@@ -89,9 +89,9 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 
 - (void)retrieveSnapshot:(void (^)(UIImage*))callback {
   DCHECK(callback);
-  if (self.snapshotCache) {
-    [self.snapshotCache retrieveImageForSnapshotID:self.tabID
-                                          callback:callback];
+  if (_snapshotCache) {
+    [_snapshotCache retrieveImageForSnapshotID:_snapshotIdentifier
+                                      callback:callback];
   } else {
     callback(nil);
   }
@@ -110,9 +110,9 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
     callback(image);
   };
 
-  SnapshotCache* snapshotCache = self.snapshotCache;
+  SnapshotCache* snapshotCache = _snapshotCache;
   if (snapshotCache) {
-    [snapshotCache retrieveGreyImageForSnapshotID:self.tabID
+    [snapshotCache retrieveGreyImageForSnapshotID:_snapshotIdentifier
                                          callback:wrappedCallback];
   } else {
     wrappedCallback(nil);
@@ -126,8 +126,8 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 }
 
 - (void)updateWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion {
-  DCHECK(!web::GetWebClient()->IsAppSpecificURL(
-      self.webState->GetLastCommittedURL()));
+  DCHECK(
+      !web::GetWebClient()->IsAppSpecificURL(_webState->GetLastCommittedURL()));
 
   if (![self canTakeSnapshot]) {
     if (completion) {
@@ -139,12 +139,11 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   }
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   CGRect snapshotFrameInWebView =
-      [self.webState->GetView() convertRect:snapshotInfo.snapshotFrameInBaseView
-                                   fromView:snapshotInfo.baseView];
-  [self.delegate snapshotGenerator:self
-      willUpdateSnapshotForWebState:self.webState];
+      [_webState->GetView() convertRect:snapshotInfo.snapshotFrameInBaseView
+                               fromView:snapshotInfo.baseView];
+  [_delegate snapshotGenerator:self willUpdateSnapshotForWebState:_webState];
   __weak SnapshotGenerator* weakSelf = self;
-  self.webState->TakeSnapshot(
+  _webState->TakeSnapshot(
       gfx::RectF(snapshotFrameInWebView),
       base::BindRepeating(^(const gfx::Image& image) {
         UIImage* snapshot = nil;
@@ -164,8 +163,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   if (![self canTakeSnapshot])
     return nil;
   SnapshotInfo snapshotInfo = [self snapshotInfo];
-  [self.delegate snapshotGenerator:self
-      willUpdateSnapshotForWebState:self.webState];
+  [_delegate snapshotGenerator:self willUpdateSnapshotForWebState:_webState];
   UIImage* baseImage =
       [self snapshotBaseView:snapshotInfo.baseView
              frameInBaseView:snapshotInfo.snapshotFrameInBaseView];
@@ -175,8 +173,16 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
              frameInWindow:snapshotInfo.snapshotFrameInWindow];
 }
 
+- (void)willBeSavedGreyWhenBackgrounding {
+  [_snapshotCache willBeSavedGreyWhenBackgrounding:_snapshotIdentifier];
+}
+
+- (void)saveGreyInBackground {
+  [_snapshotCache saveGreyInBackgroundForSnapshotID:_snapshotIdentifier];
+}
+
 - (void)removeSnapshot {
-  [self.snapshotCache removeImageWithSnapshotID:self.tabID];
+  [_snapshotCache removeImageWithSnapshotID:_snapshotIdentifier];
 }
 
 #pragma mark - Private methods
@@ -184,16 +190,18 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 // Returns NO if WebState or the view is not ready for snapshot.
 - (BOOL)canTakeSnapshot {
   // This allows for easier unit testing of classes that use SnapshotGenerator.
-  if (!self.delegate)
+  if (!_delegate) {
     return NO;
+  }
 
   // Do not generate a snapshot if web usage is disabled (as the WebState's
   // view is blank in that case).
-  if (!self.webState->IsWebUsageEnabled())
+  if (!_webState->IsWebUsageEnabled()) {
     return NO;
+  }
 
-  return [self.delegate snapshotGenerator:self
-               canTakeSnapshotForWebState:self.webState];
+  return [_delegate snapshotGenerator:self
+           canTakeSnapshotForWebState:_webState];
 }
 
 // Returns a snapshot of `baseView` with `frameInBaseView`.
@@ -209,7 +217,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   // Note: When not using device scale, the output image size may slightly
   // differ from the input size due to rounding.
   const CGFloat kScale =
-      std::max<CGFloat>(1.0, [self.snapshotCache snapshotScaleForDevice]);
+      std::max<CGFloat>(1.0, [_snapshotCache snapshotScaleForDevice]);
   UIGraphicsBeginImageContextWithOptions(frameInBaseView.size, YES, kScale);
   CGContext* context = UIGraphicsGetCurrentContext();
   // This shifts the origin of the context to be the origin of the snapshot
@@ -218,21 +226,33 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                         -frameInBaseView.origin.y);
   BOOL snapshotSuccess = YES;
 
-  // `drawViewHierarchyInRect:` has undefined behavior when the view is not
-  // in the visible view hierarchy. In practice, when this method is called
-  // on a view that is part of view controller containment and not in the view
-  // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
-  // thrown.
   if (baseView.window && ViewHierarchyContainsWKWebView(baseView)) {
+    // `-renderInContext:` is the preferred way to render a snapshot, but it's
+    // buggy for WKWebView, which is used for some WebUI pages such as
+    // "No internet" or "Site can't be reached". If a WKWebView-containing
+    // hierarchy must be snapshotted, the UIView `-drawViewHierarchyInRect:`
+    // method is used instead.
+    // `drawViewHierarchyInRect:` has undefined behavior when the view is not
+    // in the visible view hierarchy. In practice, when this method is called
+    // on a view that is part of view controller containment and not in the view
+    // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
+    // thrown.
     // TODO(crbug.com/636188): `-drawViewHierarchyInRect:afterScreenUpdates:` is
     // buggy causing GPU glitches, screen redraws during animations, broken
     // pinch to dismiss on tablet, etc.
     snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                      afterScreenUpdates:YES];
   } else {
-    // `-renderInContext:` is buggy for WKWebView, which is used for some
-    // Chromium pages such as "No internet" or "Site can't be reached".
-    [[baseView layer] renderInContext:context];
+    // Render the view's layer via `-renderInContext:`.
+    // To mitigate against crashes like crbug.com/1429512, ensure that
+    // the layer's position is valid. If not, mark the snapshotting as failed.
+    CALayer* layer = baseView.layer;
+    CGPoint pos = layer.position;
+    if (isnan(pos.x) || isnan(pos.y)) {
+      snapshotSuccess = NO;
+    } else {
+      [layer renderInContext:context];
+    }
   }
   UIImage* image = nil;
   if (snapshotSuccess)
@@ -241,9 +261,9 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 
   // Defaults to UIViewTintAdjustmentModeAutomatic if there is no delegate.
   baseView.tintAdjustmentMode =
-      self.delegate ? [self.delegate snapshotGenerator:self
-                          defaultTintAdjustmentModeForWebState:self.webState]
-                    : UIViewTintAdjustmentModeAutomatic;
+      _delegate ? [_delegate snapshotGenerator:self
+                      defaultTintAdjustmentModeForWebState:_webState]
+                : UIViewTintAdjustmentModeAutomatic;
 
   return image;
 }
@@ -262,7 +282,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   if (overlays.count == 0)
     return baseImage;
   const CGFloat kScale =
-      std::max<CGFloat>(1.0, [self.snapshotCache snapshotScaleForDevice]);
+      std::max<CGFloat>(1.0, [_snapshotCache snapshotScaleForDevice]);
   UIGraphicsBeginImageContextWithOptions(frameInWindow.size, YES, kScale);
   CGContext* context = UIGraphicsGetCurrentContext();
   // The base image is already a cropped snapshot so it is drawn at the origin
@@ -283,10 +303,10 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 // Updates the snapshot cache with `snapshot`.
 - (void)updateSnapshotCacheWithImage:(UIImage*)snapshot {
   if (snapshot) {
-    [self.snapshotCache setImage:snapshot withSnapshotID:self.tabID];
+    [_snapshotCache setImage:snapshot withSnapshotID:_snapshotIdentifier];
   } else {
     // Remove any stale snapshot since the snapshot failed.
-    [self.snapshotCache removeImageWithSnapshotID:self.tabID];
+    [_snapshotCache removeImageWithSnapshotID:_snapshotIdentifier];
   }
 }
 
@@ -307,11 +327,11 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 // Retrieves information needed for snapshotting.
 - (SnapshotInfo)snapshotInfo {
   SnapshotInfo snapshotInfo;
-  snapshotInfo.baseView = [self.delegate snapshotGenerator:self
-                                       baseViewForWebState:self.webState];
+  snapshotInfo.baseView = [_delegate snapshotGenerator:self
+                                   baseViewForWebState:_webState];
   DCHECK(snapshotInfo.baseView);
-  UIEdgeInsets baseViewInsets = [self.delegate snapshotGenerator:self
-                                   snapshotEdgeInsetsForWebState:self.webState];
+  UIEdgeInsets baseViewInsets = [_delegate snapshotGenerator:self
+                               snapshotEdgeInsetsForWebState:_webState];
   snapshotInfo.snapshotFrameInBaseView =
       UIEdgeInsetsInsetRect(snapshotInfo.baseView.bounds, baseViewInsets);
   DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView));
@@ -319,8 +339,8 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
       [snapshotInfo.baseView convertRect:snapshotInfo.snapshotFrameInBaseView
                                   toView:nil];
   DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow));
-  snapshotInfo.overlays = [self.delegate snapshotGenerator:self
-                               snapshotOverlaysForWebState:self.webState];
+  snapshotInfo.overlays = [_delegate snapshotGenerator:self
+                           snapshotOverlaysForWebState:_webState];
   return snapshotInfo;
 }
 

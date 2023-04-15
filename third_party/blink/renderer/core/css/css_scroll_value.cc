@@ -8,34 +8,34 @@
 namespace blink {
 namespace cssvalue {
 
-CSSScrollValue::CSSScrollValue(const CSSValue* axis, const CSSValue* scroller)
-    : CSSValue(kScrollClass), axis_(axis), scroller_(scroller) {}
+CSSScrollValue::CSSScrollValue(const CSSValue* scroller, const CSSValue* axis)
+    : CSSValue(kScrollClass), scroller_(scroller), axis_(axis) {}
 
 String CSSScrollValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("scroll(");
-  if (axis_) {
-    result.Append(axis_->CssText());
-  }
   if (scroller_) {
-    if (axis_) {
+    result.Append(scroller_->CssText());
+  }
+  if (axis_) {
+    if (scroller_) {
       result.Append(' ');
     }
-    result.Append(scroller_->CssText());
+    result.Append(axis_->CssText());
   }
   result.Append(")");
   return result.ReleaseString();
 }
 
 bool CSSScrollValue::Equals(const CSSScrollValue& other) const {
-  return base::ValuesEquivalent(axis_, other.axis_) &&
-         base::ValuesEquivalent(scroller_, other.scroller_);
+  return base::ValuesEquivalent(scroller_, other.scroller_) &&
+         base::ValuesEquivalent(axis_, other.axis_);
 }
 
 void CSSScrollValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
-  visitor->Trace(axis_);
   visitor->Trace(scroller_);
+  visitor->Trace(axis_);
 }
 
 }  // namespace cssvalue

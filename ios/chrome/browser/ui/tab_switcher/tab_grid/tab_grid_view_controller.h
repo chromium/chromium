@@ -130,6 +130,7 @@ enum class TabGridPageConfiguration {
 
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
+@property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
 @property(nonatomic, weak) id<TabCollectionCommands> pinnedTabsDelegate;
 
@@ -179,7 +180,7 @@ enum class TabGridPageConfiguration {
 
 // The view controller that shows below the tab grid as a bottom message. Note
 // that setting this value immediately adds it to the view hierarchy.
-@property(nonatomic, strong) UIViewController* bottomMessage;
+@property(nonatomic, strong) UIViewController* regularTabsBottomMessage;
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;

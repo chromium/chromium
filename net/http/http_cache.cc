@@ -996,8 +996,6 @@ void HttpCache::WritersDoneWritingToEntry(ActiveEntry* entry,
   DCHECK(entry->writers->IsEmpty());
   DCHECK(success || make_readers.empty());
 
-  entry->writers_done_writing_to_entry_history = absl::make_optional(success);
-
   if (!success && should_keep_entry) {
     // Restart already validated transactions so that they are able to read
     // the truncated status of the entry.

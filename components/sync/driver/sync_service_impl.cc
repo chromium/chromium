@@ -1232,18 +1232,6 @@ ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
   return data_type_manager_->GetTypesWithPendingDownloadForInitialSync();
 }
 
-void SyncServiceImpl::SetSyncRequestedAndIgnoreNotification(bool is_requested) {
-  // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
-  // |is_setting_sync_requested_| wouldn't get reset, so check.
-  if (is_requested != user_settings_->IsSyncRequested()) {
-    DCHECK(!is_setting_sync_requested_);
-    is_setting_sync_requested_ = true;
-    user_settings_->SetSyncRequested(is_requested);
-    // OnSyncRequestedPrefChange() should have cleared the flag.
-    DCHECK(!is_setting_sync_requested_);
-  }
-}
-
 void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   DCHECK(engine_);
   DCHECK(engine_->IsInitialized());
@@ -1802,7 +1790,20 @@ void SyncServiceImpl::StopAndClear() {
   // For explicit passphrase users, clear the encryption key, such that they
   // will need to reenter it if sync gets re-enabled.
   sync_prefs_.ClearEncryptionBootstrapToken();
-  SetSyncRequestedAndIgnoreNotification(false);
+
+  // Clear the sync-requested bit, but avoid side effects in
+  // OnSyncRequestedPrefChange() by leveraging |is_setting_sync_requested_|.
+  //
+  // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
+  // |is_setting_sync_requested_| wouldn't get reset, so check.
+  if (user_settings_->IsSyncRequested()) {
+    CHECK(!is_setting_sync_requested_);
+    is_setting_sync_requested_ = true;
+    user_settings_->ClearSyncRequested();
+    // OnSyncRequestedPrefChange() should have cleared the flag.
+    CHECK(!is_setting_sync_requested_);
+  }
+
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).
   NotifyObservers();

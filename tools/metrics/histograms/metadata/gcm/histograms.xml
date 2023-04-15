@@ -49,15 +49,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.Crypto.CreateKeySuccessRate" enum="BooleanSuccess"
-    expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Success rate of writing new keying material to the GCM key store.
-  </summary>
-</histogram>
-
 <histogram name="GCM.Crypto.DecryptMessageResult" enum="GCMDecryptionResult"
     expires_after="never">
 <!-- expires-never: Used to monitor push encryption and debug issues. -->
@@ -67,46 +58,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Result of decryption on a received GCM message, which includes unencrypted
     messages, successfully decrypted messages and decryption failures.
-  </summary>
-</histogram>
-
-<histogram name="GCM.Crypto.GCMDatabaseUpgradeResult" enum="Boolean"
-    expires_after="2021-07-21">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Result of upgrading GCM Key Store Database from deprecated format to current
-    format. We upgrade the GCM Key store when it first initialized, if it
-    contains any EncryptionData object with a KeyPair in it, and then record
-    whether the upgrade was successful in this metric.
-  </summary>
-</histogram>
-
-<histogram name="GCM.Crypto.GetKeySuccessRate" enum="BooleanSuccess"
-    expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Success rate of reading keying material from the GCM key store.
-  </summary>
-</histogram>
-
-<histogram name="GCM.Crypto.InitKeyStoreSuccessRate" enum="BooleanSuccess"
-    expires_after="M94">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Success rate of initializing the LevelDB back-end of the GCM key store.
-  </summary>
-</histogram>
-
-<histogram name="GCM.Crypto.LoadKeyStoreSuccessRate" enum="BooleanSuccess"
-    expires_after="M94">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Success rate of loading existing keying material in the GCM key store.
   </summary>
 </histogram>
 

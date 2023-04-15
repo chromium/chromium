@@ -9,7 +9,6 @@
 #include <limits>
 
 #include "ash/constants/ash_features.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -82,7 +81,7 @@ double BrightnessLowerBound(double reference_brightness,
   DCHECK_GT(scale, 0.0);
   DCHECK_GE(offset, 0.0);
 
-  return base::clamp(reference_brightness / scale, 0.0,
+  return std::clamp(reference_brightness / scale, 0.0,
                      std::max(reference_brightness - offset, 0.0));
 }
 
@@ -96,7 +95,7 @@ double BrightnessUpperBound(double reference_brightness,
   DCHECK_GT(scale, 0.0);
   DCHECK_GE(offset, 0.0);
 
-  return base::clamp(reference_brightness * scale,
+  return std::clamp(reference_brightness * scale,
                      std::min(reference_brightness + offset, 100.0), 100.0);
 }
 
@@ -136,7 +135,7 @@ double BoundedBrightnessAdjustment(double brightness_old,
   UMA_HISTOGRAM_ENUMERATION(
       "AutoScreenBrightness.ModelTraining.BrightnessChange", change);
 
-  return base::clamp(brightness_new, lower_bound, upper_bound) - brightness_old;
+  return std::clamp(brightness_new, lower_bound, upper_bound) - brightness_old;
 }
 
 // Calculates recommended brightness change, given old brightness, user's
@@ -495,14 +494,14 @@ void GaussianTrainer::AdjustCurveWithSingleDataPoint(
 void GaussianTrainer::EnforceMonotonicity(size_t center_index) {
   DCHECK_LT(center_index, ambient_log_lux_.size());
   brightness_[center_index] =
-      base::clamp(brightness_[center_index], params_.min_brightness, 100.0);
+      std::clamp(brightness_[center_index], params_.min_brightness, 100.0);
 
   // Updates control points to the left of |center_index| so that brightness
   // values satisfy min/max ratio requirement.
   for (size_t i = center_index; i > 0; --i) {
     const double min_value = brightness_[i] / max_ratios_[i - 1];
     const double max_value = brightness_[i] / min_ratios_[i - 1];
-    brightness_[i - 1] = base::clamp(brightness_[i - 1], min_value, max_value);
+    brightness_[i - 1] = std::clamp(brightness_[i - 1], min_value, max_value);
     if (brightness_[i - 1] > 100.0) {
       brightness_[i - 1] = 100.0;
     }
@@ -513,7 +512,7 @@ void GaussianTrainer::EnforceMonotonicity(size_t center_index) {
   for (size_t i = center_index; i < ambient_log_lux_.size() - 1; ++i) {
     const double min_value = brightness_[i] * min_ratios_[i];
     const double max_value = brightness_[i] * max_ratios_[i];
-    brightness_[i + 1] = base::clamp(brightness_[i + 1], min_value, max_value);
+    brightness_[i + 1] = std::clamp(brightness_[i + 1], min_value, max_value);
     if (brightness_[i + 1] > 100.0) {
       brightness_[i + 1] = 100.0;
     }

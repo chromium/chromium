@@ -178,21 +178,21 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   /**
    * Handler for tapping the "My files" item.
    */
-  private onMyFilesTap_(): void {
+  private onMyFilesClick_(): void {
     this.browserProxy_.openMyFiles();
   }
 
   /**
    * Handler for tapping the "Browsing data" item.
    */
-  private onBrowsingDataTap_(): void {
+  private onBrowsingDataClick_(): void {
     this.browserProxy_.openBrowsingDataSettings();
   }
 
   /**
    * Handler for tapping the "Apps and Extensions" item.
    */
-  private onAppsTap_(): void {
+  private onAppsClick_(): void {
     Router.getInstance().navigateTo(
         routes.APP_MANAGEMENT,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
@@ -201,15 +201,16 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   /**
    * Handler for tapping the "Offline files" item.
    */
-  private onDriveOfflineTap_(): void {
-    // TODO(b/266631636): Offline files row should redirect users to Files
-    // settings > Drive settings.
+  private onDriveOfflineClick_(): void {
+    Router.getInstance().navigateTo(
+        routes.GOOGLE_DRIVE,
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
   /**
    * Handler for tapping the "Linux storage" item.
    */
-  private onCrostiniTap_(): void {
+  private onCrostiniClick_(): void {
     Router.getInstance().navigateTo(
         routes.CROSTINI_DETAILS, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);
@@ -218,7 +219,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   /**
    * Handler for tapping the "Other users" item.
    */
-  private onOtherUsersTap_(): void {
+  private onOtherUsersClick_(): void {
     Router.getInstance().navigateTo(
         routes.ACCOUNTS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
@@ -227,7 +228,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   /**
    * Handler for tapping the "External storage preferences" item.
    */
-  private onExternalStoragePreferencesTap_(): void {
+  private onExternalStoragePreferencesClick_(): void {
     Router.getInstance().navigateTo(routes.EXTERNAL_STORAGE_PREFERENCES);
   }
 
@@ -266,8 +267,10 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    *     Google Drive.
    */
   private handleDriveOfflineSizeChanged_(size: string): void {
-    this.shadowRoot!.querySelector<CrLinkRowElement>(
-                        '#driveOfflineSize')!.subLabel = size;
+    if (this.showDriveOfflineStorage_) {
+      this.shadowRoot!.querySelector<CrLinkRowElement>(
+                          '#driveOfflineSize')!.subLabel = size;
+    }
   }
 
   /**

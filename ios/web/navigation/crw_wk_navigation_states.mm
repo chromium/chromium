@@ -128,9 +128,6 @@
   id key = [self keyForNavigation:navigation];
   CRWWKNavigationsStateRecord* record = [_records objectForKey:key];
   if (!record) {
-    DCHECK(state == web::WKNavigationState::REQUESTED ||
-           state == web::WKNavigationState::STARTED ||
-           state == web::WKNavigationState::COMMITTED);
     record =
         [[CRWWKNavigationsStateRecord alloc] initWithState:state
                                                      index:++_lastStateIndex];

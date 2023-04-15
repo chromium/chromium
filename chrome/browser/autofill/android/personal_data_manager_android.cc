@@ -382,6 +382,12 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
   return PersonalDataManagerAndroid::CreateJavaProfileFromNative(env, *profile);
 }
 
+jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& unused_obj) {
+  return personal_data_manager_->IsEligibleForAddressAccountStorage();
+}
+
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,

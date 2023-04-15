@@ -43,12 +43,34 @@ SemWaiter::SemWaiter() : wakeups_(0) {
   }
 }
 
-bool SemWaiter::Wait(KernelTimeout t) {
-  struct timespec abs_timeout;
-  if (t.has_timeout()) {
-    abs_timeout = t.MakeAbsTimespec();
+#if defined(__GLIBC__) && \
+    (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30))
+#define ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT 1
+#endif
+
+// Calls sem_timedwait() or possibly something else like
+// sem_clockwait() depending on the platform and
+// KernelTimeout requested. The return value is the same as a call to the return
+// value to a call to sem_timedwait().
+int SemWaiter::TimedWait(KernelTimeout t) {
+#ifndef __GOOGLE_GRTE_VERSION__
+  constexpr bool kRelativeTimeoutSupported = true;
+#else
+  constexpr bool kRelativeTimeoutSupported = false;
+#endif
+
+  if (kRelativeTimeoutSupported && t.is_relative_timeout()) {
+#if defined(ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT) && defined(CLOCK_MONOTONIC)
+    const auto abs_clock_timeout = t.MakeClockAbsoluteTimespec(CLOCK_MONOTONIC);
+    return sem_clockwait(&sem_, CLOCK_MONOTONIC, &abs_clock_timeout);
+#endif
   }
 
+  const auto abs_timeout = t.MakeAbsTimespec();
+  return sem_timedwait(&sem_, &abs_timeout);
+}
+
+bool SemWaiter::Wait(KernelTimeout t) {
   // Loop until we timeout or consume a wakeup.
   // Note that, since the thread ticker is just reset, we don't need to check
   // whether the thread is idle on the very first pass of the loop.
@@ -73,10 +95,10 @@ bool SemWaiter::Wait(KernelTimeout t) {
         if (errno == EINTR) continue;
         ABSL_RAW_LOG(FATAL, "sem_wait failed: %d", errno);
       } else {
-        if (sem_timedwait(&sem_, &abs_timeout) == 0) break;
+        if (TimedWait(t) == 0) break;
         if (errno == EINTR) continue;
         if (errno == ETIMEDOUT) return false;
-        ABSL_RAW_LOG(FATAL, "sem_timedwait failed: %d", errno);
+        ABSL_RAW_LOG(FATAL, "SemWaiter::TimedWait() failed: %d", errno);
       }
     }
     first_pass = false;

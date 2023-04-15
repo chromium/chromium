@@ -145,6 +145,11 @@ void SystemTextfield::SetShowFocusRing(bool show) {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
+void SystemTextfield::SetShowBackground(bool show) {
+  show_background_ = show;
+  UpdateBackground();
+}
+
 void SystemTextfield::RestoreText() {
   SetText(restored_text_content_);
 }
@@ -254,7 +259,7 @@ void SystemTextfield::UpdateTextColor() {
 void SystemTextfield::UpdateBackground() {
   // Create a themed rounded rect background when the mouse hovers on the
   // textfield or the textfield is focused.
-  if (IsMouseHovered() || HasFocus()) {
+  if (IsMouseHovered() || HasFocus() || show_background_) {
     ui::ColorId default_hover_state_color_id =
         chromeos::features::IsJellyrollEnabled()
             ? cros_tokens::kCrosSysHoverOnSubtle

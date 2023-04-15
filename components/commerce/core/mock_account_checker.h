@@ -20,6 +20,8 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSignedIn, (), (override));
 
+  MOCK_METHOD(bool, IsSyncingBookmarks, (), (override));
+
   MOCK_METHOD(bool, IsAnonymizedUrlDataCollectionEnabled, (), (override));
 
   MOCK_METHOD(bool, IsWebAndAppActivityEnabled, (), (override));
@@ -27,6 +29,8 @@ class MockAccountChecker : public AccountChecker {
   MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
 
   void SetSignedIn(bool signed_in);
+
+  void SetSyncingBookmarks(bool syncing);
 
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 

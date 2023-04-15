@@ -66,8 +66,8 @@ class NGLineBreakerTest : public RenderingTest {
     NGExclusionSpace exclusion_space;
     NGPositionedFloatVector leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
+    NGLineInfo line_info;
     do {
-      NGLineInfo line_info;
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
                                  line_opportunity, leading_floats, 0u,
                                  break_token, /* column_spanner_path */ nullptr,

@@ -1404,9 +1404,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kNone;
     case CSSPropertyID::kTextBoxTrim:
       DCHECK(RuntimeEnabledFeatures::CSSTextBoxTrimEnabled());
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
-             value_id == CSSValueID::kBoth;
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kStart ||
+             value_id == CSSValueID::kEnd || value_id == CSSValueID::kBoth;
     default:
       NOTREACHED();
       return false;

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Promise rejection during initial parsing of document assert_array_equals: expected property 0 to be "readystatechange:interactive" but got "unhandledrejection" (expected array ["readystatechange:interactive", "unhandledrejection", "readystatechange:complete"] got ["unhandledrejection", "readystatechange:interactive", "readystatechange:complete"])
-Harness: the test ran to completion.
-

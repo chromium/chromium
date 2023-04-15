@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">USB-C උපාංගය (ඉදිරිපස තොට)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ලෙස වෙනස් කළා. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
 <translation id="1013923882670373915">යුගලගත වීමට  "<ph name="DEVICE_NAME" />" අවසර ඉල්ලා සිටිනු ඇත. උපකරණයේ මෙම PIN කේතය ඇතුළු කරන්න: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">මෙය <ph name="APP_NAME" /> සහ ස්ථාන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සහ ChromeOS හට Wi-Fi සහ ජංගම ජාල ස්ථානය භාවිතා කිරීමට ඉඩ දෙයි.</translation>
+<translation id="1017556409696559990">Chrome තුළ ආපසු ඉතිහාසයක් නොමැති විට ඉහළ කවුළුව අවම කරන්න</translation>
 <translation id="1024364763893396229">ඔබගේ <ph name="NAME" /> සුරකින්න</translation>
 <translation id="1032891413405719768">පන්හිඳ බැටරිය අඩුයි</translation>
 <translation id="1036073649888683237">දැනුම්දීම් කළමනාකරණය කිරීමට, සැකසීම් වෙත යන්න</translation>
@@ -146,6 +148,7 @@
 <translation id="1651914502370159744">ඉතිහාස පිටුව විවෘත කරන්න</translation>
 <translation id="1654477262762802994">හඬ විමසුමක් අරඹන්න</translation>
 <translation id="1668469839109562275">තිළැලි VPN</translation>
+<translation id="1675844249244994876">දකුණු කවුළුව යාවත්කාලීන කරන්න</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ඉතිරිය</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> සම්බන්ධ නැත.</translation>
 <translation id="1677582821739292812">යම් කෙනෙක් ඔබගේ තිරය දෙස බලා සිටී</translation>
@@ -190,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ඊතර්නෙට්: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">ස්ථාන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
@@ -343,6 +347,7 @@
 <translation id="2620436844016719705">පද්ධතිය</translation>
 <translation id="2621713457727696555">ආරක්ෂිතයි</translation>
 <translation id="263399434338050016">"සියල්ල තෝරන්න"</translation>
+<translation id="2644422758626431000">කවුළුව වමට අමුණන්න</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" />න් <ph name="USED_MEMORY" /> තිබේ</translation>
 <translation id="2653019840645008922">කවුළු ග්‍රහණය</translation>
@@ -363,7 +368,6 @@
 <translation id="2726420622004325180">හොට්ස්පොට් එකක් ලබා දීමට ඔබගේ දුරකථනයේ ජංගම දත්ත තිබිය යුතුය</translation>
 <translation id="2727175239389218057">පිළිතුරු දෙන්න</translation>
 <translation id="2727977024730340865">අඩු බල චාජරයකට ප්ලග් ඉන් කර ඇත. බැටරිය චාජ් කිරිම විශ්වාස නැති විය හැක.</translation>
-<translation id="2740531572673183784">හරි</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"මකන්න"</translation>
 <translation id="2750941250130734256">සක්‍රිය කවුළුව ඈඳීම ඉවත් කර ඇත.</translation>
@@ -466,6 +470,7 @@
 <translation id="3255483164551725916">ඔබට කළ හැක්කේ කුමක්ද?</translation>
 <translation id="3256109297135787951">ඔබේ රාක්කයෙහි අයිතමයකින් උද්දීපනය ඉවත් කරන්න</translation>
 <translation id="3260969790895726815">කථනය ස්ථානීයව සකසන අතර අනුලේඛනය නොබැඳිව ක්‍රියා කරන නමුත්, සමහර හඬ විධාන ක්‍රියා නොකරයි.</translation>
+<translation id="3265032511221679826">නිශ්චිත ස්ථාන ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="3269597722229482060">දකුණු ක්ලික් කිරීම</translation>
 <translation id="3289364673986435196">බල මෙනුව</translation>
 <translation id="3289544412142055976">Linux යෙදුම් දැනට සහාය නොදක්වයි</translation>
@@ -576,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
 <translation id="3666266999138159418">ඔබේ පාවෙන කවුළුව සැඟවීමට ස්වයිප් කරන්න</translation>
 <translation id="367531336287639526">ලිපින තීරුවේ වම් පස පළමු නිරූපකය තෝරන්න</translation>
+<translation id="3677931086890821290">මෙය ස්ථාන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට සහ ChromeOS හට Wi-Fi සහ ජංගම ජාල ස්ථානය භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="3679827876008292680">කවුළුවේ අවසාන පටිත්ත වෙත යන්න</translation>
 <translation id="36813544980941320">Wi-Fi ජාල ඔබගේ දුරකථනය සහ <ph name="DEVICE_NAME" /> අතර බෙදා ගනු ඇත</translation>
 <translation id="3694122362646626770">වෙබ් අඩවි</translation>
@@ -842,6 +848,7 @@
 <translation id="493076006037866439">තිරයෙන් විශාලනය අඩු කරන්න</translation>
 <translation id="4936329710968938986">සියලු දෙනා, ක්‍රියාවිරහිතයි</translation>
 <translation id="4938176435186993759">සියලු යෝජනා සඟවන්න</translation>
+<translation id="4943007472417128747">WiFi භාවිතය සඳහා හොට්ස්පොට් ක්‍රියා විරහිත කර ඇත. හොට්ස්පොට් භාවිතය සඳහා, WiFi ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="4945196315133970626">දැනුම්දීම් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="4946376291507881335">ග්‍රහණය</translation>
 <translation id="495046168593986294">ඉහළට අනුචලනය කරන්න</translation>
@@ -1054,6 +1061,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5920710855273935292">මයිකය නිහඬයි.</translation>
+<translation id="5922962980596822074">වඩාත් මෑතක දී භාවිතා කරන ලද කවුළුවෙන් කවුළු හරහා යන්න</translation>
 <translation id="5924855612669061715">හොට්ස්පොට් ක්‍රියාත්මකයි</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ක්‍රියාත්මකයි.</translation>
 <translation id="5947494881799873997">ප්‍රතිවර්තනය</translation>
@@ -1064,6 +1072,7 @@
 <translation id="5976112937189445008">කවුළුව පටිගත කිරීමට Enter ඔබන්න</translation>
 <translation id="5978382165065462689">දුරස්ථ සහයක මගින් ඔබේ තිරයේ පාලනය බෙදාගනී.</translation>
 <translation id="5980301590375426705">අමුත්තා පිටවන්න</translation>
+<translation id="5983567367406220847">අක්‍රිය වීම හේතුවෙන්, හොට්ස්පොට් ක්‍රියා විරහිත කර ඇත.</translation>
 <translation id="598407983968395253">අච්චුව භාවිත කරන්න</translation>
 <translation id="598882571027504733">යාවත්කාලීනය ලබා ගැනීමට, අමුණා ඇති යතුරුපුවරුව සමගින් ඔබගේ Chromebook නැවත ආරම්භ කරන්න.</translation>
 <translation id="6002179289567220515">ඔබ 1 කැමරාවක් ක්‍රියාවිරහිත කිරීමට භෞතික ස්විචය භාවිතා කර ඇත. ඔබට සියලු කැමරා සඳහා ප්‍රවේශය ක්‍රියා විරහිත කිරීම ද කළ හැක.</translation>
@@ -1143,6 +1152,7 @@
 <translation id="6352082849089527770">නොදන්නා ජාල</translation>
 <translation id="6359587239691116345">නවතම විශේෂාංග සහ ආරක්ෂක වැඩි දියුණු කිරීම් ලබා ගන්න. ඔබ මෙම යාවත්කාලීනය ප්‍රතික්ෂේප කරන්නේ නම්, ඔබේ උපාංගය තවදුරටත් නිසි ලෙස ක්‍රියා නොකරන අතර ඔබ ආරක්ෂක සහ කාර්ය සාධන ගැටලු අත්විඳිය හැක.</translation>
 <translation id="6376931439017688372">බ්ලූටූත් ක්‍රියාත්මකයි</translation>
+<translation id="6378515133128829137">කවුළුව දකුණට අමුණන්න</translation>
 <translation id="6381109794406942707">උපාංගය අගුලු ඇරීමට, ඔබේ රහස් අංකය ඇතුළත් කරන්න.</translation>
 <translation id="638716340450135524">කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="639644700271529076">කැප්ස් ලොක් අක්‍රීයයි</translation>
@@ -1162,6 +1172,7 @@
 <translation id="6459472438155181876">තිරය <ph name="DISPLAY_NAME" /> වෙත දිගු කෙරෙමින්</translation>
 <translation id="6477681113376365978">ගොනුව බාගැනීමට නොහැකිය</translation>
 <translation id="6482559668224714696">පූර්ණ තිර විශාලකය</translation>
+<translation id="6483727822843292440">අඩුවෙන්ම භාවිතා කරන කවුළුවෙන් කවුළු හරහා යන්න</translation>
 <translation id="6490471652906364588">USB-C උපාංගය (දකුණු තොට)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> හට නියමිත වේලාවට පෙර ඔබ ඔබගේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීම අවශ්‍යයි</translation>
 <translation id="649452524636452238">ස්මාර්ට් කාඩ්පත් රහස් අංකය</translation>
@@ -1215,6 +1226,7 @@
 <translation id="6683022854667115063">හෙඩ්ෆෝන්</translation>
 <translation id="6696025732084565524">ඔබේ ගැලවීමට හැකි යතුරු පුවරුවට අවදානම් යාවත්කාලීනයක් අවශ්‍යයි</translation>
 <translation id="6700713906295497288">IME මෙනු බොත්තම</translation>
+<translation id="6705577071209924099">ආලෝකය ගළපන්න</translation>
 <translation id="6707693040195709527">පෙර අනුවාදයට උපාංගය වෙනස් කිරීම ප්‍රමාදයි</translation>
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6723839937902243910">බලය</translation>
@@ -1363,6 +1375,7 @@
 <translation id="7452560014878697800">යෙදුමක් ඔබගේ කැමරාව භාවිත කරමින් ඇත</translation>
 <translation id="7453330308669753048">සෙවීම් ඉතිහාස ප්‍රතිඵලය ඉවත් කරන ලදි</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | සම්පූර්ණ වීමට <ph name="TIME" /></translation>
+<translation id="7459485586006128091">අභ්‍යන්තර දෝෂයක් හේතුවෙන්, හොට්ස්පොට් ක්‍රියා විරහිත කර ඇත. මිනිත්තු කිහිපයකින් නැවත සම්බන්ධ වීමට උත්සාහ කරන්න.</translation>
 <translation id="7461924472993315131">පින්</translation>
 <translation id="746232733191930409">තිර පටිගත කිරීම් ප්‍රකාරය</translation>
 <translation id="7466449121337984263">සංවේදකය ස්පර්ශ කරන්න</translation>
@@ -1382,6 +1395,7 @@
 උපාංගය වසා දැමීම සඳහා, උපාංගයෙහි බල බොත්තම නැවත ඔබාගෙන සිටින්න.</translation>
 <translation id="7526573455193969409">ජාලය නිරීක්ෂණය විය හැක</translation>
 <translation id="7536035074519304529">IP ලිපිනය: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">වම් කවුළුව යාවත්කාලීන කරන්න</translation>
 <translation id="7543399541175347147">Linux යෙදුම් සහ අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි. වෙනත් යෙදුම් සුරකිනු ඇත.</translation>
 <translation id="7544300628205093162">යතුරුපුවරු පසුආලෝකය ක්‍රියාත්මකයි</translation>
 <translation id="7548434653388805669">නිදා ගන්නා වේලාවයි</translation>
@@ -1435,6 +1449,7 @@
 <translation id="776344839111254542">යාවත්කාලීන විස්තර බැලීමට ක්ලික් කරන්න</translation>
 <translation id="7768784765476638775">කීමට-තේරීම</translation>
 <translation id="7769299611924763557">ඔබේ GIF ඉක්මනින් සූදානම් වෙයි</translation>
+<translation id="7773536009433685931">ඒ වෙනුවට WiFi ක්‍රියාත්මක කරන්න</translation>
 <translation id="7780094051999721182">කෙටි මං</translation>
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
 <translation id="7796735576426975947">නව දැනුම්දීම සඟවා ඇත</translation>
@@ -1462,6 +1477,7 @@
 <translation id="7893503627044934815">මෙම ගොනුව පෙන්වීමට අවශ්‍ය නැත</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">ඔබ තිරයේ කරකැවීම සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
+<translation id="7901190436359881020">කවුළු මාරු කරන්න</translation>
 <translation id="7901405293566323524">දුරකථන මධ්‍යස්ථානය</translation>
 <translation id="7902625623987030061">ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න</translation>
 <translation id="7904094684485781019">මෙම ගිනුමේ පරිපාලක විසින් බහු පිවිසුම් වලට අවසර දී නොමැත.</translation>
@@ -1737,6 +1753,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> විභේදනය <ph name="RESOLUTION" /> ට වෙනස් කළා. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> මෙම Chromebook වෙත සම්බන්ධ කරන්න</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
+<translation id="9207682216934703221">මෙය ​<ph name="APP_NAME" />, <ph name="APP2_NAME" /> සහ ස්ථාන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සහ ChromeOS හට Wi-Fi සහ ජංගම ජාල ස්ථානය භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="9210037371811586452">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරයෙන් ඉවත් වෙමින්</translation>
 <translation id="9211490828691860325">සියලු වැඩතල</translation>
 <translation id="9211681782751733685">බැටරිය සම්පූර්ණයෙන් ආරෝපණ වන තෙක් <ph name="TIME_REMAINING" />ක් ඉතුරුයි.</translation>

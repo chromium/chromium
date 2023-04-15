@@ -221,7 +221,7 @@ void ShowReauthForAccount(Profile* profile,
       ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
                                     AccountAdditionSource::kContentAreaReauth,
                                 email, base::OnceClosure());
-#else
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Pass `false` for `enable_sync`, as this function is not expected to start a
   // sync setup flow after the reauth.
   GetSigninUiDelegate()->ShowReauthUI(
@@ -236,7 +236,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                const std::string& email_hint) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
-#else
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // There is no sign-in flow for guest or system profile.
   if (profile->IsGuestSession() || profile->IsSystemProfile())
     return;

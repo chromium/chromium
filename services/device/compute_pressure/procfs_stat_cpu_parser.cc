@@ -69,7 +69,7 @@ bool ProcfsStatCpuParser::Update() {
     if (core_id < 0)
       continue;
 
-    DCHECK_LE(core_times_.size(), size_t{std::numeric_limits<int>::max()});
+    CHECK_LE(core_times_.size(), size_t{std::numeric_limits<int>::max()});
     if (static_cast<int>(core_times_.size()) <= core_id)
       core_times_.resize(core_id + 1);
 
@@ -102,7 +102,7 @@ int ProcfsStatCpuParser::CoreIdFromLine(base::StringPiece stat_line) {
 // static
 void ProcfsStatCpuParser::UpdateCore(base::StringPiece core_line,
                                      CoreTimes& core_times) {
-  DCHECK_GE(CoreIdFromLine(core_line), 0);
+  CHECK_GE(CoreIdFromLine(core_line), 0);
 
   static constexpr base::StringPiece kSpaceSeparator(" ", 1);
   std::vector<base::StringPiece> tokens = base::SplitStringPiece(

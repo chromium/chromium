@@ -389,6 +389,15 @@ void OsTelemetryGetTpmInfoFunction::OnResult(
 // OsTelemetryGetUsbBusInfoFunction --------------------------------------------
 
 void OsTelemetryGetUsbBusInfoFunction::RunIfAllowed() {
+  // USB info is guarded by the `os.attached_device_info` permission.
+  if (!extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kChromeOSAttachedDeviceInfo)) {
+    Respond(Error(
+        "Unauthorized access to chrome.os.telemetry.getUsbBusInfo. Extension"
+        " doesn't have the permission."));
+    return;
+  }
+
   auto cb = base::BindOnce(&OsTelemetryGetUsbBusInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(

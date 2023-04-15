@@ -243,11 +243,6 @@ void LayoutView::ComputeLogicalHeight(
   computed_values.extent_ = LayoutUnit(ViewLogicalHeightForBoxSizing());
 }
 
-void LayoutView::UpdateLogicalWidth() {
-  NOT_DESTROYED();
-  SetLogicalWidth(LayoutUnit(ViewLogicalWidthForBoxSizing()));
-}
-
 bool LayoutView::IsChildAllowed(LayoutObject* child,
                                 const ComputedStyle&) const {
   NOT_DESTROYED();
@@ -877,7 +872,9 @@ void LayoutView::UpdateHitTestResult(HitTestResult& result,
     PhysicalOffset adjusted_point = point;
     if (const auto* layout_box = node->GetLayoutBox())
       adjusted_point -= layout_box->PhysicalLocation();
-    OffsetForContents(adjusted_point);
+    if (IsScrollContainer()) {
+      adjusted_point += PhysicalOffset(PixelSnappedScrolledContentOffset());
+    }
     result.SetNodeAndPosition(node, adjusted_point);
   }
 }

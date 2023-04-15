@@ -110,6 +110,23 @@ TEST_P(SupportsUserDataTest, TakeUserData) {
   EXPECT_FALSE(supports_user_data.TakeUserData(&key1));
 }
 
+class DataOwnsSupportsUserData : public SupportsUserData::Data {
+ public:
+  TestSupportsUserData* supports_user_data() { return &supports_user_data_; }
+
+ private:
+  TestSupportsUserData supports_user_data_;
+};
+
+// Tests that removing a `SupportsUserData::Data` that owns a `SupportsUserData`
+// does not crash.
+TEST_P(SupportsUserDataTest, ReentrantRemoveUserData) {
+  DataOwnsSupportsUserData* data = new DataOwnsSupportsUserData;
+  char key = 0;
+  data->supports_user_data()->SetUserData(&key, WrapUnique(data));
+  data->supports_user_data()->RemoveUserData(&key);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SupportsUserDataTest,
                          testing::Values(false, true));

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/contains.h"
@@ -143,10 +144,29 @@ void InputDeviceTracker::RecordDeviceConnected(
   std::vector<std::string> previously_observed_devices =
       observed_devices->GetValue();
 
-  if (!base::Contains(previously_observed_devices, device_key)) {
+  if (!base::Contains(previously_observed_devices, device_key) &&
+      !HasSeenPrimaryDeviceKeyAlias(previously_observed_devices, device_key)) {
     previously_observed_devices.emplace_back(device_key);
     observed_devices->SetValue(previously_observed_devices);
   }
+}
+
+bool InputDeviceTracker::HasSeenPrimaryDeviceKeyAlias(
+    const std::vector<std::string>& previously_observed_devices,
+    base::StringPiece device_key) {
+  const auto* aliases = Shell::Get()
+                            ->input_device_key_alias_manager()
+                            ->GetAliasesForPrimaryDeviceKey(device_key);
+  if (!aliases) {
+    return false;
+  }
+
+  for (const auto& alias : *aliases) {
+    if (base::Contains(previously_observed_devices, alias)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 StringListPrefMember* InputDeviceTracker::GetObservedDevicesForCategory(

@@ -6,12 +6,16 @@ package org.chromium.components.media_router.caf;
 
 import androidx.mediarouter.media.MediaRouter;
 
+import org.chromium.components.media_router.MediaRoute;
 import org.chromium.components.media_router.MediaSink;
 import org.chromium.components.media_router.MediaSource;
 
 /** The information of create route requests. */
 public class CreateRouteRequestInfo {
-    public final MediaSource source;
+    // `routeId` will remain unchanged, whether `mSource` changed or not. This
+    // happens when media source for an existing route changes.
+    private MediaSource mSource;
+    public final String routeId;
     public final MediaSink sink;
     public final String presentationId;
     public final String origin;
@@ -23,7 +27,8 @@ public class CreateRouteRequestInfo {
     public CreateRouteRequestInfo(MediaSource source, MediaSink sink, String presentationId,
             String origin, int tabId, boolean isOffTheRecord, int nativeRequestId,
             MediaRouter.RouteInfo routeInfo) {
-        this.source = source;
+        this.routeId = new MediaRoute(sink.getId(), source.getSourceId(), presentationId).id;
+        this.mSource = source;
         this.sink = sink;
         this.presentationId = presentationId;
         this.origin = origin;
@@ -31,5 +36,13 @@ public class CreateRouteRequestInfo {
         this.isOffTheRecord = isOffTheRecord;
         this.nativeRequestId = nativeRequestId;
         this.routeInfo = routeInfo;
+    }
+
+    public MediaSource getMediaSource() {
+        return this.mSource;
+    }
+
+    public void setMediaSource(MediaSource source) {
+        this.mSource = source;
     }
 }

@@ -17,17 +17,29 @@ void ContinueRanker::UpdateResultRanks(ResultsMap& results,
   const auto it = results.find(provider);
   DCHECK(it != results.end());
 
-  // Always rank zero-state Drive files higher than zero-state local files by
-  // giving them a higher continue_rank.
-  if (provider == ProviderType::kZeroStateFile) {
-    for (auto& result : it->second)
-      result->scoring().set_continue_rank(1);
-  } else if (provider == ProviderType::kZeroStateDrive) {
-    for (auto& result : it->second)
-      result->scoring().set_continue_rank(2);
-  } else if (provider == ProviderType::kZeroStateHelpApp) {
-    for (auto& result : it->second)
-      result->scoring().set_continue_rank(3);
+  // Note: Always rank desks admin templates higher than any other type of
+  // providers in the continue section view. Always rank zero-state Drive files
+  // higher than zero-state local files by giving them a higher continue_rank.
+  int continue_rank = -1;
+  switch (provider) {
+    case ProviderType::kZeroStateFile:
+      continue_rank = 1;
+      break;
+    case ProviderType::kZeroStateDrive:
+      continue_rank = 2;
+      break;
+    case ProviderType::kZeroStateHelpApp:
+      continue_rank = 3;
+      break;
+    case ProviderType::kDesksAdminTemplate:
+      continue_rank = 4;
+      break;
+    default:
+      break;
+  }
+
+  for (auto& result : it->second) {
+    result->scoring().set_continue_rank(continue_rank);
   }
 }
 

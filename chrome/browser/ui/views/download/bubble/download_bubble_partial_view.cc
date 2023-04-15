@@ -1,0 +1,263 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
+
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/link_fragment.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/table_layout.h"
+
+namespace {
+
+// We want the checkbox to accept gestures when users click on the label text,
+// like all other Chrome checkboxes. This ViewTargeterDelegate achieves that.
+class CheckboxTargeter : public views::ViewTargeterDelegate {
+ public:
+  CheckboxTargeter() = default;
+  ~CheckboxTargeter() override = default;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    return true;
+  }
+};
+
+class SuppressBubbleSettingRow : public views::View,
+                                 public views::ViewTargeterDelegate {
+ public:
+  METADATA_HEADER(SuppressBubbleSettingRow);
+
+  SuppressBubbleSettingRow(
+      raw_ptr<Browser> browser,
+      bool should_show_settings_link,
+      raw_ptr<DownloadBubbleUIController> bubble_controller,
+      raw_ptr<DownloadBubbleNavigationHandler> navigation_handler)
+      : browser_(browser),
+        bubble_controller_(bubble_controller),
+        navigation_handler_(navigation_handler) {
+    // Because this view appears directly below the download rows, we want to
+    // use the same insets for consistency.
+    SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
+
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+    const int icon_label_spacing =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+    auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+    // Checkbox
+    layout->AddColumn(views::LayoutAlignment::kCenter,
+                      views::LayoutAlignment::kStart,
+                      views::TableLayout::kFixedSize,
+                      views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+    // Labels
+    layout->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+        .AddColumn(views::LayoutAlignment::kStretch,
+                   views::LayoutAlignment::kStart, 1.0f,
+                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+
+    layout->AddRows(1, 1.0f);
+
+    checkbox_ = AddChildView(std::make_unique<views::Checkbox>(
+        std::u16string(),
+        base::BindRepeating(&SuppressBubbleSettingRow::CheckboxClicked,
+                            base::Unretained(this))));
+    checkbox_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW));
+    checkbox_->SetChecked(
+        !download::IsDownloadBubblePartialViewEnabled(browser_->profile()));
+    targeter_ = std::make_unique<CheckboxTargeter>();
+    checkbox_->SetEventTargeter(
+        std::make_unique<views::ViewTargeter>(targeter_.get()));
+    gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ICON);
+    // The label within the checkbox will line up with `main_text` if we don't
+    // provide any insets. This is different than the download row view, which
+    // doesn't have a label within its icon column. So we use just the left and
+    // right inset from DOWNLOAD_ICON.
+    insets.set_top_bottom(0, 0);
+    checkbox_->SetBorder(views::CreateEmptyBorder(insets));
+
+    labels_wrapper_ = AddChildView(std::make_unique<views::View>());
+    labels_wrapper_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kVertical);
+
+    auto* main_text =
+        labels_wrapper_->AddChildView(std::make_unique<views::Label>(
+            l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW),
+            views::style::CONTEXT_DIALOG_BODY_TEXT));
+    main_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    size_t settings_offset;
+    std::u16string settings_link_text = l10n_util::GetStringUTF16(
+        IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_LINK);
+    settings_text_ =
+        labels_wrapper_->AddChildView(std::make_unique<views::StyledLabel>());
+    settings_text_->SetText(l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_REMINDER,
+        settings_link_text, &settings_offset));
+    settings_text_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    settings_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    settings_text_->SetVisible(should_show_settings_link);
+
+    views::StyledLabel::RangeStyleInfo link_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(
+            base::BindRepeating(&SuppressBubbleSettingRow::SettingsLinkClicked,
+                                base::Unretained(this)));
+    settings_text_->AddStyleRange(
+        gfx::Range(settings_offset,
+                   settings_offset + settings_link_text.size()),
+        link_style);
+  }
+
+  // views::ViewTargeterDelegate
+  View* TargetForRect(View* root, const gfx::Rect& rect) override {
+    views::View* target =
+        views::ViewTargeterDelegate::TargetForRect(root, rect);
+    // Links should operate as expected, but all other gestures on this view
+    // should be forwarded to the checkbox.
+    if (target->GetClassName() == views::LinkFragment::kViewClassName) {
+      return target;
+    }
+
+    return checkbox_;
+  }
+
+ private:
+  void CheckboxClicked() {
+    download::SetDownloadBubblePartialViewEnabled(browser_->profile(),
+                                                  !checkbox_->GetChecked());
+    settings_text_->SetVisible(true);
+    navigation_handler_->ResizeDialog();
+  }
+
+  void SettingsLinkClicked() {
+    bubble_controller_->RecordDownloadBubbleInteraction();
+    chrome::ShowSettingsSubPage(browser_, chrome::kDownloadsSubPage);
+  }
+
+  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
+  raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
+  raw_ptr<views::Checkbox> checkbox_ = nullptr;
+  std::unique_ptr<CheckboxTargeter> targeter_;
+  raw_ptr<views::View> labels_wrapper_ = nullptr;
+  raw_ptr<views::StyledLabel> settings_text_ = nullptr;
+};
+
+BEGIN_METADATA(SuppressBubbleSettingRow, views::View)
+END_METADATA
+
+bool ShouldShowSuppressSetting(raw_ptr<Profile> profile, int impressions) {
+  // Impressions have been incremented by this point, so the first
+  // impression is 1.
+  return download::IsDownloadBubblePartialViewEnabledDefaultValue(profile) &&
+         3 <= impressions && impressions <= 5;
+}
+
+bool ShouldShowSettingsLink(int impressions) {
+  return impressions == 5;
+}
+
+void MaybeRecordImpression(raw_ptr<Profile> profile, int impressions) {
+  // Pref writes are moderately expensive and we never change behavior for 7+
+  // impressions, so don't increment further.
+  if (impressions > 6) {
+    return;
+  }
+
+  download::SetDownloadBubblePartialViewImpressions(profile, impressions);
+}
+
+}  // namespace
+
+// static
+std::unique_ptr<DownloadBubblePartialView> DownloadBubblePartialView::Create(
+    raw_ptr<Browser> browser,
+    raw_ptr<DownloadBubbleUIController> bubble_controller,
+    raw_ptr<DownloadBubbleNavigationHandler> navigation_handler,
+    std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
+    base::OnceClosure on_mouse_entered_closure) {
+  if (rows.empty()) {
+    return nullptr;
+  }
+
+  return base::WrapUnique(new DownloadBubblePartialView(
+      browser, bubble_controller, navigation_handler, std::move(rows),
+      std::move(on_mouse_entered_closure)));
+}
+
+DownloadBubblePartialView::DownloadBubblePartialView(
+    raw_ptr<Browser> browser,
+    raw_ptr<DownloadBubbleUIController> bubble_controller,
+    raw_ptr<DownloadBubbleNavigationHandler> navigation_handler,
+    std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
+    base::OnceClosure on_mouse_entered_closure)
+    : on_mouse_entered_closure_(std::move(on_mouse_entered_closure)) {
+  SetNotifyEnterExitOnChild(true);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  int preferred_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  raw_ptr<Profile> profile = browser->profile();
+  const int impressions =
+      download::DownloadBubblePartialViewImpressions(profile) + 1;
+  std::unique_ptr<SuppressBubbleSettingRow> setting_row;
+  if (ShouldShowSuppressSetting(profile, impressions)) {
+    setting_row = std::make_unique<SuppressBubbleSettingRow>(
+        browser, ShouldShowSettingsLink(impressions), bubble_controller,
+        navigation_handler);
+    preferred_width =
+        std::max(preferred_width, setting_row->GetPreferredSize().width());
+  }
+
+  AddChildView(DownloadBubbleRowListView::CreateWithScroll(
+      /*is_partial_view=*/true, browser, bubble_controller, navigation_handler,
+      std::move(rows), preferred_width));
+
+  if (setting_row) {
+    const int separator_spacing =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_CONTENT_LIST_VERTICAL_MULTI) /
+        2;
+    auto separator = std::make_unique<views::Separator>();
+    separator->SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(separator_spacing, 0));
+
+    AddChildView(std::move(separator));
+    AddChildView(std::move(setting_row));
+  }
+
+  MaybeRecordImpression(profile, impressions);
+}
+
+DownloadBubblePartialView::~DownloadBubblePartialView() = default;
+
+void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
+  if (on_mouse_entered_closure_) {
+    std::move(on_mouse_entered_closure_).Run();
+  }
+}
+
+BEGIN_METADATA(DownloadBubblePartialView, views::View)
+END_METADATA

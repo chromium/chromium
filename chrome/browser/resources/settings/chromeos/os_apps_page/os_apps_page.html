@@ -26,7 +26,7 @@
       <template is="dom-if" if="[[havePlayStoreApp]]" restamp>
         <div id="android-apps" class="settings-box first"
             actionable$="[[androidAppsInfo.playStoreEnabled]]"
-            on-click="onAndroidAppsSubpageTap_">
+            on-click="onAndroidAppsSubpageClick_">
           <div class="start settings-box-text">
             $i18n{androidAppsPageLabel}
             <div class="secondary" id="secondaryText">
@@ -49,7 +49,7 @@
             <div class="separator"></div>
             <cr-button id="enable"
                 disabled="[[isEnforced_(prefs.arc.enabled)]]"
-                on-click="onEnableAndroidAppsTap_"
+                on-click="onEnableAndroidAppsClick_"
                 aria-label="$i18n{androidAppsPageTitle}"
                 aria-roledescription="$i18n{androidAppsEnableButtonRole}"
                 deep-link-focus-id$="[[Setting.kTurnOnPlayStore]]">
@@ -60,7 +60,9 @@
       </template>
       <template is="dom-if" if="[[!havePlayStoreApp]]" restamp>
         <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
-            on-click="onManageAndroidAppsTap_" external
+            on-click="onManageAndroidAppsClick_"
+            external
+            button-aria-description="$i18n{opensInNewTab}"
             deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
         </cr-link-row>
       </template>

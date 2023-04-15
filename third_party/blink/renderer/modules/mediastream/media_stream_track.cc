@@ -79,8 +79,9 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
 
   auto* window =
       DynamicTo<LocalDOMWindow>(ExecutionContext::From(script_state));
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   UserMediaClient* user_media_client = UserMediaClient::From(window);
   if (!user_media_client) {
@@ -102,7 +103,7 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
       MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(),
       IdentifiableSurface());
   if (!request) {
-      return nullptr;
+    return nullptr;
   }
 
   // TODO(1288839): Create a TransferredMediaStreamTrack implementing interfaces

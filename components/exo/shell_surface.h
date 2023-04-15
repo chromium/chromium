@@ -198,6 +198,9 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   OriginChangeCallback origin_change_callback_;
   ScopedConfigure* scoped_configure_ = nullptr;
   base::circular_deque<std::unique_ptr<Config>> pending_configs_;
+  // Stores the config which is acked but not yet committed. This will keep the
+  // compositor locked until reset after Commit() is called.
+  std::unique_ptr<Config> config_waiting_for_commit_;
 
   // Window resizing is an asynchronous operation. See
   // https://crbug.com/1336706#c22 for a more detailed explanation.

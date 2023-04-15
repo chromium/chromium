@@ -185,7 +185,6 @@ void DeriveCommandLine(const GURL& start_url,
     blink::switches::kEnableRasterSideDarkModeForImages,
     blink::switches::kEnableZeroCopy,
     blink::switches::kGpuRasterizationMSAASampleCount,
-    blink::switches::kNumRasterThreads,
     switches::kAshPowerButtonPosition,
     switches::kAshSideVolumeButtonPosition,
     switches::kDefaultWallpaperLarge,
@@ -202,6 +201,7 @@ void DeriveCommandLine(const GURL& start_url,
     cc::switches::kEnableGpuBenchmarking,
     cc::switches::kEnableMainFrameBeforeActivation,
     cc::switches::kHighlightNonLCDTextLayers,
+    cc::switches::kNumRasterThreads,
     cc::switches::kShowCompositedLayerBorders,
     cc::switches::kShowFPSCounter,
     cc::switches::kShowLayerAnimationBounds,
@@ -248,26 +248,39 @@ void DeriveCommandLine(const GURL& start_url,
   }
 }
 
-// Adds allowlisted features to `out_command_line` if they are enabled in the
+// Adds allowlisted features to `out_command_line` if they are overridden in the
 // current session.
-void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
-  std::vector<const base::Feature*> kForwardEnabledFeatures{
-      &features::kAutoNightLight, &features::kLacrosOnly,
-      &features::kLacrosPrimary,  &features::kLacrosSupport,
-      &::features::kPluginVm,
+void DeriveFeatures(base::CommandLine* out_command_line) {
+  auto kForwardFeatures = {
+    &features::kAutoNightLight,
+    &features::kLacrosOnly,
+    &features::kLacrosPrimary,
+    &features::kLacrosSupport,
+    &::features::kPluginVm,
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    &media::kPlatformHEVCDecoderSupport,
+#endif
   };
-
   std::vector<std::string> enabled_features;
-  for (const auto* feature : kForwardEnabledFeatures) {
-    if (base::FeatureList::IsEnabled(*feature))
-      enabled_features.push_back(feature->name);
+  std::vector<std::string> disabled_features;
+  for (const auto* feature : kForwardFeatures) {
+    if (auto state = base::FeatureList::GetStateIfOverridden(*feature)) {
+      if (*state) {
+        enabled_features.push_back(feature->name);
+      } else {
+        disabled_features.push_back(feature->name);
+      }
+    }
   }
 
-  if (enabled_features.empty())
-    return;
-
-  out_command_line->AppendSwitchASCII("enable-features",
-                                      base::JoinString(enabled_features, ","));
+  if (!enabled_features.empty()) {
+    out_command_line->AppendSwitchASCII(
+        "enable-features", base::JoinString(enabled_features, ","));
+  }
+  if (!disabled_features.empty()) {
+    out_command_line->AppendSwitchASCII(
+        "disable-features", base::JoinString(disabled_features, ","));
+  }
 }
 
 // Simulates a session manager restart by launching give command line
@@ -387,7 +400,7 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
                    GURL(chrome::kChromeUINewTabURL).spec());
 
   DeriveCommandLine(start_url, base_command_line, otr_switches, command_line);
-  DeriveEnabledFeatures(command_line);
+  DeriveFeatures(command_line);
 }
 
 void RestartChrome(const base::CommandLine& command_line,

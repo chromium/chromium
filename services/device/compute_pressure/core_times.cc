@@ -9,7 +9,7 @@
 namespace device {
 
 CoreTimes::CoreTimes(const std::initializer_list<uint64_t>& times) {
-  DCHECK_EQ(times.size(), 10u);
+  CHECK_EQ(times.size(), 10u);
 
   size_t i = 0;
   for (auto value : times)

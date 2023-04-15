@@ -105,18 +105,6 @@ web::WebState* GetWebState(WebStateList* web_state_list,
   return web_state_list->GetWebStateAt(index);
 }
 
-TabSwitcherItem* GetTabSwitcherItem(web::WebState* web_state) {
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state->GetStableIdentifier()];
-  // chrome://newtab (NTP) tabs have no title.
-  if (IsUrlNtp(web_state->GetVisibleURL())) {
-    item.hidesTitle = YES;
-  }
-  item.title = tab_util::GetTabTitle(web_state);
-  item.showsActivity = web_state->IsLoading();
-  return item;
-}
-
 TabItem* GetTabItem(WebStateList* web_state_list,
                     WebStateSearchCriteria criteria) {
   web::WebState* web_state = GetWebState(web_state_list, criteria);

@@ -15,13 +15,13 @@ CheckPseudoHasArgumentContext::GetCurrentRelationAndNextCompound(
     CSSSelector::RelationType& relation) {
   DCHECK(compound_selector);
   for (const CSSSelector* simple_selector = compound_selector; simple_selector;
-       simple_selector = simple_selector->TagHistory()) {
+       simple_selector = simple_selector->NextSimpleSelector()) {
     CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
         pseudo_has_argument_hashes_, simple_selector);
 
     relation = simple_selector->Relation();
     if (relation != CSSSelector::kSubSelector) {
-      return simple_selector->TagHistory();
+      return simple_selector->NextSimpleSelector();
     }
   }
   return nullptr;

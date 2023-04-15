@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 212 tests; 163 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 214 tests; 164 PASS, 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -25,6 +25,8 @@ PASS Partial interface KeyframeEffect: original interface defined
 PASS Partial interface KeyframeEffect: member names are unique
 PASS Partial dictionary KeyframeEffectOptions: original dictionary defined
 PASS Partial dictionary KeyframeEffectOptions: member names are unique
+PASS Partial dictionary KeyframeAnimationOptions: original dictionary defined
+PASS Partial dictionary KeyframeAnimationOptions: member names are unique
 PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Element includes Animatable: member names are unique
@@ -57,7 +59,7 @@ PASS DocumentTimeline interface: existence and properties of interface prototype
 PASS DocumentTimeline interface: existence and properties of interface prototype object's @@unscopables property
 PASS DocumentTimeline must be primary interface of document.timeline
 PASS Stringification of document.timeline
-PASS AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
+FAIL AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type Right-hand side of 'instanceof' is not an object
 PASS AnimationTimeline interface: document.timeline must inherit property "duration" with the proper type
 FAIL AnimationTimeline interface: document.timeline must inherit property "play(optional AnimationEffect?)" with the proper type assert_inherits: property "play" not found in prototype chain
 FAIL AnimationTimeline interface: calling play(optional AnimationEffect?) on document.timeline with too few arguments must throw TypeError assert_inherits: property "play" not found in prototype chain

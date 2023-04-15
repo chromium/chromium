@@ -1,0 +1,37 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+    "//chrome/browser/ui/android/edge_to_edge/test:*",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerImpl.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/junit",
+  ]
+}

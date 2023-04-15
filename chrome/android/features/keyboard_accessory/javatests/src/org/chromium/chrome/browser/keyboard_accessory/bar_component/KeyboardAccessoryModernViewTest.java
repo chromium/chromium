@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,6 +61,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -393,6 +394,7 @@ public class KeyboardAccessoryModernViewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1432551")
     public void testDismissesSwipingEducationBubbleOnTap() {
         TestTracker tracker = new TestTracker() {
             @Override
@@ -488,7 +490,7 @@ public class KeyboardAccessoryModernViewTest {
         // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
         // above url.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
-                     any(), anyFloat()))
+                     any(), any(), anyInt(), anyInt(), anyInt()))
                 .thenReturn(TEST_CARD_ART_IMAGE);
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem = new AutofillBarItem(
@@ -521,7 +523,7 @@ public class KeyboardAccessoryModernViewTest {
         // Return the response of PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable
         // to null to indicate that the image is not present in the cache.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
-                     any(), anyFloat()))
+                     any(), any(), anyInt(), anyInt(), anyInt()))
                 .thenReturn(null);
         AutofillBarItem customIconItem = new AutofillBarItem(
                 getDefaultAutofillSuggestionBuilder().setCustomIconUrl(customIconUrl).build(),

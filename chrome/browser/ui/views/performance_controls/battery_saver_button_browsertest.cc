@@ -52,8 +52,7 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
 
   void SetUp() override {
     iph_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHBatterySaverModeFeature,
-         performance_manager::features::kBatterySaverModeAvailable});
+        {feature_engagement::kIPHBatterySaverModeFeature});
 
     SetUpFakeBatterySampler();
 
@@ -194,12 +193,7 @@ class BatterySaverBubbleViewTest : public InProcessBrowserTest {
   BatterySaverBubbleViewTest() = default;
   ~BatterySaverBubbleViewTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kBatterySaverModeAvailable);
-
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void TearDown() override { InProcessBrowserTest::TearDown(); }
 
@@ -215,9 +209,6 @@ class BatterySaverBubbleViewTest : public InProcessBrowserTest {
     views::test::InteractionTestUtilSimulatorViews::PressButton(
         button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Disable the battery saver mode for the session using the battery saver

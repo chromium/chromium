@@ -30,12 +30,6 @@ void SetUpFakeSyncServer();
 // real one. Must only be called if `IsFakeSyncServerSetUp()` is true.
 void TearDownFakeSyncServer();
 
-// Starts the sync server. The server should not be running when calling this.
-void StartSync();
-
-// Stops the sync server. The server should be running when calling this.
-void StopSync();
-
 // Triggers a sync cycle for a `type`.
 void TriggerSyncCycle(syncer::ModelType type);
 

@@ -359,6 +359,8 @@ absl::optional<BufferInfo> StreamBufferManager::RequestBufferForCaptureRequest(
   }
   buffer_info.drm_format = drm_format;
   buffer_info.hal_pixel_format = stream_context_[stream_type]->stream->format;
+  buffer_info.modifier =
+      buffer_info.gpu_memory_buffer_handle.native_pixmap_handle.modifier;
   return buffer_info;
 }
 

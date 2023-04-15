@@ -8,6 +8,7 @@ import com.google.android.gms.cast.framework.CastSession;
 
 import org.chromium.base.Log;
 import org.chromium.components.media_router.CastSessionUtil;
+import org.chromium.components.media_router.MediaSource;
 import org.chromium.components.media_router.caf.BaseNotificationController;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.components.media_router.caf.CafBaseMediaRouteProvider;
@@ -31,6 +32,17 @@ public class RemotingSessionController extends BaseSessionController {
         super(provider);
         mNotificationController = new RemotingNotificationController(this);
         sInstance = new WeakReference<>(this);
+    }
+
+    /**
+     * Called when media source needs to be updated.
+     *
+     * @param source The new media source.
+     */
+    public void updateMediaSource(MediaSource source) {
+        mFlingingControllerAdapter.updateMediaUrl(((RemotingMediaSource) source).getMediaUrl());
+        getRouteCreationInfo().setMediaSource(source);
+        getProvider().updateRouteMediaSource(getRouteCreationInfo().routeId, source.getSourceId());
     }
 
     @Override

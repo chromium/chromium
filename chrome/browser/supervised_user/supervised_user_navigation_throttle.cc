@@ -30,7 +30,7 @@ namespace {
 enum {
   FILTERING_BEHAVIOR_ALLOW = 1,
   FILTERING_BEHAVIOR_ALLOW_UNCERTAIN,
-  FILTERING_BEHAVIOR_BLOCK_DENYLIST,
+  FILTERING_BEHAVIOR_BLOCK_DENYLIST,  // deprecated
   FILTERING_BEHAVIOR_BLOCK_SAFESITES,
   FILTERING_BEHAVIOR_BLOCK_MANUAL,
   FILTERING_BEHAVIOR_BLOCK_DEFAULT,
@@ -65,8 +65,6 @@ int GetHistogramValueForFilteringBehavior(
                        : FILTERING_BEHAVIOR_ALLOW;
     case supervised_user::SupervisedUserURLFilter::BLOCK:
       switch (reason) {
-        case supervised_user::FilteringBehaviorReason::DENYLIST:
-          return FILTERING_BEHAVIOR_BLOCK_DENYLIST;
         case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
           return FILTERING_BEHAVIOR_BLOCK_SAFESITES;
         case supervised_user::FilteringBehaviorReason::ALLOWLIST:
@@ -90,14 +88,14 @@ int GetHistogramValueForFilteringBehavior(
 int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   int value =
       static_cast<int>(ui::PageTransitionStripQualifier(transition_type));
-  if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue)
+  if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue) {
     return value;
+  }
   NOTREACHED();
   return kHistogramPageTransitionFallbackValue;
 }
 
 void RecordFilterResultEvent(
-    bool safesites_histogram,
     supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain,
@@ -107,13 +105,7 @@ void RecordFilterResultEvent(
           kHistogramFilteringBehaviorSpacing +
       GetHistogramValueForTransitionType(transition_type);
   DCHECK_LT(value, kHistogramMax);
-  // Note: We can't pass in the histogram name as a parameter to this function
-  // because of how the macro works (look up the histogram on the first
-  // invocation and cache it in a static variable).
-  if (safesites_histogram)
-    base::UmaHistogramSparse("ManagedUsers.SafetyFilter", value);
-  else
-    base::UmaHistogramSparse("ManagedUsers.FilteringResult", value);
+  base::UmaHistogramSparse("ManagedUsers.FilteringResult", value);
 }
 
 }  // namespace
@@ -186,10 +178,12 @@ SupervisedUserNavigationThrottle::CheckURL() {
   // If we got a "not blocked" result synchronously, don't defer.
   deferred_ = !got_result ||
               (behavior_ == supervised_user::SupervisedUserURLFilter::BLOCK);
-  if (got_result)
+  if (got_result) {
     behavior_ = supervised_user::SupervisedUserURLFilter::INVALID;
-  if (deferred_)
+  }
+  if (deferred_) {
     return NavigationThrottle::DEFER;
+  }
   return NavigationThrottle::PROCEED;
 }
 
@@ -243,30 +237,24 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   DCHECK_EQ(supervised_user::SupervisedUserURLFilter::INVALID, behavior_);
 
   // If we got a result synchronously, pass it back to ShowInterstitialIfNeeded.
-  if (!deferred_)
+  if (!deferred_) {
     behavior_ = behavior;
+  }
 
   reason_ = reason;
 
   ui::PageTransition transition = navigation_handle()->GetPageTransition();
 
-  RecordFilterResultEvent(false, behavior, reason, uncertain, transition);
-
-  // If both the static denylist and the async checker are enabled, also record
-  // SafeSites-only UMA events.
-  if (url_filter_->HasDenylist() && url_filter_->HasAsyncURLChecker() &&
-      (reason == supervised_user::FilteringBehaviorReason::ASYNC_CHECKER ||
-       reason == supervised_user::FilteringBehaviorReason::DENYLIST)) {
-    RecordFilterResultEvent(true, behavior, reason, uncertain, transition);
-  }
+  RecordFilterResultEvent(behavior, reason, uncertain, transition);
 
   if (navigation_handle()->IsInPrimaryMainFrame()) {
     // Update navigation observer about the navigation state of the main frame.
     auto* navigation_observer =
         SupervisedUserNavigationObserver::FromWebContents(
             navigation_handle()->GetWebContents());
-    if (navigation_observer)
+    if (navigation_observer) {
       navigation_observer->UpdateMainFrameFilteringStatus(behavior, reason);
+    }
   }
 
   if (behavior == supervised_user::SupervisedUserURLFilter::BLOCK) {

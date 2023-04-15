@@ -266,6 +266,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_memory_image_backing_factory.h",
     "shared_image/skia_gl_image_representation.cc",
     "shared_image/skia_gl_image_representation.h",
+    "shared_image/texture_holder_vk.cc",
+    "shared_image/texture_holder_vk.h",
     "shared_image/wrapped_sk_image_backing.cc",
     "shared_image/wrapped_sk_image_backing.h",
     "shared_image/wrapped_sk_image_backing_factory.cc",
@@ -482,7 +484,6 @@ target(link_target_type, "gles2_sources") {
   }
 
   if (is_apple) {
-    deps += [ "//components/viz/common:metal_context_provider" ]
     sources += [
       "shared_image/iosurface_image_backing.h",
       "shared_image/iosurface_image_backing.mm",
@@ -490,6 +491,10 @@ target(link_target_type, "gles2_sources") {
       "shared_image/iosurface_image_backing_factory.mm",
       "shared_image/shared_image_format_utils_mac.mm",
     ]
+
+    if (skia_use_metal) {
+      deps += [ "//components/viz/common:metal_context_provider" ]
+    }
 
     # Required by gles2_cmd_decoder.cc on Apple.
     frameworks = [

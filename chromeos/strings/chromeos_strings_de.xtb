@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Hier findest du hilfreiches Infomaterial:</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
+<translation id="1923388006036088459">Akzentfarben</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Ein Standard-APN ist erforderlich</translation>
@@ -140,6 +141,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
 <translation id="2085089206770112532">Displayhelligkeit verringern</translation>
+<translation id="209751264101900360">Von Sonnenauf- bis -untergang – Cloud Flow</translation>
 <translation id="2102231663024125441">Textbearbeitung</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
@@ -331,6 +333,7 @@
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3969602104473960991">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
+<translation id="3974175076798940554">Exklusive Chromebook Plus-Assets sind jetzt verfügbar</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="3993704782688964914">„<ph name="DEVICE_NAME" />“ ist jetzt auf dem neuesten Stand</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
@@ -370,6 +373,7 @@
 <translation id="4275663329226226506">Medien</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4289849978083912975">Diashow</translation>
+<translation id="4293621540182258188">Von Sonnenauf- bis -untergang – Earth Flow</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4311195029067684288">Vollständig</translation>
@@ -544,6 +548,7 @@
 <translation id="576835345334454681">Displayhelligkeit erhöhen</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
+<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Informationen zum Bild</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
@@ -562,6 +567,7 @@
 <translation id="5907649332524363701">Tastenfarbe</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
+<translation id="5918201491776799918">Exklusive Chromebook Plus-Grafik auswählen</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
@@ -818,6 +824,7 @@
 <translation id="8138405288920084977">LTE-Advanced</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8151185429379586178">Entwickler-Tools</translation>
+<translation id="8153923300383192510">Exklusiv auf Chromebook Plus</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183974620058026102">Anhängen</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -840,6 +847,7 @@
 <translation id="8352772353338965963">Füge ein Konto für die Mehrfachanmeldung hinzu. Du kannst auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwende diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>
 <translation id="8372477600026034341">Zusätzliche Hosts</translation>
+<translation id="8373046809163484087">Farbpaletten passend zum Hintergrund verwenden</translation>
 <translation id="8380114448424469341">Fenster an dieser Hälfte des Bildschirms fixieren: <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
@@ -859,6 +867,7 @@
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
 <translation id="8508640263392900755">APN-Details</translation>
+<translation id="8522687886059337719">Du hast jetzt Zugriff auf neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> und <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />Bildschirmschoner<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>

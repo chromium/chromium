@@ -82,7 +82,8 @@ enum class LacrosSelectionPolicy {
 enum class LacrosSelection {
   kRootfs = 0,
   kStateful = 1,
-  kMaxValue = kStateful,
+  kDeployedLocally = 2,
+  kMaxValue = kDeployedLocally,
 };
 
 // Represents the values of the LacrosDataBackwardMigrationMode string enum

@@ -171,7 +171,9 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
       rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
     }
     if (rc < 0) {
-      DLOG(WARNING) << "Couldn't find CRAS loopback device.";
+      DLOG(WARNING) << "Couldn't find CRAS loopback device "
+                    << (is_loopback_without_chrome_ ? " for flexible loopback."
+                                                    : " for full loopback.");
       ReportStreamOpenResult(
           StreamOpenResult::kCallbackOpenCannotFindLoopbackDevice);
       libcras_client_destroy(client_);

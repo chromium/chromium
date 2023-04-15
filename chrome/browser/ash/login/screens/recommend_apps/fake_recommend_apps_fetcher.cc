@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -27,7 +28,7 @@ FakeRecommendAppsFetcher::~FakeRecommendAppsFetcher() = default;
 
 void FakeRecommendAppsFetcher::OnTimer() {
   base::Value::List apps;
-  for (int i = 0; i < base::clamp(fake_apps_count_, 0, kMaxAppCount); i++) {
+  for (int i = 0; i < std::clamp(fake_apps_count_, 0, kMaxAppCount); i++) {
     base::Value::Dict app;
     app.Set("name", base::StringPrintf("Fake App %d", (i + 1)));
     app.Set("package_name",

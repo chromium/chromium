@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 57
+// Next MinVersion: 58
 
 module arc.mojom;
 
@@ -48,6 +48,10 @@ struct AppInfo {
   // Option, only for ARC upgrade. True if the app is fixing up.
   // During fixup, it cannot be launched.
   [MinVersion=54] bool need_fixup;
+
+  // App category corresponding to the
+  // android.content.pm.ApplicationInfo#category field.
+  [MinVersion=57] AppCategory app_category;
 };
 
 // Describes the data required to install a web app.

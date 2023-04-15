@@ -14,6 +14,8 @@ per-file *passthrough*=geofflang@chromium.org
 
 # For SharedImages
 vikassoni@chromium.org
+hitawala@chromium.org
+blundell@chromium.org
 
 # D3D, dcomp, Windows platform integration, etc.
 rafael.cintron@microsoft.com

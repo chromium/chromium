@@ -68,6 +68,7 @@ NSTimeInterval kMaxAge = 60 * 60 * 1;
 - (instancetype)initWithMaxAge:(NSTimeInterval)maxAge
              authorizedSchemes:(NSArray*)authorizedSchemes
                   userDefaults:(NSUserDefaults*)groupUserDefaults
+         onlyUseClipboardAsync:(BOOL)onlyUseClipboardAsync
                         uptime:(NSTimeInterval)uptime;
 
 @end
@@ -79,10 +80,12 @@ NSTimeInterval kMaxAge = 60 * 60 * 1;
 - (instancetype)initWithMaxAge:(NSTimeInterval)maxAge
              authorizedSchemes:(NSSet*)authorizedSchemes
                   userDefaults:(NSUserDefaults*)groupUserDefaults
+         onlyUseClipboardAsync:(BOOL)onlyUseClipboardAsync
                         uptime:(NSTimeInterval)uptime {
   self = [super initWithMaxAge:maxAge
              authorizedSchemes:authorizedSchemes
                   userDefaults:groupUserDefaults
+         onlyUseClipboardAsync:onlyUseClipboardAsync
                       delegate:nil];
   if (self) {
     _fakeUptime = uptime;
@@ -120,13 +123,14 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     ClipboardRecentContentImplIOSWithFakeUptime*
         clipboard_content_implementation =
             [[ClipboardRecentContentImplIOSWithFakeUptime alloc]
-                   initWithMaxAge:kMaxAge
-                authorizedSchemes:@[
-                  base::SysUTF8ToNSString(kRecognizedScheme),
-                  base::SysUTF8ToNSString(application_scheme)
-                ]
-                     userDefaults:[NSUserDefaults standardUserDefaults]
-                           uptime:time_delta.InSecondsF()];
+                       initWithMaxAge:kMaxAge
+                    authorizedSchemes:@[
+                      base::SysUTF8ToNSString(kRecognizedScheme),
+                      base::SysUTF8ToNSString(application_scheme)
+                    ]
+                         userDefaults:[NSUserDefaults standardUserDefaults]
+                onlyUseClipboardAsync:NO
+                               uptime:time_delta.InSecondsF()];
 
     clipboard_content_ =
         std::make_unique<ClipboardRecentContentIOSWithFakeUptime>(

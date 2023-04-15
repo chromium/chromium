@@ -96,19 +96,21 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,
       ui::ColorId dropdown_color_id,
+      ui::ColorId selected_color_id,
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing) {
     toolbar_view_->OnReadAnythingThemeChanged(
         font_name, font_scale, foreground_color_id, background_color_id,
-        separator_color_id, dropdown_color_id, line_spacing, letter_spacing);
+        separator_color_id, dropdown_color_id, selected_color_id, line_spacing,
+        letter_spacing);
   }
 
   views::Button::ButtonState GetDecreaseSizeButtonState() {
-    return toolbar_view_->decrease_text_size_button_->GetStateForTesting();
+    return toolbar_view_->decrease_text_size_button_->GetState();
   }
 
   views::Button::ButtonState GetIncreaseSizeButtonState() {
-    return toolbar_view_->increase_text_size_button_->GetStateForTesting();
+    return toolbar_view_->increase_text_size_button_->GetState();
   }
 
  protected:
@@ -125,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
   OnReadAnythingThemeChanged(
       "", kReadAnythingMinimumFontScale, kColorReadAnythingForeground,
       kColorReadAnythingForeground, kColorReadAnythingForeground,
-      kColorReadAnythingForeground,
+      kColorReadAnythingForeground, kColorReadAnythingForeground,
       read_anything::mojom::LineSpacing::kStandard,
       read_anything::mojom::LetterSpacing::kStandard);
 
@@ -152,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
   OnReadAnythingThemeChanged(
       "", kReadAnythingMaximumFontScale, kColorReadAnythingForeground,
       kColorReadAnythingForeground, kColorReadAnythingForeground,
-      kColorReadAnythingForeground,
+      kColorReadAnythingForeground, kColorReadAnythingForeground,
       read_anything::mojom::LineSpacing::kStandard,
       read_anything::mojom::LetterSpacing::kStandard);
 

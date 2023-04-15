@@ -188,23 +188,26 @@ void MediaRouterMojoImpl::OnRoutesUpdated(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto current_routes = GetCurrentRoutes();
-
   std::vector<MediaRoute> added_routes =
       GetRouteSetDifference(routes, current_routes);
   std::vector<MediaRoute> removed_routes =
       GetRouteSetDifference(current_routes, routes);
+
+  // Update the internal_routes_observer_, and SetRoutesForProvider before
+  // AddMirroringMediaControllerHost, since the latter relies on these to be up
+  // to date.
+  internal_routes_observer_->OnRoutesUpdated(routes);
+  routes_query_.SetRoutesForProvider(provider_id, routes);
 
   for (const auto& route : added_routes) {
     if (route.IsLocalMirroringRoute()) {
       AddMirroringMediaControllerHost(route);
     }
   }
-
   for (const auto& route : removed_routes) {
     mirroring_media_controller_hosts_.erase(route.media_route_id());
   }
 
-  routes_query_.SetRoutesForProvider(provider_id, routes);
   routes_query_.NotifyObservers();
 }
 

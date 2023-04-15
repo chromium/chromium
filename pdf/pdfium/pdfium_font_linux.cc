@@ -49,15 +49,15 @@ class BlinkFontMapper {
     // defaults to the direct interface, which is not suitable, as it does not
     // provide MatchFontWithFallback(). This only happens in unit tests, so just
     // refuse to map fonts there.
-    auto* fci = SkFontConfigInterface::RefGlobal().get();
-    if (fci == SkFontConfigInterface::GetSingletonDirectInterface())
+    sk_sp<SkFontConfigInterface> fci = SkFontConfigInterface::RefGlobal();
+    if (fci.get() == SkFontConfigInterface::GetSingletonDirectInterface())
       return nullptr;
 
     auto font_file = std::make_unique<base::File>();
     // In RendererBlinkPlatform, SkFontConfigInterface::SetGlobal() only ever
     // sets the global to a FontLoader. Thus it is safe to assume the returned
     // result is just that.
-    auto* font_loader = reinterpret_cast<font_service::FontLoader*>(fci);
+    auto* font_loader = reinterpret_cast<font_service::FontLoader*>(fci.get());
     font_loader->MatchFontWithFallback(
         desc.family.Utf8(),
         desc.weight >= blink::WebFontDescription::kWeightBold, desc.italic,

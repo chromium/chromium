@@ -6496,6 +6496,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE" desc="This is the message of the notification when an application starts capturing multiple surfaces.">
     Your system administrator has allowed <ph name="APP_ORIGIN">$1</ph> to record your screen
   </message>
+  <message name="IDS_MULTI_CAPTURE_NOTIFICATION_ON_LOGIN_TITLE" desc="This is the title of the notification on login when multi capture is enabled and capturing potentially could happen.">
+    Your screen might be recorded
+  </message>
+  <message name="IDS_MULTI_CAPTURE_NOTIFICATION_ON_LOGIN_MESSAGE" desc="This is the message of the notification on login when multi capture is enabled and capturing potentially could happen.">
+    You'll see a notification if recording starts on this managed device
+  </message>
 
   <!-- Strings for Projector-->
   <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
@@ -6572,6 +6578,19 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_TOUCHPAD_SCROLL_AREA_DESC" desc="Description for a scroll area that allows user to try the selected scrolling directions" translateable="false">
     Scroll with two fingers on your touchpad in this area
   </message>
+
+  <!-- Drive Offline-->
+  <!-- TODO(b/278024582): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_DRIVE_OFFLINE_TITLE" desc="Title of the drive offline screen." translateable="false">
+    Keep your files available when you're offline
+  </message>
+  <message name="IDS_OOBE_DRIVE_OFFLIBE_SUBTITLE" desc="Description of the drive offline screen." translateable="false">
+    Automatically download files in your My Drive so you can access and edit them without an internet connection.
+  </message>
+  <message name="IDS_OOBE_DRIVE_OFFLIBE_ADDITIONAL_SUBTITLE" desc="Additional description of the drive offline screen." translateable="false">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available
+  </message>
+
 
   <!-- Strings for the locale switch notification inside the OOBE. -->
   <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">

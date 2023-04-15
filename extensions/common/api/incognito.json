@@ -6,6 +6,9 @@
   {
     "namespace": "incognito",
     "description": "Dummy namepsace for the incognito manifest key.",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "types": [
       {
         "id": "IncognitoMode",

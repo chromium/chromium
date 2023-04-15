@@ -182,7 +182,8 @@ bool OutputPresenterGL::Reshape(
     float device_scale_factor,
     gfx::OverlayTransform transform) {
   const gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
-  image_format_ = SkColorTypeToResourceFormat(characterization.colorType());
+  image_format_ = SharedImageFormat::SinglePlane(
+      SkColorTypeToResourceFormat(characterization.colorType()));
   const bool has_alpha =
       !SkAlphaTypeIsOpaque(characterization.imageInfo().alphaType());
   return presenter_->Resize(size, device_scale_factor, color_space, has_alpha);
@@ -197,8 +198,7 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
     auto image = std::make_unique<PresenterImageGL>(
         shared_image_factory_, shared_image_representation_factory_,
         dependency_);
-    if (!image->Initialize(image_size, color_space,
-                           SharedImageFormat::SinglePlane(image_format_),
+    if (!image->Initialize(image_size, color_space, image_format_,
                            shared_image_usage_)) {
       DLOG(ERROR) << "Failed to initialize image.";
       return {};
@@ -214,8 +214,7 @@ std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
     gfx::Size image_size) {
   auto image = std::make_unique<PresenterImageGL>(
       shared_image_factory_, shared_image_representation_factory_, dependency_);
-  if (!image->Initialize(image_size, color_space,
-                         SharedImageFormat::SinglePlane(image_format_),
+  if (!image->Initialize(image_size, color_space, image_format_,
                          shared_image_usage_)) {
     DLOG(ERROR) << "Failed to initialize image.";
     return nullptr;

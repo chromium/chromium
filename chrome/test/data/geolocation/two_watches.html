@@ -1,5 +1,6 @@
 <html>
  <head>
+  <script src="../result_queue.js"></script>
   <script>
     var position_1 = 0;
     var position_2 = 0;
@@ -11,9 +12,8 @@
     var first_position_received = false;
     var position_updated = false;
 
-    function sendString(string) {
-      window.domAutomationController.send(string);
-    }
+    const resultQueue = new ResultQueue();
+    const geopositionUpdates = resultQueue;
 
     // The permission request is not considered complete until both of the
     // watches have been set.
@@ -26,10 +26,10 @@
         last_error = "TEST FAIL: watches received different locations. " +
                       " Watch 1 (" + watch_1_id + ") got " + position_1 +
                       " Watch 2 (" + watch_2_id + ") got " + position_2;
-        sendString(last_error);
+        resultQueue.push(last_error);
         return;
       }
-      sendString('request-callback-success');
+      resultQueue.push('request-callback-success');
     }
 
     // This will be triggered twice:
@@ -46,7 +46,7 @@
       if (position.coords.latitude == expected_final_position_latitude &&
           position.coords.longitude == expected_final_position_longitude) {
         position_updated = true;
-        sendString('geoposition-updated');
+        resultQueue.push('geoposition-updated');
       }
     }
 
@@ -67,7 +67,7 @@
 
     function geoErrorCallback(error) {
       last_error = error;
-      sendString('request-callback-error');
+      resultQueue.push('request-callback-error');
     }
     function geoStartWithAsyncResponse() {
       watch_1_id = navigator.geolocation.watchPosition(
@@ -76,6 +76,8 @@
       watch_2_id = navigator.geolocation.watchPosition(
           geoSuccessCallback2, geoErrorCallback,
           {maximumAge:600000, timeout:100000, enableHighAccuracy:true});
+
+      return resultQueue.pop();
     }
     function geoGetLastPositionLatitude() {
       return "" + position_1.coords.latitude;

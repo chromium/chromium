@@ -29,6 +29,7 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/vulkan/buildflags.h"
+#include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -46,6 +47,11 @@ class DawnContextProvider;
 class MetalContextProvider;
 class VulkanContextProvider;
 }  // namespace viz
+
+namespace skgpu::graphite {
+class Context;
+class Recorder;
+}  // namespace skgpu::graphite
 
 namespace gpu {
 class ExternalSemaphorePool;
@@ -89,19 +95,16 @@ class GPU_GLES2_EXPORT SharedContextState
   SharedContextState(const SharedContextState&) = delete;
   SharedContextState& operator=(const SharedContextState&) = delete;
 
-  bool InitializeGrContext(const GpuPreferences& gpu_preferences,
-                           const GpuDriverBugWorkarounds& workarounds,
-                           gpu::raster::GrShaderCache* cache,
-                           GpuProcessActivityFlags* activity_flags = nullptr,
-                           gl::ProgressReporter* progress_reporter = nullptr);
+  bool InitializeSkia(const GpuPreferences& gpu_preferences,
+                      const GpuDriverBugWorkarounds& workarounds,
+                      gpu::raster::GrShaderCache* cache = nullptr,
+                      GpuProcessActivityFlags* activity_flags = nullptr,
+                      gl::ProgressReporter* progress_reporter = nullptr);
   bool GrContextIsGL() const {
     return gr_context_type_ == GrContextType::kGL;
   }
   bool GrContextIsVulkan() const {
     return gr_context_type_ == GrContextType::kVulkan;
-  }
-  bool GrContextIsDawn() const {
-    return gr_context_type_ == GrContextType::kDawn;
   }
 
   bool InitializeGL(const GpuPreferences& gpu_preferences,
@@ -138,7 +141,30 @@ class GPU_GLES2_EXPORT SharedContextState
     return dawn_context_provider_;
   }
   gl::ProgressReporter* progress_reporter() const { return progress_reporter_; }
+  // Ganesh/Graphite contexts may only be used on the GPU main thread.
   GrDirectContext* gr_context() { return gr_context_; }
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  skgpu::graphite::Context* graphite_context() const {
+    return graphite_context_;
+  }
+  // Graphite recorder for GPU main thread, used by RasterDecoder,
+  // SkiaOutputSurfaceImplOnGpu, etc.
+  skgpu::graphite::Recorder* gpu_main_graphite_recorder() const {
+    return gpu_main_graphite_recorder_.get();
+  }
+  // Graphite recorder for Viz compositor thread, used by SkiaOutputSurfaceImpl.
+  skgpu::graphite::Recorder* viz_compositor_graphite_recorder() const {
+    return viz_compositor_graphite_recorder_.get();
+  }
+#else
+  skgpu::graphite::Context* graphite_context() const { return nullptr; }
+  skgpu::graphite::Recorder* gpu_main_graphite_recorder() const {
+    return nullptr;
+  }
+  skgpu::graphite::Recorder* viz_compositor_graphite_recorder() const {
+    return nullptr;
+  }
+#endif
   GrContextType gr_context_type() const { return gr_context_type_; }
   // Handles Skia-reported shader compilation errors.
   void compileError(const char* shader, const char* errors) override;
@@ -283,6 +309,14 @@ class GPU_GLES2_EXPORT SharedContextState
 
   ~SharedContextState() override;
 
+  bool InitializeGanesh(const GpuPreferences& gpu_preferences,
+                        const GpuDriverBugWorkarounds& workarounds,
+                        gpu::raster::GrShaderCache* cache,
+                        GpuProcessActivityFlags* activity_flags = nullptr,
+                        gl::ProgressReporter* progress_reporter = nullptr);
+
+  bool InitializeGraphite(const GpuPreferences& gpu_preferences);
+
   absl::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 
   // gpu::GLContextVirtualDelegate implementation.
@@ -309,15 +343,20 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_vulkan_external_object_ = false;
   bool support_gl_external_object_flags_ = false;
   ContextLostCallback context_lost_callback_;
-  GrContextType gr_context_type_ = GrContextType::kGL;
+  const GrContextType gr_context_type_;
   MemoryTrackerObserver memory_tracker_observer_;
   MemoryTracker memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
-  const raw_ptr<viz::VulkanContextProvider> vk_context_provider_;
-  const raw_ptr<viz::MetalContextProvider> metal_context_provider_;
-  const raw_ptr<viz::DawnContextProvider> dawn_context_provider_;
+  const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;
+  const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;
+  const raw_ptr<viz::DawnContextProvider> dawn_context_provider_ = nullptr;
   bool created_on_compositor_gpu_thread_ = false;
   raw_ptr<GrDirectContext> gr_context_ = nullptr;
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  raw_ptr<skgpu::graphite::Context> graphite_context_ = nullptr;
+  std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
+  std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
+#endif
 
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;

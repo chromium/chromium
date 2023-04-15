@@ -810,9 +810,9 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   return result.content_setting;
 }
 
-std::vector<ContentSettingPatternSource> GetSiteExceptionsForContentType(
-    HostContentSettingsMap* map,
-    ContentSettingsType content_type) {
+std::vector<ContentSettingPatternSource>
+GetSingleOriginExceptionsForContentType(HostContentSettingsMap* map,
+                                        ContentSettingsType content_type) {
   ContentSettingsForOneType entries;
   map->GetSettingsForOneType(content_type, &entries);
   // Exclude any entries that don't represent a single webby top-frame origin.

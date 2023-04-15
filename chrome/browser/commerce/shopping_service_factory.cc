@@ -12,6 +12,7 @@
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -51,12 +52,13 @@ ShoppingServiceFactory::ShoppingServiceFactory()
           "ShoppingService",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(BookmarkModelFactory::GetInstance());
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(SessionProtoDBFactory<
             commerce_subscription_db::CommerceSubscriptionContentProto>::
                 GetInstance());
-  DependsOn(PowerBookmarkServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
@@ -68,6 +70,7 @@ KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
       BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       SessionProtoDBFactory<commerce_subscription_db::

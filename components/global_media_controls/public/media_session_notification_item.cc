@@ -322,6 +322,12 @@ MediaSessionNotificationItem::GetRemotePlaybackMetadata() const {
   return session_info_->remote_playback_metadata.Clone();
 }
 
+bool MediaSessionNotificationItem::IsPlaying() const {
+  return session_info_ &&
+         session_info_->playback_state ==
+             media_session::mojom::MediaPlaybackState::kPlaying;
+}
+
 void MediaSessionNotificationItem::FlushForTesting() {
   media_controller_remote_.FlushForTesting();  // IN-TEST
 }

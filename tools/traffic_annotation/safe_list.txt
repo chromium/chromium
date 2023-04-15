@@ -182,7 +182,6 @@ missing_new_fields,chromeos/ash/components/fwupd/firmware_update_manager.cc
 missing_new_fields,chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc
 missing_new_fields,chromeos/ash/components/timezone/timezone_request.cc
 missing_new_fields,chromeos/components/quick_answers/result_loader.cc
-missing_new_fields,chromeos/components/quick_answers/utils/spell_check_language.cc
 missing_new_fields,components/assist_ranker/ranker_url_fetcher.cc
 missing_new_fields,components/autofill/core/browser/autofill_download_manager.cc
 missing_new_fields,components/autofill/core/browser/payments/payments_client.cc
@@ -204,9 +203,6 @@ missing_new_fields,components/media_router/common/providers/cast/channel/cast_so
 missing_new_fields,components/metrics/net/net_metrics_log_uploader.cc
 missing_new_fields,components/mirroring/service/udp_socket_client.cc
 missing_new_fields,components/network_time/network_time_tracker.cc
-missing_new_fields,components/ntp_snippets/content_suggestions_service.cc
-missing_new_fields,components/ntp_snippets/remote/cached_image_fetcher.cc
-missing_new_fields,components/ntp_snippets/remote/json_request.cc
 missing_new_fields,components/ntp_tiles/icon_cacher_impl.cc
 missing_new_fields,components/ntp_tiles/popular_sites_impl.cc
 missing_new_fields,components/offline_pages/core/prefetch/prefetch_downloader_impl.cc

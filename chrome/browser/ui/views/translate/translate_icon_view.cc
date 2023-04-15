@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -97,7 +98,9 @@ void TranslateIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
-  return kTranslateIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kTranslateChromeRefreshIcon
+             : kTranslateIcon;
 }
 
 BEGIN_METADATA(TranslateIconView, PageActionIconView)

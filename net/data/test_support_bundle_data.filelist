@@ -46,7 +46,6 @@ data/ssl/certificates/README
 data/ssl/certificates/bad_validity.pem
 data/ssl/certificates/can_sign_http_exchanges_draft_extension.pem
 data/ssl/certificates/can_sign_http_exchanges_draft_extension_invalid.pem
-data/ssl/certificates/caninesonduty.com.pem
 data/ssl/certificates/client-empty-password.p12
 data/ssl/certificates/client-nokey.p12
 data/ssl/certificates/client-null-password.p12
@@ -136,6 +135,7 @@ data/ssl/certificates/key_usage_rsa_digitalsignature.pem
 data/ssl/certificates/key_usage_rsa_keyencipherment.pem
 data/ssl/certificates/key_usage_rsa_no_extension.pem
 data/ssl/certificates/large_key.pem
+data/ssl/certificates/leaf_from_known_root.pem
 data/ssl/certificates/lets-encrypt-dst-x3-root.pem
 data/ssl/certificates/lets-encrypt-isrg-x1-root.pem
 data/ssl/certificates/localhost_cert.pem
@@ -205,7 +205,6 @@ data/ssl/certificates/unittest.key.bin
 data/ssl/certificates/unittest.selfsigned.der
 data/ssl/certificates/verisign_intermediate_ca_2011.pem
 data/ssl/certificates/verisign_intermediate_ca_2016.pem
-data/ssl/certificates/vrk_gov_root.pem
 data/ssl/certificates/weak_digest_md2_ee.pem
 data/ssl/certificates/weak_digest_md2_intermediate.pem
 data/ssl/certificates/weak_digest_md2_root.pem

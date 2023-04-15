@@ -8,6 +8,7 @@
 #include "ui/base/wayland/wayland_display_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_output.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::Values;
@@ -138,14 +139,12 @@ TEST_F(WaylandOutputTest, WaylandOutputIsReady) {
   EXPECT_TRUE(new_output->IsReady());
 }
 
-class WaylandOutpuWithAuraOutputManagerTest
-    : public WaylandTestSimpleWithAuraShell {
+class WaylandOutputWithAuraOutputManagerTest : public WaylandTestSimple {
  protected:
-  // WaylandTestSimpleWithAuraShell:
-  void SetUp() override {
-    SetUseAuraOutputManager(true);
-    WaylandTestSimpleWithAuraShell::SetUp();
-  }
+  WaylandOutputWithAuraOutputManagerTest()
+      : WaylandTestSimple(wl::ServerConfig{
+            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+            .use_aura_output_manager = true}) {}
 
   WaylandOutputManager* wayland_output_manager() {
     auto* wayland_output_manager = connection_->wayland_output_manager();
@@ -160,7 +159,7 @@ class WaylandOutpuWithAuraOutputManagerTest
 
 // Tests that WaylandOutput only reports as ready if metrics has been set when
 // the aura output manager is bound.
-TEST_F(WaylandOutpuWithAuraOutputManagerTest, WaylandOutputIsReady) {
+TEST_F(WaylandOutputWithAuraOutputManagerTest, WaylandOutputIsReady) {
   auto* output_manager = connection_->wayland_output_manager();
   const auto* primary_output = output_manager->GetPrimaryOutput();
 
@@ -197,7 +196,8 @@ TEST_F(WaylandOutpuWithAuraOutputManagerTest, WaylandOutputIsReady) {
 // Tests that delegate notifications are not triggered when the wl_output.done
 // event is received. It is instead expected to be triggered by the aura output
 // manager.
-TEST_F(WaylandOutpuWithAuraOutputManagerTest, SuppressesDelegateNotifications) {
+TEST_F(WaylandOutputWithAuraOutputManagerTest,
+       SuppressesDelegateNotifications) {
   testing::NiceMock<MockWaylandOutputDelegate> output_delegate;
   EXPECT_CALL(output_delegate, OnOutputHandleMetrics(testing::_)).Times(0);
   primary_output()->set_delegate_for_testing(&output_delegate);

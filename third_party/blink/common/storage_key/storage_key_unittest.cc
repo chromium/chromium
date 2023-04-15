@@ -249,10 +249,10 @@ TEST_F(StorageKeyTest, SerializePartitioned) {
   net::SchemefulSite SiteExample(GURL("https://example.com"));
   net::SchemefulSite SiteTest(GURL("https://test.example"));
 
-  struct {
+  const struct {
     const char* origin;
-    const net::SchemefulSite& top_level_site;
-    const mojom::AncestorChainBit ancestor_chain_bit;
+    net::SchemefulSite top_level_site;
+    mojom::AncestorChainBit ancestor_chain_bit;
     const char* expected_serialization;
   } kTestCases[] = {
       // 3p context cases
@@ -268,8 +268,8 @@ TEST_F(StorageKeyTest, SerializePartitioned) {
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(test.origin);
     const url::Origin origin = url::Origin::Create(GURL(test.origin));
-    const net::SchemefulSite& site = test.top_level_site;
-    StorageKey key = StorageKey::Create(origin, site, test.ancestor_chain_bit);
+    StorageKey key = StorageKey::Create(origin, test.top_level_site,
+                                        test.ancestor_chain_bit);
     EXPECT_EQ(test.expected_serialization, key.Serialize());
     EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
   }
@@ -428,9 +428,9 @@ TEST_F(StorageKeyTest, SerializeDeserializePartitioned) {
   net::SchemefulSite SitePort(GURL("https://example.com:90"));
   net::SchemefulSite SiteFile(GURL("file:///"));
 
-  struct {
+  const struct {
     const char* origin;
-    const net::SchemefulSite& site;
+    net::SchemefulSite site;
   } kTestCases[] = {
       // 1p context case.
       {"https://example.com/", SiteExample},
@@ -523,9 +523,9 @@ TEST_F(StorageKeyTest, SerializeDeserializeOpaqueTopLevelSite) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning, toggle);
-    struct {
-      const url::Origin origin;
-      const net::SchemefulSite& top_level_site;
+    const struct {
+      url::Origin origin;
+      net::SchemefulSite top_level_site;
       const char* expected_serialization_without_partitioning;
       const char* expected_serialization_with_partitioning;
     } kTestCases[] = {
@@ -706,6 +706,11 @@ TEST_F(StorageKeyTest, DeserializeAncestorChainBits) {
         // An origin cannot be serialized with a SameSite bit.
         {
             "https://example.com/^30",
+            absl::nullopt,
+        },
+        // An origin cannot be serialized with a malformed CrossSite bit.
+        {
+            "https://example.com/^301",
             absl::nullopt,
         },
         // An origin can be serialized with a CrossSite bit.

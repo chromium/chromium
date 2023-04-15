@@ -342,12 +342,6 @@ struct SnapshotAccessibilityTreeParams {
   // See ui/accessibility/ax_mode.h for valid values of |ax_mode|.
   uint32 ax_mode;
 
-  // If true, nodes that are entirely offscreen will have their entire
-  // subtree excluded.  Note that this heuristic is imperfect, and
-  // an absolute-positioned node that's visible, but whose ancestors
-  // are entirely offscreen, may get excluded.
-  bool exclude_offscreen;
-
   // The maximum number of nodes to snapshot before exiting early.
   // Note that this is not a hard limit; once this limit is reached a
   // few more nodes may be added in order to ensure a well-formed

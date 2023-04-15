@@ -31,7 +31,7 @@ class DownloadOfflineContentProviderTest : public testing::Test {
       : task_runner_(new base::TestSimpleTaskRunner),
         current_default_handle_(task_runner_),
         provider_(&aggregator_, kTestDownloadNamespace),
-        coordinator_(base::NullCallback(), false) {}
+        coordinator_(base::NullCallback()) {}
 
   DownloadOfflineContentProviderTest(
       const DownloadOfflineContentProviderTest&) = delete;

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 
+class AccountId;
 class PrefService;
 
 namespace ash {
@@ -23,10 +24,32 @@ class ASH_EXPORT TouchpadPrefHandler {
   virtual void InitializeTouchpadSettings(PrefService* pref_service,
                                           mojom::Touchpad* touchpad) = 0;
 
+  // Initializes login screen device settings using the passed in `touchpad`.
+  // Settings will be stored either in `settings.touchpad.internal` or
+  // `settings.touchpad.external` based on the value of `touchpad.is_external`.
+  virtual void InitializeLoginScreenTouchpadSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      mojom::Touchpad* touchpad) = 0;
+
+  // Updates the `settings` member of the `mojom::Touchpad` object using
+  // default settings.
+  virtual void InitializeWithDefaultTouchpadSettings(
+      mojom::Touchpad* touchpad) = 0;
+
   // Updates device settings stored in prefs to match the values in
   // `touchpad.settings`.
   virtual void UpdateTouchpadSettings(PrefService* pref_service,
                                       const mojom::Touchpad& touchpad) = 0;
+
+  // Updates login screen device settings stored in prefs to match the values
+  // in `touchpad.settings`. Settings will be stored either in
+  // `settings.touchpad.internal` or `settings.touchpad.external`
+  // based on the value of `touchpad.is_external`.
+  virtual void UpdateLoginScreenTouchpadSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::Touchpad& touchpad) = 0;
 };
 
 }  // namespace ash

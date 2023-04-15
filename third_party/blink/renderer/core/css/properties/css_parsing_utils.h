@@ -338,6 +338,7 @@ bool ConsumeAnimationShorthand(
     const CSSParserContext&,
     bool use_legacy_parsing);
 
+CSSValue* ConsumeSingleTimelineAttachment(CSSParserTokenRange&);
 CSSValue* ConsumeSingleTimelineAxis(CSSParserTokenRange&);
 CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange&,
                                     const CSSParserContext&);

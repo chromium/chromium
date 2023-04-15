@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 分鐘前}other{# 分鐘前}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 分鐘}other{# 分鐘}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1243314992276662751">上傳</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">由左至右</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1398853756734560583">放到最大</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 分鐘前}other{# 分鐘前}}</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 個月前}other{# 個月前}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 分鐘 }other{# 分鐘 }}</translation>
 <translation id="1643823602425662293">通知</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">圖片</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4588090240171750605">向右捲動</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="4724120544754982507">通知中心，<ph name="UNREAD_NOTIFICATION_COUNT" /> 則未讀通知</translation>
 <translation id="4729257764711776855">電話號碼</translation>
 <translation id="4746179598275229723">已取消固定擴充功能</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8394908167088220973">媒體播放/暫停</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 年}other{# 年}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> 檔案 (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/秒</translation>
 <translation id="8725488761726303204">還有另外 <ph name="NUMBER" /> 個清單項目</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">傳送中… </translation>
 <translation id="8876215549894133151">格式：</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 小時前}other{# 小時前}}</translation>
 <translation id="8996630695507351249">請確認「<ph name="TARGET_DEVICE_NAME" />」已連上網際網路。</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="9059834730836941392">收合通知</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="944069440740578670">未讀通知</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>
 </translationbundle>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1075622780330595106">Ultimamente non se utilizaron <ph name="NUMBER_OF_TABS" /> das túas pestanas. Queres pechalas?</translation>
-<translation id="1181037720776840403">Eliminar</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
 <translation id="1403228085774130835">Podes atopar as pestanas pechadas nas pestanas recentes, dispoñibles no menú principal de Chrome</translation>
 <translation id="1455506303394048917">A túa actividade nestas pestanas do modo de incógnito borrarase deste dispositivo</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestana}other{Desagrupar pestanas}}</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Quitar <ph name="TABS_COUNT_ONE" /> pestana seleccionada do grupo.}other{Quitar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas do grupo.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Engadir pestana aos marcadores}other{Engadir pestanas aos marcadores}}</translation>
-<translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer grupo de pestanas con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="2569352796411618312">Suxestión: <ph name="NUMBER_OF_TABS" /> das pestanas que tes abertas levan sen utilizarse un bo anaco. Queres pechalas?</translation>
-<translation id="257674075312929031">Grupo</translation>
 <translation id="2613747923081026172">Crear grupo</translation>
 <translation id="2662028055331606429">Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar sitio</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Arrastra as pestanas para agrupalas</translation>
 <translation id="5846292395804797011">Pechar grupo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> pestanas</translation>
 <translation id="5972844218283131174">Anular toda a selección</translation>
-<translation id="6040143037577758943">Pechar</translation>
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
 <translation id="6228793724645064692">(valoración da tenda)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Ocultar modo de selección múltiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestana}other{Compartir pestanas}}</translation>
 <translation id="7129458170538955174">A folla de información sobre esta tenda está aberta a media pantalla</translation>
-<translation id="7151209024774799310">Quitar pestanas do grupo</translation>
 <translation id="7204204600596740190">Modo de selección múltiple</translation>
 <translation id="7326879924029668159">Consulta a política de devolución e outra información</translation>
 <translation id="7352298686197644113">Descubre que artigo baixou de prezo nunha das pestanas que tes abertas</translation>

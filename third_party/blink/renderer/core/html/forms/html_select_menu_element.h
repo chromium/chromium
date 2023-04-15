@@ -84,6 +84,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   // HTMLSelectElement::GetOptionList().
   ListItems GetListItems() const;
 
+  void ListboxWasClosed();
+
  private:
   class SelectMutationCallback;
 

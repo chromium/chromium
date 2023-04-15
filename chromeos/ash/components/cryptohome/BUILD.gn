@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//testing/gtest:gtest",
   ]
   sources = [
+    "auth_factor_conversions_unittest.cc",
     "cryptohome_util_unittest.cc",
     "system_salt_getter_unittest.cc",
     "userdataauth_util_unittest.cc",

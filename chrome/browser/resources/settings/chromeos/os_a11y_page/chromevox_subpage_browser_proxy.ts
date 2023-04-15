@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+export type DeviceEventListener = (device?: chrome.bluetooth.Device) => void;
+export type PairingEventListener =
+    (pairingEvent: chrome.bluetoothPrivate.PairingEvent) => void;
+
 export interface ChromeVoxSubpageBrowserProxy {
   /**
    * Requests the updated voice data. Returned by the 'all-voice-data-updated'
@@ -14,6 +18,25 @@ export interface ChromeVoxSubpageBrowserProxy {
    * through VoicesChanged.
    */
   refreshTtsVoices(): void;
+
+  /**
+   * Bluetooth API handlers for Bluetooth Braille Display Settings.
+   */
+  addDeviceAddedListener(listener: DeviceEventListener): void;
+  removeDeviceAddedListener(listener: DeviceEventListener): void;
+  addDeviceChangedListener(listener: DeviceEventListener): void;
+  removeDeviceChangedListener(listener: DeviceEventListener): void;
+  addDeviceRemovedListener(listener: DeviceEventListener): void;
+  removeDeviceRemovedListener(listener: DeviceEventListener): void;
+  addPairingListener(listener: PairingEventListener): void;
+  removePairingListener(listener: PairingEventListener): void;
+  startDiscovery(): void;
+  stopDiscovery(): void;
+
+  /**
+   * Changes the currently selected bluetooth braille display.
+   */
+  updateBluetoothBrailleDisplayAddress(displayAddress: string): void;
 }
 
 let instance: ChromeVoxSubpageBrowserProxy|null = null;
@@ -34,5 +57,49 @@ export class ChromeVoxSubpageBrowserProxyImpl implements
 
   refreshTtsVoices(): void {
     chrome.send('refreshTtsVoices');
+  }
+
+  addDeviceAddedListener(listener: DeviceEventListener): void {
+    chrome.bluetooth.onDeviceAdded.addListener(listener);
+  }
+
+  removeDeviceAddedListener(listener: DeviceEventListener): void {
+    chrome.bluetooth.onDeviceAdded.removeListener(listener);
+  }
+
+  addDeviceChangedListener(listener: DeviceEventListener): void {
+    chrome.bluetooth.onDeviceChanged.addListener(listener);
+  }
+
+  removeDeviceChangedListener(listener: DeviceEventListener): void {
+    chrome.bluetooth.onDeviceChanged.removeListener(listener);
+  }
+
+  addDeviceRemovedListener(listener: DeviceEventListener): void {
+    chrome.bluetooth.onDeviceRemoved.addListener(listener);
+  }
+
+  removeDeviceRemovedListener(listener: DeviceEventListener): void {
+    chrome.bluetooth.onDeviceRemoved.removeListener(listener);
+  }
+
+  addPairingListener(listener: PairingEventListener): void {
+    chrome.bluetoothPrivate.onPairing.addListener(listener);
+  }
+
+  removePairingListener(listener: PairingEventListener): void {
+    chrome.bluetoothPrivate.onPairing.removeListener(listener);
+  }
+
+  startDiscovery(): void {
+    chrome.bluetooth.startDiscovery();
+  }
+
+  stopDiscovery(): void {
+    chrome.bluetooth.startDiscovery();
+  }
+
+  updateBluetoothBrailleDisplayAddress(displayAddress: string): void {
+    chrome.send('updateBluetoothBrailleDisplayAddress', [displayAddress]);
   }
 }

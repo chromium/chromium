@@ -240,7 +240,7 @@ Textfield::Textfield()
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
   FocusRing::Install(this);
-  FocusRing::Get(this)->SetOutsetFocusRingDisabled();
+  FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
 #if !BUILDFLAG(IS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom

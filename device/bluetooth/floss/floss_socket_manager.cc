@@ -292,6 +292,21 @@ const DBusTypeInfo& GetDBusTypeInfo(const FlossSocketManager::FlossSocket*) {
   return info;
 }
 
+int FlossSocketManager::GetRawFlossFlagsFromBluetoothFlags(bool encrypt,
+                                                           bool auth,
+                                                           bool auth_mitm,
+                                                           bool auth_16_digit,
+                                                           bool no_sdp) {
+  int flags = 0;
+  return flags |
+         (encrypt ? static_cast<int>(SocketFlags::kSocketFlagsEncrypt) : 0) |
+         (auth ? static_cast<int>(SocketFlags::kSocketFlagsAuth) : 0) |
+         (auth_mitm ? static_cast<int>(SocketFlags::kSocketFlagsAuthMitm) : 0) |
+         (auth_16_digit ? static_cast<int>(SocketFlags::kSocketFlagsAuth16Digit)
+                        : 0) |
+         (no_sdp ? static_cast<int>(SocketFlags::kSocketFlagsNoSdp) : 0);
+}
+
 FlossSocketManager::FlossListeningSocket::FlossListeningSocket() = default;
 FlossSocketManager::FlossListeningSocket::FlossListeningSocket(
     const FlossListeningSocket&) = default;
@@ -343,6 +358,48 @@ void FlossSocketManager::ListenUsingL2cap(
       method, callback_id_);
 }
 
+void FlossSocketManager::ListenUsingL2capLe(
+    const Security security_level,
+    ResponseCallback<BtifStatus> callback,
+    ConnectionStateChanged ready_cb,
+    ConnectionAccepted new_connection_cb) {
+  if (callback_id_ == kInvalidCallbackId) {
+    std::move(callback).Run(base::unexpected(Error(kErrorInvalidCallback, "")));
+    return;
+  }
+
+  const char* method = security_level == Security::kInsecure
+                           ? socket_manager::kListenUsingInsecureL2capLeChannel
+                           : socket_manager::kListenUsingL2capLeChannel;
+
+  CallSocketMethod(
+      base::BindOnce(&FlossSocketManager::CompleteListen,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(ready_cb), std::move(new_connection_cb)),
+      method, callback_id_);
+}
+
+void FlossSocketManager::ListenUsingRfcommAlt(
+    const absl::optional<std::string> name,
+    const absl::optional<device::BluetoothUUID> application_uuid,
+    const absl::optional<int> channel,
+    const absl::optional<int> flags,
+    ResponseCallback<BtifStatus> callback,
+    ConnectionStateChanged ready_cb,
+    ConnectionAccepted new_connection_cb) {
+  if (callback_id_ == kInvalidCallbackId) {
+    std::move(callback).Run(
+        base::unexpected(Error(kErrorInvalidCallback, /*message=*/"")));
+    return;
+  }
+  CallSocketMethod(
+      base::BindOnce(&FlossSocketManager::CompleteListen,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(ready_cb), std::move(new_connection_cb)),
+      socket_manager::kListenUsingRfcomm, callback_id_, channel,
+      application_uuid, name, flags);
+}
+
 void FlossSocketManager::ListenUsingRfcomm(
     const std::string& name,
     const device::BluetoothUUID& uuid,
@@ -379,6 +436,25 @@ void FlossSocketManager::ConnectUsingL2cap(const FlossDeviceId& remote_device,
   const char* method = security_level == Security::kInsecure
                            ? socket_manager::kCreateInsecureL2capChannel
                            : socket_manager::kCreateL2capChannel;
+
+  CallSocketMethod(
+      base::BindOnce(&FlossSocketManager::CompleteConnect,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      method, callback_id_, remote_device, psm);
+}
+
+void FlossSocketManager::ConnectUsingL2capLe(const FlossDeviceId& remote_device,
+                                             const int psm,
+                                             const Security security_level,
+                                             ConnectionCompleted callback) {
+  if (callback_id_ == kInvalidCallbackId) {
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    return;
+  }
+
+  const char* method = security_level == Security::kInsecure
+                           ? socket_manager::kCreateInsecureL2capLeChannel
+                           : socket_manager::kCreateL2capLeChannel;
 
   CallSocketMethod(
       base::BindOnce(&FlossSocketManager::CompleteConnect,

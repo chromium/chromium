@@ -432,6 +432,9 @@ def main():
     result = 0
     ninja_targets_seen = set()
     for filepath in glob.glob(os.path.join(THIS_DIR, '*.json')):
+      # This file is formatted differently from other json files
+      if 'autoshard_exceptions' in filepath:
+        continue
       if not process_file(args.mode, args.test_name, tests_location, filepath,
                           ninja_targets, ninja_targets_seen):
         result = 1

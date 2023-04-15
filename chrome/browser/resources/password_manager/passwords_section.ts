@@ -9,14 +9,15 @@ import './strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
+import './dialogs/move_passwords_dialog.js';
 import './user_utils_mixin.js';
-import './prefs/pref_mixin.js';
 // <if expr="_google_chrome">
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
 
 // </if>
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -28,8 +29,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
-import {PrefMixin} from './prefs/pref_mixin.js';
 // <if expr="_google_chrome">
+import {PromoCardId} from './promo_cards/promo_card.js';
 import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 // </if>
 import {Route, RouteObserverMixin, UrlParam} from './router.js';
@@ -38,14 +39,16 @@ import {UserUtilMixin} from './user_utils_mixin.js';
 export interface PasswordsSectionElement {
   $: {
     addPasswordButton: CrButtonElement,
+    descriptionLabel: HTMLElement,
     passwordsList: IronListElement,
+    noPasswordsFound: HTMLElement,
     movePasswords: HTMLElement,
     importPasswords: HTMLElement,
   };
 }
 
 const PasswordsSectionElementBase =
-    PrefMixin(UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
+    PrefsMixin(UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -81,19 +84,26 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showAddPasswordDialog_: Boolean,
       showAuthTimedOutDialog_: Boolean,
+      showMovePasswordsDialog_: Boolean,
 
       movePasswordsText_: String,
 
-      numberOfPasswordsOnDevice_: {
+      passwordsOnDevice_: {
         type: Number,
-        computed: 'computeNumberOfPasswordsOnDevice_(groups_)',
+        computed: 'computePasswordsOnDevice_(groups_)',
       },
 
       showMovePasswords_: {
         type: Boolean,
         computed: 'computeShowMovePasswords_(isAccountStoreUser, ' +
-            'numberOfPasswordsOnDevice_)',
+            'passwordsOnDevice_, searchTerm_)',
       },
+
+      showPasswordsDescription_: {
+        type: Boolean,
+        computed: 'computeShowPasswordsDescription_(groups_, searchTerm_)',
+      },
+
       // <if expr="_google_chrome">
       promoCard_: {
         type: Object,
@@ -103,7 +113,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       passwordManagerDisabled_: {
         type: Boolean,
-        computed: 'computePasswordManagerDisabled_(pref)',
+        computed: 'computePasswordManagerDisabled_(' +
+            'prefs.credentials_enable_service.enforcement, ' +
+            'prefs.credentials_enable_service.value)',
       },
     };
   }
@@ -113,6 +125,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shownGroupsCount_: number;
   private showAddPasswordDialog_: boolean;
   private showAuthTimedOutDialog_: boolean;
+  private showMovePasswordsDialog_: boolean;
   private movePasswordsText_: string;
   // <if expr="_google_chrome">
   private promoCard_: PromoCard|null;
@@ -123,12 +136,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
   private authTimedOutListener_: (() => void)|null;
 
-  constructor() {
-    super();
-
-    this.prefKey = 'credentials_enable_service';
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     const updateGroups = () => {
@@ -137,6 +144,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
 
     this.setSavedPasswordsListener_ = _passwordList => {
+      // <if expr="_google_chrome">
+      if (_passwordList.length === 0 &&
+          this.promoCard_?.id === PromoCardId.CHECKUP) {
+        this.promoCard_ = null;
+      }
+      // </if>
       updateGroups();
     };
 
@@ -150,10 +163,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
     this.authTimedOutListener_ = this.onAuthTimedOut_.bind(this);
     window.addEventListener('auth-timed-out', this.authTimedOutListener_);
-    this.$.movePasswords.addEventListener(
-        'click', this.onMovePasswordsClicked_);
-    this.$.importPasswords.addEventListener(
-        'click', this.onImportPasswordsClicked_);
   }
 
   override disconnectedCallback() {
@@ -206,7 +215,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showAddPasswordDialog_ = true;
   }
 
-  private onAddPasswordDialogClosed_() {
+  private onAddPasswordDialogClose_() {
     this.showAddPasswordDialog_ = false;
   }
 
@@ -214,31 +223,31 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showAuthTimedOutDialog_ = true;
   }
 
-  private onAuthTimedOutDialogClosed_() {
+  private onAuthTimedOutDialogClose_() {
     this.showAuthTimedOutDialog_ = false;
   }
 
-  private computeNumberOfPasswordsOnDevice_(): number {
+  private computePasswordsOnDevice_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
     const localStorage = [
       chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
       chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     ];
     return this.groups_.map(group => group.entries)
         .flat()
-        .filter(entry => localStorage.includes(entry.storedIn))
-        .length;
+        .filter(entry => localStorage.includes(entry.storedIn));
   }
 
   private computeShowMovePasswords_(): boolean {
     // TODO(crbug.com/1420548): Check for conflicts if needed.
-    return this.computeNumberOfPasswordsOnDevice_() > 0 &&
-        this.isAccountStoreUser;
+    return this.computePasswordsOnDevice_().length > 0 &&
+        this.isAccountStoreUser && !this.searchTerm_;
   }
 
   private async onGroupsChanged_() {
     this.movePasswordsText_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'movePasswords', this.computeNumberOfPasswordsOnDevice_());
+            'movePasswords', this.computePasswordsOnDevice_().length);
   }
 
   private getMovePasswordsText_(): TrustedHTML {
@@ -248,7 +257,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onMovePasswordsClicked_(e: Event) {
     e.preventDefault();
-    // TODO(crbug.com/1420548): Show move passwords dialog.
+    this.showMovePasswordsDialog_ = true;
+  }
+
+  private onMovePasswordsDialogClose_() {
+    this.showMovePasswordsDialog_ = false;
   }
 
   private showImportPasswordsOption_(): boolean {
@@ -274,12 +287,17 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
 
   private computePasswordManagerDisabled_(): boolean {
-    if (!this.pref) {
-      return true;
-    }
-    return this.pref!.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED &&
-        !this.pref!.value;
+    const pref = this.getPref('credentials_enable_service');
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !pref.value;
+  }
+
+  private computeShowPasswordsDescription_(): boolean {
+    return !this.searchTerm_ && this.groups_.length > 0;
+  }
+
+  private showNoPasswordsFound_(): boolean {
+    return this.hideGroupsList_() && this.groups_.length > 0;
   }
 }
 

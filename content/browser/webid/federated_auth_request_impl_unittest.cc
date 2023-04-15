@@ -400,7 +400,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void SendTokenRequest(const GURL& token_url,
                         const std::string& account,
                         const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback) override {
+                        TokenRequestCallback callback,
+                        ContinueOnCallback on_continue) override {
     ++num_fetched_[FetchedEndpoint::TOKEN];
 
     std::string delivered_token =
@@ -461,13 +462,15 @@ class IdpNetworkRequestManagerParamChecker
   void SendTokenRequest(const GURL& token_url,
                         const std::string& account,
                         const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback) override {
+                        TokenRequestCallback callback,
+                        ContinueOnCallback on_continue) override {
     if (expected_selected_account_id_)
       EXPECT_EQ(expected_selected_account_id_, account);
     if (expected_url_encoded_post_data_)
       EXPECT_EQ(expected_url_encoded_post_data_, url_encoded_post_data);
     TestIdpNetworkRequestManager::SendTokenRequest(
-        token_url, account, url_encoded_post_data, std::move(callback));
+        token_url, account, url_encoded_post_data, std::move(callback),
+        std::move(on_continue));
   }
 
  private:

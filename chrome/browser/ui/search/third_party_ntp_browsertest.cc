@@ -74,11 +74,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   // Verify that the subframe exists and has the expected origin.
   content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
   ASSERT_TRUE(subframe);
-  std::string subframe_origin;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      subframe, "domAutomationController.send(window.origin)",
-      &subframe_origin));
-  EXPECT_EQ("chrome-search://most-visited", subframe_origin);
+  EXPECT_EQ("chrome-search://most-visited",
+            content::EvalJs(subframe, "window.origin"));
 }
 
 // Verifies that Chrome won't spawn a separate renderer process for

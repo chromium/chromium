@@ -12,6 +12,12 @@
 #include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace {
+constexpr size_t kMaxFrameRate = 30;
+}  // namespace
 
 ReceiverSessionClient::ReceiverSessionClient(
     fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
@@ -55,6 +61,19 @@ void ReceiverSessionClient::SetMojoEndpoints(
   // valid remoting endpoint when |renderer_controller| is set.
   cast_streaming::ReceiverConfig config(std::move(video_codecs),
                                         std::move(audio_codecs));
+
+  gfx::Size display_resolution =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds().size();
+  config.video_limits.push_back(cast_streaming::ReceiverConfig::VideoLimits{
+      .max_pixels_per_second =
+          static_cast<int>(display_resolution.width() *
+                           display_resolution.height() * kMaxFrameRate),
+      .max_dimensions = gfx::Rect(display_resolution),
+      .max_frame_rate = kMaxFrameRate});
+  config.display_description = cast_streaming::ReceiverConfig::Display{
+      .dimensions = gfx::Rect(display_resolution),
+      .max_frame_rate = kMaxFrameRate,
+      .can_scale_content = true};
 
   receiver_session_ = cast_streaming::ReceiverSession::Create(
       config,

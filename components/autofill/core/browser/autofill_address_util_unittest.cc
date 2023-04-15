@@ -251,4 +251,11 @@ TEST(GetProfileDescription, NotIncludeAddressAndContacts) {
   EXPECT_EQ(description, u"John H. Doe");
 }
 
+TEST(GetProfileDescription, ProfileDescriptionForMigration) {
+  AutofillProfile profile = test::GetFullProfile();
+  // Should contain full name only.
+  EXPECT_EQ(GetProfileSummaryForMigrationPrompt(profile, "en-US"),
+            u"John H. Doe\n666 Erebus St.\njohndoe@hades.com\n16502111111");
+}
+
 }  // namespace autofill

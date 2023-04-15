@@ -77,6 +77,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   background_color_id_ = initial_colors.background_color_id;
   separator_color_id_ = initial_colors.separator_color_id;
   dropdown_color_id_ = initial_colors.dropdown_color_id;
+  selected_dropdown_color_id_ = initial_colors.selected_dropdown_color_id;
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetSelectedIndex().value());
@@ -115,6 +116,7 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   background_color_id_ = new_colors.background_color_id;
   separator_color_id_ = new_colors.separator_color_id;
   dropdown_color_id_ = new_colors.dropdown_color_id;
+  selected_dropdown_color_id_ = new_colors.selected_dropdown_color_id;
 
   NotifyThemeChanged();
 }
@@ -195,10 +197,10 @@ void ReadAnythingModel::OnSystemThemeChanged() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnReadAnythingThemeChanged(font_name_, font_scale_,
-                                   foreground_color_id_, background_color_id_,
-                                   separator_color_id_, dropdown_color_id_,
-                                   line_spacing_, letter_spacing_);
+    obs.OnReadAnythingThemeChanged(
+        font_name_, font_scale_, foreground_color_id_, background_color_id_,
+        separator_color_id_, dropdown_color_id_, selected_dropdown_color_id_,
+        line_spacing_, letter_spacing_);
   }
 }
 
@@ -286,11 +288,40 @@ ReadAnythingFontModel::GetDropdownBackgroundColorIdAt(size_t index) const {
   return background_color_id_;
 }
 
+absl::optional<ui::ColorId>
+ReadAnythingFontModel::GetDropdownSelectedBackgroundColorIdAt(
+    size_t index) const {
+  return selected_color_id_;
+}
+
 ReadAnythingFontModel::~ReadAnythingFontModel() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingColorsModel
 ///////////////////////////////////////////////////////////////////////////////
+ReadAnythingColorsModel::ColorInfo::ColorInfo(
+    std::u16string name,
+    int icon_asset,
+    ui::ColorId foreground_color_id,
+    ui::ColorId background_color_id,
+    ui::ColorId separator_color_id,
+    ui::ColorId dropdown_color_id,
+    ui::ColorId selected_dropdown_color_id,
+    ColorInfo::ReadAnythingColor logging_value)
+    : name(name),
+      icon_asset(icon_asset),
+      foreground_color_id(foreground_color_id),
+      background_color_id(background_color_id),
+      separator_color_id(separator_color_id),
+      dropdown_color_id(dropdown_color_id),
+      selected_dropdown_color_id(selected_dropdown_color_id),
+      logging_value(logging_value) {}
+ReadAnythingColorsModel::ColorInfo::ColorInfo(const ColorInfo& other) = default;
+ReadAnythingColorsModel::ColorInfo::ColorInfo(ColorInfo&&) = default;
+ReadAnythingColorsModel::ColorInfo&
+ReadAnythingColorsModel::ColorInfo::operator=(const ColorInfo&) = default;
+ReadAnythingColorsModel::ColorInfo&
+ReadAnythingColorsModel::ColorInfo::operator=(ColorInfo&&) = default;
 
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
@@ -301,7 +332,8 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingBackground,
       kColorReadAnythingSeparator,
       kColorReadAnythingDropdownBackground,
-      ReadAnythingColor::kDefault};
+      kColorReadAnythingDropdownSelected,
+      ColorInfo::ReadAnythingColor::kDefault};
 
   ColorInfo kLightColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_LIGHT_COLOR_LABEL),
@@ -310,7 +342,8 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingBackgroundLight,
       kColorReadAnythingSeparatorLight,
       kColorReadAnythingDropdownBackgroundLight,
-      ReadAnythingColor::kLight};
+      kColorReadAnythingDropdownSelectedLight,
+      ColorInfo::ReadAnythingColor::kLight};
 
   ColorInfo kDarkColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_DARK_COLOR_LABEL),
@@ -319,7 +352,8 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingBackgroundDark,
       kColorReadAnythingSeparatorDark,
       kColorReadAnythingDropdownBackgroundDark,
-      ReadAnythingColor::kDark};
+      kColorReadAnythingDropdownSelectedDark,
+      ColorInfo::ReadAnythingColor::kDark};
 
   ColorInfo kYellowColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_YELLOW_COLOR_LABEL),
@@ -328,7 +362,8 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingBackgroundYellow,
       kColorReadAnythingSeparatorYellow,
       kColorReadAnythingDropdownBackgroundYellow,
-      ReadAnythingColor::kYellow};
+      kColorReadAnythingDropdownSelectedYellow,
+      ColorInfo::ReadAnythingColor::kYellow};
 
   ColorInfo kBlueColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_BLUE_COLOR_LABEL),
@@ -337,7 +372,8 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingBackgroundBlue,
       kColorReadAnythingSeparatorBlue,
       kColorReadAnythingDropdownBackgroundBlue,
-      ReadAnythingColor::kBlue};
+      kColorReadAnythingDropdownSelectedBlue,
+      ColorInfo::ReadAnythingColor::kBlue};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);

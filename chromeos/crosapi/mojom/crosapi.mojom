@@ -321,10 +321,9 @@ interface Crosapi {
   [MinVersion=72] BindExtensionInfoPrivate@75(
       pending_receiver<ExtensionInfoPrivate> receiver);
 
-  // FirewallHoleService is a service that allows users to open ports in the
-  // ChromeOS system firewall from Lacros. Implemented in Ash.
-  [MinVersion=101] BindFirewallHoleService@105(
-      pending_receiver<FirewallHoleService> receiver);
+  // Deprecated in M114; use chromeos::FirewallHole directly.
+  [MinVersion=101] REMOVED_105@105(
+      pending_receiver<FirewallHoleServiceDeprecated> receiver);
 
   // NetworkingPrivate is a service that allows users to modify
   // network settings in Lacros. Implemented in Ash.
@@ -952,8 +951,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 57
-// Next id: 57
+// Next version: 59
+// Next id: 59
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1315,6 +1314,16 @@ struct BrowserInitParams {
   [MinVersion=57]
   StandaloneBrowserAppServiceBlockList?
       standalone_browser_app_service_blocklist@57;
+
+  // When this flag is set to true, CPU-mappable native GpuMemoryBuffers are
+  // enabled.
+  //
+  // TODO(b/278097642): improve this documentation. I think this only refers to
+  // the ability of renderer processes to obtain such buffers because as far as
+  // I know, the GPU process can allocate CPU-mappable native GpuMemoryBuffers
+  // regardless of this flag.
+  [MinVersion=58]
+  bool enable_cpu_mappable_native_gpu_memory_buffers@58;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

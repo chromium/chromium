@@ -15,6 +15,9 @@ enum MethodType {
 
   // Method called in response to user clicking on the region search button.
   kOnRegionSearchClicked = 2,
+
+  // Method called when user's experience opt-in status is available.
+  kOnExpsOptInStatusAvailable = 3,
 };
 
 // Types of promos shown in the companion UI.
@@ -27,8 +30,8 @@ enum PromoType {
   // Promo to turn on make searches and browsing better.
   kMsbb = 2,
 
-  // Promo to opt into labs api.
-  kLabs = 3,
+  // Promo to opt into experience api.
+  kExps = 3,
 };
 
 // User actions taken on a promo.
@@ -63,11 +66,20 @@ interface CompanionPageHandler {
 
   // Called to notify the browser that user has clicked on region search button.
   OnRegionSearchClicked();
+
+  // Called to notify the browser that the user's experience opt-in status is
+  // available.
+  OnExpsOptInStatusAvailable(bool is_exps_opted_in);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface CompanionPage {
   // Pass the companion URL needed to request the iframe to the frontend for
-  // rendering.
-  OnURLChanged(url.mojom.Url new_url);
+  // rendering. Results in a full reload of the companion side panel.
+  LoadCompanionPage(url.mojom.Url new_url);
+
+  // Notifies the companion page about subsequent navigations on the main page.
+  // Results in a postmessage() call to the companion with the encoded protobuf
+  // representation of the update params.
+  UpdateCompanionPage(string companion_update_proto);
 };

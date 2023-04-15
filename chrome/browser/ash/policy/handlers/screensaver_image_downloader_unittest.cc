@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -91,13 +92,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   std::unique_ptr<ScreensaverImageDownloader> screensaver_image_downloader_;
 };
 
-// crbug.com/1430802: flaky on Linux and Chrome OS
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DownloadImagesTest DISABLED_DownloadImagesTest
-#else
-#define MAYBE_DownloadImagesTest DownloadImagesTest
-#endif
-TEST_F(ScreensaverImageDownloaderTest, MAYBE_DownloadImagesTest) {
+TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
   // Test successful download.
   {
     url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
@@ -134,10 +129,14 @@ TEST_F(ScreensaverImageDownloaderTest, MAYBE_DownloadImagesTest) {
         QueueNewJobWithFuture(kImageUrl3, kImageFileName3);
 
     // Wait until the request have been made to delete the tmp folder
-    EXPECT_TRUE(url_loader_factory()->IsPending(kImageUrl3));
-    DeleteTempFolder();
-    url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
+    url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          ASSERT_TRUE(request.url.is_valid());
+          EXPECT_EQ(kImageUrl3, request.url);
 
+          DeleteTempFolder();
+          url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
+        }));
     EXPECT_EQ(ScreensaverImageDownloadResult::kFileSaveError,
               result_future->Get<0>());
     EXPECT_FALSE(result_future->Get<1>().has_value());

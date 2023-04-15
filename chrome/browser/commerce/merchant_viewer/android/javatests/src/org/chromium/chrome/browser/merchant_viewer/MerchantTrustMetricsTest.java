@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Rule;

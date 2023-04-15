@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -36,7 +37,6 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -210,7 +210,8 @@ class ExtensionProtocolsTestBase : public testing::Test {
     content_verifier_ = new ContentVerifier(
         browser_context(),
         std::make_unique<ChromeContentVerifierDelegate>(browser_context()));
-    info_map()->SetContentVerifier(content_verifier_.get());
+    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(browser_context()))
+        ->set_content_verifier(content_verifier_.get());
   }
 
   void TearDown() override {
@@ -233,8 +234,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
   void AddExtension(const scoped_refptr<const Extension>& extension,
                     bool incognito_enabled,
                     bool notifications_disabled) {
-    info_map()->AddExtension(extension.get(), base::Time::Now(),
-                             incognito_enabled, notifications_disabled);
     EXPECT_TRUE(extension_registry()->AddEnabled(extension));
     ExtensionPrefs::Get(browser_context())
         ->SetIsIncognitoEnabled(extension->id(), incognito_enabled);
@@ -242,7 +241,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   void RemoveExtension(const scoped_refptr<const Extension>& extension,
                        const UnloadedExtensionReason reason) {
-    info_map()->RemoveExtension(extension->id());
     EXPECT_TRUE(extension_registry()->RemoveEnabled(extension->id()));
     if (reason == UnloadedExtensionReason::DISABLE)
       EXPECT_TRUE(extension_registry()->AddDisabled(extension));
@@ -250,10 +248,10 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   // Helper method to create a URL request/loader, call RequestOrLoad on it, and
   // return the result. If |extension| hasn't already been added to
-  // info_map(), this will add it.
+  // extension_registry(), this will add it.
   GetResult DoRequestOrLoad(const scoped_refptr<Extension> extension,
                             const std::string& relative_path) {
-    if (!info_map()->extensions().Contains(extension->id())) {
+    if (!extension_registry()->enabled_extensions().Contains(extension->id())) {
       AddExtension(extension.get(),
                    /*incognito_enabled=*/false,
                    /*notifications_disabled=*/false);
@@ -264,10 +262,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   ExtensionRegistry* extension_registry() {
     return ExtensionRegistry::Get(browser_context());
-  }
-
-  InfoMap* info_map() {
-    return ExtensionSystem::Get(browser_context())->info_map();
   }
 
   content::BrowserContext* browser_context() {

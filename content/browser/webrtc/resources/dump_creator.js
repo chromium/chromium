@@ -27,52 +27,82 @@ export class DumpCreator {
      * @type {Element}
      * @private
      */
-    this.root_ = document.createElement('details');
+    this.createDumpRoot(containerElement);
+    this.createAudioRecordingRoot(containerElement);
+    this.createPacketRecordingRoot(containerElement);
+  }
 
-    this.root_.className = 'peer-connection-dump-root';
-    containerElement.appendChild(this.root_);
+  createDumpRoot(containerElement) {
+    this.dumpRoot_ = document.createElement('details');
+
+    this.dumpRoot_.className = 'peer-connection-dump-root';
+    containerElement.appendChild(this.dumpRoot_);
     const summary = document.createElement('summary');
-    this.root_.appendChild(summary);
-    summary.textContent = 'Create Dump';
+    this.dumpRoot_.appendChild(summary);
+    summary.textContent = 'Create a WebRTC-Internals dump';
     const content = document.createElement('div');
-    this.root_.appendChild(content);
-
+    this.dumpRoot_.appendChild(content);
     content.appendChild($('dump-template').content.cloneNode(true));
     content.getElementsByTagName('a')[0].addEventListener(
-        'click', this.onDownloadData_.bind(this));
-    content.getElementsByTagName('input')[1].addEventListener(
-        'click', this.onAudioDebugRecordingsChanged_.bind(this));
-    content.getElementsByTagName('input')[2].addEventListener(
+      'click', this.onDownloadData_.bind(this));
+  }
+
+  createAudioRecordingRoot(containerElement) {
+    this.audioRoot_ = document.createElement('details');
+
+    this.audioRoot_.className = 'peer-connection-dump-root';
+    containerElement.appendChild(this.audioRoot_);
+    const summary = document.createElement('summary');
+    this.audioRoot_.appendChild(summary);
+    summary.textContent = 'Create diagnostic audio recordings';
+    const content = document.createElement('div');
+    this.audioRoot_.appendChild(content);
+    content.appendChild($('audio-recording-template').content.cloneNode(true));
+    content.getElementsByTagName('input')[0].addEventListener(
+      'click', this.onAudioDebugRecordingsChanged_.bind(this));
+
+  }
+
+  createPacketRecordingRoot(containerElement) {
+    this.packetRoot_ = document.createElement('details');
+
+    this.packetRoot_.className = 'peer-connection-dump-root';
+    containerElement.appendChild(this.packetRoot_);
+    const summary = document.createElement('summary');
+    this.packetRoot_.appendChild(summary);
+    summary.textContent = 'Create diagnostic packet recordings';
+    const content = document.createElement('div');
+    this.packetRoot_.appendChild(content);
+    content.appendChild($('packet-recording-template').content.cloneNode(true));
+    content.getElementsByTagName('input')[0].addEventListener(
         'click', this.onEventLogRecordingsChanged_.bind(this));
   }
 
   // Mark the diagnostic audio recording checkbox checked.
   setAudioDebugRecordingsCheckbox() {
-    this.root_.getElementsByTagName('input')[1].checked = true;
+    this.audioRoot_.getElementsByTagName('input')[0].checked = true;
   }
 
   // Mark the diagnostic audio recording checkbox unchecked.
   clearAudioDebugRecordingsCheckbox() {
-    this.root_.getElementsByTagName('input')[1].checked = false;
+    this.audioRoot_.getElementsByTagName('input')[0].checked = false;
   }
 
   // Mark the event log recording checkbox checked.
   setEventLogRecordingsCheckbox() {
-    this.root_.getElementsByTagName('input')[2].checked = true;
+    this.packetRoot_.getElementsByTagName('input')[0].checked = true;
   }
 
   // Mark the event log recording checkbox unchecked.
   clearEventLogRecordingsCheckbox() {
-    this.root_.getElementsByTagName('input')[2].checked = false;
+    this.packetRoot_.getElementsByTagName('input')[0].checked = false;
   }
 
   // Mark the event log recording checkbox as mutable/immutable.
   setEventLogRecordingsCheckboxMutability(mutable) {
-    // TODO(eladalon): Remove reliance on number and order of elements.
-    // https://crbug.com/817391
-    this.root_.getElementsByTagName('input')[2].disabled = !mutable;
+    this.packetRoot_.getElementsByTagName('input')[0].disabled = !mutable;
     if (!mutable) {
-      const label = this.root_.getElementsByTagName('label')[2];
+      const label = this.packetRoot_.getElementsByTagName('label')[0];
       label.style = 'color:red;';
       label.textContent =
           ' WebRTC event logging\'s state was set by a command line flag.';
@@ -85,7 +115,7 @@ export class DumpCreator {
    * @private
    */
   async onDownloadData_(event) {
-    const useCompression = this.root_.getElementsByTagName('input')[0].checked;
+    const useCompression = this.dumpRoot_.getElementsByTagName('input')[0].checked;
     const dumpObject = {
       'getUserMedia': userMediaRequests,
       'PeerConnections': peerConnectionDataStore,
@@ -108,7 +138,7 @@ export class DumpCreator {
       return;
     }
     url = URL.createObjectURL(textBlob);
-    const anchor = this.root_.getElementsByTagName('a')[0];
+    const anchor = this.dumpRoot_.getElementsByTagName('a')[0];
     anchor.download = 'webrtc_internals_dump.txt'
     anchor.href = url;
     // The default action of the anchor will download the url.
@@ -120,7 +150,7 @@ export class DumpCreator {
    * @private
    */
   onAudioDebugRecordingsChanged_() {
-    const enabled = this.root_.getElementsByTagName('input')[1].checked;
+    const enabled = this.audioRoot_.getElementsByTagName('input')[0].checked;
     if (enabled) {
       chrome.send('enableAudioDebugRecordings');
     } else {
@@ -134,7 +164,7 @@ export class DumpCreator {
    * @private
    */
   onEventLogRecordingsChanged_() {
-    const enabled = this.root_.getElementsByTagName('input')[2].checked;
+    const enabled = this.packetRoot_.getElementsByTagName('input')[0].checked;
     if (enabled) {
       chrome.send('enableEventLogRecordings');
     } else {

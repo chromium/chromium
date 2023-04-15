@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -226,16 +227,20 @@ void SettingsFunction::OnSessionSettingsChanged(
 bool SettingsFunction::IsAccessToStorageAllowed() {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   // Default access level is only secure contexts.
-  int access_level = api::storage::ACCESS_LEVEL_TRUSTED_CONTEXTS;
+  int access_level =
+      base::to_underlying(api::storage::AccessLevel::kTrustedContexts);
   prefs->ReadPrefAsInteger(extension()->id(), kPrefSessionStorageAccessLevel,
                            &access_level);
 
   // Only a blessed extension context is considered trusted.
-  if (access_level == api::storage::ACCESS_LEVEL_TRUSTED_CONTEXTS)
+  if (access_level ==
+      base::to_underlying(api::storage::AccessLevel::kTrustedContexts)) {
     return source_context_type() == Feature::BLESSED_EXTENSION_CONTEXT;
+  }
 
   // All contexts are allowed.
-  DCHECK_EQ(api::storage::ACCESS_LEVEL_TRUSTED_AND_UNTRUSTED_CONTEXTS,
+  DCHECK_EQ(base::to_underlying(
+                api::storage::AccessLevel::kTrustedAndUntrustedContexts),
             access_level);
   return true;
 }
@@ -521,13 +526,14 @@ StorageStorageAreaSetAccessLevelFunction::RunInSession() {
 
   // The parsing code ensures `access_level` is sane.
   DCHECK(params->access_options.access_level ==
-             api::storage::ACCESS_LEVEL_TRUSTED_CONTEXTS ||
+             api::storage::AccessLevel::kTrustedContexts ||
          params->access_options.access_level ==
-             api::storage::ACCESS_LEVEL_TRUSTED_AND_UNTRUSTED_CONTEXTS);
+             api::storage::AccessLevel::kTrustedAndUntrustedContexts);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
-  prefs->SetIntegerPref(extension_id(), kPrefSessionStorageAccessLevel,
-                        params->access_options.access_level);
+  prefs->SetIntegerPref(
+      extension_id(), kPrefSessionStorageAccessLevel,
+      base::to_underlying(params->access_options.access_level));
 
   return NoArguments();
 }

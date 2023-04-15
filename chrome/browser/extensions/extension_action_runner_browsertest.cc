@@ -81,6 +81,10 @@ bool RunAllPendingInRenderer(content::WebContents* web_contents) {
   return content::ExecuteScript(web_contents, "1 == 1;");
 }
 
+// Returns whether the extension injected a script by checking the document
+// title. This assumes the use of test extension
+// 'extensions/blocked_actions/content_scripts' for this check to work as
+// expected.
 bool DidInjectScript(content::WebContents& web_contents) {
   return browsertest_util::DidChangeTitle(web_contents,
                                           /*original_title=*/u"OK",
@@ -419,7 +423,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_FALSE(inject_success_listener.was_satisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunAction) {
+class ExtensionActionRunnerRunActionBubbleBrowserTest
+    : public ExtensionActionRunnerBrowserTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ExtensionActionRunnerRunActionBubbleBrowserTest,
+    testing::Bool(),  // Accept reload bubble.
+    [](const testing::TestParamInfo<
+        ExtensionActionRunnerRunActionBubbleBrowserTest::ParamType>& info) {
+      return info.param ? "AcceptReload" : "DismissReload";
+    });
+
+// TODO(crbug.com/1378775): Test an extension that can be granted tab permission
+// but without a reload. And also running an action without granting tab
+// permission.
+
+// Tests that when running an action and accepting the reload bubble blocked
+// actions are run (script injects), but when the user dismissed the bubble
+// blocked actions are not run.
+IN_PROC_BROWSER_TEST_P(ExtensionActionRunnerRunActionBubbleBrowserTest,
+                       RunAction) {
   // Load an extension that wants to run on every page at document start, and
   // load a test page.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -439,7 +464,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunAction) {
   const int nav_id = web_controller.GetLastCommittedEntry()->GetUniqueID();
 
   // The extension should want to run on the page, should not have
-  // injected, and should have "on click" access.
+  // injected, should have user site access "on click", and page interaction
+  // witheld.
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
@@ -448,44 +474,51 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunAction) {
   auto* permissions = PermissionsManager::Get(browser()->profile());
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             UserSiteAccess::kOnClick);
+  SitePermissionsHelper permissions_helper(browser()->profile());
+  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extension, web_contents),
+            SitePermissionsHelper::SiteInteraction::kWithheld);
 
-  // Run the action without changing permissions, and reject the bubble
-  // prompting for page reload.
-  runner->accept_bubble_for_testing(false);
-  runner->RunAction(extension, true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  const bool kAcceptReload = GetParam();
+  // Run the action and (accept or dismiss) the reload bubble depending on
+  // `kAcceptReload`.
+  runner->accept_bubble_for_testing(kAcceptReload);
+  runner->RunAction(extension, /*grant_tab_permissions=*/true);
 
-  // Nothing should happen, because the user didn't agree to reload the page.
-  // The extension should still want to run.
-  EXPECT_EQ(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
-  EXPECT_FALSE(DidInjectScript(*web_contents));
-  EXPECT_TRUE(runner->WantsToRun(extension));
-
-  // Run the action without changing permissions, and accept the bubble
-  // prompting for page reload.
-  runner->accept_bubble_for_testing(true);
-  runner->RunAction(extension, true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // Since we automatically accepted the bubble prompting us, the page should
-  // have reload, the extension should have injected at document start and
-  // the site access should still be "on click".
-  EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
-  EXPECT_TRUE(DidInjectScript(*web_contents));
-  EXPECT_FALSE(runner->WantsToRun(extension));
+  // Verify extension has granted site interaction (since it's immediately
+  // granted when running an action, regardless of page refresh) and its user
+  // site access is still on click (since running an action doesn't change the
+  // site access the user selected).
+  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extension, web_contents),
+            SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             UserSiteAccess::kOnClick);
+
+  if (kAcceptReload) {
+    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+    // Since we automatically accepted the bubble prompting us, the page should
+    // have reloaded, the extension should have injected at document start, and
+    // the site access should still be "on click".
+    EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
+    EXPECT_TRUE(DidInjectScript(*web_contents));
+    EXPECT_FALSE(runner->WantsToRun(extension));
+  } else {
+    // The script should not inject because it needs to run at start and we
+    // haven't reloaded the page, and there should be blocked actions to run
+    // since we haven't reloaded to run them.
+    EXPECT_FALSE(DidInjectScript(*web_contents));
+    EXPECT_TRUE(runner->WantsToRun(extension));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
-                       HandlePageAccessModified) {
-  // Load an extension that wants to run on every page at document start, and
+// Tests that the blocked actions of an extension are run (e.g. scripts
+// injected) when calling this method.
+IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunBlockedActions) {
+  // Load an extension that wants to run on every page at document idle, and
   // load a test page.
   ASSERT_TRUE(embedded_test_server()->Start());
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+      test_data_dir_.AppendASCII("blocked_actions/content_script_at_idle"));
   ASSERT_TRUE(extension);
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
@@ -496,53 +529,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  content::NavigationController& web_controller = web_contents->GetController();
-  const int nav_id = web_controller.GetLastCommittedEntry()->GetUniqueID();
 
-  // The extension should want to run on the page, should not have
-  // injected, and should have "on click" access.
+  // The extension should want to run on the page at first.
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
-  EXPECT_TRUE(runner->WantsToRun(extension));
-  EXPECT_FALSE(DidInjectScript(*web_contents));
-  auto* permissions = PermissionsManager::Get(browser()->profile());
-  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            UserSiteAccess::kOnClick);
+  ASSERT_TRUE(runner->WantsToRun(extension));
+  ExtensionTestMessageListener script_injection_listener("injection succeeded");
 
-  // Request a permission increase, and accept the bubble prompting for page
-  // refresh.
-  runner->accept_bubble_for_testing(true);
-  runner->HandlePageAccessModified(extension, UserSiteAccess::kOnClick,
-                                   UserSiteAccess::kOnSite);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // Since we automatically accepted the bubble prompting us, the page should
-  // have refreshed, the extension should have injected at document start and
-  // the site access should now be "on site".
-  EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
-  EXPECT_TRUE(DidInjectScript(*web_contents));
+  // Confirm that running blocked actions clears out any blocked actions for the
+  // extension.
+  runner->RunBlockedActions(extension);
+  SitePermissionsHelper permissions_helper(browser()->profile());
+  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extension, web_contents),
+            extensions::SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_FALSE(runner->WantsToRun(extension));
-  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            UserSiteAccess::kOnSite);
-
-  // Request a permission decrease, and accept the blocked action bubble
-  // prompting for page refresh.
-  runner->accept_bubble_for_testing(true);
-  runner->HandlePageAccessModified(extension, UserSiteAccess::kOnSite,
-                                   UserSiteAccess::kOnClick);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // Since we automatically accepted the bubble prompting us, the page should
-  // have refreshed, the extension should not have injected at document start
-  // and the site access should now be "on click".
-  EXPECT_GE(web_controller.GetLastCommittedEntry()->GetUniqueID(), nav_id);
-  EXPECT_FALSE(DidInjectScript(*web_contents));
-  EXPECT_TRUE(runner->WantsToRun(extension));
-  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            UserSiteAccess::kOnClick);
+  EXPECT_TRUE(script_injection_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(DidInjectScript(*web_contents));
 }
 
 // If we don't withhold permissions, extensions should execute normally.
@@ -710,8 +713,7 @@ class ExtensionActionRunnerWithUserHostControlsBrowserTest
     runner->accept_bubble_for_testing(accept_bubble);
 
     if (accept_bubble) {
-      PermissionsManagerWaiter waiter(
-          extensions::PermissionsManager::Get(profile()));
+      PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
       runner->HandleUserSiteSettingModified({extension_id}, url_origin,
                                             user_site_setting);
       waiter.WaitForUserPermissionsSettingsChange();

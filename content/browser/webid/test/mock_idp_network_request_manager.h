@@ -28,11 +28,12 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
                     FetchClientMetadataCallback));
   MOCK_METHOD3(SendAccountsRequest,
                void(const GURL&, const std::string&, AccountsRequestCallback));
-  MOCK_METHOD4(SendTokenRequest,
+  MOCK_METHOD5(SendTokenRequest,
                void(const GURL&,
                     const std::string&,
                     const std::string&,
-                    TokenRequestCallback));
+                    TokenRequestCallback,
+                    ContinueOnCallback));
   MOCK_METHOD5(SendSuccessfulTokenRequestMetrics,
                void(const GURL&,
                     base::TimeDelta,

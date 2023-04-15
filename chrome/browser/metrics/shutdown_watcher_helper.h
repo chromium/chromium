@@ -30,10 +30,6 @@ class ShutdownWatcherHelper : public base::Watchdog::Delegate {
   // wait before it calls alarm.
   void Arm(const base::TimeDelta& duration);
 
-  // Get the timeout after which a shutdown hang is detected, for the current
-  // channel.
-  static base::TimeDelta GetPerChannelTimeout(base::TimeDelta duration);
-
   // base::Watchdog::Delegate implementation:
   void Alarm() override;
 

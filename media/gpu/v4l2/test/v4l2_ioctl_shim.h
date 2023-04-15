@@ -202,6 +202,12 @@ class V4L2IoctlShim {
   void SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
                    v4l2_ext_controls* ext_ctrls) const;
 
+  // Sets the value of controls which specify decoding parameters
+  // for each frame. Submits with V4L2_CTRL_WHICH_CUR_VAL to produce an
+  // immediate result instead of queuing up.
+  void SetExtCtrlsImmediate(const std::unique_ptr<V4L2Queue>& queue,
+                            v4l2_ext_controls* ext_ctrls) const;
+
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.
   void MediaIocRequestAlloc(int* req_fd) const;

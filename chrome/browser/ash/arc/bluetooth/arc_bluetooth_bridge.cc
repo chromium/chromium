@@ -606,6 +606,58 @@ void ArcBluetoothBridge::DeviceRemoved(BluetoothAdapter* adapter,
   OnForgetDone(mojom::BluetoothAddress::From(address));
 }
 
+void ArcBluetoothBridge::OnGetServiceRecordsFinished(
+    mojom::BluetoothAddressPtr remote_addr,
+    const BluetoothUUID& target_uuid,
+    const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez) {
+  auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->bluetooth(), OnGetSdpRecords);
+  if (!sdp_bluetooth_instance) {
+    LOG(ERROR) << "Could not get bluetooth instance to return SDP records";
+    return;
+  }
+
+  std::vector<mojom::BluetoothSdpRecordPtr> records;
+  for (const auto& r : records_bluez) {
+    records.push_back(mojom::BluetoothSdpRecord::From(r));
+  }
+
+  sdp_bluetooth_instance->OnGetSdpRecords(mojom::BluetoothStatus::SUCCESS,
+                                          std::move(remote_addr), target_uuid,
+                                          std::move(records));
+}
+
+void ArcBluetoothBridge::OnGetServiceRecordsError(
+    mojom::BluetoothAddressPtr remote_addr,
+    const BluetoothUUID& target_uuid,
+    bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code) {
+  auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->bluetooth(), OnGetSdpRecords);
+  if (!sdp_bluetooth_instance) {
+    LOG(ERROR) << "Could not get bluetooth instance to return SDP error";
+    return;
+  }
+
+  mojom::BluetoothStatus status;
+
+  switch (error_code) {
+    case bluez::BluetoothServiceRecordBlueZ::ErrorCode::ERROR_ADAPTER_NOT_READY:
+      status = mojom::BluetoothStatus::NOT_READY;
+      break;
+    case bluez::BluetoothServiceRecordBlueZ::ErrorCode::
+        ERROR_DEVICE_DISCONNECTED:
+      status = mojom::BluetoothStatus::RMT_DEV_DOWN;
+      break;
+    default:
+      status = mojom::BluetoothStatus::FAIL;
+      break;
+  }
+
+  sdp_bluetooth_instance->OnGetSdpRecords(
+      status, std::move(remote_addr), target_uuid,
+      std::vector<mojom::BluetoothSdpRecordPtr>());
+}
+
 void ArcBluetoothBridge::GattServiceAdded(BluetoothAdapter* adapter,
                                           BluetoothDevice* device,
                                           BluetoothRemoteGattService* service) {
@@ -1162,7 +1214,7 @@ void ArcBluetoothBridge::StopLEScanImpl() {
 
 void ArcBluetoothBridge::OnPoweredOn(
     ArcBluetoothBridge::AdapterStateCallback callback,
-    bool save_user_pref) const {
+    bool save_user_pref) {
   // Saves the power state to user preference only if Android initiated it.
   if (save_user_pref)
     SetPrimaryUserBluetoothPowerSetting(true);
@@ -1173,11 +1225,14 @@ void ArcBluetoothBridge::OnPoweredOn(
   // should do this after the above callback since Android will clear its
   // device cache after receiving the "ON" state of adapter.
   SendCachedDevices();
+
+  // Allow derived classes to perform additional logic if desired.
+  HandlePoweredOn();
 }
 
 void ArcBluetoothBridge::OnPoweredOff(
     ArcBluetoothBridge::AdapterStateCallback callback,
-    bool save_user_pref) const {
+    bool save_user_pref) {
   // Saves the power state to user preference only if Android initiated it.
   if (save_user_pref)
     SetPrimaryUserBluetoothPowerSetting(false);
@@ -2714,110 +2769,15 @@ ArcBluetoothBridge::GattConnection::operator=(
 
 namespace {
 
-constexpr int kAutoSockPort = 0;
-constexpr int kMinRfcommChannel = 1;
-constexpr int kMaxRfcommChannel = 30;
-
-// Copied from the values of L2CAP_PSM_LE_DYN_START and L2CAP_PSM_LE_DYN_END
-// in /include/net/bluetooth/l2cap.h
-constexpr int kMinL2capLePsm = 0x0080;
-constexpr int kMaxL2capLePsm = 0x00FF;
-
-union BluetoothSocketAddress {
-  sockaddr sock;
-  sockaddr_rc rfcomm;
-  sockaddr_l2 l2cap;
-};
-
 bool IsValidPort(mojom::BluetoothSocketType sock_type, int port) {
   switch (sock_type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM:
-      return port <= kMaxRfcommChannel && port >= kMinRfcommChannel;
+      return port <= ArcBluetoothBridge::kMaxRfcommChannel &&
+             port >= ArcBluetoothBridge::kMinRfcommChannel;
     case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-      return port <= kMaxL2capLePsm && port >= kMinL2capLePsm;
+      return port <= ArcBluetoothBridge::kMaxL2capLePsm &&
+             port >= ArcBluetoothBridge::kMinL2capLePsm;
   }
-}
-
-int32_t GetSockOptvalFromFlags(mojom::BluetoothSocketType sock_type,
-                               mojom::BluetoothSocketFlagsPtr sock_flags) {
-  int optval = 0;
-  switch (sock_type) {
-    case mojom::BluetoothSocketType::TYPE_RFCOMM:
-      optval |= sock_flags->encrypt ? RFCOMM_LM_ENCRYPT : 0;
-      optval |= sock_flags->auth ? RFCOMM_LM_AUTH : 0;
-      optval |= sock_flags->auth_mitm ? RFCOMM_LM_SECURE : 0;
-      optval |= sock_flags->auth_16_digit ? RFCOMM_LM_SECURE : 0;
-      return optval;
-    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-      optval |= sock_flags->encrypt ? L2CAP_LM_ENCRYPT : 0;
-      optval |= sock_flags->auth ? L2CAP_LM_AUTH : 0;
-      optval |= sock_flags->auth_mitm ? L2CAP_LM_SECURE : 0;
-      optval |= sock_flags->auth_16_digit ? L2CAP_LM_SECURE : 0;
-      return optval;
-  }
-}
-
-// Opens an AF_BLUETOOTH socket with |sock_type|, sets L2CAP_LM or RFCOMM_LM
-// with |optval|, and binds the socket to address with |port|.
-base::ScopedFD OpenBluetoothSocketImpl(mojom::BluetoothSocketType sock_type,
-                                       int32_t optval,
-                                       uint16_t port) {
-  int protocol;
-  int level;
-  int optname;
-  switch (sock_type) {
-    case mojom::BluetoothSocketType::TYPE_RFCOMM:
-      protocol = BTPROTO_RFCOMM;
-      level = SOL_RFCOMM;
-      optname = RFCOMM_LM;
-      break;
-    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-      protocol = BTPROTO_L2CAP;
-      level = SOL_L2CAP;
-      optname = L2CAP_LM;
-      break;
-    default:
-      LOG(ERROR) << "Unknown socket type " << sock_type;
-      return {};
-  }
-
-  base::ScopedFD sock(socket(AF_BLUETOOTH, SOCK_STREAM, protocol));
-  if (!sock.is_valid()) {
-    PLOG(ERROR) << "Failed to open bluetooth socket.";
-    return {};
-  }
-  if (setsockopt(sock.get(), level, optname, &optval, sizeof(optval)) == -1) {
-    PLOG(ERROR) << "Failed to setopt() on socket.";
-    return {};
-  }
-  if (fcntl(sock.get(), F_SETFL, O_NONBLOCK | fcntl(sock.get(), F_GETFL)) ==
-      -1) {
-    PLOG(ERROR) << "Failed to fcntl() on socket.";
-    return {};
-  }
-
-  BluetoothSocketAddress sa = {};
-  switch (sock_type) {
-    case mojom::BluetoothSocketType::TYPE_RFCOMM:
-      sa.rfcomm.rc_family = AF_BLUETOOTH;
-      sa.rfcomm.rc_channel = port;
-      break;
-    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-      sa.l2cap.l2_family = AF_BLUETOOTH;
-      sa.l2cap.l2_psm = htobs(port);
-      sa.l2cap.l2_bdaddr_type = BDADDR_LE_PUBLIC;
-      break;
-    default:
-      LOG(ERROR) << "Unknown socket type " << sock_type;
-      return {};
-  }
-
-  if (bind(sock.get(), &sa.sock, sizeof(sa)) == -1) {
-    PLOG(ERROR) << "Failed to bind()";
-    return {};
-  }
-
-  return sock;
 }
 
 }  // namespace
@@ -2843,29 +2803,8 @@ void ArcBluetoothBridge::BluetoothSocketListen(
     return;
   }
 
-  int32_t optval = GetSockOptvalFromFlags(sock_type, std::move(sock_flags));
-  uint16_t listen_port = static_cast<uint16_t>(port);
-  auto sock_wrapper =
-      CreateBluetoothListenSocket(sock_type, optval, &listen_port);
-  if (!sock_wrapper) {
-    std::move(callback).Run(
-        mojom::BluetoothStatus::FAIL, /*port=*/0,
-        mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
-    return;
-  }
-
-  std::move(callback).Run(mojom::BluetoothStatus::SUCCESS, listen_port,
-                          sock_wrapper->remote.BindNewPipeAndPassReceiver());
-  sock_wrapper->remote.set_disconnect_handler(
-      base::BindOnce(&ArcBluetoothBridge::CloseBluetoothListeningSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-  listening_sockets_.insert(std::move(sock_wrapper));
-}
-
-void ArcBluetoothBridge::CloseBluetoothListeningSocket(
-    BluetoothListeningSocket* ptr) {
-  auto itr = listening_sockets_.find(ptr);
-  listening_sockets_.erase(itr);
+  CreateBluetoothListenSocket(sock_type, std::move(sock_flags), port,
+                              std::move(callback));
 }
 
 void ArcBluetoothBridge::BluetoothSocketConnect(
@@ -2890,277 +2829,9 @@ void ArcBluetoothBridge::BluetoothSocketConnect(
     return;
   }
 
-  int32_t optval = GetSockOptvalFromFlags(sock_type, std::move(sock_flags));
-  auto sock_wrapper = CreateBluetoothConnectSocket(
-      sock_type, optval, std::move(remote_addr), static_cast<uint16_t>(port));
-  if (!sock_wrapper) {
-    std::move(callback).Run(
-        mojom::BluetoothStatus::FAIL,
-        mojo::PendingReceiver<arc::mojom::BluetoothConnectSocketClient>());
-    return;
-  }
-
-  std::move(callback).Run(mojom::BluetoothStatus::SUCCESS,
-                          sock_wrapper->remote.BindNewPipeAndPassReceiver());
-  sock_wrapper->remote.set_disconnect_handler(
-      base::BindOnce(&ArcBluetoothBridge::CloseBluetoothConnectingSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-  connecting_sockets_.insert(std::move(sock_wrapper));
-}
-
-void ArcBluetoothBridge::CloseBluetoothConnectingSocket(
-    BluetoothConnectingSocket* ptr) {
-  auto itr = connecting_sockets_.find(ptr);
-  connecting_sockets_.erase(itr);
-}
-
-std::unique_ptr<ArcBluetoothBridge::BluetoothListeningSocket>
-ArcBluetoothBridge::CreateBluetoothListenSocket(
-    mojom::BluetoothSocketType sock_type,
-    int32_t optval,
-    uint16_t* port) {
-  DCHECK(port);
-  base::ScopedFD sock = OpenBluetoothSocketImpl(sock_type, optval, *port);
-  if (!sock.is_valid()) {
-    LOG(ERROR) << "Failed to open listen socket.";
-    return nullptr;
-  }
-
-  if (listen(sock.get(), /*backlog=*/1) == -1) {
-    PLOG(ERROR) << "Failed to listen()";
-    return nullptr;
-  }
-
-  BluetoothSocketAddress local_addr;
-  socklen_t addr_len = sizeof(local_addr);
-  if (getsockname(sock.get(), &local_addr.sock, &addr_len) == -1) {
-    PLOG(ERROR) << "Failed to getsockname()";
-    return nullptr;
-  }
-
-  auto sock_wrapper = std::make_unique<BluetoothListeningSocket>();
-  sock_wrapper->sock_type = sock_type;
-  sock_wrapper->controller = base::FileDescriptorWatcher::WatchReadable(
-      sock.get(),
-      base::BindRepeating(&ArcBluetoothBridge::OnBluetoothListeningSocketReady,
-                          weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-  sock_wrapper->file = std::move(sock);
-
-  switch (sock_type) {
-    case mojom::BluetoothSocketType::TYPE_RFCOMM:
-      *port = local_addr.rfcomm.rc_channel;
-      break;
-    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-      *port = btohs(local_addr.l2cap.l2_psm);
-      break;
-    default:
-      LOG(ERROR) << "Unknown socket type " << sock_type;
-      return nullptr;
-  }
-
-  return sock_wrapper;
-}
-
-void ArcBluetoothBridge::OnBluetoothListeningSocketReady(
-    ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper) {
-  BluetoothSocketAddress sa;
-  socklen_t addr_len = sizeof(sa);
-  base::ScopedFD accept_fd(
-      accept(sock_wrapper->file.get(), &sa.sock, &addr_len));
-  if (!accept_fd.is_valid()) {
-    PLOG(ERROR) << "Failed to accept()";
-    return;
-  }
-  if (fcntl(accept_fd.get(), F_SETFL,
-            O_NONBLOCK | fcntl(accept_fd.get(), F_GETFL)) == -1) {
-    PLOG(ERROR) << "Failed to fnctl()";
-    return;
-  }
-
-  mojo::ScopedHandle handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(accept_fd)));
-
-  // Tells Android we successfully accept() a new connection.
-  if (sock_wrapper->created_by_deprecated_method) {
-    auto connection = mojom::BluetoothRfcommConnection::New();
-    connection->sock = std::move(handle);
-    connection->addr =
-        mojom::BluetoothAddress::From<bdaddr_t>(sa.rfcomm.rc_bdaddr);
-    connection->channel = sa.rfcomm.rc_channel;
-    sock_wrapper->deprecated_remote->OnAccepted(std::move(connection));
-  } else {
-    auto connection = mojom::BluetoothSocketConnection::New();
-    connection->sock = std::move(handle);
-    switch (sock_wrapper->sock_type) {
-      case mojom::BluetoothSocketType::TYPE_RFCOMM:
-        connection->addr =
-            mojom::BluetoothAddress::From<bdaddr_t>(sa.rfcomm.rc_bdaddr);
-        connection->port = sa.rfcomm.rc_channel;
-        break;
-      case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-        connection->addr =
-            mojom::BluetoothAddress::From<bdaddr_t>(sa.l2cap.l2_bdaddr);
-        connection->port = btohs(sa.l2cap.l2_psm);
-        break;
-      default:
-        LOG(ERROR) << "Unknown socket type " << sock_wrapper->sock_type;
-        return;
-    }
-    sock_wrapper->remote->OnAccepted(std::move(connection));
-  }
-}
-
-std::unique_ptr<ArcBluetoothBridge::BluetoothConnectingSocket>
-ArcBluetoothBridge::CreateBluetoothConnectSocket(
-    mojom::BluetoothSocketType sock_type,
-    int32_t optval,
-    mojom::BluetoothAddressPtr addr,
-    uint16_t port) {
-  base::ScopedFD sock =
-      OpenBluetoothSocketImpl(sock_type, optval, kAutoSockPort);
-  if (!sock.is_valid()) {
-    LOG(ERROR) << "Failed to open connect socket.";
-    return nullptr;
-  }
-
-  std::string addr_str = addr->To<std::string>();
-  BluetoothDevice* device = bluetooth_adapter_->GetDevice(addr_str);
-  if (!device)
-    return nullptr;
-
-  const auto addr_type = device->GetAddressType();
-  if (addr_type == BluetoothDevice::ADDR_TYPE_UNKNOWN) {
-    LOG(ERROR) << "Unknown address type.";
-    return nullptr;
-  }
-
-  BluetoothSocketAddress sa = {};
-  switch (sock_type) {
-    case mojom::BluetoothSocketType::TYPE_RFCOMM:
-      sa.rfcomm.rc_family = AF_BLUETOOTH;
-      sa.rfcomm.rc_bdaddr = addr->To<bdaddr_t>();
-      sa.rfcomm.rc_channel = static_cast<uint8_t>(port);
-      break;
-    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-      sa.l2cap.l2_family = AF_BLUETOOTH;
-      sa.l2cap.l2_bdaddr = addr->To<bdaddr_t>();
-      sa.l2cap.l2_psm = htobs(port);
-      sa.l2cap.l2_bdaddr_type = addr_type == BluetoothDevice::ADDR_TYPE_PUBLIC
-                                    ? BDADDR_LE_PUBLIC
-                                    : BDADDR_LE_RANDOM;
-      break;
-    default:
-      LOG(ERROR) << "Unknown socket type " << sock_type;
-      return nullptr;
-  }
-
-  int ret = HANDLE_EINTR(connect(
-      sock.get(), reinterpret_cast<const struct sockaddr*>(&sa), sizeof(sa)));
-
-  auto sock_wrapper =
-      std::make_unique<ArcBluetoothBridge::BluetoothConnectingSocket>();
-  sock_wrapper->sock_type = sock_type;
-  if (ret == 0) {
-    // connect() returns success immediately.
-    sock_wrapper->file = std::move(sock);
-    // BluetoothSocketConnect() is a blocking mojo call on the ARC side, so the
-    // callback needs to be triggered asynchronously and thus we use a PostTask
-    // here.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ArcBluetoothBridge::OnBluetoothConnectingSocketReady,
-                       weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-    return sock_wrapper;
-  }
-  if (errno != EINPROGRESS) {
-    PLOG(ERROR) << "Failed to connect.";
-    return nullptr;
-  }
-
-  sock_wrapper->controller = base::FileDescriptorWatcher::WatchWritable(
-      sock.get(),
-      base::BindRepeating(&ArcBluetoothBridge::OnBluetoothConnectingSocketReady,
-                          weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-  sock_wrapper->file = std::move(sock);
-  return sock_wrapper;
-}
-
-void ArcBluetoothBridge::OnBluetoothConnectingSocketReady(
-    ArcBluetoothBridge::BluetoothConnectingSocket* sock_wrapper) {
-  // When connect() is ready, we will transfer this fd to Android, and Android
-  // is responsible for closing it. The file watcher |controller| needs to be
-  // disabled first, and then the fd ownership is transferred.
-  sock_wrapper->controller.reset();
-  base::ScopedFD fd = std::move(sock_wrapper->file);
-
-  // Checks whether connect() succeeded.
-  int err = 0;
-  socklen_t len = sizeof(err);
-  int ret = getsockopt(fd.get(), SOL_SOCKET, SO_ERROR, &err, &len);
-  if (ret != 0 || err != 0) {
-    LOG(ERROR) << "Failed to connect. err=" << err;
-    if (sock_wrapper->created_by_deprecated_method)
-      sock_wrapper->deprecated_remote->OnConnectFailed();
-    else
-      sock_wrapper->remote->OnConnectFailed();
-    return;
-  }
-
-  // Gets peer address.
-  BluetoothSocketAddress peer_sa;
-  socklen_t peer_sa_len = sizeof(peer_sa);
-  if (getpeername(fd.get(), &peer_sa.sock, &peer_sa_len) == -1) {
-    PLOG(ERROR) << "Failed to getpeername().";
-    if (sock_wrapper->created_by_deprecated_method)
-      sock_wrapper->deprecated_remote->OnConnectFailed();
-    else
-      sock_wrapper->remote->OnConnectFailed();
-    return;
-  }
-
-  // Gets our port.
-  BluetoothSocketAddress local_sa;
-  socklen_t local_sa_len = sizeof(local_sa);
-  if (getsockname(fd.get(), &local_sa.sock, &local_sa_len) == -1) {
-    PLOG(ERROR) << "Failed to getsockname()";
-    if (sock_wrapper->created_by_deprecated_method)
-      sock_wrapper->deprecated_remote->OnConnectFailed();
-    else
-      sock_wrapper->remote->OnConnectFailed();
-    return;
-  }
-
-  mojo::ScopedHandle handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-
-  // Notifies Android.
-  if (sock_wrapper->created_by_deprecated_method) {
-    auto connection = mojom::BluetoothRfcommConnection::New();
-    connection->sock = std::move(handle);
-    connection->addr =
-        mojom::BluetoothAddress::From<bdaddr_t>(peer_sa.rfcomm.rc_bdaddr);
-    connection->channel = local_sa.rfcomm.rc_channel;
-    sock_wrapper->deprecated_remote->OnConnected(std::move(connection));
-  } else {
-    auto connection = mojom::BluetoothSocketConnection::New();
-    connection->sock = std::move(handle);
-    switch (sock_wrapper->sock_type) {
-      case mojom::BluetoothSocketType::TYPE_RFCOMM:
-        connection->addr =
-            mojom::BluetoothAddress::From<bdaddr_t>(peer_sa.rfcomm.rc_bdaddr);
-        connection->port = local_sa.rfcomm.rc_channel;
-        break;
-      case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
-        connection->addr =
-            mojom::BluetoothAddress::From<bdaddr_t>(peer_sa.l2cap.l2_bdaddr);
-        connection->port = btohs(local_sa.l2cap.l2_psm);
-        break;
-      default:
-        LOG(ERROR) << "Unknown socket type " << sock_wrapper->sock_type;
-        return;
-    }
-    sock_wrapper->remote->OnConnected(std::move(connection));
-  }
+  CreateBluetoothConnectSocket(sock_type, std::move(sock_flags),
+                               std::move(remote_addr), port,
+                               std::move(callback));
 }
 
 // static

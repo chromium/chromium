@@ -27,7 +27,6 @@
 <translation id="199526504800285197">Запись остановлена</translation>
 <translation id="1995951722691075581">Запись остановлена, так как в хранилище недостаточно свободного места. Удалите ненужные файлы, чтобы записать видео.</translation>
 <translation id="2036868001356139588">Длительность таймера</translation>
-<translation id="2050339315714019657">Вертикальное расположение</translation>
 <translation id="2064538373111010176">Камера <ph name="CAMERA" /> активна</translation>
 <translation id="2128052519899549250">Запись видео в режиме ускорения</translation>
 <translation id="2134029355740465625">Настройки видео</translation>
@@ -123,6 +122,7 @@
 <translation id="6888362557094394345">Перемещение вниз</translation>
 <translation id="695140971690006676">Сбросить все</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6965830616442491568">Портрет</translation>
 <translation id="698156982839284926">3 секунды</translation>
 <translation id="7134221860976209830">Таймер на 10 сек.</translation>
 <translation id="7191890674911603392">Тип записи</translation>

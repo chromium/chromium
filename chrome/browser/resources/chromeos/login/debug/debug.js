@@ -1342,26 +1342,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
-      id: 'arc-tos',
-      kind: ScreenKind.NORMAL,
-      states: [
-        {
-          id: 'us-terms-loaded',
-          trigger: (screen) => {
-            screen.clearDemoMode();
-            screen.reloadPlayStoreToS();
-          },
-        },
-        {
-          id: 'demo-mode',
-          trigger: (screen) => {
-            screen.setupForDemoMode();
-            screen.reloadPlayStoreToS();
-          },
-        },
-      ],
-    },
-    {
       id: 'arc-vm-data-migration',
       kind: ScreenKind.NORMAL,
     },

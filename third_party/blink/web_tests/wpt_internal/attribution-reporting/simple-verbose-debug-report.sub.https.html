@@ -1,11 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name=variant content="?method=fetch">
-<meta name=variant content="?method=fetch&cross-origin">
-<meta name=variant content="?method=fetch&cross-origin&eligible=trigger">
-<meta name=variant content="?method=img">
-<meta name=variant content="?method=img&cross-origin">
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -21,7 +16,6 @@ attribution_reporting_promise_test(async t => {
       debug_key: '456',
     },
     cookie: attributionDebugCookie,
-    method: 'variant',
     reportingOrigin,
   });
 

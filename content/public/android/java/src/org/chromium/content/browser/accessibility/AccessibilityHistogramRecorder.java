@@ -22,6 +22,9 @@ public class AccessibilityHistogramRecorder {
     public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE =
             "Accessibility.Android.OnDemand.PercentageDropped.Complete";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_FORM_CONTROLS =
+            "Accessibility.Android.OnDemand.PercentageDropped.FormControls";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC =
             "Accessibility.Android.OnDemand.PercentageDropped.Basic";
 
@@ -35,6 +38,9 @@ public class AccessibilityHistogramRecorder {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE =
             "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Complete";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_FORM_CONTROLS =
+            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.FormControls";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC =
             "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped.Basic";
@@ -120,11 +126,13 @@ public class AccessibilityHistogramRecorder {
      */
     public void recordEventsHistograms() {
         // To investigate whether adding more AXModes could be beneficial, track separate
-        // stats when both the ComputeAXMode and OnDemand features are enabled.
-        boolean isComputeAXModeEnabled =
-                ContentFeatureList.isEnabled(ContentFeatureList.COMPUTE_AX_MODE);
+        // stats when both the AccessibilityAXModes and OnDemand features are enabled.
+        boolean isAccessibilityAXModesEnabled =
+                ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_AX_MODES);
+
         // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
         boolean isAXModeComplete = AccessibilityState.isScreenReaderEnabled();
+        boolean isAXModeFormControls = AccessibilityState.isOnlyPasswordManagersEnabled();
 
         // If we did not enqueue any events, we can ignore the data as a trivial case.
         if (mTotalEnqueuedEvents > 0) {
@@ -133,9 +141,11 @@ public class AccessibilityHistogramRecorder {
             RecordHistogram.recordPercentageHistogram(
                     PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
             // Log the percentage dropped per AXMode as well.
-            if (isComputeAXModeEnabled) {
+            if (isAccessibilityAXModesEnabled) {
                 RecordHistogram.recordPercentageHistogram(isAXModeComplete
                                 ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE
+                                : isAXModeFormControls
+                                ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_FORM_CONTROLS
                                 : PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC,
                         100 - percentSent);
             }
@@ -155,9 +165,11 @@ public class AccessibilityHistogramRecorder {
                         EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
 
                 // Log the 100% events count per AXMode as well.
-                if (isComputeAXModeEnabled) {
+                if (isAccessibilityAXModesEnabled) {
                     RecordHistogram.recordCustomCountHistogram(isAXModeComplete
                                     ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE
+                                    : isAXModeFormControls
+                                    ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_FORM_CONTROLS
                                     : ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC,
                             mTotalEnqueuedEvents - mTotalDispatchedEvents,
                             EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET,

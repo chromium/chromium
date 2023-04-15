@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -268,6 +269,7 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
       GURL url("https://example.com");
       ConsoleMessagesDelegate console_delegate;
 
+      base::HistogramTester histogram_tester;
       EXPECT_TRUE(ClearSiteDataHandler::ParseHeaderForTesting(
           test_case.header, &actual_cookies, &actual_storage, &actual_cache,
           &storage_buckets_to_remove, &console_delegate, url));
@@ -276,6 +278,25 @@ TEST_P(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
       EXPECT_EQ(test_case.storage, actual_storage);
       EXPECT_EQ(test_case.cache, actual_cache);
       EXPECT_EQ(test_case.storage_buckets_to_remove, storage_buckets_to_remove);
+
+      // Count the number of bits in a mask that are 1.
+      auto count_ones_in_mask = [](int mask) {
+        int count = 0;
+        for (size_t i = 0; i < sizeof(mask) * 8; ++i) {
+          count += (mask >> i) & 1;
+        }
+        return count;
+      };
+      histogram_tester.ExpectTotalCount(
+          "Storage.ClearSiteDataHeader.Parameters", 1);
+      int sample = histogram_tester.GetTotalSum(
+          "Storage.ClearSiteDataHeader.Parameters");
+      // There should be one bit set to one for each data type seen.
+      EXPECT_EQ(count_ones_in_mask(sample),
+                static_cast<int>(test_case.cookies) +
+                    static_cast<int>(test_case.storage) +
+                    static_cast<int>(test_case.cache) +
+                    static_cast<int>(!storage_buckets_to_remove.empty()));
 
       // Test that a call with the above parameters actually reaches
       // ExecuteClearingTask().

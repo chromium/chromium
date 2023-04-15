@@ -76,10 +76,6 @@
 #include "content/public/browser/tts_environment_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "content/public/browser/firewall_hole_proxy.h"
-#endif
-
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
@@ -551,11 +547,6 @@ GeneratedCodeCacheSettings ContentBrowserClient::GetGeneratedCodeCacheSettings(
     BrowserContext* context) {
   // By default, code cache is disabled, embedders should override.
   return GeneratedCodeCacheSettings(false, 0, base::FilePath());
-}
-
-cert_verifier::mojom::CertVerifierServiceParamsPtr
-ContentBrowserClient::GetCertVerifierServiceParams() {
-  return nullptr;
 }
 
 void ContentBrowserClient::AllowCertificateError(
@@ -1354,6 +1345,10 @@ bool ContentBrowserClient::HasErrorPage(int http_status_code) {
 std::unique_ptr<IdentityRequestDialogController>
 ContentBrowserClient::CreateIdentityRequestDialogController() {
   return std::make_unique<IdentityRequestDialogController>();
+}
+
+std::unique_ptr<MDocProvider> ContentBrowserClient::CreateMDocProvider() {
+  return nullptr;
 }
 
 bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(

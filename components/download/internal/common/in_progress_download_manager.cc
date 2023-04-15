@@ -177,10 +177,6 @@ void OnPathReserved(
     }
   }
 
-  RecordBackgroundTargetDeterminationResult(
-      intermediate_path.empty()
-          ? BackgroudTargetDeterminationResultTypes::kPathReservationFailed
-          : BackgroudTargetDeterminationResultTypes::kSuccess);
   std::move(callback).Run(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE, danger_type,
       insecure_download_status, intermediate_path, base::FilePath(),
@@ -407,8 +403,6 @@ void InProgressDownloadManager::DetermineDownloadTarget(
         download->GetDangerType(), download->GetInsecureDownloadStatus(),
         target_path, base::FilePath(), std::string() /*mime_type*/,
         DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
-    RecordBackgroundTargetDeterminationResult(
-        BackgroudTargetDeterminationResultTypes::kTargetPathMissing);
     return;
   }
 
@@ -420,8 +414,6 @@ void InProgressDownloadManager::DetermineDownloadTarget(
         download->GetDangerType(), download->GetInsecureDownloadStatus(),
         target_path, base::FilePath(), std::string() /*mime_type*/,
         DOWNLOAD_INTERRUPT_REASON_NONE);
-    RecordBackgroundTargetDeterminationResult(
-        BackgroudTargetDeterminationResultTypes::kSuccess);
     return;
   }
 
@@ -609,7 +601,6 @@ void InProgressDownloadManager::OnDownloadNamesRetrieved(
     std::unique_ptr<std::vector<DownloadDBEntry>> entries,
     DisplayNames display_names) {
   std::set<uint32_t> download_ids;
-  int num_duplicates = 0;
   display_names_ = std::move(display_names);
   for (const auto& entry : *entries) {
     auto item = CreateDownloadItemImpl(
@@ -621,7 +612,6 @@ void InProgressDownloadManager::OnDownloadNamesRetrieved(
     if (download_id != DownloadItem::kInvalidId &&
         base::Contains(download_ids, download_id)) {
       RemoveInProgressDownload(item->GetGuid());
-      num_duplicates++;
       continue;
     }
 #if BUILDFLAG(IS_ANDROID)
@@ -642,8 +632,6 @@ void InProgressDownloadManager::OnDownloadNamesRetrieved(
     in_progress_downloads_.emplace_back(std::move(item));
     download_ids.insert(download_id);
   }
-  if (num_duplicates > 0)
-    RecordDuplicateInProgressDownloadIdCount(num_duplicates);
   OnInitialized();
   OnDownloadsInitialized();
 }

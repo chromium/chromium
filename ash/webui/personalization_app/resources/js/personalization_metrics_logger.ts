@@ -4,6 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {ColorScheme, StaticColor} from '../personalization_app.mojom-webui.js';
+
 import {Paths} from './personalization_router_element.js';
 
 // Numerical values are used for metrics; do not change or reuse values. These
@@ -27,6 +29,10 @@ const enum HistogramName {
   AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
+  DYNAMIC_COLOR_COLOR_SCHEME_BUTTON =
+      'Ash.Personalization.DynamicColor.ColorSchemeButton',
+  DYNAMIC_COLOR_STATIC_COLOR_BUTTON =
+      'Ash.Personalization.DynamicColor.StaticColorButton',
   DYNAMIC_COLOR_TOGGLE_BUTTON = 'Ash.Personalization.DynamicColor.ToggleButton',
   KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
       'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
@@ -81,4 +87,16 @@ export function logKeyboardBacklightOpenZoneCustomizationUMA() {
 export function logDynamicColorToggleButtonClick(enabled: boolean) {
   chrome.metricsPrivate.recordBoolean(
       HistogramName.DYNAMIC_COLOR_TOGGLE_BUTTON, enabled);
+}
+
+export function logDynamicColorStaticColorButtonClick(color: StaticColor) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.DYNAMIC_COLOR_STATIC_COLOR_BUTTON, color,
+      StaticColor.MAX_VALUE);
+}
+
+export function logDynamicColorColorSchemeButtonClick(color: ColorScheme) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.DYNAMIC_COLOR_COLOR_SCHEME_BUTTON, color,
+      ColorScheme.MAX_VALUE);
 }

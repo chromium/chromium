@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser.h"
@@ -50,7 +49,7 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
 
   // Start the swipe where the tab contents start/end.  This provides a small
   // amount of slop inside the tab before a swipe will change tabs.
-  auto contents_insets = tab->tab_style()->GetContentsInsets();
+  auto contents_insets = tab->tab_style_views()->GetContentsInsets();
   int left = contents_insets.left();
   int right = contents_insets.right();
 
@@ -63,7 +62,8 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
   // opposite edges of the tab, which should be at (overlap / 2).
   gfx::Rect tab_edges = tab_bounds;
   // For odd overlap values, be conservative and inset both edges rounding up.
-  tab_edges.Inset(gfx::Insets::VH(0, (TabStyle::GetTabOverlap() + 1) / 2));
+  tab_edges.Inset(
+      gfx::Insets::VH(0, (tab->tab_style()->GetTabOverlap() + 1) / 2));
   const int x = (direction == LEFT)
                     ? std::min(tab_bounds.x() + left, tab_edges.right())
                     : std::max(tab_bounds.right() - right, tab_edges.x());
@@ -92,7 +92,7 @@ void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
                         ui::EventTimeForNow(),
                         /*flags=*/0, x_offset,
                         /*y_offset=*/0.f, /*x_offset_ordinal=*/0.f,
-                        /*y_offset_original=*/0.f, kFingerCount);
+                        /*y_offset_ordinal=*/0.f, kFingerCount);
   OnScrollEvent(&event);
 }
 
@@ -184,7 +184,7 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   if (highlighted_tab_ != -1) {
     gfx::Point hover_point(swipe_x_, swipe_y_);
     views::View::ConvertPointToTarget(tab_strip_, new_tab, &hover_point);
-    new_tab->tab_style()->SetHoverLocation(hover_point);
+    new_tab->tab_style_views()->SetHoverLocation(hover_point);
   }
 }
 
@@ -273,7 +273,7 @@ void TabScrubberChromeOS::FinishScrub(bool activate) {
     TabStrip* tab_strip = browser_view->tabstrip();
     if (activate && highlighted_tab_ != -1) {
       Tab* tab = tab_strip->tab_at(highlighted_tab_);
-      tab->tab_style()->HideHover(TabStyle::HideHoverStyle::kImmediate);
+      tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
       int distance = std::abs(highlighted_tab_ -
                               browser_->tab_strip_model()->active_index());
       UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.ScrubDistance", distance, 1, 20, 21);
@@ -331,7 +331,7 @@ void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
   float max = x_offset;
   if (x_offset < 0)
     std::swap(min, max);
-  swipe_x_ += base::clamp(
+  swipe_x_ += std::clamp(
       x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset), min, max);
 
   // In an RTL layout, everything is mirrored, i.e. the index of the first tab
@@ -360,12 +360,13 @@ void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
 
   if (highlighted_tab_ != -1) {
     Tab* tab = tab_strip_->tab_at(highlighted_tab_);
-    tab->tab_style()->HideHover(TabStyle::HideHoverStyle::kImmediate);
+    tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
   }
 
   if (new_index != browser_->tab_strip_model()->active_index()) {
     highlighted_tab_ = new_index;
-    new_tab->tab_style()->ShowHover(TabStyle::ShowHoverStyle::kPronounced);
+    new_tab->tab_style_views()->ShowHover(
+        TabStyle::ShowHoverStyle::kPronounced);
   } else {
     highlighted_tab_ = -1;
   }

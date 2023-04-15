@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -108,8 +109,37 @@ const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
 const char kActionIdOpenInOffice[] = "open-in-office";
 const char kActionIdOpenWeb[] = "OPEN_WEB";
+const char kODFSExtensionId[] = "gnnndjlaomemikopnjhhnoombakkkkdg";
 
-const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
+// Searches for the installed extension in order of preference.
+std::string GetODFSExtensionId(Profile* profile) {
+  const ash::file_system_provider::Service* const service =
+      ash::file_system_provider::Service::Get(profile);
+
+  for (const auto& [provider_id, provider] : service->GetProviders()) {
+    if (provider_id.GetType() !=
+        ash::file_system_provider::ProviderId::EXTENSION) {
+      continue;
+    }
+    const auto& extension_id = provider_id.GetExtensionId();
+
+    // App from official internal build.
+    if (extension_id == kODFSExtensionId) {
+      return kODFSExtensionId;
+    }
+
+    // App built manually from internal repo.
+    if (extension_id == "gcpjnalmmghdoadafjgomdlghfnllceo") {
+      return "gcpjnalmmghdoadafjgomdlghfnllceo";
+    }
+
+    // App built manually from internal git, used for the early dogfood.
+    if (extension_id == "ajdgmkbkgifbokednjgbmieaemeighkg") {
+      return "ajdgmkbkgifbokednjgbmieaemeighkg";
+    }
+  }
+  return {};
+}
 
 namespace {
 

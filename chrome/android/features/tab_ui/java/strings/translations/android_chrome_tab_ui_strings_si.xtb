@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
 <translation id="1075622780330595106">ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
-<translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="125153950246128346">වෙනත් පටිත්තක් බැලීමට තට්ටු කරන්න</translation>
 <translation id="1403228085774130835">Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත ටැබ තුළ ඔබට ඔබගේ වසන ලද ටැබ සොයා ගත හැකිය</translation>
 <translation id="1455506303394048917">මෙම අප්‍රකට ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ඇත</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">දැන් <ph name="SOURCE_WEBSITE" /> හි <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{පටිත්ත සමූහගත නොකරන්න}one{පටිති සමූහගත නොකරන්න}other{පටිති සමූහගත නොකරන්න}}</translation>
 <translation id="2277224997687551299">සමූහ නම සංස්කරණය කරන්න</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_ONE" />ක් ඉවත් කරන්න.}one{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_MANY" />ක් ඉවත් කරන්න.}other{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_MANY" />ක් ඉවත් කරන්න.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{පටිත්ත පිටුසන් කරන්න}one{පටිති පිටුසන් කරන්න}other{පටිති පිටුසන් කරන්න}}</translation>
-<translation id="2479148705183875116">සැකසීම් වෙත යන්න</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ටැබ <ph name="TABS_COUNT_ONE" />ක් හකුළන්න.}one{ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}other{ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}}</translation>
 <translation id="2569352796411618312">යෝජනාව: ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
-<translation id="257674075312929031">සමූහය</translation>
 <translation id="2613747923081026172">කණ්ඩායම සාදන්න</translation>
 <translation id="2662028055331606429">ඇගයීම <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">අඩවියට පිවිසෙන්න</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">පටිති කණ්ඩායම් කිරීමට ඒවා අදින්න</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> සමූහය ටැබ <ph name="NUMBER_OF_TABS" />ක් සමග දිග හරින්න</translation>
 <translation id="5972844218283131174">සියල්ල තේරීමෙන් ඉවත් කරන්න</translation>
-<translation id="6040143037577758943">වසන්න</translation>
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">බහු-තේරීම් ප්‍රකාරය සඟවන්න</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{පටිත්ත බෙදා ගන්න}one{පටිති බෙදා ගන්න}other{පටිති බෙදා ගන්න}}</translation>
 <translation id="7129458170538955174">මෙම වෙළඳසැල පිළිබඳ තොරතුරු අර්ධ උසෙහිදී විවෘත විය</translation>
-<translation id="7151209024774799310">සමූහයෙන් පටිති ඉවත් කරන්න</translation>
 <translation id="7204204600596740190">බහු-තේරීම් ප්‍රකාරය</translation>
 <translation id="7326879924029668159">ආපසු යැවීමේ ප්‍රතිපත්තිය සහ තවත් දේ බලන්න</translation>
 <translation id="7352298686197644113">ඔබගේ විවෘත ටැබවල වඩා අඩු මිලක් ඇති අයිතමය බලන්න</translation>

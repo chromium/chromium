@@ -1,0 +1,78 @@
+This is a testharness.js-based test.
+Found 74 tests; 72 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS URL interface: existence and properties of interface object
+PASS URL interface object length
+PASS URL interface object name
+PASS URL interface: legacy window alias
+PASS URL interface: existence and properties of interface prototype object
+PASS URL interface: existence and properties of interface prototype object's "constructor" property
+PASS URL interface: existence and properties of interface prototype object's @@unscopables property
+FAIL URL interface: operation canParse(USVString, optional USVString) assert_own_property: interface object missing static operation expected property "canParse" missing
+PASS URL interface: attribute href
+PASS URL interface: stringifier
+PASS URL interface: attribute origin
+PASS URL interface: attribute protocol
+PASS URL interface: attribute username
+PASS URL interface: attribute password
+PASS URL interface: attribute host
+PASS URL interface: attribute hostname
+PASS URL interface: attribute port
+PASS URL interface: attribute pathname
+PASS URL interface: attribute search
+PASS URL interface: attribute searchParams
+PASS URL interface: attribute hash
+PASS URL interface: operation toJSON()
+PASS URL must be primary interface of new URL("http://foo")
+PASS Stringification of new URL("http://foo")
+PASS URL interface: new URL("http://foo") must inherit property "canParse(USVString, optional USVString)" with the proper type
+FAIL URL interface: calling canParse(USVString, optional USVString) on new URL("http://foo") with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "canParse" missing
+PASS URL interface: new URL("http://foo") must inherit property "href" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "origin" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "protocol" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "username" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "password" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "host" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "hostname" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "port" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "pathname" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "search" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "searchParams" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "hash" with the proper type
+PASS URL interface: new URL("http://foo") must inherit property "toJSON()" with the proper type
+PASS URL interface: toJSON operation on new URL("http://foo")
+PASS URLSearchParams interface: existence and properties of interface object
+PASS URLSearchParams interface object length
+PASS URLSearchParams interface object name
+PASS URLSearchParams interface: existence and properties of interface prototype object
+PASS URLSearchParams interface: existence and properties of interface prototype object's "constructor" property
+PASS URLSearchParams interface: existence and properties of interface prototype object's @@unscopables property
+PASS URLSearchParams interface: attribute size
+PASS URLSearchParams interface: operation append(USVString, USVString)
+PASS URLSearchParams interface: operation delete(USVString)
+PASS URLSearchParams interface: operation get(USVString)
+PASS URLSearchParams interface: operation getAll(USVString)
+PASS URLSearchParams interface: operation has(USVString)
+PASS URLSearchParams interface: operation set(USVString, USVString)
+PASS URLSearchParams interface: operation sort()
+PASS URLSearchParams interface: iterable<USVString, USVString>
+PASS URLSearchParams interface: stringifier
+PASS URLSearchParams must be primary interface of new URLSearchParams("hi=there&thank=you")
+PASS Stringification of new URLSearchParams("hi=there&thank=you")
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "size" with the proper type
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "append(USVString, USVString)" with the proper type
+PASS URLSearchParams interface: calling append(USVString, USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "delete(USVString)" with the proper type
+PASS URLSearchParams interface: calling delete(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "get(USVString)" with the proper type
+PASS URLSearchParams interface: calling get(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "getAll(USVString)" with the proper type
+PASS URLSearchParams interface: calling getAll(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "has(USVString)" with the proper type
+PASS URLSearchParams interface: calling has(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "set(USVString, USVString)" with the proper type
+PASS URLSearchParams interface: calling set(USVString, USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "sort()" with the proper type
+Harness: the test ran to completion.
+

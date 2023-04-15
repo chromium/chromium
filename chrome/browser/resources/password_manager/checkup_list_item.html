@@ -5,7 +5,7 @@
   }
 
   site-favicon {
-    margin-inline-end: 20px;
+    padding-inline-end: 20px;
   }
 
   #list-item {
@@ -15,7 +15,7 @@
   }
 
   #credentialInfo {
-    display: flex;
+    display: grid;
     flex: 2;
   }
 
@@ -25,6 +25,7 @@
     color: var(--cr-secondary-text-color);
     font-size: inherit;
     margin-inline-start: 4px;
+    max-width: 10ch;
   }
 
   #usernameContainer {
@@ -33,9 +34,6 @@
 
   #username {
     max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   #changeButton {
@@ -61,7 +59,8 @@
   }
 
   #changePasswordButton {
-    height: 32px;
+    height: auto;
+    padding: 3px 16px;
   }
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
@@ -70,26 +69,24 @@
       aria-hidden="true">
   </site-favicon>
   <div id="credentialInfo">
-    <div id="infoColumn">
-      <div id="shownUrl" class="label">
-        [[group.name]]
-      </div>
-      <div id="usernameContainer" class="cr-secondary-text label">
-        <span id="username">[[item.username]]</span>
-        <input id="insecurePassword" focus-row-control
-                  focus-type="passwordField" readonly disabled
-                  type="[[getPasswordInputType(isPasswordVisible)]]"
-                  value="[[getPasswordValue_(item, isPasswordVisible)]]">
-      </div>
-      <template is="dom-if" if="[[showDetails]]">
-        <div class="cr-secondary-text label" id="compromiseType">
-          [[getCompromiseDescription_(item)]]
-        </div>
-        <div class="cr-secondary-text label" id="elapsedTime">
-          [[item.compromisedInfo.elapsedTimeSinceCompromise]]
-        </div>
-      </template>
+    <div id="shownUrl" class="label text-elide">
+      [[group.name]]
     </div>
+    <div id="usernameContainer" class="cr-secondary-text label">
+      <span id="username" class="text-elide">[[item.username]]</span>
+      <input id="insecurePassword" focus-row-control
+          focus-type="passwordField" readonly disabled
+          type="[[getPasswordInputType(isPasswordVisible)]]"
+          value="[[getPasswordValue_(item, isPasswordVisible)]]">
+    </div>
+    <template is="dom-if" if="[[showDetails]]">
+      <div class="cr-secondary-text label text-elide" id="compromiseType">
+        [[getCompromiseDescription_(item)]]
+      </div>
+      <div class="cr-secondary-text label text-elide" id="elapsedTime">
+        [[item.compromisedInfo.elapsedTimeSinceCompromise]]
+      </div>
+    </template>
   </div>
   <template is="dom-if" if="[[item.changePasswordUrl]]">
     <div class="button-container" id="changeButton">

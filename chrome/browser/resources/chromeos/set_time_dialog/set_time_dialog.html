@@ -1,4 +1,4 @@
-      <style include="cr-page-host-style cr-shared-style md-select">
+      <style include="cr-page-host-style cr-shared-style md-select cros-color-overrides">
         :host {
           user-select: none;
         }
@@ -7,11 +7,6 @@
           border-radius: 0;
           height: 100%;
           width: 100%;
-        }
-
-        cr-dialog [slot=title] {
-          /* The native dialog caption area has enough visual whitespace. */
-          padding-top: 0;
         }
 
         cr-dialog [slot=button-container] {
@@ -121,4 +116,3 @@
           </cr-button>
         </div>
       </cr-dialog>
-    </template>

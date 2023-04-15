@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ}one{# ਦਿਨ ਪਹਿਲਾਂ}other{# ਦਿਨ ਪਹਿਲਾਂ}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 ਮਿੰਟ}one{# ਮਿੰਟ}other{# ਮਿੰਟ}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ}one{# ਦਿਨ ਪਹਿਲਾਂ}other{# ਦਿਨ ਪਹਿਲਾਂ}}</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1243314992276662751">ਅਪਲੋਡ ਕਰੋ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">ਖੱਬੇ ਤੋਂ ਸੱਜੇ ਪਾਸੇ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1398853756734560583">ਅਧਿਕਤਮ ਬਣਾਓ</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ}one{# ਮਹੀਨਾ ਪਹਿਲਾਂ}other{# ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 ਮਿੰਟ ਅਤੇ }one{# ਮਿੰਟ ਅਤੇ }other{# ਮਿੰਟ ਅਤੇ }}</translation>
 <translation id="1643823602425662293">ਸੂਚਨਾ</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">ਚਿੱਤਰ</translation>
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4588090240171750605">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੌਲ ਕਰੋ</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 ਸਾਲ ਪਹਿਲਾਂ}one{# ਸਾਲ ਪਹਿਲਾਂ}other{# ਸਾਲ ਪਹਿਲਾਂ}}</translation>
 <translation id="4724120544754982507">ਸੂਚਨਾ ਕੇਂਦਰ, <ph name="UNREAD_NOTIFICATION_COUNT" /> ਨਾ-ਪੜ੍ਹੀਆਂ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="4729257764711776855">ਨੰਬਰ</translation>
 <translation id="4746179598275229723">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
 <translation id="8394908167088220973">ਮੀਡੀਆ ਪਲੇ ਕਰੋ/ਰੋਕੋ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ਸਾਲ}one{# ਸਾਲ}other{# ਸਾਲ}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ਫਾਈਲ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> ਹੋਰ</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8876215549894133151">ਫੌਰਮੈਟ:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 ਘੰਟਾ ਪਹਿਲਾਂ}one{# ਘੰਟਾ ਪਹਿਲਾਂ}other{# ਘੰਟੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="8996630695507351249">ਪੱਕਾ ਕਰੋ ਕਿ <ph name="TARGET_DEVICE_NAME" /> ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੇ।</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 ਸਕਿੰਟ}one{# ਸਕਿੰਟ}other{# ਸਕਿੰਟ}}</translation>
 <translation id="9059834730836941392">ਸੂਚਨਾ ਸਮੇਟੋ</translation>
 <translation id="9170848237812810038">&amp;ਅਨਡੂ</translation>
 <translation id="932327136139879170">ਹੋਮ</translation>
 <translation id="944069440740578670">ਨਾ-ਪੜ੍ਹੀਆਂ ਸੂਚਨਾਵਾਂ</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 ਸਕਿੰਟ ਪਹਿਲਾਂ}one{# ਸਕਿੰਟ ਪਹਿਲਾਂ}other{# ਸਕਿੰਟ ਪਹਿਲਾਂ}}</translation>
 </translationbundle>

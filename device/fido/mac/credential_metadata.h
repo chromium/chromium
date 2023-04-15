@@ -170,8 +170,9 @@ std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
                                           base::span<const uint8_t> user_id);
 
 // EncodeRpId encodes the given RP ID for storage in the macOS keychain. The
-// returned value is a UTF-8 string, to ensure it can be set as the
-// `kSecAttrLabel` value of a keychain item.
+// returned value is guaranteed to be a valid UTF-8 string, to ensure it can
+// safely be converted to an NSString and used as a string property in a
+// parameters dictionary.
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::string EncodeRpId(const std::string& secret, const std::string& rp_id);
 

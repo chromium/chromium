@@ -21,7 +21,9 @@
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/known_roots.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -338,8 +340,10 @@ void GetChainDEREncodedBytes(X509Certificate* cert,
 }  // namespace
 
 CertVerifyProcAndroid::CertVerifyProcAndroid(
-    scoped_refptr<CertNetFetcher> cert_net_fetcher)
-    : cert_net_fetcher_(std::move(cert_net_fetcher)) {}
+    scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<CRLSet> crl_set)
+    : CertVerifyProc(std::move(crl_set)),
+      cert_net_fetcher_(std::move(cert_net_fetcher)) {}
 
 CertVerifyProcAndroid::~CertVerifyProcAndroid() = default;
 
@@ -353,7 +357,6 @@ int CertVerifyProcAndroid::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {

@@ -25,9 +25,11 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -218,7 +220,7 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
   }
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
-      name, serialized_data,
+      name, serialized_data, MaybeBindPrivateAggregationHost(),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -285,7 +287,7 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
   shared_storage_worklet_host_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
-      name, urls, serialized_data,
+      name, urls, serialized_data, MaybeBindPrivateAggregationHost(),
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
@@ -882,7 +884,6 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
     bool private_aggregation_permissions_policy_allowed =
         document_service_->render_frame_host().IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kPrivateAggregation);
-
     driver_->StartWorkletService(
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver());
 
@@ -892,8 +893,7 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
                                 ->GetEmbedderSharedStorageContextIfAllowed();
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
-        private_aggregation_permissions_policy_allowed,
-        MaybeBindPrivateAggregationHost(), embedder_context);
+        private_aggregation_permissions_policy_allowed, embedder_context);
   }
 
   return shared_storage_worklet_service_.get();
@@ -903,8 +903,7 @@ mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   DCHECK(browser_context_);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
-      !blink::features::kPrivateAggregationApiEnabledInSharedStorage.Get()) {
+  if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
     return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
   }
 
@@ -914,12 +913,11 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
 
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
       pending_pa_host_remote;
-  if (!private_aggregation_manager->BindNewReceiver(
-          shared_storage_origin_, main_frame_origin_,
-          PrivateAggregationBudgetKey::Api::kSharedStorage,
-          pending_pa_host_remote.InitWithNewPipeAndPassReceiver())) {
-    return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
-  }
+  bool success = private_aggregation_manager->BindNewReceiver(
+      shared_storage_origin_, main_frame_origin_,
+      PrivateAggregationBudgetKey::Api::kSharedStorage,
+      pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
+  CHECK(success);
 
   return pending_pa_host_remote;
 }

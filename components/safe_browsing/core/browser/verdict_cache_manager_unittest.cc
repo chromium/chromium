@@ -977,13 +977,14 @@ TEST_F(VerdictCacheManagerTest, TestShutdown) {
 TEST_F(VerdictCacheManagerTest, TestHashPrefixRealTimeLookupCaching) {
   // Basic test ensuring that the cache manager calls are propagating as
   // expected to the HashRealTimeCache.
-  EXPECT_TRUE(
-      cache_manager_->GetCachedHashPrefixRealTimeLookupResults({"aaaa", "bbbb"})
-          .empty());
+  EXPECT_TRUE(cache_manager_
+                  ->GetCachedHashPrefixRealTimeLookupResults(
+                      {"aaaa", "bbbb"}, /*skip_logging=*/false)
+                  .empty());
   CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "aaaa");
   CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "bbbb");
   auto cache_results = cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
-      {"aaaa", "bbbb", "cccc"});
+      {"aaaa", "bbbb", "cccc"}, /*skip_logging=*/false);
   EXPECT_EQ(cache_results.size(), 2u);
   EXPECT_TRUE(base::Contains(cache_results, "aaaa"));
   EXPECT_TRUE(base::Contains(cache_results, "bbbb"));

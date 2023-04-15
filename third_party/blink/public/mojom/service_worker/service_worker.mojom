@@ -27,6 +27,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_event_statu
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -190,7 +191,8 @@ interface ServiceWorker {
       ServiceWorkerObjectInfo service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
       pending_receiver<ReportingObserver>? reporting_observer_receiver,
-      AncestorFrameType ancestor_frame_type);
+      AncestorFrameType ancestor_frame_type,
+      blink.mojom.StorageKey storage_key);
 
   // These methods dispatch InstallEvent and ActivateEvent to the
   // ServiceWorkerGlobalScope.

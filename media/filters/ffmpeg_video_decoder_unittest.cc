@@ -56,9 +56,10 @@ MATCHER(ContainsFailedToSendLog, "") {
 
 class FFmpegVideoDecoderTest : public testing::Test {
  public:
-  FFmpegVideoDecoderTest() : decoder_(new FFmpegVideoDecoder(&media_log_)) {
+  FFmpegVideoDecoderTest()
+      : decoder_(std::make_unique<FFmpegVideoDecoder>(&media_log_)) {
     // Initialize various test buffers.
-    frame_buffer_.reset(new uint8_t[kCodedSize.GetArea()]);
+    frame_buffer_ = std::make_unique<uint8_t[]>(kCodedSize.GetArea());
     end_of_stream_buffer_ = DecoderBuffer::CreateEOSBuffer();
     i_frame_buffer_ = ReadTestDataFile("vp8-I-frame-320x240");
     corrupt_i_frame_buffer_ = ReadTestDataFile("vp8-corrupt-I-frame");

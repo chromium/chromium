@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.chromium.webengine.test.instrumentation_test_apk">
+
+    <application android:label="WE Instrumentation Test APK"
+        tools:replace="android:label"
+        android:supportsRtl="true">
+        <activity android:name="InstrumentationActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@style/ShellTheme"
+                  android:windowSoftInputMode="adjustResize"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
+
+        <meta-data android:name="org.chromium.webengine.shell.BrowserProcessMode"
+                   android:value="{{ browser_process_mode }}"/>
+    </application>
+</manifest>

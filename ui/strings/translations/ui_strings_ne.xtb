@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{ १ दिनअघि}other{ # दिनअघि}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{१ मिनट अगाडि}other{# मिनट अगाडि}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{१ मिनेट}other{# मिनेट}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{१ दिनअघि}other{# दिनअघि}}</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">बायाँ देखि दायाँ सम्म</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1398853756734560583">अधिकतम बनाउनुहोस्</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{१ मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{१ महिनाअघि}other{# महिनाअघि}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{ १ मिनेट र }other{ # मिनेट र }}</translation>
 <translation id="1643823602425662293">सूचना</translation>
 <translation id="169515659049020177">सिफ्ट</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">छवि</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4588090240171750605">दायाँ तिर स्क्रोल गर्नुहोस्</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{१ वर्षअघि}other{# वर्षअघि}}</translation>
 <translation id="4724120544754982507">सूचनासम्बन्धी केन्द्र, <ph name="UNREAD_NOTIFICATION_COUNT" /> नपढिएका सूचनाहरू</translation>
 <translation id="4729257764711776855">फोन नम्बर</translation>
 <translation id="4746179598275229723">एक्स्टेन्सन अनपिन गरियो</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">पठाउँदै...</translation>
 <translation id="8876215549894133151">स्वरूप:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> केबी</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{१ घण्टाअघि}other{# घण्टाअघि}}</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" /> इन्टरनेटमा जोडिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{ १ सेकेन्ड}other{ # सेकेन्ड}}</translation>
 <translation id="9059834730836941392">सूचना संक्षिप्त गर्नुहोस्</translation>
 <translation id="9170848237812810038">&amp;पूर्वस्थितिमा फर्काउनुहोस्</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>
 <translation id="944069440740578670">नपढिएका सूचनाहरू</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{१ सेकेन्डअघि}other{# सेकेन्डअघि}}</translation>
 </translationbundle>

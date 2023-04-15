@@ -660,6 +660,7 @@ component("net") {
     "http/http_status_code.cc",
     "http/http_status_code.h",
     "http/http_status_code_list.h",
+    "http/http_stream.cc",
     "http/http_stream.h",
     "http/http_stream_factory.cc",
     "http/http_stream_factory.h",
@@ -1215,6 +1216,13 @@ component("net") {
       "base/network_interfaces_linux.cc",
       "base/network_interfaces_linux.h",
       "base/platform_mime_util_linux.cc",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "base/address_map_cache_linux.cc",
+      "base/address_map_cache_linux.h",
     ]
   }
 
@@ -3060,7 +3068,6 @@ test("net_unittests") {
       "websockets/websocket_deflate_predictor_impl_test.cc",
       "websockets/websocket_deflate_stream_test.cc",
       "websockets/websocket_deflater_test.cc",
-      "websockets/websocket_end_to_end_test.cc",
       "websockets/websocket_errors_test.cc",
       "websockets/websocket_extension_parser_test.cc",
       "websockets/websocket_extension_test.cc",
@@ -3076,6 +3083,14 @@ test("net_unittests") {
       "websockets/websocket_test_util.cc",
       "websockets/websocket_test_util.h",
     ]
+
+    if (!is_ios) {
+      # TODO(crbug.com/1281277): iOS does not have support for the spawned test
+      # server, which is used by this test. The long term plan is to add
+      # websocket support to the embedded test server and when that happens,
+      # this test could be enabled.
+      sources += [ "websockets/websocket_end_to_end_test.cc" ]
+    }
   }
 
   if (!disable_file_support) {

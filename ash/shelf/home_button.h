@@ -181,6 +181,9 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // Removes the nudge label from the view hierarchy.
   void RemoveNudgeLabel();
 
+  // Removes the quick app button from the view hierarchy.
+  void RemoveQuickAppButton();
+
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
@@ -193,7 +196,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                                     SearchModel* search_model) override;
 
   // QuickAppAccessModel::Observer:
-  void OnQuickAppChanged() override;
+  void OnQuickAppShouldShowChanged(bool quick_app_shown) override;
+  void OnQuickAppIconChanged() override;
 
   base::ScopedObservation<QuickAppAccessModel, QuickAppAccessModel::Observer>
       quick_app_model_observation_{this};
@@ -232,9 +236,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // The app button which is shown next to the home button. Only shown when
   // set by SetQuickApp().
   views::ImageButton* quick_app_button_ = nullptr;
-
-  // The app_id of the quick app button.
-  std::string quick_app_id_;
 
   base::ObserverList<NudgeAnimationObserver> observers_;
 

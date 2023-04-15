@@ -529,16 +529,6 @@ enum class FidoRequestType : uint8_t {
   kGetAssertion = 1,
 };
 
-// CableRequestType enumerates the types of connections that caBLE cares about.
-// Unlike `FidoRequestType`, caBLE cares about the difference between making
-// a discoverable and non-discoverable credential because this is flagged in
-// the QR code.
-enum class CableRequestType {
-  kMakeCredential,
-  kDiscoverableMakeCredential,
-  kGetAssertion,
-};
-
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FIDO_CONSTANTS_H_

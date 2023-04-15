@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
+#include "base/functional/callback_forward.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,17 +25,20 @@ class JpegThumbnailHelper {
   JpegThumbnailHelper(const JpegThumbnailHelper&) = delete;
   JpegThumbnailHelper& operator=(const JpegThumbnailHelper&) = delete;
 
-  // Callback post_processing_task will run on the thread created by this
-  // helper.
+  // `post_processing_task` will run on the thread that created this
+  // JpegThumbnailHelper.
   void Compress(
       double jpeg_aspect_ratio,
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
-  // Closure post_write_task will run on the thread created by this helper.
+  // `post_write_task` will run on the thread that created this
+  // JpegThumbnailHelper.
   void Write(thumbnail::TabId tab_id,
              std::vector<uint8_t> compressed_data,
              base::OnceClosure post_write_task);
-  // Callback post_read_task will run on the thread created by this helper.
+
+  // `post_read_task` will run on the thread that created this
+  // JpegThumbnailHelper.
   void Read(thumbnail::TabId tab_id,
             base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
                 post_read_task);

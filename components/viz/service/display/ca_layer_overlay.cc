@@ -30,10 +30,18 @@ namespace {
 // quads are promoted to CALayers. At extremes, corruption can occur.
 // https://crbug.com/1022116
 
-constexpr size_t kTooManyQuads = 128;
-// |kTooManyQuadsWithVideos| can be re-assigned by kMacCAOverlayQuadMaxNum when
-// feature kMacCAOverlayQuad is enabled.
-constexpr size_t kTooManyQuadsWithVideos = 300;
+// The default CALayer number allowed for CoreAnimation when kCALayerNewLimit is
+// disabled.
+constexpr size_t kLayerLimitDefault = 128;
+
+// The default CALayer number allowed with many videos (video conferencing). It
+// can be overriden by the "many-videos" feature parameters if kCALayerNewLimit
+// is enabled.
+constexpr size_t kLayerLimitWithManyVideos = 300;
+
+// The new limit if kCALayerNewLimit is enabled. It can be overriden by the
+// "default" feature parameters.
+constexpr size_t kLayerNewLimitDefault = 512;
 
 // If there are too many RenderPassDrawQuads, we shouldn't use Core
 // Animation to present them as individual layers, since that potentially
@@ -368,16 +376,22 @@ CALayerOverlayProcessor::CALayerOverlayProcessor()
     : overlays_allowed_(ui::RemoteLayerAPISupported()),
       enable_ca_renderer_(base::FeatureList::IsEnabled(kCARenderer)),
       enable_hdr_underlays_(base::FeatureList::IsEnabled(kHDRUnderlays)) {
-  if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {
-    max_quad_list_size_for_videos_ = kTooManyQuadsWithVideos;
-    const int max_num = features::kMacCAOverlayQuadMaxNum.Get();
-    if (max_num > 0)
-      max_quad_list_size_for_videos_ = max_num;
-  } else {
-    max_quad_list_size_for_videos_ = kTooManyQuads;
-  }
+  layer_limit_default_ = kLayerLimitDefault;
+  layer_limit_with_many_videos_ = kLayerLimitWithManyVideos;
+  if (base::FeatureList::IsEnabled(features::kCALayerNewLimit)) {
+    layer_limit_default_ = kLayerNewLimitDefault;
+    const int layer_limit_default_field_trial =
+        features::kCALayerNewLimitDefault.Get();
+    if (layer_limit_default_field_trial > 0) {
+      layer_limit_default_ = layer_limit_default_field_trial;
+    }
 
-  DCHECK_GE(max_quad_list_size_for_videos_, kTooManyQuads);
+    const int layer_limit_with_many_videos_field_trial =
+        features::kCALayerNewLimitManyVideos.Get();
+    if (layer_limit_with_many_videos_field_trial > 0) {
+      layer_limit_with_many_videos_ = layer_limit_with_many_videos_field_trial;
+    }
+  }
 }
 
 bool CALayerOverlayProcessor::AreClipSettingsValid(
@@ -478,8 +492,6 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     result = gfx::kCALayerFailedVideoCaptureEnabled;
   } else if (!render_pass->copy_requests.empty()) {
     result = gfx::kCALayerFailedCopyRequests;
-  } else if (num_visible_quads > max_quad_list_size_for_videos_) {
-    result = gfx::kCALayerFailedTooManyQuads;
   }
 
   if (result != gfx::kCALayerSuccess) {
@@ -527,12 +539,11 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     ca_layer_overlays->push_back(ca_layer);
   }
 
-  // Apply Feature kMacCAOverlayQuad to non-video-conferencing mode only.
-  // In the case of |max_quad_list_size_for_videos_| > |num_visible_quads| >
-  // kTooManyQuads, accept OverlayCandidate only if it's in a video conferencing
-  // mode. (video count >= kMaxNumVideos(5)) Otherwise, fail OverlayCandidate.
-  if (num_visible_quads > kTooManyQuads &&
-      yuv_draw_quad_count < kMaxNumVideos) {
+  // Fails if there are more draw quads than allowed for CoreAnimation.
+  size_t max_number = (yuv_draw_quad_count < kMaxNumVideos)
+                          ? layer_limit_default_
+                          : layer_limit_with_many_videos_;
+  if (num_visible_quads > max_number) {
     result = gfx::kCALayerFailedTooManyQuads;
   }
 

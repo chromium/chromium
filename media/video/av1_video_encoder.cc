@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/svc_scalability_mode.h"
@@ -33,26 +32,6 @@ void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
     DCHECK_EQ(error, AOM_CODEC_OK);
   }
   delete codec_ctx;
-}
-
-int GetNumberOfThreads(int width) {
-  // Default to 1 thread for less than VGA.
-  int desired_threads = 1;
-
-  if (width >= 3840)
-    desired_threads = 16;
-  else if (width >= 2560)
-    desired_threads = 8;
-  else if (width >= 1280)
-    desired_threads = 4;
-  else if (width >= 640)
-    desired_threads = 2;
-
-  // Clamp to the number of available logical processors/cores.
-  desired_threads =
-      std::min(desired_threads, base::SysInfo::NumberOfProcessors());
-
-  return desired_threads;
 }
 
 EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
@@ -86,7 +65,7 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
   config.g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
   // Set the number of threads based on the image width and num of cores.
-  config.g_threads = GetNumberOfThreads(opts.frame_size.width());
+  config.g_threads = GetNumberOfThreadsForSoftwareEncoding(opts.frame_size);
 
   // Insert keyframes at will with a given max interval
   if (opts.keyframe_interval.has_value()) {

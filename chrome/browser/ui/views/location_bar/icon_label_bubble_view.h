@@ -50,6 +50,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
     // this as its foreground color, separator, and ink drop base color.
     virtual SkColor GetIconLabelBubbleSurroundingForegroundColor() const = 0;
 
+    // Returns the alpha to use when computing the color of the separator.
+    virtual SkAlpha GetIconLabelBubbleSeparatorAlpha() const;
+
     // Returns the base color for ink drops.  If not overridden, this returns
     // GetIconLabelBubbleSurroundingForegroundColor().
     virtual SkColor GetIconLabelBubbleInkDropColor() const;

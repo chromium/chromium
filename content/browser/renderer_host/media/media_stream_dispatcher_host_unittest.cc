@@ -33,11 +33,15 @@
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
@@ -62,6 +66,7 @@ using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
+using ::testing::Return;
 
 namespace content {
 
@@ -255,12 +260,14 @@ class MockMediaStreamDispatcherHost
 
   void OnDeviceStoppedInternal(const std::string& label,
                                const blink::MediaStreamDevice& device) {
-    if (blink::IsVideoInputMediaType(device.type))
+    if (blink::IsVideoInputMediaType(device.type)) {
       EXPECT_TRUE(device.IsSameDevice(
           stream_devices_set_->stream_devices[0]->video_device.value()));
-    if (blink::IsAudioInputMediaType(device.type))
+    }
+    if (blink::IsAudioInputMediaType(device.type)) {
       EXPECT_TRUE(device.IsSameDevice(
           stream_devices_set_->stream_devices[0]->audio_device.value()));
+    }
 
     OnDeviceStopSuccess();
   }
@@ -402,8 +409,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     std::unique_ptr<MockMediaStreamUIProxy> fake_ui =
         std::make_unique<MockMediaStreamUIProxy>();
 
-    if (expect_started)
+    if (expect_started) {
       EXPECT_CALL(*fake_ui, MockOnStarted(_));
+    }
     return fake_ui;
   }
 
@@ -476,19 +484,22 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
   bool DoesContainRawIds(
       const absl::optional<blink::MediaStreamDevice>& optional_device) {
-    if (!optional_device.has_value())
+    if (!optional_device.has_value()) {
       return false;
+    }
     const blink::MediaStreamDevice& device = optional_device.value();
     if (device.id != media::AudioDeviceDescription::kDefaultDeviceId &&
         device.id != media::AudioDeviceDescription::kCommunicationsDeviceId) {
       for (const auto& audio_device : audio_device_descriptions_) {
-        if (audio_device.unique_id == device.id)
+        if (audio_device.unique_id == device.id) {
           return true;
+        }
       }
     }
     for (const std::string& device_id : stub_video_device_ids_) {
-      if (device_id == device.id)
+      if (device_id == device.id) {
         return true;
+      }
     }
     return false;
   }
@@ -496,8 +507,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   bool DoesEveryDeviceMapToRawId(
       const absl::optional<blink::MediaStreamDevice>& optional_device,
       const url::Origin& origin) {
-    if (!optional_device.has_value())
+    if (!optional_device.has_value()) {
       return true;
+    }
     const blink::MediaStreamDevice& device = optional_device.value();
     if (device.type != blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         device.type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
@@ -1148,8 +1160,9 @@ TEST_F(MediaStreamDispatcherHostTest, StopGeneratedStreams) {
 
   // Create first group of streams.
   size_t generated_streams = 3;
-  for (size_t i = 0; i < generated_streams; ++i)
+  for (size_t i = 0; i < generated_streams; ++i) {
     GenerateStreamAndWaitForResult(kPageRequestId + i, controls, expectation);
+  }
 
   media_stream_manager_->CancelAllRequests(kProcessId, kRenderId, kRequesterId);
   base::RunLoop().RunUntilIdle();
@@ -1409,5 +1422,67 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Range(
             static_cast<int>(blink::mojom::MediaStreamType::NO_SERVICE),
             static_cast<int>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES))));
+
+class MockContentBrowserClient : public ContentBrowserClient {
+ public:
+  MOCK_METHOD(bool,
+              IsGetDisplayMediaSetSelectAllScreensAllowed,
+              (content::BrowserContext * context, const url::Origin& origin),
+              (override));
+};
+
+class MediaStreamDispatcherHostMultiCaptureTest
+    : public RenderViewHostTestHarness {
+ public:
+  MediaStreamDispatcherHostMultiCaptureTest() {
+    SetBrowserClientForTesting(&content_browser_client_);
+  }
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    RenderFrameHostTester::For(main_rfh())->InitializeRenderFrameIfNeeded();
+  }
+
+ protected:
+  GlobalRenderFrameHostId global_rfh_id() {
+    return static_cast<RenderFrameHostImpl*>(main_rfh())->GetGlobalId();
+  }
+
+  MockContentBrowserClient content_browser_client_;
+};
+
+TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
+       NoRenderFrameHostMultiCaptureNotAllowed) {
+  GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
+  // Use a wrong id
+  int main_render_process_id = main_rfh_global_id.child_id - 1;
+  int render_frame_id = main_rfh_global_id.frame_routing_id - 1;
+
+  EXPECT_FALSE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
+      main_render_process_id, render_frame_id));
+}
+
+TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
+       RenderFrameHostExistsButNoPolicySetMultiCaptureNotAllowed) {
+  GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
+  int main_render_process_id = main_rfh_global_id.child_id;
+  int render_frame_id = main_rfh_global_id.frame_routing_id;
+
+  EXPECT_FALSE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
+      main_render_process_id, render_frame_id));
+}
+
+TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
+       PolicySetMultiCaptureAllowed) {
+  GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
+  int main_render_process_id = main_rfh_global_id.child_id;
+  int render_frame_id = main_rfh_global_id.frame_routing_id;
+  EXPECT_CALL(content_browser_client_,
+              IsGetDisplayMediaSetSelectAllScreensAllowed(_, _))
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
+      main_render_process_id, render_frame_id));
+}
 
 }  // namespace content

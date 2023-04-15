@@ -93,7 +93,9 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
       external_data_manager_(std::move(external_data_manager)),
       state_keys_broker_(state_keys_broker),
       task_runner_(task_runner),
-      local_state_(nullptr) {}
+      local_state_(nullptr),
+      helper_(std::make_unique<reporting::UserEventReporterHelper>(
+          reporting::Destination::UNDEFINED_DESTINATION)) {}
 
 DeviceCloudPolicyManagerAsh::~DeviceCloudPolicyManagerAsh() = default;
 
@@ -278,6 +280,59 @@ void DeviceCloudPolicyManagerAsh::SetSigninProfileSchemaRegistry(
   NotifyGotRegistry();
 }
 
+void DeviceCloudPolicyManagerAsh::OnUserManagerCreated(
+    user_manager::UserManager* user_manager) {
+  user_manager_observation_.Observe(user_manager);
+}
+
+void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed(
+    user_manager::UserManager* user_manager) {
+  user_manager_observation_.Reset();
+}
+
+void DeviceCloudPolicyManagerAsh::OnUserToBeRemoved(
+    const AccountId& account_id) {
+  // This logic needs to be consistent with UserAddedRemovedReporter.
+  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
+    return;
+  }
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user || user->IsKioskType() ||
+      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+      user->GetType() == user_manager::USER_TYPE_GUEST) {
+    return;
+  }
+
+  const std::string email = account_id.GetUserEmail();
+  users_to_be_removed_.insert_or_assign(account_id,
+                                        helper_->ShouldReportUser(email));
+}
+
+void DeviceCloudPolicyManagerAsh::OnUserRemoved(
+    const AccountId& account_id,
+    user_manager::UserRemovalReason reason) {
+  // This logic needs to be consistent with UserAddedRemovedReporter.
+  auto it = users_to_be_removed_.find(account_id);
+  if (it == users_to_be_removed_.end()) {
+    return;
+  }
+
+  bool is_affiliated_user = it->second;
+  users_to_be_removed_.erase(it);
+
+  // Check the pref, after we update the tracking map.
+  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
+    return;
+  }
+
+  // Unlike UserAddedRemovedReporter, instead of reporting, we cache
+  // the removed user here.
+  // They're going to be reported, once the reporter instance is created.
+  removed_users_.emplace_back(
+      RemovedUser{is_affiliated_user ? account_id.GetUserEmail() : "", reason});
+}
+
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we should call it here.
@@ -311,11 +366,21 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
     return;
   }
 
+  if (auto* user_manager = user_manager::UserManager::Get()) {
+    user_manager->RemoveObserver(this);
+  }
+
   managed_session_service_ = std::make_unique<ManagedSessionService>();
   login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
       managed_session_service_.get());
+
   user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
-      managed_session_service_.get());
+      std::move(users_to_be_removed_), managed_session_service_.get());
+  for (const auto& [user_email, reason] : removed_users_) {
+    user_added_removed_reporter_->ProcessRemovedUser(user_email, reason);
+  }
+  removed_users_.clear();
+
   lock_unlock_reporter_ = ash::reporting::LockUnlockReporter::Create(
       managed_session_service_.get());
 }

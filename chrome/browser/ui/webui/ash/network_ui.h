@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
+#include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom-forward.h"
@@ -63,6 +64,12 @@ class NetworkUI : public ui::MojoWebUIController {
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver);
+
+  // Instantiates the implementation of mojom::PasspointService mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

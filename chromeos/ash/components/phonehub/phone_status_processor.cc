@@ -498,9 +498,12 @@ void PhoneStatusProcessor::GenerateAppListWithIcons(
     // TODO(nayebi): AppMetadata is no longer limited to Notification class,
     // let's move it outside of the Notification class.s2
     apps_list.emplace_back(Notification::AppMetadata(
-        base::UTF8ToUTF16(app.visible_name()), app.package_name(), image,
-        /* icon_color = */ absl::nullopt, /* icon_is_monochrome = */ false,
-        app.user_id(), app.app_streamability_status()));
+        base::UTF8ToUTF16(app.visible_name()), app.package_name(),
+        /* color_icon= */ image,
+        /* monochrome_icon_mask= */ absl::nullopt,
+        /* icon_color = */ absl::nullopt,
+        /* icon_is_monochrome = */ false, app.user_id(),
+        app.app_streamability_status()));
     std::string key = app.package_name() + base::NumberToString(app.user_id());
     decoding_data_list->emplace_back(
         IconDecoder::DecodingData(str_hash(key), app.icon()));
@@ -526,7 +529,7 @@ void PhoneStatusProcessor::IconsDecoded(
       std::string key = app_metadata.package_name +
                         base::NumberToString(app_metadata.user_id);
       if (decoding_data.id == str_hash(key)) {
-        app_metadata.icon = decoding_data.result;
+        app_metadata.color_icon = decoding_data.result;
         continue;
       }
     }

@@ -20,8 +20,8 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -293,7 +293,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 #pragma mark - IOSChromeVariationsSeedFetcherDelegate
 
-- (void)didFetchSeedSuccess:(BOOL)succeeded {
+- (void)variationsSeedFetcherDidCompleteFetchWithSuccess:(BOOL)success {
   DCHECK_EQ(_group, IOSChromeVariationsGroup::kEnabled);
   DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);
   _seedFetchCompleted = YES;

@@ -62,7 +62,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, Success) {
   EXPECT_GT(config_size, 0U);
 
   // Go on with converting the headers.
-  output.reset(new uint8_t[config_size]);
+  output = std::make_unique<uint8_t[]>(config_size);
   EXPECT_TRUE(output.get() != nullptr);
   EXPECT_TRUE(converter.ConvertHEVCDecoderConfigToByteStream(
       hevc_config_, output.get(), &config_size));
@@ -72,7 +72,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, Success) {
       kPacketDataOkWithFieldLen4, sizeof(kPacketDataOkWithFieldLen4),
       &hevc_config_);
   EXPECT_GT(output_size, 0U);
-  output.reset(new uint8_t[output_size]);
+  output = std::make_unique<uint8_t[]>(output_size);
   EXPECT_TRUE(output.get() != nullptr);
 
   uint32_t output_size_left_for_nal_unit = output_size;
@@ -112,7 +112,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
   EXPECT_GT(config_size, 0U);
 
   // Go on with converting the headers.
-  output.reset(new uint8_t[config_size]);
+  output = std::make_unique<uint8_t[]>(config_size);
   EXPECT_TRUE(output.get() != nullptr);
   EXPECT_TRUE(converter.ConvertHEVCDecoderConfigToByteStream(
       hevc_config_, output.get(), &config_size));
@@ -130,7 +130,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
 
   // Ignore the error and try to go on with conversion simulating wrong usage.
   output_size = sizeof(kPacketDataOkWithFieldLen4);
-  output.reset(new uint8_t[output_size]);
+  output = std::make_unique<uint8_t[]>(output_size);
   EXPECT_TRUE(output.get() != nullptr);
 
   uint32_t output_size_left_for_nal_unit = output_size;
@@ -156,7 +156,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureTooSmallOutputBuffer) {
 
   // Go on with converting the headers with too small buffer.
   config_size -= 10;
-  output.reset(new uint8_t[config_size]);
+  output = std::make_unique<uint8_t[]>(config_size);
   EXPECT_TRUE(output.get() != nullptr);
   EXPECT_FALSE(converter.ConvertHEVCDecoderConfigToByteStream(
       hevc_config_, output.get(), &config_size));
@@ -164,7 +164,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureTooSmallOutputBuffer) {
 
   // Still too small (but only 1 byte short).
   config_size = real_config_size - 1;
-  output.reset(new uint8_t[config_size]);
+  output = std::make_unique<uint8_t[]>(config_size);
   EXPECT_TRUE(output.get() != nullptr);
   EXPECT_FALSE(converter.ConvertHEVCDecoderConfigToByteStream(
       hevc_config_, output.get(), &config_size));
@@ -172,7 +172,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureTooSmallOutputBuffer) {
 
   // Finally, retry with valid buffer.
   config_size = real_config_size;
-  output.reset(new uint8_t[config_size]);
+  output = std::make_unique<uint8_t[]>(config_size);
   EXPECT_TRUE(output.get() != nullptr);
   EXPECT_TRUE(converter.ConvertHEVCDecoderConfigToByteStream(
       hevc_config_, output.get(), &config_size));
@@ -184,7 +184,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureTooSmallOutputBuffer) {
   EXPECT_GT(output_size, 0U);
   // Simulate too small output buffer.
   output_size -= 1;
-  output.reset(new uint8_t[output_size]);
+  output = std::make_unique<uint8_t[]>(output_size);
   EXPECT_TRUE(output.get() != nullptr);
 
   uint32_t output_size_left_for_nal_unit = output_size;
@@ -225,7 +225,7 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, CorruptedPacket) {
   EXPECT_GT(config_size, 0U);
 
   // Go on with converting the headers.
-  output.reset(new uint8_t[config_size]);
+  output = std::make_unique<uint8_t[]>(config_size);
   EXPECT_TRUE(converter.ConvertHEVCDecoderConfigToByteStream(
       hevc_config_, output.get(), &config_size));
 

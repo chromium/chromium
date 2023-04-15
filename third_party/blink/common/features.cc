@@ -306,6 +306,15 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<int> kPrivateAggregationApiMaxBudgetPerScope{
     &kPrivateAggregationApi, "max_budget_per_scope", /*default_value=*/65536};
 
+// Has the same effect as enabling
+// kPrivateAggregationApiFledgeExtensionsEnabled. This is intended as a
+// convenience for local testing only.
+// TODO(alexmt): Remove when kPrivateAggregationApiFledgeExtensionsEnabled is
+// enabled by default.
+BASE_FEATURE(kPrivateAggregationApiFledgeExtensionsLocalTestingOverride,
+             "PrivateAggregationApiFledgeExtensionsLocalTestingOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
 // enabled by the runtime enabled feature, for origin trials.
@@ -979,6 +988,8 @@ BASE_FEATURE(kInterestGroupStorage,
 // TODO(crbug.com/1197209): Adjust these limits in response to usage.
 const base::FeatureParam<int> kInterestGroupStorageMaxOwners{
     &kInterestGroupStorage, "max_owners", 1000};
+const base::FeatureParam<int> kInterestGroupStorageMaxStoragePerOwner{
+    &kInterestGroupStorage, "max_storage_per_owner", 10 * 1024 * 1024};
 const base::FeatureParam<int> kInterestGroupStorageMaxGroupsPerOwner{
     &kInterestGroupStorage, "max_groups_per_owner", 1000};
 const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
@@ -1250,11 +1261,6 @@ const base::FeatureParam<bool> kLegacyWindowsPlatform = {
 
 BASE_FEATURE(kReportFCPOnlyOnSuccessfulCommit,
              "ReportFCPOnlyOnSuccessfulCommit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(crbug.com/1382005): Deprecate this flag.
-BASE_FEATURE(kRegionCaptureExperimentalSubtypes,
-             "RegionCaptureExperimentalSubtypes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Source Location blocking BFCache is captured
@@ -1648,10 +1654,6 @@ BASE_FEATURE(kSSVTrailerWriteExposureAssertion,
 
 BASE_FEATURE(kSSVTrailerEnforceExposureAssertion,
              "SSVTrailerEnforceExposureAssertion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAbortSignalHandleBasedRemoval,
-             "AbortSignalHandleBasedRemoval",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,

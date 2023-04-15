@@ -9,8 +9,7 @@
 [
     Exposed=(Window,DedicatedWorker),
     ImplementedAs=MediaSourceHandleImpl,
-    Transferable,
-    RuntimeEnabled=MediaSourceInWorkersUsingHandle
+    Transferable
 ] interface MediaSourceHandle {
   // Trivial handle object useful for attaching a DedicatedWorker MediaSource
   // to a Window HTMLMediaElement by setting the media element's srcObject.

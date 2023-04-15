@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_SCENE_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_SCENE_AGENT_H_
 
-#import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
 // A scene agent for the Start Surface.
 @interface StartSurfaceSceneAgent : ObservingSceneAgent

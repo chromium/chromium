@@ -82,8 +82,9 @@ struct WallpaperCollection {
     // Name of this collection to be displayed to the user.
     string name;
 
-    // Extra description text about the wallpaper collection.
-    string description;
+    // Extra description text about the wallpaper collection. May be empty
+    // string.
+    string description_content;
 
     // The preview image URLs of this collection.
     array<url.mojom.Url> previews;
@@ -178,21 +179,6 @@ struct FetchGooglePhotosPhotosResponse {
     string? resume_token;
 };
 
-// Represents the response to a daily refresh request.
-struct SetDailyRefreshResponse {
-  // Indicates whether the request is successful.
-  bool success;
-
-  // Indicates whether the request forces the current wallpaper image to
-  // refresh.
-  bool force_refresh;
-};
-
-struct CurrentWallpaperDescription {
-  string title;
-  string content;
-};
-
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
   // Attribution text such as "Photo by John Doe" or the file name of the local
@@ -209,10 +195,16 @@ struct CurrentWallpaper {
   // |WallpaperImage| or local image the user has selected.
   string key;
 
-  // Extra description content about the image. Currently only supplied for
+  // Extra description title about the image. Currently only supplied for
   // images supplied by backdrop server with type
   // `WallpaperType::{kDaily, kOnline}`.
-  CurrentWallpaperDescription? description;
+  // May be empty string.
+  string description_title;
+
+  // Extra description content about the image. Same as above, only supplied for
+  // `WallpaperType::{kDaily, kOnline}`.
+  // May be empty string.
+  string description_content;
 };
 
 // Receives updated wallpaper information whenever it is changed.
@@ -322,8 +314,7 @@ interface WallpaperProvider {
     // Sets the Google Photos album with the given id as the daily refresh
     // album. May refresh the current wallpaper image if it is not part of the
     // album.
-    SelectGooglePhotosAlbum(string id)
-        => (SetDailyRefreshResponse response);
+    SelectGooglePhotosAlbum(string id) => (bool success);
 
     // Gets the id of the current Google Photos album on daily refresh, or an
     // empty string if Google Photos daily refresh is not active.
@@ -334,8 +325,7 @@ interface WallpaperProvider {
 
     // Sets and enables daily refresh for the given |collection_id|. May refresh
     // the current wallpaper image if it is not part of the collection.
-    SetDailyRefreshCollectionId(string collection_id)
-        => (SetDailyRefreshResponse response);
+    SetDailyRefreshCollectionId(string collection_id) => (bool success);
 
     // Get the daily refresh collection id. It can be empty if daily refresh is
     // not enabled.
@@ -357,6 +347,7 @@ interface WallpaperProvider {
 };
 
 // Color scheme options used to generate the system UI's color palette.
+// These options are based off the user's wallpaper.
 enum ColorScheme {
   kStatic = 0,
   kTonalSpot = 1,
@@ -364,6 +355,21 @@ enum ColorScheme {
   kExpressive = 3,
   kVibrant = 4,
 };
+
+// Static color options used to generate the system UI's color palette. These
+// options are not based off the user's wallpaper.
+enum StaticColor {
+  kUnknown = 0,
+  kGoogleBlue = 1,
+  kLightPink = 2,
+  kDarkGreen = 3,
+  kLightPurple = 4,
+};
+
+const uint32 kStaticColorGoogleBlue = 0x4285F4;
+const uint32 kStaticColorLightPink = 0xFFD6D6;
+const uint32 kStaticColorDarkGreen = 0x485045;
+const uint32 kStaticColorLightPurple = 0xCBBFFF;
 
 // Samples of a color scheme for the tri-color scheme preview.
 struct SampleColorScheme {
@@ -578,6 +584,15 @@ enum AmbientUiVisibility {
   kClosed = 3,
 };
 
+// Enumeration of screen saver running time before sleep.
+enum ScreenSaverDuration {
+  kFiveMinutes = 0,
+  kTenMinutes = 1,
+  kThirtyMinutes = 2,
+  kOneHour = 3,
+  kForever = 4,
+};
+
 // Album metadaba to display. Contains necessary data for both topic sources.
 struct AmbientModeAlbum {
   // Unique identifier for this album. It assumes unique id across different
@@ -640,6 +655,11 @@ interface AmbientProvider {
   // Sets the ambient animation theme.
   SetAnimationTheme(AnimationTheme animation_theme);
 
+  // Sets the screen saver running duration before put into sleep.
+  //
+  // SPECIAL NOTE: |minutes| with value 0 means forever.
+  SetScreenSaverDuration(int32 minutes);
+
   // Sets the ambient mode topic source.
   //
   // SPECIAL NOTE: If |SetAnimationTheme(kVideo)| is called, the provider's
@@ -661,6 +681,12 @@ interface AmbientProvider {
 
   // Starts the screen saver preview.
   StartScreenSaverPreview();
+
+  // Determines whether to show the time of day promo banner.
+  ShouldShowTimeOfDayBanner() => (bool should_show_banner);
+
+  // Called when the time of day promo banner is dismissed.
+  HandleTimeOfDayBannerDismissed();
 };
 
 // The supported preset colors for keyboard backlight.

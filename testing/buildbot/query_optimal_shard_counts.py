@@ -1,17 +1,18 @@
+#!/usr/bin/env vpython3
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """Script to query optimal shards for swarmed test suites.
 
 This script queries bigquery for recent test suite runtimes. For suites running
 over the desired max runtime, it'll suggest optimal shard counts to bring the
 duration below the desired max runtime.
 """
-#!/usr/bin/env vpython3
-# Copyright 2023 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
 
 import argparse
 import datetime
 import json
+import os
 import subprocess
 import sys
 
@@ -20,7 +21,7 @@ _CLOUD_PROJECT_ID = 'chrome-trooper-analytics'
 # TODO(crbug.com/1418199): Replace with queried, per-suite overheads, once
 # infra is set up to support automated overhead measurements.
 # See go/nplus1shardsproposal
-DEFAULT_OVERHEAD_SEC = 60 * 0.5
+DEFAULT_OVERHEAD_SEC = 60
 ANDROID_OVERHEAD_SEC = 60 * 2
 
 # Builders that should currently not be autosharded because they don't use GCE
@@ -218,11 +219,21 @@ QUERY = """
     FROM
       optimal_shard_counts
 """
-_BQ_ERROR_MESSAGE = """
+
+_BQ_SETUP_INSTRUCTION = """
 ** NOTE: this script is only for Googlers to use. **
 
 bq script isn't found on your machine. To run this script, you need to be able
 to run bigquery in your terminal.
+If this is the first time you run the script, do the following steps:
+
+1) Follow the steps at https://cloud.google.com/sdk/docs/ to download and
+   unpack google-cloud-sdk in your home directory.
+2) Run `gcloud auth login`
+3) Run `gcloud config set project chrome-trooper-analytics`
+   3a) If 'chrome-trooper-analytics' does not show up, contact
+       chrome-browser-infra@ to be added as a user of the table
+4) Run this script!
 """
 
 
@@ -231,7 +242,7 @@ def _run_query(lookback_start_date, lookback_end_date, desired_runtime,
   try:
     subprocess.check_call(['which', 'bq'])
   except subprocess.CalledProcessError as e:
-    raise RuntimeError(_BQ_ERROR_MESSAGE) from e
+    raise RuntimeError(_BQ_SETUP_INSTRUCTION) from e
   query = QUERY.format(
       desired_runtime_min=desired_runtime,
       default_overhead_sec=DEFAULT_OVERHEAD_SEC,
@@ -267,6 +278,11 @@ def main(args):
                       '-o',
                       action='store',
                       help='The filename to store bigquery results.')
+  parser.add_argument('--overwrite-output-file',
+                      action='store_true',
+                      help='If there is already an output-file written, '
+                      'overwrite the contents with new data. Otherwise, results'
+                      ' will be merged with existing file.')
   parser.add_argument('--lookback-days',
                       default=14,
                       type=int,
@@ -326,7 +342,16 @@ def main(args):
       percentile=opts.percentile,
       min_sample_size=opts.min_sample_size,
   )
+
   data = {}
+  new_data = {}
+  verbose_new_data = {}
+  if not opts.overwrite_output_file and os.path.exists(opts.output_file):
+    with open(opts.output_file, 'r') as existing_output_file:
+      print('Output file already exists. Will merge query results with existing'
+            ' output file.')
+      data = json.load(existing_output_file)
+
   for r in results:
     builder_group = r['waterfall_builder_group']
     builder_name = r['waterfall_builder_name']
@@ -335,8 +360,9 @@ def main(args):
             'shards': r['optimal_shard_count'],
         },
     }
+    verbose_dict = shard_dict.copy()
     if opts.verbose:
-      suite_dict = shard_dict[r['test_suite']]
+      suite_dict = verbose_dict[r['test_suite']]
       suite_dict['current_shard_count'] = r['shard_count']
       suite_dict['current_percentile_duration_minutes'] = r[
           'percentile_duration_minutes']
@@ -349,14 +375,30 @@ def main(args):
       suite_dict['avg_pending_time_sec'] = r['avg_pending_time_sec']
       suite_dict['p50_pending_time_sec'] = r['p50_pending_time_sec']
       suite_dict['p90_pending_time_sec'] = r['p90_pending_time_sec']
+      verbose_new_data.setdefault(builder_group,
+                                  {}).setdefault(builder_name,
+                                                 {}).update(shard_dict)
     data.setdefault(builder_group, {}).setdefault(builder_name,
                                                   {}).update(shard_dict)
+    new_data.setdefault(builder_group, {}).setdefault(builder_name,
+                                                      {}).update(shard_dict)
 
-  output_data = json.dumps(data, indent=4, separators=(',', ': '))
+  output_data = json.dumps(data,
+                           indent=4,
+                           separators=(',', ': '),
+                           sort_keys=True)
+  print('Results from query:')
+  if opts.verbose:
+    print(json.dumps(verbose_new_data, indent=4, separators=(',', ': ')))
+  else:
+    print(json.dumps(new_data, indent=4, separators=(',', ': ')))
+
   if opts.output_file:
+    if opts.overwrite_output_file and os.path.exists(opts.output_file):
+      print('Will overwrite existing output file.')
     with open(opts.output_file, 'w') as output_file:
+      print('Writing to output file.')
       output_file.write(output_data)
-  print(output_data)
 
 
 if __name__ == '__main__':

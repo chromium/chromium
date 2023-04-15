@@ -4,17 +4,22 @@
 
 package org.chromium.weblayer;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.webengine.interfaces.IFullscreenCallbackDelegate;
+import org.chromium.webengine.interfaces.IFullscreenClient;
 
 /**
  * This class acts as a proxy between the Fullscreen events happening in
  * weblayer and the FullscreenCallbackDelegate in webengine.
  */
 class FullscreenCallbackDelegate extends FullscreenCallback {
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
     private IFullscreenCallbackDelegate mFullscreenCallbackDelegate;
 
     void setDelegate(IFullscreenCallbackDelegate delegate) {
@@ -23,10 +28,14 @@ class FullscreenCallbackDelegate extends FullscreenCallback {
 
     @Override
     public void onEnterFullscreen(@NonNull Runnable exitFullscreenRunner) {
-        // TODO(crbug/1421742): forward exitFullscreenRunner Runnable to WebEngine if needed.
         if (mFullscreenCallbackDelegate != null) {
             try {
-                mFullscreenCallbackDelegate.onEnterFullscreen();
+                mFullscreenCallbackDelegate.onEnterFullscreen(new IFullscreenClient.Stub() {
+                    @Override
+                    public void exitFullscreen() {
+                        mHandler.post(() -> { exitFullscreenRunner.run(); });
+                    }
+                });
             } catch (RemoteException e) {
             }
         }

@@ -11,7 +11,9 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     package="org.chromium.webengine.shell">
 
-    <application android:label="WE shell"
+    <application
+        android:name="WebEngineShellApplication"
+        android:label="WE shell"
         tools:replace="android:label"
         android:supportsRtl="true">
         <activity android:name="WebEngineShellActivity"
@@ -43,13 +45,6 @@ found in the LICENSE file.
                   android:windowSoftInputMode="adjustResize"
                   android:exported="true">
         </activity>
-        <activity android:name="InstrumentationActivity"
-                  android:launchMode="singleTask"
-                  android:theme="@style/ShellTheme"
-                  android:windowSoftInputMode="adjustResize"
-                  android:exported="true">
-        </activity>
-        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
 
         <meta-data android:name="org.chromium.webengine.shell.BrowserProcessMode"
                    android:value="{{ browser_process_mode }}"/>

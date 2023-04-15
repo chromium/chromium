@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -74,6 +75,7 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug/1432238")
     public void testDragAndDropLauncherActivity_createNewTabbedActivity() throws Exception {
         Intent intent = createLinkDragDropIntent(mLinkUrl, null);
         ChromeTabbedActivity lastAccessedActivity = ApplicationTestUtils.waitForActivityWithClass(
@@ -98,6 +100,7 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug/1432238")
     public void testDragAndDropLauncherActivity_openInExistingTabbedActivity() throws Exception {
         // Simulate creation of max Chrome instances (= 2 for the purpose of testing) and establish
         // the last accessed instance. Actual max # of instances will not be created as this would

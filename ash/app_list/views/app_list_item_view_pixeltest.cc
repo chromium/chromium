@@ -54,6 +54,9 @@ class AppListItemViewPixelTest
     if (use_folder_icon_refresh()) {
       scoped_feature_list_.InitAndEnableFeature(
           features::kAppCollectionFolderRefresh);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAppCollectionFolderRefresh);
     }
   }
 

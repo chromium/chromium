@@ -350,12 +350,9 @@ class DownloadDisplayControllerTest : public testing::Test {
     controller().OnNewItem(/*show_animation=*/false);
   }
 
-  void UpdateOfflineItem(int item_index,
-                         OfflineItemState state,
-                         bool is_pending_deep_scanning) {
+  void UpdateOfflineItem(int item_index, OfflineItemState state) {
     offline_items_[item_index].state = state;
     controller().OnUpdatedItem(state == OfflineItemState::COMPLETE,
-                               is_pending_deep_scanning,
                                /*may_show_details=*/true);
   }
 
@@ -366,22 +363,28 @@ class DownloadDisplayControllerTest : public testing::Test {
                           bool may_show_details = true) {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
 
+    // In-progress but dangerous downloads are considered complete.
+    // TODO(crbug.com/1433102): Don't duplicate this logic.
+    bool in_progress_dangerous =
+        (state == DownloadState::IN_PROGRESS &&
+         danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
     EXPECT_CALL(item(item_index), GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item(item_index), GetDangerType())
         .WillRepeatedly(Return(danger_type));
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
-      in_progress_count_--;
-      EXPECT_CALL(manager(), InProgressCount())
-          .WillRepeatedly(Return(in_progress_count_));
       DownloadPrefs::FromDownloadManager(&manager())
           ->SetLastCompleteTime(base::Time::Now());
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
+    if (state == DownloadState::COMPLETE || in_progress_dangerous) {
+      in_progress_count_--;
+      EXPECT_CALL(manager(), InProgressCount())
+          .WillRepeatedly(Return(in_progress_count_));
+    }
     controller().OnUpdatedItem(
-        state == DownloadState::COMPLETE,
-        danger_type == download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+        state == DownloadState::COMPLETE || in_progress_dangerous,
         may_show_details);
   }
 
@@ -606,8 +609,7 @@ TEST_F(DownloadDisplayControllerTest,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
-  UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE,
-                    /*is_pending_deep_scanning=*/false);
+  UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
   // Details are shown because all items are complete.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
@@ -650,10 +652,11 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_DeepScanning) {
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
                      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING);
-  // Details are shown because the scan is pending.
+  // Details are shown because the pending deep scan download is considered
+  // complete.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
 
   // Reset details_shown while the downloads are in progress. This can happen if
   // the user clicks somewhere else to dismiss the download bubble.
@@ -711,18 +714,17 @@ TEST_F(DownloadDisplayControllerTest,
   EXPECT_CALL(item(0), IsDangerous()).WillRepeatedly(Return(true));
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
                      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST);
-  // Details are not shown for most dangerous reasons.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+  // Dangerous downloads should be considered completed and
+  // should display details if there are no other in-progress downloads.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
 
-  // Downloads prompted for deep scanning should be considered in progress and
-  // should display details.
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
                      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
 }
 
 TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_OnRemovedItem) {

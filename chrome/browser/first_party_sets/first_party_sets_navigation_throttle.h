@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -59,6 +60,10 @@ class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
 
   // The timer used to resume the navigation on timeout.
   base::OneShotTimer resume_navigation_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Timer starting when a navigation gets deferred.
+  absl::optional<base::ElapsedTimer> throttle_navigation_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stores the state of whether the navigation has been resumed, to make sure

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Siku 1 iliyopita}other{Siku # zilizopita}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Dakika 1 iliyopita}other{Dakika # zilizopita}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{Dak 1}other{Dak #}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Siku 1 Iliyopita}other{Siku # Zilizopita}}</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1243314992276662751">Pakia</translation>
 <translation id="1266864766717917324">Imeshindwa kushiriki <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Kushoto hadi Kulia</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1398853756734560583">Tanua</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Dakika 1 Iliyopita}other{Dakika # Zilizopita}}</translation>
 <translation id="1450753235335490080">Imeshindwa kushiriki <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Mwezi 1 Uliopita}other{Miezi # Iliyopita}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{Dakika 1 na }other{Dakika # na }}</translation>
 <translation id="1643823602425662293">Arifa</translation>
 <translation id="169515659049020177">Hama</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Picha</translation>
 <translation id="4565377596337484307">Ficha nenosiri</translation>
 <translation id="4588090240171750605">Sogeza Kulia</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Mwaka 1 Uliopita}other{Miaka # Iliyopita}}</translation>
 <translation id="4724120544754982507">Kituo cha Arifa, arifa <ph name="UNREAD_NOTIFICATION_COUNT" /> ambazo hujasoma</translation>
 <translation id="4729257764711776855">nambari</translation>
 <translation id="4746179598275229723">Kiendelezi kimebanduliwa</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Tuma ujumbe</translation>
 <translation id="8394908167088220973">Cheza Media/Sitisha</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{Mwaka 1}other{Miaka #}}</translation>
+<translation id="8598144894266192959">Asilimia <ph name="NUMBER" /></translation>
 <translation id="8602707065186045623">Faili ya <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> zaidi</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Inatuma…</translation>
 <translation id="8876215549894133151">Fomati:</translation>
 <translation id="8901569739625249689">KB <ph name="QUANTITY" /></translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Saa 1 Iliyopita}other{Saa # Zilizopita}}</translation>
 <translation id="8996630695507351249">Hakikisha kwamba <ph name="TARGET_DEVICE_NAME" /> imeunganishwa kwenye intaneti.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{Sekunde 1}other{Sekunde #}}</translation>
 <translation id="9059834730836941392">Kunja arifa</translation>
 <translation id="9170848237812810038">&amp;Tendua</translation>
 <translation id="932327136139879170">Mwanzo</translation>
 <translation id="944069440740578670">Arifa ambazo Hazijasomwa</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Sekunde 1 Iliyopita}other{Sekunde # Zilizopita}}</translation>
 </translationbundle>

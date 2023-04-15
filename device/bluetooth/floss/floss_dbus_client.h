@@ -82,6 +82,9 @@ extern DEVICE_BLUETOOTH_EXPORT const char kSetPin[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondedDevices[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectedDevices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSdpSearch[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateSdpRecord[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRemoveSdpRecord[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAdapterPropertyChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
@@ -93,6 +96,8 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnBondStateChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnSdpSearchComplete[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnSdpRecordCreated[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceConnected[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceDisconnected[];
 
@@ -124,14 +129,19 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDefaultAdapterChanged[];
 namespace socket_manager {
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char
     kListenUsingInsecureRfcommWithServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capLeChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcomm[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcommWithServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char
     kCreateInsecureRfcommSocketToServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateRfcommSocketToServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAccept[];
 extern DEVICE_BLUETOOTH_EXPORT const char kClose[];

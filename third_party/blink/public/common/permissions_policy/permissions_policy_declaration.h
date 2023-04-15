@@ -55,7 +55,6 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   // document. Usually, the 'src' keyword in a declaration will cause the origin
   // of the iframe to be present in |origins|, but for sandboxed iframes, this
   // flag is set instead.
-  // TODO(crbug.com/1418009): Consider merging into `self_if_matches`.
   bool matches_opaque_src{false};
 
   // Indicates that the parsed policy is deprecated.

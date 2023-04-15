@@ -735,8 +735,7 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
 
   // Grant Sync consent.
   EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(1);
-  EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
-              SetSyncRequested(true));
+  EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(), SetSyncRequested());
   authentication_service()->GrantSyncConsent(identity(0));
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(

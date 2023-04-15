@@ -9,6 +9,8 @@
   Exposed=(Window,Worker),
   SecureContext
 ] interface StorageBucket {
+  readonly attribute DOMString name;
+
   [Exposed=Window, CallWith=ScriptState, Measure] Promise<boolean> persist();
   [CallWith=ScriptState, Measure] Promise<boolean> persisted();
 

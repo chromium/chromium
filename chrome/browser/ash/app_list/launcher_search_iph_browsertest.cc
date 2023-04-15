@@ -433,12 +433,11 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickLink) {
   OpenAppListAndWaitForIphView();
-  raw_ptr<views::StyledLabel> description_label =
-      static_cast<views::StyledLabel*>(search_box_view()->GetViewByID(
-          ash::LauncherSearchIphView::ViewId::kDescriptionLabel));
+  raw_ptr<views::View> link_label = search_box_view()->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kDescriptionLinkLabel);
 
   ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
-  description_label->ClickFirstLinkForTesting();
+  Click(link_label);
   tab_added_waiter.Wait();
   EXPECT_EQ(GURL("https://www.google.com/"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());

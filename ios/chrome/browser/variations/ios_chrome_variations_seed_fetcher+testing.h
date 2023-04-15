@@ -7,10 +7,6 @@
 
 #import <memory>
 
-namespace base {
-class Time;
-}  // namespace base
-
 namespace variations {
 struct SeedResponse;
 }  // namespace variations
@@ -19,13 +15,9 @@ struct SeedResponse;
 // IOSChromeVariationsSeedFetcher to be tested.
 @interface IOSChromeVariationsSeedFetcher (Testing)
 
-@property(nonatomic, readonly) NSURL* variationsUrl;
+- (void)doActualFetch;
 
-@property(nonatomic, assign) base::Time startTimeOfOngoingSeedRequest;
-
-- (void)applySwitchesFromArguments:(NSArray<NSString*>*)arguments;
-
-- (void)onSeedRequestCompletedWithData:(NSData*)data
+- (void)seedRequestDidCompleteWithData:(NSData*)data
                               response:(NSHTTPURLResponse*)httpResponse
                                  error:(NSError*)error;
 

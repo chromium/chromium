@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
@@ -32,9 +33,11 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
  * Fragment for rendering web content. This is obtained through WebEngine.
  */
 public class WebFragment extends Fragment {
-    private SurfaceView mSurfaceView;
+    @Nullable
     private WebSandbox mWebSandbox;
+    @Nullable
     private WebEngine mWebEngine;
+    @Nullable
     private IWebFragmentEventsDelegate mDelegate;
 
     private final IWebFragmentEventsDelegateClient mClient =
@@ -89,6 +92,7 @@ public class WebFragment extends Fragment {
     /**
      * Returns the {@link WebEngine} associated with this Fragment.
      */
+    @NonNull
     public WebEngine getWebEngine() {
         return mWebEngine;
     }
@@ -233,9 +237,8 @@ public class WebFragment extends Fragment {
 
     /**
      * Returns the Sandbox that created this WebFragment.
-     *
-     * @return WebSandbox WebSandbox that created this Fragment.
      */
+    @NonNull
     public WebSandbox getWebSandbox() {
         return mWebSandbox;
     }
@@ -293,7 +296,7 @@ public class WebFragment extends Fragment {
     /**
      * This class is an implementation detail and not intended for public use. It may change at any
      * time in incompatible ways, including being removed.
-     * <p>
+     *
      * This class stores WebFragment specific state to a ViewModel so that it can reused if a
      * new Fragment is created that should share the same state.
      */

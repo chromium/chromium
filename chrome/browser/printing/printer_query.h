@@ -88,6 +88,19 @@ class PrinterQuery {
                           base::OnceClosure callback);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  // Updates the printable area of the provided `PrintSettings` object.
+  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`.
+  static bool UpdatePrintableArea(PrintSettings& print_settings);
+#endif
+
+  // Sets the printable area in `print_settings` to be the default printable
+  // area. Intended to be used only for virtual printers. Does not communicate
+  // with printer drivers, so it does not require special OOPPD handling.
+  static void ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
+      PrintSettings& print_settings);
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Provide the client ID when the caller has registered with the
   // `PrintBackendServiceManager` for getting settings for system print.
@@ -101,9 +114,6 @@ class PrinterQuery {
 
   // Returns true if a PrintingContext is still associated to this instance.
   bool is_valid() const;
-
-  // Posts the given task to be run.
-  bool PostTask(const base::Location& from_here, base::OnceClosure task);
 
   // Provide an override for generating worker threads in tests.
   static void SetCreatePrinterQueryCallbackForTest(

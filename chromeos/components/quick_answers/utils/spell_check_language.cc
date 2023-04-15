@@ -25,17 +25,30 @@ namespace {
 constexpr char kDownloadServerUrl[] =
     "https://redirector.gvt1.com/edgedl/chrome/dict/";
 
+constexpr char kQuickAnswersDictionarySubDirName[] = "quick_answers";
+
 constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("quick_answers_spellchecker", R"(
           semantics {
-            sender: "Quick answers Spellchecker"
+            sender: "Quick Answers Spellchecker"
             description:
-              "Download dictionary for Quick answers feature if necessary."
-            trigger: "Quick answers feature enabled."
+              "Download spell checker dictionary for Quick Answers feature. "
+              "The downloaded dictionaries are used to generate intents for "
+              "selected text."
+            trigger: "Quick Answers feature enabled."
             data:
               "The spell checking language identifier. No user identifier is "
-              "sent."
+              "sent other than user locales."
             destination: GOOGLE_OWNED_SERVICE
+            internal {
+              contacts {
+                email: "assistive-eng@google.com"
+              }
+            }
+            user_data {
+              type: OTHER
+            }
+            last_reviewed: "2023-04-11"
           }
           policy {
             cookies_allowed: NO
@@ -49,14 +62,30 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
             }
           })");
 
-constexpr int kMaxRetries = 3;
+constexpr int kMaxRetries = 1;
 
-base::FilePath GetDictionaryFilePath(const std::string& language) {
+base::FilePath GetDictionaryDirectoryPath() {
   base::FilePath dict_dir;
-  base::PathService::Get(chrome::DIR_APP_DICTIONARIES, &dict_dir);
-  base::FilePath dict_path =
-      spellcheck::GetVersionedFileName(language, dict_dir);
-  return dict_path;
+  if (!base::PathService::Get(chrome::DIR_APP_DICTIONARIES, &dict_dir)) {
+    return base::FilePath();
+  }
+  return dict_dir.AppendASCII(kQuickAnswersDictionarySubDirName);
+}
+
+bool EnsureDictionaryDirectoryExists() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  base::FilePath dict_dir = GetDictionaryDirectoryPath();
+
+  if (dict_dir.empty()) {
+    LOG(ERROR) << "Failed to resolve the dictionary directory path.";
+    return false;
+  }
+
+  // `base::CreateDirectory` returns true if it successfully creates
+  // the directory or if the directory already exists.
+  return base::CreateDirectory(dict_dir);
 }
 
 GURL GetDictionaryURL(const std::string& file_name) {
@@ -77,11 +106,11 @@ void CloseDictionaryFile(base::File file) {
   file.Close();
 }
 
-void RemoveDictionaryFile(const base::FilePath& file_path) {
+bool RemoveDictionaryFile(const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  base::DeleteFile(file_path);
+  return base::DeleteFile(file_path);
 }
 
 }  // namespace
@@ -96,11 +125,10 @@ SpellCheckLanguage::~SpellCheckLanguage() = default;
 
 void SpellCheckLanguage::Initialize(const std::string& language) {
   language_ = language;
-  dictionary_file_path_ = GetDictionaryFilePath(language);
 
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&base::PathExists, dictionary_file_path_),
-      base::BindOnce(&SpellCheckLanguage::OnPathExistsComplete,
+      FROM_HERE, base::BindOnce(&EnsureDictionaryDirectoryExists),
+      base::BindOnce(&SpellCheckLanguage::OnDictionaryDirectoryExistsComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -145,6 +173,28 @@ void SpellCheckLanguage::OnSimpleURLLoaderComplete(base::FilePath tmp_path) {
                      weak_factory_.GetWeakPtr()));
 }
 
+void SpellCheckLanguage::OnDictionaryDirectoryExistsComplete(
+    bool directory_exists) {
+  if (!directory_exists) {
+    LOG(ERROR) << "Failed to find or create the dictionary directory.";
+    MaybeRetryInitialize();
+    return;
+  }
+
+  base::FilePath dict_dir = GetDictionaryDirectoryPath();
+  if (dict_dir.empty()) {
+    LOG(ERROR) << "Failed to resolve the dictionary directory path.";
+    MaybeRetryInitialize();
+    return;
+  }
+  dictionary_file_path_ = spellcheck::GetVersionedFileName(language_, dict_dir);
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, dictionary_file_path_),
+      base::BindOnce(&SpellCheckLanguage::OnPathExistsComplete,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void SpellCheckLanguage::OnDictionaryCreated(
     mojo::PendingRemote<mojom::SpellCheckDictionary> dictionary) {
   dictionary_.reset();
@@ -159,11 +209,21 @@ void SpellCheckLanguage::OnDictionaryCreated(
 }
 
 void SpellCheckLanguage::MaybeRetryInitialize() {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RemoveDictionaryFile, dictionary_file_path_));
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&RemoveDictionaryFile, dictionary_file_path_),
+      base::BindOnce(&SpellCheckLanguage::OnFileRemovedForRetry,
+                     weak_factory_.GetWeakPtr()));
+}
 
+void SpellCheckLanguage::OnFileRemovedForRetry(bool file_removed) {
   if (num_retries_ >= kMaxRetries) {
-    LOG(ERROR) << "Service initialize failed after max retries";
+    LOG(ERROR) << "Service initialize failed after max retries.";
+    service_.reset();
+    return;
+  }
+
+  if (!file_removed) {
+    LOG(ERROR) << "Will not retry - could not remove the dictionary file.";
     service_.reset();
     return;
   }
@@ -183,8 +243,9 @@ void SpellCheckLanguage::OnPathExistsComplete(bool path_exists) {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                kNetworkTrafficAnnotationTag);
+
     loader_->SetRetryOptions(
-        /*max_retries=*/5,
+        /*max_retries=*/3,
         network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 

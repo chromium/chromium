@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -111,10 +112,40 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // Returns whether the pref with the given `key` is registered as syncable.
   bool IsPrefKeySyncable(const std::string& key) const;
 
+  // Returns whether the pref with the given `key` is mergeable.
+  // TODO(crbug.com/1416479): This does not cover prefs with custom merge logic
+  // yet.
+  bool IsPrefKeyMergeable(const std::string& key) const;
+
+  // Produces a "merged" view of `account_value` and `local_value`. In case
+  // `pref_name` is a mergeable pref, a new merged pref is returned, which is
+  // owned by `merged_prefs_`. Else, it returns a pointer to the account value,
+  // given that in this case the account value overrides the local value.
+  const base::Value* MaybeMerge(const std::string& pref_name,
+                                const base::Value& local_value,
+                                const base::Value& account_value) const;
+  base::Value* MaybeMerge(const std::string& pref_name,
+                          base::Value& local_value,
+                          base::Value& account_value);
+
+  // Unmerges `value` and returns the new local value and the account value (in
+  // that order).
+  std::pair<base::Value, base::Value> UnmergeValue(const std::string& pref_name,
+                                                   base::Value value,
+                                                   uint32_t flags) const;
+
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.
   const scoped_refptr<PersistentPrefStore> local_pref_store_;
   const scoped_refptr<ValueMapPrefStore> account_pref_store_;
+
+  // This stores the merged value of a mergeable pref, if required - i.e. if the
+  // pref is queried while it exists on both the stores. This is needed to
+  // tackle the issue regarding the ownership of the newly created merged values
+  // on calls to GetValue().
+  // Note: Marked as mutable to allow update by GetValue() method which is
+  // const.
+  mutable PrefValueMap merged_prefs_;
 
   // Observers for the two underlying pref stores, used to propagate pref-change
   // notifications the this class's own observers.

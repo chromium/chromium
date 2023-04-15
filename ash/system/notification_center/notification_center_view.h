@@ -61,7 +61,7 @@ enum class NotificationCenterAnimationState {
 // Manages scrolling of notification list.
 class ASH_EXPORT NotificationCenterView
     : public views::View,
-      public MessageCenterScrollBar::Observer,
+      public RoundedMessageCenterScrollBar::Observer,
       public views::FocusChangeListener,
       public gfx::AnimationDelegate,
       public views::ViewObserver {
@@ -139,17 +139,12 @@ class ASH_EXPORT NotificationCenterView
   // Called when user clicks the see all notifications button.
   void ExpandMessageCenter();
 
-  // Returns true if the notification bar is visible.
-  bool IsNotificationBarVisible() const;
-
   // Returns true if the scroll bar is visible.
   bool IsScrollBarVisible() const;
 
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  void Layout() override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -214,8 +209,6 @@ class ASH_EXPORT NotificationCenterView
 
   // Position from the bottom of scroll contents in dip.
   int last_scroll_position_from_bottom_;
-
-  const bool is_notifications_refresh_enabled_;
 
   // The height available to the message center view. This is the remaining
   // height of the system tray excluding the system menu (which can be expanded

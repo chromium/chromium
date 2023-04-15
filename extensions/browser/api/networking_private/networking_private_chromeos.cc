@@ -114,7 +114,7 @@ void AppendDeviceState(
   NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(type);
   NetworkStateHandler::TechnologyState technology_state =
       GetStateHandler()->GetTechnologyState(pattern);
-  private_api::DeviceStateType state = private_api::DEVICE_STATE_TYPE_NONE;
+  private_api::DeviceStateType state = private_api::DeviceStateType::kNone;
   switch (technology_state) {
     case NetworkStateHandler::TECHNOLOGY_UNAVAILABLE:
       if (!device) {
@@ -122,33 +122,33 @@ void AppendDeviceState(
       }
       // If we have a DeviceState entry but the technology is not available,
       // assume the technology is not initialized.
-      state = private_api::DEVICE_STATE_TYPE_UNINITIALIZED;
+      state = private_api::DeviceStateType::kUninitialized;
       break;
     case NetworkStateHandler::TECHNOLOGY_AVAILABLE:
-      state = private_api::DEVICE_STATE_TYPE_DISABLED;
+      state = private_api::DeviceStateType::kDisabled;
       break;
     case NetworkStateHandler::TECHNOLOGY_DISABLING:
-      state = private_api::DEVICE_STATE_TYPE_DISABLED;
+      state = private_api::DeviceStateType::kDisabled;
       break;
     case NetworkStateHandler::TECHNOLOGY_UNINITIALIZED:
-      state = private_api::DEVICE_STATE_TYPE_UNINITIALIZED;
+      state = private_api::DeviceStateType::kUninitialized;
       break;
     case NetworkStateHandler::TECHNOLOGY_ENABLING:
-      state = private_api::DEVICE_STATE_TYPE_ENABLING;
+      state = private_api::DeviceStateType::kEnabling;
       break;
     case NetworkStateHandler::TECHNOLOGY_ENABLED:
-      state = private_api::DEVICE_STATE_TYPE_ENABLED;
+      state = private_api::DeviceStateType::kEnabled;
       break;
     case NetworkStateHandler::TECHNOLOGY_PROHIBITED:
-      state = private_api::DEVICE_STATE_TYPE_PROHIBITED;
+      state = private_api::DeviceStateType::kProhibited;
       break;
   }
-  DCHECK_NE(private_api::DEVICE_STATE_TYPE_NONE, state);
+  DCHECK_NE(private_api::DeviceStateType::kNone, state);
   std::unique_ptr<private_api::DeviceStateProperties> properties(
       new private_api::DeviceStateProperties);
   properties->type = private_api::ParseNetworkType(type);
   properties->state = state;
-  if (device && state == private_api::DEVICE_STATE_TYPE_ENABLED) {
+  if (device && state == private_api::DeviceStateType::kEnabled) {
     properties->scanning = device->scanning();
   }
   if (device && type == ::onc::network_config::kCellular) {

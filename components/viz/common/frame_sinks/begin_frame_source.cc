@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -166,14 +167,20 @@ void BeginFrameSource::SetIsGpuBusy(bool busy) {
   is_gpu_busy_ = busy;
   if (is_gpu_busy_) {
     DCHECK_EQ(gpu_busy_response_state_, GpuBusyThrottlingState::kIdle);
+    gpu_busy_start_time_ = base::TimeTicks::Now();
     return;
   }
 
   const bool was_throttled =
       gpu_busy_response_state_ == GpuBusyThrottlingState::kThrottled;
   gpu_busy_response_state_ = GpuBusyThrottlingState::kIdle;
-  if (was_throttled)
+  if (was_throttled) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Viz.FrameSink.GpuBusyDuration",
+        base::TimeTicks::Now() - gpu_busy_start_time_, base::Microseconds(1),
+        base::Seconds(5), /*bucket_count=*/100);
     OnGpuNoLongerBusy();
+  }
 }
 
 bool BeginFrameSource::RequestCallbackOnGpuAvailable() {

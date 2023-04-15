@@ -69,7 +69,7 @@ The following arguments are supported:
                         e.g. --vmodule=*media/gpu*=2.
 
   --codec               codec profile to encode, "h264" (baseline),
-                        "h264main, "h264high", "vp8" and "vp9".
+                        "h264main, "h264high", "vp8", "vp9", "av1".
                         H264 Baseline is selected if unspecified.
   --num_temporal_layers the number of temporal layers of the encoded
                         bitstream. A default value is 1.
@@ -283,6 +283,9 @@ class VideoEncoderTest : public ::testing::Test {
         bitstream_processors.emplace_back(new VP9Validator(
             config.output_profile, visible_rect, config.num_spatial_layers,
             config.num_temporal_layers));
+        break;
+      case VideoCodec::kAV1:
+        bitstream_processors.emplace_back(new AV1Validator(visible_rect));
         break;
       default:
         LOG(ERROR) << "Unsupported profile: "

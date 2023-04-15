@@ -200,15 +200,16 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationAppNoComplete) {
   SetInfo(id, params);
 
   ResultCatcher catcher;
-  const Extension* extension = LoadApp("system/display/overscan_no_complete");
+  scoped_refptr<const Extension> extension =
+      LoadApp("system/display/overscan_no_complete");
   ASSERT_TRUE(extension);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Calibration was started by the app but not completed.
   ASSERT_TRUE(provider_->calibration_started(id));
 
-  // Unloading the app should complete the calibraiton (and hide the overlay).
-  UnloadApp(extension);
+  // Unloading the app should complete the calibration (and hide the overlay).
+  UnloadApp(extension.get());
   ASSERT_FALSE(provider_->calibration_changed(id));
   ASSERT_FALSE(provider_->calibration_started(id));
 }
@@ -277,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                             "  \"mode\": \"normal\"\n"
                                             "}]",
                                             browser_context()));
-    EXPECT_EQ(api::system_display::MIRROR_MODE_NORMAL,
+    EXPECT_EQ(api::system_display::MirrorMode::kNormal,
               provider_->mirror_mode());
   }
   {
@@ -294,7 +295,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                     "  \"mirroringDestinationIds\": [\"11\"]\n"
                                     "}]",
                                     browser_context()));
-    EXPECT_EQ(api::system_display::MIRROR_MODE_MIXED, provider_->mirror_mode());
+    EXPECT_EQ(api::system_display::MirrorMode::kMixed,
+              provider_->mirror_mode());
   }
   {
     auto set_mirror_mode_function =
@@ -308,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                             "  \"mode\": \"off\"\n"
                                             "}]",
                                             browser_context()));
-    EXPECT_EQ(api::system_display::MIRROR_MODE_OFF, provider_->mirror_mode());
+    EXPECT_EQ(api::system_display::MirrorMode::kOff, provider_->mirror_mode());
   }
 }
 

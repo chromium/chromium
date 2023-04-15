@@ -39,7 +39,7 @@ class TextFragmentAnchorMetricsTest : public SimTest {
   }
 
   void RunAsyncMatchingTasks() {
-    auto* scheduler =
+    auto& scheduler =
         blink::scheduler::WebThreadScheduler::MainThreadScheduler();
     blink::scheduler::RunIdleTasksForTesting(scheduler, WTF::BindOnce([]() {}));
     RunPendingTasks();

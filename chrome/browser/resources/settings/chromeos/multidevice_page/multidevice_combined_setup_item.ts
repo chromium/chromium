@@ -21,7 +21,7 @@ import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 const SettingsMultideviceCombinedSetupItemElementBase =
     MultiDeviceFeatureMixin(PolymerElement);
 
-class SettingsMultideviceCombinedSetupItemElement extends
+export class SettingsMultideviceCombinedSetupItemElement extends
     SettingsMultideviceCombinedSetupItemElementBase {
   static get is() {
     return 'settings-multidevice-combined-setup-item' as const;

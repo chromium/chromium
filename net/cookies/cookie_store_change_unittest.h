@@ -707,6 +707,38 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, ChangeIncludesCookieAccessSemantics) {
       cookie_changes[3].access_result.access_semantics));
 }
 
+TYPED_TEST_P(CookieStoreChangeGlobalTest, PartitionedCookies) {
+  if (!TypeParam::supports_named_cookie_tracking ||
+      !TypeParam::supports_partitioned_cookies) {
+    return;
+  }
+
+  CookieStore* cs = this->GetCookieStore();
+
+  // Test that all partitioned cookies are visible to global change listeners.
+  std::vector<CookieChangeInfo> all_cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> global_subscription =
+      cs->GetChangeDispatcher().AddCallbackForAllChanges(base::BindRepeating(
+          &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+          base::Unretained(&all_cookie_changes)));
+  // Set two cookies in two separate partitions, one with nonce.
+  this->CreateAndSetCookie(
+      cs, GURL("https://www.example2.com"),
+      "__Host-a=1; Secure; Path=/; Partitioned",
+      CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
+      absl::nullopt /* system_time */,
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
+  this->CreateAndSetCookie(
+      cs, GURL("https://www.example2.com"),
+      "__Host-a=2; Secure; Path=/; Partitioned; Max-Age=7200",
+      CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
+      absl::nullopt /* system_time */,
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"),
+                                            base::UnguessableToken::Create()));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(2u, all_cookie_changes.size());
+}
+
 TYPED_TEST_P(CookieStoreChangeUrlTest, NoCookie) {
   if (!TypeParam::supports_url_cookie_tracking)
     return;
@@ -1748,16 +1780,14 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies) {
       "__Host-b=2; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com")));
   // Partitioned cookie with a different partition key
   this->CreateAndSetCookie(
       cs, GURL("https://www.example.com"),
       "__Host-c=3; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com")));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(2u, cookie_changes.size());
@@ -1785,12 +1815,59 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies) {
       "__Host-b=2; Secure; Path=/; Partitioned; Max-Age=7200",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
   this->DeliverChangeNotifications();
   ASSERT_EQ(0u, other_cookie_changes.size());
   // Check that the other listener was invoked.
   ASSERT_LT(2u, cookie_changes.size());
+}
+
+TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies_WithNonce) {
+  if (!TypeParam::supports_named_cookie_tracking ||
+      !TypeParam::supports_partitioned_cookies) {
+    return;
+  }
+
+  CookieStore* cs = this->GetCookieStore();
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  std::vector<CookieChangeInfo> cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      cs->GetChangeDispatcher().AddCallbackForUrl(
+          GURL("https://www.example.com"),
+          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"),
+                                                nonce),
+          base::BindRepeating(
+              &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+              base::Unretained(&cookie_changes)));
+
+  // Should not see changes to an unpartitioned cookie.
+  this->CreateAndSetCookie(cs, GURL("https://www.example.com"),
+                           "__Host-a=1; Secure; Path=/",
+                           CookieOptions::MakeAllInclusive());
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  // Set partitioned cookie without nonce. Should not see the change.
+  this->CreateAndSetCookie(
+      cs, GURL("https://www.example.com"),
+      "__Host-a=2; Secure; Path=/; Partitioned",
+      CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
+      absl::nullopt /* system_time */,
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  // Set partitioned cookie with nonce.
+  this->CreateAndSetCookie(cs, GURL("https://www.example.com"),
+                           "__Host-a=3; Secure; Path=/; Partitioned",
+                           CookieOptions::MakeAllInclusive(),
+                           absl::nullopt /* server_time */,
+                           absl::nullopt /* system_time */,
+                           CookiePartitionKey::FromURLForTesting(
+                               GURL("https://www.foo.com"), nonce));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(1u, cookie_changes.size());
 }
 
 TYPED_TEST_P(CookieStoreChangeNamedTest, NoCookie) {
@@ -2987,16 +3064,14 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies) {
       "__Host-a=2; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com")));
   // Partitioned cookie with a different partition key
   this->CreateAndSetCookie(
       cs, GURL("https://www.example.com"),
       "__Host-a=3; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com")));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(2u, cookie_changes.size());
@@ -3023,12 +3098,59 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies) {
       "__Host-a=2; Secure; Path=/; Partitioned; Max-Age=7200",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
   this->DeliverChangeNotifications();
   ASSERT_EQ(0u, other_cookie_changes.size());
   // Check that the other listener was invoked.
   ASSERT_LT(2u, cookie_changes.size());
+}
+
+TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies_WithNonce) {
+  if (!TypeParam::supports_named_cookie_tracking ||
+      !TypeParam::supports_partitioned_cookies) {
+    return;
+  }
+
+  CookieStore* cs = this->GetCookieStore();
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  std::vector<CookieChangeInfo> cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      cs->GetChangeDispatcher().AddCallbackForCookie(
+          GURL("https://www.example.com"), "__Host-a",
+          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"),
+                                                nonce),
+          base::BindRepeating(
+              &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+              base::Unretained(&cookie_changes)));
+
+  // Should not see changes to an unpartitioned cookie.
+  this->CreateAndSetCookie(cs, GURL("https://www.example.com"),
+                           "__Host-a=1; Secure; Path=/",
+                           CookieOptions::MakeAllInclusive());
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  // Set partitioned cookie without nonce. Should not see the change.
+  this->CreateAndSetCookie(
+      cs, GURL("https://www.example.com"),
+      "__Host-a=2; Secure; Path=/; Partitioned",
+      CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
+      absl::nullopt /* system_time */,
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  // Set partitioned cookie with nonce.
+  this->CreateAndSetCookie(cs, GURL("https://www.example.com"),
+                           "__Host-a=3; Secure; Path=/; Partitioned",
+                           CookieOptions::MakeAllInclusive(),
+                           absl::nullopt /* server_time */,
+                           absl::nullopt /* system_time */,
+                           CookiePartitionKey::FromURLForTesting(
+                               GURL("https://www.foo.com"), nonce));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(1u, cookie_changes.size());
 }
 
 REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeGlobalTest,
@@ -3046,7 +3168,8 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeGlobalTest,
                             DeregisterRace,
                             DeregisterRaceMultiple,
                             MultipleSubscriptions,
-                            ChangeIncludesCookieAccessSemantics);
+                            ChangeIncludesCookieAccessSemantics,
+                            PartitionedCookies);
 
 REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeUrlTest,
                             NoCookie,
@@ -3071,7 +3194,8 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeUrlTest,
                             DifferentSubscriptionsFiltering,
                             MultipleSubscriptions,
                             ChangeIncludesCookieAccessSemantics,
-                            PartitionedCookies);
+                            PartitionedCookies,
+                            PartitionedCookies_WithNonce);
 
 REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeNamedTest,
                             NoCookie,
@@ -3098,7 +3222,8 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeNamedTest,
                             MultipleSubscriptions,
                             SubscriptionOutlivesStore,
                             ChangeIncludesCookieAccessSemantics,
-                            PartitionedCookies);
+                            PartitionedCookies,
+                            PartitionedCookies_WithNonce);
 
 }  // namespace net
 

@@ -71,7 +71,7 @@ std::unique_ptr<UserScript> CreateUserScript(
   auto result = std::make_unique<UserScript>();
 
   // run_at
-  if (content_script.run_at != content_scripts_api::RUN_AT_NONE) {
+  if (content_script.run_at != content_scripts_api::RunAt::kNone) {
     result->set_run_location(
         script_parsing::ConvertManifestRunLocation(content_script.run_at));
   }
@@ -145,7 +145,7 @@ std::unique_ptr<UserScript> CreateUserScript(
              base::OptionalToPtr(content_script.exclude_globs), result.get());
 
   // Parse execution world. This should only be possible for MV3.
-  if (content_script.world != api::extension_types::EXECUTION_WORLD_NONE) {
+  if (content_script.world != api::extension_types::ExecutionWorld::kNone) {
     if (extension->manifest_version() >= 3) {
       result->set_execution_world(ConvertExecutionWorld(content_script.world));
     } else {

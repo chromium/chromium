@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
-<translation id="1181037720776840403">Хасах</translation>
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
 <translation id="1403228085774130835">Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табууд хэсгээс олох боломжтой</translation>
 <translation id="1455506303394048917">Таны эдгээр Нууцлалтай таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Табыг бүлэглэхээ болих}other{Табуудыг бүлэглэхээ болих}}</translation>
 <translation id="2277224997687551299">Бүлгийн нэрийг засах</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлгээс хасах.}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлгээс хасах.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Табыг тэмдэглэх}other{Табуудыг тэмдэглэх}}</translation>
-<translation id="2479148705183875116">Тохиргоо руу очих</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табыг хураах.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий бүлэг табыг хураах.}}</translation>
 <translation id="2569352796411618312">Зөвлөмж: Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
-<translation id="257674075312929031">Бүлэг</translation>
 <translation id="2613747923081026172">Бүлэг үүсгэх</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ</translation>
 <translation id="266935134738038806">Сайтад зочлох</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Бүлэглэхийн тулд табыг чирж зөөнө үү</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> таб бүхий <ph name="TITLE_OF_GROUP" /> бүлгийг хаах</translation>
 <translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
-<translation id="6040143037577758943">Хаах</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Табыг хуваалцах}other{Табуудыг хуваалцах}}</translation>
 <translation id="7129458170538955174">Энэ дэлгүүрийн талаарх мэдээллийг тал өндөртэйгээр нээсэн</translation>
-<translation id="7151209024774799310">Бүлгээс табыг хасах</translation>
 <translation id="7204204600596740190">Олон сонголттой горим</translation>
 <translation id="7326879924029668159">Буцаалтын бодлого болон илүү ихийг хараарай</translation>
 <translation id="7352298686197644113">Таны нээлттэй табд аль зүйл илүү хямд үнэтэй байгааг хараарай</translation>

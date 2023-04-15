@@ -22,11 +22,13 @@
     testRunner.fail(`request for ${request.params.documentURL} will be sent`);
   });
   dp.Network.onceResponseReceived().then(response => {
-    testRunner.fail(`response for ${request.params.documentURL} was received`);
+    testRunner.fail(`response for ${response.params.response.url} was received`);
   });
 
   // Navigate back - should use back-forward cache.
-  session.evaluate('window.history.back()');
+  // Intentionally ignore evaluation errors - since we are navigating, we might
+  // get the "Inspected target navigated or closed" error response.
+  await dp.Runtime.evaluate({expression: 'window.history.back()'});
   const frameNavigated = await dp.Page.onceFrameNavigated();
   testRunner.log(frameNavigated.params.type);
   testRunner.completeTest();

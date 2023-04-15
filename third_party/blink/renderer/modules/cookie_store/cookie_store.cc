@@ -231,7 +231,11 @@ net::SiteForCookies DefaultSiteForCookies(ExecutionContext* execution_context) {
     return window->document()->SiteForCookies();
 
   auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
-  return net::SiteForCookies::FromUrl(GURL(scope->Url()));
+  const blink::BlinkStorageKey& key = scope->storage_key();
+  if (key.IsFirstPartyContext()) {
+    return net::SiteForCookies::FromUrl(GURL(scope->Url()));
+  }
+  return net::SiteForCookies();
 }
 
 scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
@@ -244,12 +248,9 @@ scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
     return window->document()->TopFrameOrigin()->IsolatedCopy();
   }
 
-  // TODO(crbug.com/1225444): This is a temporary solution until we can plumb
-  // BlinkStorageKey to ServiceWorkerGlobalScope. Once we do the top-frame
-  // origin should be BlinkStorageKey's top-frame site.
   auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
   return SecurityOrigin::CreateFromUrlOrigin(url::Origin::Create(
-      net::SchemefulSite(scope->GetSecurityOrigin()->ToUrlOrigin()).GetURL()));
+      net::SchemefulSite(scope->storage_key().GetTopLevelSite()).GetURL()));
 }
 
 }  // namespace

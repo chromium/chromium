@@ -93,11 +93,11 @@ export class TetherConnectionDialogElement extends
         this.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
   }
 
-  private onNotNowTap_(): void {
+  private onNotNowClick_(): void {
     this.getDialog_().cancel();
   }
 
-  private onConnectTap_(): void {
+  private onConnectClick_(): void {
     const event =
         new CustomEvent('tether-connect', {bubbles: true, composed: true});
     this.dispatchEvent(event);

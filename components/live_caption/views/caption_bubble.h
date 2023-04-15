@@ -186,8 +186,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // window, which is where the user is already looking. It also ensures that
   // the caption bubble will appear in the right workspace if a user has Chrome
   // windows open on multiple workspaces. This method has no effect if the
-  // active model has changed between when it was posted and executed.
-  void RepositionInContextRect(const CaptionBubbleModel* model,
+  // active model has changed between when it was posted and executed, which
+  // is ensured by passing the active model's id as |model_id|.
+  void RepositionInContextRect(CaptionBubbleModel::Id model_id,
                                const gfx::Rect& context_rect);
 
   // After 5 seconds of inactivity, hide the caption bubble. Activity is defined

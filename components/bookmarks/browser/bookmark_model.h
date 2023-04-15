@@ -220,9 +220,13 @@ class BookmarkModel : public BookmarkUndoProvider,
   // same or not.
   void GetBookmarks(std::vector<UrlAndTitle>* urls);
 
+  // Returns the type of |folder| as represented in metrics.
+  metrics::BookmarkFolderTypeForUMA GetFolderType(
+      const BookmarkNode* folder) const;
+
   // Adds a new folder node at the specified position with the given
-  // |creation_time|, |guid| and |meta_info|. If no GUID is provided (i.e.
-  // nullopt), then a random one will be generated. If a GUID is provided, it
+  // |creation_time|, |uuid| and |meta_info|. If no UUID is provided (i.e.
+  // nullopt), then a random one will be generated. If a UUID is provided, it
   // must be valid.
   const BookmarkNode* AddFolder(
       const BookmarkNode* parent,
@@ -230,7 +234,7 @@ class BookmarkModel : public BookmarkUndoProvider,
       const std::u16string& title,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
       absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> guid = absl::nullopt);
+      absl::optional<base::Uuid> uuid = absl::nullopt);
 
   // Adds a new bookmark for the given `url` at the specified position with the
   // given `meta_info`. Used for bookmarks being added through some direct user
@@ -243,8 +247,8 @@ class BookmarkModel : public BookmarkUndoProvider,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr);
 
   // Adds a url at the specified position with the given `creation_time`,
-  // `meta_info`, `guid`, and `last_used_time`. If no GUID is provided
-  // (i.e. nullopt), then a random one will be generated. If a GUID is
+  // `meta_info`, `uuid`, and `last_used_time`. If no UUID is provided
+  // (i.e. nullopt), then a random one will be generated. If a UUID is
   // provided, it must be valid. Used for bookmarks not being added from
   // direct user actions (e.g. created via sync, locally modified bookmark
   // or pre-existing bookmark). `added_by_user` is true when a new bookmark was
@@ -256,7 +260,7 @@ class BookmarkModel : public BookmarkUndoProvider,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
       absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::Uuid> guid = absl::nullopt,
+      absl::optional<base::Uuid> uuid = absl::nullopt,
       bool added_by_user = false);
 
   // Sorts the children of |parent|, notifying observers by way of the

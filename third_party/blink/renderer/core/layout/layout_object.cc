@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
@@ -374,6 +375,13 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return nullptr;
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
+    case EDisplay::kInlineListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      return MakeGarbageCollected<LayoutNGInlineListItem>(element);
+    case EDisplay::kFlowRootListItem:
+    case EDisplay::kInlineFlowRootListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      [[fallthrough]];
     case EDisplay::kBlock:
     case EDisplay::kFlowRoot:
     case EDisplay::kInlineBlock:
@@ -1340,8 +1348,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // height will allow the object to grow and shrink based on the content
   // inside. The same goes for for logical width, if this objects is inside a
   // shrink-to-fit container, for instance.
-  if (!style->Width().IsFixed() || !style->Height().IsFixed())
+  if (!style->UsedWidth().IsFixed() || !style->UsedHeight().IsFixed()) {
     return false;
+  }
 
   if (object->IsTextControl()) {
     return true;
@@ -4850,6 +4859,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
   Vector<PhysicalRect> outline_rects;
   PhysicalOffset paint_offset = iterator.GetFragmentData()->PaintOffset();
 
+  VectorOutlineRectCollector collector;
   if (iterator.Cursor()) {
     wtf_size_t fragment_index = iterator.Cursor()->ContainerFragmentIndex();
     do {
@@ -4859,23 +4869,25 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
       if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {
         box_fragment->AddSelfOutlineRects(
             paint_offset + item->OffsetInContainerFragment(), outline_type,
-            &outline_rects, nullptr);
+            collector, nullptr);
       } else {
         PhysicalRect rect;
         rect = item->RectInContainerFragment();
         rect.Move(paint_offset);
-        outline_rects.push_back(rect);
+        collector.AddRect(rect);
       }
       // Keep going as long as we're within the same container fragment. If
       // we're block-fragmented, there will be multiple container fragments,
       // each with their own FragmentData object.
     } while (iterator.Advance() &&
              iterator.Cursor()->ContainerFragmentIndex() == fragment_index);
+    outline_rects = collector.TakeRects();
   } else {
     if (const NGPhysicalBoxFragment* box_fragment =
             iterator.GetPhysicalBoxFragment()) {
-      box_fragment->AddSelfOutlineRects(paint_offset, outline_type,
-                                        &outline_rects, nullptr);
+      box_fragment->AddSelfOutlineRects(paint_offset, outline_type, collector,
+                                        nullptr);
+      outline_rects = collector.TakeRects();
     } else {
       outline_rects = OutlineRects(nullptr, paint_offset, outline_type);
     }
@@ -4890,9 +4902,9 @@ Vector<PhysicalRect> LayoutObject::OutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type) const {
   NOT_DESTROYED();
-  Vector<PhysicalRect> outline_rects;
-  AddOutlineRects(outline_rects, info, additional_offset, outline_type);
-  return outline_rects;
+  VectorOutlineRectCollector collector;
+  AddOutlineRects(collector, info, additional_offset, outline_type);
+  return collector.TakeRects();
 }
 
 void LayoutObject::SetModifiedStyleOutsideStyleRecalc(

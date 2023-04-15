@@ -228,6 +228,7 @@
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "media/base/media_switches.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
+#include "ui/gfx/switches.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -830,6 +831,11 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
             break;
         }
       }
+    }
+
+    if (init_params->EnableCpuMappableNativeGpuMemoryBuffers()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kEnableNativeGpuMemoryBuffers);
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

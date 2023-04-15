@@ -40,6 +40,8 @@ source_set("open_from_clipboard_impl") {
   assert_no_deps = [ "//base:i18n" ]
   if (is_ios) {
     sources += [
+      "clipboard_async_wrapper_ios.h",
+      "clipboard_async_wrapper_ios.mm",
       "clipboard_recent_content_impl_ios.h",
       "clipboard_recent_content_impl_ios.mm",
     ]

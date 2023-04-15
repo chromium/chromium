@@ -95,6 +95,9 @@ void ArcOverlayControllerImpl::AttachOverlay(aura::Window* overlay_window) {
   overlay_container_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   overlay_container_->RequestFocus();
 
+  // Make sure that the overlay comes on top of other windows.
+  host_window_->StackChildAtTop(overlay_container_->GetNativeViewContainer());
+
   UpdateHostBounds();
 }
 

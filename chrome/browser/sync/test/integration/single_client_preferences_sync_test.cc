@@ -401,4 +401,237 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                   .Wait());
 }
 
+using SingleClientPreferencesWithAccountStorageMergeSyncTest =
+    SingleClientPreferencesWithAccountStorageSyncTest;
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
+                       ShouldMergeLocalAndAccountMergeableDictPref) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  GetRegistry(GetProfile(0))
+      ->RegisterDictionaryPref(
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  base::Value::Dict local_value = base::Value::Dict()
+                                      .Set("google.com", "allow")
+                                      .Set("wikipedia.org", "allow");
+  GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       local_value.Clone());
+
+  base::Value::Dict server_value = base::Value::Dict()
+                                       .Set("facebook.com", "deny")
+                                       .Set("microsoft.com", "deny")
+                                       .Set("wikipedia.org", "deny");
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::Value(server_value.Clone()));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and the dict value is
+  // merged with the value in the local store.
+  auto merged_value = base::Value::Dict()
+                          .Set("facebook.com", "deny")
+                          .Set("google.com", "allow")
+                          .Set("microsoft.com", "deny")
+                          .Set("wikipedia.org", "deny");
+  EXPECT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            merged_value);
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // The local store remains unchanged.
+  EXPECT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            local_value);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
+                       ShouldUnmergeMergeableDictPrefUponUpdate) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  GetRegistry(GetProfile(0))
+      ->RegisterDictionaryPref(
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  base::Value::Dict local_value = base::Value::Dict()
+                                      .Set("google.com", "allow")
+                                      .Set("wikipedia.org", "allow");
+  GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       local_value.Clone());
+
+  base::Value::Dict server_value = base::Value::Dict()
+                                       .Set("facebook.com", "deny")
+                                       .Set("microsoft.com", "deny")
+                                       .Set("wikipedia.org", "deny");
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::Value(server_value.Clone()));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and the dict value is
+  // merged with the value in the local store.
+  auto merged_value = base::Value::Dict()
+                          .Set("facebook.com", "deny")
+                          .Set("google.com", "allow")
+                          .Set("microsoft.com", "deny")
+                          .Set("wikipedia.org", "deny");
+  ASSERT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            merged_value);
+
+  auto updated_value = base::Value::Dict()
+                           // New key, should get added to both stores.
+                           .Set("cnn.com", "deny")
+                           // Updated value, should get added to both stores.
+                           .Set("facebook.com", "allow")
+                           // Unchanged, should be only in the local store.
+                           .Set("google.com", "allow")
+                           // Unchanged, should be only in the account store.
+                           .Set("microsoft.com", "deny");
+
+  GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       updated_value.Clone());
+  ASSERT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            updated_value);
+
+  // Note that entry for "wikipedia.org" was removed.
+  auto updated_server_value = base::Value::Dict()
+                                  .Set("cnn.com", "deny")
+                                  .Set("facebook.com", "allow")
+                                  .Set("microsoft.com", "deny");
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::ModelType::PREFERENCES,
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          ConvertToSyncedPrefValue(base::Value(updated_server_value.Clone())))
+          .Wait());
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Note that entry for "wikipedia.org" was removed.
+  auto updated_local_value = base::Value::Dict()
+                                 .Set("cnn.com", "deny")
+                                 .Set("facebook.com", "allow")
+                                 .Set("google.com", "allow");
+  EXPECT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            updated_local_value);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
+                       ShouldMergeLocalAndAccountMergeableListPref) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  base::Value::List local_value =
+      base::Value::List().Append("cnn.com").Append("facebook.com");
+  GetPrefs(0)->SetList(prefs::kURLsToRestoreOnStartup, local_value.Clone());
+
+  base::Value::List server_value =
+      base::Value::List().Append("google.com").Append("facebook.com");
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               prefs::kURLsToRestoreOnStartup,
+                               base::Value(server_value.Clone()));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and the list value is
+  // merged with the value in the local store.
+  auto merged_value = base::Value::List()
+                          .Append("google.com")
+                          .Append("facebook.com")
+                          .Append("cnn.com");
+  EXPECT_EQ(GetPrefs(0)->GetList(prefs::kURLsToRestoreOnStartup), merged_value);
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // The local store remains unchanged.
+  EXPECT_EQ(GetPrefs(0)->GetList(prefs::kURLsToRestoreOnStartup), local_value);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
+                       ShouldUnmergeMergeableListPrefUponUpdate) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  base::Value::List local_value =
+      base::Value::List().Append("cnn.com").Append("facebook.com");
+  GetPrefs(0)->SetList(prefs::kURLsToRestoreOnStartup, local_value.Clone());
+
+  base::Value::List server_value =
+      base::Value::List().Append("google.com").Append("facebook.com");
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               prefs::kURLsToRestoreOnStartup,
+                               base::Value(server_value.Clone()));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and the list value is
+  // merged with the value in the local store.
+  auto merged_value = base::Value::List()
+                          .Append("google.com")
+                          .Append("facebook.com")
+                          .Append("cnn.com");
+  ASSERT_EQ(GetPrefs(0)->GetList(prefs::kURLsToRestoreOnStartup), merged_value);
+
+  // Common entry for "facebook.com" is removed.
+  auto updated_value =
+      base::Value::List().Append("google.com").Append("cnn.com");
+  GetPrefs(0)->SetList(prefs::kURLsToRestoreOnStartup, updated_value.Clone());
+  ASSERT_EQ(GetPrefs(0)->GetList(prefs::kURLsToRestoreOnStartup),
+            updated_value);
+
+  // No standard unmerging logic exists for list prefs and hence, updated value
+  // is written to the account store and the local store.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES,
+                  prefs::kURLsToRestoreOnStartup,
+                  ConvertToSyncedPrefValue(base::Value(updated_value.Clone())))
+                  .Wait());
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // The local store remains unchanged.
+  EXPECT_EQ(GetPrefs(0)->GetList(prefs::kURLsToRestoreOnStartup),
+            updated_value);
+}
+
 }  // namespace

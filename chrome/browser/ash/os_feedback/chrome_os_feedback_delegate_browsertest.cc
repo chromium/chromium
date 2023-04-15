@@ -163,7 +163,7 @@ void FakeFeedbackPrivateDelegate::FetchExtraLogs(
 extensions::api::feedback_private::LandingPageType
 FakeFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
-  return extensions::api::feedback_private::LANDING_PAGE_TYPE_NOLANDINGPAGE;
+  return extensions::api::feedback_private::LandingPageType::kNoLandingPage;
 }
 
 void FakeFeedbackPrivateDelegate::GetLacrosHistograms(
@@ -199,8 +199,9 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
   ~ChromeOsFeedbackDelegateTest() override = default;
 
   absl::optional<GURL> GetLastActivePageUrl() {
-    ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
-    return feedback_delegate_.GetLastActivePageUrl();
+    auto feedback_delegate =
+        ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+    return feedback_delegate.GetLastActivePageUrl();
   }
 
  protected:
@@ -240,12 +241,12 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
           std::move(callback).Run(true);
         });
 
-    auto feedback_delegate_ = std::make_unique<ChromeOsFeedbackDelegate>(
+    auto feedback_delegate = ChromeOsFeedbackDelegate::CreateForTesting(
         profile_, std::move(mock_feedback_service));
 
     if (preload_system_logs) {
       // Trigger preloading.
-      feedback_delegate_->GetLastActivePageUrl();
+      feedback_delegate.GetLastActivePageUrl();
       // Wait for preloading is completed.
       EXPECT_TRUE(fetch_future.Take());
     }
@@ -254,7 +255,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
         CreateFakePngData());
 
     base::test::TestFuture<SendReportStatus> future;
-    feedback_delegate_->SendReport(std::move(report), future.GetCallback());
+    feedback_delegate.SendReport(std::move(report), future.GetCallback());
 
     EXPECT_EQ(SendReportStatus::kSuccess, future.Get());
   }
@@ -309,8 +310,9 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
 // Test GetApplicationLocale returns a valid locale.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetApplicationLocale) {
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
-  EXPECT_EQ(feedback_delegate_.GetApplicationLocale(), "en-US");
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_EQ(feedback_delegate.GetApplicationLocale(), "en-US");
 }
 
 // Test GetLastActivePageUrl returns last active page url if any.
@@ -328,21 +330,23 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
       IdentityManagerFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(identity_manager);
 
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
-  EXPECT_EQ(feedback_delegate_.GetSignedInUserEmail(), "");
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_EQ(feedback_delegate.GetSignedInUserEmail(), "");
 
   signin::MakePrimaryAccountAvailable(identity_manager, kSignedInUserEmail,
                                       signin::ConsentLevel::kSignin);
-  EXPECT_EQ(feedback_delegate_.GetSignedInUserEmail(), kSignedInUserEmail);
+  EXPECT_EQ(feedback_delegate.GetSignedInUserEmail(), kSignedInUserEmail);
 }
 
 // Test GetPerformanceTraceId returns id for performance trace data if any.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
-  EXPECT_EQ(feedback_delegate_.GetPerformanceTraceId(), 0);
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_EQ(feedback_delegate.GetPerformanceTraceId(), 0);
   std::unique_ptr<ContentTracingManager> tracing_manager =
       ContentTracingManager::Create();
-  EXPECT_EQ(feedback_delegate_.GetPerformanceTraceId(), 1);
+  EXPECT_EQ(feedback_delegate.GetPerformanceTraceId(), 1);
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -593,13 +597,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
 // Test GetScreenshot returns correct data when there is a screenshot.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, HasScreenshot) {
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
 
   OsFeedbackScreenshotManager::GetInstance()->SetPngDataForTesting(
       CreateFakePngData());
 
   base::test::TestFuture<const std::vector<uint8_t>&> future;
-  feedback_delegate_.GetScreenshotPng(future.GetCallback());
+  feedback_delegate.GetScreenshotPng(future.GetCallback());
 
   const std::vector<uint8_t> expected{12, 11, 99};
   const std::vector<uint8_t> result = future.Get();
@@ -608,9 +613,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, HasScreenshot) {
 
 // Test GetScreenshot returns empty array when there is not a screenshot.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
   base::test::TestFuture<const std::vector<uint8_t>&> future;
-  feedback_delegate_.GetScreenshotPng(future.GetCallback());
+  feedback_delegate.GetScreenshotPng(future.GetCallback());
 
   const std::vector<uint8_t> result = future.Get();
   EXPECT_EQ(0u, result.size());
@@ -618,13 +624,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
 
 // Test if Diagnostics app is opened.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserChangeObserver browser_opened(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  feedback_delegate_.OpenDiagnosticsApp();
+  feedback_delegate.OpenDiagnosticsApp();
   browser_opened.Wait();
 
   Browser* app_browser = ash::FindSystemWebAppBrowser(
@@ -636,13 +643,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
 
 // Test if Explore app is opened.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserChangeObserver browser_opened(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  feedback_delegate_.OpenExploreApp();
+  feedback_delegate.OpenExploreApp();
   browser_opened.Wait();
 
   Browser* app_browser = ash::FindSystemWebAppBrowser(
@@ -666,9 +674,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
   // Initialize the delegate.
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
 
-  feedback_delegate_.OpenMetricsDialog();
+  feedback_delegate.OpenMetricsDialog();
 
   std::set<views::Widget*> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,
@@ -691,9 +700,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenSystemInfoDialog) {
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
 
   // Initialize the delegate.
-  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
 
-  feedback_delegate_.OpenSystemInfoDialog();
+  feedback_delegate.OpenSystemInfoDialog();
 
   std::set<views::Widget*> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,

@@ -147,11 +147,10 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
         identity_test_env_.identity_manager());
   }
 
-  std::unique_ptr<PerUserTopicSubscriptionManager> BuildRegistrationManager(
-      bool migrate_prefs = true) {
+  std::unique_ptr<PerUserTopicSubscriptionManager> BuildRegistrationManager() {
     auto reg_manager = std::make_unique<PerUserTopicSubscriptionManager>(
         identity_provider_.get(), &pref_service_, url_loader_factory(),
-        kProjectId, migrate_prefs);
+        kProjectId);
     reg_manager->Init();
     reg_manager->AddObserver(&state_observer_);
     return reg_manager;
@@ -427,7 +426,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   testing::Mock::VerifyAndClearExpectations(&identity_observer);
 
   // Add valid responses to access token and subscription requests and ensure
-  // that subscribtions finished.
+  // that subscriptions finished.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "valid_access_token", base::Time::Max());
   AddCorrectSubscriptionResponce();
@@ -678,7 +677,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 }
 
 TEST_F(PerUserTopicSubscriptionManagerTest,
-       ShouldDeletTopicsFromPrefsWhenRequestFails) {
+       ShouldDeleteTopicsFromPrefsWhenRequestFails) {
   auto topics = GetSequenceOfTopics(kInvalidationTopicsCount);
 
   AddCorrectSubscriptionResponce();

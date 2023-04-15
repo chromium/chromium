@@ -43,9 +43,11 @@ void FastCheckoutTabHelper::DidStartNavigation(
   }
 
   FetchCapabilities(url);
-  if (FastCheckoutClient* fast_checkout_client =
-          FastCheckoutClientImpl::FromWebContents(web_contents())) {
-    fast_checkout_client->OnNavigation(url, IsCartOrCheckoutUrl(url));
+  if (autofill::ContentAutofillClient* client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents())) {
+    DCHECK(client->GetFastCheckoutClient());
+    client->GetFastCheckoutClient()->OnNavigation(url,
+                                                  IsCartOrCheckoutUrl(url));
   }
 }
 

@@ -203,6 +203,11 @@ class ASH_EXPORT UnifiedSystemTrayController
     return detailed_view_controller_.get();
   }
 
+  QuickSettingsMediaViewController* media_view_controller() {
+    DCHECK(media_view_controller_);
+    return media_view_controller_.get();
+  }
+
   bool showing_audio_detailed_view() const {
     return showing_audio_detailed_view_;
   }

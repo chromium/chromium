@@ -135,6 +135,7 @@ _CONFIG = [
             'base::bit_cast',
             'base::expected',
             'base::make_span',
+            'base::to_underlying',
             'base::unexpected',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
@@ -321,7 +322,8 @@ _CONFIG = [
             'base::TestMockTimeTaskRunner',
             'base::TickClock',
 
-            # cc painting types.
+            # cc painting and raster types.
+            'cc::CategorizedWorkerPool',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
             'cc::PaintCanvas',
@@ -544,6 +546,7 @@ _CONFIG = [
             'compositor_target_property::.+',
             'cors::.+',
             'css_parsing_utils::.+',
+            'css_toggle_key_handling::.+',
             'cssvalue::.+',
             'encoding::.+',
             'encoding_enum::.+',
@@ -626,6 +629,7 @@ _CONFIG = [
             'network::.+',
 
             # Used in network service types.
+            'net::SchemefulSite',
             'net::SiteForCookies',
 
             # PartitionAlloc
@@ -1171,8 +1175,7 @@ _CONFIG = [
             'media::VideoFrame',
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
-            'viz::ResourceFormat',
-            'viz::ResourceFormatToClosestSkColorType',
+            'viz::SinglePlaneFormat',
             'viz::ToClosestSkColorType',
             'viz::TransferableResource',
         ],
@@ -1404,7 +1407,6 @@ _CONFIG = [
             'gpu::SyncToken',
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
-            'viz::ResourceFormat',
             'media::.+',
             'libyuv::.+',
         ]
@@ -1666,6 +1668,11 @@ _CONFIG = [
             'net::IsValidTopLevelMimeType',
             'net::ParseMimeTypeWithoutParameter',
             'net::registry_controlled_domains::.+',
+
+            # Needed to use the liburlpattern API.
+            "absl::StatusOr",
+            "absl::string_view",
+            'liburlpattern::.+',
         ],
     },
     {

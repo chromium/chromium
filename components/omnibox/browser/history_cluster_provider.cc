@@ -14,6 +14,8 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/strings/grit/components_strings.h"
@@ -133,7 +135,7 @@ bool HistoryClusterProvider::CreateMatches() {
             base::UTF16ToUTF8(search_match.contents));
     if (matched_keyword_data) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
+          metrics::OmniboxEventProto_Feature_HISTORY_CLUSTER_SUGGESTION);
       if (!history_clusters::GetConfig()
                .omnibox_history_cluster_provider_counterfactual) {
         matches_.push_back(
@@ -166,10 +168,11 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
 
   const auto& text = search_match.contents;
 
-  match.destination_url = GURL(base::UTF8ToUTF16(base::StringPrintf(
+  const auto url_string = base::StringPrintf(
       "chrome://history/journeys?q=%s",
       base::EscapeQueryParamValue(base::UTF16ToUTF8(text), /*use_plus=*/false)
-          .c_str())));
+          .c_str());
+  match.destination_url = GURL(url_string);
 
   match.fill_into_edit = text;
 
@@ -178,9 +181,8 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
       FindTermMatches(input_.text(), text), text.length(),
       ACMatchClassification::MATCH, ACMatchClassification::NONE);
 
-  match.contents = l10n_util::GetStringUTF16(
-      IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT);
-  match.contents_class = {{0, ACMatchClassification::DIM}};
+  match.contents = base::UTF8ToUTF16(url_string);
+  match.contents_class = {{0, ACMatchClassification::URL}};
 
   CompleteHistoryClustersMatch(base::UTF16ToUTF8(text),
                                std::move(matched_keyword_data), &match);

@@ -4,11 +4,18 @@
 
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 
+#include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "content/public/android/content_jni_headers/RenderFrameMetadataProviderImpl_jni.h"
+#endif
 
 namespace content {
 
@@ -18,7 +25,14 @@ RenderFrameMetadataProviderImpl::RenderFrameMetadataProviderImpl(
     : task_runner_(task_runner),
       frame_token_message_queue_(frame_token_message_queue) {}
 
-RenderFrameMetadataProviderImpl::~RenderFrameMetadataProviderImpl() = default;
+RenderFrameMetadataProviderImpl::~RenderFrameMetadataProviderImpl() {
+  if (inside_metadata_changed_) {
+#if BUILDFLAG(IS_ANDROID)
+    JNIEnv* env = base::android::AttachCurrentThread();
+    android::Java_RenderFrameMetadataProviderImpl_reportRecursiveDelete(env);
+#endif
+  }
+}
 
 void RenderFrameMetadataProviderImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -107,13 +121,28 @@ void RenderFrameMetadataProviderImpl::SetLastRenderFrameMetadataForTest(
 void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
     uint32_t frame_token,
     const cc::RenderFrameMetadata& metadata) {
-  for (Observer& observer : observers_)
+  base::AutoReset<bool> auto_reset(&inside_metadata_changed_, true);
+
+  // Guard for this being recursively deleted from one of the observer
+  // callbacks.
+  base::WeakPtr<RenderFrameMetadataProviderImpl> self =
+      weak_factory_.GetWeakPtr();
+
+  for (Observer& observer : observers_) {
     observer.OnRenderFrameMetadataChangedBeforeActivation(metadata);
+    if (!self) {
+      return;
+    }
+  }
 
   if (metadata.local_surface_id != last_local_surface_id_) {
     last_local_surface_id_ = metadata.local_surface_id;
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnLocalSurfaceIdChanged(metadata);
+      if (!self) {
+        return;
+      }
+    }
   }
 
   if (!frame_token)

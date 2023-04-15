@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
@@ -60,7 +61,9 @@ bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
     }
   }
 
-  service_->CheckUsernamePasswordPairs(std::move(credentials));
+  service_->CheckUsernamePasswordPairs(
+      LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
+      std::move(credentials));
   return true;
 }
 
@@ -84,7 +87,8 @@ void BulkLeakCheckServiceAdapter::OnEdited(
     // credentials we could de-dupe before we pass it on to the service.
     std::vector<LeakCheckCredential> credentials;
     credentials.emplace_back(credential.username, credential.password);
-    service_->CheckUsernamePasswordPairs(std::move(credentials));
+    service_->CheckUsernamePasswordPairs(LeakDetectionInitiator::kEditCheck,
+                                         std::move(credentials));
   }
 }
 

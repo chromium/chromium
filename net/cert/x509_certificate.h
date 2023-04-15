@@ -241,13 +241,6 @@ class NET_EXPORT X509Certificate
     return intermediate_ca_certs_;
   }
 
-  // Creates a CRYPTO_BUFFER from the DER-encoded representation. Unlike
-  // creating a CRYPTO_BUFFER directly, this function does some minimal
-  // checking to reject obviously invalid inputs.
-  // Returns NULL on failure.
-  static bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytes(
-      base::span<const uint8_t> data);
-
   // Creates all possible CRYPTO_BUFFERs from |data| encoded in a specific
   // |format|. Returns an empty collection on failure.
   static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> CreateCertBuffersFromBytes(

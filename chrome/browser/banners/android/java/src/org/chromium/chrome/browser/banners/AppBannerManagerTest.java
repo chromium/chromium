@@ -130,6 +130,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.DisableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
 public class AppBannerManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
@@ -1373,7 +1374,7 @@ public class AppBannerManagerTest {
     @Test
     @SmallTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=AmbientBadgeSuppressFirstVisit:period/7d"})
+    @Features.EnableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
     public void testAmbientBadgeSuppressedOnFirstVisit() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithAction(
                 mTestServer, "call_stashed_prompt_on_click");
@@ -1386,15 +1387,15 @@ public class AppBannerManagerTest {
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         waitForBadgeStatus(tab, AmbientBadgeState.PENDING_ENGAGEMENT);
 
-        // Advance 3days and navigate to |url| again, ambient badge should show.
+        // Advance 3 days and navigate to |url| again, ambient badge should show.
         AppBannerManager.setTimeDeltaForTesting(3);
         mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
         waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
 
-        // Advance 8 more days and navigate to |url| again, no ambient badge.
-        AppBannerManager.setTimeDeltaForTesting(11);
+        // Advance 31 more days and navigate to |url| again, no ambient badge.
+        AppBannerManager.setTimeDeltaForTesting(35);
         mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
         waitForBadgeStatus(tab, AmbientBadgeState.PENDING_ENGAGEMENT);

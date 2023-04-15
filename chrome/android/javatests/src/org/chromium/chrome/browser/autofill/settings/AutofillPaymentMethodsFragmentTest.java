@@ -23,6 +23,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -31,6 +33,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -222,36 +227,116 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @SmallTest
     @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "false") })
-    public void testToggleDisabledByPolicy() {
+    public void testAutofillToggleDisabledByPolicy() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        ChromeSwitchPreference togglePreference =
+        ChromeSwitchPreference autofillTogglePreference =
                 (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(0);
-        Assert.assertFalse(togglePreference.isEnabled());
+        Assert.assertFalse(autofillTogglePreference.isEnabled());
     }
 
     @Test
     @SmallTest
     @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "true") })
-    public void testToggleEnabledByPolicy() {
+    public void testAutofillToggleEnabledByPolicy() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        ChromeSwitchPreference togglePreference =
+        ChromeSwitchPreference autofillTogglePreference =
                 (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(0);
-        Assert.assertTrue(togglePreference.isEnabled());
+        Assert.assertTrue(autofillTogglePreference.isEnabled());
     }
 
     @Test
     @SmallTest
-    public void testToggleEnabledByDefault() {
+    public void testAutofillToggleEnabledByDefault() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        ChromeSwitchPreference togglePreference =
+        ChromeSwitchPreference autofillTogglePreference =
                 (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(0);
-        Assert.assertTrue(togglePreference.isEnabled());
+        Assert.assertTrue(autofillTogglePreference.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testMandatoryReauthToggle_notShownWhenFeatureDisabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preferences on the initial screen map are Save and Fill toggle + Add Card
+        // button + Payment Apps.
+        Assert.assertEquals(3, getPreferenceScreen(activity).getPreferenceCount());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    // Use the policy to simulate AutofillCreditCard is disabled.
+    @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "false") })
+    public void testMandatoryReauthToggle_notShownWhenAutofillDisabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that Reauth toggle is not shown when Autofill toggle is disabled. The preferences
+        // on the initial screen map are Save and Fill toggle + Payment Apps (No add card button
+        // when Autofill is disabled).
+        Assert.assertEquals(2, getPreferenceScreen(activity).getPreferenceCount());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testMandatoryReauthToggle_displayToggle() throws Exception {
+        // Simulate the pref was enabled previously, to ensure the toggle value is set
+        // correspondingly.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
+        });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference on the initial screen map is only Save and Fill toggle +
+        // Mandatory Reauth toggle + Add Card button + Payment Apps.
+        Assert.assertEquals(4, getPreferenceScreen(activity).getPreferenceCount());
+        ChromeSwitchPreference mandatoryReauthPreference =
+                (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(1);
+        Assert.assertEquals(mandatoryReauthPreference.getTitle(),
+                activity.getString(
+                        R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label));
+        Assert.assertTrue(mandatoryReauthPreference.isChecked());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testMandatoryReauthToggle_switchValueOnClicked() throws Exception {
+        // Initial state, Reauth pref is disabled by default.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
+        });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference on the initial screen map is only Save and Fill toggle +
+        // Mandatory Reauth toggle + Add Card button + Payment Apps.
+        Assert.assertEquals(4, getPreferenceScreen(activity).getPreferenceCount());
+        ChromeSwitchPreference mandatoryReauthPreference =
+                (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(1);
+        Assert.assertEquals(mandatoryReauthPreference.getTitle(),
+                activity.getString(
+                        R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label));
+        Assert.assertFalse(mandatoryReauthPreference.isChecked());
+
+        // Simulate click on the Reauth toggle.
+        TestThreadUtils.runOnUiThreadBlocking(mandatoryReauthPreference::performClick);
+
+        // Verify that the Reauth toggle is now checked.
+        Assert.assertTrue(mandatoryReauthPreference.isChecked());
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
         return ((AutofillPaymentMethodsFragment) activity.getMainFragment()).getPreferenceScreen();
+    }
+
+    private static PrefService getPrefService() {
+        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 }

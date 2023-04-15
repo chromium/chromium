@@ -136,6 +136,8 @@ public class ChromeTabCreator extends TabCreator {
                 return "ReadingList";
             case TabLaunchType.FROM_TAB_SWITCHER_UI:
                 return "TabSwitcherUI";
+            case TabLaunchType.FROM_RESTORE_TABS_UI:
+                return "RestoreTabsUI";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -515,6 +517,7 @@ public class ChromeTabCreator extends TabCreator {
                 break;
             case TabLaunchType.FROM_CHROME_UI:
             case TabLaunchType.FROM_TAB_SWITCHER_UI:
+            case TabLaunchType.FROM_RESTORE_TABS_UI:
             case TabLaunchType.FROM_TAB_GROUP_UI:
             case TabLaunchType.FROM_STARTUP:
             case TabLaunchType.FROM_LAUNCHER_SHORTCUT:

@@ -18,6 +18,7 @@
 #include "content/test/test_web_contents.h"
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -27,6 +28,7 @@
 namespace content {
 
 using device::mojom::PressureFactor;
+using device::mojom::PressureSource;
 using device::mojom::PressureState;
 using device::mojom::PressureStatus;
 using device::mojom::PressureUpdate;
@@ -39,18 +41,17 @@ constexpr base::TimeDelta kSampleInterval = base::Seconds(1);
 class PressureManagerSync {
  public:
   explicit PressureManagerSync(device::mojom::PressureManager* manager)
-      : manager_(*manager) {
-    DCHECK(manager);
-  }
+      : manager_(raw_ref<device::mojom::PressureManager>::from_ptr(manager)) {}
   ~PressureManagerSync() = default;
 
   PressureManagerSync(const PressureManagerSync&) = delete;
   PressureManagerSync& operator=(const PressureManagerSync&) = delete;
 
   PressureStatus AddClient(
-      mojo::PendingRemote<device::mojom::PressureClient> client) {
+      mojo::PendingRemote<device::mojom::PressureClient> client,
+      PressureSource source) {
     base::test::TestFuture<PressureStatus> future;
-    manager_->AddClient(std::move(client), future.GetCallback());
+    manager_->AddClient(std::move(client), source, future.GetCallback());
     return future.Get();
   }
 
@@ -90,7 +91,7 @@ class FakePressureClient : public device::mojom::PressureClient {
 
   void SetNextUpdateCallback(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!update_callback_) << " already called before update received";
+    CHECK(!update_callback_) << " already called before update received";
 
     update_callback_ = std::move(callback);
   }
@@ -190,13 +191,13 @@ class ComputePressureTest : public RenderViewHostImplTestHarness {
 
 TEST_F(ComputePressureTest, AddClient) {
   FakePressureClient client;
-  ASSERT_EQ(
-      pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote()),
-      PressureStatus::kOk);
+  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
+                                              PressureSource::kCpu),
+            PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
-  PressureUpdate update(PressureState::kNominal, {PressureFactor::kThermal},
-                        time);
+  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal,
+                        {PressureFactor::kThermal}, time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
@@ -205,12 +206,12 @@ TEST_F(ComputePressureTest, AddClient) {
 
 TEST_F(ComputePressureTest, UpdatePressureFactors) {
   FakePressureClient client;
-  ASSERT_EQ(
-      pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote()),
-      PressureStatus::kOk);
+  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
+                                              PressureSource::kCpu),
+            PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
-  PressureUpdate update1(PressureState::kNominal,
+  PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal,
                          {PressureFactor::kPowerSupply}, time);
 
   pressure_manager_overrider_->UpdateClients(update1);
@@ -220,7 +221,7 @@ TEST_F(ComputePressureTest, UpdatePressureFactors) {
   client.updates().clear();
 
   PressureUpdate update2(
-      PressureState::kCritical,
+      PressureSource::kCpu, PressureState::kCritical,
       {PressureFactor::kThermal, PressureFactor::kPowerSupply},
       time + kSampleInterval);
   pressure_manager_overrider_->UpdateClients(update2);
@@ -229,7 +230,8 @@ TEST_F(ComputePressureTest, UpdatePressureFactors) {
   EXPECT_EQ(client.updates()[0], update2);
   client.updates().clear();
 
-  PressureUpdate update3(PressureState::kCritical, {PressureFactor::kThermal},
+  PressureUpdate update3(PressureSource::kCpu, PressureState::kCritical,
+                         {PressureFactor::kThermal},
                          time + kSampleInterval * 2);
   pressure_manager_overrider_->UpdateClients(update3);
   client.WaitForUpdate();
@@ -242,9 +244,9 @@ TEST_F(ComputePressureTest, AddClientNotSupported) {
   pressure_manager_overrider_->set_is_supported(false);
 
   FakePressureClient client;
-  EXPECT_EQ(
-      pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote()),
-      PressureStatus::kNotSupported);
+  EXPECT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
+                                              PressureSource::kCpu),
+            PressureStatus::kNotSupported);
 }
 
 TEST_F(ComputePressureTest, InsecureOrigin) {

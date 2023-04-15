@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
@@ -407,8 +406,6 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<TermsOfServiceScreenHandler>());
 
   AddScreenHandler(std::make_unique<SyncConsentScreenHandler>());
-
-  AddScreenHandler(std::make_unique<ArcTermsOfServiceScreenHandler>());
 
   if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration)) {
     AddScreenHandler(std::make_unique<ArcVmDataMigrationScreenHandler>());

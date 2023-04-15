@@ -72,6 +72,8 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
 
   base::TimeTicks LoadEnd() const override { return base::TimeTicks(); }
 
+  base::TimeTicks DiscoveryTime() const override { return base::TimeTicks(); }
+
  private:
   KURL url_;
   bool is_loaded_ = false;

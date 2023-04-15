@@ -19,11 +19,11 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed, isPersonalizationJellyEnabled, isScreenSaverDurationEnabled} from '../load_time_booleans.js';
 import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {setAmbientModeEnabled} from './ambient_controller.js';
+import {dismissTimeOfDayBanner, setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {getTemplate} from './ambient_subpage_element.html.js';
@@ -54,6 +54,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
       ambientModeEnabled_: {
         type: Boolean,
         value: null,
+        observer: 'onAmbientModeEnabledChanged_',
       },
       temperatureUnit_: {
         type: Number,
@@ -73,6 +74,13 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Boolean,
         value() {
           return isPersonalizationJellyEnabled();
+        },
+      },
+      isScreenSaverDurationEnabled_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return isScreenSaverDurationEnabled();
         },
       },
     };
@@ -140,6 +148,14 @@ export class AmbientSubpage extends WithPersonalizationStore {
     if (elem) {
       elem.scrollIntoView();
       elem.focus();
+    }
+  }
+
+  private onAmbientModeEnabledChanged_(value: boolean) {
+    if (value) {
+      // Dismisses the banner after the user visits this subpage and ambient
+      // mode is enabled.
+      dismissTimeOfDayBanner(this.getStore());
     }
   }
 

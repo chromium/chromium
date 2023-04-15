@@ -161,25 +161,7 @@ class UserActiveDirectoryPolicyManagerTest
   bool session_exit_expected_ = false;
 };
 
-TEST_F(UserActiveDirectoryPolicyManagerTest, InitializationChromadEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kChromadAvailable);
-
-  CreatePolicyManager(base::TimeDelta());
-  fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
-  mock_store()->set_policy_data_for_testing(
-      std::make_unique<enterprise_management::PolicyData>());
-  mock_store()->NotifyStoreLoaded();
-  InitPolicyManagerAndVerifyExpectations();
-
-  EXPECT_EQ(policy_manager_->scheduler()->interval(),
-            ActiveDirectoryPolicyManager::kFetchIntervalChromadEnabled);
-}
-
 TEST_F(UserActiveDirectoryPolicyManagerTest, InitializationChromadDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kChromadAvailable);
-
   CreatePolicyManager(base::TimeDelta());
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_NONE);
   mock_store()->set_policy_data_for_testing(
@@ -472,21 +454,7 @@ class DeviceActiveDirectoryPolicyManagerTest
   }
 };
 
-TEST_F(DeviceActiveDirectoryPolicyManagerTest, InitializationChromadEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kChromadAvailable);
-
-  CreatePolicyManager();
-  InitPolicyManagerAndVerifyExpectations();
-
-  EXPECT_EQ(policy_manager_->scheduler()->interval(),
-            ActiveDirectoryPolicyManager::kFetchIntervalChromadEnabled);
-}
-
 TEST_F(DeviceActiveDirectoryPolicyManagerTest, InitializationChromadDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kChromadAvailable);
-
   CreatePolicyManager();
   InitPolicyManagerAndVerifyExpectations();
 

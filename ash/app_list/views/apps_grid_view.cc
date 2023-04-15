@@ -38,7 +38,6 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/utility/haptics_util.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -1881,7 +1880,7 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   int col = (point.x() - bounds.x() + x_offset -
              GetGridCenteringOffset(selected_page).x()) /
             total_tile_size.width();
-  col = base::clamp(col, 0, cols_ - 1);
+  col = std::clamp(col, 0, cols_ - 1);
 
   GridIndex max_target_index;
   if (selected_page == GetTotalPages() - 1) {
@@ -2159,7 +2158,7 @@ void AppsGridView::UpdateColsAndRowsForFolder() {
     cols_ = 1;
   } else {
     int preferred_cols = std::sqrt(item_list_->item_count() - 1) + 1;
-    cols_ = base::clamp(preferred_cols, 1, max_cols_);
+    cols_ = std::clamp(preferred_cols, 1, max_cols_);
   }
 
   PreferredSizeChanged();
@@ -2938,7 +2937,7 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   const gfx::Vector2d grid_offset = GetGridCenteringOffset(current_page);
 
   DCHECK_GT(total_tile_size.width(), 0);
-  int col = base::clamp(
+  int col = std::clamp(
       (point.x() - bounds.x() - grid_offset.x()) / total_tile_size.width(), 0,
       cols_ - 1);
 
@@ -2947,7 +2946,7 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
       (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height();
   const absl::optional<int> tiles_per_page = TilesPerPage(current_page);
   const int row = tiles_per_page
-                      ? base::clamp(ideal_row, 0, *tiles_per_page / cols_ - 1)
+                      ? std::clamp(ideal_row, 0, *tiles_per_page / cols_ - 1)
                       : std::max(ideal_row, 0);
   return GridIndex(current_page, row * cols_ + col);
 }

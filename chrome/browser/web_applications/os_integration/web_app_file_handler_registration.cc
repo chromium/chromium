@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 
 namespace web_app {
@@ -23,7 +24,7 @@ bool FileHandlingIconsSupportedByOs() {
 
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
-                                Profile* profile,
+                                const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
   DCHECK(ShouldRegisterFileHandlersWithOs());
@@ -32,7 +33,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
-                                  Profile* profile,
+                                  const base::FilePath& profile_path,
                                   ResultCallback callback) {
   DCHECK(ShouldRegisterFileHandlersWithOs());
   // Stub function for OS's which don't register file handlers with the OS.

@@ -44,6 +44,19 @@ BluetoothRemoteGattCharacteristicFloss::BluetoothRemoteGattCharacteristicFloss(
 
 BluetoothRemoteGattCharacteristicFloss::
     ~BluetoothRemoteGattCharacteristicFloss() {
+  // Reply to pending callbacks
+  if (std::get<1>(pending_write_callbacks_)) {
+    auto [callback, error_callback, data] = std::move(pending_write_callbacks_);
+    if (error_callback) {
+      std::move(error_callback)
+          .Run(BluetoothGattServiceFloss::GattErrorCode::kUnknown);
+    }
+  }
+  if (pending_read_callback_) {
+    std::move(pending_read_callback_)
+        .Run(BluetoothGattServiceFloss::GattErrorCode::kUnknown, {});
+  }
+
   descriptors_.clear();
   service_->RemoveObserverForHandle(characteristic_->instance_id);
 }

@@ -110,6 +110,10 @@ class FakeRTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
       const override;
   absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const override;
+
+  webrtc::RTCError Stop() override;
+  webrtc::RTCError SetCodecPreferences(
+      Vector<webrtc::RtpCodecCapability>) override;
   webrtc::RTCError SetHeaderExtensionsToNegotiate(
       Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) override;
   Vector<webrtc::RtpHeaderExtensionCapability> GetNegotiatedHeaderExtensions()

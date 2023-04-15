@@ -149,7 +149,9 @@ base::TimeDelta GetPreviewImageCaptureDelay(
 }
 
 base::TimeDelta GetShowDelay(int tab_width) {
-  static const int max_width_additiona_delay =
+  const TabStyle* tab_style = TabStyle::Get();
+
+  static const int max_width_additional_delay =
       base::GetFieldTrialParamByFeatureAsInt(
           features::kTabHoverCardImages,
           features::kTabHoverCardAdditionalMaxWidthDelay, 500);
@@ -173,17 +175,19 @@ base::TimeDelta GetShowDelay(int tab_width) {
   //               |                                |
   //       pinned tab width               standard tab width
   constexpr base::TimeDelta kMinimumTriggerDelay = base::Milliseconds(300);
-  if (tab_width < TabStyle::GetPinnedWidth())
+  if (tab_width < tab_style->GetPinnedWidth()) {
     return kMinimumTriggerDelay;
+  }
   constexpr base::TimeDelta kMaximumTriggerDelay = base::Milliseconds(800);
   double logarithmic_fraction =
-      std::log(tab_width - TabStyle::GetPinnedWidth() + 1) /
-      std::log(TabStyle::GetStandardWidth() - TabStyle::GetPinnedWidth() + 1);
+      std::log(tab_width - tab_style->GetPinnedWidth() + 1) /
+      std::log(tab_style->GetStandardWidth() - tab_style->GetPinnedWidth() + 1);
   base::TimeDelta scaling_factor = kMaximumTriggerDelay - kMinimumTriggerDelay;
   base::TimeDelta delay =
       logarithmic_fraction * scaling_factor + kMinimumTriggerDelay;
-  if (tab_width >= TabStyle::GetStandardWidth())
-    delay += base::Milliseconds(max_width_additiona_delay);
+  if (tab_width >= tab_style->GetStandardWidth()) {
+    delay += base::Milliseconds(max_width_additional_delay);
+  }
   return delay;
 }
 

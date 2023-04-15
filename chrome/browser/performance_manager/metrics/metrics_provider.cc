@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -130,6 +131,17 @@ void MetricsProvider::RecordAvailableMemoryMetrics() {
                                   available_bytes / kBytesPerMb);
   base::UmaHistogramPercentage("Memory.Experimental.AvailableMemoryPercent",
                                available_bytes * 100 / total_bytes);
+
+#if BUILDFLAG(IS_MAC)
+  base::SystemMemoryInfoKB info;
+  if (base::GetSystemMemoryInfo(&info)) {
+    base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacFileBackedMemoryMB",
+                                    info.file_backed / kBytesPerMb);
+    base::UmaHistogramPercentage(
+        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache",
+        (available_bytes + info.file_backed) * 100 / total_bytes);
+  }
+#endif
 }
 
 }  // namespace performance_manager

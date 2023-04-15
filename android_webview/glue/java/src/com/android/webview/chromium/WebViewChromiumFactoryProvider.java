@@ -467,8 +467,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     Set<String> actions = controller.queryActions(webViewPackageName);
                     Log.w(TAG, "WebViewSafeMode is enabled: received %d SafeModeActions",
                             actions.size());
-                    RecordHistogram.recordCount100Histogram(
-                            "Android.WebView.SafeMode.ActionsCount", actions.size());
                     controller.executeActions(actions);
                     long safeModeQueryExecuteEnd = SystemClock.elapsedRealtime();
                     RecordHistogram.recordTimesHistogram(

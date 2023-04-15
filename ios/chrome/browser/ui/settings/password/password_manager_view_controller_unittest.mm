@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 
-#import "base/compiler_specific.h"
 #import "base/functional/bind.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
@@ -31,6 +30,7 @@
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
@@ -781,6 +781,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateDisabled);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -792,6 +795,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_FALSE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -817,6 +824,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateDisabled);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -828,6 +838,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_FALSE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -854,6 +868,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateDefault);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -865,6 +882,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_TRUE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -890,6 +911,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateDefault);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -901,6 +925,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_TRUE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -927,6 +955,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateSafe);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithPluralIds(
@@ -940,6 +971,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE([checkPassword.trailingImageTintColor
       isEqual:[UIColor colorNamed:kGreenColor]]);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_TRUE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -1012,10 +1047,13 @@ TEST_F(
   AddSavedInsecureForm(InsecureType::kLeaked);
   ChangePasswordCheckState(PasswordCheckStateUnmutedCompromisedPasswords);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithPluralIds(
-      IDS_IOS_CHECK_PASSWORDS, IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1,
+      IDS_IOS_CHECK_PASSWORDS, IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 0);
@@ -1025,6 +1063,10 @@ TEST_F(
   EXPECT_TRUE([checkPassword.trailingImageTintColor
       isEqual:[UIColor colorNamed:kRed500Color]]);
   EXPECT_TRUE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_TRUE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -1219,6 +1261,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateRunning);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -1230,6 +1275,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_FALSE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_FALSE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -1298,6 +1347,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateError);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -1310,6 +1362,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.infoButtonHidden);
   EXPECT_FALSE(checkPassword.accessoryType);
+
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_TRUE(checkNowButton.enabled);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
@@ -1336,6 +1392,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
   ChangePasswordCheckState(PasswordCheckStateError);
 
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithIds(
@@ -1349,6 +1408,10 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_FALSE(checkPassword.infoButtonHidden);
   EXPECT_FALSE(checkPassword.accessoryType);
 
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_TRUE(checkNowButton.enabled);
+
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
@@ -1359,6 +1422,23 @@ TEST_F(PasswordManagerViewControllerTest,
 
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Test verifies that the "Check Now" button is unavailable when the user is
+// signed out.
+TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateSignedOutError) {
+  AddSavedForm1();
+
+  ChangePasswordCheckState(PasswordCheckStateSignedOut);
+
+  // Check button should be shown.
+  EXPECT_TRUE(
+      HasTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1));
+  TableViewTextItem* checkNowButton =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  EXPECT_FALSE(checkNowButton.enabled);
+
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 

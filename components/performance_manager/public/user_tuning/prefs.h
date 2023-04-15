@@ -14,7 +14,16 @@ class PrefRegistrySyncable;
 
 namespace performance_manager::user_tuning::prefs {
 
+// DEPRECATED: being replaced by kHighEfficiencyModeState
 extern const char kHighEfficiencyModeEnabled[];
+
+enum class HighEfficiencyModeState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kEnabledOnTimer = 2,
+};
+
+extern const char kHighEfficiencyModeState[];
 
 enum class BatterySaverModeState {
   kDisabled = 0,
@@ -41,8 +50,16 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+HighEfficiencyModeState GetCurrentHighEfficiencyModeState(
+    PrefService* pref_service);
+
 BatterySaverModeState GetCurrentBatterySaverModeState(
     PrefService* pref_service);
+
+// This function migrates the old, boolean High Efficiency (Memory Saver)
+// preference to the new, integer one that represents a value of the
+// `HighEfficiencyModeState` enum. This is done once at startup.
+void MigrateHighEfficiencyModePref(PrefService* pref_service);
 
 }  // namespace performance_manager::user_tuning::prefs
 

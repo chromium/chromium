@@ -20,23 +20,14 @@ namespace {
 // Check if a format is supported by DXGI for DComp surfaces or swap chains.
 // https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/converting-data-color-space
 bool IsFormatSupportedForScanout(viz::SharedImageFormat format) {
-  if (format.is_multi_plane()) {
-    return false;
-  }
-
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-    case viz::ResourceFormat::BGRA_8888:
-    case viz::ResourceFormat::RGBX_8888:
-    case viz::ResourceFormat::BGRX_8888:
-    case viz::ResourceFormat::RGBA_F16:
-    case viz::ResourceFormat::RGBA_1010102:
-      return true;
-
-    default:
-      return false;
-  }
+  return ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
+          (format == viz::SinglePlaneFormat::kBGRA_8888) ||
+          (format == viz::SinglePlaneFormat::kRGBX_8888) ||
+          (format == viz::SinglePlaneFormat::kBGRX_8888) ||
+          (format == viz::SinglePlaneFormat::kRGBA_F16) ||
+          (format == viz::SinglePlaneFormat::kRGBA_1010102));
 }
+
 constexpr uint32_t kDXGISwapChainUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
                                          SHARED_IMAGE_USAGE_DISPLAY_WRITE |
                                          SHARED_IMAGE_USAGE_SCANOUT;

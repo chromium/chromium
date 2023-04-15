@@ -4,19 +4,21 @@
     var iframe = document.createElement('iframe');
     var responseSent = false;
 
-    window.onmessage = function(e) {
-      if (!responseSent) {
-        responseSent = true;
-        window.domAutomationController.send(e.data);
-        document.body.removeChild(iframe);
-      }
-    };
+    return new Promise(resolve => {
+      window.onmessage = function(e) {
+        if (!responseSent) {
+          responseSent = true;
+          resolve(e.data);
+          document.body.removeChild(iframe);
+        }
+      };
 
-    iframe.onload = function() {
-      iframe.contentWindow.postMessage('ping', '*');
-    };
+      iframe.onload = function() {
+        iframe.contentWindow.postMessage('ping', '*');
+      };
 
-    iframe.src = 'chrome-extension://' + extensionId + '/' + iframeSrc;
-    document.body.appendChild(iframe);
+      iframe.src = 'chrome-extension://' + extensionId + '/' + iframeSrc;
+      document.body.appendChild(iframe);
+    });
   };
 </script>

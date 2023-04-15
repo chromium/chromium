@@ -120,6 +120,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:build_perf_siso",
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 

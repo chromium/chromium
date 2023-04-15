@@ -45,3 +45,8 @@ absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColorId(
     size_t index) {
   return submenu_background_color_id_;
 }
+
+absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSelectedBackgroundColorId(
+    size_t index) {
+  return selected_color_id_;
+}

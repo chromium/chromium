@@ -71,6 +71,7 @@ void TestWaylandClientThread::OnFileCanReadWithoutBlocking(int fd) {
 
   wl_display_read_events(client_->display());
   wl_display_dispatch_pending(client_->display());
+  wl_display_flush(client_->display());
 }
 
 void TestWaylandClientThread::OnFileCanWriteWithoutBlocking(int fd) {}

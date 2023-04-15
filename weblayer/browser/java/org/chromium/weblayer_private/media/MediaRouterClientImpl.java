@@ -102,6 +102,11 @@ public class MediaRouterClientImpl extends MediaRouterClient {
         return true;
     }
 
+    @Override
+    public boolean isCastAnotherContentWhileCastingEnabled() {
+        return true;
+    }
+
     @CalledByNative
     public static void initialize() {
         if (MediaRouterClient.getInstance() != null) return;

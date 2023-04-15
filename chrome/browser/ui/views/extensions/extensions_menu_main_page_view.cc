@@ -266,12 +266,6 @@ void ExtensionsMenuMainPageView::Update(std::u16string current_site,
       GetSiteSettingToggleText(is_site_settings_toggle_on));
 }
 
-void ExtensionsMenuMainPageView::UpdatePinButtons() {
-  for (views::View* view : menu_items_->children()) {
-    GetAsMenuItem(view)->UpdatePinButton();
-  }
-}
-
 std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
     const {
   std::vector<ExtensionMenuItemView*> menu_item_views;

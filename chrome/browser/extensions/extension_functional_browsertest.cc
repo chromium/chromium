@@ -143,12 +143,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
 
   // Verify that |tab1_popup| can find unrelated frames from the same extension
   // (i.e. that it can find |tab2|.
-  std::string location_of_opened_window;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      tab1_popup,
-      "var w = window.open('', 'tab2');\n"
-      "window.domAutomationController.send(w.location.href);",
-      &location_of_opened_window));
+  std::string location_of_opened_window =
+      EvalJs(tab1_popup,
+             "var w = window.open('', 'tab2');\n"
+             "w.location.href;")
+          .ExtractString();
   EXPECT_EQ(tab2->GetLastCommittedURL(), location_of_opened_window);
 }
 

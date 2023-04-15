@@ -50,11 +50,9 @@ constexpr net::NetworkTrafficAnnotationTag
             "This feature is controlled by enterprise policies, and cannot"
             "be overridden by users. It is disabled by default."
           chrome_policy {
-            subProto1 {
+            ScreensaverLockScreenImages {
               ScreensaverLockScreenImages {
-                ScreensaverLockScreenImages {
-                    entries: ""
-                }
+                  entries: ""
               }
             }
           }

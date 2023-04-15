@@ -16,8 +16,11 @@
 #import "components/strings/grit/components_chromium_strings.h"
 #import "components/strings/grit/components_google_chrome_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/variations/service/variations_service.h"
 #import "components/version_info/version_info.h"
+#import "components/version_ui/version_handler_helper.h"
 #import "components/version_ui/version_ui_constants.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/version_handler.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -99,6 +102,13 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                   IDS_VERSION_UI_VARIATIONS);
   html_source->AddLocalizedString(version_ui::kVariationsCmdName,
                                   IDS_VERSION_UI_VARIATIONS_CMD);
+  html_source->AddLocalizedString(version_ui::kVariationsSeedName,
+                                  IDS_VERSION_UI_VARIATIONS_SEED_NAME);
+
+  html_source->AddString(
+      version_ui::kVariationsSeed,
+      version_ui::SeedTypeToUiString(
+          GetApplicationContext()->GetVariationsService()->GetSeedType()));
 
   html_source->AddString(version_ui::kSanitizer, version_info::GetSanitizerList());
 

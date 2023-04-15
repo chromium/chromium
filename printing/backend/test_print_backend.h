@@ -39,6 +39,10 @@ class TestPrintBackend : public PrintBackend {
   mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) override;
+  absl::optional<gfx::Rect> GetPaperPrintableArea(
+      const std::string& printer_name,
+      const std::string& paper_vendor_id,
+      const gfx::Size& paper_size_um) override;
 #endif
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;

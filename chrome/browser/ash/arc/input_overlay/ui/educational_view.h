@@ -15,6 +15,10 @@ namespace ash {
 class PillButton;
 }  // namespace ash
 
+namespace views {
+class ImageView;
+}  // namespace views
+
 namespace arc::input_overlay {
 class DisplayOverlayController;
 
@@ -33,6 +37,9 @@ class EducationalView : public views::View {
   EducationalView& operator=(const EducationalView&) = delete;
   ~EducationalView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   void Init(const gfx::Size& parent_size);
   void OnAcceptedPressed();
@@ -41,6 +48,8 @@ class EducationalView : public views::View {
   void AddShadow();
 
   raw_ptr<ash::PillButton> accept_button_ = nullptr;
+  // Image banner.
+  raw_ptr<views::ImageView> banner_ = nullptr;
   // View shadow for this view.
   std::unique_ptr<ash::ViewShadow> view_shadow_;
   // Whether or not phone specs should be used.

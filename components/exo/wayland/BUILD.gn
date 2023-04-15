@@ -301,6 +301,7 @@ source_set("unit_tests") {
     "clients/security_delegate_binding_test.cc",
     "output_metrics_unittest.cc",
     "server_unittest.cc",
+    "shell_unittest.cc",
     "surface_augmenter_unittest.cc",
     "surface_unittest.cc",
     "wayland_aura_shell_server_test.cc",
@@ -604,6 +605,36 @@ executable("wayland_info_client") {
     "//base",
     "//third_party/wayland:wayland_client",
     "//ui/gfx/geometry",
+  ]
+}
+
+loadable_module("exo_wlcs") {
+  testonly = true
+  sources = [
+    "test/wlcs/display_server.cc",
+    "test/wlcs/display_server.h",
+    "test/wlcs/exo_wlcs.cc",
+    "test/wlcs/pointer.cc",
+    "test/wlcs/pointer.h",
+    "test/wlcs/touch.cc",
+    "test/wlcs/touch.h",
+    "test/wlcs/wlcs_helpers.cc",
+    "test/wlcs/wlcs_helpers.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//base",
+    "//base/test:test_config",
+    "//components/exo",
+    "//components/exo/wayland",
+    "//components/exo/wayland:wayland_client_test_helper",
+    "//components/exo/wayland/fuzzer:server_environment",
+    "//skia",
+    "//third_party/wayland:wayland_client",
+    "//third_party/wayland:wayland_util",
+    "//ui/events:test_support",
   ]
 }
 

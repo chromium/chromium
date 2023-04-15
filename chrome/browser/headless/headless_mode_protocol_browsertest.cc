@@ -196,7 +196,9 @@ void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
 }
 
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
-HEADLESS_MODE_PROTOCOL_TEST(FocusBlurNotifications,
+
+// Flaky crbug/1431857
+HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,
                             "input/focus-blur-notifications.js")
 // TODO(crbug.com/1416882): Re-enable this test
 #if BUILDFLAG(IS_MAC)

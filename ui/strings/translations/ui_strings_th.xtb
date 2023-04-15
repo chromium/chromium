@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 วันที่ผ่านมา}other{# วันที่ผ่านมา}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 นาที}other{# นาที}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 วันที่ผ่านมา}other{# วันที่ผ่านมา}}</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
 <translation id="1266864766717917324">แชร์<ph name="CONTENT_TYPE" />ไม่ได้</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">ซ้ายไปขวา</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1398853756734560583">ขยายใหญ่สุด</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="1450753235335490080">แชร์<ph name="CONTENT_TYPE" />ไม่สำเร็จ</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 เดือนที่ผ่านมา}other{# เดือนที่ผ่านมา}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 นาทีกับอีก }other{# นาทีกับอีก }}</translation>
 <translation id="1643823602425662293">การแจ้งเตือน</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">รูปภาพ</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
 <translation id="4588090240171750605">เลื่อนทางขวา</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 ปีที่ผ่านมา}other{# ปีที่ผ่านมา}}</translation>
 <translation id="4724120544754982507">ศูนย์การแจ้งเตือนมีการแจ้งเตือนที่ยังไม่อ่าน <ph name="UNREAD_NOTIFICATION_COUNT" /> รายการ</translation>
 <translation id="4729257764711776855">หมายเลขโทรศัพท์</translation>
 <translation id="4746179598275229723">เลิกปักหมุดส่วนขยายแล้ว</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">กำลังส่ง...</translation>
 <translation id="8876215549894133151">รูปแบบ:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 ชั่วโมงที่ผ่านมา}other{# ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="8996630695507351249">ตรวจสอบว่า <ph name="TARGET_DEVICE_NAME" /> เชื่อมต่ออินเทอร์เน็ตอยู่</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 วินาที}other{# วินาที}}</translation>
 <translation id="9059834730836941392">ยุบการแจ้งเตือน</translation>
 <translation id="9170848237812810038">เ&amp;ลิกทำ</translation>
 <translation id="932327136139879170">หน้าแรก</translation>
 <translation id="944069440740578670">การแจ้งเตือนที่ยังไม่อ่าน</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 วินาทีที่ผ่านมา}other{# วินาทีที่ผ่านมา}}</translation>
 </translationbundle>

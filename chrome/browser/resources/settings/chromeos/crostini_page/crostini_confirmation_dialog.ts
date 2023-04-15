@@ -55,11 +55,11 @@ class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
     this.accepted_ = true;
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onAcceptTap_() {
+  private onAcceptClick_() {
     this.$.dialog.close();
   }
 

@@ -5607,8 +5607,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   EXPECT_NE(nullptr, text_pattern_unknown.Get());
 }
 
+// TODO(crbug.com/1432289): Fix this failing test.
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
-                       AsyncContentLoadedEventOnDocumentLoad) {
+                       DISABLED_AsyncContentLoadedEventOnDocumentLoad) {
   // Load the page.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,

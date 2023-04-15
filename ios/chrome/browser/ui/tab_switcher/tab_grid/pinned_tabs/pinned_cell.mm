@@ -162,16 +162,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setIcon:(UIImage*)icon {
-  if (icon) {
-    _faviconView.image = icon;
-  } else {
-    NSString* symbolName = kGlobeSymbol;
-    if (@available(iOS 15, *)) {
-      symbolName = kGlobeAmericasSymbol;
-    }
-    _faviconView.image = DefaultSymbolWithPointSize(
-        symbolName, kPinnedCellFaviconSymbolPointSize);
-  }
+  _faviconView.image = icon;
 }
 
 - (UIImage*)snapshot {

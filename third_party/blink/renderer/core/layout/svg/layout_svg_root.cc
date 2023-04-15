@@ -141,50 +141,6 @@ bool LayoutSVGRoot::IsEmbeddedThroughFrameContainingSVGDocument() const {
   return owner_layout_object && owner_layout_object->IsEmbeddedObject();
 }
 
-LayoutUnit LayoutSVGRoot::ComputeReplacedLogicalWidth(
-    ShouldComputePreferred should_compute_preferred) const {
-  NOT_DESTROYED();
-  // When we're embedded through SVGImage
-  // (border-image/background-image/<html:img>/...) we're forced to resize to a
-  // specific size.
-  if (!container_size_.IsEmpty())
-    return container_size_.Width();
-
-  if (IsEmbeddedThroughFrameContainingSVGDocument())
-    return ContainingBlock()->AvailableLogicalWidth();
-
-  LayoutUnit width =
-      LayoutReplaced::ComputeReplacedLogicalWidth(should_compute_preferred);
-  if (StyleRef().LogicalWidth().IsPercentOrCalc())
-    width *= LogicalSizeScaleFactorForPercentageLengths();
-  return width;
-}
-
-LayoutUnit LayoutSVGRoot::ComputeReplacedLogicalHeight(
-    LayoutUnit estimated_used_width) const {
-  NOT_DESTROYED();
-  // When we're embedded through SVGImage
-  // (border-image/background-image/<html:img>/...) we're forced to resize to a
-  // specific size.
-  if (!container_size_.IsEmpty())
-    return container_size_.Height();
-
-  if (IsEmbeddedThroughFrameContainingSVGDocument())
-    return ContainingBlock()->AvailableLogicalHeight(
-        kIncludeMarginBorderPadding);
-
-  const Length& logical_height = StyleRef().LogicalHeight();
-  if (IsDocumentElement() && logical_height.IsPercentOrCalc()) {
-    LayoutUnit height = ValueForLength(
-        logical_height,
-        GetDocument().GetLayoutView()->ViewLogicalHeightForPercentages());
-    height *= LogicalSizeScaleFactorForPercentageLengths();
-    return height;
-  }
-
-  return LayoutReplaced::ComputeReplacedLogicalHeight(estimated_used_width);
-}
-
 double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
   NOT_DESTROYED();
   if (!IsDocumentElement() || !GetDocument().IsInOutermostMainFrame())

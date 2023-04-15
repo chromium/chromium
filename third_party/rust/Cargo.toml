@@ -62,10 +62,6 @@ package = "atty"
 path = "autocfg/v1/crate"
 package = "autocfg"
 
-[patch.crates-io.bindgen_v0_60]
-path = "bindgen/v0_60/crate"
-package = "bindgen"
-
 [patch.crates-io.bitflags_v1]
 path = "bitflags/v1/crate"
 package = "bitflags"
@@ -82,17 +78,9 @@ package = "cargo-platform"
 path = "cargo_metadata/v0_14/crate"
 package = "cargo_metadata"
 
-[patch.crates-io.cexpr_v0_6]
-path = "cexpr/v0_6/crate"
-package = "cexpr"
-
 [patch.crates-io.cfg-if_v1]
 path = "cfg_if/v1/crate"
 package = "cfg-if"
-
-[patch.crates-io.clang-sys_v1]
-path = "clang_sys/v1/crate"
-package = "clang-sys"
 
 [patch.crates-io.clap_lex_v0_1]
 path = "clap_lex/v0_1/crate"
@@ -126,29 +114,13 @@ package = "cxxbridge-cmd"
 path = "cxxbridge_macro/v1/crate"
 package = "cxxbridge-macro"
 
-[patch.crates-io.either_v1]
-path = "either/v1/crate"
-package = "either"
-
-[patch.crates-io.env_logger_v0_9]
-path = "env_logger/v0_9/crate"
-package = "env_logger"
-
 [patch.crates-io.fastrand_v1]
 path = "fastrand/v1/crate"
 package = "fastrand"
 
-[patch.crates-io.glob_v0_3]
-path = "glob/v0_3/crate"
-package = "glob"
-
 [patch.crates-io.hashbrown_v0_11]
 path = "hashbrown/v0_11/crate"
 package = "hashbrown"
-
-[patch.crates-io.humantime_v2]
-path = "humantime/v2/crate"
-package = "humantime"
 
 [patch.crates-io.indexmap_v1]
 path = "indexmap/v1/crate"
@@ -166,25 +138,13 @@ package = "itoa"
 path = "lazy_static/v1/crate"
 package = "lazy_static"
 
-[patch.crates-io.lazycell_v1]
-path = "lazycell/v1/crate"
-package = "lazycell"
-
 [patch.crates-io.libc_v0_2]
 path = "libc/v0_2/crate"
 package = "libc"
 
-[patch.crates-io.libloading_v0_7]
-path = "libloading/v0_7/crate"
-package = "libloading"
-
 [patch.crates-io.link-cplusplus_v1]
 path = "link_cplusplus/v1/crate"
 package = "link-cplusplus"
-
-[patch.crates-io.log_v0_4]
-path = "log/v0_4/crate"
-package = "log"
 
 [patch.crates-io.memchr_v2]
 path = "memchr/v2/crate"
@@ -194,14 +154,6 @@ package = "memchr"
 path = "memoffset/v0_6/crate"
 package = "memoffset"
 
-[patch.crates-io.minimal-lexical_v0_2]
-path = "minimal_lexical/v0_2/crate"
-package = "minimal-lexical"
-
-[patch.crates-io.nom_v7]
-path = "nom/v7/crate"
-package = "nom"
-
 [patch.crates-io.once_cell_v1]
 path = "once_cell/v1/crate"
 package = "once_cell"
@@ -209,10 +161,6 @@ package = "once_cell"
 [patch.crates-io.os_str_bytes_v6]
 path = "os_str_bytes/v6/crate"
 package = "os_str_bytes"
-
-[patch.crates-io.peeking_take_while_v0_1]
-path = "peeking_take_while/v0_1/crate"
-package = "peeking_take_while"
 
 [patch.crates-io.proc-macro2_v1]
 path = "proc_macro2/v1/crate"
@@ -237,10 +185,6 @@ package = "remove_dir_all"
 [patch.crates-io.rstest_v0_12]
 path = "rstest/v0_12/crate"
 package = "rstest"
-
-[patch.crates-io.rustc-hash_v1]
-path = "rustc_hash/v1/crate"
-package = "rustc-hash"
 
 [patch.crates-io.rustc_version_v0_4]
 path = "rustc_version/v0_4/crate"
@@ -273,10 +217,6 @@ package = "serde_json"
 [patch.crates-io.serde_v1]
 path = "serde/v1/crate"
 package = "serde"
-
-[patch.crates-io.shlex_v1]
-path = "shlex/v1/crate"
-package = "shlex"
 
 [patch.crates-io.small_ctor_v0_1]
 path = "small_ctor/v0_1/crate"
@@ -321,14 +261,6 @@ package = "unicode-linebreak"
 [patch.crates-io.unicode-width_v0_1]
 path = "unicode_width/v0_1/crate"
 package = "unicode-width"
-
-[patch.crates-io.version_check_v0_9]
-path = "version_check/v0_9/crate"
-package = "version_check"
-
-[patch.crates-io.which_v4]
-path = "which/v4/crate"
-package = "which"
 
 [patch.crates-io.winapi-util_v0_1]
 path = "winapi_util/v0_1/crate"

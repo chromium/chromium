@@ -11,7 +11,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_subsection.html.js';
 import {AcceleratorCategory, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo} from './shortcut_types.js';
-import {getSubcategoryNameStringId} from './shortcut_utils.js';
+import {compareAcceleratorInfos, getSubcategoryNameStringId} from './shortcut_utils.js';
 
 /**
  * This interface is used to hold all the data needed by an
@@ -138,6 +138,12 @@ export class AcceleratorSubsectionElement extends
       }
     });
     this.accelRowDataArray = tempAccelRowData;
+  }
+
+  // Sorts the accelerators so that they are displayed based off of a heuristic.
+  protected getSortedAccelerators(accelerators: AcceleratorInfo[]):
+      AcceleratorInfo[] {
+    return accelerators.sort(compareAcceleratorInfos);
   }
 
   static get template(): HTMLTemplateElement {

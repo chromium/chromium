@@ -106,9 +106,10 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDefaultBuckets(
+      size_t size);
   PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDenserBuckets(
       size_t size);
-  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexFor8Buckets(size_t size);
   PA_ALWAYS_INLINE static constexpr uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
@@ -229,7 +230,7 @@ PA_ALWAYS_INLINE constexpr uint16_t RoundUpToOdd(uint16_t size) {
 }
 
 // static
-PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexFor8Buckets(
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
     size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
@@ -251,9 +252,9 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexFor8Buckets(
 }
 
 // static
-PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
-    size_t size) {
-  const auto index = GetIndexFor8Buckets(size);
+PA_ALWAYS_INLINE constexpr uint16_t
+BucketIndexLookup::GetIndexForDefaultBuckets(size_t size) {
+  const auto index = GetIndexForDenserBuckets(size);
   // Below the minimum size, 4 and 8 bucket distributions are the same, since we
   // can't fit any more buckets per order; this is due to alignment
   // requirements: each bucket must be a multiple of the alignment, which
@@ -264,7 +265,7 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
   //
   // We also do not want to go about the index for the max bucketed size.
   if (size > kAlignment * kNumBucketsPerOrder &&
-      index < GetIndexFor8Buckets(kMaxBucketed)) {
+      index < GetIndexForDenserBuckets(kMaxBucketed)) {
     return RoundUpToOdd(index);
   } else {
     return index;
@@ -292,9 +293,9 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   // So, an allocation of size 1.4*2^10 would go into the 1.5*2^10 bucket under
   // Distribution A, but to the 2^11 bucket under Distribution B.
   if (1 << 8 < size && size < kHighThresholdForAlternateDistribution) {
-    return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
+    return BucketIndexLookup::GetIndexForDefaultBuckets(RoundUpSize(size));
   }
-  return BucketIndexLookup::GetIndexForDenserBuckets(size);
+  return BucketIndexLookup::GetIndexForDefaultBuckets(size);
 }
 
 }  // namespace partition_alloc::internal

@@ -20,9 +20,11 @@
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -58,6 +60,14 @@ SkColor ComputeBackgroundColorForUrl(const GURL& icon_url) {
   base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(origin.c_str()),
                       origin.size(), hash);
   return SkColorSetRGB(hash[0], hash[1], hash[2]);
+}
+
+// Gets the appropriate light or dark rasterized default favicon.
+gfx::Image GetDefaultFaviconForColorScheme(bool is_dark) {
+  const int resource_id =
+      is_dark ? IDR_DEFAULT_FAVICON_DARK : IDR_DEFAULT_FAVICON;
+  return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+      resource_id);
 }
 
 }  // namespace
@@ -131,9 +141,19 @@ gfx::Image GetDefaultFavicon() {
       ui::NativeTheme::GetInstanceForNativeUi();
   is_dark = native_theme && native_theme->ShouldUseDarkColors();
 #endif
-  int resource_id = is_dark ? IDR_DEFAULT_FAVICON_DARK : IDR_DEFAULT_FAVICON;
-  return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-      resource_id);
+  return GetDefaultFaviconForColorScheme(is_dark);
+}
+
+ui::ImageModel GetDefaultFaviconModel(ui::ColorId bg_color) {
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](ui::ColorId bg_color, const ui::ColorProvider* provider) {
+            return *GetDefaultFaviconForColorScheme(
+                        color_utils::IsDark(provider->GetColor(bg_color)))
+                        .ToImageSkia();
+          },
+          bg_color),
+      gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize));
 }
 
 void SaveFaviconEvenIfInIncognito(content::WebContents* contents) {

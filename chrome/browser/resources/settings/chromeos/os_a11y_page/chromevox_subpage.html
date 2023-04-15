@@ -4,7 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="settings-shared">
+<style include="settings-shared md-select">
   :host {
     --cr-section-indent-width: 60px;
   }
@@ -165,11 +165,23 @@ found in the LICENSE file.
   <cr-link-row class="settings-box"
       label="$i18n{chromeVoxTtsSettingsLink}"
       sub-label="$i18n{chromeVoxTtsSettingsDescription}"
-      on-click="onTtsSettingsTap_" external embedded>
+      on-click="onTtsSettingsClick_"
+      external
+      button-aria-description="$i18n{opensInNewTab}"
+      embedded>
   </cr-link-row>
 </div>
 <h2>$i18n{chromeVoxBrailleLabel}</h2>
 <div class="sub-item">
+  <div class="settings-box continuation">
+    <div class="start settings-box-text">
+      $i18n{chromeVoxBrailleTableDescription}
+    </div>
+    <settings-dropdown-menu id="brailleTableTypeDropdown"
+        pref="{{prefs.settings.a11y.chromevox.braille_table_type}}"
+        menu-options="[[brailleTableTypeOptions_]]">
+    </settings-dropdown-menu>
+  </div>
   <settings-toggle-button
       id="brailleWordWrapToggle"
       class="settings-box continuation"
@@ -182,6 +194,7 @@ found in the LICENSE file.
       pref="{{prefs.settings.a11y.chromevox.menu_braille_commands}}"
       label="$i18n{chromeVoxMenuBrailleCommands}">
   </settings-toggle-button>
+  <bluetooth-braille-display-ui></bluetooth-braille-display-ui>
   <div class="text-row">
     <div>$i18n{chromeVoxVirtualBrailleDisplay}</div>
     <div class="secondary">$i18n{chromeVoxVirtualBrailleDisplayDetails}</div>
@@ -199,6 +212,16 @@ found in the LICENSE file.
         value="[[prefs.settings.a11y.chromevox.virtual_braille_columns.value]]"
         on-input="onBrailleColumnsInput_" on-focusout="onBrailleColumnsFocusout_">
     </cr-input>
+  </div>
+  <div class="settings-box continuation indented">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxVirtualBrailleDisplayStyleLabel}
+    </div>
+    <settings-dropdown-menu id="virtualBrailleDisplayStyleDropdown"
+        label="$i18n{chromeVoxVirtualBrailleDisplayStyleLabel}"
+        pref="{{prefs.settings.a11y.chromevox.braille_side_by_side}}"
+        menu-options="[[virtualBrailleDisplayStyleOptions_]]">
+    </settings-dropdown-menu>
   </div>
 </div>
 <cr-expand-button id="developerOptionsExpandButton" class="hr"
@@ -234,7 +257,10 @@ found in the LICENSE file.
     <cr-link-row class="settings-box"
         label="$i18n{chromeVoxEventLogLink}"
         sub-label="$i18n{chromeVoxEventLogDescription}"
-        on-click="onEventLogTap_" external embedded>
+        on-click="onEventLogClick_"
+        external
+        button-aria-description="$i18n{opensInNewTab}"
+        embedded>
     </cr-link-row>
     <template is="dom-if" if="[[prefs.settings.a11y.chromevox.enable_event_stream_logging.value]]">
       <div class="indented">

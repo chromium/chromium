@@ -180,7 +180,7 @@ public class SigninManagerImplTest {
 
         mSigninManager.finishSignInAfterPolicyEnforced();
         verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
-        verify(mSyncService).setSyncRequested(true);
+        verify(mSyncService).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
@@ -213,7 +213,7 @@ public class SigninManagerImplTest {
 
         verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN);
 
-        verify(mSyncService, never()).setSyncRequested(true);
+        verify(mSyncService, never()).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();

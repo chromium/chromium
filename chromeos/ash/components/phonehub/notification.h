@@ -31,12 +31,14 @@ class Notification {
   struct AppMetadata {
     AppMetadata(const std::u16string& visible_app_name,
                 const std::string& package_name,
-                const gfx::Image& icon,
+                const gfx::Image& color_icon,
+                const absl::optional<gfx::Image>& monochrome_icon_mask,
                 const absl::optional<SkColor> icon_color,
                 bool icon_is_monochrome,
                 int64_t user_id,
                 proto::AppStreamabilityStatus app_streamability_status =
                     proto::AppStreamabilityStatus::STREAMABLE);
+    ~AppMetadata();
     AppMetadata(const AppMetadata& other);
     AppMetadata& operator=(const AppMetadata& other);
 
@@ -48,7 +50,10 @@ class Notification {
 
     std::u16string visible_app_name;
     std::string package_name;
-    gfx::Image icon;
+    // The |color_icon| is the icon with it's original color whereas the
+    // |monochrome_icon| is the icon with a monochrome or system theme mask.
+    gfx::Image color_icon;
+    absl::optional<gfx::Image> monochrome_icon_mask;
     // Color for a monochrome icon. Leave empty to use the system theme default.
     absl::optional<SkColor> icon_color;
     // Whether the icon image is just a mask used to generate a monochrome icon.

@@ -87,6 +87,8 @@ class ApkSpec:
   size_info_prefix: str = None
   # Whether to break down classes.dex.
   analyze_dex: bool = True
+  # Whether to create symbols for each string literal.
+  track_string_literals: bool = True
   # Dict of apk_path -> source_path, provided by json config.
   path_defaults: dict = None
   # Component to use for symbols when not specified by DIR_METADATA, provided by
@@ -379,7 +381,8 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
           apkanalyzer.CreateDexSymbols(apk_spec.apk_path,
                                        apk_analyzer_results[container_name],
                                        dex_total_size, class_deobfuscation_map,
-                                       apk_spec.size_info_prefix))
+                                       apk_spec.size_info_prefix,
+                                       apk_spec.track_string_literals))
       add_syms(section_ranges, dex_symbols)
       metrics_by_file.update(dex_metrics_by_file)
   if pak_spec:
@@ -487,12 +490,6 @@ def _AddContainerArguments(parser, is_top_args=False):
                        help='Regular expression for which containers to create')
 
   group = parser.add_argument_group(title='Analysis Options for Native Code')
-  group.add_argument('--no-string-literals',
-                     dest='track_string_literals',
-                     default=True,
-                     action='store_false',
-                     help='Disable breaking down "** merge strings" into more '
-                     'granular symbols.')
   group.add_argument('--no-map-file',
                      dest='ignore_linker_map',
                      action='store_true',
@@ -528,6 +525,10 @@ def _AddContainerArguments(parser, is_top_args=False):
                      help='Custom path to the root source directory.')
   group.add_argument('--output-directory',
                      help='Path to the root build directory.')
+  group.add_argument('--no-string-literals',
+                     action='store_true',
+                     help=('Do not create symbols for string literals '
+                           '(applies to DEX and Native).'))
   if is_top_args:
     group.add_argument('--json-config', help='Path to a supersize.json.')
     group.add_argument('--no-output-directory',
@@ -865,6 +866,8 @@ def _CreateContainerSpecs(apk_file_manager,
                                                'size-info',
                                                os.path.basename(apk_prefix))
     apk_spec.analyze_dex = analyze_dex
+    apk_spec.track_string_literals = not (top_args.no_string_literals
+                                          or sub_args.no_string_literals)
     apk_spec.default_component = json_config.DefaultComponentForSplit(
         split_name)
     apk_spec.path_defaults = json_config.ApkPathDefaults()
@@ -877,7 +880,7 @@ def _CreateContainerSpecs(apk_file_manager,
     apk_pak_paths = [
         f.filename for f in apk_infolist if f.filename.endswith('.pak')
     ]
-  if apk_pak_paths or sub_args.pak_files:
+  if not top_args.no_output_directory and (apk_pak_paths or sub_args.pak_files):
     pak_spec = PakSpec(pak_paths=sub_args.pak_files,
                        pak_info_path=sub_args.pak_info_file,
                        apk_pak_paths=apk_pak_paths)
@@ -899,8 +902,8 @@ def _CreateContainerSpecs(apk_file_manager,
         map_path=sub_args.map_file or aux_map_file,
         abi_filters=abi_filters,
         auto_abi_filters=auto_abi_filters,
-        track_string_literals=(top_args.track_string_literals
-                               and sub_args.track_string_literals),
+        track_string_literals=not (top_args.no_string_literals
+                                   or sub_args.no_string_literals),
         ignore_linker_map=(top_args.ignore_linker_map
                            or sub_args.ignore_linker_map),
         json_config=json_config,
@@ -1156,7 +1159,7 @@ def Run(top_args, on_config_error):
 
   if top_args.check_data_quality:
     logging.info('Checking data quality')
-    data_quality.CheckDataQuality(size_info, top_args.track_string_literals)
+    data_quality.CheckDataQuality(size_info, not top_args.no_string_literals)
     duration = (time.time() - start_time) / 60
     if duration > 10:
       raise data_quality.QualityCheckError(

@@ -12,8 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
+#include "base/notreached.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -24,6 +28,7 @@
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_utilities.h"
+#include "ui/display/manager/display_properties_parser.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -37,9 +42,6 @@
 namespace display {
 
 namespace {
-
-// TODO(crbug/1262970): Delete when we can read radius from command line.
-const float kRoundedDisplayRadius = 16.0;
 
 // The DPI threshold to determine the device scale factor.
 // DPI higher than |dpi| will use |device_scale_factor|.
@@ -78,6 +80,23 @@ ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
       });
 
   return display_mode_list;
+}
+
+absl::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisplayProperties)) {
+    return absl::nullopt;
+  }
+
+  absl::optional<base::Value> display_switch_value = base::JSONReader::Read(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kDisplayProperties));
+
+  if (!display_switch_value.has_value()) {
+    return absl::nullopt;
+  }
+
+  return ParseDisplayPanelRadii(&display_switch_value.value());
 }
 
 }  // namespace
@@ -166,7 +185,8 @@ DisplayChangeObserver::GetExternalManagedDisplayModeList(
 }
 
 DisplayChangeObserver::DisplayChangeObserver(DisplayManager* display_manager)
-    : display_manager_(display_manager) {
+    : internal_panel_radii_(ParsePanelRadiiFromCommandLine()),
+      display_manager_(display_manager) {
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -277,7 +297,8 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
     bool native,
     float device_scale_factor,
     float dpi,
-    const std::string& name) {
+    const std::string& name,
+    const gfx::RoundedCornersF& panel_radii) {
   const bool has_overscan = snapshot->has_overscan();
   const int64_t id = snapshot->display_id();
 
@@ -334,14 +355,14 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   new_info.SetManagedDisplayModes(display_modes);
 
   new_info.set_maximum_cursor_size(snapshot->maximum_cursor_size());
-  // Temporary adding rounded corners to the internal display info.
-  if (display::features::IsRoundedDisplayEnabled() &&
-      snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-    new_info.set_rounded_corners_radii(
-        gfx::RoundedCornersF(kRoundedDisplayRadius));
-  }
+
+  new_info.set_rounded_corners_radii(panel_radii);
 
   new_info.SetDRMFormatsAndModifiers(snapshot->GetDRMFormatsAndModifiers());
+
+  new_info.set_variable_refresh_rate_state(
+      snapshot->variable_refresh_rate_state());
+  new_info.set_vsync_rate_min(snapshot->vsync_rate_min());
 
   return new_info;
 }
@@ -406,8 +427,15 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
     name = l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_UNKNOWN);
   }
 
+  gfx::RoundedCornersF panel_radii;
+
+  if (display::features::IsRoundedDisplayEnabled() &&
+      snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
+    panel_radii = internal_panel_radii_.value_or(gfx::RoundedCornersF());
+  }
+
   return CreateManagedDisplayInfo(snapshot, mode_info, native,
-                                  device_scale_factor, dpi, name);
+                                  device_scale_factor, dpi, name, panel_radii);
 }
 
 }  // namespace display

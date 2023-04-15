@@ -29,14 +29,15 @@ function setOpusDtxEnabled(sdp) {
   // Get default audio codec
   var defaultCodec = getSdpDefaultAudioCodec(sdp);
   if (defaultCodec !== 'opus') {
-    failure('setOpusDtxEnabled',
+    throw new MethodError('setOpusDtxEnabled',
             'Default audio codec is not set to \'opus\'.');
   }
 
   // Find codec ID for Opus, e.g. 111 if 'a=rtpmap:111 opus/48000/2'.
   var codecId = findRtpmapId(sdpLines, 'opus');
   if (codecId === null) {
-    failure('setOpusDtxEnabled', 'Unknown ID for |codec| = \'opus\'.');
+    throw new MethodError(
+      'setOpusDtxEnabled', 'Unknown ID for |codec| = \'opus\'.');
   }
 
   // Find 'a=fmtp:111' line, where 111 is the codecId
@@ -102,7 +103,7 @@ function setSdpDefaultCodec(sdp, type, codec, preferHwCodec, profile) {
   var useLastInstance = !preferHwCodec;
   var codecId = findRtpmapId(sdpLines, codec, useLastInstance, profile);
   if (codecId === null) {
-    failure(
+    throw new MethodError(
         'setSdpDefaultCodec',
         'Unknown ID for |codec| = \'' + codec + '\' and |profile| = \'' +
             profile + '\'.');
@@ -111,7 +112,7 @@ function setSdpDefaultCodec(sdp, type, codec, preferHwCodec, profile) {
   // Find 'm=|type|' line, e.g. 'm=video 9 UDP/TLS/RTP/SAVPF 100 101 107 116'.
   var mLineNo = findLine(sdpLines, 'm=' + type);
   if (mLineNo === null) {
-    failure('setSdpDefaultCodec',
+    throw new MethodError('setSdpDefaultCodec',
             '\'m=' + type + '\' line missing from |sdp|.');
   }
 
@@ -146,21 +147,21 @@ function getSdpDefaultCodec(sdp, type) {
   // Find 'm=|type|' line, e.g. 'm=video 9 UDP/TLS/RTP/SAVPF 100 101 107 116'.
   var mLineNo = findLine(sdpLines, 'm=' + type);
   if (mLineNo === null) {
-    failure('getSdpDefaultCodec',
+    throw new MethodError('getSdpDefaultCodec',
             '\'m=' + type + '\' line missing from |sdp|.');
   }
 
   // The default codec's ID.
   var defaultCodecId = getMLineDefaultCodec(sdpLines[mLineNo]);
   if (defaultCodecId === null) {
-    failure('getSdpDefaultCodec',
+    throw new MethodError('getSdpDefaultCodec',
             '\'m=' + type + '\' line contains no codecs.');
   }
 
   // Find codec name, e.g. 'VP8' for 100 if 'a=rtpmap:100 VP8/9000'.
   var defaultCodec = findRtpmapCodec(sdpLines, defaultCodecId);
   if (defaultCodec === null) {
-    failure('getSdpDefaultCodec',
+    throw new MethodError('getSdpDefaultCodec',
             'Unknown codec name for default codec ' + defaultCodecId + '.');
   }
   return defaultCodec;
@@ -200,7 +201,7 @@ function findRtpmapCodec(sdpLines, id) {
   var from = sdpLines[lineNo].indexOf(' ');
   var to = sdpLines[lineNo].indexOf('/', from);
   if (from === null || to === null || from + 1 >= to)
-    failure('findRtpmapCodec', '');
+    throw new MethodError('findRtpmapCodec', '');
   return sdpLines[lineNo].substring(from + 1, to);
 }
 
@@ -259,7 +260,7 @@ function isRtpmapLine(sdpLine, contains) {
     // Expecting pattern 'a=rtpmap:<id> <codec>/<rate>'.
     var pattern = new RegExp('a=rtpmap:(\\d+) \\w+\\/\\d+');
     if (!sdpLine.match(pattern))
-      failure('isRtpmapLine', 'Unexpected "a=rtpmap:" pattern.');
+      throw new MethodError('isRtpmapLine', 'Unexpected "a=rtpmap:" pattern.');
     return true;
   }
   return false;

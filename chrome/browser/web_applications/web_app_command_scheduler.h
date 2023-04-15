@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -136,6 +137,7 @@ class WebAppCommandScheduler {
   void ScheduleManifestUpdateCheck(
       const GURL& url,
       const AppId& app_id,
+      base::Time check_time,
       base::WeakPtr<content::WebContents> contents,
       ManifestUpdateCheckCommand::CompletedCallback callback,
       const base::Location& location = FROM_HERE);

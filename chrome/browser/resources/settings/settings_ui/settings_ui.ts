@@ -260,7 +260,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     this.$.drawer.close();
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     this.$.drawer.toggle();
   }
 

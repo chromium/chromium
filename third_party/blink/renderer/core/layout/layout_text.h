@@ -267,8 +267,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     has_abstract_inline_text_box_ = true;
   }
 
-  float HyphenWidth(const Font&, TextDirection);
-
   PhysicalRect DebugRect() const override;
 
   void AutosizingMultiplerChanged() {
@@ -529,13 +527,6 @@ inline UChar32 LayoutText::CodepointAt(unsigned i) const {
   UChar32 c;
   U16_GET(Characters16(), 0, i, TextLength(), c);
   return c;
-}
-
-inline float LayoutText::HyphenWidth(const Font& font,
-                                     TextDirection direction) {
-  const ComputedStyle& style = StyleRef();
-  return font.Width(ConstructTextRun(font, style.HyphenString().GetString(),
-                                     style, direction));
 }
 
 inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {

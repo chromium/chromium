@@ -29,6 +29,20 @@ class NET_EXPORT AddressMapOwnerLinux {
   // with (e.g. interface index).
   using AddressMap = std::map<IPAddress, struct ifaddrmsg>;
 
+  // Represents a diff between one AddressMap and a new one. IPAddresses that
+  // map to absl::nullopt have been deleted from the map, and IPAddresses that
+  // map to non-nullopt have been added or updated.
+  using AddressMapDiff =
+      base::flat_map<IPAddress, absl::optional<struct ifaddrmsg>>;
+  // Represents a diff between one set of online links and new one. Interface
+  // indices that map to true are newly online and indices that map to false are
+  // newly offline.
+  using OnlineLinksDiff = base::flat_map<int, bool>;
+  // A callback for diffs, to be used by AddressTrackerLinux.
+  using DiffCallback =
+      base::RepeatingCallback<void(const AddressMapDiff& addr_diff,
+                                   const OnlineLinksDiff&)>;
+
   AddressMapOwnerLinux() = default;
 
   AddressMapOwnerLinux(const AddressMapOwnerLinux&) = delete;

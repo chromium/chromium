@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/firewall_hole_proxy.h"
 #include "extensions/browser/app_window/app_window.h"
 
 using content::BrowserContext;
@@ -75,7 +74,7 @@ AppFirewallHole::~AppFirewallHole() {
 
 AppFirewallHole::AppFirewallHole(
     const base::WeakPtr<AppFirewallHoleManager>& manager,
-    PortType type,
+    chromeos::FirewallHole::PortType type,
     uint16_t port,
     const std::string& extension_id)
     : type_(type),
@@ -87,15 +86,10 @@ void AppFirewallHole::SetVisible(bool app_visible) {
   app_visible_ = app_visible;
   if (app_visible_) {
     if (!firewall_hole_) {
-      auto callback = base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
-                                     weak_factory_.GetWeakPtr());
-      if (type_ == PortType::kTcp) {
-        content::OpenTCPFirewallHole("" /* all interfaces */, port_,
-                                     std::move(callback));
-      } else {
-        content::OpenUDPFirewallHole("" /* all interfaces */, port_,
-                                     std::move(callback));
-      }
+      chromeos::FirewallHole::Open(
+          type_, port_, "" /*all interfaces*/,
+          base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
+                         weak_factory_.GetWeakPtr()));
     }
   } else {
     firewall_hole_.reset();
@@ -103,7 +97,7 @@ void AppFirewallHole::SetVisible(bool app_visible) {
 }
 
 void AppFirewallHole::OnFirewallHoleOpened(
-    std::unique_ptr<content::FirewallHoleProxy> firewall_hole) {
+    std::unique_ptr<chromeos::FirewallHole> firewall_hole) {
   if (app_visible_) {
     DCHECK(!firewall_hole_);
     firewall_hole_ = std::move(firewall_hole);
@@ -122,7 +116,7 @@ AppFirewallHoleManager* AppFirewallHoleManager::Get(BrowserContext* context) {
 }
 
 std::unique_ptr<AppFirewallHole> AppFirewallHoleManager::Open(
-    AppFirewallHole::PortType type,
+    chromeos::FirewallHole::PortType type,
     uint16_t port,
     const std::string& extension_id) {
   auto hole = base::WrapUnique(new AppFirewallHole(weak_factory_.GetWeakPtr(),

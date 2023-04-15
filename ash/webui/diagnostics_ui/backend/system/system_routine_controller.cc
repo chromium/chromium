@@ -660,13 +660,14 @@ void SystemRoutineController::OnPowerRoutineResult(
 
 void SystemRoutineController::SendRoutineResult(
     mojom::RoutineResultInfoPtr result_info) {
-  // Added as part of investigation of crash reported in crbug/1316648 to test
-  // if crash is related to memory resource allocation. Remove if crash
-  // continues to occur.
-  if (!result_info.is_null() && !result_info->result.is_null()) {
+  if (inflight_routine_runner_ && !result_info.is_null() &&
+      !result_info->result.is_null()) {
     inflight_routine_runner_->OnRoutineResult(std::move(result_info));
   } else {
-    LOG(ERROR) << "RoutineResult is null";
+    LOG(ERROR) << (inflight_routine_runner_
+                       ? "Do not send routine result since it's null."
+                       : "Not able to call OnRoutineResult() since the "
+                         "inflight_routine_runner_ is null.");
   }
 
   inflight_routine_runner_.reset();

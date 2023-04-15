@@ -10,8 +10,6 @@
 namespace external_intents {
 
 BASE_DECLARE_FEATURE(kExternalNavigationDebugLogs);
-BASE_DECLARE_FEATURE(kExternalNavigationSubframeRedirects);
-BASE_DECLARE_FEATURE(kBlockSubframeIntentToSelf);
 BASE_DECLARE_FEATURE(kBlockFrameRenavigations);
 BASE_DECLARE_FEATURE(kDoNotRequireSpecializedCCTHandler);
 BASE_DECLARE_FEATURE(kBlockIntentsToSelf);

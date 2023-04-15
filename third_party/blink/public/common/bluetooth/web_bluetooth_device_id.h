@@ -8,6 +8,9 @@
 #include <stdint.h>
 
 #include <array>
+#include <cstdint>
+#include <functional>
+#include <iosfwd>
 #include <string>
 
 #include "third_party/blink/public/common/common_export.h"

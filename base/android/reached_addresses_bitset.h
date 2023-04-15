@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 
 namespace base {
@@ -64,7 +65,9 @@ class BASE_EXPORT ReachedAddressesBitset {
 
   uintptr_t start_address_;
   uintptr_t end_address_;
-  std::atomic<uint32_t>* reached_;
+  // This field is not a raw_ptr<> because the rewriter couldn't handle the
+  // global variable in a build configuration specific code.
+  RAW_PTR_EXCLUSION std::atomic<uint32_t>* reached_;
 };
 
 }  // namespace android

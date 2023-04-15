@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/notification_click_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -95,7 +94,9 @@ TEST_F(NotificationInteractionHandlerImplTest,
   const char expected_package_name[] = "com.fakeapp";
   const int64_t expected_user_id = 1;
   auto expected_app_metadata = Notification::AppMetadata(
-      expected_app_visible_name, expected_package_name, gfx::Image(),
+      expected_app_visible_name, expected_package_name,
+      /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt,
       /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true,
       expected_user_id, proto::AppStreamabilityStatus::STREAMABLE);
 
@@ -107,5 +108,4 @@ TEST_F(NotificationInteractionHandlerImplTest,
   EXPECT_EQ(expected_user_id, GetUserId());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

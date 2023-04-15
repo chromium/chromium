@@ -18,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
@@ -1236,17 +1237,41 @@ BackForwardCacheImpl::GetEntries() {
   return entries_;
 }
 
-BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
-    int navigation_entry_id) {
+std::list<BackForwardCacheImpl::Entry*>
+BackForwardCacheImpl::GetEntriesForRenderViewHostImpl(
+    const RenderViewHostImpl* rvhi) const {
+  std::list<BackForwardCacheImpl::Entry*> entries_for_rvhi;
+  for (auto& entry : entries_) {
+    for (const auto& rvh : entry->render_view_hosts()) {
+      if (&*rvh == rvhi) {
+        entries_for_rvhi.push_back(entry.get());
+        break;
+      }
+    }
+  }
+  return entries_for_rvhi;
+}
+
+base::expected<BackForwardCacheImpl::Entry*,
+               BackForwardCacheImpl::GetEntryFailureCase>
+BackForwardCacheImpl::GetOrEvictEntry(int navigation_entry_id) {
   auto matching_entry = base::ranges::find(
       entries_, navigation_entry_id, [](std::unique_ptr<Entry>& entry) {
         return entry->render_frame_host()->nav_entry_id();
       });
 
-  if (matching_entry == entries_.end())
-    return nullptr;
+  if (matching_entry == entries_.end()) {
+    return base::unexpected(
+        BackForwardCacheImpl::GetEntryFailureCase::kEntryNotFound);
+  }
 
   auto* render_frame_host = (*matching_entry)->render_frame_host();
+  // Don't return the entry if it was evicted.
+  if (render_frame_host->is_evicted_from_back_forward_cache()) {
+    return base::unexpected(
+        BackForwardCacheImpl::GetEntryFailureCase::kEntryEvictedBefore);
+  }
+
   // If we are in the experiments to allow pages with cache-control:no-store
   // in back/forward cache and the page has cache-control:no-store, we should
   // record them as reasons. It might not be possible to restore the entry even
@@ -1257,11 +1282,9 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
   if (!bfcache_eligibility.CanRestore()) {
     render_frame_host->EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
         bfcache_eligibility);
+    return base::unexpected(
+        BackForwardCacheImpl::GetEntryFailureCase::kEntryIneligibleAndEvicted);
   }
-
-  // Don't return the frame if it is evicted.
-  if (render_frame_host->is_evicted_from_back_forward_cache())
-    return nullptr;
 
   return (*matching_entry).get();
 }

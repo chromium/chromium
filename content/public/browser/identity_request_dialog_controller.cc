@@ -92,4 +92,13 @@ void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
   }
 }
 
+void IdentityRequestDialogController::ShowPopUpWindow(
+    const GURL& url,
+    TokenCallback on_resolve,
+    DismissCallback dismiss_callback) {
+  if (!is_interception_enabled_) {
+    std::move(dismiss_callback).Run(DismissReason::kOther);
+  }
+}
+
 }  // namespace content

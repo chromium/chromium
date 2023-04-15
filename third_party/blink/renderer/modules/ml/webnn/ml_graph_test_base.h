@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_BASE_H_
 
+#include <numeric>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -22,7 +24,7 @@ class V8TestingScope;
 // The utility methods for graph test.
 enum ExecutionMode { kAsync, kSync };
 // The backends share the unit tests in the MLGraphTest.
-enum BackendType { kFake, kXnnpack };
+enum BackendType { kFake, kXnnpack, kModelLoader };
 
 using TestVariety = std::tuple<BackendType, ExecutionMode>;
 
@@ -98,6 +100,20 @@ Vector<T> GetArrayBufferViewValues(
   memcpy(values.data(), array_buffer_view->BaseAddress(),
          array_buffer_view->byteLength());
   return values;
+}
+
+template <typename T>
+MLOperand* BuildConstant(MLGraphBuilder* builder,
+                         const Vector<uint32_t>& dimensions,
+                         V8MLOperandType::Enum type,
+                         const Vector<T>& values,
+                         ExceptionState& exception_state) {
+  size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
+                                       size_t(1), std::multiplies<uint32_t>());
+  auto buffer = CreateDOMArrayBufferView(buffer_size, type);
+  DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
+  memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
+  return BuildConstant(builder, dimensions, type, exception_state, buffer);
 }
 
 }  // namespace blink

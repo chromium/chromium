@@ -228,7 +228,7 @@ const char kIsolatedAppCSP[] =
     "base-uri 'none';"
     "default-src 'self';"
     "object-src 'none';"
-    "frame-src 'self' https:;"
+    "frame-src 'self' https: blob: data:;"
     "connect-src 'self' https:;"
     "script-src 'self' 'wasm-unsafe-eval';"
     "img-src 'self' https: blob: data:;"
@@ -1229,15 +1229,18 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
   base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache =
       nullptr;
   if (entry) {
-    BackForwardCacheImpl::Entry* restored_entry =
-        frame_tree_node->navigator()
-            .controller()
-            .GetBackForwardCache()
-            .GetEntry(entry->GetUniqueID());
-    if (restored_entry) {
+    auto restored_entry = frame_tree_node->navigator()
+                              .controller()
+                              .GetBackForwardCache()
+                              .GetOrEvictEntry(entry->GetUniqueID());
+    // TODO(crbug.com/1430653): Check the
+    // `BackForwardCacheImpl::GetEntryFailureCase` in the return value and
+    // cancel the NavigationRequest to avoid use-after-free if we know that it
+    // will be restarted.
+    if (restored_entry.has_value()) {
       if (frame_tree_node->IsMainFrame()) {
         rfh_restored_from_back_forward_cache =
-            restored_entry->render_frame_host()->GetWeakPtr();
+            restored_entry.value()->render_frame_host()->GetWeakPtr();
       } else {
         // We have a matching BFCache entry for a subframe navigation. This
         // shouldn't happen as we should've triggered deletion of BFCache
@@ -2167,22 +2170,25 @@ NavigationRequest::~NavigationRequest() {
     }
 
     if (IsServedFromBackForwardCache()) {
-      BackForwardCacheImpl::Entry* bfcache_entry =
-          GetNavigationController()->GetBackForwardCache().GetEntry(
+      auto bfcache_entry =
+          GetNavigationController()->GetBackForwardCache().GetOrEvictEntry(
               nav_entry_id());
-      if (!bfcache_entry)
-        return;
-
-      RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
-          bfcache_entry->render_frame_host()->GetGlobalId());
-      // RFH could have been deleted. E.g. eviction timer fired
-      if (rfh && rfh->IsInBackForwardCache()) {
-        // rfh is still in the cache so the navigation must have failed. But we
-        // have already disabled eviction so the safest thing to do here to
-        // recover is to evict.
-        rfh->EvictFromBackForwardCacheWithReason(
-            BackForwardCacheMetrics::NotRestoredReason::
-                kNavigationCancelledWhileRestoring);
+      // TODO(crbug.com/1430653): Check the
+      // `BackForwardCacheImpl::GetEntryFailureCase` in the return value and
+      // cancel the NavigationRequest to avoid use-after-free if we know that it
+      // will be restarted.
+      if (bfcache_entry.has_value()) {
+        RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
+            bfcache_entry.value()->render_frame_host()->GetGlobalId());
+        // RFH could have been deleted. E.g. eviction timer fired
+        if (rfh && rfh->IsInBackForwardCache()) {
+          // rfh is still in the cache so the navigation must have failed. But
+          // we have already disabled eviction so the safest thing to do here to
+          // recover is to evict.
+          rfh->EvictFromBackForwardCacheWithReason(
+              BackForwardCacheMetrics::NotRestoredReason::
+                  kNavigationCancelledWhileRestoring);
+        }
       }
     }
   }
@@ -2826,8 +2832,8 @@ void NavigationRequest::StartNavigation() {
   modified_request_headers_.Clear();
   removed_request_headers_.clear();
 
-  throttle_runner_ = base::WrapUnique(new NavigationThrottleRunner(
-      this, navigation_id_, IsInPrimaryMainFrame()));
+  throttle_runner_ = std::make_unique<NavigationThrottleRunner>(
+      this, navigation_id_, IsInPrimaryMainFrame());
 
   // For prerendered page activation, CommitDeferringConditions have already run
   // at the beginning of the navigation, so we won't run them again.
@@ -4185,18 +4191,25 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // If the current navigation is being restarted, it should not try to make
     // any further progress.
     CHECK(!restarting_back_forward_cached_navigation_);
-    if (!rfh_restored_from_back_forward_cache_) {
-      // The RenderFrameHost to restore has been evicted and deleted. We should
-      // stop processing this back/forward cache restore navigation, as the
-      // navigation will soon be restarted as a normal history navigation.
+    NavigationControllerImpl* controller = GetNavigationController();
+    auto entry =
+        controller->GetBackForwardCache().GetOrEvictEntry(nav_entry_id_);
+    if (!rfh_restored_from_back_forward_cache_ ||
+        (!entry.has_value() &&
+         entry.error() == BackForwardCacheImpl::kEntryIneligibleAndEvicted)) {
+      // If the RenderFrameHost to restore has been evicted and deleted, or the
+      // current navigation is being restarted due to the `GetOrEvictEntry`
+      // call, we should stop processing this back/forward cache restore
+      // navigation, as the navigation will soon be restarted as a normal
+      // history navigation.
+
+      // TODO(crbug.com/1430653): Cancel the NavigationRequest to avoid
+      // use-after-free if we know that it will be restarted.
       return;
     }
-    NavigationControllerImpl* controller = GetNavigationController();
-    BackForwardCacheImpl::Entry* entry =
-        controller->GetBackForwardCache().GetEntry(nav_entry_id_);
-    CHECK(entry);
-    CHECK(entry->render_frame_host());
-    render_frame_host_ = entry->render_frame_host()->GetSafeRef();
+    CHECK(entry.has_value() && entry.value());
+    CHECK(entry.value()->render_frame_host());
+    render_frame_host_ = entry.value()->render_frame_host()->GetSafeRef();
   } else if (IsPrerenderedPageActivation()) {
     // Prerendering requires changing pages starting at the root node.
     DCHECK(IsInMainFrame());
@@ -5512,6 +5525,9 @@ void NavigationRequest::CommitNavigation() {
   // A navigation request should only commit once the response has been
   // processed.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+  // If a WebUI was created for this navigation, it must have been moved to the
+  // RenderFrameHost we're about to commit in already.
+  CHECK(!HasWebUI());
   CheckSoftNavigationHeuristicsInvariants();
 
   if (!CoopCoepSanityCheck())
@@ -9343,15 +9359,16 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
   return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
 }
 
-bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
-  TRACE_EVENT2("content", "NavigationRequest::CreateWebUI", "frame_host",
-               frame_host, "url", GetURL());
+void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
+  TRACE_EVENT1("content", "NavigationRequest::CreateWebUI", "url", GetURL());
+
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
-          frame_host->GetSiteInstance()->GetBrowserContext(), GetURL());
+          frame_tree_node_->navigator().controller().GetBrowserContext(),
+          GetURL());
   if (new_web_ui_type == WebUI::kNoWebUI) {
     // The navigation doesn't need a WebUI.
-    return false;
+    return;
   }
   CHECK(!web_ui_);
 
@@ -9360,20 +9377,15 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   // in `frame_host`. However, it is useful to verify that its type hasn't
   // changed. Site isolation guarantees that RenderFrameHostImpl will be changed
   // if the WebUI type differs.
-  if (frame_host->web_ui()) {
+  if (frame_host && frame_host->web_ui()) {
     CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
-    return false;
+    return;
   }
 
-  web_ui_ = std::make_unique<WebUIImpl>(frame_host);
-
+  web_ui_ = std::make_unique<WebUIImpl>(this);
   std::unique_ptr<WebUIController> controller(
       WebUIControllerFactoryRegistry::GetInstance()
           ->CreateWebUIControllerForURL(web_ui_.get(), GetURL()));
-  if (!controller) {
-    // TODO(https://crbug.com/1220337): Make this a CHECK instead.
-    return false;
-  }
 
   // If we have assigned (zero or more) bindings to the NavigationEntry in
   // the past, make sure we're not granting it different bindings than it
@@ -9389,11 +9401,10 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
     // happen and crash immediately if it does, because there are no easy ways
     // to recover.
     CHECK(self);
-    return false;
+    return;
   }
 
   web_ui_->SetController(std::move(controller));
-  return true;
 }
 
 }  // namespace content

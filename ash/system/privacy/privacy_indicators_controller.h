@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -79,23 +81,100 @@ enum class PrivacyIndicatorsSource {
   kMaxValue = kScreenCapture
 };
 
-// Updates privacy indicators, including:
-// * Updates camera and microphone access indicators for
-//   `PrivacyIndicatorsTrayItemView`(s) across all status area widgets.
-// * Adds, updates, or removes the privacy notification associated with the
-//   given `app_id`. The given scoped_refptr for `delegate` will be passed as a
-//   parameter for the function creating the privacy indicators notification.
-void ASH_EXPORT UpdatePrivacyIndicators(
-    const std::string& app_id,
-    absl::optional<std::u16string> app_name,
-    bool is_camera_used,
-    bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
-    PrivacyIndicatorsSource source);
-
 // Get the id of the privacy indicators notification associated with `app_id`.
 std::string ASH_EXPORT
 GetPrivacyIndicatorsNotificationId(const std::string& app_id);
+
+// Struct that stores info of an app that is being tracked by privacy
+// indicators.
+struct PrivacyIndicatorsAppInfo {
+  PrivacyIndicatorsAppInfo();
+  PrivacyIndicatorsAppInfo(PrivacyIndicatorsAppInfo&&);
+  PrivacyIndicatorsAppInfo& operator=(PrivacyIndicatorsAppInfo&&) = default;
+  ~PrivacyIndicatorsAppInfo();
+
+  absl::optional<std::u16string> app_name;
+  scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate;
+};
+
+// A controller that manages the logic of modifying the tray item privacy
+// indicator dot and the privacy indicators notification when camera/microphone
+// access state changes.
+class ASH_EXPORT PrivacyIndicatorsController
+    : public CrasAudioHandler::AudioObserver,
+      public media::CameraPrivacySwitchObserver {
+ public:
+  PrivacyIndicatorsController();
+
+  PrivacyIndicatorsController(const PrivacyIndicatorsController&) = delete;
+  PrivacyIndicatorsController& operator=(const PrivacyIndicatorsController&) =
+      delete;
+
+  ~PrivacyIndicatorsController() override;
+
+  // Returns the singleton instance.
+  static PrivacyIndicatorsController* Get();
+
+  // Updates privacy indicators, including:
+  // * Updates camera and microphone access indicators for
+  //   `PrivacyIndicatorsTrayItemView`(s) across all status area widgets.
+  // * Adds, updates, or removes the privacy notification associated with the
+  //   given `app_id`. The given scoped_refptr for `delegate` will be passed as
+  //   a parameter for the function creating the privacy indicators
+  //   notification.
+  // Note that if camera/microphone are muted, privacy indicators will not
+  // indicate its usage via the tray item indicator dot and the notification.
+  void UpdatePrivacyIndicators(
+      const std::string& app_id,
+      absl::optional<std::u16string> app_name,
+      bool is_camera_used,
+      bool is_microphone_used,
+      scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
+      PrivacyIndicatorsSource source);
+
+  // media::CameraPrivacySwitchObserver:
+  void OnCameraHWPrivacySwitchStateChanged(
+      const std::string& device_id,
+      cros::mojom::CameraPrivacySwitchState state) override;
+  void OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState state) override;
+
+  // CrasAudioHandler::AudioObserver:
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
+
+  // Specifies whether camera/microphone is in use by at least one app.
+  bool IsCameraUsed() const;
+  bool IsMicrophoneUsed() const;
+
+  const std::map<std::string, PrivacyIndicatorsAppInfo>& apps_using_camera()
+      const {
+    return apps_using_camera_;
+  }
+
+  const std::map<std::string, PrivacyIndicatorsAppInfo>& apps_using_microphone()
+      const {
+    return apps_using_microphone_;
+  }
+
+ private:
+  // Updates privacy indicators after camera mute state changed.
+  void UpdateForCameraMuteStateChanged();
+
+  // Stores the app(s) info that are currently accessing camera/microphone. The
+  // key represents the app id.
+  std::map<std::string, PrivacyIndicatorsAppInfo> apps_using_camera_;
+  std::map<std::string, PrivacyIndicatorsAppInfo> apps_using_microphone_;
+
+  // This keeps track of the current Camera Privacy Switch state.
+  // Updated via `OnCameraHWPrivacySwitchStateChanged()` and
+  // `OnCameraSWPrivacySwitchStateChanged()` We use these variables since
+  // fetching this directly through `media::CameraHalDispatcherImpl` would
+  // otherwise need an asynchronous call.
+  bool camera_muted_by_hardware_switch_ = false;
+  bool camera_muted_by_software_switch_ = false;
+};
 
 // Update `PrivacyIndicatorsTrayItemView` screen share status across all status
 // area widgets.

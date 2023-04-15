@@ -81,7 +81,7 @@ TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
 
   for (int i = 0; i < 100; ++i) {
     // Each buffer's timestamp is kBufferDuration from the previous buffer.
-    scoped_refptr<DecoderBuffer> encoded_buffer = new DecoderBuffer(0);
+    auto encoded_buffer = base::MakeRefCounted<DecoderBuffer>(0);
 
     // Ping-pong between two random offsets to prevent validator from
     // stabilizing timestamp pattern.
@@ -126,7 +126,7 @@ TEST_P(AudioTimestampValidatorTest, NoWarningForValidTimes) {
 
   for (int i = 0; i < 100; ++i) {
     // Each buffer's timestamp is kBufferDuration from the previous buffer.
-    scoped_refptr<DecoderBuffer> encoded_buffer = new DecoderBuffer(0);
+    auto encoded_buffer = base::MakeRefCounted<DecoderBuffer>(0);
     encoded_buffer->set_timestamp(i * kBufferDuration);
 
     if (i == 0) {
@@ -172,7 +172,7 @@ TEST_P(AudioTimestampValidatorTest, SingleWarnForSingleLargeGap) {
     if (i == 50)
       EXPECT_MEDIA_LOG(HasSubstr("timestamp gap detected"));
 
-    scoped_refptr<DecoderBuffer> encoded_buffer = new DecoderBuffer(0);
+    auto encoded_buffer = base::MakeRefCounted<DecoderBuffer>(0);
     encoded_buffer->set_timestamp(i * kBufferDuration + offset);
 
     if (i == 0) {
@@ -219,7 +219,7 @@ TEST_P(AudioTimestampValidatorTest, RepeatedWarnForSlowAccumulatingDrift) {
     if (i >= output_delay_ + 2)
       offset = i * base::Milliseconds(1);
 
-    scoped_refptr<DecoderBuffer> encoded_buffer = new DecoderBuffer(0);
+    auto encoded_buffer = base::MakeRefCounted<DecoderBuffer>(0);
     encoded_buffer->set_timestamp((i * kBufferDuration) + offset);
 
     // Expect gap warnings to start when drift hits 50 milliseconds. Warnings

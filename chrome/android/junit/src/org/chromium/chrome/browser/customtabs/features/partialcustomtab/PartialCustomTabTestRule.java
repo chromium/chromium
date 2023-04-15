@@ -86,6 +86,10 @@ public class PartialCustomTabTestRule implements TestRule {
     static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
     static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
 
+    static final int DEVICE_WIDTH_MEDIUM = 700;
+    static final int DEVICE_WIDTH_COMPACT = 500;
+    static final int DEVICE_HEIGHT_COMPACT = 300;
+
     @Mock
     Activity mActivity;
     @Mock
@@ -277,6 +281,19 @@ public class PartialCustomTabTestRule implements TestRule {
         mDisplaySize.set(DEVICE_HEIGHT, DEVICE_WIDTH);
         when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
         when(mDisplay.getRotation()).thenReturn(direction);
+    }
+
+    public void configDeviceWidthMedium() {
+        mRealMetrics.widthPixels = DEVICE_WIDTH_MEDIUM;
+        mDisplaySize.set(DEVICE_WIDTH_MEDIUM, DEVICE_HEIGHT - NAVBAR_HEIGHT);
+    }
+
+    public void configCompactDevice() {
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mRealMetrics.widthPixels = DEVICE_WIDTH_COMPACT;
+        mRealMetrics.heightPixels = DEVICE_HEIGHT_COMPACT;
+        mDisplaySize.set(DEVICE_WIDTH_COMPACT, DEVICE_HEIGHT_COMPACT);
+        when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH_COMPACT);
     }
 
     public void verifyWindowFlagsSet() {

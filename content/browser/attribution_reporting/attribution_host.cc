@@ -20,7 +20,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -33,6 +32,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -360,7 +360,8 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     absl::optional<int64_t> navigation_id,
     RenderFrameHostImpl* initiator_frame_host) {
-  if (!base::FeatureList::IsEnabled(kAttributionFencedFrameReportingBeacon)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAttributionFencedFrameReportingBeacon)) {
     return;
   }
 

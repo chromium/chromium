@@ -146,7 +146,8 @@ CSSToggleMap::IterationSource::IterationSource(const CSSToggleMap& toggle_map) {
   // TODO(https://crbug.com/1354597): Could this be simplified?
   toggles_snapshot_.ReserveInitialCapacity(toggle_map.size());
   for (const auto& [name, toggle] : toggle_map.toggles_) {
-    // TODO(dbaron): Should this copy-construct the toggle?  (Highlight does!)
+    // TODO(https://crbug.com/1250716): Should this copy-construct the
+    // toggle?  (Highlight does!)
     toggles_snapshot_.push_back(toggle.Get());
   }
 }

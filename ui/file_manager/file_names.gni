@@ -258,6 +258,7 @@ ts_files = [
   "file_manager/state/actions/current_directory.ts",
   "file_manager/state/actions/folder_shortcuts.ts",
   "file_manager/state/actions/navigation.ts",
+  "file_manager/state/actions/search.ts",
   "file_manager/state/actions/ui_entries.ts",
   "file_manager/state/actions/volumes.ts",
 

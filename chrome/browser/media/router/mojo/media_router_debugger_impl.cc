@@ -51,7 +51,7 @@ void MediaRouterDebuggerImpl::DisableRtcpReports() {
 
 bool MediaRouterDebuggerImpl::ShouldFetchMirroringStats() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_rtcp_reports_enabled_ &&
+  return is_rtcp_reports_enabled_ ||
          base::FeatureList::IsEnabled(media::kEnableRtcpReporting);
 }
 

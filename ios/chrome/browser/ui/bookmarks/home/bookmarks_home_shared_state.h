@@ -65,11 +65,11 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 @property(nonatomic, strong) TableViewModel* tableViewModel;
 
 // The model holding profile bookmark data.
-@property(nonatomic, readonly, assign)
+@property(nonatomic, assign, readonly)
     bookmarks::BookmarkModel* profileBookmarkModel;
-
 // The model holding account bookmark data.
-@property(nonatomic, readonly) bookmarks::BookmarkModel* accountBookmarkModel;
+@property(nonatomic, assign, readonly)
+    bookmarks::BookmarkModel* accountBookmarkModel;
 
 // Views.
 
@@ -129,10 +129,16 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // Max number of favicon download requests in the lifespan of this tableView.
 + (NSUInteger)maxDownloadFaviconCount;
 
-- (instancetype)initWithProfileBookmarkModel:
-                    (bookmarks::BookmarkModel*)profileBookmarkModel
-                           displayedRootNode:
-                               (const bookmarks::BookmarkNode*)displayedRootNode
+// Initializes BookmarksHomeSharedState.
+// `profileBookmarkModel` cannot be nullptr.
+// `accountBookmarkModel` if kEnableBookmarksAccountStorage is enabled,
+// the model cannot be nullptr,. Otherwise, it has to be nullptr.
+// `displayedRootNode` is the displayed folder. cannot be nullptr.
+- (instancetype)
+    initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+               displayedRootNode:
+                   (const bookmarks::BookmarkNode*)displayedRootNode
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

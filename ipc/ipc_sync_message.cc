@@ -9,6 +9,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 
 namespace {
@@ -116,8 +117,8 @@ bool MessageReplyDeserializer::SerializeOutputParameters(const Message& msg) {
 
 PendingSyncMsg::PendingSyncMsg(int id,
                                std::unique_ptr<MessageReplyDeserializer> d,
-                               base::WaitableEvent* e)
-    : id(id), deserializer(std::move(d)), done_event(e) {}
+                               std::unique_ptr<base::WaitableEvent> e)
+    : id(id), deserializer(std::move(d)), done_event(std::move(e)) {}
 
 PendingSyncMsg::PendingSyncMsg(PendingSyncMsg&& that) = default;
 

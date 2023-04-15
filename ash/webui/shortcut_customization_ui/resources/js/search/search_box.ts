@@ -132,6 +132,12 @@ export class SearchBoxElement extends SearchBoxElementBase {
     const searchInput =
         strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
             .getSearchInput();
+
+    // Focus the search bar when the app opens.
+    afterNextRender(this, () => {
+      searchInput.focus();
+    });
+
     searchInput.addEventListener('focus', this.onSearchInputFocused.bind(this));
     searchInput.addEventListener(
         'mousedown', this.onSearchInputMousedown.bind(this));
@@ -165,6 +171,13 @@ export class SearchBoxElement extends SearchBoxElementBase {
 
   private computeSearchResultsExist(): boolean {
     return this.searchResults.length !== 0;
+  }
+
+  /**
+   * @return Length of the search results array.
+   */
+  private getListLength(): number {
+    return this.searchResults.length;
   }
 
   private getCurrentQuery(): string {

@@ -143,8 +143,9 @@ void GetEVPolicyOids(const EVRootCAMetadata* ev_metadata,
     return;
 
   for (const der::Input& oid : cert->policy_oids()) {
-    if (ev_metadata->IsEVPolicyOIDGivenBytes(oid))
+    if (ev_metadata->IsEVPolicyOID(oid)) {
       oids->insert(oid);
+    }
   }
 }
 
@@ -313,6 +314,18 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
   // Selects a revocation policy based on the CertVerifier flags and the given
   // certificate chain.
   RevocationPolicy ChooseRevocationPolicy(const ParsedCertificateList& certs) {
+    if (flags_ & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES) {
+      // In theory when network fetches are disabled but revocation is enabled
+      // we could continue with networking_allowed=false (and
+      // VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS would also have to change
+      // allow_missing_info and allow_unable_to_check to true).
+      // That theoretically could allow still consulting any cached CRLs/etc.
+      // However in the way things are currently implemented in the builtin
+      // verifier there really is no point to bothering, just disable
+      // revocation checking if network fetches are disabled.
+      return NoRevocationChecking();
+    }
+
     // Use hard-fail revocation checking for local trust anchors, if requested
     // by the load flag and the chain uses a non-public root.
     if ((flags_ & CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS) &&
@@ -359,8 +372,9 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
                              sizeof(root_fingerprint.data));
 
     for (const der::Input& oid : path->user_constrained_policy_set) {
-      if (ev_metadata_->HasEVPolicyOIDGivenBytes(root_fingerprint, oid))
+      if (ev_metadata_->HasEVPolicyOID(root_fingerprint, oid)) {
         return true;
+      }
     }
 
     return false;
@@ -370,7 +384,6 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
     return !deadline_.is_null() && base::TimeTicks::Now() > deadline_;
   }
 
-  // The CRLSet may be null.
   raw_ptr<const CRLSet> crl_set_;
   raw_ptr<CertNetFetcher> net_fetcher_;
   const VerificationType verification_type_;
@@ -385,6 +398,7 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
 class CertVerifyProcBuiltin : public CertVerifyProc {
  public:
   CertVerifyProcBuiltin(scoped_refptr<CertNetFetcher> net_fetcher,
+                        scoped_refptr<CRLSet> crl_set,
                         std::unique_ptr<SystemTrustStore> system_trust_store);
 
   bool SupportsAdditionalTrustAnchors() const override;
@@ -398,19 +412,20 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     CRLSet* crl_set,
                      const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
 
-  scoped_refptr<CertNetFetcher> net_fetcher_;
-  std::unique_ptr<SystemTrustStore> system_trust_store_;
+  const scoped_refptr<CertNetFetcher> net_fetcher_;
+  const std::unique_ptr<SystemTrustStore> system_trust_store_;
 };
 
 CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
+    scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<SystemTrustStore> system_trust_store)
-    : net_fetcher_(std::move(net_fetcher)),
+    : CertVerifyProc(std::move(crl_set)),
+      net_fetcher_(std::move(net_fetcher)),
       system_trust_store_(std::move(system_trust_store)) {
   DCHECK(system_trust_store_);
 }
@@ -508,12 +523,6 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
     *cert_status |= CERT_STATUS_INVALID;
 }
 
-bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBuffers(
-    const std::shared_ptr<const ParsedCertificate>& certificate) {
-  return X509Certificate::CreateCertBufferFromBytes(
-      certificate->der_cert().AsSpan());
-}
-
 // Creates a X509Certificate (chain) to return as the verified result.
 //
 //  * |target_cert|: The original X509Certificate that was passed in to
@@ -525,8 +534,9 @@ scoped_refptr<X509Certificate> CreateVerifiedCertChain(
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
 
   // Skip the first certificate in the path as that is the target certificate
-  for (size_t i = 1; i < path.certs.size(); ++i)
-    intermediates.push_back(CreateCertBuffers(path.certs[i]));
+  for (size_t i = 1; i < path.certs.size(); ++i) {
+    intermediates.push_back(bssl::UpRef(path.certs[i]->cert_buffer()));
+  }
 
   scoped_refptr<X509Certificate> result = X509Certificate::CreateFromBuffer(
       bssl::UpRef(target_cert->cert_buffer()), std::move(intermediates));
@@ -707,7 +717,6 @@ int CertVerifyProcBuiltin::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
@@ -830,7 +839,7 @@ int CertVerifyProcBuiltin::VerifyInternal(
     result = TryBuildPath(
         target, &intermediates, &trust_store, der_verification_time, deadline,
         cur_attempt.verification_type, cur_attempt.digest_policy, flags,
-        ocsp_response, crl_set, net_fetcher_.get(), ev_metadata,
+        ocsp_response, crl_set(), net_fetcher_.get(), ev_metadata,
         &checked_revocation_for_some_path);
 
     base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
@@ -922,9 +931,11 @@ CertVerifyProcBuiltinResultDebugData::Clone() {
 
 scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
+    scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<SystemTrustStore> system_trust_store) {
   return base::MakeRefCounted<CertVerifyProcBuiltin>(
-      std::move(net_fetcher), std::move(system_trust_store));
+      std::move(net_fetcher), std::move(crl_set),
+      std::move(system_trust_store));
 }
 
 base::TimeDelta GetCertVerifyProcBuiltinTimeLimitForTesting() {

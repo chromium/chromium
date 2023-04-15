@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.homepage.settings;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import android.view.View;
 import android.widget.TextView;
 
@@ -156,11 +158,11 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(
                 "RadioGroupPreference should be visible when Homepage Conversion is enabled.",
                 mRadioGroupPreference.isVisible());
-        Assert.assertThat("Title text view is null.", mRadioGroupPreference.getTitleTextView(),
+        assertThat("Title text view is null.", mRadioGroupPreference.getTitleTextView(),
                 Matchers.notNullValue());
-        Assert.assertThat("Chrome NTP radio button is null.",
+        assertThat("Chrome NTP radio button is null.",
                 mRadioGroupPreference.getChromeNTPRadioButton(), Matchers.notNullValue());
-        Assert.assertThat("Custom URI radio button is null.",
+        assertThat("Custom URI radio button is null.",
                 mRadioGroupPreference.getCustomUriRadioButton(), Matchers.notNullValue());
 
         mTitleTextView = mRadioGroupPreference.getTitleTextView();

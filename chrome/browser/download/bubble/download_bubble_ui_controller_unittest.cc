@@ -69,7 +69,7 @@ class MockDownloadDisplayController : public DownloadDisplayController {
   }
   void MaybeShowButtonWhenCreated() override {}
   MOCK_METHOD1(OnNewItem, void(bool));
-  MOCK_METHOD3(OnUpdatedItem, void(bool, bool, bool));
+  MOCK_METHOD2(OnUpdatedItem, void(bool, bool));
   MOCK_METHOD1(OnRemovedItem, void(const ContentId&));
 };
 
@@ -271,6 +271,9 @@ class DownloadBubbleUIControllerTest : public testing::Test {
         .WillRepeatedly(ReturnRef(GURL::EmptyGURL()));
     EXPECT_CALL(item(index), GetReferrerUrl())
         .WillRepeatedly(ReturnRef(GURL::EmptyGURL()));
+    EXPECT_CALL(item(index), GetDangerType())
+        .WillRepeatedly(
+            Return(DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
@@ -371,14 +374,14 @@ TEST_F(DownloadBubbleUIControllerTest, ProcessesUpdatedItems) {
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
-  EXPECT_CALL(display_controller(), OnUpdatedItem(false, false, true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(false, true)).Times(1);
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS);
-  EXPECT_CALL(display_controller(), OnUpdatedItem(true, false, true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
 
   EXPECT_CALL(display_controller(), OnNewItem(false)).Times(1);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[1]);
-  EXPECT_CALL(display_controller(), OnUpdatedItem(true, false, true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
 }
 
@@ -386,7 +389,7 @@ TEST_F(DownloadBubbleUIControllerTest, UpdatedItemIsPendingDeepScanning) {
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, "Download 1");
-  EXPECT_CALL(display_controller(), OnUpdatedItem(false, true, true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(true, true)).Times(1);
   UpdateDownloadItem(
       /*item_index=*/0, DownloadState::IN_PROGRESS, false,
       DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING);

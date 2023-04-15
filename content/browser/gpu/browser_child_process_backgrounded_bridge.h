@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_GPU_BROWSER_CHILD_PROCESS_BACKGROUNDED_BRIDGE_H_
 #define CONTENT_BROWSER_GPU_BROWSER_CHILD_PROCESS_BACKGROUNDED_BRIDGE_H_
 
-#include <objc/objc.h>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/process/port_provider_mac.h"
@@ -44,10 +44,8 @@ class CONTENT_EXPORT BrowserChildProcessBackgroundedBridge
   base::ScopedObservation<base::PortProvider, base::PortProvider::Observer>
       scoped_port_provider_observer_{this};
 
-  // Registration IDs for NSApplicationDidBecomeActiveNotification and
-  // NSApplicationDidResignActiveNotification.
-  id did_become_active_observer_ = nil;
-  id did_resign_active_observer_ = nil;
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
 }  // namespace content

@@ -94,12 +94,8 @@ std::string OriginWithPossibleWildcards::Serialize() const {
 
 bool OriginWithPossibleWildcards::DoesMatchOrigin(
     const url::Origin& match_origin) const {
-  // TODO(crbug.com/1418009): Add way to prevent CSP matching from allowing
-  // upgrades (http -> https) as permissions don't allow this.
-  return network::CheckCSPSource(csp_source, match_origin.GetURL(),
-                                 csp_source) &&
-         csp_source.scheme == match_origin.scheme() &&
-         csp_source.port == (match_origin.port() ?: url::PORT_UNSPECIFIED);
+  return network::CheckCSPSource(csp_source, match_origin.GetURL(), csp_source,
+                                 network::CSPSourceContext::PermissionsPolicy);
 }
 
 bool operator==(const OriginWithPossibleWildcards& lhs,

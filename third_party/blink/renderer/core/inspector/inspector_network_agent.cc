@@ -199,9 +199,9 @@ class InspectorFileReaderLoaderClient final
       base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback)
       : blob_(std::move(blob)),
         callback_(std::move(callback)),
-        loader_(
-            MakeGarbageCollected<FileReaderLoader>(this,
-                                                   std::move(task_runner))) {}
+        loader_(MakeGarbageCollected<FileReaderLoader>(this,
+                                                       std::move(task_runner))),
+        keep_alive_(this) {}
 
   InspectorFileReaderLoaderClient(const InspectorFileReaderLoaderClient&) =
       delete;
@@ -239,8 +239,7 @@ class InspectorFileReaderLoaderClient final
  private:
   void Done(scoped_refptr<SharedBuffer> output) {
     std::move(callback_).Run(output);
-    // FileReaderLoader holds `this` as a member, so clearing it here will
-    // trigger both its garbage collection and ours.
+    keep_alive_.Clear();
     loader_ = nullptr;
   }
 
@@ -250,6 +249,7 @@ class InspectorFileReaderLoaderClient final
   base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback_;
   Member<FileReaderLoader> loader_;
   scoped_refptr<SharedBuffer> raw_data_;
+  SelfKeepAlive<InspectorFileReaderLoaderClient> keep_alive_;
 };
 
 static void ResponseBodyFileReaderLoaderDone(

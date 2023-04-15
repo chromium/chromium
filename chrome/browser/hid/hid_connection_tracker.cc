@@ -29,36 +29,6 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-namespace {
-
-std::u16string GetDeviceConnectedNotificationMessage(
-    Profile* profile,
-    const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (origin.scheme() == extensions::kExtensionScheme) {
-    const auto* extension_registry =
-        extensions::ExtensionRegistry::Get(profile);
-    DCHECK(extension_registry);
-    const extensions::Extension* extension =
-        extension_registry->GetExtensionById(
-            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
-    return l10n_util::GetStringFUTF16(
-        IDS_WEBHID_DEVICE_CONNECTED_BY_EXTENSION_NOTIFICATION_MESSAGE,
-        base::UTF8ToUTF16(extension->name()));
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED();
-  return u"";
-}
-
-std::string GetDeviceOpenedNotificationId(Profile* profile,
-                                          const url::Origin& origin) {
-  return base::StrCat(
-      {"webhid.opened.", profile->UniqueId(), ".", origin.host()});
-}
-
-}  // namespace
-
 HidConnectionTracker::HidConnectionTracker(Profile* profile)
     : profile_(profile) {}
 
@@ -66,71 +36,46 @@ HidConnectionTracker::~HidConnectionTracker() {
   CleanUp();
 }
 
-void HidConnectionTracker::IncrementConnectionCount() {
-  ++connection_count_;
+void HidConnectionTracker::IncrementConnectionCount(const url::Origin& origin) {
+  CHECK_GE(origins_[origin], 0);
+  origins_[origin]++;
+  total_connection_count_++;
+
   auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
   if (!hid_system_tray_icon) {
     return;
   }
-
-  if (connection_count_ == 1) {
+  if (total_connection_count_ == 1) {
     hid_system_tray_icon->StageProfile(profile_);
   } else {
     hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
   }
 }
 
-void HidConnectionTracker::DecrementConnectionCount() {
-  --connection_count_;
+void HidConnectionTracker::DecrementConnectionCount(const url::Origin& origin) {
+  auto it = origins_.find(origin);
+  CHECK(it != origins_.end());
+  auto& connection_count = it->second;
+  CHECK_GT(connection_count, 0);
+
+  connection_count--;
+  total_connection_count_--;
+  if (connection_count == 0) {
+    origins_.erase(it);
+  }
+
   auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
   if (!hid_system_tray_icon) {
     return;
   }
-
-  if (connection_count_ == 0) {
+  if (total_connection_count_ == 0) {
     hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/false);
   } else {
     hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
   }
 }
 
-void HidConnectionTracker::NotifyDeviceConnected(const url::Origin& origin) {
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(
-              [](HidConnectionTracker* hid_connection_tracker,
-                 const url::Origin& origin, absl::optional<int> button_index) {
-                // |hid_connection_tracker| will always be valid here because an
-                // active notification prevents the Profile (which owns the
-                // HidConnectionTracker as a KeyedService) from being destroyed.
-                hid_connection_tracker->ShowSiteSettings(origin);
-              },
-              this, origin));
-
-  auto notification_id = GetDeviceOpenedNotificationId(profile_, origin);
-  message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      l10n_util::GetStringUTF16(
-          IDS_WEBHID_DEVICE_CONNECTED_BY_EXTENSION_NOTIFICATION_TITLE),
-      GetDeviceConnectedNotificationMessage(profile_, origin),
-      ui::ImageModel::FromVectorIcon(vector_icons::kVideogameAssetIcon,
-                                     ui::kColorIcon, 64),
-      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), /*origin_url=*/{},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 notification_id,
-                                 ash::NotificationCatalogName::kWebHid),
-#else
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 notification_id),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      message_center::RichNotificationData(), std::move(delegate));
-  NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      /*metadata=*/nullptr);
-}
-
-void HidConnectionTracker::ShowHidContentSettingsExceptions() {
+void HidConnectionTracker::ShowContentSettingsExceptions() {
   chrome::ShowContentSettingsExceptionsForProfile(
       profile_, ContentSettingsType::HID_CHOOSER_DATA);
 }
@@ -140,10 +85,12 @@ void HidConnectionTracker::ShowSiteSettings(const url::Origin& origin) {
 }
 
 void HidConnectionTracker::CleanUp() {
-  if (connection_count_ > 0) {
-    connection_count_ = 0;
+  if (!origins_.empty()) {
+    origins_.clear();
+    total_connection_count_ = 0;
     auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
-    if (hid_system_tray_icon)
+    if (hid_system_tray_icon) {
       hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/true);
+    }
   }
 }

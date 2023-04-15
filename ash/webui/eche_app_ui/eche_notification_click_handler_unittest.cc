@@ -168,7 +168,8 @@ TEST_F(EcheNotificationClickHandlerTest, HandleNotificationClick) {
   base::HistogramTester histogram_tester;
   phonehub::Notification::AppMetadata app_meta_data =
       phonehub::Notification::AppMetadata(app_name, package_name,
-                                          /*icon=*/gfx::Image(),
+                                          /*color_icon=*/gfx::Image(),
+                                          /*monochrome_icon_mask=*/gfx::Image(),
                                           /*icon_color=*/absl::nullopt,
                                           /*icon_is_monochrome=*/true, user_id);
   HandleNotificationClick(notification_id, app_meta_data);

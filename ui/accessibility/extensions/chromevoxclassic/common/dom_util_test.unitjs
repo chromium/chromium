@@ -309,8 +309,8 @@ TEST_F('ChromeVoxDomUtilUnitTest', 'GetLabel', function() {
     Stay signed in
     </label>
     <input name="signIn" id="signIn" value="Sign in" type="submit">
-    <input id="dummyA" size="18" value="" type="text" title="">
-    <input id="dummyB" size="18" value="" type="text" aria-label="">
+    <input id="idA" size="18" value="" type="text" title="">
+    <input id="idB" size="18" value="" type="text" aria-label="">
     </fieldset>
   */});
 
@@ -344,10 +344,10 @@ TEST_F('ChromeVoxDomUtilUnitTest', 'GetLabel', function() {
   var signinButton = $('signIn');
   assertEquals('Sign in', cvox.DomUtil.getName(signinButton));
   assertEquals('Sign in Button', getControlText(signinButton));
-  var dummyInputA = $('dummyA');
-  assertEquals('', cvox.DomUtil.getName(dummyInputA));
-  var dummyInputB = $('dummyB');
-  assertEquals('', cvox.DomUtil.getName(dummyInputB));
+  var testInputA = $('idA');
+  assertEquals('', cvox.DomUtil.getName(testInputA));
+  var testInputB = $('idB');
+  assertEquals('', cvox.DomUtil.getName(testInputB));
 
   // The heuristic no longer returns 'Stay signed in' as the label for
   // the signIn button because 'Stay signed in' is in a label that's
@@ -1563,7 +1563,7 @@ TEST_F('ChromeVoxDomUtilUnitTest', 'Memoization', function() {
     });
   });
 
-  // Finally as a sanity check that things are being memoized, turn on
+  // Finally as a confidence check that things are being memoized, turn on
   // memoization and show that we get the wrong result if we change the
   // DOM and call isVisible again.
   cvox.Memoize.scope(function() {

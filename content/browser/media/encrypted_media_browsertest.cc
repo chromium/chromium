@@ -50,6 +50,9 @@
 //   MojoRenderer, which hosts a RendererImpl in the remote process, which uses
 //   the Decryptor exposed by the AesDecryptor directly in the remote process.
 //   See TestMojoMediaClient for details on this path.
+
+// TODO (b/263310318) Enable on Android when Clear Key issues on Android are
+// fixed.
 #if BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #define SUPPORTS_EXTERNAL_CLEAR_KEY_IN_CONTENT_SHELL
 #endif

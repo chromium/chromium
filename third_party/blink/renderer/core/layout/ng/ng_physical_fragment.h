@@ -699,18 +699,18 @@ class CORE_EXPORT NGPhysicalFragment
       PhysicalRect* overflow);
 
   void AddOutlineRectsForNormalChildren(
-      Vector<PhysicalRect>* outline_rects,
+      OutlineRectCollector& collector,
       const PhysicalOffset& additional_offset,
       NGOutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;
-  void AddOutlineRectsForCursor(Vector<PhysicalRect>* outline_rects,
+  void AddOutlineRectsForCursor(OutlineRectCollector& collector,
                                 const PhysicalOffset& additional_offset,
                                 NGOutlineType outline_type,
                                 const LayoutBoxModelObject* containing_block,
                                 NGInlineCursor* cursor) const;
   void AddOutlineRectsForDescendant(
       const NGLink& descendant,
-      Vector<PhysicalRect>* rects,
+      OutlineRectCollector& collector,
       const PhysicalOffset& additional_offset,
       NGOutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;

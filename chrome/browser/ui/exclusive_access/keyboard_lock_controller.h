@@ -47,7 +47,6 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   void ExitExclusiveAccessToPreviousState() override;
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
-  void RecordBubbleReshowsHistogram(int bubble_reshow_count) override;
 
   // Returns true if the keyboard is locked.
   bool IsKeyboardLockActive() const;
@@ -85,18 +84,11 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   // Displays the exit instructions if the user presses escape rapidly.
   void ReShowExitBubbleIfNeeded();
 
-  // Records the number of times the exit instructions were shown due to
-  // repeated ESC keypresses.
-  void RecordForcedBubbleReshowsHistogram();
-
   // Called after the bubble is hidden in tests, if set.
   ExclusiveAccessBubbleHideCallbackForTest bubble_hide_callback_for_test_;
 
   // Called after the esc repeat threshold is reached, if set.
   base::OnceClosure esc_repeat_triggered_for_test_;
-
-  // Tracks the count of bubble reshows due to repeated ESC key presses.
-  int forced_reshow_count_ = 0;
 
   KeyboardLockState keyboard_lock_state_ = KeyboardLockState::kUnlocked;
   base::OneShotTimer hold_timer_;

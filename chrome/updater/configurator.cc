@@ -4,12 +4,12 @@
 
 #include "chrome/updater/configurator.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -78,7 +78,7 @@ base::TimeDelta Configurator::InitialDelay() const {
 }
 
 base::TimeDelta Configurator::ServerKeepAliveTime() const {
-  return base::clamp(external_constants_->ServerKeepAliveTime(),
+  return std::clamp(external_constants_->ServerKeepAliveTime(),
                      base::Seconds(1), kServerKeepAliveTime);
 }
 

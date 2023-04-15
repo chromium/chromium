@@ -45,9 +45,8 @@
 
 @interface ActivityServiceMediator ()
 
-@property(nonatomic, weak)
-    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
-        handler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands, FindInPageCommands>
+    handler;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
@@ -62,21 +61,24 @@
 // The navigation agent.
 @property(nonatomic, readonly) WebNavigationBrowserAgent* navigationAgent;
 
+@property(nonatomic, readonly) ReadingListBrowserAgent* readingListBrowserAgent;
+
 @end
 
 @implementation ActivityServiceMediator
 
 #pragma mark - Public
 
-- (instancetype)initWithHandler:(id<BrowserCommands,
-                                    BrowserCoordinatorCommands,
-                                    FindInPageCommands>)handler
+- (instancetype)initWithHandler:
+                    (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
              baseViewController:(UIViewController*)baseViewController
-                navigationAgent:(WebNavigationBrowserAgent*)navigationAgent {
+                navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
+        readingListBrowserAgent:
+            (ReadingListBrowserAgent*)readingListBrowserAgent {
   if (self = [super init]) {
     _handler = handler;
     _bookmarksHandler = bookmarksHandler;
@@ -85,6 +87,7 @@
     _bookmarkModel = bookmarkModel;
     _baseViewController = baseViewController;
     _navigationAgent = navigationAgent;
+    _readingListBrowserAgent = readingListBrowserAgent;
   }
   return self;
 }
@@ -135,7 +138,7 @@
     ReadingListActivity* readingListActivity =
         [[ReadingListActivity alloc] initWithURL:data.shareURL
                                            title:data.title
-                                      dispatcher:self.handler];
+                         readingListBrowserAgent:self.readingListBrowserAgent];
     [applicationActivities addObject:readingListActivity];
 
     BookmarkActivity* bookmarkActivity =

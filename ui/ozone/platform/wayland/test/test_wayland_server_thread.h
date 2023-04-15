@@ -53,7 +53,6 @@ struct DisplayDeleter {
 
 // Server configuration related enums and structs.
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
-enum class CompositorVersion { kV3, kV4 };
 enum class TextInputExtensionVersion { kV7, kV8 };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
@@ -61,7 +60,7 @@ enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 struct ServerConfig {
   TextInputExtensionVersion text_input_extension_version =
       TextInputExtensionVersion::kV8;
-  CompositorVersion compositor_version = CompositorVersion::kV4;
+  TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
   ShouldUseExplicitSynchronizationProtocol use_explicit_synchronization =
@@ -91,6 +90,7 @@ class TestWaylandServerThread : public base::Thread,
   class OutputDelegate;
 
   TestWaylandServerThread();
+  explicit TestWaylandServerThread(const ServerConfig& config);
 
   TestWaylandServerThread(const TestWaylandServerThread&) = delete;
   TestWaylandServerThread& operator=(const TestWaylandServerThread&) = delete;
@@ -102,9 +102,7 @@ class TestWaylandServerThread : public base::Thread,
   // descriptor that a client can connect to. The caller is responsible for
   // ensuring that this file descriptor gets closed (for example, by calling
   // wl_display_connect).
-  // Instantiates an xdg_shell of version |shell_version|; versions 6 and 7
-  // (stable) are supported.
-  bool Start(const ServerConfig& config);
+  bool Start();
 
   // Runs 'callback' or 'closure' on the server thread; blocks until the
   // callable is run and all pending Wayland requests and events are delivered.
@@ -225,13 +223,11 @@ class TestWaylandServerThread : public base::Thread,
   raw_ptr<wl_event_loop> event_loop_ = nullptr;
   raw_ptr<wl_protocol_logger> protocol_logger_ = nullptr;
 
+  ServerConfig config_;
+
   // Represent Wayland global objects
-  // Compositor version is selected dynamically by server config but version is
-  // actually set on construction thus both compositor version objects appear
-  // here.
-  // TODO(crbug.com/1315587): Refactor this pattern when required.
-  TestCompositor compositor_v4_;
-  TestCompositor compositor_v3_;
+  TestCompositor compositor_;
+
   TestSubCompositor sub_compositor_;
   TestViewporter viewporter_;
   TestAlphaCompositing alpha_compositing_;

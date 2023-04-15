@@ -158,12 +158,10 @@ std::string JsUint8Array(const std::vector<uint8_t>& bytes) {
 }
 
 std::string GetPageTextContent(content::WebContents* web_contents) {
-  std::string text_content;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents->GetPrimaryMainFrame(),
-      "domAutomationController.send(document.body.textContent);",
-      &text_content));
-  return text_content;
+  return content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                         "document.body.textContent;")
+      .ExtractString();
+  ;
 }
 
 std::string GetCertFingerprint1(const net::X509Certificate& cert) {

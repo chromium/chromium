@@ -51,3 +51,10 @@ env = ['CFG_DISABLE_UNSTABLE_FEATURES=0']
 # construct the sysroot explicitly. We don't need this, and we don't even want
 # it during cross-compiles (since we will only build host proc_macro crates).
 exclude_deps_in_gn = ['proc_macro']
+
+[crate.unwind]
+# The unwind crate has #[link] directives to the native unwind library, but we
+# either get that automatically by linking with clang++, or build and link the
+# lib from //buildtools/third_party/libunsind explicitly. Disable -lfoo linker
+# flags from this crate.
+rustflags = ['-Zlink-directives=false']

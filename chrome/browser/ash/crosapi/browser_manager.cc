@@ -95,6 +95,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_switches.h"
 #include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -235,8 +236,6 @@ void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
   base::FilePath locale_path =
       lacros_dir.Append(base::StringPrintf("locales/%s.pak", locale.c_str()));
   PreloadFile(locale_path);
-  base::FilePath locale_info_path = locale_path.AddExtension(".info");
-  PreloadFile(locale_info_path);
 
   // Preload Widevine for the right architecture.
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -566,6 +565,16 @@ BrowserManager::BrowserManager(
       component_update_service_(update_service),
       environment_provider_(std::make_unique<EnvironmentProvider>()),
       launch_at_login_screen_(
+          // NOTE: We only want to pre-launch Lacros if Ash is launched in login
+          // manager mode. When the `kLoginUser` switch is passed, we are
+          // restarting the session for an already logged in user, either in
+          // production, or after PRE_ tests. In both of those cases, the user
+          // is already logged in, and we do not want Lacros to prelaunch.
+          // Originally introduced because of https://crbug.com/1432779, which
+          // causes PRE_ tests to restart back to login screen, but with the
+          // user still "logged in" (UserManager::IsUserLoggedIn() == true).
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kLoginUser) &&
           base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)),
       disabled_for_testing_(g_disabled_for_testing) {
   DCHECK(!g_instance);
@@ -723,6 +732,11 @@ void BrowserManager::CreateBrowserWithRestoredData(
 }
 
 void BrowserManager::InitializeAndStartIfNeeded() {
+  // If we already tried to load Lacros but for some reason it wasn't available
+  // (for example, in some tests), then we should return here to avoid failure.
+  if (state_ == State::UNAVAILABLE) {
+    return;
+  }
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
   // Ensure this isn't run multiple times.
@@ -1094,13 +1108,19 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
     // DetermineLoggingDestination in logging_chrome.cc.
     argv.push_back("--enable-logging=stderr");
 
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kLoggingLevel)) {
+      argv.push_back(base::StringPrintf(
+          "--%s=%s", switches::kLoggingLevel,
+          command_line->GetSwitchValueASCII(switches::kLoggingLevel).c_str()));
+    }
+
     // TODO(crbug.com/1423163): Remove after root causing the issue.
     argv.push_back(
         "--vmodule=command_storage_backend=1,session_service_commands=1");
 
     if (launch_at_login_screen_ &&
-        !base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kDisableLoggingRedirect)) {
+        !command_line->HasSwitch(switches::kDisableLoggingRedirect)) {
       // Redirect logs to cryptohome after login on non-test images.
       argv.push_back(base::StringPrintf(
           "--%s=%s", chromeos::switches::kCrosPostLoginLogFile,

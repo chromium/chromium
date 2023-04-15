@@ -21,6 +21,11 @@ interface QuickStartDecoder {
   DecodeBootstrapConfigurations(array<uint8> data) => (
     BootstrapConfigurations? bootstrap_configurations);
 
+  // Decode a D2D response to a request for Wifi Credentials
+  // This response is JSON, with a Base64 encoded JSON payload
+  DecodeWifiCredentialsResponse(array<uint8> data) => (
+    GetWifiCredentialsResponse response);
+
   // Decode a FIDO CTAP2 GetAssertionResponse from the phone into a struct
   // that details fields we need to pass along to GAIA as well as error
   // codes from the CBOR decoding step and from the phone.

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Pirms 1 dienas}zero{Pirms # dienām}one{Pirms # dienas}other{Pirms # dienām}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pirms 1 minūtes}zero{Pirms # minūtēm}one{Pirms # minūtes}other{Pirms # minūtēm}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}zero{# min}one{# min}other{# min}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{pirms 1 dienas}zero{pirms # dienām}one{pirms # dienas}other{pirms # dienām}}</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">No kreisās uz labo pusi</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1398853756734560583">Maksimizēt</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{pirms 1 minūtes}zero{pirms # minūtēm}one{pirms # minūtes}other{pirms # minūtēm}}</translation>
 <translation id="1450753235335490080">Nevar kopīgot: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{pirms 1 mēneša}zero{pirms # mēnešiem}one{pirms # mēneša}other{pirms # mēnešiem}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minūte un }zero{# minūtes un }one{# minūte un }other{# minūtes un }}</translation>
 <translation id="1643823602425662293">Paziņojums</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Attēls</translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4588090240171750605">Ritināt pa labi</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{pirms 1 gada}zero{pirms # gadiem}one{pirms # gada}other{pirms # gadiem}}</translation>
 <translation id="4724120544754982507">Paziņojumu centrs, <ph name="UNREAD_NOTIFICATION_COUNT" /> nelasīts(-i) paziņojums(-i)</translation>
 <translation id="4729257764711776855">numuru</translation>
 <translation id="4746179598275229723">Paplašinājums ir atsprausts</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Sūtīt ziņojumu</translation>
 <translation id="8394908167088220973">Multivide — atskaņot/apturēt</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 g.}zero{# g.}one{# g.}other{# g.}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Fails <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">vēl <ph name="NUMBER" /></translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Notiek sūtīšana...</translation>
 <translation id="8876215549894133151">Formāts:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{pirms 1 stundas}zero{pirms # stundām}one{pirms # stundas}other{pirms # stundām}}</translation>
 <translation id="8996630695507351249">Ierīcei <ph name="TARGET_DEVICE_NAME" /> ir jābūt izveidotam savienojumam ar internetu.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}zero{# s}one{# s}other{# s}}</translation>
 <translation id="9059834730836941392">Sakļaut paziņojumu</translation>
 <translation id="9170848237812810038">&amp;Atsaukt</translation>
 <translation id="932327136139879170">Sākums</translation>
 <translation id="944069440740578670">Nelasītie paziņojumi</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{pirms 1 sekundes}zero{pirms # sekundēm}one{pirms # sekundes}other{pirms # sekundēm}}</translation>
 </translationbundle>

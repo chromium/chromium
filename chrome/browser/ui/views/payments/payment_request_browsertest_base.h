@@ -300,7 +300,7 @@ class PaymentRequestBrowserTestBase
   // Resets the event waiter for the events that trigger when opening a dialog.
   void ResetEventWaiterForDialogOpened();
   // Wait for the event(s) passed to ResetEventWaiter*() to occur.
-  void WaitForObservedEvent();
+  [[nodiscard]] testing::AssertionResult WaitForObservedEvent();
 
   // Return a weak pointer to a Content Security Policy (CSP) checker for tests.
   base::WeakPtr<CSPChecker> GetCSPCheckerForTests();

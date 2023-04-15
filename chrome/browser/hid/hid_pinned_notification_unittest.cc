@@ -53,7 +53,7 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
                 GetExpectedButtonTitleForProfile(pair.first));
       EXPECT_TRUE(maybe_notification->delegate());
 
-      EXPECT_CALL(*hid_connection_tracker, ShowHidContentSettingsExceptions());
+      EXPECT_CALL(*hid_connection_tracker, ShowContentSettingsExceptions());
       SimulateButtonClick(pair.first);
     }
   }

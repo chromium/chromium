@@ -2709,7 +2709,8 @@
     "os": [
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7824,37 +7825,7 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "CECPQ2Enabled": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "ssl.cecpq2_enabled": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "CECPQ2Enabled": false
-        },
-        "prefs": {
-          "ssl.cecpq2_enabled": {
-            "value": false,
-            "location": "local_state"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "EncryptedClientHelloEnabled": {
     "os": [
@@ -13611,6 +13582,9 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "ReportDeviceSignalStrengthEventDrivenTelemetry": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+  "DeviceReportNetworkEvents": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "DeviceReportXDREvents": {

@@ -432,6 +432,13 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
         entries, long_animation_frame_buffer_, maybe_name);
   }
 
+  if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled(
+          GetExecutionContext()) &&
+      visibility_state_buffer_.size()) {
+    entries = MergePerformanceEntryVectors(entries, visibility_state_buffer_,
+                                           maybe_name);
+  }
+
   return entries;
 }
 

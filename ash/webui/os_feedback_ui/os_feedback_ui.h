@@ -7,9 +7,12 @@
 
 #include <memory>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
 #include "ash/webui/os_feedback_ui/backend/help_content_provider.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
@@ -23,7 +26,19 @@ class ColorChangeHandler;
 
 namespace ash {
 
+class OSFeedbackUI;
 class OsFeedbackDelegate;
+
+// WebUIConfig for chrome://os-feedback
+class OSFeedbackUIConfig : public ChromeOSWebUIConfig<OSFeedbackUI> {
+ public:
+  explicit OSFeedbackUIConfig(CreateWebUIControllerFunc create_controller_func)
+      : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                            ash::kChromeUIOSFeedbackHost,
+                            create_controller_func) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 class OSFeedbackUI : public ui::MojoWebUIController {
  public:

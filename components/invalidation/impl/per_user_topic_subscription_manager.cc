@@ -33,14 +33,8 @@ namespace invalidation {
 
 namespace {
 
-const char kTypeSubscribedForInvalidationsDeprecated[] =
-    "invalidation.registered_for_invalidation";
-
 const char kTypeSubscribedForInvalidations[] =
     "invalidation.per_sender_registered_for_invalidation";
-
-const char kActiveRegistrationTokenDeprecated[] =
-    "invalidation.active_registration_token";
 
 const char kActiveRegistrationTokens[] =
     "invalidation.per_sender_active_registration_tokens";
@@ -108,10 +102,6 @@ class PerProjectDictionaryPrefUpdate {
 // static
 void PerUserTopicSubscriptionManager::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kTypeSubscribedForInvalidationsDeprecated);
-  registry->RegisterStringPref(kActiveRegistrationTokenDeprecated,
-                               std::string());
-
   registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
   registry->RegisterDictionaryPref(kActiveRegistrationTokens);
 }
@@ -187,8 +177,7 @@ PerUserTopicSubscriptionManager::PerUserTopicSubscriptionManager(
     IdentityProvider* identity_provider,
     PrefService* pref_service,
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const std::string& project_id,
-    bool migrate_prefs)
+    const std::string& project_id)
     : pref_service_(pref_service),
       identity_provider_(identity_provider),
       url_loader_factory_(url_loader_factory),
@@ -203,11 +192,9 @@ PerUserTopicSubscriptionManager::Create(
     IdentityProvider* identity_provider,
     PrefService* pref_service,
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const std::string& project_id,
-    bool migrate_prefs) {
+    const std::string& project_id) {
   return std::make_unique<PerUserTopicSubscriptionManager>(
-      identity_provider, pref_service, url_loader_factory, project_id,
-      migrate_prefs);
+      identity_provider, pref_service, url_loader_factory, project_id);
 }
 
 void PerUserTopicSubscriptionManager::Init() {
@@ -276,7 +263,7 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
     if (topics.find(topic) == topics.end()) {
       // Unsubscription request may only replace pending subscription request,
       // because topic immediately deleted from |topic_to_private_topic_| when
-      // unsubsciption request scheduled.
+      // unsubscription request scheduled.
       DCHECK(pending_subscriptions_.count(topic) == 0 ||
              pending_subscriptions_[topic]->type ==
                  PerUserTopicSubscriptionRequest::SUBSCRIBE);

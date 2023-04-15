@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static junit.framework.Assert.assertFalse;
 
 import static org.junit.Assert.assertEquals;
@@ -654,7 +656,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Button shouldn't be wider than the established maximum.
-        Assert.assertThat(mOptionalButtonView.getLayoutParams().width,
+        assertThat(mOptionalButtonView.getLayoutParams().width,
                 Matchers.lessThanOrEqualTo(maxActionChipWidth));
     }
 

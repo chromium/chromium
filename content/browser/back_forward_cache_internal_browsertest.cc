@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/types/expected.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 
 #include "base/command_line.h"
@@ -14,6 +15,7 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -415,8 +417,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // Verify proxies are stored as well.
-  auto* cached_entry = cache.GetEntry(rfh_a->nav_entry_id());
-  EXPECT_EQ(2u, cached_entry->proxy_hosts_size());
+  auto cached_entry = cache.GetOrEvictEntry(rfh_a->nav_entry_id());
+  EXPECT_TRUE(cached_entry.has_value());
+  EXPECT_EQ(2u, cached_entry.value()->proxy_hosts_size());
 
   // 3. Navigate from an uncacheable to a cached page page (B->A).
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -453,8 +456,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // Verify proxies are stored as well.
-  cached_entry = cache.GetEntry(rfh_a->nav_entry_id());
-  EXPECT_EQ(2u, cached_entry->proxy_hosts_size());
+  cached_entry = cache.GetOrEvictEntry(rfh_a->nav_entry_id());
+  EXPECT_TRUE(cached_entry.has_value());
+  EXPECT_EQ(2u, cached_entry.value()->proxy_hosts_size());
 
   // 5. Navigate from a cacheable page to a cached page (C->A).
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -472,8 +476,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_c->IsInBackForwardCache());
 
   // Verify proxies are stored as well.
-  cached_entry = cache.GetEntry(rfh_c->nav_entry_id());
-  EXPECT_EQ(3u, cached_entry->proxy_hosts_size());
+  cached_entry = cache.GetOrEvictEntry(rfh_c->nav_entry_id());
+  EXPECT_TRUE(cached_entry.has_value());
+  EXPECT_EQ(3u, cached_entry.value()->proxy_hosts_size());
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

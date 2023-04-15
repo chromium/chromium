@@ -28,11 +28,6 @@
 #include "base/values.h"
 
 namespace base {
-namespace internal {
-BASE_FEATURE(kHistogramNewSnapshotDelta,
-             "HistogramNewSnapshotDelta",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace internal
 
 std::string HistogramTypeToString(HistogramType type) {
   switch (type) {

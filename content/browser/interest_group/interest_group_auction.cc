@@ -635,6 +635,7 @@ class InterestGroupAuction::BuyerHelper
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
       const std::vector<std::string>& errors) override {
     BidState* state = generate_bid_client_receiver_set_.current_context();
@@ -653,7 +654,7 @@ class InterestGroupAuction::BuyerHelper
         bidding_signals_data_version, has_bidding_signals_data_version,
         debug_loss_report_url, debug_win_report_url, set_priority,
         has_set_priority, std::move(update_priority_signals_overrides),
-        std::move(pa_requests), errors);
+        std::move(pa_requests), std::move(non_kanon_pa_requests), errors);
   }
 
   // Closes all Mojo pipes, releases all weak pointers, and stops the timeout
@@ -773,6 +774,7 @@ class InterestGroupAuction::BuyerHelper
   // `signals` are the PostAuctionSignals from the auction `this` was a part of.
   void TakePrivateAggregationRequests(
       const BidState* winner,
+      const BidState* non_kanon_winner,
       const PostAuctionSignals& signals,
       std::map<url::Origin, PrivateAggregationRequests>&
           private_aggregation_requests_reserved,
@@ -801,6 +803,28 @@ class InterestGroupAuction::BuyerHelper
               private_aggregation_requests_reserved[origin].emplace_back(
                   std::move(converted_request_value.request));
             }
+          }
+        }
+      }
+      if (non_kanon_winner == state.get()) {
+        const url::Origin& bidder = state->bidder->interest_group.owner;
+        for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+             state->non_kanon_private_aggregation_requests) {
+          absl::optional<PrivateAggregationRequestWithEventType>
+              converted_request = FillInPrivateAggregationRequest(
+                  std::move(request), signals.winning_bid,
+                  signals.highest_scoring_other_bid,
+                  auction_worklet::mojom::RejectReason::kBelowKAnonThreshold,
+                  false);
+          if (converted_request.has_value()) {
+            PrivateAggregationRequestWithEventType converted_request_value =
+                std::move(converted_request.value());
+            // Only reserved types are supported for k-anon failures.
+            // This *should* be guaranteed by `FillInPrivateAggregationRequest`
+            // since we passed in `false` for `is_winner`.
+            DCHECK(!converted_request_value.event_type.has_value());
+            private_aggregation_requests_reserved[bidder].emplace_back(
+                std::move(converted_request_value.request));
           }
         }
       }
@@ -923,6 +947,7 @@ class InterestGroupAuction::BuyerHelper
         /*has_set_priority=*/false,
         /*update_priority_signals_overrides=*/{},
         /*pa_requests=*/{},
+        /*non_kanon_pa_requests=*/{},
         /*errors=*/{});
   }
 
@@ -1094,6 +1119,7 @@ class InterestGroupAuction::BuyerHelper
           /*has_set_priority=*/false,
           /*update_priority_signals_overrides=*/{},
           /*pa_requests=*/{},
+          /*non_kanon_pa_requests=*/{},
           /*errors=*/{});
       // If this was the last bidder, and it was filtered out, there's nothing
       // else to do, and `this` may have already been deleted.
@@ -1188,6 +1214,7 @@ class InterestGroupAuction::BuyerHelper
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      PrivateAggregationRequests non_kanon_pa_requests,
       const std::vector<std::string>& errors) {
     DCHECK(!state->made_bid);
     DCHECK_GT(num_outstanding_bids_, 0);
@@ -1254,6 +1281,10 @@ class InterestGroupAuction::BuyerHelper
         pa_requests,
         [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
                request_ptr) { return request_ptr.is_null(); }));
+    DCHECK(base::ranges::none_of(
+        non_kanon_pa_requests,
+        [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+               request_ptr) { return request_ptr.is_null(); }));
     auction_->MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       PrivateAggregationRequests& pa_requests_for_bidder =
@@ -1261,6 +1292,14 @@ class InterestGroupAuction::BuyerHelper
       pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
                                     std::move_iterator(pa_requests.begin()),
                                     std::move_iterator(pa_requests.end()));
+    }
+    if (!non_kanon_pa_requests.empty()) {
+      PrivateAggregationRequests& non_kanon_pa_requests_for_bidder =
+          state->non_kanon_private_aggregation_requests;
+      non_kanon_pa_requests_for_bidder.insert(
+          non_kanon_pa_requests_for_bidder.end(),
+          std::move_iterator(non_kanon_pa_requests.begin()),
+          std::move_iterator(non_kanon_pa_requests.end()));
     }
 
     auction_->errors_.insert(auction_->errors_.end(), errors.begin(),
@@ -2012,6 +2051,9 @@ base::StringPiece GetRejectReasonString(
     case auction_worklet::mojom::RejectReason::kCategoryExclusions:
       reject_reason_str = "category-exclusions";
       break;
+    case auction_worklet::mojom::RejectReason::kBelowKAnonThreshold:
+      reject_reason_str = "below-kanon-threshold";
+      break;
   }
   return reject_reason_str;
 }
@@ -2176,6 +2218,12 @@ void InterestGroupAuction::
     winner = leader.top_bid->bid->bid_state;
   }
 
+  BidState* non_kanon_winner = nullptr;
+  if (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kEnforce &&
+      HasNonKAnonWinner() && !NonKAnonWinnerIsKAnon()) {
+    non_kanon_winner = top_non_kanon_enforced_bid()->bid->bid_state;
+  }
+
   // `signals` includes post auction signals from current auction.
   PostAuctionSignals signals;
   signals.winning_bid = leader.top_bid ? leader.top_bid->bid->bid : 0.0;
@@ -2224,7 +2272,8 @@ void InterestGroupAuction::
     std::map<std::string, PrivateAggregationRequests>
         private_aggregation_requests_non_reserved;
     buyer_helper->TakePrivateAggregationRequests(
-        winner, signals, private_aggregation_requests_reserved,
+        winner, non_kanon_winner, signals,
+        private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
 
     for (auto& [origin, requests] : private_aggregation_requests_reserved) {

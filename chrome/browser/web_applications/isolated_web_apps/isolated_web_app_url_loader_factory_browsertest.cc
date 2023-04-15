@@ -27,6 +27,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -156,6 +157,18 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
         /*foreground=*/true);
 
     return app_window->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::RenderFrameHost* Navigate(const GURL& url) {
+    Browser* app_window = CreateAppWindow();
+    AttachWebContents(app_window);
+
+    content::RenderFrameHost* render_frame_host = NavigateToURLWithDisposition(
+        app_window, url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+    CHECK(render_frame_host);
+    return render_frame_host;
   }
 
   void NavigateAndWaitForTitle(const GURL& url,
@@ -390,6 +403,67 @@ self.addEventListener('activate', (event) => {
 
   NavigateAndWaitForTitle(GURL(kUrl),
                           u"data from web bundle data from service worker");
+}
+
+class IsolatedWebAppURLLoaderFactoryFrameBrowserTest
+    : public IsolatedWebAppURLLoaderFactoryBrowserTest {
+ protected:
+  void NavigateAndCheckForErrors(web_package::WebBundleBuilder&& builder) {
+    base::FilePath bundle_path =
+        SignAndWriteBundleToDisk(builder.CreateBundle());
+    std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
+        kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+    RegisterWebApp(std::move(iwa));
+    TrustWebBundleId();
+
+    auto* rfh = Navigate(kUrl);
+
+    // It is not easily possible from JavaScript to determine whether a frame
+    // has loaded successfully or errored (`frame.onload` also triggers when an
+    // error page is loaded in the frame, `frame.onerror` never triggers). Thus,
+    // we eval JS inside the created frame to compare the frame's content to the
+    // expected content.
+    int sub_frame_count = 0;
+    rfh->ForEachRenderFrameHost(
+        [&sub_frame_count](content::RenderFrameHost* rfh) {
+          if (rfh->IsInPrimaryMainFrame()) {
+            return;
+          }
+          ++sub_frame_count;
+          EXPECT_THAT(content::EvalJs(rfh, "document.body.innerText"),
+                      Eq("inner frame content"));
+        });
+    EXPECT_THAT(sub_frame_count, Eq(1));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryFrameBrowserTest,
+                       CanUseDataUrlForFrame) {
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(
+      kUrl, {{":status", "200"}, {"content-type", "text/html"}},
+      "<iframe src=\"data:text/html,<h1>inner frame content</h1>\"></iframe>");
+  ASSERT_NO_FATAL_FAILURE(NavigateAndCheckForErrors(std::move(builder)));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryFrameBrowserTest,
+                       CanUseBlobUrlForFrame) {
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kUrl, {{":status", "200"}, {"content-type", "text/html"}},
+                      "<script src=\"script.js\"></script>");
+  builder.AddExchange(
+      kUrl.Resolve("/script.js"),
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      R"(
+const iframe = document.createElement("iframe");
+document.currentScript.appendChild(iframe);
+const blob = new Blob(
+  ['<h1>inner frame content</h1>'],
+  {type : 'text/html'}
+);
+iframe.src = window.URL.createObjectURL(blob);
+  )");
+  ASSERT_NO_FATAL_FAILURE(NavigateAndCheckForErrors(std::move(builder)));
 }
 
 class IsolatedWebAppURLLoaderFactoryCSPBrowserTest

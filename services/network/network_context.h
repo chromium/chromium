@@ -128,6 +128,7 @@ class ProxyLookupRequest;
 class ResourceSchedulerClient;
 class SCTAuditingHandler;
 class SessionCleanupCookieStore;
+class SharedDictionaryManager;
 class SQLiteTrustTokenPersister;
 class WebSocketFactory;
 class WebTransport;
@@ -589,6 +590,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   WebBundleManager& GetWebBundleManager() { return web_bundle_manager_; }
 
+  SharedDictionaryManager* GetSharedDictionaryManager() {
+    return shared_dictionary_manager_.get();
+  }
+
   // May return null if the in-memory cache is disabled.
   NetworkServiceMemoryCache* GetMemoryCache();
 
@@ -941,6 +946,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       http_cache_file_operations_factory_;
 
   const CacheTransparencySettings cache_transparency_settings_;
+
+  // Used only when blink::features::kCompressionDictionaryTransportBackend is
+  // enabled.
+  std::unique_ptr<SharedDictionaryManager> shared_dictionary_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

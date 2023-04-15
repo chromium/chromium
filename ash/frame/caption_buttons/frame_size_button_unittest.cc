@@ -944,7 +944,7 @@ TEST_F(MultitaskMenuTest, CloseOnClickOutside) {
 // Tests that moving the mouse outside the menu will close the menu, if opened
 // via hovering on the frame size button.
 TEST_F(MultitaskMenuTest, MoveMouseOutsideMenu) {
-  chromeos::MultitaskMenuView::SetSkipMouseOutDelayFoTesting(true);
+  chromeos::MultitaskMenuView::SetSkipMouseOutDelayForTesting(true);
 
   // Simulate opening the menu by moving the mouse to the frame size button and
   // opening the menu.
@@ -975,6 +975,22 @@ TEST_F(MultitaskMenuTest, MoveMouseOutsideMenu) {
   event_generator->MoveMouseTo(gfx::Point(1, 1));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetMultitaskMenu());
+}
+
+// Tests that window accelerators, e.g. minimize, still work when the multitask
+// menu is open.
+TEST_F(MultitaskMenuTest, MinimizeWhenMenuShown) {
+  ShowMultitaskMenu();
+
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN);
+  ASSERT_TRUE(window_state()->IsMinimized());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetMultitaskMenu());
+
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN);
+  ASSERT_FALSE(window_state()->IsMinimized());
+  EXPECT_TRUE(GetWidget()->GetNativeWindow()->IsVisible());
+  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 }  // namespace ash

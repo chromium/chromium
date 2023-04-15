@@ -8,6 +8,9 @@
 
 namespace performance_manager::user_tuning {
 
+const int UserPerformanceTuningNotifier::kTabCountThresholdForPromo = 10;
+const int UserPerformanceTuningNotifier::kMemoryPercentThresholdForPromo = 70;
+
 UserPerformanceTuningNotifier::UserPerformanceTuningNotifier(
     std::unique_ptr<Receiver> receiver,
     uint64_t resident_set_threshold_kb,

@@ -310,7 +310,7 @@ void PaymentRequestBrowserTestBase::InvokePaymentRequestUIWithJs(
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
 
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // The web-modal dialog should be open.
   web_modal::WebContentsModalDialogManager* web_contents_modal_dialog_manager =
@@ -321,13 +321,9 @@ void PaymentRequestBrowserTestBase::InvokePaymentRequestUIWithJs(
 void PaymentRequestBrowserTestBase::ExpectBodyContains(
     const std::vector<std::string>& expected_strings) {
   content::WebContents* web_contents = GetActiveWebContents();
-  const std::string extract_contents_js =
-      "(function() { "
-      "window.domAutomationController.send(window.document.body.textContent); "
-      "})()";
-  std::string contents;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, extract_contents_js, &contents));
+  const std::string extract_contents_js = "window.document.body.textContent;";
+  std::string contents =
+      content::EvalJs(web_contents, extract_contents_js).ExtractString();
   for (const std::string& expected_string : expected_strings) {
     EXPECT_NE(std::string::npos, contents.find(expected_string))
         << "String \"" << expected_string
@@ -580,7 +576,7 @@ void PaymentRequestBrowserTestBase::ClickOnDialogViewAndWait(
   if (wait_for_animation) {
     WaitForAnimation(dialog_view);
   }
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 void PaymentRequestBrowserTestBase::ClickOnDialogView(views::View* view) {
@@ -683,7 +679,7 @@ void PaymentRequestBrowserTestBase::RetryPaymentRequest(
   ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
                                      "retry(" + validation_errors + ");"));
 
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 void PaymentRequestBrowserTestBase::RetryPaymentRequest(
@@ -699,7 +695,7 @@ void PaymentRequestBrowserTestBase::RetryPaymentRequest(
   ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
                                      "retry(" + validation_errors + ");"));
 
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 bool PaymentRequestBrowserTestBase::IsViewVisible(DialogViewID view_id) const {
@@ -885,8 +881,8 @@ void PaymentRequestBrowserTestBase::ResetEventWaiterForDialogOpened() {
                                DialogEvent::DIALOG_OPENED});
 }
 
-void PaymentRequestBrowserTestBase::WaitForObservedEvent() {
-  event_waiter_->Wait();
+testing::AssertionResult PaymentRequestBrowserTestBase::WaitForObservedEvent() {
+  return event_waiter_->Wait();
 }
 
 base::WeakPtr<CSPChecker>

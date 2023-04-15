@@ -44,11 +44,11 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 device::BluetoothTransport GetBluetoothTransport(bt::Transport transport) {
   switch (transport) {
-    case bt::Transport::TRANSPORT_CLASSIC:
+    case bt::Transport::kClassic:
       return device::BLUETOOTH_TRANSPORT_CLASSIC;
-    case bt::Transport::TRANSPORT_LE:
+    case bt::Transport::kLe:
       return device::BLUETOOTH_TRANSPORT_LE;
-    case bt::Transport::TRANSPORT_DUAL:
+    case bt::Transport::kDual:
       return device::BLUETOOTH_TRANSPORT_DUAL;
     default:
       return device::BLUETOOTH_TRANSPORT_INVALID;

@@ -46,6 +46,9 @@ class CONTENT_EXPORT AttributionReport {
                    int64_t priority,
                    double randomized_trigger_rate,
                    Id id);
+    // This is added to allow default construction of
+    // `AttributionReport::Data()`.
+    EventLevelData();
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -81,6 +84,7 @@ class CONTENT_EXPORT AttributionReport {
         ::aggregation_service::mojom::AggregationCoordinator
             aggregation_coordinator,
         absl::optional<std::string> attestation_token);
+    AggregatableAttributionData();
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
     AggregatableAttributionData(AggregatableAttributionData&&);
@@ -118,7 +122,10 @@ class CONTENT_EXPORT AttributionReport {
     // `attribution_test_utils.h` should also be updated.
   };
 
+  // TODO(linnan): Use a single Id type for both types of reports.
   using Id = absl::variant<EventLevelData::Id, AggregatableAttributionData::Id>;
+
+  using Data = absl::variant<EventLevelData, AggregatableAttributionData>;
 
   static Type GetReportType(Id report_id) {
     return static_cast<Type>(report_id.index());
@@ -129,13 +136,12 @@ class CONTENT_EXPORT AttributionReport {
   static absl::optional<base::Time> MinReportTime(absl::optional<base::Time> a,
                                                   absl::optional<base::Time> b);
 
-  AttributionReport(
-      AttributionInfo attribution_info,
-      base::Time report_time,
-      base::Time initial_report_time,
-      base::GUID external_report_id,
-      int failed_send_attempts,
-      absl::variant<EventLevelData, AggregatableAttributionData> data);
+  AttributionReport(AttributionInfo attribution_info,
+                    base::Time report_time,
+                    base::Time initial_report_time,
+                    base::GUID external_report_id,
+                    int failed_send_attempts,
+                    Data data);
   AttributionReport(const AttributionReport&);
   AttributionReport& operator=(const AttributionReport&);
   AttributionReport(AttributionReport&&);
@@ -162,14 +168,9 @@ class CONTENT_EXPORT AttributionReport {
 
   int failed_send_attempts() const { return failed_send_attempts_; }
 
-  const absl::variant<EventLevelData, AggregatableAttributionData>& data()
-      const {
-    return data_;
-  }
+  const Data& data() const { return data_; }
 
-  absl::variant<EventLevelData, AggregatableAttributionData>& data() {
-    return data_;
-  }
+  Data& data() { return data_; }
 
   Type GetReportType() const { return static_cast<Type>(data_.index()); }
 
@@ -195,7 +196,7 @@ class CONTENT_EXPORT AttributionReport {
   int failed_send_attempts_;
 
   // Only one type of data may be stored at once.
-  absl::variant<EventLevelData, AggregatableAttributionData> data_;
+  Data data_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

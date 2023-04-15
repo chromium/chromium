@@ -167,7 +167,7 @@ TEST_F('CrComponentsAppManagementUninstallButtonTest', 'All', function() {
 var CrComponentsSettingsPrefsTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=cr_components/settings_prefs_tests.js';  //  presubmit: ignore-long-line
+    return 'chrome://settings/test_loader.html?module=cr_components/settings_prefs_test.js';  //  presubmit: ignore-long-line
   }
 };
 
@@ -178,7 +178,7 @@ TEST_F('CrComponentsSettingsPrefsTest', 'All', function() {
 var CrComponentsSettingsPrefUtilsTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=cr_components/settings_pref_util_tests.js';  //  presubmit: ignore-long-line
+    return 'chrome://settings/test_loader.html?module=cr_components/settings_pref_util_test.js';  //  presubmit: ignore-long-line
   }
 };
 

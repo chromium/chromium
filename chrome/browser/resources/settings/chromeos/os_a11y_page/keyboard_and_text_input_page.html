@@ -88,7 +88,7 @@
       <cr-link-row id="switchAccessSubpageButton"
           class="settings-box"
           label="$i18n{switchAccessOptionsLabel}"
-          on-click="onSwitchAccessSettingsTap_"
+          on-click="onSwitchAccessSettingsClick_"
           role-description="$i18n{subpageArrowRoleDescription}" embedded>
       </cr-link-row>
     </div>
@@ -128,7 +128,7 @@
 </settings-toggle-button>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="keyboardSubpageButton" class="hr"
-      label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardTap_"
+      label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardClick_"
       sub-label="$i18n{keyboardSettingsDescription}"
       role-description="$i18n{subpageArrowRoleDescription}" embedded>
   </cr-link-row>

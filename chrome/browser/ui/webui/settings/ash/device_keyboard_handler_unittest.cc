@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/observer_list.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +32,7 @@ class TestKeyboardHandler : public KeyboardHandler {
 
 }  // namespace
 
-class KeyboardHandlerTest : public testing::Test {
+class KeyboardHandlerTest : public ChromeAshTestBase {
  public:
   KeyboardHandlerTest() : handler_test_api_(&handler_) {
     handler_.set_web_ui(&web_ui_);

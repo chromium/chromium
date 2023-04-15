@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/account_checker.h"
-#include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/json/values_util.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
@@ -15,6 +13,8 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -42,9 +42,11 @@ const char kNotificationsPrefUrl[] =
 AccountChecker::AccountChecker(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
+      sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
       weak_ptr_factory_(this) {
   if (identity_manager) {
@@ -68,6 +70,12 @@ AccountChecker::~AccountChecker() = default;
 bool AccountChecker::IsSignedIn() {
   return identity_manager_ &&
          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+}
+
+bool AccountChecker::IsSyncingBookmarks() {
+  return sync_service_ && syncer::GetUploadToGoogleState(
+                              sync_service_, syncer::ModelType::BOOKMARKS) ==
+                              syncer::UploadState::ACTIVE;
 }
 
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {
@@ -170,7 +178,7 @@ void AccountChecker::OnFetchWaaJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (pref_service_ && result.has_value() && result->is_dict()) {
     const char waa_response_key[] = "history_recording_enabled";
-    if (auto waa_enabled = result->FindBoolKey(waa_response_key)) {
+    if (auto waa_enabled = result->GetDict().FindBool(waa_response_key)) {
       pref_service_->SetBoolean(kWebAndAppActivityEnabledForShopping,
                                 *waa_enabled);
     }
@@ -270,12 +278,11 @@ void AccountChecker::OnPriceEmailPrefChanged() {
   }
 
   // Send the new value to server.
-  base::Value preferences_map(base::Value::Type::DICT);
-  preferences_map.SetBoolKey(
-      kPriceTrackEmailPref,
-      pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));
-  base::Value post_json(base::Value::Type::DICT);
-  post_json.SetKey(kPreferencesKey, std::move(preferences_map));
+  base::Value::Dict post_json = base::Value::Dict().Set(
+      kPreferencesKey,
+      base::Value::Dict().Set(
+          kPriceTrackEmailPref,
+          pref_service_->GetBoolean(kPriceEmailNotificationsEnabled)));
   std::string post_data;
   base::JSONWriter::Write(post_json, &post_data);
 

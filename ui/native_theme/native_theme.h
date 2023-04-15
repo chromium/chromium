@@ -500,6 +500,14 @@ class NATIVE_THEME_EXPORT NativeTheme {
   }
   absl::optional<SkColor> user_color() const { return user_color_; }
 
+  void set_scheme_variant(
+      absl::optional<ui::ColorProviderManager::SchemeVariant> scheme_variant) {
+    scheme_variant_ = scheme_variant;
+  }
+  absl::optional<ui::ColorProviderManager::SchemeVariant> scheme_variant() {
+    return scheme_variant_;
+  }
+
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
   // the state of NativeTheme was untouched.
@@ -583,8 +591,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
-  // User's primary color. Included in the ColorProvider Key.
+  // User's primary color. Included in the `ColorProvider::Key` as the basis of
+  // all generated colors.
   absl::optional<SkColor> user_color_;
+
+  // System color scheme variant. Used in `ColorProvider::Key` to specify the
+  // transforms of `user_color_` which generate colors.
+  absl::optional<ui::ColorProviderManager::SchemeVariant> scheme_variant_;
 
   bool should_use_dark_colors_ = false;
   const ui::SystemTheme system_theme_;

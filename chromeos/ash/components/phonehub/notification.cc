@@ -20,27 +20,32 @@ const char kVisibleAppName[] = "visible_app_name";
 const char kPackageName[] = "package_name";
 const char kUserId[] = "user_id";
 const char kAppStreamabilityStatus[] = "app_streamability_status";
-const char kIcon[] = "icon";
+const char kColorIcon[] = "icon";
 const char kIconColorR[] = "icon_color_r";
 const char kIconColorG[] = "icon_color_g";
 const char kIconColorB[] = "icon_color_b";
 const char kIconIsMonochrome[] = "icon_is_monochrome";
+const char kMonochromeIconMask[] = "monochrome_icon_mask";
 
 Notification::AppMetadata::AppMetadata(
     const std::u16string& visible_app_name,
     const std::string& package_name,
-    const gfx::Image& icon,
+    const gfx::Image& color_icon,
+    const absl::optional<gfx::Image>& monochrome_icon_mask,
     const absl::optional<SkColor> icon_color,
     bool icon_is_monochrome,
     int64_t user_id,
     proto::AppStreamabilityStatus app_streamability_status)
     : visible_app_name(visible_app_name),
       package_name(package_name),
-      icon(icon),
+      color_icon(color_icon),
+      monochrome_icon_mask(monochrome_icon_mask),
       icon_color(icon_color),
       icon_is_monochrome(icon_is_monochrome),
       user_id(user_id),
       app_streamability_status(app_streamability_status) {}
+
+Notification::AppMetadata::~AppMetadata() = default;
 
 Notification::AppMetadata::AppMetadata(const AppMetadata& other) = default;
 
@@ -49,7 +54,7 @@ Notification::AppMetadata& Notification::AppMetadata::operator=(
 
 bool Notification::AppMetadata::operator==(const AppMetadata& other) const {
   return visible_app_name == other.visible_app_name &&
-         package_name == other.package_name && icon == other.icon &&
+         package_name == other.package_name && color_icon == other.color_icon &&
          user_id == other.user_id;
 }
 
@@ -58,13 +63,20 @@ bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {
 }
 
 base::Value::Dict Notification::AppMetadata::ToValue() const {
-  scoped_refptr<base::RefCountedMemory> png_data = icon.As1xPNGBytes();
+  scoped_refptr<base::RefCountedMemory> png_data = color_icon.As1xPNGBytes();
+  scoped_refptr<base::RefCountedMemory> monochrome_mask_png_data;
 
   base::Value::Dict val;
   val.Set(kVisibleAppName, visible_app_name);
   val.Set(kPackageName, package_name);
   val.Set(kUserId, static_cast<double>(user_id));
-  val.Set(kIcon, base::Base64Encode(*png_data));
+  val.Set(kColorIcon, base::Base64Encode(*png_data));
+
+  if (monochrome_icon_mask.has_value()) {
+    monochrome_mask_png_data = monochrome_icon_mask.value().As1xPNGBytes();
+    val.Set(kMonochromeIconMask, base::Base64Encode(*monochrome_mask_png_data));
+  }
+
   val.Set(kIconIsMonochrome, icon_is_monochrome);
   if (icon_color.has_value()) {
     val.Set(kIconColorR, static_cast<int>(SkColorGetR(*icon_color)));
@@ -81,7 +93,11 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   DCHECK(value.FindString(kVisibleAppName));
   DCHECK(value.FindString(kPackageName));
   DCHECK(value.FindDouble(kUserId));
-  DCHECK(value.FindString(kIcon));
+  DCHECK(value.FindString(kColorIcon));
+
+  if (value.contains(kMonochromeIconMask)) {
+    DCHECK(value.FindString(kMonochromeIconMask));
+  }
 
   if (value.contains(kIconIsMonochrome)) {
     DCHECK(value.FindBool(kIconIsMonochrome));
@@ -106,14 +122,25 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
         base::UTF8ToUTF16(visible_app_name_value->GetString());
   }
 
-  std::string icon_str;
-  base::Base64Decode(*(value.FindString(kIcon)), &icon_str);
-  gfx::Image decode_icon = gfx::Image::CreateFrom1xPNGBytes(
-      base::MakeRefCounted<base::RefCountedString>(std::move(icon_str)));
+  std::string color_icon_str;
+  base::Base64Decode(*(value.FindString(kColorIcon)), &color_icon_str);
+  gfx::Image decode_color_icon = gfx::Image::CreateFrom1xPNGBytes(
+      base::MakeRefCounted<base::RefCountedString>(std::move(color_icon_str)));
+
+  absl::optional<gfx::Image> decode_monochrome_icon_mask = absl::nullopt;
+  std::string monochrome_icon_mask_str;
+  if (value.contains(kMonochromeIconMask)) {
+    base::Base64Decode(*(value.FindString(kMonochromeIconMask)),
+                       &monochrome_icon_mask_str);
+    decode_monochrome_icon_mask = gfx::Image::CreateFrom1xPNGBytes(
+        base::MakeRefCounted<base::RefCountedString>(
+            std::move(monochrome_icon_mask_str)));
+  }
 
   return Notification::AppMetadata(
       visible_app_name_string_value, *(value.FindString(kPackageName)),
-      decode_icon, icon_color, icon_is_monochrome, *(value.FindDouble(kUserId)),
+      decode_color_icon, decode_monochrome_icon_mask, icon_color,
+      icon_is_monochrome, *(value.FindDouble(kUserId)),
       static_cast<proto::AppStreamabilityStatus>(
           value.FindInt(kAppStreamabilityStatus)
               .value_or(static_cast<int>(

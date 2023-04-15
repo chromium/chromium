@@ -11,9 +11,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -51,7 +51,7 @@ class ShortcutSubManagerTestBase : public WebAppTest {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -115,7 +115,7 @@ class ShortcutSubManagerTestBase : public WebAppTest {
 
  private:
   raw_ptr<FakeWebAppProvider> provider_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
@@ -223,8 +223,8 @@ class ShortcutSubManagerExecuteTest
       return SK_ColorTRANSPARENT;
     }
 
-    scoped_refptr<OsIntegrationTestOverride> test_override =
-        GetOsIntegrationTestOverride();
+    scoped_refptr<OsIntegrationTestOverrideImpl> test_override =
+        OsIntegrationTestOverrideImpl::Get();
 
 #if BUILDFLAG(IS_WIN)
     absl::optional<SkColor> desktop_color =
@@ -301,7 +301,7 @@ TEST_P(ShortcutSubManagerExecuteTest, InstallAppVerifyCorrectShortcuts) {
       ASSERT_FALSE(os_integration_state.has_shortcut());
     }
 
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutCreated(
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
 
@@ -332,7 +332,7 @@ TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
       ASSERT_FALSE(os_integration_state.has_shortcut());
     }
 
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutCreated(
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
     ASSERT_THAT(
@@ -362,7 +362,7 @@ TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
 // TODO(crbug.com/1425967): Enable once PList parsing code is added to
 // OsIntegrationTestOverride for Mac shortcut checking.
 #if !BUILDFLAG(IS_MAC)
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutCreated(
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
     ASSERT_THAT(
@@ -391,7 +391,7 @@ TEST_P(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
       ASSERT_FALSE(os_integration_state.has_shortcut());
     }
 
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutCreated(
+    ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
     ASSERT_THAT(
@@ -402,7 +402,7 @@ TEST_P(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
 
   test::UninstallAllWebApps(profile());
   if (HasShortcutsOsIntegration()) {
-    ASSERT_FALSE(GetOsIntegrationTestOverride()->IsShortcutCreated(
+    ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
   }

@@ -509,7 +509,7 @@ TEST_F(SafetyCheckMediatorTest,
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
               base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                  IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1)));
+                  IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1)));
   EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, UnsafeImage());
   EXPECT_TRUE(
       [mediator_.passwordCheckItem.trailingImageTintColor isEqual:RedColor()]);

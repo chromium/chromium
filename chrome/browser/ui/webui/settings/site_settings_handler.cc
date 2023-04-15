@@ -1210,8 +1210,8 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
 
   // Get permission exceptions which apply to a single site
   for (auto content_type : content_types) {
-    auto exceptions =
-        site_settings::GetSiteExceptionsForContentType(map, content_type);
+    auto exceptions = site_settings::GetSingleOriginExceptionsForContentType(
+        map, content_type);
     for (const auto& e : exceptions) {
       GURL url = GURL(e.primary_pattern.ToString());
       CreateOrAppendSiteGroupEntry(&all_sites_map_, url);

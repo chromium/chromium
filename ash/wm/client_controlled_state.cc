@@ -24,6 +24,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
@@ -120,6 +121,15 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     // Then ask delegate to set the desired bounds for the snap state.
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
+  } else if (window_state->IsFloated()) {
+    const gfx::Rect bounds =
+        Shell::Get()->tablet_mode_controller()->InTabletMode()
+            ? FloatController::GetPreferredFloatWindowTabletBounds(
+                  window_state->window())
+            : FloatController::GetPreferredFloatWindowClamshellBounds(
+                  window_state->window());
+    delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
+                                   bounds, window_state->GetDisplay().id());
   } else if (event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED) {
     // Explicitly handle the primary change because it can change the display id
     // with no bounds change.
@@ -188,12 +198,19 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
                                                const WMEvent* event) {
   if (!delegate_)
     return;
+  auto* const window = window_state->window();
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
       const auto* set_bounds_event =
           static_cast<const SetBoundsWMEvent*>(event);
       const gfx::Rect& bounds = set_bounds_event->requested_bounds();
       if (set_bounds_locally_) {
+        // Don’t preempt on-going animation (e.g. tucking) for floated windows.
+        if (window_state->IsFloated() && window->layer() &&
+            window->layer()->GetAnimator()->is_animating()) {
+          return;
+        }
+
         switch (next_bounds_change_animation_type_) {
           case WindowState::BoundsChangeAnimationType::kNone:
             window_state->SetBoundsDirect(bounds);
@@ -221,7 +238,6 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
         // TODO(oshima): Define behavior for pinned app.
         bounds_change_animation_duration_ = set_bounds_event->duration();
         int64_t display_id = set_bounds_event->display_id();
-        auto* window = window_state->window();
         if (display_id == display::kInvalidDisplayId) {
           display_id = display::Screen::GetScreen()
                            ->GetDisplayNearestWindow(window)
@@ -267,14 +283,10 @@ bool ClientControlledState::EnterNextState(WindowState* window_state,
   window_state->NotifyPreStateTypeChange(previous_state_type);
 
   auto* const window = window_state->window();
-  // Don't update the window if the window is detached from parent.
-  // This can happen during dragging.
-  // TODO(oshima): This was added for DOCKED windows. Investigate if
-  // we still need this.
-  if (window->parent()) {
-    UpdateMinimizedState(window_state, previous_state_type);
-  }
 
+  // Calling order matters. We need to handle the floated state before handling
+  // the minimized state because FloatController may change the visibility of
+  // the window.
   auto* const float_controller = Shell::Get()->float_controller();
   if (next_state_type == WindowStateType::kFloated) {
     if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
@@ -285,6 +297,14 @@ bool ClientControlledState::EnterNextState(WindowState* window_state,
   }
   if (previous_state_type == WindowStateType::kFloated) {
     float_controller->UnfloatImpl(window);
+  }
+
+  // Don't update the window if the window is detached from parent.
+  // This can happen during dragging.
+  // TODO(oshima): This was added for DOCKED windows. Investigate if
+  // we still need this.
+  if (window->parent()) {
+    UpdateMinimizedState(window_state, previous_state_type);
   }
 
   window_state->NotifyPostStateTypeChange(previous_state_type);

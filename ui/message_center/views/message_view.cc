@@ -545,12 +545,13 @@ void MessageView::UpdateBackgroundPainter() {
 void MessageView::UpdateNestedBorder() {
   if (!is_nested_ || !GetWidget())
     return;
-  SkColor border_color =
-      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused);
 
+  SkColor border_color;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled())
-    border_color = SK_ColorTRANSPARENT;
+  border_color = SK_ColorTRANSPARENT;
+#else
+  border_color =
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused);
 #endif
 
   SetBorder(views::CreateRoundedRectBorder(

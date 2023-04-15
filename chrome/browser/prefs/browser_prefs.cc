@@ -215,7 +215,6 @@
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/prefetch/offline_metrics_collector_impl.h"
-#include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -251,6 +250,7 @@
 #include "chrome/browser/video_tutorials/prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/content_creation/notes/core/note_prefs.h"
+#include "components/ntp_snippets/register_prefs.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
@@ -820,6 +820,26 @@ const char kBentoBarEnabled[] = "ash.bento_bar.enabled";
 const char kUserHasUsedDesksRecently[] = "ash.user_has_used_desks_recently";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kUserSettingEnabled[] = "offline_prefetch.enabled";
+const char kBackoff[] = "offline_prefetch.backoff";
+const char kLimitlessPrefetchingEnabledTimePref[] =
+    "offline_prefetch.limitless_prefetching_enabled_time";
+const char kPrefetchTestingHeaderPref[] =
+    "offline_prefetch.testing_header_value";
+const char kEnabledByServer[] = "offline_prefetch.enabled_by_server";
+const char kNextForbiddenCheckTimePref[] = "offline_prefetch.next_gpb_check";
+const char kPrefetchCachedGCMToken[] = "offline_prefetch.gcm_token";
+#endif
+
+// Deprecated 04/2023.
+const char kTypeSubscribedForInvalidations[] =
+    "invalidation.registered_for_invalidation";
+const char kActiveRegistrationToken[] =
+    "invalidation.active_registration_token";
+const char kFCMInvalidationClientIDCache[] = "fcm.invalidation.client_id_cache";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -919,6 +939,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kEasyUnlockHardlockState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 04/2023.
+  registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
+  registry->RegisterStringPref(kActiveRegistrationToken, std::string());
+  registry->RegisterStringPref(kFCMInvalidationClientIDCache, std::string());
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1115,6 +1140,28 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kBentoBarEnabled, false);
   registry->RegisterBooleanPref(kUserHasUsedDesksRecently, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kBackoff);
+  registry->RegisterBooleanPref(kUserSettingEnabled, true);
+  registry->RegisterTimePref(kLimitlessPrefetchingEnabledTimePref,
+                             base::Time());
+  registry->RegisterStringPref(kPrefetchTestingHeaderPref, std::string());
+  registry->RegisterBooleanPref(kEnabledByServer, false);
+  registry->RegisterTimePref(kNextForbiddenCheckTimePref, base::Time());
+  registry->RegisterStringPref(kPrefetchCachedGCMToken, std::string());
+#endif
+
+  // Deprecated 04/2023.
+  registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
+  registry->RegisterStringPref(kActiveRegistrationToken, std::string());
+  registry->RegisterStringPref(kFCMInvalidationClientIDCache, std::string());
+
+  // Deprecated 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  ntp_snippets::prefs::RegisterProfilePrefsForMigrationApril2023(registry);
+#endif
 }
 
 }  // namespace
@@ -1476,7 +1523,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_pages::OfflineMetricsCollectorImpl::RegisterPrefs(registry);
-  offline_pages::prefetch_prefs::RegisterPrefs(registry);
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1891,6 +1937,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kEasyUnlockHardlockState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Added 04/2023.
+  local_state->ClearPref(kTypeSubscribedForInvalidations);
+  local_state->ClearPref(kActiveRegistrationToken);
+  local_state->ClearPref(kFCMInvalidationClientIDCache);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2158,6 +2209,27 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kBentoBarEnabled);
   profile_prefs->ClearPref(kUserHasUsedDesksRecently);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kBackoff);
+  profile_prefs->ClearPref(kUserSettingEnabled);
+  profile_prefs->ClearPref(kLimitlessPrefetchingEnabledTimePref);
+  profile_prefs->ClearPref(kPrefetchTestingHeaderPref);
+  profile_prefs->ClearPref(kEnabledByServer);
+  profile_prefs->ClearPref(kNextForbiddenCheckTimePref);
+  profile_prefs->ClearPref(kPrefetchCachedGCMToken);
+#endif
+
+  // Added 04/2023.
+  profile_prefs->ClearPref(kTypeSubscribedForInvalidations);
+  profile_prefs->ClearPref(kActiveRegistrationToken);
+  profile_prefs->ClearPref(kFCMInvalidationClientIDCache);
+
+  // Added 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  ntp_snippets::prefs::MigrateObsoleteProfilePrefsApril2023(profile_prefs);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

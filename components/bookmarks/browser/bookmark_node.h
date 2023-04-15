@@ -48,17 +48,17 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 
   // TODO(crbug.com/1026195): Make these constants of type base::Uuid once there
   // exists a constexpr constructor.
-  static const char kRootNodeGuid[];
-  static const char kBookmarkBarNodeGuid[];
-  static const char kOtherBookmarksNodeGuid[];
-  static const char kMobileBookmarksNodeGuid[];
-  static const char kManagedNodeGuid[];
+  static const char kRootNodeUuid[];
+  static const char kBookmarkBarNodeUuid[];
+  static const char kOtherBookmarksNodeUuid[];
+  static const char kMobileBookmarksNodeUuid[];
+  static const char kManagedNodeUuid[];
 
-  // A bug in sync caused some problematic GUIDs to be produced.
-  static const char kBannedGuidDueToPastSyncBug[];
+  // A bug in sync caused some problematic UUIDs to be produced.
+  static const char kBannedUuidDueToPastSyncBug[];
 
-  // Creates a new node with |id|, |guid| and |url|.
-  BookmarkNode(int64_t id, const base::Uuid& guid, const GURL& url);
+  // Creates a new node with |id|, |uuid| and |url|.
+  BookmarkNode(int64_t id, const base::Uuid& uuid, const GURL& url);
 
   BookmarkNode(const BookmarkNode&) = delete;
   BookmarkNode& operator=(const BookmarkNode&) = delete;
@@ -80,11 +80,11 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   int64_t id() const { return id_; }
   void set_id(int64_t id) { id_ = id; }
 
-  // Returns this node's GUID, which is guaranteed to be valid.
-  // For bookmark nodes that are managed by the bookmark model, the GUIDs are
+  // Returns this node's UUID, which is guaranteed to be valid.
+  // For bookmark nodes that are managed by the bookmark model, the UUIDs are
   // persisted across sessions and stable throughout the lifetime of the
   // bookmark.
-  const base::Uuid& guid() const { return guid_; }
+  const base::Uuid& uuid() const { return uuid_; }
 
   const GURL& url() const { return url_; }
   void set_url(const GURL& url) { url_ = url; }
@@ -158,7 +158,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 
  protected:
   BookmarkNode(int64_t id,
-               const base::Uuid& guid,
+               const base::Uuid& uuid,
                const GURL& url,
                Type type,
                bool is_permanent_node);
@@ -193,12 +193,12 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // The unique identifier for this node.
   int64_t id_;
 
-  // The GUID for this node. A BookmarkNode GUID is immutable and differs from
+  // The UUID for this node. A BookmarkNode UUID is immutable and differs from
   // the |id_| in that it is consistent across different clients and
   // stable throughout the lifetime of the bookmark, with the exception of nodes
-  // added to the Managed Bookmarks folder, whose GUIDs are re-assigned at
+  // added to the Managed Bookmarks folder, whose UUIDs are re-assigned at
   // start-up every time.
-  const base::Uuid guid_;
+  const base::Uuid uuid_;
 
   // The URL of this node. BookmarkModel maintains maps off this URL, so changes
   // to the URL must be done through the BookmarkModel.
@@ -275,7 +275,7 @@ class BookmarkPermanentNode : public BookmarkNode {
   // other than the well-known ones, see factory methods.
   BookmarkPermanentNode(int64_t id,
                         Type type,
-                        const base::Uuid& guid,
+                        const base::Uuid& uuid,
                         const std::u16string& title,
                         bool visible_when_empty);
 

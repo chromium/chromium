@@ -20,8 +20,6 @@ class HighEfficiencyModeTest
   void SetUp() override {
     testing::GraphTestHarnessWithMockDiscarder::SetUp();
 
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kHighEfficiencyModeAvailable);
     // This is usually called when the profile is created. Fake it here since it
     // doesn't happen in tests.
     PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
@@ -82,8 +80,7 @@ TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
   page_node()->SetIsVisible(false);
 
   task_env().FastForwardBy(
-      performance_manager::features::kHighEfficiencyModeTimeBeforeDiscard
-          .Get());
+      HighEfficiencyModePolicy::kDefaultDiscardTimeInterval);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
@@ -124,8 +121,7 @@ TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
   // Advance time by the usual discard interval, minus 10 seconds. This means
   // that the page will be discarded 10 seconds after the mode is changed.
   task_env().FastForwardBy(
-      performance_manager::features::kHighEfficiencyModeTimeBeforeDiscard
-          .Get() -
+      HighEfficiencyModePolicy::kDefaultDiscardTimeInterval -
       base::Seconds(10));
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -180,8 +176,7 @@ TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
   page_node->SetIsVisible(false);
 
   task_env().FastForwardBy(
-      performance_manager::features::kHighEfficiencyModeTimeBeforeDiscard
-          .Get());
+      HighEfficiencyModePolicy::kDefaultDiscardTimeInterval);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

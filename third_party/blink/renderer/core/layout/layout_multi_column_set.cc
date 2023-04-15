@@ -275,7 +275,7 @@ LayoutUnit LayoutMultiColumnSet::LogicalTopFromMulticolContentEdge() const {
   // have margins, but spanner placeholders may.
   LayoutUnit first_column_box_margin_edge =
       first_column_box.LogicalTop() -
-      MultiColumnBlockFlow()->MarginBeforeForChild(first_column_box);
+      first_column_box.MarginBefore(MultiColumnBlockFlow()->Style());
   return LogicalTop() - first_column_box_margin_edge;
 }
 

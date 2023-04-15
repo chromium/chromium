@@ -55,9 +55,8 @@ void GetAssertionOperation::Run() {
   }
 
   if (credentials->empty()) {
-    // TouchIdAuthenticator::HasCredentialForGetAssertionRequest() is
-    // invoked first to ensure this doesn't occur.
-    NOTREACHED();
+    // This can happen if e.g. a credential is deleted after it is shown to the
+    // user on the account picker.
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
                              {});
     return;
@@ -96,7 +95,7 @@ void GetAssertionOperation::PromptTouchIdDone(bool success) {
 
   // Re-fetch credentials with the now evaluated LAContext, so that making
   // signatures does not trigger yet another Touch ID prompt.
-  credential_store_->set_authentication_context(
+  credential_store_->SetAuthenticationContext(
       touch_id_context_->authentication_context());
 
   absl::optional<std::list<Credential>> credentials =

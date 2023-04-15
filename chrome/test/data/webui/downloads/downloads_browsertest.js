@@ -19,7 +19,7 @@ var DownloadsTest = class extends PolymerTest {
 var DownloadsItemTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/item_test.js';
   }
 };
 
@@ -30,7 +30,7 @@ TEST_F('DownloadsItemTest', 'All', function() {
 var DownloadsManagerTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/manager_test.js';
   }
 };
 
@@ -41,7 +41,7 @@ TEST_F('DownloadsManagerTest', 'All', function() {
 var DownloadsToolbarTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_test.js';
   }
 };
 

@@ -35,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Prompt that asks users to confirm saving an address profile imported from a form submission.
+ * TODO(crbug.com/1432549): cover with render tests.
  */
 @JNINamespace("autofill")
 @JNIAdditionalImport(PersonalDataManager.class)
@@ -58,10 +59,15 @@ public class SaveUpdateAddressProfilePrompt {
         mModalDialogManager = modalDialogManager;
 
         LayoutInflater inflater = LayoutInflater.from(activity);
-        mDialogView = inflater.inflate(isUpdate ? R.layout.autofill_update_address_profile_prompt
-                                                : R.layout.autofill_save_address_profile_prompt,
-                null);
-        if (!isUpdate) setupAddressNickname();
+        if (isMigrationToAccount) {
+            mDialogView = inflater.inflate(R.layout.autofill_migrate_address_profile_prompt, null);
+        } else if (isUpdate) {
+            mDialogView = inflater.inflate(R.layout.autofill_update_address_profile_prompt, null);
+        } else {
+            mDialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
+        }
+
+        if (!isUpdate && !isMigrationToAccount) setupAddressNickname();
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -146,7 +152,7 @@ public class SaveUpdateAddressProfilePrompt {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void setSourceNotice(String sourceNotice) {
         showTextIfNotEmpty(
-                mDialogView.findViewById(R.id.autofill_save_update_address_profile_prompt_footer),
+                mDialogView.findViewById(R.id.autofill_address_profile_prompt_source_notice),
                 sourceNotice);
     }
 

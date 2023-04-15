@@ -2,14 +2,17 @@
   <head>
     <title>Capture Handle Test - Embedded Capturing Page</title>
     <link rel="icon" href="data:," />
+    <script src="../result_queue.js"></script>
     <script>
       "use strict";
 
       let capturedStream;
       let capturedVideoTrack;
 
+      let resultQueue = new ResultQueue();
+
       function captureOtherTab() {
-        navigator.mediaDevices
+        return navigator.mediaDevices
           .getDisplayMedia({ video: true, selfBrowserSurface: "include" })
           .then(handleCaptureSuccess)
           .catch(handleCaptureError);
@@ -17,31 +20,25 @@
 
       function readLastEvent() {
         // Blocks until onCaptureHandleChange() unblocks.
+        return resultQueue.pop();
       }
 
       function readCaptureHandle() {
         if (!capturedVideoTrack) {
-          window.domAutomationController.send("error-no-video-track");
-          return;
+          return "error-no-video-track";
         }
 
         let captureHandle = capturedVideoTrack.getCaptureHandle();
         if (!captureHandle) {
-          window.domAutomationController.send("no-embedded-capture-handle");
-          return;
+          return "no-embedded-capture-handle";
         }
 
-        window.domAutomationController.send(
-          JSON.stringify(captureHandle)
-        );
+        return JSON.stringify(captureHandle);
       }
 
       function handleCaptureSuccess(stream) {
         if (capturedStream) {
-          window.domAutomationController.send(
-            "error-multiple-embedded-captures"
-          );
-          return;
+          return "error-multiple-embedded-captures";
         }
 
         capturedStream = stream;
@@ -49,30 +46,34 @@
 
         capturedVideoTrack.oncapturehandlechange = onCaptureHandleChange;
 
-        window.domAutomationController.send("embedded-capture-success");
+        return "embedded-capture-success";
       }
 
       function handleCaptureError(error) {
-        window.domAutomationController.send("embedded-capture-failure");
+        return "embedded-capture-failure";
       }
 
       function onCaptureHandleChange(event) {
-        window.domAutomationController.send(
-          JSON.stringify(event.target.getCaptureHandle())
-        );
+        resultQueue.push(JSON.stringify(event.target.getCaptureHandle()));
       }
 
       function reportEmbeddingSuccess() {
-        window.domAutomationController.send("embedding-done");
+        window.parent.postMessage("embedding-done", '*');
       }
 
       window.addEventListener("message", (event) => {
         if (event.data == "start-capture") {
-          captureOtherTab();
+          captureOtherTab().then((result) => {
+            event.source.postMessage(result, '*');
+          });
         } else if (event.data == "read-capture-handle") {
-          readCaptureHandle();
+          event.source.postMessage(readCaptureHandle(), '*');
+        } else if (event.data == "last-embedded-event") {
+          readLastEvent().then((result) => {
+            event.source.postMessage(result, '*');
+          });
         } else {
-          window.domAutomationController.send("unrecognized-message");
+          throw new Error("unrecognized-message");
         }
       });
     </script>

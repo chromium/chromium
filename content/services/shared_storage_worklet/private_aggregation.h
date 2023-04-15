@@ -13,7 +13,8 @@
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace gin {
@@ -24,11 +25,9 @@ namespace shared_storage_worklet {
 
 class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
  public:
-  PrivateAggregation(
-      blink::mojom::SharedStorageWorkletServiceClient& client,
-      bool private_aggregation_permissions_policy_allowed,
-      blink::mojom::PrivateAggregationHost& private_aggregation_host,
-      SharedStorageWorkletGlobalScope& global_scope);
+  PrivateAggregation(blink::mojom::SharedStorageWorkletServiceClient& client,
+                     bool private_aggregation_permissions_policy_allowed,
+                     SharedStorageWorkletGlobalScope& global_scope);
   ~PrivateAggregation() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -38,7 +37,10 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
 
   const char* GetTypeName() override;
 
-  void OnOperationStarted(int64_t operation_id);
+  void OnOperationStarted(
+      int64_t operation_id,
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host);
   void OnOperationFinished(int64_t operation_id);
 
  private:
@@ -53,7 +55,6 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
 
   bool private_aggregation_permissions_policy_allowed_;
 
-  raw_ref<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
   raw_ref<SharedStorageWorkletGlobalScope> global_scope_;
 
   bool has_recorded_use_counters_ = false;

@@ -306,6 +306,12 @@ class ExtensionWebRequestEventRouter {
   // only, and are never deferenced.
   using BrowserContextID = std::uintptr_t;
 
+  static BrowserContextID GetBrowserContextID(
+      content::BrowserContext* browser_context) {
+    return reinterpret_cast<BrowserContextID>(
+        static_cast<void*>(browser_context));
+  }
+
   // The events denoting the lifecycle of a given network request.
   enum EventTypes {
     kInvalidEvent = 0,
@@ -744,9 +750,6 @@ class ExtensionWebRequestEventRouter {
       RawListeners* listeners_out,
       int* extra_info_spec_out);
 
-  static BrowserContextID GetBrowserContextID(
-      const content::BrowserContext* browser_context);
-
   // Decrements the count of event handlers blocking the given request. When the
   // count reaches 0, we stop blocking the request and proceed it using the
   // method requested by the extension with the highest precedence. Precedence
@@ -835,7 +838,7 @@ class ExtensionWebRequestEventRouter {
 
   CallbacksForPageLoad callbacks_for_page_load_;
 
-  typedef std::pair<content::BrowserContext*, int> RulesRegistryKey;
+  typedef std::pair<BrowserContextID, int> RulesRegistryKey;
   // Maps each browser_context (and OTRBrowserContext) and a webview key to its
   // respective rules registry.
   std::map<RulesRegistryKey,

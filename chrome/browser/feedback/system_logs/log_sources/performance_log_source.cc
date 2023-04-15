@@ -44,15 +44,11 @@ std::string BatterySaverModeStateToString(BatterySaverModeState state) {
 }  // namespace
 
 PerformanceLogSource::PerformanceLogSource() : SystemLogsSource("Performance") {
-  memory_saver_available_ = base::FeatureList::IsEnabled(
-      performance_manager::features::kHighEfficiencyModeAvailable);
   battery_saver_available_ = base::FeatureList::IsEnabled(
       performance_manager::features::kBatterySaverModeAvailable);
 
-  if (memory_saver_available_ || battery_saver_available_) {
-    tuning_manager_ = performance_manager::user_tuning::
-        UserPerformanceTuningManager::GetInstance();
-  }
+  tuning_manager_ = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
 }
 
 PerformanceLogSource::~PerformanceLogSource() = default;
@@ -62,21 +58,18 @@ void PerformanceLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK(!callback.is_null());
 
   auto response = std::make_unique<SystemLogsResponse>();
-  if (tuning_manager_ != nullptr) {
-    PopulatePerformanceSettingLogs(response.get());
-    PopulateBatteryDetailLogs(response.get());
-  }
+  CHECK(tuning_manager_);
+  PopulatePerformanceSettingLogs(response.get());
+  PopulateBatteryDetailLogs(response.get());
 
   std::move(callback).Run(std::move(response));
 }
 
 void PerformanceLogSource::PopulatePerformanceSettingLogs(
     SystemLogsResponse* response) {
-  if (memory_saver_available_) {
-    response->emplace(
-        "high_efficiency_mode_active",
-        BoolToString(tuning_manager_->IsHighEfficiencyModeActive()));
-  }
+  response->emplace(
+      "high_efficiency_mode_active",
+      BoolToString(tuning_manager_->IsHighEfficiencyModeActive()));
 
   if (battery_saver_available_) {
     PrefService* local_prefs = g_browser_process->local_state();

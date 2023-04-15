@@ -16,7 +16,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -26,6 +25,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -502,7 +502,7 @@ TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
 TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kAttributionFencedFrameReportingBeacon);
+      features::kAttributionFencedFrameReportingBeacon);
 
   const struct {
     const char* source_origin;
@@ -546,7 +546,7 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
 TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kAttributionFencedFrameReportingBeacon);
+      features::kAttributionFencedFrameReportingBeacon);
 
   contents()->NavigateAndCommit(GURL("https://secure.com"));
 

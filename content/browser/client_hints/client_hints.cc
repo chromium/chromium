@@ -603,7 +603,6 @@ struct ClientHintsExtendedData {
         !frame_tree_node || frame_tree_node->IsOutermostMainFrame();
     if (is_outermost_main_frame) {
       outermost_main_frame_origin = resource_origin;
-      is_1p_origin = true;
     } else if (frame_tree_node->IsInFencedFrameTree()) {
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
           resource_origin,
@@ -617,8 +616,6 @@ struct ClientHintsExtendedData {
           outermost_main_frame->GetLastCommittedOrigin();
       permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
           outermost_main_frame->permissions_policy());
-      is_1p_origin = resource_origin.IsSameOriginWith(
-          outermost_main_frame->GetLastCommittedOrigin());
     }
 
     const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -690,7 +687,6 @@ struct ClientHintsExtendedData {
   bool is_outermost_main_frame = false;
   url::Origin outermost_main_frame_origin;
   std::unique_ptr<blink::PermissionsPolicy> permissions_policy;
-  bool is_1p_origin = false;
 };
 
 bool SkipPermissionPolicyCheck(WebClientHintsType type) {
@@ -710,7 +706,7 @@ bool IsClientHintEnabled(const ClientHintsExtendedData& data,
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
                          WebClientHintsType type) {
   if (data.is_outermost_main_frame) {
-    return data.is_1p_origin;
+    return true;
   }
   return SkipPermissionPolicyCheck(type) ||
          (data.permissions_policy->IsFeatureEnabledForOrigin(

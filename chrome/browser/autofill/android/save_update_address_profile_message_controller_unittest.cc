@@ -34,9 +34,7 @@ namespace autofill {
 using testing::_;
 
 class SaveUpdateAddressProfileMessageControllerTest
-    : public ChromeRenderViewHostTestHarness,
-      public ::testing::WithParamInterface<
-          std::tuple<AutofillProfile::Source, bool>> {
+    : public ChromeRenderViewHostTestHarness {
  public:
   SaveUpdateAddressProfileMessageControllerTest() = default;
 
@@ -48,11 +46,12 @@ class SaveUpdateAddressProfileMessageControllerTest
   void SigninUser(const std::string& email, signin::ConsentLevel consent_level);
   void EnqueueSaveMessage(
       const AutofillProfile& profile,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback
           action_callback) {
-    EnqueueMessage(profile, nullptr, std::move(save_callback),
-                   std::move(action_callback));
+    EnqueueMessage(profile, nullptr, is_migration_to_account,
+                   std::move(save_callback), std::move(action_callback));
   }
   void EnqueueUpdateMessage(
       const AutofillProfile& profile,
@@ -60,19 +59,13 @@ class SaveUpdateAddressProfileMessageControllerTest
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback
           action_callback) {
-    EnqueueMessage(profile, original_profile, std::move(save_callback),
-                   std::move(action_callback));
+    EnqueueMessage(profile, original_profile, /*is_migration_to_account=*/false,
+                   std::move(save_callback), std::move(action_callback));
   }
   void ExpectDismissMessageCall();
 
   void TriggerActionClick();
   void TriggerMessageDismissedCallback(messages::DismissReason dismiss_reason);
-
-  bool is_migration_to_account() const { return std::get<1>(GetParam()); }
-
-  AutofillProfile::Source profile_source() const {
-    return std::get<0>(GetParam());
-  }
 
   messages::MessageWrapper* GetMessageWrapper();
 
@@ -88,6 +81,7 @@ class SaveUpdateAddressProfileMessageControllerTest
   void EnqueueMessage(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback
           action_callback);
@@ -108,13 +102,6 @@ void SaveUpdateAddressProfileMessageControllerTest::SetUp() {
 
   profile_ = test::GetFullProfile();
   original_profile_ = test::GetFullProfile2();
-  profile_.set_source_for_testing(profile_source());
-  original_profile_.set_source_for_testing(profile_source());
-  if (profile_source() == AutofillProfile::Source::kAccount ||
-      is_migration_to_account()) {
-    SigninUser(TestingProfile::kDefaultProfileUserName,
-               signin::ConsentLevel::kSignin);
-  }
 }
 
 void SaveUpdateAddressProfileMessageControllerTest::TearDown() {
@@ -138,13 +125,14 @@ void SaveUpdateAddressProfileMessageControllerTest::SigninUser(
 void SaveUpdateAddressProfileMessageControllerTest::EnqueueMessage(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
+    bool is_migration_to_account,
     AutofillClient::AddressProfileSavePromptCallback save_callback,
     SaveUpdateAddressProfileMessageController::PrimaryActionCallback
         action_callback) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  controller_.DisplayMessage(
-      web_contents(), profile, original_profile, is_migration_to_account(),
-      std::move(save_callback), std::move(action_callback));
+  controller_.DisplayMessage(web_contents(), profile, original_profile,
+                             is_migration_to_account, std::move(save_callback),
+                             std::move(action_callback));
   EXPECT_TRUE(controller_.IsMessageDisplayed());
 }
 
@@ -175,32 +163,79 @@ SaveUpdateAddressProfileMessageControllerTest::GetMessageWrapper() {
 }
 
 // Tests that the save message properties (title, description with profile
-// details, primary button text, icon) are set correctly.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest, SaveMessageContent) {
-  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
+// details, primary button text, icon) are set correctly during local or sync
+// address profile saving process.
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
+       SaveMessageContent_LocalOrSyncAddressProfile) {
+  EnqueueSaveMessage(profile_, /*is_migration_to_account=*/false,
+                     save_callback_.Get(), action_callback_.Get());
 
-  if (is_migration_to_account()) {
-    EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE),
-              GetMessageWrapper()->GetTitle());
-    EXPECT_EQ(
-        l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE,
-            base::ASCIIToUTF16(TestingProfile::kDefaultProfileUserName)),
-        GetMessageWrapper()->GetDescription());
-  } else if (profile_source() == AutofillProfile::Source::kAccount) {
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
-              GetMessageWrapper()->GetTitle());
-    EXPECT_EQ(l10n_util::GetStringFUTF16(
-                  IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
-                  base::ASCIIToUTF16(TestingProfile::kDefaultProfileUserName)),
-              GetMessageWrapper()->GetDescription());
-  } else {
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
-              GetMessageWrapper()->GetTitle());
-    EXPECT_EQ(u"John H. Doe, 666 Erebus St.",
-              GetMessageWrapper()->GetDescription());
-  }
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(u"John H. Doe, 666 Erebus St.",
+            GetMessageWrapper()->GetDescription());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
+            GetMessageWrapper()->GetDescriptionMaxLines());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
+            GetMessageWrapper()->GetIconResourceId());
+
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the save message properties (title, description with profile
+// details, primary button text, icon) are set correctly during address profile
+// migration flow.
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
+       SaveMessageContent_AddressProfileMigrationFlow) {
+  profile_.set_source_for_testing(AutofillProfile::Source::kAccount);
+  original_profile_.set_source_for_testing(AutofillProfile::Source::kAccount);
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  EnqueueSaveMessage(profile_, /*is_migration_to_account=*/true,
+                     save_callback_.Get(), action_callback_.Get());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE),
+      GetMessageWrapper()->GetDescription());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
+            GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
+            GetMessageWrapper()->GetDescriptionMaxLines());
+  EXPECT_EQ(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS),
+      GetMessageWrapper()->GetIconResourceId());
+
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the save message properties (title, description with profile
+// details, primary button text, icon) are set correctly when a new address
+// profile is saved in account.
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
+       SaveMessageContent_AccountAddressProfile) {
+  profile_.set_source_for_testing(AutofillProfile::Source::kAccount);
+  original_profile_.set_source_for_testing(AutofillProfile::Source::kAccount);
+  SigninUser(TestingProfile::kDefaultProfileUserName,
+             signin::ConsentLevel::kSignin);
+  EnqueueSaveMessage(profile_, /*is_migration_to_account=*/false,
+                     save_callback_.Get(), action_callback_.Get());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
+                base::ASCIIToUTF16(TestingProfile::kDefaultProfileUserName)),
+            GetMessageWrapper()->GetDescription());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
@@ -215,7 +250,7 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest, SaveMessageContent) {
 
 // Tests that the update message properties (title, description with original
 // profile details, primary button text, icon) are set correctly.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest, UpdateMessageContent) {
+TEST_F(SaveUpdateAddressProfileMessageControllerTest, UpdateMessageContent) {
   EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
                        action_callback_.Get());
 
@@ -236,12 +271,12 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest, UpdateMessageContent) {
 
 // Tests that the action callback is triggered when the user clicks on the
 // primary action button of the save message.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest,
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        ProceedOnActionClickWhenSave) {
-  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
+  EnqueueSaveMessage(profile_, /*is_migration_to_account=*/false,
+                     save_callback_.Get(), action_callback_.Get());
 
-  EXPECT_CALL(action_callback_,
-              Run(_, profile_, nullptr, is_migration_to_account(), _));
+  EXPECT_CALL(action_callback_, Run(_, profile_, nullptr, false, _));
   TriggerActionClick();
 
   EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);
@@ -250,7 +285,7 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest,
 
 // Tests that the action callback is triggered when the user clicks on the
 // primary action button of the update message.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest,
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        ProceedOnActionClickWhenUpdate) {
   EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
                        action_callback_.Get());
@@ -265,9 +300,10 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest,
 // Tests that the save callback is triggered with
 // |SaveAddressProfileOfferUserDecision::kMessageDeclined| when the user
 // dismisses the message via gesture.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest,
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageDeclinedOnGestureDismiss) {
-  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
+  EnqueueSaveMessage(profile_, /*is_migration_to_account=*/false,
+                     save_callback_.Get(), action_callback_.Get());
 
   EXPECT_CALL(
       save_callback_,
@@ -279,9 +315,10 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest,
 // Tests that the save callback is triggered with
 // |SaveAddressProfileOfferUserDecision::kMessageTimeout| when the message is
 // auto-dismissed after a timeout.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest,
+TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageTimeoutOnTimerAutodismiss) {
-  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
+  EnqueueSaveMessage(profile_, /*is_migration_to_account=*/false,
+                     save_callback_.Get(), action_callback_.Get());
 
   EXPECT_CALL(
       save_callback_,
@@ -291,7 +328,7 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest,
 }
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
-TEST_P(SaveUpdateAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
+TEST_F(SaveUpdateAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
   EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
                        action_callback_.Get());
 
@@ -305,30 +342,11 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
                   profile_));
   ExpectDismissMessageCall();
-  EnqueueSaveMessage(another_profile, another_save_callback.Get(),
+  EnqueueSaveMessage(another_profile, /*is_migration_to_account=*/false,
+                     another_save_callback.Get(),
                      another_action_callback.Get());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    SaveUpdateAddressProfileMessage,
-    SaveUpdateAddressProfileMessageControllerTest,
-    ::testing::ValuesIn(
-        {std::tuple(AutofillProfile::Source::kLocalOrSyncable, false),
-         std::tuple(AutofillProfile::Source::kAccount, false),
-         std::tuple(AutofillProfile::Source::kLocalOrSyncable, true),
-         std::tuple(AutofillProfile::Source::kAccount, true)}),
-    [](const ::testing::TestParamInfo<
-        SaveUpdateAddressProfileMessageControllerTest::ParamType>& info) {
-      auto suffix = std::string();
-
-      return std::string() +
-             (std::get<0>(info.param) == AutofillProfile::Source::kAccount
-                  ? "ProfileFromAccount"
-                  : "LocalOrSyncProfile") +
-             (std::get<1>(info.param) ? "WithProfileMigration"
-                                      : "WithoutProfileMigration");
-    });
 
 }  // namespace autofill

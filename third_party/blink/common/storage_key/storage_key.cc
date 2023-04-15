@@ -234,15 +234,17 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The ancestor_chain_bit is the portion beyond the first separator.
       int raw_bit;
-      if (!base::StringToInt(in.substr(pos_first_caret + 2, std::string::npos),
-                             &raw_bit)) {
+      const base::StringPiece raw_bit_substr =
+          in.substr(pos_first_caret + 2, std::string::npos);
+      if (!base::StringToInt(raw_bit_substr, &raw_bit)) {
         return absl::nullopt;
       }
 
       // If the integer conversion results in a value outside the enumerated
-      // indices of [0,1]
-      if (raw_bit < 0 || raw_bit > 1)
+      // indices of [0,1] or trimmed leading 0s we must reject the key.
+      if (raw_bit < 0 || raw_bit > 1 || raw_bit_substr.size() > 1) {
         return absl::nullopt;
+      }
       ancestor_chain_bit = static_cast<blink::mojom::AncestorChainBit>(raw_bit);
 
       // There is no nonce or top level site.

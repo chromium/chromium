@@ -19,7 +19,7 @@ extern const base::FeatureParam<base::TimeDelta> kGracePeriod;
 extern const base::FeatureParam<base::TimeDelta> kTimerDelay;
 extern const base::FeatureParam<base::TimeDelta> kInteractionTtl;
 extern const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction;
-
+extern const base::FeatureParam<base::TimeDelta> kBounceTimeout;
 }  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_FEATURES_H_

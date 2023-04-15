@@ -130,6 +130,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestErrorOnUpdate) {
   node4.child_ids.push_back(5);
   node4.child_ids.push_back(5);
   ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(node4, node5);
+  update.tree_data.tree_id = manager->GetTreeID();
   AXEventNotificationDetails events;
   events.updates = {update};
 
@@ -1157,6 +1158,7 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash) {
   root2.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXTreeUpdate update2 = MakeAXTreeUpdateForTesting(root2);
+  update2.tree_data.tree_id = initial_state.tree_data.tree_id;
   update2.node_id_to_clear = root.id;
   update2.root_id = root2.id;
   AXEventNotificationDetails events2;
@@ -1207,6 +1209,7 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash2) {
 
   // Make an update that explicitly clears the previous root.
   ui::AXTreeUpdate update2 = MakeAXTreeUpdateForTesting(root2);
+  update2.tree_data.tree_id = initial_state.tree_data.tree_id;
   update2.node_id_to_clear = root.id;
   update2.root_id = root2.id;
   AXEventNotificationDetails events2;
@@ -1431,6 +1434,7 @@ TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
   // Now remove the child root from the tree.
   popup_button.child_ids = {};
   ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(popup_button);
+  update.tree_data.tree_id = manager->GetTreeID();
   AXEventNotificationDetails events;
   events.updates = {update};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events));
@@ -1505,8 +1509,8 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
   // Reparenting a child found in the tree should not crash.
   root.child_ids = {child1.id};
   child1.child_ids = {child2.id};
-  const ui::AXTreeUpdate update2 =
-      MakeAXTreeUpdateForTesting(root, child1, child2);
+  ui::AXTreeUpdate update2 = MakeAXTreeUpdateForTesting(root, child1, child2);
+  update2.tree_data.tree_id = update1.tree_data.tree_id;
   manager->ax_tree()->Unserialize(update2);
   EXPECT_EQ(1, observer.reparent_count());
   EXPECT_EQ(3, observer.node_count());

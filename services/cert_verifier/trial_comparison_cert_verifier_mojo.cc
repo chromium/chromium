@@ -10,6 +10,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/trial_comparison_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
@@ -77,16 +78,15 @@ TrialComparisonCertVerifierMojo::TrialComparisonCertVerifierMojo(
         config_client_receiver,
     mojo::PendingRemote<mojom::TrialComparisonCertVerifierReportClient>
         report_client,
-    scoped_refptr<net::CertVerifyProc> primary_verify_proc,
-    scoped_refptr<net::CertVerifyProcFactory> primary_verify_proc_factory,
-    scoped_refptr<net::CertVerifyProc> trial_verify_proc,
-    scoped_refptr<net::CertVerifyProcFactory> trial_verify_proc_factory)
+    scoped_refptr<net::CertVerifyProcFactory> verify_proc_factory,
+    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    const net::CertVerifyProcFactory::ImplParams& impl_params)
     : receiver_(this, std::move(config_client_receiver)),
       report_client_(std::move(report_client)) {
   trial_comparison_cert_verifier_ =
       std::make_unique<net::TrialComparisonCertVerifier>(
-          primary_verify_proc, primary_verify_proc_factory, trial_verify_proc,
-          trial_verify_proc_factory,
+          std::move(verify_proc_factory), std::move(cert_net_fetcher),
+          impl_params,
           base::BindRepeating(
               &TrialComparisonCertVerifierMojo::OnSendTrialReport,
               // Unretained safe because the report_callback will not be called
@@ -119,11 +119,11 @@ void TrialComparisonCertVerifierMojo::RemoveObserver(Observer* observer) {
   trial_comparison_cert_verifier_->RemoveObserver(observer);
 }
 
-void TrialComparisonCertVerifierMojo::UpdateChromeRootStoreData(
+void TrialComparisonCertVerifierMojo::UpdateVerifyProcData(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::ChromeRootStoreData* root_store_data) {
-  trial_comparison_cert_verifier_->UpdateChromeRootStoreData(
-      std::move(cert_net_fetcher), root_store_data);
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
+  trial_comparison_cert_verifier_->UpdateVerifyProcData(
+      std::move(cert_net_fetcher), impl_params);
 }
 
 void TrialComparisonCertVerifierMojo::OnTrialConfigUpdated(bool allowed) {

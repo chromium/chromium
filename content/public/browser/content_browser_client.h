@@ -212,6 +212,7 @@ class FontAccessDelegate;
 class HidDelegate;
 class IdentityRequestDialogController;
 class LoginDelegate;
+class MDocProvider;
 class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
@@ -973,13 +974,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // can be cached and the amount of disk space used for caching generated code.
   virtual GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       BrowserContext* context);
-
-  // Allows the embedder to control initialization of the
-  // CertVerifierServiceFactory. May return nullptr to use defaults. This must
-  // return the same parameters for the lifetime of the process. Will be called
-  // when the CertVerifierService is created or re-created.
-  virtual cert_verifier::mojom::CertVerifierServiceParamsPtr
-  GetCertVerifierServiceParams();
 
   // Informs the embedder that a certificate error has occurred. If
   // |overridable| is true and if |strict_enforcement| is false, the user
@@ -2296,6 +2290,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Creates a modal window that intermediates the exchange of ID tokens.
   virtual std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController();
+
+  // Creates an mdoc provider to fetch mdocs from native apps.
+  virtual std::unique_ptr<MDocProvider> CreateMDocProvider();
 
   // Returns true if JS dialogs from an iframe with different origin from the
   // main frame should be disallowed.

@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_log_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -37,7 +38,7 @@ namespace {
 
 constexpr size_t kMaxResponseSize =
     5 * 1024 * 1024;  // Response size limit is 5MB
-constexpr base::TimeDelta kRequestTimeout = base::Minutes(1);
+constexpr base::TimeDelta kDefaultRequestTimeout = base::Minutes(1);
 constexpr char kObliviousHttpRequestMimeType[] = "message/ohttp-req";
 
 constexpr size_t kMaxMethodSize = 16;
@@ -212,7 +213,7 @@ void ObliviousHttpRequestHandler::StartRequest(
 
   state->net_log = net::NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::URL_REQUEST);
-  state->net_log.BeginEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_START);
+  state->net_log.BeginEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST);
 
   if (state->request->trust_token_params) {
     state->trust_token_helper_factory =
@@ -372,7 +373,9 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
 
   state->loader->AttachStringForUpload(*maybe_encrypted_blob,
                                        kObliviousHttpRequestMimeType);
-  state->loader->SetTimeoutDuration(kRequestTimeout);
+  state->loader->SetTimeoutDuration(state->request->timeout_duration
+                                        ? *state->request->timeout_duration
+                                        : kDefaultRequestTimeout);
   state->loader->DownloadToString(
       GetURLLoaderFactory(),
       base::BindOnce(&ObliviousHttpRequestHandler::OnRequestComplete,
@@ -389,8 +392,15 @@ void ObliviousHttpRequestHandler::RespondWithError(
   DCHECK(client);
   DCHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
-  state->net_log.EndEventWithIntParams(
-      net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_END, "status", error_code);
+  state->net_log.EndEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST, [&] {
+    base::Value::Dict params;
+    params.Set("net_error", error_code);
+    if (outer_response_error_code) {
+      params.Set("outer_response_error_code",
+                 outer_response_error_code.value());
+    }
+    return params;
+  });
 
   network::mojom::ObliviousHttpCompletionResultPtr response_result;
   if (outer_response_error_code) {
@@ -500,7 +510,19 @@ void ObliviousHttpRequestHandler::NotifyComplete(
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::string body) {
   mojom::ObliviousHttpClient* client = clients_.Get(id);
+  auto state_iter = client_state_.find(id);
   DCHECK(client);
+  DCHECK(state_iter != client_state_.end());
+  RequestState* state = state_iter->second.get();
+  net::NetLogResponseHeaders(
+      state->net_log, net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_HEADERS,
+      headers.get());
+  state->net_log.EndEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST, [&] {
+    base::Value::Dict params;
+    params.Set("net_error", net::OK);
+    params.Set("inner_response_code", inner_response_code);
+    return params;
+  });
 
   network::mojom::ObliviousHttpResponsePtr response =
       network::mojom::ObliviousHttpResponse::New();

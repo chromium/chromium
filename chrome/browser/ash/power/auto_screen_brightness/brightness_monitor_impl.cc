@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/power/auto_screen_brightness/brightness_monitor_impl.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -87,7 +87,7 @@ void BrightnessMonitorImpl::ScreenBrightnessChanged(
     // instead of throwing it away.
     LogDataError(DataError::kBrightnessPercent);
     brightness_percent_received =
-        base::clamp(brightness_percent_received, 0.0, 100.0);
+        std::clamp(brightness_percent_received, 0.0, 100.0);
   }
 
   if (change.cause() ==

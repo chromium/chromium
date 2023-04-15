@@ -40,6 +40,7 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list);
 void DeserializeWebStateList(WebStateList* web_state_list,
                              SessionWindowIOS* session_window,
                              SessionRestorationScope session_restoration_scope,
+                             bool enable_pinned_web_states,
                              const WebStateFactory& web_state_factory);
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_SERIALIZATION_H_

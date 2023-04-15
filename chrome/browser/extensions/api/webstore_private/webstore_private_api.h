@@ -34,6 +34,7 @@ class Profile;
 
 namespace content {
 class GpuFeatureChecker;
+class WebContents;
 }
 
 namespace extensions {
@@ -92,6 +93,8 @@ class WebstorePrivateBeginInstallWithManifest3Function
                               const std::string& error_message) override;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  void RequestExtensionApproval(content::WebContents* web_contents);
+
   // Handles the result of the extension approval flow.
   void OnExtensionApprovalDone(
       SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);

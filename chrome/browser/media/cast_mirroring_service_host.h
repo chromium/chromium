@@ -193,8 +193,6 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   base::UnguessableToken ignored_token_ = base::UnguessableToken::Create();
   const media::VideoCaptureParams ignored_params_;
 
-  const bool freeze_ui_enabled_;
-
   // Used for calls supplied to `media_stream_ui_`, mainly to handle callbacks
   // for TabSharingUIViews. Invalidated every time a new UI is created.
   base::WeakPtrFactory<CastMirroringServiceHost> weak_factory_for_ui_{this};

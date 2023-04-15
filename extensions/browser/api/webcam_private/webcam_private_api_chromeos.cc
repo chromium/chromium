@@ -318,19 +318,19 @@ void WebcamPrivateSetFunction::OnWebcam(
   if (params->config.pan) {
     ++pending_num_set_webcam_param_requests_;
   }
-  if (params->config.pan_direction) {
+  if (params->config.pan_direction != webcam_private::PanDirection::kNone) {
     ++pending_num_set_webcam_param_requests_;
   }
   if (params->config.tilt) {
     ++pending_num_set_webcam_param_requests_;
   }
-  if (params->config.tilt_direction) {
+  if (params->config.tilt_direction != webcam_private::TiltDirection::kNone) {
     ++pending_num_set_webcam_param_requests_;
   }
   if (params->config.zoom) {
     ++pending_num_set_webcam_param_requests_;
   }
-  if (params->config.autofocus_state) {
+  if (params->config.autofocus_state != webcam_private::AutofocusState::kNone) {
     ++pending_num_set_webcam_param_requests_;
   }
   if (params->config.focus) {
@@ -343,19 +343,19 @@ void WebcamPrivateSetFunction::OnWebcam(
                        &WebcamPrivateSetFunction::OnSetWebcamParameters, this));
   }
 
-  if (params->config.pan_direction) {
+  if (params->config.pan_direction != webcam_private::PanDirection::kNone) {
     Webcam::PanDirection direction = Webcam::PAN_STOP;
     switch (params->config.pan_direction) {
-      case webcam_private::PAN_DIRECTION_NONE:
-      case webcam_private::PAN_DIRECTION_STOP:
+      case webcam_private::PanDirection::kNone:
+      case webcam_private::PanDirection::kStop:
         direction = Webcam::PAN_STOP;
         break;
 
-      case webcam_private::PAN_DIRECTION_RIGHT:
+      case webcam_private::PanDirection::kRight:
         direction = Webcam::PAN_RIGHT;
         break;
 
-      case webcam_private::PAN_DIRECTION_LEFT:
+      case webcam_private::PanDirection::kLeft:
         direction = Webcam::PAN_LEFT;
         break;
     }
@@ -372,19 +372,19 @@ void WebcamPrivateSetFunction::OnWebcam(
                             this));
   }
 
-  if (params->config.tilt_direction) {
+  if (params->config.tilt_direction != webcam_private::TiltDirection::kNone) {
     Webcam::TiltDirection direction = Webcam::TILT_STOP;
     switch (params->config.tilt_direction) {
-      case webcam_private::TILT_DIRECTION_NONE:
-      case webcam_private::TILT_DIRECTION_STOP:
+      case webcam_private::TiltDirection::kNone:
+      case webcam_private::TiltDirection::kStop:
         direction = Webcam::TILT_STOP;
         break;
 
-      case webcam_private::TILT_DIRECTION_UP:
+      case webcam_private::TiltDirection::kUp:
         direction = Webcam::TILT_UP;
         break;
 
-      case webcam_private::TILT_DIRECTION_DOWN:
+      case webcam_private::TiltDirection::kDown:
         direction = Webcam::TILT_DOWN;
         break;
     }
@@ -401,15 +401,15 @@ void WebcamPrivateSetFunction::OnWebcam(
                             this));
   }
 
-  if (params->config.autofocus_state) {
+  if (params->config.autofocus_state != webcam_private::AutofocusState::kNone) {
     Webcam::AutofocusState state = Webcam::AUTOFOCUS_ON;
     switch (params->config.autofocus_state) {
-      case webcam_private::AUTOFOCUS_STATE_NONE:
-      case webcam_private::AUTOFOCUS_STATE_OFF:
+      case webcam_private::AutofocusState::kNone:
+      case webcam_private::AutofocusState::kOff:
         state = Webcam::AUTOFOCUS_OFF;
         break;
 
-      case webcam_private::AUTOFOCUS_STATE_ON:
+      case webcam_private::AutofocusState::kOn:
         state = Webcam::AUTOFOCUS_ON;
         break;
     }

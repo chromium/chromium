@@ -22,7 +22,6 @@ class CertVerifyProcFactory;
 class CertNetFetcher;
 class CertVerifyResult;
 class TrialComparisonCertVerifier;
-class ChromeRootStoreData;
 }  // namespace net
 
 FORWARD_DECLARE_TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo);
@@ -47,10 +46,9 @@ class TrialComparisonCertVerifierMojo
           config_client_receiver,
       mojo::PendingRemote<mojom::TrialComparisonCertVerifierReportClient>
           report_client,
-      scoped_refptr<net::CertVerifyProc> primary_verify_proc,
-      scoped_refptr<net::CertVerifyProcFactory> primary_verify_proc_factory,
-      scoped_refptr<net::CertVerifyProc> trial_verify_proc,
-      scoped_refptr<net::CertVerifyProcFactory> trial_verify_proc_factory);
+      scoped_refptr<net::CertVerifyProcFactory> verify_proc_factory,
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      const net::CertVerifyProcFactory::ImplParams& impl_params);
 
   TrialComparisonCertVerifierMojo(const TrialComparisonCertVerifierMojo&) =
       delete;
@@ -68,9 +66,9 @@ class TrialComparisonCertVerifierMojo
   void SetConfig(const Config& config) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void UpdateChromeRootStoreData(
+  void UpdateVerifyProcData(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const net::ChromeRootStoreData* root_store_data) override;
+      const net::CertVerifyProcFactory::ImplParams& impl_params) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(::TrialComparisonCertVerifierMojoTest,

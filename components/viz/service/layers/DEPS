@@ -1,0 +1,4 @@
+include_rules = [
+    "+components/viz/service/frame_sinks",
+    "+mojo/public",
+]

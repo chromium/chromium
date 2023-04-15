@@ -52,6 +52,25 @@ class NetworkState;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
     : public NetworkStateHandlerObserver {
  public:
+  // TODO(b/271854446): Make these private once the migration has landed.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class UninstallESimResult {
+    kSuccess = 0,
+    kNetworkNotFound = 1,
+    kDisconnectFailed = 2,
+    kInhibitFailed = 3,
+    kRefreshProfilesFailed = 4,
+    kDisableProfileFailed = 5,
+    kUninstallProfileFailed = 6,
+    kRemoveServiceFailed = 7,
+    kMaxValue = kRemoveServiceFailed
+  };
+
+  // Timeout when waiting for network list change after removing network
+  // service. Service removal continues with next service.
+  static const base::TimeDelta kNetworkListWaitTimeout;
+
   CellularESimUninstallHandler();
   CellularESimUninstallHandler(const CellularESimUninstallHandler&) = delete;
   CellularESimUninstallHandler& operator=(const CellularESimUninstallHandler&) =
@@ -88,19 +107,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void OnShuttingDown() override;
 
   friend class CellularESimUninstallHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, Success);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
-                           Success_AlreadyDisabled);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, DisconnectFailure);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, HermesFailure);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, MultipleRequests);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
-                           StubCellularNetwork);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, ResetEuiccMemory);
-
-  // Timeout when waiting for network list change after removing network
-  // service. Service removal continues with next service.
-  static const base::TimeDelta kNetworkListWaitTimeout;
 
   enum class UninstallState {
     kIdle,
@@ -115,20 +121,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const UninstallState& step);
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class UninstallESimResult {
-    kSuccess = 0,
-    kNetworkNotFound = 1,
-    kDisconnectFailed = 2,
-    kInhibitFailed = 3,
-    kRefreshProfilesFailed = 4,
-    kDisableProfileFailed = 5,
-    kUninstallProfileFailed = 6,
-    kRemoveServiceFailed = 7,
-    kMaxValue = kRemoveServiceFailed
-  };
 
   // Represents ESim uninstallation request parameters. Requests are queued and
   // processed one at a time. |esim_profile_path| and |euicc_path| are nullopt

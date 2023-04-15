@@ -311,10 +311,11 @@ bool SyncChannel::SyncContext::Push(SyncMessage* sync_msg) {
   if (reject_new_deserializers_)
     return false;
 
-  PendingSyncMsg pending(
-      SyncMessage::GetMessageId(*sync_msg), sync_msg->TakeReplyDeserializer(),
-      new base::WaitableEvent(base::WaitableEvent::ResetPolicy::MANUAL,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED));
+  PendingSyncMsg pending(SyncMessage::GetMessageId(*sync_msg),
+                         sync_msg->TakeReplyDeserializer(),
+                         std::make_unique<base::WaitableEvent>(
+                             base::WaitableEvent::ResetPolicy::MANUAL,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED));
   deserializers_.push_back(std::move(pending));
   return true;
 }
@@ -323,9 +324,7 @@ bool SyncChannel::SyncContext::Pop() {
   bool result;
   {
     base::AutoLock auto_lock(deserializers_lock_);
-    PendingSyncMsg& msg = deserializers_.back();
-    msg.done_event.ClearAndDelete();
-    result = msg.send_result;
+    result = deserializers_.back().send_result;
     deserializers_.pop_back();
   }
 
@@ -343,7 +342,7 @@ bool SyncChannel::SyncContext::Pop() {
 
 base::WaitableEvent* SyncChannel::SyncContext::GetSendDoneEvent() {
   base::AutoLock auto_lock(deserializers_lock_);
-  return deserializers_.back().done_event;
+  return deserializers_.back().done_event.get();
 }
 
 base::WaitableEvent* SyncChannel::SyncContext::GetDispatchEvent() {
@@ -370,7 +369,7 @@ bool SyncChannel::SyncContext::TryToUnblockListener(const Message* msg) {
     DVLOG(1) << "Received error reply";
   }
 
-  base::WaitableEvent* done_event = deserializers_.back().done_event;
+  base::WaitableEvent* done_event = deserializers_.back().done_event.get();
   TRACE_EVENT_WITH_FLOW0("toplevel.flow",
                          "SyncChannel::SyncContext::TryToUnblockListener",
                          done_event, TRACE_EVENT_FLAG_FLOW_OUT);
@@ -438,7 +437,7 @@ void SyncChannel::SyncContext::CancelPendingSends() {
   for (iter = deserializers_.begin(); iter != deserializers_.end(); iter++) {
     TRACE_EVENT_WITH_FLOW0("toplevel.flow",
                            "SyncChannel::SyncContext::CancelPendingSends",
-                           iter->done_event, TRACE_EVENT_FLAG_FLOW_OUT);
+                           iter->done_event.get(), TRACE_EVENT_FLAG_FLOW_OUT);
     iter->done_event->Signal();
   }
 }

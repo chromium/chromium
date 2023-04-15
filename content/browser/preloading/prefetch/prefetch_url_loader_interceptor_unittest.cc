@@ -24,6 +24,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -254,10 +255,13 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
 
     scoped_feature_list_.InitAndDisableFeature(::features::kPreloadingConfig);
+    PreloadingConfig::GetInstance().ParseConfig();
   }
 
   void TearDown() override {
     interceptor_.release();
+    scoped_feature_list_.Reset();
+    PreloadingConfig::GetInstance().ParseConfig();
 
     RenderViewHostTestHarness::TearDown();
   }

@@ -474,6 +474,36 @@ TEST_F(AttributionReportNetworkSenderTest, HeadersPopulated) {
       kAggregatableReportUrl, ""));
 }
 
+TEST_F(AttributionReportNetworkSenderTest, ReportRedirects) {
+  auto report = DefaultEventLevelReport();
+  EXPECT_CALL(callback_, Run(report, SendResult(SendResult::Status::kSent,
+                                                net::OK, net::HTTP_OK)));
+
+  const GURL kNewUrl(
+      "https://report2.test/.well-known/attribution-reporting/"
+      "report-event-attribution");
+
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = net::HTTP_MOVED_PERMANENTLY;
+  redirect_info.new_url = kNewUrl;
+  redirect_info.new_method = "POST";
+  network::TestURLLoaderFactory::Redirects redirects;
+  redirects.emplace_back(redirect_info, network::mojom::URLResponseHead::New());
+  network::URLLoaderCompletionStatus status;
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+  test_url_loader_factory_.AddResponse(
+      GURL(kEventLevelReportUrl), std::move(head), "", status,
+      std::move(redirects),
+      network::TestURLLoaderFactory::ResponseProduceFlags::
+          kSendHeadersOnNetworkError);
+
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
 TEST_F(AttributionReportNetworkSenderTest,
        EventLevelReportSent_MetricsRecorded) {
   // All OK

@@ -64,7 +64,6 @@
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/ssl/ssl_key_logger_impl.h"
 #include "net/url_request/url_request_context.h"
-#include "services/network/crl_set_distributor.h"
 #include "services/network/dns_config_change_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/http_auth_cache_copier.h"
@@ -411,8 +410,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
 
-  crl_set_distributor_ = std::make_unique<CRLSetDistributor>();
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
   ct_log_list_distributor_ = std::make_unique<CtLogListDistributor>();
 #endif
@@ -727,12 +724,6 @@ void NetworkService::GetNetworkList(
       base::BindOnce(&net::GetNetworkList, raw_networks, policy),
       base::BindOnce(&OnGetNetworkList, std::move(networks),
                      std::move(callback)));
-}
-
-void NetworkService::UpdateCRLSet(
-    base::span<const uint8_t> crl_set,
-    mojom::NetworkService::UpdateCRLSetCallback callback) {
-  crl_set_distributor_->OnNewCRLSet(crl_set, std::move(callback));
 }
 
 void NetworkService::OnCertDBChanged() {

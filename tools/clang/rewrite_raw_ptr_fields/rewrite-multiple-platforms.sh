@@ -90,10 +90,24 @@ force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
-    cros)
+    chromeos-lacros)
         cat <<EOF
 target_os = "chromeos"
 chromeos_is_browser_only = true
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+force_enable_raw_ptr_exclusion = true
+EOF
+        ;;
+
+    chromeos-ash)
+        cat <<EOF
+target_os = "chromeos"
+chromeos_is_browser_only = false
 dcheck_always_on = true
 is_chrome_branded = true
 is_debug = false

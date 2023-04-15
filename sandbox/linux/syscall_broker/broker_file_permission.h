@@ -6,6 +6,7 @@
 #define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_FILE_PERMISSION_H_
 
 #include <bitset>
+#include <cstdint>
 #include <string>
 
 #include "base/strings/string_piece.h"

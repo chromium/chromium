@@ -29,6 +29,11 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables FLEDGE and Attribution Reporting API integration.
+BASE_FEATURE(kAttributionFencedFrameReportingBeacon,
+             "AttributionFencedFrameReportingBeacon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",

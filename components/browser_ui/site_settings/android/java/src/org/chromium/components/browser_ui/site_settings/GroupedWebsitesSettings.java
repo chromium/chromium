@@ -231,8 +231,10 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         PreferenceCategory category = findPreference(PREF_SITES_IN_GROUP);
         category.removeAll();
         for (Website site : mSiteGroup.getWebsites()) {
-            category.addPreference(new WebsiteRowPreference(category.getContext(),
-                    getSiteSettingsDelegate(), site, getActivity().getLayoutInflater()));
+            WebsiteRowPreference preference = new WebsiteRowPreference(category.getContext(),
+                    getSiteSettingsDelegate(), site, getActivity().getLayoutInflater());
+            preference.setOnDeleteCallback(() -> { category.removePreference(preference); });
+            category.addPreference(preference);
         }
     }
 }

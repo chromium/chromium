@@ -57,7 +57,7 @@ function queueNavigationEventMessage(message) {
  * TODO(crbug.com/783382): Remove this once DidStartLoading is no longer
  * called for same-document navigation.
  */
-window.history.pushState = function(stateObject, pageTitle, pageUrl) {
+History.prototype.pushState = function(stateObject, pageTitle, pageUrl) {
   queueNavigationEventMessage({
     'command': 'willChangeState',
     'frame_id': __gCrWeb.message.getFrameId()
@@ -85,7 +85,7 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
   });
 };
 
-window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
+History.prototype.replaceState = function(stateObject, pageTitle, pageUrl) {
   queueNavigationEventMessage({
     'command': 'willChangeState',
     'frame_id': __gCrWeb.message.getFrameId()

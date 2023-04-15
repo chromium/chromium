@@ -116,7 +116,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
 
     base::RunLoop run_loop;
     RegisterProtocolHandlersWithOs(
-        app_id, app_name, profile, {handler1_info, handler2_info},
+        app_id, app_name, profile->GetPath(), {handler1_info, handler2_info},
         base::BindLambdaForTesting([&](Result result) {
           EXPECT_EQ(Result::kOk, result);
           run_loop.Quit();
@@ -241,7 +241,8 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 
   base::RunLoop run_loop;
   UnregisterProtocolHandlersWithOs(
-      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](Result result) {
+      kApp1Id, GetProfile()->GetPath(),
+      base::BindLambdaForTesting([&](Result result) {
         EXPECT_EQ(Result::kOk, result);
         run_loop.Quit();
       }));
@@ -285,7 +286,8 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 
   base::RunLoop run_loop;
   UnregisterProtocolHandlersWithOs(
-      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](Result result) {
+      kApp1Id, GetProfile()->GetPath(),
+      base::BindLambdaForTesting([&](Result result) {
         EXPECT_EQ(Result::kOk, result);
         run_loop.Quit();
       }));

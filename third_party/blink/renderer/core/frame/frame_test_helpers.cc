@@ -379,7 +379,7 @@ WebViewHelper::WebViewHelper(
     : web_view_(nullptr),
       agent_group_scheduler_(
           scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateWebAgentGroupScheduler()),
+              .CreateWebAgentGroupScheduler()),
       platform_(Platform::Current()) {
   DocumentLoader::DisableCodeCacheForTesting();
   CreateTestWebFrameWidgetCallback create_callback =

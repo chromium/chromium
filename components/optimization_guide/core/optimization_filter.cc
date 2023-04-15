@@ -7,7 +7,9 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "crypto/sha2.h"
 
 namespace optimization_guide {
 
@@ -37,17 +39,27 @@ bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
   return false;
 }
 
+// Returns a SHA256 hex string for the given input.
+std::string SHA256(base::StringPiece input) {
+  uint8_t result[crypto::kSHA256Length];
+  crypto::SHA256HashString(input, result, std::size(result));
+  std::string sha256hex = base::HexEncode(result, std::size(result));
+  return sha256hex;
+}
+
 }  // namespace
 
 OptimizationFilter::OptimizationFilter(
     std::unique_ptr<BloomFilter> bloom_filter,
     std::unique_ptr<RegexpList> regexps,
     std::unique_ptr<RegexpList> exclusion_regexps,
-    bool skip_host_suffix_checking)
+    bool skip_host_suffix_checking,
+    proto::BloomFilterFormat bloom_filter_format)
     : bloom_filter_(std::move(bloom_filter)),
       regexps_(std::move(regexps)),
       exclusion_regexps_(std::move(exclusion_regexps)),
-      skip_host_suffix_checking_(skip_host_suffix_checking) {
+      skip_host_suffix_checking_(skip_host_suffix_checking),
+      bloom_filter_format_(bloom_filter_format) {
   // May be created on one thread but used on another. The first call to
   // CalledOnValidSequence() will re-bind it.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -67,8 +79,15 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
     return false;
 
   // First check full host name.
-  if (bloom_filter_->Contains(url.host()))
-    return true;
+  if (bloom_filter_format_ == proto::BLOOM_FILTER_FORMAT_SHA256) {
+    if (bloom_filter_->Contains(SHA256(url.host()))) {
+      return true;
+    }
+  } else {
+    if (bloom_filter_->Contains(url.host())) {
+      return true;
+    }
+  }
 
   // Do not check host suffixes if we are told to skip host suffix checking.
   if (skip_host_suffix_checking_)
@@ -86,8 +105,16 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
     if (full_host.length() - left_pos > kMinHostSuffix) {
       std::string suffix = full_host.substr(left_pos + 1);
       suffix_count++;
-      if (bloom_filter_->Contains(suffix))
-        return true;
+
+      if (bloom_filter_format_ == proto::BLOOM_FILTER_FORMAT_SHA256) {
+        if (bloom_filter_->Contains(SHA256(suffix))) {
+          return true;
+        }
+      } else {
+        if (bloom_filter_->Contains(suffix)) {
+          return true;
+        }
+      }
     }
   }
   return false;

@@ -8,6 +8,8 @@ import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
+import {mojoString16ToString} from 'chrome://shortcut-customization/js/mojo_utils.js';
+import {getBoldedDescription} from 'chrome://shortcut-customization/js/search/search_result_bolding.js';
 import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
 import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,6 +17,9 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 function initSearchResultRowElement(): SearchResultRowElement {
   const element = document.createElement('search-result-row');
+  // Add required property `searchQuery` since it is used to determine which
+  // parts of the description to bold in the SearchResultRowElement.
+  element.searchQuery = '';
   document.body.appendChild(element);
   flush();
   return element;
@@ -153,5 +158,21 @@ suite('searchResultRowTest', function() {
         searchResultRowElement.shadowRoot
             ?.querySelectorAll('.accelerator-text-divider')
             .length);
+  });
+
+  test('Query-matching bolded results show up correctly', async () => {
+    const query = 'Take screenshot';
+    searchResultRowElement = initSearchResultRowElement();
+    searchResultRowElement.searchQuery = query;
+    searchResultRowElement.searchResult = TakeScreenshotSearchResult;
+    flush();
+    assertEquals(
+        getBoldedDescription(
+            mojoString16ToString(searchResultRowElement.searchResult
+                                     .acceleratorLayoutInfo.description),
+            query),
+        strictQuery(
+            '#description', searchResultRowElement.shadowRoot, HTMLDivElement)
+            .innerHTML);
   });
 });

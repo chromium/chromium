@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Πριν από 1 ημέρα}other{Πριν από # ημέρες}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Πριν από 1 λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1λ.}other{#λ.}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Πριν από 1 ημέρα}other{Πριν από # ημέρες}}</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1243314992276662751">Μεταφόρτωση</translation>
 <translation id="1266864766717917324">Δεν ήταν δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Από αριστερά προς τα δεξιά</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1398853756734560583">Μεγιστοποίηση</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Πριν από 1 λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="1450753235335490080">Δεν είναι δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Πριν από 1 μήνα}other{Πριν από # μήνες}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 λεπτό και }other{# λεπτά και }}</translation>
 <translation id="1643823602425662293">Ειδοποίηση</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Εικόνα</translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4588090240171750605">Κύλιση δεξιά</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Πριν από 1 έτος}other{Πριν από # έτη}}</translation>
 <translation id="4724120544754982507">Κέντρο ειδοποιήσεων, <ph name="UNREAD_NOTIFICATION_COUNT" /> μη αναγνωσμένες ειδοποιήσεις</translation>
 <translation id="4729257764711776855">αριθμός</translation>
 <translation id="4746179598275229723">Η επέκταση ξεκαρφιτσώθηκε</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Αποστολή μηνύματος</translation>
 <translation id="8394908167088220973">Αναπαραγωγή/παύση πολυμέσων</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1έτ.}other{#έτ.}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Αρχείο <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> ακόμη</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Αποστολή…</translation>
 <translation id="8876215549894133151">Μορφή:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Πριν από 1 ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="8996630695507351249">Βεβαιωθείτε ότι η συσκευή <ph name="TARGET_DEVICE_NAME" /> είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 δευτ.}other{# δευτ.}}</translation>
 <translation id="9059834730836941392">Σύμπτυξη ειδοποίησης</translation>
 <translation id="9170848237812810038">Αναί&amp;ρεση</translation>
 <translation id="932327136139879170">Αρχική σελίδα</translation>
 <translation id="944069440740578670">Μη αναγνωσμένες ειδοποιήσεις</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Πριν από 1 δευτερόλεπτο}other{Πριν από # δευτερόλεπτα}}</translation>
 </translationbundle>

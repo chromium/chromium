@@ -52,7 +52,7 @@ class PressureObserver final : public ScriptWrappable {
                                   PressureObserverOptions*,
                                   ExceptionState&);
 
-  static size_t ToSourceIndex(V8PressureSource::Enum);
+  static wtf_size_t ToSourceIndex(V8PressureSource::Enum);
 
   // PressureObserver IDL implementation.
   ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
@@ -67,12 +67,14 @@ class PressureObserver final : public ScriptWrappable {
   // GarbageCollected implementation.
   void Trace(blink::Visitor*) const override;
 
-  // Called by PressureObserverManager.
+  // Called by PressureClientImpl.
   void OnUpdate(ExecutionContext*,
                 V8PressureSource::Enum,
                 V8PressureState::Enum,
                 const Vector<V8PressureFactor>&,
                 DOMHighResTimeStamp);
+
+  // Called by PressureObserverManager.
   void OnBindingSucceeded(V8PressureSource::Enum);
   void OnBindingFailed(V8PressureSource::Enum, DOMExceptionCode);
   void OnConnectionError();
@@ -108,7 +110,7 @@ class PressureObserver final : public ScriptWrappable {
   HeapHashSet<Member<ScriptPromiseResolver>>
       pending_resolvers_[V8PressureSource::kEnumSize];
 
-  // The last valid record received from the observer manager.
+  // The last valid record received from PressureClientImpl.
   // Stored to avoid sending updates whenever the new record is the same.
   Member<PressureRecord> last_record_map_[V8PressureSource::kEnumSize];
 

@@ -10,6 +10,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -36,6 +37,7 @@
 #include "chromeos/ui/wm/features.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -915,6 +917,62 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
             gfx::Rect(gfx::Point(padding, padding), initial_bounds.size()));
 }
 
+TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  auto* const float_controller = Shell::Get()->float_controller();
+
+  // The AppType must be set to any except `AppType::NON_APP` (default value) to
+  // make it floatable.
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
+  widget_delegate()->EnableFloat();
+  ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
+
+  // Enter tablet mode
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  // Float window.
+  const WMEvent float_event(WM_EVENT_FLOAT);
+  window_state()->OnWMEvent(&float_event);
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsFloated());
+  EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
+
+  // Test tucking.
+  // Start dragging in the center of the header and fling it to offscreen.
+  auto* const header_view = GetHeaderView();
+  auto* const event_generator = GetEventGenerator();
+  const gfx::Point start = header_view->GetBoundsInScreen().CenterPoint();
+  const gfx::Vector2d offset(10, 10);
+
+  event_generator->GestureScrollSequence(start, start + offset,
+                                         base::Milliseconds(10), /*steps=*/1);
+
+  // Bounds change should be blocked while animating.
+  const auto start_bounds = window()->GetBoundsInScreen();
+  state()->set_bounds_locally(true);
+  widget()->SetBounds(gfx::Rect(0, 0, 256, 256));
+  state()->set_bounds_locally(false);
+  EXPECT_EQ(window()->GetBoundsInScreen(), start_bounds);
+
+  EXPECT_TRUE(window()->IsVisible());
+  ShellTestApi().WaitForWindowFinishAnimating(window());
+  EXPECT_FALSE(window()->IsVisible());
+  EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window()));
+
+  // Test untucking.
+  float_controller->MaybeUntuckFloatedWindowForTablet(window());
+  ShellTestApi().WaitForWindowFinishAnimating(window());
+  EXPECT_TRUE(window()->IsVisible());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window()));
+  EXPECT_EQ(FloatController::GetPreferredFloatWindowTabletBounds(window()),
+            delegate()->requested_bounds());
+}
+
 TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
   // The AppType must be set to any except `AppType::NON_APP` (default value) to
   // make it floatable.
@@ -999,6 +1057,41 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kFloated, delegate()->new_state());
 
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsFloated());
+  EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
+
+  // Test rotate.
+  ASSERT_TRUE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Display::ROTATE_90, display::Display::RotationSource::USER);
+  ASSERT_FALSE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
+  EXPECT_EQ(
+      InTabletMode()
+          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
+          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
+      delegate()->requested_bounds());
+
+  // Test minimize.
+  const WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  window_state()->OnWMEvent(&minimize_event);
+  EXPECT_EQ(WindowStateType::kFloated, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kMinimized, delegate()->new_state());
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Test unminimize.
+  const WMEvent unminimize_event(WM_EVENT_RESTORE);
+  window_state()->OnWMEvent(&unminimize_event);
+  EXPECT_EQ(
+      InTabletMode()
+          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
+          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
+      delegate()->requested_bounds());
+  EXPECT_EQ(WindowStateType::kMinimized, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kFloated, delegate()->new_state());
   state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(window_state()->IsFloated());
   EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());

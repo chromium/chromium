@@ -26,6 +26,9 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using ContextType = extensions::ExtensionBrowserTest::ContextType;
 
@@ -65,6 +68,9 @@ class ExtensionPreferenceApiLacrosBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    if (!IsServiceAvailable()) {
+      GTEST_SKIP() << "The Lacros service is not available.";
+    }
     extensions::ExtensionApiTest::SetUpOnMainThread();
 
     // The browser might get closed later (and therefore be destroyed), so we
@@ -117,12 +123,12 @@ class ExtensionPreferenceApiLacrosBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionPreferenceApiLacrosBrowserTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionPreferenceApiLacrosBrowserTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
-  if (!IsServiceAvailable()) {
-    return;
-  }
   absl::optional<::base::Value> out_value;
   crosapi::mojom::PrefsAsyncWaiter async_waiter(
       chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
@@ -186,9 +192,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, OnChange) {
-  if (!IsServiceAvailable()) {
-    return;
-  }
   if (!DoesAshSupportObservers()) {
     LOG(WARNING) << "Ash does not support observers, skipping the test.";
     return;
@@ -206,5 +209,99 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
                        CreateObservers) {
   EXPECT_TRUE(
       RunExtensionTest("preference/onchange", {}, {.allow_in_incognito = true}))
+      << message_;
+}
+
+// An implementation of the `crosapi::mojom::Prefs` mojo service which returns
+// null when fetching a pref value. Used for testing the Preference API against
+// Ash-Lacros version skew where Ash does not recognize the Lacros extension
+// pref. Since it's not possible to extend the PrefPath enum at runtime, this
+// class implements the same behaviour like the Ash implementation when it does
+// not recognize the pref i.e, sends a null value as a response to
+// `GetExtensionPrefWithControl`.
+class FakePrefsAshService : public crosapi::mojom::Prefs {
+ public:
+  FakePrefsAshService() = default;
+  FakePrefsAshService(const FakePrefsAshService&) = delete;
+  FakePrefsAshService& operator=(const FakePrefsAshService&) = delete;
+  ~FakePrefsAshService() override {}
+
+ private:
+  // crosapi::mojom::Prefs:
+  void GetPref(crosapi::mojom::PrefPath path,
+               GetPrefCallback callback) override {
+    std::move(callback).Run(absl::nullopt);
+  }
+  void SetPref(crosapi::mojom::PrefPath path,
+               base::Value value,
+               SetPrefCallback callback) override {
+    std::move(callback).Run();
+  }
+  void AddObserver(
+      crosapi::mojom::PrefPath path,
+      mojo::PendingRemote<crosapi::mojom::PrefObserver> observer) override {
+    mojo::Remote<crosapi::mojom::PrefObserver> remote(std::move(observer));
+    observers_.Add(std::move(remote));
+  }
+  void GetExtensionPrefWithControl(
+      crosapi::mojom::PrefPath path,
+      GetExtensionPrefWithControlCallback callback) override {
+    // Not a valid prefpath
+    std::move(callback).Run(absl::nullopt,
+                            crosapi::mojom::PrefControlState::kDefaultUnknown);
+  }
+  void ClearExtensionControlledPref(
+      crosapi::mojom::PrefPath path,
+      ClearExtensionControlledPrefCallback callback) override {
+    std::move(callback).Run();
+  }
+
+  mojo::RemoteSet<crosapi::mojom::PrefObserver> observers_;
+};
+
+class ExtensionPreferenceApiUnsupportedInAshBrowserTest
+    : public ExtensionPreferenceApiLacrosBrowserTest {
+ public:
+  ExtensionPreferenceApiUnsupportedInAshBrowserTest(
+      const ExtensionPreferenceApiUnsupportedInAshBrowserTest&) = delete;
+  ExtensionPreferenceApiUnsupportedInAshBrowserTest& operator=(
+      const ExtensionPreferenceApiUnsupportedInAshBrowserTest&) = delete;
+
+ protected:
+  ExtensionPreferenceApiUnsupportedInAshBrowserTest() = default;
+  ~ExtensionPreferenceApiUnsupportedInAshBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    // If the lacros service or the network settings service interface are not
+    // available on this version of ash-chrome, this test suite will no-op.
+    if (!IsServiceAvailable()) {
+      GTEST_SKIP() << "The Lacros service is not available.";
+    }
+    // Replace the production prefs service with a fake for testing.
+    mojo::Remote<crosapi::mojom::Prefs>& remote =
+        chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
+    remote.reset();
+    receiver_.Bind(remote.BindNewPipeAndPassReceiver());
+  }
+
+  FakePrefsAshService service_;
+  mojo::Receiver<crosapi::mojom::Prefs> receiver_{&service_};
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionPreferenceApiUnsupportedInAshBrowserTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionPreferenceApiUnsupportedInAshBrowserTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+// Tests that verifies that an error message is returned when an extension is
+// requesting the value of a pref that should be controlled in Ash but it's not
+// supported in the Ash version due to the Ash-Lacros version skew.
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiUnsupportedInAshBrowserTest,
+                       UnsupportedInAsh) {
+  EXPECT_TRUE(RunExtensionTest("preference/unsupported_in_ash", {},
+                               {.allow_in_incognito = false}))
       << message_;
 }

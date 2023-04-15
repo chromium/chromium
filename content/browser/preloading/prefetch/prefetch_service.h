@@ -37,6 +37,29 @@ class PrefetchProxyConfigurator;
 class PrefetchServiceDelegate;
 class ServiceWorkerContext;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrefetchRedirectResult {
+  kSuccessRedirectFollowed = 0,
+  kFailedNullPrefetch = 1,
+  kFailedRedirectsDisabled = 2,
+  kFailedInvalidMethod = 3,
+  kFailedInvalidResponseCode = 4,
+  kFailedInvalidChangeInNetworkContext = 5,
+  kFailedIneligible = 6,
+  kMaxValue = kFailedIneligible,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrefetchRedirectNetworkContextTransition {
+  kDefaultToDefault = 0,
+  kDefaultToIsolated = 1,
+  kIsolatedToDefault = 2,
+  kIsolatedToIsolated = 3,
+  kMaxValue = kIsolatedToIsolated,
+};
+
 // Manages all prefetches within a single BrowserContext. Responsible for
 // checking the eligibility of the prefetch, making the network request for the
 // prefetch, and provide prefetched resources to URL loader interceptor when

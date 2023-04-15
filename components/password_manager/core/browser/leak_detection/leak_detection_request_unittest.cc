@@ -48,10 +48,11 @@ TEST_F(LeakDetectionRequestTest, ServerError) {
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
-  request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
-                             /*api_key=*/absl::nullopt,
-                             {kUsernameHash, kEncryptedPayload},
-                             callback.Get());
+  request().LookupSingleLeak(
+      test_url_loader_factory(), kAccessToken,
+      /*api_key=*/absl::nullopt,
+      {LeakDetectionInitiator::kSignInCheck, kUsernameHash, kEncryptedPayload},
+      callback.Get());
   EXPECT_CALL(callback,
               Run(IsNull(), Eq(LeakDetectionError::kInvalidServerResponse)));
   task_env().RunUntilIdle();
@@ -70,10 +71,11 @@ TEST_F(LeakDetectionRequestTest, QuotaLimit) {
       net::HTTP_TOO_MANY_REQUESTS);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
-  request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
-                             /*api_key=*/absl::nullopt,
-                             {kUsernameHash, kEncryptedPayload},
-                             callback.Get());
+  request().LookupSingleLeak(
+      test_url_loader_factory(), kAccessToken,
+      /*api_key=*/absl::nullopt,
+      {LeakDetectionInitiator::kSignInCheck, kUsernameHash, kEncryptedPayload},
+      callback.Get());
   EXPECT_CALL(callback, Run(IsNull(), Eq(LeakDetectionError::kQuotaLimit)));
   task_env().RunUntilIdle();
 
@@ -92,10 +94,11 @@ TEST_F(LeakDetectionRequestTest, MalformedServerResponse) {
       std::string(kMalformedResponse));
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
-  request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
-                             /*api_key=*/absl::nullopt,
-                             {kUsernameHash, kEncryptedPayload},
-                             callback.Get());
+  request().LookupSingleLeak(
+      test_url_loader_factory(), kAccessToken,
+      /*api_key=*/absl::nullopt,
+      {LeakDetectionInitiator::kSignInCheck, kUsernameHash, kEncryptedPayload},
+      callback.Get());
   EXPECT_CALL(callback,
               Run(IsNull(), Eq(LeakDetectionError::kInvalidServerResponse)));
   task_env().RunUntilIdle();
@@ -116,10 +119,11 @@ TEST_F(LeakDetectionRequestTest, WellformedServerResponse) {
       LeakDetectionRequest::kLookupSingleLeakEndpoint, response_string);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
-  request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
-                             /*api_key=*/absl::nullopt,
-                             {kUsernameHash, kEncryptedPayload},
-                             callback.Get());
+  request().LookupSingleLeak(
+      test_url_loader_factory(), kAccessToken,
+      /*api_key=*/absl::nullopt,
+      {LeakDetectionInitiator::kSignInCheck, kUsernameHash, kEncryptedPayload},
+      callback.Get());
   EXPECT_CALL(callback,
               Run(testing::Pointee(SingleLookupResponse()), Eq(absl::nullopt)));
   task_env().RunUntilIdle();
@@ -146,7 +150,8 @@ TEST_F(LeakDetectionRequestTest,
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
   request().LookupSingleLeak(
       test_url_loader_factory(), /*access_token=*/absl::nullopt, kApiKey,
-      {kUsernameHash, kEncryptedPayload}, callback.Get());
+      {LeakDetectionInitiator::kSignInCheck, kUsernameHash, kEncryptedPayload},
+      callback.Get());
   EXPECT_CALL(callback,
               Run(testing::Pointee(SingleLookupResponse()), Eq(absl::nullopt)));
   task_env().RunUntilIdle();

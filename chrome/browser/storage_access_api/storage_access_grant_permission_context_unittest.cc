@@ -541,11 +541,11 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
 
   // However, ensure that the user's denial is not exposed when querying the
   // permission, per the spec.
-  EXPECT_EQ(
-      CONTENT_SETTING_ASK,
-      permission_context
-          .GetPermissionStatus(nullptr, GetRequesterURL(), GetTopLevelURL())
-          .content_setting);
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            permission_context
+                .GetPermissionStatus(/*render_frame_host=*/nullptr,
+                                     GetRequesterURL(), GetTopLevelURL())
+                .content_setting);
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {

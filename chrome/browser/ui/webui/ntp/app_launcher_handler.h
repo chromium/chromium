@@ -106,7 +106,9 @@ class AppLauncherHandler
   // web_app::OnWebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppUninstalled(
+      const web_app::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // web_app::AppRegistrarObserver:

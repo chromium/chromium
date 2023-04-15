@@ -136,72 +136,34 @@ public class TabUiMetricsHelper {
 
     public static void recordSelectionEditorExitMetrics(
             @TabSelectionEditorExitMetricGroups int actionId, Context context) {
-        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(context)) {
-            switch (actionId) {
-                case TabSelectionEditorExitMetricGroups.CLOSED:
-                    RecordUserAction.record("TabMultiSelectV2.Closed");
-                    break;
-                case TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY:
-                    RecordUserAction.record("TabMultiSelectV2.ClosedAutomatically");
-                    break;
-                case TabSelectionEditorExitMetricGroups.CLOSED_BY_USER:
-                    RecordUserAction.record("TabMultiSelectV2.ClosedByUser");
-                    break;
-                default:
-                    assert false
-                        : "Unexpected TabSelectionEditorExitMetricGroups value of "
-                          + actionId
-                          + " when calling recordSelectionEditorExitMetrics with V2 enabled.";
-            }
-        } else {
-            switch (actionId) {
-                case TabSelectionEditorExitMetricGroups.CLOSED:
-                    // Since the equivalent metric is not recorded for V1, it will result in a
-                    // no-op.
-                    break;
-                case TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY:
-                    // Since the equivalent metric is not recorded for V1, it will result in a
-                    // no-op.
-                    break;
-                case TabSelectionEditorExitMetricGroups.CLOSED_BY_USER:
-                    RecordUserAction.record("TabMultiSelect.Cancelled");
-                    break;
-                default:
-                    assert false
-                        : "Unexpected TabSelectionEditorExitMetricGroups value of "
-                          + actionId
-                          + " when calling recordSelectionEditorExitMetrics with V2 disabled.";
-            }
+        switch (actionId) {
+            case TabSelectionEditorExitMetricGroups.CLOSED:
+                RecordUserAction.record("TabMultiSelectV2.Closed");
+                break;
+            case TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY:
+                RecordUserAction.record("TabMultiSelectV2.ClosedAutomatically");
+                break;
+            case TabSelectionEditorExitMetricGroups.CLOSED_BY_USER:
+                RecordUserAction.record("TabMultiSelectV2.ClosedByUser");
+                break;
+            default:
+                assert false : "Unexpected TabSelectionEditorExitMetricGroups value of " + actionId
+                               + " when calling recordSelectionEditorExitMetrics with V2 enabled.";
         }
     }
 
     public static void recordSelectionEditorOpenMetrics(
             @TabSelectionEditorOpenMetricGroups int actionId, Context context) {
-        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(context)) {
-            switch (actionId) {
-                case TabSelectionEditorOpenMetricGroups.OPEN_FROM_GRID:
-                    RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
-                    break;
-                case TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG:
-                    RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
-                    break;
-                default:
-                    assert false
-                        : "Unexpected TabSelectionEditorOpenMetricGroups value of "
-                          + actionId
-                          + " when calling recordSelectionEditorOpenMetrics with V2 enabled.";
-            }
-        } else {
-            switch (actionId) {
-                case TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG:
-                    RecordUserAction.record("TabMultiSelect.OpenFromDialog");
-                    break;
-                default:
-                    assert false
-                        : "Unexpected TabSelectionEditorOpenMetricGroups value of "
-                          + actionId
-                          + " when calling recordSelectionEditorOpenMetrics with V2 disabled.";
-            }
+        switch (actionId) {
+            case TabSelectionEditorOpenMetricGroups.OPEN_FROM_GRID:
+                RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
+                break;
+            case TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG:
+                RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
+                break;
+            default:
+                assert false : "Unexpected TabSelectionEditorOpenMetricGroups value of " + actionId
+                               + " when calling recordSelectionEditorOpenMetrics with V2 enabled.";
         }
     }
 }

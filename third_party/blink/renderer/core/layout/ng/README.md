@@ -49,6 +49,11 @@ Please refer to the [inline layout README](inline/README.md).
 
 TODO(layout-dev): Document with lots of pretty pictures.
 
+All coordinates and sizes associated with an NGPhysicalFragment are physical,
+i.e. pure left/top offsets from the parent fragment, and sizes are expressed
+with widths and heights (not inline-size / block-size). No logical offsets or
+sizes. Writing mode and direction are resolved during layout.
+
 ### Constraint Spaces ###
 
 TODO(layout-dev): Document with lots of pretty pictures.

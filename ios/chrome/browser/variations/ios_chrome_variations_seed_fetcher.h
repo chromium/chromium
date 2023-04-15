@@ -7,27 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-// Enum for the seed fetch result histogram. Must stay in sync with
-// `VariationsSeedFetchResult` from enums.xml.
-enum class IOSSeedFetchException : int {
-  // Default value. DO NOT LOG.
-  kNotApplicable = 0,
-  // HTTPS request times out.
-  kHTTPSRequestTimeout = -2,
-  // Variations URL error.
-  kHTTPSRequestBadUrl = -3,
-  // The "IM" header returned from the variations server does not exist or
-  // contains invalid value.
-  kInvalidIMHeader = -5,
-};
-
 // Protocol for variations seed fetcher that reacts to variations seed fetch
 // stages.
 @protocol IOSChromeVariationsSeedFetcherDelegate
 
-// Informs the delegate that the initial seed fetch has successfully completed
-// or failed.
-- (void)didFetchSeedSuccess:(BOOL)succeeded;
+// Informs the delegate that the initial seed fetch has completed.
+// If the value of the `success` parameter is YES, the seed fetch is successful;
+// if NO, the fetch has failed.
+- (void)variationsSeedFetcherDidCompleteFetchWithSuccess:(BOOL)success;
 
 @end
 
@@ -35,10 +22,21 @@ enum class IOSSeedFetchException : int {
 // components are initialized.
 @interface IOSChromeVariationsSeedFetcher : NSObject
 
-// Delegate object that observes the status of seed fetching.
+// Delegate object that would be informed when the seed fetch completes.
 @property(nonatomic, weak) id<IOSChromeVariationsSeedFetcherDelegate> delegate;
 
-// Starts fetching the initial seed from the variations server.
+// Initializes the seed fetcher using `arguments` as variation switches, and
+// apply them to the seed manager.
+//
+// Note: If the user calls `init`, the fetcher
+// would be initialized with command line arguments.
+- (instancetype)initWithArguments:(NSArray<NSString*>*)arguments
+    NS_DESIGNATED_INITIALIZER;
+
+// Starts fetching the initial seed from the variations server. The `delegate`
+// property would be informed when the fetch completes. If the fetch is
+// successful, the acquired seed would be stored in
+// IOSChromeVariationsSeedStore.
 //
 // Note: the caller is responsible for making sure that a seed fetcher object is
 // only be initiated when there is no valid variations seed available in local

@@ -130,4 +130,10 @@ const char kGpuWatchdogTimeoutSeconds[] = "gpu-watchdog-timeout-seconds";
 const char kForceSeparateEGLDisplayForWebGLTesting[] =
     "force-separate-egl-display-for-webgl-testing";
 
+// Specify which backend to use for Skia Graphite - "dawn" (default) or "metal"
+// (only allowed on non-official developer builds).
+const char kSkiaGraphiteBackend[] = "skia-graphite-backend";
+const char kSkiaGraphiteBackendDawn[] = "dawn";
+const char kSkiaGraphiteBackendMetal[] = "metal";
+
 }  // namespace switches

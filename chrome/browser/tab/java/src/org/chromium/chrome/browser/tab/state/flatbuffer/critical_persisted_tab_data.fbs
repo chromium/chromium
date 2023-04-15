@@ -37,6 +37,7 @@ enum LaunchTypeAtCreation:int {
     FROM_RECENT_TABS = 17,
     FROM_READING_LIST = 18,
     FROM_TAB_SWITCHER_UI = 19,
+    FROM_RESTORE_TABS_UI = 20,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

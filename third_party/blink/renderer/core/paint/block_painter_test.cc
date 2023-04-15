@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/block_painter.h"
-
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,32 +18,11 @@ using testing::ElementsAre;
 
 namespace blink {
 
+// TODO(1229581): Rename this. It's not testing BlockPainter anymore.
 using BlockPainterTest = PaintControllerPaintTest;
 
 INSTANTIATE_PAINT_TEST_SUITE_P(BlockPainterTest);
 
-TEST_P(BlockPainterTest, OverflowRectForCullRectTesting) {
-  SetBodyInnerHTML(R"HTML(
-    <div id='scroller' style='width: 50px; height: 50px; overflow: scroll'>
-      <div style='width: 50px; height: 5000px'></div>
-    </div>
-  )HTML");
-  auto* scroller = To<LayoutBlock>(GetLayoutObjectByElementId("scroller"));
-  EXPECT_EQ(PhysicalRect(0, 0, 50, 5000),
-            BlockPainter(*scroller).OverflowRectForCullRectTesting());
-}
-
-TEST_P(BlockPainterTest, OverflowRectCompositedScrollingForCullRectTesting) {
-  SetBodyInnerHTML(R"HTML(
-    <div id='scroller' style='width: 50px; height: 50px; overflow: scroll;
-                              will-change: transform'>
-      <div style='width: 50px; height: 5000px'></div>
-    </div>
-  )HTML");
-  auto* scroller = To<LayoutBlock>(GetLayoutObjectByElementId("scroller"));
-  EXPECT_EQ(PhysicalRect(0, 0, 50, 5000),
-            BlockPainter(*scroller).OverflowRectForCullRectTesting());
-}
 namespace {
 class BlockPainterTestMockEventListener final : public NativeEventListener {
  public:

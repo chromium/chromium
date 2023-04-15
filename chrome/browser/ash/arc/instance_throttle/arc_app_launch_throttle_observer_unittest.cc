@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -33,7 +34,8 @@ ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
       ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,
       true /* show_in_launcher */, true /* shortcut */, true /* launchable */,
       false /* need_fixup */, absl::nullopt /* app_size_in_bytes */,
-      absl::nullopt /* data_size_in_bytes */);
+      absl::nullopt /* data_size_in_bytes */,
+      arc::mojom::AppCategory::kUndefined);
 }
 
 class ArcAppLaunchThrottleObserverTest : public testing::Test {

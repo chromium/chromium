@@ -168,7 +168,7 @@ bool ContinueSectionView::ShouldShowPrivacyNotice() const {
     return false;
   }
 
-  return HasMinimumFilesToShow() &&
+  return (HasDesksAdminTemplates() || HasMinimumFilesToShow()) &&
          !(nudge_controller_->IsPrivacyNoticeAccepted() ||
            nudge_controller_->WasPrivacyNoticeShown());
 }

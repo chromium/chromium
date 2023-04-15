@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_grid.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -60,7 +61,6 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -832,6 +832,8 @@ void OverviewGrid::AddDropTargetForDraggingFromThisGrid(
   drop_target_widget_ =
       CreateDropTargetWidget(root_window_, dragged_item->GetWindow());
   const size_t position = GetOverviewItemIndex(dragged_item) + 1u;
+  // TODO(b/277979324): Consider avoid creating overview item for drop target
+  // widget.
   overview_session_->AddItem(drop_target_widget_->GetNativeWindow(),
                              /*reposition=*/true, /*animate=*/false,
                              /*ignored_items=*/{dragged_item}, position);
@@ -850,6 +852,8 @@ void OverviewGrid::AddDropTargetNotForDraggingFromThisGrid(
     drop_target_widget_->SetOpacity(1.f);
   }
   const size_t position = FindInsertionIndex(dragged_window);
+  // TODO(b/277979324): Consider avoid creating overview item for drop target
+  // widget.
   overview_session_->AddItem(drop_target_window, /*reposition=*/true, animate,
                              /*ignored_items=*/{}, position);
 }
@@ -1378,7 +1382,7 @@ void OverviewGrid::UpdateNudge(OverviewItem* item, double value) {
 
     OverviewItem* nudged_item = window_list_[data.index].get();
     double nudge_param = value * value / 30.0;
-    nudge_param = base::clamp(nudge_param, 0.0, 1.0);
+    nudge_param = std::clamp(nudge_param, 0.0, 1.0);
     gfx::RectF bounds =
         gfx::Tween::RectFValueBetween(nudge_param, data.src, data.dst);
     nudged_item->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
@@ -1570,7 +1574,7 @@ void OverviewGrid::StartScroll() {
 bool OverviewGrid::UpdateScrollOffset(float delta) {
   float new_scroll_offset = scroll_offset_;
   new_scroll_offset += delta;
-  new_scroll_offset = base::clamp(new_scroll_offset, scroll_offset_min_, 0.f);
+  new_scroll_offset = std::clamp(new_scroll_offset, scroll_offset_min_, 0.f);
 
   // For flings, we want to return false if we hit one of the edges, which is
   // when |new_scroll_offset| is exactly 0.f or |scroll_offset_min_|.
@@ -2328,13 +2332,13 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
   // `rightmost_window_right` may have been modified by an earlier scroll.
   // `scroll_offset_` is added to adjust for that. If `rightmost_window_right`
   // is less than `total_bounds.right()`, the grid cannot be scrolled. Set
-  // `scroll_offset_min_` to 0 so that `base::clamp()` is happy.
+  // `scroll_offset_min_` to 0 so that `std::clamp()` is happy.
   rightmost_window_right -= scroll_offset_;
   scroll_offset_min_ = total_bounds.right() - rightmost_window_right;
   if (scroll_offset_min_ > 0.f)
     scroll_offset_min_ = 0.f;
 
-  scroll_offset_ = base::clamp(scroll_offset_, scroll_offset_min_, 0.f);
+  scroll_offset_ = std::clamp(scroll_offset_, scroll_offset_min_, 0.f);
 
   // Map which contains up to |kTabletLayoutRow| entries with information on the
   // last items right bound per row. Used so we can place the next item directly

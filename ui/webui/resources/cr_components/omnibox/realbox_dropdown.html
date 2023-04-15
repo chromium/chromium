@@ -8,6 +8,7 @@
     border-radius: calc(0.25 * var(--cr-realbox-height));
     box-shadow: var(--cr-realbox-shadow);
     display: flex;
+    gap: 10px;
     margin-bottom: 8px;
     overflow: hidden;
     padding-bottom: 8px;
@@ -25,14 +26,24 @@
     }
   }
 
+  .matches {
+    display: contents;
+  }
+
   cr-realbox-match {
     color: var(--color-realbox-results-foreground);
   }
 
   .header {
     align-items: center;
+    box-sizing: border-box;
     display: flex;
-    margin-top: 8px;
+    font-size: inherit;
+    font-weight: inherit;
+    /* To mirror match typical row height of items in vertical list. */
+    height: 44px;
+    margin-block-end: 0;
+    margin-block-start: 0;
     outline: none;
     padding-bottom: 6px;
     padding-inline-end: 16px;
@@ -71,14 +82,29 @@
     }
   }
 
-  .primary-side {
-    flex: 2 1 var(--cr-realbox-min-width);
-    min-width: var(--cr-realbox-min-width);  /* needed for ellipsis. */
+  .primary-side,
+  .secondary-side {
+    flex: 1;
+    min-width: 0;
   }
 
   .secondary-side {
     display: var(--cr-realbox-secondary-side-display, none);
-    flex: 1 0 calc(var(--cr-realbox-width) - var(--cr-realbox-min-width));
+    padding-inline-end: 16px;
+  }
+
+  .secondary-side .header {
+    padding-inline-end: 6px;
+    padding-inline-start: 6px;
+  }
+
+  .secondary-side .header .text {
+    padding: 0;
+  }
+
+  .secondary-side .matches {
+    display: flex;
+    gap: 2px;
   }
 </style>
 <div id="content">
@@ -90,7 +116,7 @@
         <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
           <!-- Header cannot be tabbed into but gets focus when clicked. This stops
               the dropdown from losing focus and closing as a result. -->
-          <div class="header" data-id$="[[groupId]]" tabindex="-1"
+          <h3 class="header" data-id$="[[groupId]]" tabindex="-1"
               on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
               aria-hidden="true">
             <span class="text">[[headerForGroup_(groupId)]]</span>
@@ -99,21 +125,18 @@
                 aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
                 on-mousedown="onToggleButtonMouseDown_">
             </cr-icon-button>
-          </div>
+          </h3>
         </template>
-        <template is="dom-if" if="[[!groupIsHidden_(groupId, hiddenGroupIds_.*)]]"
-            restamp>
+        <div class="matches">
           <template is="dom-repeat"
-              items="[[matchesForSide_(side, result.matches.*)]]" as="match"
-              filter="[[matchIsInGroupFilter_(groupId)]]"
-              on-dom-change="onResultRepaint_">
+              items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
+              as="match" on-dom-change="onResultRepaint_">
             <cr-realbox-match tabindex="0" role="option" match="[[match]]"
-                match-index="[[matchIndex_(match)]]"
-                side-type="[[sideTypeForGroup_(groupId)]]"
+                match-index="[[matchIndex_(match)]]" side-type="[[side]]"
                 selected$="[[isSelected_(match, selectedMatchIndex)]]">
             </cr-realbox-match>
           </template>
-        </template>
+        </div>
       </template>
     </div>
   </template>

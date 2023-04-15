@@ -20,12 +20,22 @@ class GpuBuilders(builders.Builders):
 
   def _BuilderRunsTestOfInterest(self, test_map: typing.Dict[str, typing.Any]
                                  ) -> bool:
+    # Builders running tests in Chrome Labs.
     tests = test_map.get('isolated_scripts', [])
     for t in tests:
       if t.get('isolate_name') not in self.GetIsolateNames():
         continue
       if self._suite in t.get('args', []):
         return True
+
+    # Builders running tests in Skylab.
+    tests = test_map.get('skylab_tests', [])
+    for t in tests:
+      if t.get('test') not in self.GetIsolateNames():
+        continue
+      if self._suite in t.get('args', []):
+        return True
+
     return False
 
   def GetIsolateNames(self) -> typing.Set[str]:

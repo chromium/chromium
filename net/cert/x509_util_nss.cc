@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
+#include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net::x509_util {
@@ -251,30 +252,24 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCERTCertificate(
     CERTCertificate* nss_cert,
     const std::vector<CERTCertificate*>& nss_chain,
     X509Certificate::UnsafeCreateOptions options) {
-  if (!nss_cert || !nss_cert->derCert.len)
+  if (!nss_cert || !nss_cert->derCert.len) {
     return nullptr;
-  bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
-      X509Certificate::CreateCertBufferFromBytes(
-          base::make_span(nss_cert->derCert.data, nss_cert->derCert.len)));
-  if (!cert_handle)
-    return nullptr;
+  }
+  bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(x509_util::CreateCryptoBuffer(
+      base::make_span(nss_cert->derCert.data, nss_cert->derCert.len)));
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   intermediates.reserve(nss_chain.size());
   for (const CERTCertificate* nss_intermediate : nss_chain) {
-    if (!nss_intermediate || !nss_intermediate->derCert.len)
+    if (!nss_intermediate || !nss_intermediate->derCert.len) {
       return nullptr;
-    bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-        X509Certificate::CreateCertBufferFromBytes(base::make_span(
-            nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
-    if (!intermediate_cert_handle)
-      return nullptr;
-    intermediates.push_back(std::move(intermediate_cert_handle));
+    }
+    intermediates.push_back(x509_util::CreateCryptoBuffer(base::make_span(
+        nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
   }
-  scoped_refptr<X509Certificate> result(
-      X509Certificate::CreateFromBufferUnsafeOptions(
-          std::move(cert_handle), std::move(intermediates), options));
-  return result;
+
+  return X509Certificate::CreateFromBufferUnsafeOptions(
+      std::move(cert_handle), std::move(intermediates), options);
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromCERTCertificate(

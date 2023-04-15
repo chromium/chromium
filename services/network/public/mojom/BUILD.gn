@@ -31,20 +31,6 @@ mojom("mojom_ip_address") {
     {
       types = [
         {
-          mojom = "network.mojom.IPAddress"
-          cpp = "::net::IPAddress"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/ip_address_mojom_traits.h" ]
-      traits_public_deps = [
-        "//net",
-        "//services/network/public/cpp:ip_address_mojom_support",
-      ]
-    },
-    {
-      types = [
-        {
           mojom = "network.mojom.IPEndPoint"
           cpp = "::net::IPEndPoint"
         },
@@ -91,6 +77,20 @@ mojom("mojom_ip_address") {
   ]
 
   cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.IPAddress"
+          cpp = "::net::IPAddress"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/ip_address_mojom_traits.h" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:ip_address_mojom_support",
+      ]
+    },
     {
       types = [
         {
@@ -152,7 +152,30 @@ mojom("mojom_ip_address") {
   ]
   cpp_typemaps += shared_cpp_typemaps
 
-  blink_cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.IPAddress"
+          cpp = "::net::IPAddress"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/ip_address_mojom_traits.h",
+
+        # The blink variants need HashTraits for net::IPAddress.
+        "//third_party/blink/renderer/platform/network/ip_address.h",
+      ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:ip_address_mojom_support",
+
+        # Depending on //url is a hack to depend on blink/platform.
+        "//url",
+      ]
+    },
+  ]
+  blink_cpp_typemaps += shared_cpp_typemaps
 }
 
 # As with mojom_ip_address, this is a separate target to avoid a circular
@@ -641,6 +664,7 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.CorsErrorStatus"
           cpp = "::network::CorsErrorStatus"
+          default_constructible = false
         },
       ]
       traits_headers =

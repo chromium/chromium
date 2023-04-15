@@ -7,16 +7,18 @@
 import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CrPolicyNetworkBehaviorMojo', function() {
-  suiteSetup(async () => {
-    Polymer({
-      is: 'test-behavior',
+  const TestElementBase =
+      mixinBehaviors([CrPolicyNetworkBehaviorMojo], PolymerElement);
 
-      behaviors: [CrPolicyNetworkBehaviorMojo],
-    });
-  });
+  class TestBehaviorElement extends TestElementBase {
+    static get is() {
+      return 'test-behavior';
+    }
+  }
+  customElements.define(TestBehaviorElement.is, TestBehaviorElement);
 
   let testBehavior;
 

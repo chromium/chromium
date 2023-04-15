@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1075622780330595106">Вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
-<translation id="1181037720776840403">Удалить</translation>
 <translation id="125153950246128346">Нажмите, чтобы перейти на другую вкладку</translation>
 <translation id="1403228085774130835">Закрытые вкладки можно найти в главном меню Chrome в разделе "Недавние вкладки".</translation>
 <translation id="1455506303394048917">Связанная с ними информация будет удалена с этого устройства.</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Удалить вкладку из группы}one{Удалить вкладки из группы}few{Удалить вкладки из группы}many{Удалить вкладки из группы}other{Удалить вкладки из группы}}</translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Удалить <ph name="TABS_COUNT_ONE" /> выбранную вкладку из группы.}one{Удалить <ph name="TABS_COUNT_MANY" /> выбранную вкладку из группы.}few{Удалить <ph name="TABS_COUNT_MANY" /> выбранные вкладки из группы.}many{Удалить <ph name="TABS_COUNT_MANY" /> выбранных вкладок из группы.}other{Удалить <ph name="TABS_COUNT_MANY" /> выбранной вкладки из группы.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Добавить вкладку в закладки}one{Добавить вкладки в закладки}few{Добавить вкладки в закладки}many{Добавить вкладки в закладки}other{Добавить вкладки в закладки}}</translation>
-<translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
-<translation id="257674075312929031">Группа</translation>
 <translation id="2613747923081026172">Создать группу</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Открыть сайт</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Перетаскивайте вкладки, чтобы группировать их</translation>
 <translation id="5846292395804797011">Закрыть группу вкладок "<ph name="TITLE_OF_GROUP" />". Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5972844218283131174">Отменить выбор</translation>
-<translation id="6040143037577758943">Закрыть</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Выбрать вкладки</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Выйти из режима выбора вкладок</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Поделиться вкладкой}one{Поделиться вкладками}few{Поделиться вкладками}many{Поделиться вкладками}other{Поделиться вкладками}}</translation>
 <translation id="7129458170538955174">Информация об этом магазине развернута на половину экрана</translation>
-<translation id="7151209024774799310">Удалить вкладки из группы</translation>
 <translation id="7204204600596740190">Режим выбора вкладок</translation>
 <translation id="7326879924029668159">Правила возврата и другая информация</translation>
 <translation id="7352298686197644113">Узнайте, какой из товаров на открытых вкладках стал дешевле.</translation>

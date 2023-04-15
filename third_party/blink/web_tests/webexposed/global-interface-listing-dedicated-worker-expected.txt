@@ -1180,6 +1180,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method min
 [Worker]     method mul
 [Worker]     method pad
+[Worker]     method prelu
 [Worker]     method relu
 [Worker]     method resample2d
 [Worker]     method reshape
@@ -1859,6 +1860,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter caches
 [Worker]     getter indexedDB
 [Worker]     getter locks
+[Worker]     getter name
 [Worker]     method constructor
 [Worker]     method durability
 [Worker]     method estimate

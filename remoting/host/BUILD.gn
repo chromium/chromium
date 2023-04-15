@@ -7,6 +7,7 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
+import("//third_party/webrtc/webrtc.gni")
 
 assert(!remoting_use_x11 || is_linux, "X11 is only supported on Linux")
 
@@ -555,10 +556,7 @@ static_library("common") {
       "x11_display_util.cc",
       "x11_display_util.h",
     ]
-    configs += [
-      "//third_party/webrtc/modules/portal:gio",
-      ":libevdev",
-    ]
+    configs += [ ":libevdev" ]
     libs += [ "//third_party/libei/lib64/libei.a" ]
     public_deps += [
       "//third_party/wayland:wayland_client",
@@ -593,6 +591,11 @@ static_library("common") {
         "linux/keyboard_layout_monitor_wayland.cc",
         "linux/keyboard_layout_monitor_wayland.h",
       ]
+    }
+
+    # webRTC only enables portal support if PipeWire support is enabled
+    if (rtc_use_pipewire) {
+      configs += [ "//third_party/webrtc/modules/portal:gio" ]
     }
   }
 

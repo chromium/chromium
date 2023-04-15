@@ -146,11 +146,13 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteAddressTest.java",
     "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteGroupTest.java",
+    "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteRowPreferenceTest.java",
   ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/browser_ui/settings/android:test_support_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",

@@ -578,7 +578,8 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(context_);
   if (holding_space_keyed_service) {
     for (const auto& saved_scan_path : scanned_file_paths_)
-      holding_space_keyed_service->AddScan(saved_scan_path);
+      holding_space_keyed_service->AddItemOfType(HoldingSpaceItem::Type::kScan,
+                                                 saved_scan_path);
   }
   RecordScanJobResult(failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
                           !page_save_failed_,

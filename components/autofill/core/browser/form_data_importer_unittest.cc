@@ -115,12 +115,6 @@ constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Define default value for Iban.
-constexpr char kIbanValue[] = "FR76 3000 6000 0112 3456 7890 189";
-constexpr char kIbanValueWithoutWhitespaces[] = "FR7630006000011234567890189";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // For a given ServerFieldType |type| returns a pair of field name and label
 // that should be parsed into this type by our field type parsers.
 std::pair<std::string, std::string> GetLabelAndNameForType(
@@ -3198,7 +3192,7 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   IBAN iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   personal_data_manager_->AddIBAN(iban);
 
   WaitForOnPersonalDataChanged();
@@ -4390,7 +4384,7 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        ExtractFormData_ProcessIBANImportCandidate_LocalIban) {
   IBAN iban;
-  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   personal_data_manager_->AddIBAN(iban);
 
   WaitForOnPersonalDataChanged();
@@ -4415,7 +4409,8 @@ TEST_P(FormDataImporterTest,
 
   iban_save_strike_database.AddStrikes(
       iban_save_strike_database.GetMaxStrikesLimit(),
-      IBANSaveManager::GetPartialIbanHashString(kIbanValueWithoutWhitespaces));
+      IBANSaveManager::GetPartialIbanHashString(
+          test::GetStrippedValue(test::kIbanValue)));
 
   // Simulate a form submission with a new IBAN.
   FormData form;

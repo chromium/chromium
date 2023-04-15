@@ -23,8 +23,8 @@ BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
 // deduping or `SortAndCull()`.
 BASE_DECLARE_FEATURE(kGroupingFrameworkForZPS);
 BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
+BASE_DECLARE_FEATURE(kIgnoreIntermediateResults);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
-BASE_DECLARE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls);
 BASE_DECLARE_FEATURE(kPreferNonShortcutMatchesWhenDeduping);
 BASE_DECLARE_FEATURE(kPreferTailOverHistoryClusterSuggestions);
 BASE_DECLARE_FEATURE(kPreserveDefault);
@@ -53,10 +53,10 @@ BASE_DECLARE_FEATURE(kClobberTriggersContextualWebZeroSuggest);
 BASE_DECLARE_FEATURE(kClobberTriggersSRPZeroSuggest);
 BASE_DECLARE_FEATURE(kFocusTriggersContextualWebZeroSuggest);
 BASE_DECLARE_FEATURE(kFocusTriggersSRPZeroSuggest);
-BASE_DECLARE_FEATURE(kKeepSecondaryZeroSuggest);
 BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);
 BASE_DECLARE_FEATURE(kNormalizeSearchSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxOnClobberFocusTypeOnContent);
+BASE_DECLARE_FEATURE(kRealboxSecondaryZeroSuggest);
 BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 BASE_DECLARE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
@@ -88,6 +88,7 @@ BASE_DECLARE_FEATURE(kDomainSuggestions);
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);
 BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
+BASE_DECLARE_FEATURE(kCr2023ActionChips);
 BASE_DECLARE_FEATURE(kSuggestionAnswersColorReverse);
 BASE_DECLARE_FEATURE(kMostVisitedTiles);
 BASE_DECLARE_FEATURE(kRichAutocompletion);
@@ -101,6 +102,7 @@ BASE_DECLARE_FEATURE(kUniformRowHeight);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kExpandedStateHeight);
 BASE_DECLARE_FEATURE(kExpandedStateShape);
+BASE_DECLARE_FEATURE(kExpandedStateColors);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
@@ -153,11 +155,15 @@ BASE_DECLARE_FEATURE(kReportSearchboxStats);
 
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
-BASE_DECLARE_FEATURE(kMlRelevanceScoring);
+BASE_DECLARE_FEATURE(kMlUrlScoring);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
 
 // Inspire Me - additional suggestions based on user's location and interests.
 BASE_DECLARE_FEATURE(kInspireMe);
+
+// Actions in Suggest - Action Chips for Entity Suggestions.
+// Data driven feature; flag helps tune behavior.
+BASE_DECLARE_FEATURE(kActionsInSuggest);
 
 }  // namespace omnibox
 

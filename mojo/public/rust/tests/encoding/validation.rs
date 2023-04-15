@@ -12,6 +12,7 @@ use crate::mojom_validation::*;
 
 use mojo::bindings::mojom::MojomMessageOption;
 use mojo::system;
+use rust_gtest_interop::prelude::*;
 
 /// This macro is a wrapper for the tests! macro as it takes advantage of the
 /// shared code between tests.
@@ -24,7 +25,7 @@ use mojo::system;
 macro_rules! validation_tests {
     ($($name:ident => $req_type:ident;)*) => {
         $(
-        stubbed_mojo_test!($name, {
+        stubbed_mojo_test!(MojoValidationTest, $name, {
             let data = include_str!(concat!("../../../interfaces/bindings/tests/data/validation/",
                                             stringify!($name),
                                             ".data"));
@@ -38,8 +39,8 @@ macro_rules! validation_tests {
                         mock_handles.push(unsafe { system::acquire(0) });
                     }
                     match $req_type::decode_message(data, mock_handles) {
-                        Ok(_) => panic!("Should not be valid!"),
-                        Err(err) => assert_eq!(err.as_str(), expected),
+                        Ok(_) => expect_true!(false, "Should not be valid!"),
+                        Err(err) => expect_eq!(err.as_str(), expected),
                     }
                 },
                 Err(msg) => panic!("Error: {}", msg),

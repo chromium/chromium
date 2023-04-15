@@ -18,12 +18,13 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/commerce/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
-    "//chrome/browser/tabmodel:java",
+    "//components/commerce/core/android:core_java",
     "//components/signin/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

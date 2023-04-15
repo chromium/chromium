@@ -97,7 +97,10 @@ SkiaGLImageRepresentation::SkiaGLImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(manager, backing, tracker),
+    : SkiaImageRepresentation(context_state->gr_context(),
+                              manager,
+                              backing,
+                              tracker),
       gl_representation_(std::move(gl_representation)),
       promise_textures_(std::move(promise_textures)),
       context_state_(std::move(context_state)) {

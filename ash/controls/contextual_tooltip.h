@@ -21,6 +21,7 @@ enum class TooltipType {
   kInAppToHome,
   kKeyboardBacklightColor,
   kKeyboardBacklightWallpaperColor,
+  kTimeOfDayFeatureBanner,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -47,6 +48,7 @@ constexpr int kSuccessLimitInAppToHome = 7;
 constexpr int kSuccessLimitHomeToOverview = 3;
 constexpr int kSuccessLimitBackGesture = 1;
 constexpr int kSuccessLimitKeyboardBacklightColor = 1;
+constexpr int kSuccessLimitTimeOfDayFeatureBanner = 1;
 
 // Minimum time between showing contextual nudges to the user.
 constexpr base::TimeDelta kMinInterval = base::Days(1);

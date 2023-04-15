@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
-<translation id="1181037720776840403">Silin</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1403228085774130835">Qapalı tablarınızı Chrome əsas menyusunda Son tablarda tapa bilərsiniz</translation>
 <translation id="1455506303394048917">Incognito tablarındakı fəaliyyətiniz bu cihazdan silinəcək</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tabı ayırın}other{Tabları ayırın}}</translation>
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qrupdan silin.}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qrupdan silin.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Taba əlfəcin əlavə edin}other{Tablara əlfəcin əlavə edin}}</translation>
-<translation id="2479148705183875116">Ayarlara keçin</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
-<translation id="257674075312929031">Qrup</translation>
 <translation id="2613747923081026172">Qrup yaradın</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq</translation>
 <translation id="266935134738038806">Sayta daxil olun</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
-<translation id="6040143037577758943">Qapat</translation>
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabı paylaşın}other{Tabları paylaşın}}</translation>
 <translation id="7129458170538955174">Bu mağaza haqqında məlumatlar yarım hündürlükdə açılıb</translation>
-<translation id="7151209024774799310">Tabları qrupdan silin</translation>
 <translation id="7204204600596740190">Çoxsaylı seçim rejimi</translation>
 <translation id="7326879924029668159">Qaytarma siyasətinə və digər məlumatlara baxın</translation>
 <translation id="7352298686197644113">Açıq tablarda hansı əşyanın qiymətinin daha aşağı olduğuna baxın</translation>

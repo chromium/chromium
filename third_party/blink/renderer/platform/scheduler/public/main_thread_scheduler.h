@@ -83,8 +83,8 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   virtual v8::Isolate* Isolate() = 0;
 
   // Return a reference to an underlying main thread WebThreadScheduler object.
-  // Can be null if there is no underlying main thread WebThreadScheduler
-  // (e.g. worker threads).
+  // This will be null if the `MainThreadScheduler` object doesn't support this,
+  // which can happen in tests if not using a real scheduler.
   virtual scheduler::WebThreadScheduler* ToWebMainThreadScheduler() {
     return nullptr;
   }

@@ -35,7 +35,7 @@
     </cr-policy-indicator>
   </template>
   <cr-button id="changeChannelCrButton"
-      on-click="onChangeChannelTap_"
+      on-click="onChangeChannelClick_"
       aria-describedby="currentlyOnChannelText"
       disabled="[[!canChangeChannel_]]"
       deep-link-focus-id$="[[Setting.kChangeChromeChannel]]">
@@ -119,7 +119,7 @@
     <div class="separator"></div>
     <cr-icon-button id="editHostnameButton"
         class="icon-edit"
-        on-click="onEditHostnameTap_"
+        on-click="onEditHostnameClick_"
         aria-label="[[i18n('aboutDeviceNameEditBtnA11yLabel')]]"
         aria-description=
             "[[getDeviceNameEditButtonA11yDescription_(deviceNameMetadata_)]]"
@@ -139,7 +139,7 @@
   </div>
   <cr-icon-button id="copyBuildDetailsButton" class="icon-copy-content"
       aria-labelledby="copyBuildDetailsButtonToolTip"
-      on-click="onCopyBuildDetailsToClipBoardTap_"
+      on-click="onCopyBuildDetailsToClipBoardClick_"
       disabled="[[!copyToClipBoardEnabled_(versionInfo_, channelInfo_)]]"
       deep-link-focus-id$="[[Setting.kCopyDetailedBuildInfo]]">
   </cr-icon-button>
@@ -149,7 +149,7 @@
     $i18n{aboutBuildDetailsCopyTooltipLabel}
   </paper-tooltip>
   <div class="separator"></div>
-  <cr-icon-button on-click="onVisitBuildDetailsPageTap_"
+  <cr-icon-button on-click="onVisitBuildDetailsPageClick_"
       aria-labelledby="aboutBuildDetailsTitle"
       class="icon-external">
   </cr-icon-button>

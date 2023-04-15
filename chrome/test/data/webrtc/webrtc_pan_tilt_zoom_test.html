@@ -29,9 +29,9 @@
       await queryPermissions;
       stream = await navigator.mediaDevices.getUserMedia(constraints);
       waitForImageCapture = new Promise(resolve => setTimeout(resolve, 100));
-      returnToTest("runGetUserMedia-success");
+      return logAndReturn("runGetUserMedia-success");
     } catch (error) {
-      returnToTest("runGetUserMedia-failure");
+      return logAndReturn("runGetUserMedia-failure");
     }
   }
 
@@ -39,9 +39,9 @@
     try {
       await queryPermissions;
       await navigator.permissions.request({ name: "camera", panTiltZoom: true });
-      returnToTest("runRequestPanTiltZoom-success");
+      return logAndReturn("runRequestPanTiltZoom-success");
     } catch (error) {
-      returnToTest("runRequestPanTiltZoom-failure");
+      return logAndReturn("runRequestPanTiltZoom-failure");
     }
   }
 
@@ -63,32 +63,32 @@
     const expectedConstraintsString = JSON.stringify(s(expectedConstraints));
     if  (constraintsString !== expectedConstraintsString) {
       debug(`Expected ${expectedConstraintsString} - got ${constraintsString}`)
-      returnToTest("checkConstraints-failure");
+      return logAndReturn("checkConstraints-failure");
     }
 
-    returnToTest("checkConstraints-success");
+    return logAndReturn("checkConstraints-success");
   }
 
   async function applyConstraints(constraints) {
     try {
       const videoTrack = stream.getVideoTracks()[0];
       await videoTrack.applyConstraints(constraints);
-      returnToTest("applyConstraints-success");
+      return logAndReturn("applyConstraints-success");
     } catch (error) {
-      returnToTest(`applyConstraints-failure-${error.name}`);
+      return logAndReturn(`applyConstraints-failure-${error.name}`);
     }
   }
 
   function getMicrophonePermission() {
-    returnToTest(microphonePermissionStatus.state);
+    return logAndReturn(microphonePermissionStatus.state);
   }
 
   function getCameraPermission() {
-    returnToTest(cameraPermissionStatus.state);
+    return logAndReturn(cameraPermissionStatus.state);
   }
 
   function getPanTiltZoomPermission() {
-    returnToTest(panTiltZoomPermissionStatus.state);
+    return logAndReturn(panTiltZoomPermissionStatus.state);
   }
 
   document.addEventListener('visibilitychange', () => {

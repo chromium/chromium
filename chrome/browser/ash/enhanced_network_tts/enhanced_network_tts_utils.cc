@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -30,7 +29,7 @@ void ConvertOffsetsToIndexes(std::vector<int>& vect) {
 
 // The server requires the rate to be between 0.3 and 4.0, in steps of 0.1.
 float ClampRateToLimits(float rate) {
-  float clampped_rate = base::clamp(rate, kMinRate, kMaxRate);
+  float clampped_rate = std::clamp(rate, kMinRate, kMaxRate);
   // Set the precision to one significant digit.
   return static_cast<float>(static_cast<int>(clampped_rate * 10) / 10.0f);
 }

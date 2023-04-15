@@ -39,6 +39,10 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#rbs-controller-byob-request
   ReadableStreamBYOBRequest* byobRequest();
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollergetbyobrequest
+  static ReadableStreamBYOBRequest* GetBYOBRequest(
+      ReadableByteStreamController*);
+
   // https://streams.spec.whatwg.org/#rbs-controller-desired-size
   absl::optional<double> desiredSize();
 
@@ -63,6 +67,7 @@ class CORE_EXPORT ReadableByteStreamController
   void Trace(Visitor*) const override;
 
  private:
+  friend class ByteStreamTeeEngine;
   friend class ReadableStream;
   friend class ReadableStreamBYOBReader;
   friend class ReadableStreamBYOBRequest;

@@ -138,6 +138,9 @@ android_library("java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//weblayer/browser/java:base_module_interfaces_java",
     "//weblayer/browser/java:interfaces_java",
+
+    # TODO(rayankans): Figure out why this isn't being inherited from //weblayer/browser/java.
+    "$google_play_services_package:google_play_services_basement_java",
   ]
 
   proguard_configs = [ "proguard.flags" ]
@@ -188,6 +191,7 @@ android_aidl("webengine_aidl") {
     "org/chromium/webengine/interfaces/IBooleanCallback.aidl",
     "org/chromium/webengine/interfaces/ICookieManagerDelegate.aidl",
     "org/chromium/webengine/interfaces/IFullscreenCallbackDelegate.aidl",
+    "org/chromium/webengine/interfaces/IFullscreenClient.aidl",
     "org/chromium/webengine/interfaces/INavigationObserverDelegate.aidl",
     "org/chromium/webengine/interfaces/INavigationParams.aidl",
     "org/chromium/webengine/interfaces/IPostMessageCallback.aidl",
@@ -225,6 +229,7 @@ android_library("webengine_java") {
     "org/chromium/webengine/ExceptionHelper.java",
     "org/chromium/webengine/FullscreenCallback.java",
     "org/chromium/webengine/FullscreenCallbackDelegate.java",
+    "org/chromium/webengine/FullscreenClient.java",
     "org/chromium/webengine/MessageEventListener.java",
     "org/chromium/webengine/Navigation.java",
     "org/chromium/webengine/NavigationObserver.java",

@@ -291,7 +291,7 @@ class SettingsAccountManagerSubpageElement extends
     return this.accounts_.filter(account => !account.isDeviceAccount);
   }
 
-  private onReauthenticationTap_(event: DomRepeatEvent<Account>) {
+  private onReauthenticationClick_(event: DomRepeatEvent<Account>) {
     if (event.model.item.unmigrated) {
       this.browserProxy_.migrateAccount(event.model.item.email);
     } else {
@@ -316,7 +316,7 @@ class SettingsAccountManagerSubpageElement extends
     this.deviceAccount_ = deviceAccount;
   }
 
-  private onAccountActionsMenuButtonTap_(event: DomRepeatEvent<Account>) {
+  private onAccountActionsMenuButtonClick_(event: DomRepeatEvent<Account>) {
     this.actionMenuAccount_ = event.model.item;
 
     assertInstanceof(event.target, HTMLElement);
@@ -329,7 +329,7 @@ class SettingsAccountManagerSubpageElement extends
    * If Lacros is enabled, shows a warning dialog that the user needs to
    * confirm before removing the account.
    */
-  private onRemoveAccountTap_(): void {
+  private onRemoveAccountClick_(): void {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
     assertExists(this.actionMenuAccount_);
     if (loadTimeData.getBoolean('lacrosEnabled') &&
@@ -347,7 +347,7 @@ class SettingsAccountManagerSubpageElement extends
    * The user chooses not to remove the account after seeing the warning
    * dialog, and taps the cancel button.
    */
-  private onRemoveAccountDialogCancelTap_(): void {
+  private onRemoveAccountDialogCancelClick_(): void {
     this.actionMenuAccount_ = null;
     this.$.removeConfirmationDialog.cancel();
     this.shadowRoot!.querySelector<CrButtonElement>(
@@ -358,7 +358,7 @@ class SettingsAccountManagerSubpageElement extends
    * After seeing the warning dialog, the user chooses to removes the account
    * pointed to by |this.actionMenuAccount_|, and taps the remove button.
    */
-  private onRemoveAccountDialogRemoveTap_(): void {
+  private onRemoveAccountDialogRemoveClick_(): void {
     assertExists(this.actionMenuAccount_);
     this.browserProxy_.removeAccount(this.actionMenuAccount_);
     this.actionMenuAccount_ = null;

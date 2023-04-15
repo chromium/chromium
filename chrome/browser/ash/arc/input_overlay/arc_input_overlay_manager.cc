@@ -28,6 +28,7 @@
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -100,7 +101,7 @@ class ArcInputOverlayManager::InputMethodObserver
   }
 
  private:
-  ArcInputOverlayManager* const owner_;
+  raw_ptr<ArcInputOverlayManager> const owner_;
 };
 
 // static

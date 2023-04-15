@@ -21,7 +21,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     private final StreamPositionExtrapolator mStreamPositionExtrapolator;
     private final RemotingSessionController mSessionController;
-    private final String mMediaUrl;
+    private String mMediaUrl;
     private MediaStatusObserver mMediaStatusObserver;
     private boolean mLoaded;
     private boolean mHasEverReceivedValidMediaSession;
@@ -30,6 +30,17 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
         mSessionController = sessionController;
         mMediaUrl = mediaUrl;
         mStreamPositionExtrapolator = new StreamPositionExtrapolator();
+    }
+
+    /**
+     * Called when media source needs to be updated.
+     *
+     * @param mediaUrl The new media source URL.
+     */
+    public void updateMediaUrl(String mediaUrl) {
+        mMediaUrl = mediaUrl;
+        mLoaded = false;
+        load(/* position= */ 0, /* autoplay= */ false);
     }
 
     ////////////////////////////////////////////
@@ -67,7 +78,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     ////////////////////////////////////////////
 
     /** Starts loading the media URL, from the given position. */
-    public void load(long position) {
+    public void load(long position, boolean autoplay) {
         if (!mSessionController.isConnected()) return;
 
         mLoaded = true;
@@ -76,7 +87,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
                                       .setContentType("*/*")
                                       .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                                       .build();
-        mSessionController.getRemoteMediaClient().load(mediaInfo, /* autoplay= */ true, position);
+        mSessionController.getRemoteMediaClient().load(mediaInfo, autoplay, position);
     }
 
     ////////////////////////////////////////////
@@ -88,7 +99,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
         if (!mSessionController.isConnected()) return;
 
         if (!mLoaded) {
-            load(/* position= */ 0);
+            load(/* position= */ 0, /* autoplay= */ true);
             return;
         }
 
@@ -122,7 +133,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
         if (!mSessionController.isConnected()) return;
 
         if (!mLoaded) {
-            load(position);
+            load(position, /* autoplay= */ true);
             return;
         }
 

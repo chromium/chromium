@@ -135,6 +135,7 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
+#include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_dispatcher.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
@@ -243,7 +244,6 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
-#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/chromeos/user_activity_power_manager_notifier.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
@@ -256,6 +256,7 @@
 #include "ui/display/manager/touch_transform_setter.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/native_display_delegate.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -747,6 +748,7 @@ Shell::~Shell() {
   input_device_settings_dispatcher_.reset();
   input_device_tracker_.reset();
   input_device_settings_controller_.reset();
+  input_device_key_alias_manager_.reset();
 
   screen_orientation_controller_.reset();
   screen_layout_observer_.reset();
@@ -1252,6 +1254,9 @@ void Shell::Init(
   // windows are active.
   window_modality_controller_ =
       std::make_unique<::wm::WindowModalityController>(this, env);
+
+  input_device_key_alias_manager_ =
+      std::make_unique<InputDeviceKeyAliasManager>();
 
   // The `InputDeviceSettingsController` is a dependency of the following so it
   // must be initialized first:

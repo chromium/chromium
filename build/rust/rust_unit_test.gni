@@ -83,7 +83,7 @@ template("rust_unit_test") {
   if (defined(invoker.env_out_dir)) {
     _env_out_dir = invoker.env_out_dir
   } else {
-    _env_out_dir = target_out_dir
+    _env_out_dir = target_gen_dir
   }
 
   # TODO(crbug.com/1229320): Arrange to run test executables on try bots.

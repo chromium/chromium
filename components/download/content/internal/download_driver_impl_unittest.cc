@@ -57,7 +57,7 @@ MATCHER_P(DriverEntryEqual, entry, "") {
 class DownloadDriverImplTest : public testing::Test {
  public:
   DownloadDriverImplTest()
-      : coordinator_(base::NullCallback(), false),
+      : coordinator_(base::NullCallback()),
         task_runner_(new base::TestSimpleTaskRunner),
         current_default_handle_(task_runner_) {}
 

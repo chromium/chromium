@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
-<translation id="1181037720776840403">Rimuovi</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
 <translation id="1403228085774130835">Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome</translation>
 <translation id="1455506303394048917">La tua attività in queste schede di navigazione in incognito verrà cancellata da questo dispositivo</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Rimuovi <ph name="TABS_COUNT_ONE" /> scheda selezionata dal gruppo.}other{Rimuovi <ph name="TABS_COUNT_MANY" /> schede selezionate dal gruppo.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aggiungi scheda a preferiti}other{Aggiungi schede a preferiti}}</translation>
-<translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
-<translation id="257674075312929031">Gruppo</translation>
 <translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
 <translation id="5846292395804797011">Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5972844218283131174">Deseleziona tutte</translation>
-<translation id="6040143037577758943">Chiudi</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>
 <translation id="7129458170538955174">Informazioni su questo negozio aperte nella parte inferiore dello schermo</translation>
-<translation id="7151209024774799310">Rimuovi schede dal gruppo</translation>
 <translation id="7204204600596740190">Modalità di selezione multipla</translation>
 <translation id="7326879924029668159">Visualizza le norme sui resi e non solo</translation>
 <translation id="7352298686197644113">Scopri quale articolo nelle schede aperte ha un prezzo più basso</translation>

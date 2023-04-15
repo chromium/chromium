@@ -25,6 +25,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
+#include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -493,6 +494,11 @@ void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
   support_->InitializeCompositorFrameSinkType(type);
 }
 
+void RootCompositorFrameSinkImpl::BindLayerContext(
+    mojom::PendingLayerContextPtr context) {
+  support_->BindLayerContext(*context);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void RootCompositorFrameSinkImpl::SetThreadIds(
     const std::vector<int32_t>& thread_ids) {
@@ -662,6 +668,11 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   if (external_begin_frame_source_)
     return external_begin_frame_source_.get();
   return synthetic_begin_frame_source_.get();
+}
+
+void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
+    absl::optional<base::TimeDelta> max_vrr_interval) {
+  // TODO(b/221220344): Use VRR parameters in frame scheduling logic.
 }
 
 }  // namespace viz

@@ -178,7 +178,8 @@ std::unique_ptr<OptimizationFilter> ProcessOptimizationFilter(
 
   return std::make_unique<OptimizationFilter>(
       std::move(bloom_filter), std::move(regexps), std::move(exclusion_regexps),
-      optimization_filter.skip_host_suffix_checking());
+      optimization_filter.skip_host_suffix_checking(),
+      optimization_filter.bloom_filter_format());
 }
 
 }  // namespace optimization_guide

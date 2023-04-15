@@ -1047,6 +1047,11 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   for (const auto& new_data : update.nodes)
     DCHECK(new_data.id != kInvalidAXNodeID)
         << "AXTreeUpdate contains invalid node: " << update.ToString();
+  if (update.tree_data.tree_id != AXTreeIDUnknown() &&
+      data_.tree_id != AXTreeIDUnknown()) {
+    DCHECK_EQ(update.tree_data.tree_id, data_.tree_id)
+        << "Tree id mismatch between tree update and this tree.";
+  }
 #endif
 
   event_data_ = std::make_unique<AXEvent>();

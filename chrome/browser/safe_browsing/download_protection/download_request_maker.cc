@@ -165,7 +165,8 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
       profile && AdvancedProtectionStatusManagerFactory::GetForProfile(profile)
                      ->IsUnderAdvancedProtection();
 
-  *request_->mutable_population() = GetUserPopulationForProfile(profile);
+  *request_->mutable_population() =
+      GetUserPopulationForProfileWithCookieTheftExperiments(profile);
   if (base::FeatureList::IsEnabled(kNestedArchives)) {
     request_->mutable_population()->add_finch_active_groups(
         "SafeBrowsingArchiveImprovements.Enabled");

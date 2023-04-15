@@ -22,6 +22,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
+import {StoredAccount, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -32,7 +33,6 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
@@ -258,7 +258,7 @@ export class PasswordsListHandlerElement extends
     return !this.activePassword_ || !this.activePassword_.entry.federationText;
   }
 
-  private onMenuEditPasswordTap_() {
+  private onMenuEditPasswordClick_() {
     if (this.isPasswordEditable_()) {
       this.requestPlaintextPassword(
               this.activePassword_!.entry.id,
@@ -296,14 +296,14 @@ export class PasswordsListHandlerElement extends
     this.activePassword_ = null;
   }
 
-  private onMenuSendPasswordTap_() {
+  private onMenuSendPasswordClick_() {
     // TODO(crbug.com/1298608): Implement the logic.
   }
 
   /**
    * Copy selected password to clipboard.
    */
-  private onMenuCopyPasswordButtonTap_() {
+  private onMenuCopyPasswordButtonClick_() {
     // Copy to clipboard occurs inside C++ and we don't expect getting
     // result back to javascript.
     this.requestPlaintextPassword(
@@ -377,7 +377,7 @@ export class PasswordsListHandlerElement extends
   /**
    * Should only be called when |activePassword_| has a device copy.
    */
-  private onMenuMovePasswordToAccountTap_() {
+  private onMenuMovePasswordToAccountClick_() {
     this.$.menu.close();
     this.showPasswordMoveToAccountDialog_ = true;
   }

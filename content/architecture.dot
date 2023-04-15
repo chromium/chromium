@@ -1,0 +1,70 @@
+digraph {
+  graph[bgcolor=transparent]
+  node[shape=plaintext]
+
+  Embedder[label=<
+    <table border="1" cellborder="0">
+      <tr>
+        <td port="left1" width="25"></td>
+        <td port="left2" width="25"></td>
+        <td port="center" width="200">Embedder</td>
+        <td port="right" width="50"></td>
+      </tr>
+    </table>
+  >]
+  Content[label=<
+    <table border="1" cellborder="0">
+      <tr>
+        <td port="left1" width="30"></td>
+        <td port="left2" width="30"></td>
+        <td port="center" width="60">Content</td>
+        <td port="right" width="60"></td>
+      </tr>
+    </table>
+  >]
+  Embedder:center->Content:center[label="Content\nPublic API"]
+
+  Blink[label=<
+    <table border="1" cellborder="0">
+      <tr>
+        <td port="left" width="50"></td>
+        <td width="50">Blink</td>
+        <td port="right" width="50"></td>
+      </tr>
+    </table>
+  >]
+
+  {rank=same net, V8}
+  net[label=<
+    <table border="1" cellborder="0">
+      <tr><td>//net</td></tr>
+    </table>
+  >]
+  V8[label=<
+    <table border="1" cellborder="0">
+      <tr><td>V8</td></tr>
+    </table>
+  >]
+  base[label=<
+    <table border="1" cellborder="0">
+      <tr>
+        <td port="left1" width="25"></td>
+        <td port="left2" width="25"></td>
+        <td port="center" width="200">//base</td>
+        <td port="right" width="50"></td>
+      </tr>
+    </table>
+  >]
+
+  Embedder:left1->base:left1
+  Embedder:right->Blink:right[dir=both, label="Blink\nPublic API"]
+  Embedder:left2->net[dir=both]
+
+  Content->base:center
+  Content:left1->net[dir=both]
+  Content:left2->V8[dir=both]
+  Content:right->Blink:left[dir=both]
+  Blink:left->V8[dir=both]
+  Blink->base:right
+  net->base:left2
+}

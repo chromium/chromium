@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_otp_input_dialog_views.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
@@ -19,7 +20,9 @@ namespace {
 const int kDefaultOtpLength = 6;
 }  // namespace
 
-class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
+class CardUnmaskOtpInputDialogBrowserTest
+    : public DialogBrowserTest,
+      public testing::WithParamInterface<CardUnmaskChallengeOptionType> {
  public:
   CardUnmaskOtpInputDialogBrowserTest() = default;
   CardUnmaskOtpInputDialogBrowserTest(
@@ -34,7 +37,11 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
 
     // Do lazy initialization of controller.
     CardUnmaskOtpInputDialogControllerImpl::CreateForWebContents(web_contents);
-    controller()->ShowDialog(kDefaultOtpLength, /*delegate=*/nullptr);
+    CardUnmaskChallengeOption challenge_option;
+    challenge_option.challenge_input_length = kDefaultOtpLength;
+    challenge_option.type = GetParam();
+    controller()->ShowDialog(challenge_option,
+                             /*delegate=*/nullptr);
   }
 
   CardUnmaskOtpInputDialogViews* GetDialog() {
@@ -57,10 +64,14 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
     return CardUnmaskOtpInputDialogControllerImpl::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
+
+  std::string GetOtpAuthType() {
+    return autofill_metrics::GetOtpAuthType(GetParam());
+  }
 };
 
 // Ensures the UI can be shown.
-IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
                        InvokeUi_CardUnmaskOtpInputDialogDisplays) {
   base::HistogramTester histogram_tester;
 
@@ -69,12 +80,12 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
   // TODO(crbug.com/1243475): Move this logging to controller unittest as well.
   // Right now the view is created but not injected. Need to change this when
   // moving this logging.
-  histogram_tester.ExpectUniqueSample("Autofill.OtpInputDialog.SmsOtp.Shown",
-                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Shown", true, 1);
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.
-IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
                        CanCloseTabWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
@@ -83,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
 }
 
 // Ensures closing browser while dialog being visible is correctly handled.
-IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
                        CanCloseBrowserWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
@@ -99,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
 #else
 #define MAYBE_LinkInvalidatesOnActivation LinkInvalidatesOnActivation
 #endif
-IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
                        MAYBE_LinkInvalidatesOnActivation) {
   ShowUi("");
   VerifyUi();
@@ -116,5 +127,11 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
   run_loop.Run();
   EXPECT_TRUE(GetDialog()->NewCodeLinkIsEnabledForTesting());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CardUnmaskOtpInputDialogBrowserTest,
+    testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
+                    CardUnmaskChallengeOptionType::kEmailOtp));
 
 }  // namespace autofill

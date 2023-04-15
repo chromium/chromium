@@ -38,11 +38,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/android/supervised_user_web_content_handler_impl.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/supervised_user/chromeos/supervised_user_web_content_handler_impl.h"
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h"
 #endif
 
 namespace {
@@ -50,15 +50,18 @@ namespace {
 std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
     content::WebContents* web_contents,
     GURL url,
-    Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<WebContentHandlerImpl>(
+    Profile* profile,
+    int frame_id) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(
       web_contents, url,
-      *LargeIconServiceFactory::GetForBrowserContext(profile));
+      *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id);
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<WebContentHandlerImpl>(web_contents);
-#else
-  return nullptr;
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
+                                                               frame_id);
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
+                                                               frame_id);
 #endif
 }
 
@@ -310,11 +313,13 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     const OnInterstitialResultCallback& callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto web_content_handler =
+      CreateWebContentHandler(web_contents(), url, profile, frame_id);
+  CHECK(web_content_handler);
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       SupervisedUserInterstitial::Create(
-          web_contents(), CreateWebContentHandler(web_contents(), url, profile),
+          web_contents(), std::move(web_content_handler),
           *supervised_user_service_, url, reason, frame_id, navigation_id);
-
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
   bool already_requested = base::Contains(requested_hosts_, url.host());

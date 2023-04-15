@@ -51,7 +51,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/service_worker_manager.h"
 #include "extensions/browser/state_store.h"
@@ -235,7 +234,6 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     if (mode >= ChromeContentVerifierDelegate::VerifyInfo::Mode::BOOTSTRAP)
       content_verifier_->Start();
-    info_map()->SetContentVerifier(content_verifier_.get());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // This class is used to check the permissions of the force-installed
     // extensions inside the managed-guest session. It updates the local state
@@ -334,12 +332,6 @@ UserScriptManager* ExtensionSystemImpl::Shared::user_script_manager() {
   return user_script_manager_.get();
 }
 
-InfoMap* ExtensionSystemImpl::Shared::info_map() {
-  if (!extension_info_map_.get())
-    extension_info_map_ = base::MakeRefCounted<InfoMap>();
-  return extension_info_map_.get();
-}
-
 QuotaService* ExtensionSystemImpl::Shared::quota_service() {
   return quota_service_.get();
 }
@@ -377,8 +369,6 @@ void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   if (user_script_manager() || extension_service())
     return;  // Already initialized.
 
-  // The InfoMap needs to be created before the ProcessManager.
-  shared_->info_map();
   shared_->Init(extensions_enabled);
 }
 
@@ -414,8 +404,6 @@ scoped_refptr<value_store::ValueStoreFactory>
 ExtensionSystemImpl::store_factory() {
   return shared_->store_factory();
 }
-
-InfoMap* ExtensionSystemImpl::info_map() { return shared_->info_map(); }
 
 const base::OneShotEvent& ExtensionSystemImpl::ready() const {
   return shared_->ready();
@@ -477,40 +465,6 @@ bool ExtensionSystemImpl::FinishDelayedInstallationIfReady(
   return service->GetPendingExtensionUpdate(extension_id) &&
          service->FinishDelayedInstallationIfReady(extension_id,
                                                    install_immediately);
-}
-
-void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
-    const Extension* extension,
-    base::OnceClosure callback) {
-  base::Time install_time;
-  if (extension->location() != mojom::ManifestLocation::kComponent) {
-    install_time =
-        ExtensionPrefs::Get(profile_)->GetLastUpdateTime(extension->id());
-  }
-  bool incognito_enabled = util::IsIncognitoEnabled(extension->id(), profile_);
-
-  bool notifications_disabled = false;
-  message_center::NotifierId notifier_id(
-      message_center::NotifierType::APPLICATION, extension->id());
-
-  NotifierStateTracker* notifier_state_tracker =
-      NotifierStateTrackerFactory::GetForProfile(profile_);
-  notifications_disabled =
-      !notifier_state_tracker->IsNotifierEnabled(notifier_id);
-
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&InfoMap::AddExtension, info_map(),
-                     base::RetainedRef(extension), install_time,
-                     incognito_enabled, notifications_disabled),
-      std::move(callback));
-}
-
-void ExtensionSystemImpl::UnregisterExtensionWithRequestContexts(
-    const std::string& extension_id) {
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&InfoMap::RemoveExtension, info_map(), extension_id));
 }
 
 }  // namespace extensions

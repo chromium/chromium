@@ -118,7 +118,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   /**
    * Selects the password on tap if revealed.
    */
-  private onReadonlyInputTap_() {
+  private onReadonlyInputClick_() {
     if (this.entry.password) {
       (this.shadowRoot!.querySelector('#password') as HTMLInputElement)
           .select();
@@ -139,7 +139,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
         }));
   }
 
-  private onPasswordMoreActionsButtonTap_() {
+  private onPasswordMoreActionsButtonClick_() {
     this.dispatchEvent(new CustomEvent('password-more-actions-clicked', {
       bubbles: true,
       composed: true,

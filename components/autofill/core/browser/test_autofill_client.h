@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -40,10 +41,12 @@
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/translate/core/browser/language_state.h"
@@ -190,6 +193,10 @@ class TestAutofillClientTemplate : public T {
 
   AutofillOfferManager* GetAutofillOfferManager() override {
     return autofill_offer_manager_.get();
+  }
+
+  FastCheckoutClient* GetFastCheckoutClient() override {
+    return &mock_fast_checkout_client_;
   }
 
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override {
@@ -453,6 +460,15 @@ class TestAutofillClientTemplate : public T {
     return {};
   }
 
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      const override {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+    return mock_device_authenticator_;
+#else
+    return nullptr;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  }
+
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override {
     std::move(callback).Run("some risk data");
@@ -641,6 +657,10 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<testing::NiceMock<MockIBANManager>> mock_iban_manager_;
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
+  ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
+  scoped_refptr<device_reauth::MockDeviceAuthenticator>
+      mock_device_authenticator_ =
+          base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;

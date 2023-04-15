@@ -119,7 +119,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testWhenMostRecentTabIsNull() {
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 mPropertyModel, mTabModelSelector, mTabListFaviconProvider, null);
-        assertNull(mPropertyModel.get(CLICK_LISTENER));
+        assertNotNull(mPropertyModel.get(CLICK_LISTENER));
 
         mediator.setVisibility(true);
 
@@ -156,6 +156,7 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     public void testUpdateSingleTabSwitcherTitleOnTablet() {
         doReturn(true).when(mTab3).isLoading();
         doReturn("").when(mTab3).getTitle();
+        doReturn(mUrl).when(mTab3).getUrl();
         SingleTabSwitcherOnTabletMediator mediator = new SingleTabSwitcherOnTabletMediator(
                 mPropertyModel, mTabModelSelector, mTabListFaviconProvider, mTab3);
         mediator.updateTitle();

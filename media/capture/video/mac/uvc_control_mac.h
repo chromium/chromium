@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/trace_event.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture_types.h"
 
@@ -135,6 +136,8 @@ class CAPTURE_EXPORT UvcControl {
   void SetControlCurrent(int control_selector,
                          ValueType value,
                          base::StringPiece control_name) const {
+    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                 "UvcControl::SetControlCurrent", "control_name", control_name);
     CHECK(interface_);
     IOUSBDevRequest command =
         CreateEmptyCommand(uvc::kVcRequestCodeSetCur, kUSBOut, control_selector,
@@ -154,6 +157,9 @@ class CAPTURE_EXPORT UvcControl {
                           int control_selector,
                           ValueType* result,
                           base::StringPiece control_name) const {
+    TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                 "UvcControl::SendControlRequest", "request_code", request_code,
+                 "control_name", control_name);
     CHECK(interface_);
     IOUSBDevRequest command = CreateEmptyCommand(
         request_code, kUSBIn, control_selector, sizeof(ValueType));

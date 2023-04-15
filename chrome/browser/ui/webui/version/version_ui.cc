@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -29,7 +30,9 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/variations/service/variations_service.h"
 #include "components/version_info/version_info.h"
+#include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -55,6 +58,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "chrome/browser/ui/webui/version/version_handler_win.h"
 #include "chrome/browser/ui/webui/version/version_util_win.h"
 #endif
@@ -84,6 +88,7 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
     {version_ui::kProfilePathName, IDS_VERSION_UI_PROFILE_PATH},
     {version_ui::kVariationsName, IDS_VERSION_UI_VARIATIONS},
     {version_ui::kVariationsCmdName, IDS_VERSION_UI_VARIATIONS_CMD},
+    {version_ui::kVariationsSeedName, IDS_VERSION_UI_VARIATIONS_SEED_NAME},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {version_ui::kARC, IDS_ARC_LABEL},
     {version_ui::kPlatform, IDS_PLATFORM_LABEL},
@@ -181,6 +186,23 @@ int VersionUI::VersionProcessorVariation() {
     case base::mac::CPUType::kArm:
       return IDS_VERSION_UI_64BIT_ARM;
   }
+#elif BUILDFLAG(IS_WIN)
+#if defined(ARCH_CPU_ARM64)
+  return IDS_VERSION_UI_64BIT_ARM;
+#else
+  bool emulated = base::win::OSInfo::IsRunningEmulatedOnArm64();
+#if defined(ARCH_CPU_X86)
+  if (emulated) {
+    return IDS_VERSION_UI_32BIT_TRANSLATED_INTEL;
+  }
+  return IDS_VERSION_UI_32BIT;
+#else   // defined(ARCH_CPU_X86)
+  if (emulated) {
+    return IDS_VERSION_UI_64BIT_TRANSLATED_INTEL;
+  }
+  return IDS_VERSION_UI_64BIT;
+#endif  // defined(ARCH_CPU_X86)
+#endif  // defined(ARCH_CPU_ARM64)
 #elif defined(ARCH_CPU_64_BITS)
   return IDS_VERSION_UI_64BIT;
 #elif defined(ARCH_CPU_32_BITS)
@@ -273,6 +295,13 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(version_ui::kUpdateCohortName,
                          version_utils::win::GetCohortVersionInfo());
 #endif  // BUILDFLAG(IS_WIN)
+
+  html_source->AddString(
+      version_ui::kVariationsSeed,
+      g_browser_process->variations_service()
+          ? version_ui::SeedTypeToUiString(
+                g_browser_process->variations_service()->GetSeedType())
+          : std::string());
 
   html_source->AddString(version_ui::kSanitizer,
                          version_info::GetSanitizerList());

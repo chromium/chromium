@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_MAC_CREDENTIAL_STORE_H_
 
 #include <list>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -24,8 +25,6 @@
 
 #if defined(__OBJC__)
 @class LAContext;
-#else
-class LAContext;
 #endif
 
 // This enum represents the error or success statuses of calling
@@ -89,13 +88,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   TouchIdCredentialStore& operator=(const TouchIdCredentialStore&) = delete;
   ~TouchIdCredentialStore() override;
 
+#if defined(__OBJC__)
   // An LAContext that has been successfully evaluated using |TouchIdContext|
-  // may be passed in |authenticaton_context|, in order to authorize
+  // may be passed in |authentication_context|, in order to authorize
   // credentials returned by the `Find*` instance methods for signing without
   // triggering a Touch ID prompt.
-  void set_authentication_context(LAContext* authentication_context) {
-    authentication_context_ = authentication_context;
-  }
+  void SetAuthenticationContext(LAContext* authentication_context);
+#endif  // __OBJC__
 
   // CreateCredential inserts a new credential into the keychain. It returns
   // the new credential and its public key, or absl::nullopt if an error
@@ -128,7 +127,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
 
   // FindResidentCredentials returns the client-side discoverable credentials
   // for the given |rp_id|. If |rp_id| is not specified, all resident
-  // credentials are returned. base::nulltopt is returned if an error occurred.
+  // credentials are returned. nullopt is returned if an error occurred.
   absl::optional<std::list<Credential>> FindResidentCredentials(
       const absl::optional<std::string>& rp_id) const;
 
@@ -169,7 +168,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
       const std::set<std::vector<uint8_t>>& credential_ids) const;
 
   AuthenticatorConfig config_;
-  LAContext* authentication_context_ = nullptr;
+
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
 }  // namespace device::fido::mac

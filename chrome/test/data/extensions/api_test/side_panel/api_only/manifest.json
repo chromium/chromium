@@ -1,0 +1,8 @@
+{
+  "name": "API only",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["sidePanel"],
+  "background": {"service_worker": "service_worker.js"},
+  "description": "An example of dynamic side panel options, rather than static."
+}

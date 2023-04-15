@@ -87,7 +87,6 @@ bool VerifyUsingCertVerifyProc(
     const std::string& hostname,
     const std::vector<CertInput>& intermediate_der_certs,
     const std::vector<CertInputWithTrustSetting>& der_certs_with_trust_settings,
-    net::CRLSet* crl_set,
     const base::FilePath& dump_path) {
   std::vector<base::StringPiece> der_cert_chain;
   der_cert_chain.push_back(target_der_cert.der_cert);
@@ -132,8 +131,7 @@ bool VerifyUsingCertVerifyProc(
   int rv = cert_verify_proc->Verify(
       x509_target_and_intermediates.get(), hostname,
       /*ocsp_response=*/std::string(), /*sct_list=*/std::string(), flags,
-      crl_set, /*additional_trust_anchors=*/{}, &result,
-      net::NetLogWithSource());
+      /*additional_trust_anchors=*/{}, &result, net::NetLogWithSource());
 
   std::cout << "CertVerifyProc result: " << net::ErrorToShortString(rv) << "\n";
   PrintCertVerifyResult(result);

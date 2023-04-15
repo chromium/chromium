@@ -73,7 +73,7 @@ class TickGenerator {
 class VideoRendererAlgorithmTest : public testing::Test {
  public:
   VideoRendererAlgorithmTest()
-      : tick_clock_(new base::SimpleTestTickClock()),
+      : tick_clock_(std::make_unique<base::SimpleTestTickClock>()),
         algorithm_(base::BindRepeating(&WallClockTimeSource::GetWallClockTimes,
                                        base::Unretained(&time_source_)),
                    &media_log_) {

@@ -455,24 +455,6 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
   histograms.ExpectBucketCount("Conversions.AttributionSrcRequestStatus", 2, 1);
 }
 
-TEST_F(AttributionSrcLoaderTest, TooManyConcurrentRequests_NewRequestDropped) {
-  KURL url = ToKURL("https://example1.com/foo.html");
-  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
-
-  for (size_t i = 0; i < AttributionSrcLoader::kMaxConcurrentRequests; ++i) {
-    EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(
-        url, mojom::blink::AttributionNavigationType::kAnchor));
-  }
-
-  EXPECT_FALSE(attribution_src_loader_->RegisterNavigation(
-      url, mojom::blink::AttributionNavigationType::kAnchor));
-
-  url_test_helpers::ServeAsynchronousRequests();
-
-  EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(
-      url, mojom::blink::AttributionNavigationType::kAnchor));
-}
-
 TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
@@ -514,8 +496,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->RegisterNavigation(
-      url, mojom::blink::AttributionNavigationType::kAnchor,
+  std::ignore = attribution_src_loader_->RegisterNavigation(
+      /*navigation_url=*/KURL(), /*attribution_src=*/url,
       /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
@@ -602,8 +584,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->RegisterNavigation(
-      url, mojom::blink::AttributionNavigationType::kAnchor,
+  std::ignore = attribution_src_loader_->RegisterNavigation(
+      /*navigation_url=*/KURL(), /*attribution_src=*/url,
       /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();

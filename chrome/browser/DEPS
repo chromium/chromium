@@ -215,6 +215,7 @@ include_rules = [
   "+components/network_time",
   "+components/no_state_prefetch/browser",
   "+components/no_state_prefetch/common",
+  "+components/ntp_snippets",
   "+components/ntp_tiles",
   "+components/offline_items_collection/core",
   "+components/offline_pages/buildflags",
@@ -383,7 +384,7 @@ include_rules = [
   "+courgette",
   "+device/base",
   "+device/bluetooth",
-  "+device/fido",
+  "+device/fido/features.h",
   "+device/gamepad/public/cpp",
   "+device/vr/buildflags/buildflags.h",
   "+device/vr/public",
@@ -591,5 +592,8 @@ specific_include_rules = {
   ],
   "render_view_context_menu_browsertest.cc" : [
     "+third_party/libwebp/src/src/webp/decode.h",
-  ]
+  ],
+  "webauth_interactive_uitest.cc": [
+    "+device/fido",
+  ],
 }

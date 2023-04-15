@@ -1209,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   EXPECT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
   EXPECT_EQ(
       guid,
-      GetBookmarkBarNode(kSingleProfileIndex)->children()[0].get()->guid());
+      GetBookmarkBarNode(kSingleProfileIndex)->children()[0].get()->uuid());
   EXPECT_EQ(1, histogram_tester.GetBucketCount("Sync.BookmarkGUIDSource2",
                                                /*kSpecifics=*/0));
 
@@ -1253,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   EXPECT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
   EXPECT_EQ(
       originator_client_item_id,
-      GetBookmarkBarNode(kSingleProfileIndex)->children()[0].get()->guid());
+      GetBookmarkBarNode(kSingleProfileIndex)->children()[0].get()->uuid());
 
   EXPECT_EQ(1, histogram_tester.GetBucketCount("Sync.BookmarkGUIDSource2",
                                                /*kValidOCII=*/1));
@@ -1466,11 +1466,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const std::string title = "Seattle Sounders FC";
   const BookmarkNode* local_folder = AddFolder(
       kSingleProfileIndex, GetBookmarkBarNode(kSingleProfileIndex), 0, title);
-  const base::GUID old_guid = local_folder->guid();
-  SCOPED_TRACE(std::string("old_guid=") + old_guid.AsLowercaseString());
+  const base::Uuid old_uuid = local_folder->uuid();
+  SCOPED_TRACE(std::string("old_uuid=") + old_uuid.AsLowercaseString());
 
   ASSERT_TRUE(local_folder);
-  ASSERT_TRUE(BookmarksGUIDChecker(kSingleProfileIndex, old_guid).Wait());
+  ASSERT_TRUE(BookmarksGUIDChecker(kSingleProfileIndex, old_uuid).Wait());
   ASSERT_EQ(1u, CountFoldersWithTitlesMatching(kSingleProfileIndex, title));
 
   // Create an equivalent remote folder.
@@ -1479,7 +1479,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       entity_builder_factory.NewBookmarkEntityBuilder(title);
   std::unique_ptr<syncer::LoopbackServerEntity> remote_folder =
       bookmark_builder.BuildFolder();
-  const base::GUID new_guid = base::GUID::ParseCaseInsensitive(
+  const base::Uuid new_uuid = base::Uuid::ParseCaseInsensitive(
       remote_folder->GetSpecifics().bookmark().guid());
   fake_server_->InjectEntity(std::move(remote_folder));
 
@@ -1487,9 +1487,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
   ASSERT_TRUE(SetupSync());
 
-  // The folder GUID should have been updated with the corresponding value.
-  EXPECT_TRUE(BookmarksGUIDChecker(kSingleProfileIndex, new_guid).Wait());
-  EXPECT_FALSE(ContainsBookmarkNodeWithGUID(kSingleProfileIndex, old_guid));
+  // The folder UUID should have been updated with the corresponding value.
+  EXPECT_TRUE(BookmarksGUIDChecker(kSingleProfileIndex, new_uuid).Wait());
+  EXPECT_FALSE(ContainsBookmarkNodeWithGUID(kSingleProfileIndex, old_uuid));
   EXPECT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 }
 
@@ -1846,7 +1846,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_EQ(1u, server_bookmarks.size());
   EXPECT_EQ(server_bookmarks[0].client_tag_hash(),
             syncer::ClientTagHash::FromUnhashed(
-                syncer::BOOKMARKS, folder->guid().AsLowercaseString())
+                syncer::BOOKMARKS, folder->uuid().AsLowercaseString())
                 .value());
 }
 

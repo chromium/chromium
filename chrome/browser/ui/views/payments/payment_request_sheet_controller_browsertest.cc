@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
                                      "    phone: 'PHONE ERROR'"
                                      "  }"
                                      "});"));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_FALSE(dialog_view()->throbber_overlay_for_testing()->GetVisible());
   EXPECT_TRUE(dialog_view()

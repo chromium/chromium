@@ -46,10 +46,10 @@ CreateMockWebMainThreadSchedulerForTests() {
   return std::make_unique<SimpleMockMainThreadScheduler>();
 }
 
-void RunIdleTasksForTesting(WebThreadScheduler* scheduler,
+void RunIdleTasksForTesting(WebThreadScheduler& scheduler,
                             base::OnceClosure callback) {
   MainThreadSchedulerImpl* scheduler_impl =
-      static_cast<MainThreadSchedulerImpl*>(scheduler);
+      static_cast<MainThreadSchedulerImpl*>(&scheduler);
   scheduler_impl->RunIdleTasksForTesting(std::move(callback));
 }
 

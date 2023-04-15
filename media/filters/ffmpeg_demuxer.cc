@@ -778,8 +778,9 @@ void FFmpegDemuxerStream::InitBitstreamConverter() {
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case AV_CODEC_ID_HEVC:
-      bitstream_converter_.reset(
-          new FFmpegH265ToAnnexBBitstreamConverter(stream_->codecpar));
+      bitstream_converter_ =
+          std::make_unique<FFmpegH265ToAnnexBBitstreamConverter>(
+              stream_->codecpar);
       break;
 #endif
     case AV_CODEC_ID_AAC:
@@ -1064,7 +1065,7 @@ void FFmpegDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
   DCHECK(!pending_seek_cb_);
   TRACE_EVENT_ASYNC_BEGIN0("media", "FFmpegDemuxer::Seek", this);
   pending_seek_cb_ = std::move(cb);
-  SeekInternal(time, base::BindOnce(&FFmpegDemuxer::OnSeekFrameSuccess,
+  SeekInternal(time, base::BindOnce(&FFmpegDemuxer::OnSeekFrameDone,
                                     weak_factory_.GetWeakPtr()));
 }
 
@@ -1073,7 +1074,7 @@ bool FFmpegDemuxer::IsSeekable() const {
 }
 
 void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
-                                 base::OnceClosure seek_cb) {
+                                 base::OnceCallback<void(int)> seek_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // FFmpeg requires seeks to be adjusted according to the lowest starting time.
@@ -1115,10 +1116,10 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
   const AVStream* seeking_stream = demux_stream->av_stream();
   DCHECK(seeking_stream);
 
-  blocking_task_runner_->PostTaskAndReply(
+  blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&av_seek_frame),
-                     glue_->format_context(), seeking_stream->index,
+      base::BindOnce(&av_seek_frame, glue_->format_context(),
+                     seeking_stream->index,
                      ConvertToTimeBase(seeking_stream->time_base, seek_time),
                      // Always seek to a timestamp <= to the desired timestamp.
                      AVSEEK_FLAG_BACKWARD),
@@ -1656,13 +1657,19 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindPreferredStreamForSeeking(
   return nullptr;
 }
 
-void FFmpegDemuxer::OnSeekFrameSuccess() {
+void FFmpegDemuxer::OnSeekFrameDone(int result) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(pending_seek_cb_);
 
   if (stopped_) {
     MEDIA_LOG(ERROR, media_log_) << GetDisplayName() << ": bad state";
     RunPendingSeekCB(PIPELINE_ERROR_ABORT);
+    return;
+  }
+
+  if (result < 0) {
+    MEDIA_LOG(ERROR, media_log_) << GetDisplayName() << ": demuxer seek failed";
+    RunPendingSeekCB(PIPELINE_ERROR_READ);
     return;
   }
 
@@ -1729,8 +1736,10 @@ void FFmpegDemuxer::OnEnabledAudioTracksChanged(
 
 void FFmpegDemuxer::OnVideoSeekedForTrackChange(
     DemuxerStream* video_stream,
-    base::OnceClosure seek_completed_cb) {
+    base::OnceClosure seek_completed_cb,
+    int result) {
   static_cast<FFmpegDemuxerStream*>(video_stream)->FlushBuffers(true);
+  // TODO(crbug.com/1424380): Report seek failures for track changes too.
   std::move(seek_completed_cb).Run();
 }
 

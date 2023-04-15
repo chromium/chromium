@@ -43,10 +43,10 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
 
-  bookmark_model_ =
+  profile_bookmark_model_ =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+  bookmarks::test::WaitForBookmarkModelToLoad(profile_bookmark_model_);
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 }
 
@@ -55,20 +55,21 @@ const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
     NSString* title) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
   GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") + c_title);
-  return bookmark_model_->AddURL(parent, parent->children().size(), c_title,
-                                 url);
+  return profile_bookmark_model_->AddURL(parent, parent->children().size(),
+                                         c_title, url);
 }
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddFolder(
     const BookmarkNode* parent,
     NSString* title) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
-  return bookmark_model_->AddFolder(parent, parent->children().size(), c_title);
+  return profile_bookmark_model_->AddFolder(parent, parent->children().size(),
+                                            c_title);
 }
 
 void BookmarkIOSUnitTestSupport::ChangeTitle(NSString* title,
                                              const BookmarkNode* node) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
-  bookmark_model_->SetTitle(node, c_title,
-                            bookmarks::metrics::BookmarkEditSource::kUser);
+  profile_bookmark_model_->SetTitle(
+      node, c_title, bookmarks::metrics::BookmarkEditSource::kUser);
 }

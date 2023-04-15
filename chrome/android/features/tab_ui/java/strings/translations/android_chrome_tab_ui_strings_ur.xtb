@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
-<translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
 <translation id="1403228085774130835">‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینیو کے نیچے حالیہ ٹیبز میں تلاش کر سکتے ہیں</translation>
 <translation id="1455506303394048917">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے صاف ہو جائے گی</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ٹیب کو گروپ سے ہٹا دیں}other{ٹیبز کو گروپ سے ہٹا دیں}}</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{گروپ سے <ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو ہٹائیں۔}other{گروپ سے <ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو ہٹائیں۔}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ٹیب کو بُک مارک کریں}other{ٹیبز کو بُک مارک کریں}}</translation>
-<translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
-<translation id="257674075312929031">گروپ</translation>
 <translation id="2613747923081026172">گروپ بنائیں</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی</translation>
 <translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">ان کی گروپ بندی کرنے کے لیے ٹیبز کو گھسیٹیں</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ بند کریں</translation>
 <translation id="5972844218283131174">سبھی کو غیر منتخب کریں</translation>
-<translation id="6040143037577758943">بند کریں</translation>
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ٹیب کا اشتراک کریں}other{ٹیبز کا اشتراک کریں}}</translation>
 <translation id="7129458170538955174">اس اسٹور سے متعلق معلومات نصف اونچائی پر کھلی ہے</translation>
-<translation id="7151209024774799310">ٹیبز کو گروپ سے ہٹائیں</translation>
 <translation id="7204204600596740190">متعدد انتخاب کی وضع</translation>
 <translation id="7326879924029668159">واپسی کی پالیسی اور مزید دیکھیں</translation>
 <translation id="7352298686197644113">دیکھیں کہ آپ کے کھلے ٹیبز میں کون سے آئٹم کی قیمت کم ہے</translation>

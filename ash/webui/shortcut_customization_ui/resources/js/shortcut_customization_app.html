@@ -5,7 +5,6 @@
     font-family: var(--shortcuts-font-family-default);
     font-size: var(--shortcuts-font-size-default);
     font-weight: var(--shortcuts-font-weight-regular);
-    height: 100%;
   }
 
   /** 
@@ -25,13 +24,16 @@
     }
   }
 
+  #navigationPanel::part(nav-body) {
+    width: var(--cr-toolbar-field-width);
+  }
+
   #navigationPanel::part(title) {
     color: var(--cros-text-color-secondary);
     padding-inline-start: 8px;
   }
 
   #navigationPanel::part(navigation-item) {
-    color: var(--cros-text-color-primary);
     padding-inline-start: 28px;
   }
 

@@ -165,12 +165,12 @@ export class SettingsAddLanguagesDialogElement extends
     this.disableActionButton_ = !this.languagesToAdd_.size;
   }
 
-  private onCancelButtonTap_() {
+  private onCancelButtonClick_() {
     this.$.dialog.close();
   }
 
   /** Enables the checked languages. */
-  private onActionButtonTap_() {
+  private onActionButtonClick_() {
     this.dispatchEvent(new CustomEvent('languages-added', {
       bubbles: true,
       composed: true,

@@ -309,22 +309,23 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
     }
   }
 
-  bool as_pinned_home_tab = IsPinnedHomeTabUrl(registrar, app_id, launch_url);
+  Browser* browser = nullptr;
 
   if (registrar.IsTabbedWindowModeEnabled(app_id)) {
-    if (Browser* browser =
-            AppBrowserController::FindForWebApp(*profile, app_id)) {
-      return ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
-                                               as_pinned_home_tab);
-    }
+    browser = AppBrowserController::FindForWebApp(*profile, app_id);
   }
 
-  return ReparentWebContentsIntoAppBrowser(
-      contents,
-      Browser::Create(Browser::CreateParams::CreateForApp(
-          GenerateApplicationNameFromAppId(app_id), true /* trusted_source */,
-          gfx::Rect(), profile, true /* user_gesture */)),
-      app_id, as_pinned_home_tab);
+  if (!browser) {
+    browser = Browser::Create(Browser::CreateParams::CreateForApp(
+        GenerateApplicationNameFromAppId(app_id), true /* trusted_source */,
+        gfx::Rect(), profile, true /* user_gesture */));
+  }
+
+  bool as_pinned_home_tab =
+      browser->app_controller()->IsUrlInHomeTabScope(launch_url);
+
+  return ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
+                                           as_pinned_home_tab);
 }
 
 void SetWebContentsActingAsApp(content::WebContents* contents,
@@ -444,11 +445,9 @@ content::WebContents* NavigateWebApplicationWindow(
 
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
-  WebAppRegistrar& registrar =
-      WebAppProvider::GetForLocalAppsUnchecked(nav_params.browser->profile())
-          ->registrar_unsafe();
-
-  if (IsPinnedHomeTabUrl(registrar, app_id, nav_params.url)) {
+  if (nav_params.browser->app_controller() &&
+      nav_params.browser->app_controller()->IsUrlInHomeTabScope(
+          nav_params.url)) {
     // Navigations to the home tab URL in tabbed apps should happen in the home
     // tab.
     nav_params.browser->tab_strip_model()->ActivateTabAt(0);

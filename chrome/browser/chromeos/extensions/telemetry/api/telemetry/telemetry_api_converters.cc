@@ -381,7 +381,7 @@ telemetry_api::CpuArchitectureEnum Convert(
     case telemetry_service::ProbeCpuArchitectureEnum::kUnknown:
       return telemetry_api::CpuArchitectureEnum::kUnknown;
     case telemetry_service::ProbeCpuArchitectureEnum::kX86_64:
-      return telemetry_api::CpuArchitectureEnum::kX8664;
+      return telemetry_api::CpuArchitectureEnum::kX86_64;
     case telemetry_service::ProbeCpuArchitectureEnum::kAArch64:
       return telemetry_api::CpuArchitectureEnum::kAarch64;
     case telemetry_service::ProbeCpuArchitectureEnum::kArmv7l:
@@ -506,7 +506,7 @@ telemetry_api::UsbSpecSpeed Convert(
     case crosapi::mojom::ProbeUsbSpecSpeed::kUnknown:
       return telemetry_api::UsbSpecSpeed::kUnknown;
     case crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps:
-      return telemetry_api::UsbSpecSpeed::kN15mbps;
+      return telemetry_api::UsbSpecSpeed::kN1_5mbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps:
       return telemetry_api::UsbSpecSpeed::kN12Mbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps:

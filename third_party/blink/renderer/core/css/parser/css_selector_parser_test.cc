@@ -291,8 +291,8 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     ASSERT_TRUE(list->HasOneSelector());
 
     auto* selector = list->First();
-    while (selector->TagHistory()) {
-      selector = selector->TagHistory();
+    while (selector->NextSimpleSelector()) {
+      selector = selector->NextSimpleSelector();
     }
 
     EXPECT_EQ(selector->GetPseudoType(), test_case.type);
@@ -972,7 +972,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
                                         : selector->Value();
       EXPECT_EQ(sub_expectation.first, selector_value);
       EXPECT_EQ(sub_expectation.second, selector->Relation());
-      selector = selector->TagHistory();
+      selector = selector->NextSimpleSelector();
     }
     EXPECT_FALSE(selector);
   }
@@ -1230,7 +1230,7 @@ static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
 
   Vector<const CSSSelector*> selectors;
   for (const CSSSelector* selector = list->First(); selector;
-       selector = selector->TagHistory()) {
+       selector = selector->NextSimpleSelector()) {
     selectors.push_back(selector);
   }
   // The back of `selectors` now contains the leftmost simple CSSSelector.
@@ -1316,11 +1316,11 @@ TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
             GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kNone));
 }
 
-static const CSSSelector* NthInTagHistory(const CSSSelector& selector,
-                                          wtf_size_t tag_history_index) {
+static const CSSSelector* NthSimpleSelector(const CSSSelector& selector,
+                                            wtf_size_t index) {
   wtf_size_t i = 0;
-  for (const CSSSelector* s = &selector; s; s = s->TagHistory()) {
-    if (i == tag_history_index) {
+  for (const CSSSelector* s = &selector; s; s = s->NextSimpleSelector()) {
+    if (i == index) {
       return s;
     }
     ++i;
@@ -1331,16 +1331,16 @@ static const CSSSelector* NthInTagHistory(const CSSSelector& selector,
 struct ScopeActivationData {
   // The selector text, e.g. ".a .b > .c".
   const char* inner_rule;
-  // The simple CSSSelector to "focus" the test on, specified by the nth
-  // CSSSelector in the TagHistory.
-  wtf_size_t tag_history_index;
+  // The simple CSSSelector to "focus" the test on, specified by the Nth
+  // CSSSelector in the list of simple selectors.
+  wtf_size_t index;
 };
 
-// Each test verifies that the simple selector at the specified tag history
+// Each test verifies that the simple selector at the specified selector
 // index is ':true' and that it has relation=kPseudoActivation.
 ScopeActivationData scope_activation_data[] = {
     // Comments indicate the expected order of simple selectors
-    // in the TagHistory.
+    // in the list of simple selectors.
 
     // [:true, :scope]
     {":scope", 0},
@@ -1401,8 +1401,7 @@ TEST_P(ScopeActivationTest, All) {
   CSSSelectorList* list = ParseNested(param.inner_rule, CSSNestingType::kScope);
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->First());
-  const CSSSelector* selector =
-      NthInTagHistory(*list->First(), param.tag_history_index);
+  const CSSSelector* selector = NthSimpleSelector(*list->First(), param.index);
   ASSERT_TRUE(selector);
   SCOPED_TRACE(selector->SimpleSelectorTextForDebug().Utf8());
   EXPECT_EQ(CSSSelector::kPseudoTrue, selector->GetPseudoType());
@@ -1417,7 +1416,7 @@ static wtf_size_t CountSimpleSelectors(const CSSSelectorList& list,
   wtf_size_t count = 0;
   for (const CSSSelector* selector = list.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    for (const CSSSelector* s = selector; s; s = s->TagHistory()) {
+    for (const CSSSelector* s = selector; s; s = s->NextSimpleSelector()) {
       if (s->SelectorList()) {
         count += CountSimpleSelectors(*s->SelectorList(), predicate);
       }

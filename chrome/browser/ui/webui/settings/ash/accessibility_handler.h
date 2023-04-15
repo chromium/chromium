@@ -42,6 +42,8 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void HandleShowChromeVoxTutorial(const base::Value::List& args);
   void HandleShowSelectToSpeakSettings(const base::Value::List& args);
   void HandleSetStartupSoundEnabled(const base::Value::List& args);
+  void HandleUpdateBluetoothBrailleDisplayAddress(
+      const base::Value::List& args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

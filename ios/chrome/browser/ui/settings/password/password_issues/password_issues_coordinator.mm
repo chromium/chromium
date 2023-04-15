@@ -32,6 +32,28 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::WarningType;
+
+namespace {
+
+// Returns a DetailsContext based on the given WarningType.
+DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
+  switch (warning_type) {
+    case WarningType::kCompromisedPasswordsWarning:
+      return DetailsContext::kCompromisedIssues;
+    case WarningType::kReusedPasswordsWarning:
+      return DetailsContext::kReusedIssues;
+    case WarningType::kWeakPasswordsWarning:
+      return DetailsContext::kWeakIssues;
+    case WarningType::kDismissedWarningsWarning:
+      return DetailsContext::kDismissedWarnings;
+    case WarningType::kNoInsecurePasswordsWarning:
+      return DetailsContext::kGeneral;
+  }
+}
+
+}  // namespace
+
 @interface PasswordIssuesCoordinator () <PasswordDetailsCoordinatorDelegate,
                                          PasswordIssuesCoordinatorDelegate,
                                          PasswordIssuesPresenter> {
@@ -139,7 +161,8 @@
                                browser:self.browser
                             credential:password.credential
                           reauthModule:self.reauthModule
-                  supportMoveToAccount:NO];
+                               context:ComputeDetailsContextFromWarningType(
+                                           _warningType)];
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }

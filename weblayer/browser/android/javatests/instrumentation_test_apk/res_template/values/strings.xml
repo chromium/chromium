@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="asset_statements">
+      [
+      {#
+      Add all localhost origins with ports in the 8900s range as 1P origins.
+      This is to avoid flakiness in tests by relying on having a specific port available.
+      // LINT.IfChange
+      #}
+      {% for i in range(8900, 9000) %}
+      {#
+      // LINT.ThenChange(
+      //     //weblayer/browser/android/javatests/src/org/chromium/webengine/test/DigitalAssetLinksServerRule.java
+      // )
+      #}
+      {
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+          \"namespace\": \"web\",
+          \"site\": \"http://localhost:{{ i }}\"
+        }
+      },
+      {% endfor %}
+      {
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+          \"namespace\": \"web\",
+          \"site\": \"https://example.com\"
+        }
+      }
+      ]
+    </string>
+</resources>

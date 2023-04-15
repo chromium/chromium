@@ -54,9 +54,6 @@ class HighEfficiencyChipView : public PageActionIconView,
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
-  void MaybeShowIPH();
-  void OnIPHClosed();
-
   // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
   // Checks whether high efficiency mode is currently enabled.
   void OnHighEfficiencyModeChanged() override;

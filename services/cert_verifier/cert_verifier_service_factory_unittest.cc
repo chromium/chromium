@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -21,10 +24,13 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/test_root_certs.h"
+#include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -40,6 +46,9 @@
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/der/input.h"
 #endif
+
+using net::test::IsError;
+using net::test::IsOk;
 
 namespace cert_verifier {
 namespace {
@@ -66,11 +75,73 @@ class DummyCVServiceClient : public mojom::CertVerifierServiceClient {
   DummyCVServiceClient() : client_(this) {}
 
   // mojom::CertVerifierServiceClient implementation:
-  void OnCertVerifierChanged() override { changed_count_++; }
+  void OnCertVerifierChanged() override {
+    changed_count_++;
+    run_loop_->Quit();
+  }
+
+  void WaitForCertVerifierChange(unsigned expected) {
+    if (changed_count_ < expected) {
+      run_loop_->Run();
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    ASSERT_EQ(changed_count_, expected);
+  }
 
   unsigned changed_count_ = 0;
+  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
   mojo::Receiver<mojom::CertVerifierServiceClient> client_;
 };
+
+std::tuple<int, net::CertVerifyResult> Verify(
+    const mojo::Remote<mojom::CertVerifierService>& cv_service_remote,
+    scoped_refptr<net::X509Certificate> cert,
+    const std::string& hostname) {
+  base::RunLoop request_completed_run_loop;
+  DummyCVServiceRequest dummy_cv_service_req(
+      request_completed_run_loop.QuitClosure());
+  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
+      &dummy_cv_service_req);
+  auto net_log(net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
+  cv_service_remote->Verify(
+      net::CertVerifier::RequestParams(std::move(cert), hostname,
+                                       /*flags=*/0,
+                                       /*ocsp_response=*/std::string(),
+                                       /*sct_list=*/std::string()),
+      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
+      net_log.source().start_time,
+      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
+
+  request_completed_run_loop.Run();
+  return {dummy_cv_service_req.net_error, dummy_cv_service_req.result};
+}
+
+void UpdateCRLSetWithTestFile(
+    CertVerifierServiceFactoryImpl* cv_service_factory_impl,
+    base::StringPiece crlset_file_name) {
+  std::string crl_set_bytes;
+  EXPECT_TRUE(base::ReadFileToString(
+      net::GetTestCertsDirectory().AppendASCII(crlset_file_name),
+      &crl_set_bytes));
+
+  base::RunLoop update_run_loop;
+  cv_service_factory_impl->UpdateCRLSet(
+      base::as_bytes(base::make_span(crl_set_bytes)),
+      update_run_loop.QuitClosure());
+  update_run_loop.Run();
+}
+
+void EnableChromeRootStoreIfOptional(CertVerifierServiceFactoryImpl* factory) {
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  // Configure with Chrome Root Store enabled.
+  {
+    base::RunLoop run_loop;
+    factory->SetUseChromeRootStore(true, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+#endif
+}
 
 }  // namespace
 
@@ -84,7 +155,6 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      /*params=*/nullptr,
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
@@ -97,26 +167,10 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
       cv_service_client.InitWithNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
-  base::RunLoop request_completed_run_loop;
-  DummyCVServiceRequest dummy_cv_service_req(
-      request_completed_run_loop.QuitClosure());
-  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-      &dummy_cv_service_req);
-
-  auto net_log(net::NetLogWithSource::Make(
-      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-  cv_service_remote->Verify(
-      net::CertVerifier::RequestParams(test_cert, "www.example.com", 0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
-      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-  request_completed_run_loop.Run();
-  ASSERT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
-  ASSERT_TRUE(dummy_cv_service_req.result.cert_status &
-              net::CERT_STATUS_AUTHORITY_INVALID);
+  auto [net_error, result] =
+      Verify(cv_service_remote, test_cert, "www.example.com");
+  ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -141,17 +195,11 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(proto_serialized)));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
   {
@@ -171,25 +219,9 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
-  base::RunLoop request_completed_run_loop;
-  DummyCVServiceRequest dummy_cv_service_req(
-      request_completed_run_loop.QuitClosure());
-  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-      &dummy_cv_service_req);
-
-  auto net_log(net::NetLogWithSource::Make(
-      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-  cv_service_remote->Verify(
-      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                       "www.example.com", 0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
-      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-  request_completed_run_loop.Run();
-  ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+  auto [net_error, result] =
+      Verify(cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
+  ASSERT_EQ(net_error, net::OK);
   // Update happened before the CertVerifier was created, no change observers
   // should have been notified.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
@@ -205,17 +237,11 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -229,27 +255,10 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
 
   // Try request, it should fail because we haven't updated the Root Store yet.
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
-    ASSERT_TRUE(dummy_cv_service_req.result.cert_status &
-                net::CERT_STATUS_AUTHORITY_INVALID);
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
+    ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+    ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
   }
   // No updates should have happened yet.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
@@ -275,24 +284,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
 
   // Try request, it should succeed.
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
+    ASSERT_EQ(net_error, net::OK);
   }
 
   // Update should have been notified.
@@ -319,17 +313,11 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(proto_serialized)));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
   {
@@ -349,28 +337,11 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
-  base::RunLoop request_completed_run_loop;
-  DummyCVServiceRequest dummy_cv_service_req(
-      request_completed_run_loop.QuitClosure());
-  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-      &dummy_cv_service_req);
-
-  auto net_log(net::NetLogWithSource::Make(
-      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-  cv_service_remote->Verify(
-      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                       "www.example.com", 0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
-      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-  request_completed_run_loop.Run();
+  auto [net_error, result] =
+      Verify(cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
   // Request should result in error because root store update was ignored.
-  ASSERT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
-  ASSERT_TRUE(dummy_cv_service_req.result.cert_status &
-              net::CERT_STATUS_AUTHORITY_INVALID);
+  ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
   // Update was ignored, so no change observers should have been notified.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
 }
@@ -394,17 +365,11 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(proto_serialized)));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
   {
@@ -426,26 +391,10 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
 
   // Initial request should succeed.
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
     // Request should be OK.
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    ASSERT_EQ(net_error, net::OK);
   }
 
   // Create updated Chrome Root Store with an invalid cert; update should be
@@ -470,26 +419,10 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   }
 
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
     // Request should be OK because root store update was ignored.
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    ASSERT_EQ(net_error, net::OK);
   }
 
   // Clear all certs from the proto
@@ -508,26 +441,10 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   }
 
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
     // Request should be OK because root store update was ignored.
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    ASSERT_EQ(net_error, net::OK);
   }
   // Update was ignored, so no change observers should have been notified.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
@@ -561,7 +478,6 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      /*params=*/nullptr,
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
@@ -600,7 +516,6 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      /*params=*/nullptr,
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
   cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
   base::RunLoop request_completed_run_loop;
@@ -613,6 +528,363 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
   EXPECT_EQ(info_ptr->root_cert_info.size(), anchors.size());
 }
 
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+class CertVerifierServiceFactoryCRLSetTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    if (!SystemSupportsCRLSets()) {
+      GTEST_SKIP() << "Skipping test because system doesn't support CRLSets";
+    }
+
+    ::testing::Test::SetUp();
+  }
+
+ private:
+  bool SystemSupportsCRLSets() {
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+    return true;
+#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+    // On CHROME_ROOT_STORE_OPTIONAL platforms, the tests set
+    // use_chrome_root_store=true, so the tests will also work on those
+    // platforms even if the kChromeRootStoreUsed default is false.
+    // (This doesn't result in missing coverage of the
+    // use_chrome_root_store=false case since the only non-CRS implementations
+    // remaining don't support CRLSets.)
+    return true;
+#else
+    return false;
 #endif
+  }
+
+  base::test::TaskEnvironment task_environment_;
+};
+
+// Test that a new Cert verifier will use an updated CRLSet if
+// one was already passed into CertVerifierServiceFactory.
+TEST_F(CertVerifierServiceFactoryCRLSetTest,
+       GetNewCertVerifierWithUpdatedCRLSet) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root.get());
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  // Feed factory the CRLSet which blocks |ok_cert|.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl, "crlset_by_leaf_spki.raw");
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  // Create the cert verifier. It should start with the previously configured
+  // CRLSet already active.
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+  EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+  EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+
+  // Update happened before the CertVerifier was created, no change observers
+  // should have been notified.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+}
+
+// Test that an existing CertVerifierService will use an updated CRLSet if one
+// is provided to the CertVerifierServiceFactory
+TEST_F(CertVerifierServiceFactoryCRLSetTest,
+       UpdateExistingCertVerifierWithCRLSet) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root.get());
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  // Try request, it should succeed since the leaf is not blocked yet.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsOk());
+  }
+  // No updates should have happened yet.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Feed factory the CRLSet which blocks |ok_cert|.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl, "crlset_by_leaf_spki.raw");
+
+  // Update should have been notified.
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+
+  // Try request again on existing verifier, it should be blocked now.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+}
+
+// Verifies newer CRLSets (by sequence number) are applied.
+TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetIsUpdatedIfNewer) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root.get());
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  // Wait for the CertVerifier to be created before sending the CRLSet update.
+  // This ensures that the CertVerifierServiceClient will be registered and
+  // thus receive the expected number of update notifications.
+  cv_service_remote.FlushForTesting();
+
+  // No updates should have happened yet.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Send a CRLSet that only allows the root cert if it matches a known SPKI
+  // hash (that matches the test server chain)
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl,
+                           "crlset_by_root_subject.raw");
+
+  // Client should have received notification of the update.
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+
+  // Try request, it should succeed since the root SPKI hash is allowed.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsOk());
+  }
+
+  // Feed factory the CRLSet which blocks the root with no SPKI hash exception.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl,
+                           "crlset_by_root_subject_no_spki.raw");
+
+  // Client should have received notification of the update.
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(2u));
+
+  // Try request again, it should be blocked now.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+}
+
+// Verifies that attempting to send an older CRLSet (by sequence number)
+// does not apply to existing or new contexts.
+TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetDoesNotDowngrade) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root.get());
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  // Wait for the CertVerifier to be created before sending the CRLSet update.
+  // This ensures that the CertVerifierServiceClient will be registered and
+  // thus receive the expected number of update notifications.
+  cv_service_remote.FlushForTesting();
+
+  // No updates should have happened yet.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Send a CRLSet which blocks the root with no SPKI hash exception.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl,
+                           "crlset_by_root_subject_no_spki.raw");
+
+  // Make sure the connection fails, due to the certificate being revoked.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+
+  // Attempt to configure an older CRLSet that allowed trust in the root.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl,
+                           "crlset_by_root_subject.raw");
+
+  // Make sure the connection still fails, due to the newer CRLSet still
+  // applying.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+
+  // Change count should still be 1 since the CRLSet was ignored.
+  EXPECT_EQ(cv_service_client.changed_count_, 1u);
+
+  // Create a new CertVerifierService and ensure the latest CRLSet is still
+  // applied.
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  DummyCVServiceClient cv_service_client2;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params2 =
+      mojom::CertVerifierCreationParams::New();
+
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote2.BindNewPipeAndPassReceiver(),
+      cv_service_client2.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params2));
+
+  // The newer CRLSet that blocks the connection should still apply, even to
+  // new CertVerifierServices.
+  {
+    auto [net_error, result] = Verify(cv_service_remote2, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+}
+
+// Verifies that attempting to send an invalid CRLSet does not affect existing
+// or new contexts.
+TEST_F(CertVerifierServiceFactoryCRLSetTest, BadCRLSetIgnored) {
+  scoped_refptr<net::X509Certificate> test_root(net::ImportCertFromFile(
+      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+  ASSERT_TRUE(test_root);
+  net::ScopedTestRoot scoped_test_root(test_root.get());
+  scoped_refptr<net::X509Certificate> ok_cert(
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
+  ASSERT_TRUE(ok_cert);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params =
+      mojom::CertVerifierCreationParams::New();
+
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params));
+
+  // Try verifying, it should succeed with the builtin CRLSet.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsOk());
+  }
+
+  // No updates should have happened yet.
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  // Send a CRLSet which blocks the root with no SPKI hash exception.
+  UpdateCRLSetWithTestFile(&cv_service_factory_impl,
+                           "crlset_by_root_subject_no_spki.raw");
+
+  // Make sure verifying fails, due to the certificate being revoked.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+
+  // Send an invalid CRLSet.
+  {
+    std::string crl_set_bytes(1000, '\xff');
+
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateCRLSet(
+        base::as_bytes(base::make_span(crl_set_bytes)),
+        update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  // Verification should still fail, due to the invalid CRLSet being ignored.
+  {
+    auto [net_error, result] = Verify(cv_service_remote, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+
+  // Change count should still be 1 since the CRLSet was ignored.
+  EXPECT_EQ(cv_service_client.changed_count_, 1u);
+
+  // Create a new CertVerifierService and ensure the latest valid CRLSet is
+  // still applied.
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote2;
+  DummyCVServiceClient cv_service_client2;
+  mojom::CertVerifierCreationParamsPtr cv_creation_params2 =
+      mojom::CertVerifierCreationParams::New();
+
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote2.BindNewPipeAndPassReceiver(),
+      cv_service_client2.client_.BindNewPipeAndPassRemote(),
+      std::move(cv_creation_params2));
+
+  // The CRLSet that blocks the root should still apply, even to new
+  // CertVerifierServices.
+  {
+    auto [net_error, result] = Verify(cv_service_remote2, ok_cert, "127.0.0.1");
+    EXPECT_THAT(net_error, IsError(net::ERR_CERT_REVOKED));
+    EXPECT_TRUE(result.cert_status & net::CERT_STATUS_REVOKED);
+  }
+}
 
 }  // namespace cert_verifier

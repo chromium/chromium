@@ -6,15 +6,9 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
-#import "base/i18n/message_formatter.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -30,13 +24,13 @@
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -92,6 +86,7 @@
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -115,8 +110,6 @@
 #error "This file requires ARC support."
 #endif
 
-using base::UserMetricsAction;
-
 namespace {
 
 // When the tab strip moves beyond this origin offset, switch the status bar
@@ -129,11 +122,6 @@ enum HeaderBehaviour {
   // This header stay on screen and covers part of the content.
   Overlap
 };
-
-// Snackbar category for browser view controller.
-NSString* const kBrowserViewControllerSnackbarCategory =
-    @"BrowserViewControllerSnackbarCategory";
-
 }  // namespace
 
 #pragma mark - ToolbarContainerView
@@ -232,10 +220,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // YES if Voice Search should be started when the new tab animation is
   // finished.
   BOOL _startVoiceSearchAfterNewTabAnimation;
-  // YES if waiting for a foreground tab due to expectNewForegroundTab.
-  // TODO(crbug.com/1329109): Move this to a browser agent or web event
-  // mediator.
-  BOOL _expectingForegroundTab;
 
   // Whether or not -shutdown has been called.
   BOOL _isShutdown;
@@ -302,7 +286,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
 
-  ReadingListModel* _readingModel;
+  // Used to add or cancel a page placeholder for next navigation.
+  PagePlaceholderBrowserAgent* _pagePlaceholderBrowserAgent;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -380,9 +365,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for popup menu commands
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 
-// Command handler for snackbar commands
-@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
-
 // Command handler for application commands
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 
@@ -392,9 +374,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Command handler for find in page commands
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
-
-// Command handler for toolbar commands
-@property(nonatomic, weak) id<ToolbarCommands> toolbarCommandsHandler;
 
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
@@ -486,12 +465,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.textZoomHandler = dependencies.textZoomHandler;
     self.helpHandler = dependencies.helpHandler;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
-    self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
     self.applicationCommandsHandler = dependencies.applicationCommandsHandler;
     self.browserCoordinatorCommandsHandler =
         dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
-    self.toolbarCommandsHandler = dependencies.toolbarCommandsHandler;
     self.loadQueryCommandsHandler = dependencies.loadQueryCommandsHandler;
     self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
@@ -502,11 +479,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _webNavigationBrowserAgent = dependencies.webNavigationBrowserAgent;
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
-    _readingModel = dependencies.readingModel;
     _voiceSearchController = dependencies.voiceSearchController;
     self.secondaryToolbarContainerCoordinator =
         dependencies.secondaryToolbarContainerCoordinator;
     self.safeAreaProvider = dependencies.safeAreaProvider;
+    _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -815,11 +792,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// TODO(crbug.com/1329109): Move this to a browser agent or web event mediator.
-- (void)expectNewForegroundTab {
-  _expectingForegroundTab = YES;
-}
-
 - (void)startVoiceSearch {
   // Delay Voice Search until new tab animations have finished.
   if (self.inNewTabAnimation) {
@@ -861,12 +833,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // tab if the caller is about to create one) ends up on screen completely.
     // Force loading the view in case it was not loaded yet.
     [self loadViewIfNeeded];
-    // TODO(crbug.com/1329109): Move this to a browser agent or web event
-    // mediator.
-    if (self.currentWebState && _expectingForegroundTab) {
-      PagePlaceholderTabHelper::FromWebState(self.currentWebState)
-          ->AddPlaceholderForNextNavigation();
-    }
+    _pagePlaceholderBrowserAgent->AddPagePlaceholder();
     if (self.currentWebState)
       [self displayWebState:self.currentWebState];
   }
@@ -981,7 +948,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [_voiceSearchController disconnect];
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-
   _bookmarksCoordinator = nil;
 }
 
@@ -2065,73 +2031,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Private Methods: Reading List
-// TODO(crbug.com/1272540): Remove these methods from the BVC.
-
-// Adds the given urls to the reading list.
-- (void)addURLsToReadingList:(NSArray<URLWithTitle*>*)URLs {
-  DCHECK(URLs.count > 0) << "URLs are missing";
-
-  for (URLWithTitle* urlWithTitle in URLs) {
-    [self addURLToReadingList:urlWithTitle.URL withTitle:urlWithTitle.title];
-  }
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-
-  // The identity manager should not be null in incognito mode, as the new items
-  // are added to the original account's reading list if the user is signed in.
-  // To reduce the risk of misuse, it is not added as a property to the BVC,
-  // and will be moved outside of BVC in https://crbug.com/1272540 soon.
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browserState->GetOriginalChromeBrowserState());
-  CoreAccountId accountId =
-      _readingModel->GetAccountWhereEntryIsSavedTo(URLs.lastObject.URL);
-  AccountInfo accountInfo =
-      identityManager->FindExtendedAccountInfoByAccountId(accountId);
-
-  NSString* snackbarText = nil;
-  if (!accountInfo.IsEmpty() &&
-      base::FeatureList::IsEnabled(
-          kEnableEmailInBookmarksReadingListSnackbar)) {
-    std::u16string pattern = l10n_util::GetStringUTF16(
-        IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT);
-    std::u16string utf16Text =
-        base::i18n::MessageFormatter::FormatWithNamedArgs(
-            pattern, "count", (int)URLs.count, "email", accountInfo.email);
-    snackbarText = base::SysUTF16ToNSString(utf16Text);
-  } else {
-    snackbarText =
-        l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
-  }
-
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:snackbarText];
-  message.accessibilityLabel = snackbarText;
-  message.duration = 2.0;
-  message.category = kBrowserViewControllerSnackbarCategory;
-
-  [self.snackbarCommandsHandler showSnackbarMessage:message];
-}
-
-- (void)addURLToReadingList:(const GURL&)URL withTitle:(NSString*)title {
-  if (self.currentWebState &&
-      self.currentWebState->GetVisibleURL().spec() == URL.spec()) {
-    // Log UKM if the current page is being added to Reading List.
-    ukm::SourceId sourceID =
-        ukm::GetSourceIdForWebStateDocument(self.currentWebState);
-    if (sourceID != ukm::kInvalidSourceId) {
-      ukm::builders::IOS_PageAddedToReadingList(sourceID)
-          .SetAddedFromMessages(false)
-          .Record(ukm::UkmRecorder::Get());
-    }
-  }
-
-  base::RecordAction(UserMetricsAction("MobileReadingListAdd"));
-
-  _readingModel->AddOrReplaceEntry(URL, base::SysNSStringToUTF8(title),
-                                   reading_list::ADDED_VIA_CURRENT_APP,
-                                   /*estimated_read_time=*/base::TimeDelta());
-}
 
 // TODO(crbug.com/1345210) Remove `isNTPActiveForCurrentWebState` method from
 // BVC
@@ -2949,10 +2848,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - BrowserCommands
 
-// TODO(crbug.com/1272540): Remove this command and factor it into a model
-// update helper function as part of the reading list API.
+// TODO(crbug.com/1272540): Remove this command after updating ios_internal.
 - (void)addToReadingList:(ReadingListAddCommand*)command {
-  [self addURLsToReadingList:command.URLs];
+  self.readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 - (void)prepareForOverflowMenuPresentation {
@@ -2981,9 +2879,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self dismissPopups];
 }
 
-- (void)webStateSelected:(web::WebState*)webState {
-  DCHECK(webState);
-
+- (void)webStateSelected {
+  if (!self.currentWebState) {
+    return;
+  }
   // Ignore changes while the tab stack view is visible (or while suspended).
   // The display will be refreshed when this view becomes active again.
   if (!self.visible || !self.webUsageEnabled) {
@@ -2992,21 +2891,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // TODO(crbug.com/1329088): Trigger this update from the mediator, or (as an
   // interm step) pass the view to be displayed instead.
-  [self displayWebState:webState];
-
-  // TODO(crbug.com/1329109): Move this to a browser agent or web event
-  // mediator.
-  if (_expectingForegroundTab && !self.inNewTabAnimation) {
-    // Now that the new tab has been displayed, return to normal. Rather than
-    // keep a reference to the previous tab, just turn off preview mode for all
-    // tabs (since doing so is a no-op for the tabs that don't have it set).
-    _expectingForegroundTab = NO;
-
-    for (int index = 0; index < self.webStateListSize; ++index) {
-      web::WebState* webStateAtIndex = self.webStateList->GetWebStateAt(index);
-      PagePlaceholderTabHelper::FromWebState(webStateAtIndex)
-          ->CancelPlaceholderForNextNavigation();
-    }
+  [self displayWebState:self.currentWebState];
+  if (!self.inNewTabAnimation) {
+    _pagePlaceholderBrowserAgent->CancelPagePlaceholder();
   }
 }
 
@@ -3151,16 +3038,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
 
     strongSelf.inNewTabAnimation = NO;
-    // Use the model's currentWebState here because it is possible that it can
-    // be reset to a new value before the new Tab animation finished (e.g.
-    // if another Tab shows a dialog via `dialogPresenter`). However, that
-    // webState's view hasn't been displayed yet because it was in a new tab
-    // animation.
-    web::WebState* currentWebState = strongSelf.currentWebState;
 
-    if (currentWebState) {
-      [strongSelf webStateSelected:currentWebState];
-    }
+    [strongSelf webStateSelected];
     if (completion)
       completion();
 
@@ -3397,7 +3276,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.secondaryToolbarContainerView.accessibilityElementsHidden = NO;
 }
 
-#pragma mark - LensPresentationDelegate:
+#pragma mark - LensPresentationDelegate
 
 - (CGRect)webContentAreaForLensCoordinator:(LensCoordinator*)lensCoordinator {
   DCHECK(lensCoordinator);

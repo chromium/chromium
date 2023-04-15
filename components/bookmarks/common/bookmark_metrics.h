@@ -13,6 +13,17 @@ struct UrlLoadStats;
 
 namespace metrics {
 
+// Enum for folder categories, reported through UMA. Present in enums.xml as
+// BookmarkFolderType. New values should be added at the end and things should
+// not be renumbered.
+enum class BookmarkFolderTypeForUMA {
+  kBookmarksBar = 0,
+  kOtherBookmarks = 1,
+  kMobileBookmarks = 2,
+  kUserGeneratedFolder = 3,
+  kMaxValue = kUserGeneratedFolder,
+};
+
 // Enum for possible sources for edits, reported through UMA. Present in
 // enums.xml as BookmarkEditSource. New values should be added at the end
 // and things should not be renumbered.
@@ -26,7 +37,10 @@ enum class BookmarkEditSource {
 };
 
 // Records when a bookmark is added by the user.
-void RecordBookmarkAdded();
+void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent);
+
+// Records when a bookmark folder is added by the user.
+void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent);
 
 // Records when a bookmark is removed.
 void RecordBookmarkRemoved(BookmarkEditSource source);
@@ -35,6 +49,10 @@ void RecordBookmarkRemoved(BookmarkEditSource source);
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,
                           base::Time date_added);
+
+// Records when a bookmark or bookmark folder is moved to a different parent
+// folder.
+void RecordBookmarkMovedTo(BookmarkFolderTypeForUMA new_parent);
 
 // Records the time since the last save with a 1 hour max. The first save will
 // record the time since startup.

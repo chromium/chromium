@@ -24,7 +24,8 @@ namespace ash {
 
 namespace {
 
-const int kInstallRetryLimit = 10;
+constexpr int kInstallRetryLimit = 3;
+constexpr base::TimeDelta kInstallRetryDelay = base::Days(1);
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,               // Number of initial errors to ignore.
@@ -216,7 +217,8 @@ void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
     NET_LOG(ERROR) << "No non-cellular type Internet connectivity.";
     auto current_request = std::move(remaining_install_requests_.front());
     PopRequest();
-    ScheduleRetry(std::move(current_request));
+    ScheduleRetry(std::move(current_request),
+                  InstallRetryReason::kMissingNonCellularConnectivity);
     ProcessRequests();
     return;
   }
@@ -262,7 +264,7 @@ void CellularPolicyHandler::OnConfigureESimService(
   auto current_request = std::move(remaining_install_requests_.front());
   PopRequest();
   if (!service_path) {
-    ScheduleRetry(std::move(current_request));
+    ScheduleRetry(std::move(current_request), InstallRetryReason::kOther);
     ProcessRequests();
     return;
   }
@@ -285,7 +287,7 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   auto current_request = std::move(remaining_install_requests_.front());
   PopRequest();
   if (hermes_status != HermesResponseStatus::kSuccess) {
-    ScheduleRetry(std::move(current_request));
+    ScheduleRetry(std::move(current_request), InstallRetryReason::kOther);
     ProcessRequests();
     return;
   }
@@ -306,7 +308,8 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
 }
 
 void CellularPolicyHandler::ScheduleRetry(
-    std::unique_ptr<InstallPolicyESimRequest> request) {
+    std::unique_ptr<InstallPolicyESimRequest> request,
+    InstallRetryReason reason) {
   if (request->retry_backoff.failure_count() >= kInstallRetryLimit) {
     NET_LOG(ERROR) << "Install policy eSIM profile with SMDP address: "
                    << request->smdp_address << " failed " << kInstallRetryLimit
@@ -316,7 +319,15 @@ void CellularPolicyHandler::ScheduleRetry(
   }
 
   request->retry_backoff.InformOfRequest(/*succeeded=*/false);
-  base::TimeDelta retry_delay = request->retry_backoff.GetTimeUntilRelease();
+
+  if (reason != InstallRetryReason::kMissingNonCellularConnectivity) {
+    request->retry_backoff.SetCustomReleaseTime(base::TimeTicks::Now() +
+                                                kInstallRetryDelay);
+  }
+
+  const base::TimeDelta retry_delay =
+      request->retry_backoff.GetTimeUntilRelease();
+
   NET_LOG(ERROR) << "Install policy eSIM profile failed. Retrying in "
                  << retry_delay;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -367,7 +378,7 @@ void CellularPolicyHandler::OnWaitTimeout() {
                  << ". Timed out waiting for EUICC or profile list.";
   auto current_request = std::move(remaining_install_requests_.front());
   PopRequest();
-  ScheduleRetry(std::move(current_request));
+  ScheduleRetry(std::move(current_request), InstallRetryReason::kOther);
   ProcessRequests();
 }
 

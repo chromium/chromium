@@ -880,7 +880,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
   OmniboxTriggeredFeatureService* trigger_service =
       client_->GetOmniboxTriggeredFeatureService();
   OmniboxTriggeredFeatureService::Feature trigger_feature =
-      OmniboxTriggeredFeatureService::Feature::kShortcutBoost;
+      metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST;
 
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(

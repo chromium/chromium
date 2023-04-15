@@ -80,6 +80,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       base::OnceCallback<void(const GURL& idp_config_url,
                               const std::string& /*account_id*/,
                               bool /*is_sign_in*/)>;
+  using TokenCallback = base::OnceCallback<void(const std::string& /*token*/)>;
+
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
 
@@ -131,6 +133,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Show dialog notifying user that IdP sign-in failed.
   virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
+
+  // Show a pop-up window that the IdP controls.
+  virtual void ShowPopUpWindow(const GURL& url,
+                               TokenCallback on_resolve,
+                               DismissCallback dismiss_callback);
 
  protected:
   bool is_interception_enabled_{false};

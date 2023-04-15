@@ -10,15 +10,15 @@
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 // <if expr="chromeos_ash">
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
 // </if>
 
+import '../strings.m.js';
+
+import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 import {getTemplate} from './secure_dns_input.html.js';
 
 export interface SecureDnsInputElement {

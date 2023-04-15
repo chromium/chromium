@@ -233,7 +233,14 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   float icon_surface_buffer_scale_ = 1.0f;
   std::unique_ptr<WaylandShmBuffer> icon_buffer_;
   raw_ptr<const SkBitmap> icon_bitmap_ = nullptr;
-  gfx::Point icon_offset_;
+  // pending_icon_offset_ is the offset from the image to the cursor to be
+  // applied on the next DrawIconInternal().
+  // current_icon_offset_ holds the actual current offset from the drag image
+  // to the cursor. It's used for calculating the right values to be used with
+  // wl_surface.offset to ensure the offset specified in pending_icon_offset_
+  // becomes the actual offset from the image to the cursor.
+  gfx::Point pending_icon_offset_;
+  gfx::Point current_icon_offset_;
   wl::Object<wl_callback> icon_frame_callback_;
 
   // Keeps track of the window that holds the pointer grab, i.e. the window that

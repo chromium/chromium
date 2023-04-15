@@ -187,30 +187,30 @@ TEST_F(FrameCaptionButtonContainerViewTest,
   ASSERT_EQ(initial_close_button_bounds.x(),
             initial_size_button_bounds.right());
 
-  // Maximize/restore button is hidden in tablet mode and the other buttons
+  // Size and minimize buttons are hidden in tablet mode and the other buttons
   // should shift accordingly.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  container.UpdateCaptionButtonState(false /*=animate*/);
+  container.UpdateCaptionButtonState(/*animate=*/false);
   test.EndAnimations();
   // Parent needs to layout in response to size change.
   views::test::RunScheduledLayout(&container);
 
-  EXPECT_TRUE(test.minimize_button()->GetVisible());
+  EXPECT_TRUE(extra_button->GetVisible());
+  EXPECT_FALSE(test.minimize_button()->GetVisible());
   EXPECT_FALSE(test.size_button()->GetVisible());
   EXPECT_TRUE(test.close_button()->GetVisible());
   gfx::Rect extra_button_bounds = extra_button->bounds();
-  gfx::Rect minimize_button_bounds = test.minimize_button()->bounds();
   gfx::Rect close_button_bounds = test.close_button()->bounds();
-  EXPECT_EQ(minimize_button_bounds.x(), extra_button_bounds.right());
-  EXPECT_EQ(close_button_bounds.x(), minimize_button_bounds.right());
+  EXPECT_EQ(close_button_bounds.x(), extra_button_bounds.right());
   EXPECT_EQ(initial_close_button_bounds.size(), close_button_bounds.size());
-  EXPECT_EQ(
-      initial_container_bounds.width() - initial_size_button_bounds.width(),
-      container.GetPreferredSize().width());
+  EXPECT_EQ(initial_container_bounds.width() -
+                initial_size_button_bounds.width() -
+                initial_minimize_button_bounds.width(),
+            container.GetPreferredSize().width());
 
   // Button positions should be the same when leaving tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  container.UpdateCaptionButtonState(false /*=animate*/);
+  container.UpdateCaptionButtonState(/*animate=*/false);
   // Calling code needs to layout in response to size change.
   views::test::RunScheduledLayout(&container);
   test.EndAnimations();

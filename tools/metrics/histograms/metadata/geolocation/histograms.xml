@@ -109,6 +109,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.NetworkLocationRequest.RequestInterval"
+    units="mins" expires_after="2023-10-31">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    For recording the time gap between each HTTP request to geolocation service.
+    The maximum bucket is 10 minutes because that is the maxium interval between
+    wifi data polls.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
     enum="HttpResponseCode" expires_after="2023-08-20">
   <owner>mattreynolds@chromium.org</owner>

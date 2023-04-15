@@ -1490,10 +1490,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // addition, its associated RenderWidgetHost has to be focused.
   bool IsFocused();
 
-  // Sets `new_web_ui` as the WebUI for this RenderFrameHost, which is based on
-  // the provided `request`'s URL.
-  void SetWebUI(NavigationRequest& request,
-                std::unique_ptr<WebUIImpl> new_web_ui);
+  // Sets the WebUI owned by `request` as the WebUI for this RenderFrameHost,
+  // which is based on the provided `request`'s URL.
+  void SetWebUI(NavigationRequest& request);
 
   // Destroys WebUI instance and resets related data.
   // This indirectly calls content's embedders and may have arbitrary side
@@ -3102,6 +3101,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            ResetOwnerInBFCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTestWithBFCache,
                            ChildFramesHiddenWhileInBFCache);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTestWithBFCache,
+                           EvictionInBFCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplPrerenderBrowserTest,
                            KeepPrerenderRFHOwnerAfterActivation);
   class SubresourceLoaderFactoriesConfig;

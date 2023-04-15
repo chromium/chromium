@@ -7,10 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/message_center/message_center.h"
@@ -67,8 +65,7 @@ class MockDelegate : public MessageCenterUiDelegate {
 
 }  // namespace
 
-class MessageCenterUiControllerTest : public AshTestBase,
-                                      public testing::WithParamInterface<bool> {
+class MessageCenterUiControllerTest : public AshTestBase {
  public:
   MessageCenterUiControllerTest() {}
 
@@ -79,18 +76,12 @@ class MessageCenterUiControllerTest : public AshTestBase,
   ~MessageCenterUiControllerTest() override {}
 
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
-
     AshTestBase::SetUp();
     delegate_ = std::make_unique<MockDelegate>();
     message_center_ = message_center::MessageCenter::Get();
     ui_controller_ =
         std::make_unique<MessageCenterUiController>(delegate_.get());
   }
-
-  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
   void TearDown() override {
     ui_controller_.reset();
@@ -125,14 +116,9 @@ class MessageCenterUiControllerTest : public AshTestBase,
   std::unique_ptr<MockDelegate> delegate_;
   std::unique_ptr<MessageCenterUiController> ui_controller_;
   message_center::MessageCenter* message_center_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MessageCenterUiControllerTest,
-                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
-
-TEST_P(MessageCenterUiControllerTest, BasicMessageCenter) {
+TEST_F(MessageCenterUiControllerTest, BasicMessageCenter) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
@@ -158,7 +144,7 @@ TEST_P(MessageCenterUiControllerTest, BasicMessageCenter) {
   ASSERT_FALSE(ui_controller_->message_center_visible());
 }
 
-TEST_P(MessageCenterUiControllerTest, BasicPopup) {
+TEST_F(MessageCenterUiControllerTest, BasicPopup) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
@@ -178,7 +164,7 @@ TEST_P(MessageCenterUiControllerTest, BasicPopup) {
   ASSERT_FALSE(ui_controller_->message_center_visible());
 }
 
-TEST_P(MessageCenterUiControllerTest, MessageCenterClosesPopups) {
+TEST_F(MessageCenterUiControllerTest, MessageCenterClosesPopups) {
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
@@ -213,7 +199,7 @@ TEST_P(MessageCenterUiControllerTest, MessageCenterClosesPopups) {
   ASSERT_FALSE(ui_controller_->message_center_visible());
 }
 
-TEST_P(MessageCenterUiControllerTest, ShowBubbleFails) {
+TEST_F(MessageCenterUiControllerTest, ShowBubbleFails) {
   // Now the delegate will signal that it was unable to show a bubble.
   delegate_->show_popups_success_ = false;
   delegate_->show_message_center_success_ = false;

@@ -130,7 +130,8 @@ void ProtocolHandlersHandler::OnAppRegistrarDestroyed() {
 }
 
 void ProtocolHandlersHandler::OnWebAppUninstalled(
-    const web_app::AppId& app_id) {
+    const web_app::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   OnWebAppProtocolSettingsChanged();
 }
 

@@ -7,6 +7,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -495,7 +496,7 @@ TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics,
   GetUkmService()->Flush(
       metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
-  // Build UKM report to verity that all of the events and sources have been
+  // Build UKM report to verify that all of the events and sources have been
   // recorded.
   ukm::Report report = GetUkmReport();
 
@@ -544,4 +545,60 @@ TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics,
   // Verify that the source id's are of the expected type.
   EXPECT_THAT(actual_source_ids,
               testing::UnorderedElementsAreArray(added_source_ids));
+}
+
+class ChromeMetricsServiceClientTestDemoModeRecordAppMetrics
+    : public ChromeMetricsServiceClientTestIgnoredForAppMetrics {
+ public:
+  ChromeMetricsServiceClientTestDemoModeRecordAppMetrics() = default;
+
+  void SetUp() override {
+    ChromeMetricsServiceClientTestIgnoredForAppMetrics::SetUp();
+    ash::DemoSession::SetDemoConfigForTesting(
+        ash::DemoSession::DemoModeConfig::kOnline);
+    testing_profile_->ScopedCrosSettingsTestHelper()
+        ->InstallAttributes()
+        ->SetDemoMode();
+  }
+
+  void TearDown() override {
+    ash::DemoSession::ResetDemoConfigForTesting();
+    ChromeMetricsServiceClientTestIgnoredForAppMetrics::TearDown();
+  }
+};
+
+TEST_F(ChromeMetricsServiceClientTestDemoModeRecordAppMetrics,
+       VerifyRecordingInDemoSession) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  auto chrome_metrics_service_client = Init(prefs);
+
+  // Make sure the MSBB consent is set to false initially.
+  SetUrlKeyedAnonymizedDataCollectionEnabled(prefs, false);
+
+  // Make sure the APP consent is set to false for sync service.
+  sync_service_.SetAppSync(false);
+
+  auto ukm_consent_state = GetChromeMetricsServiceClient().GetUkmConsentState();
+
+  // Assert that UKM consent state contains only APPS in DemoSession.
+  EXPECT_FALSE(ukm_consent_state.Has(ukm::UkmConsentType::MSBB));
+  EXPECT_TRUE(ukm_consent_state.Has(ukm::UkmConsentType::APPS));
+
+  // Record a mix of SourceId's and Events.
+  RecordTestEvent1(ukm::SourceIdType::NAVIGATION_ID);
+  RecordTestEvent1(ukm::SourceIdType::NAVIGATION_ID);
+  RecordTestEvent1(ukm::SourceIdType::APP_ID);
+  RecordTestEvent1(ukm::SourceIdType::NAVIGATION_ID);
+  RecordTestEvent1(ukm::SourceIdType::APP_ID);
+
+  GetUkmService()->Flush(
+      metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+
+  // Build UKM report to verify that all of the events and sources have been
+  // recorded for Demo Session.
+  ukm::Report report = GetUkmReport();
+
+  // Expect that only APP events and sources originally recorded are present.
+  EXPECT_EQ(report.sources_size(), 2);
+  EXPECT_EQ(report.entries_size(), 2);
 }

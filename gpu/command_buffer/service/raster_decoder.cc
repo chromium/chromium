@@ -1166,12 +1166,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
 #else
     NOTREACHED();
 #endif
-  } else if (shared_context_state_->GrContextIsDawn()) {
+  } else {
     // TODO(crbug.com/1090476): Query Dawn for this value once an API exists for
     // capabilities.
     caps.max_texture_size = 8192;
-  } else {
-    NOTIMPLEMENTED();
   }
   if (feature_info()->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =

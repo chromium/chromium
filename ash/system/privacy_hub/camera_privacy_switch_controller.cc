@@ -72,8 +72,10 @@ CameraPrivacySwitchController::CameraPrivacySwitchController()
                   IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE},
               base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
                   base::BindRepeating([]() {
-                    CameraPrivacySwitchController::
-                        SetAndLogCameraPreferenceFromNotification(false);
+                    PrivacyHubNotificationController::
+                        SetAndLogSensorPreferenceFromNotification(
+                            SensorDisabledNotificationDelegate::Sensor::kCamera,
+                            false);
                   }))}) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
@@ -158,17 +160,6 @@ CameraPrivacySwitchController::GetUserSwitchPreference() {
 
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
-}
-
-// static
-void CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
-    const bool enabled) {
-  PrefService* const pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  if (pref_service) {
-    pref_service->SetBoolean(prefs::kUserCameraAllowed, enabled);
-    privacy_hub_metrics::LogCameraEnabledFromNotification(enabled);
-  }
 }
 
 void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(

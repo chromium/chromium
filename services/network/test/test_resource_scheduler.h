@@ -35,8 +35,6 @@ class TestResourceScheduler : public ResourceScheduler {
 
   void OnClientDeleted(int child_id, int route_id) override {}
 
-  size_t ActiveSchedulerClientsCounter() const override { return 0; }
-
   void RecordGlobalRequestCountMetrics() const override {}
 
   void ReprioritizeRequest(net::URLRequest* request,

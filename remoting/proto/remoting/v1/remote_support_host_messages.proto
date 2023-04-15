@@ -3,6 +3,7 @@ syntax = "proto2";
 package remoting.apis.v1;
 
 import "host_info.proto";
+import "chrome_os_enterprise_options.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -42,6 +43,10 @@ message RegisterSupportHostRequest {
   // host. Only authorized accounts can make a successful GetSupportHostRequest.
   // If this field isn't set, then anyone can call GetSupportHost for this host.
   optional string authorized_helper = 7;
+
+  // The set of options for a Chrome OS enterprise session. This field must not
+  // be set for any other session type or the request will fail.
+  optional ChromeOsEnterpriseOptions chrome_os_enterprise_options = 8;
 }
 
 // The response to a RegisterSupportHostRequest.

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_UNDO_MANAGER_BRIDGE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_UNDO_MANAGER_BRIDGE_OBSERVER_H_
 
-#include "base/compiler_specific.h"
 #include "components/undo/undo_manager_observer.h"
 
 // The ObjC translations of the C++ observer callbacks are defined here.

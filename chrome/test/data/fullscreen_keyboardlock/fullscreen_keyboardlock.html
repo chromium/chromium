@@ -9,19 +9,22 @@
   <head>
     <title>Fullscreen Keyboard Lock Test</title>
     <script>
-      let x_pressed = false;
-      let report_called = false;
+      let x_pressed_resolve;
+      let x_pressed;
       let prevent_default = true;
 
       function processResult() {
-        if (x_pressed && report_called) {
-          window.domAutomationController.send(container().innerHTML);
+        if (x_pressed && x_pressed_resolve) {
+          x_pressed_resolve(container().innerHTML);
         }
       }
 
-      function getKeyEventReport() {
-        report_called = true;
-        processResult();
+      async function getKeyEventReport() {
+        await new Promise(resolve => {
+          x_pressed_resolve = resolve;
+          processResult();
+        });
+        return container().innerHTML;
       }
 
       function isMacOSFullscreenShortcut(e) {

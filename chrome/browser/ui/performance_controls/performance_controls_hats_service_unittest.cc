@@ -125,7 +125,6 @@ class PerformanceControlsHatsServiceHasBatteryTest
         {performance_manager::features::
              kPerformanceControlsBatteryPerformanceSurvey,
          {}},
-        {performance_manager::features::kBatterySaverModeAvailable, {}},
     };
   }
 };
@@ -138,7 +137,6 @@ class PerformanceControlsHatsServiceHighEfficiencyOptOutTest
         {performance_manager::features::
              kPerformanceControlsHighEfficiencyOptOutSurvey,
          {}},
-        {performance_manager::features::kHighEfficiencyModeAvailable, {}},
     };
   }
 };
@@ -151,7 +149,6 @@ class PerformanceControlsHatsServiceBatterySaverOptOutTest
         {performance_manager::features::
              kPerformanceControlsBatterySaverOptOutSurvey,
          {}},
-        {performance_manager::features::kBatterySaverModeAvailable, {}},
     };
   }
 };

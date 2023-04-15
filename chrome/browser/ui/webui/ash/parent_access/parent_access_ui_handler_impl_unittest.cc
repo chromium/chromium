@@ -51,6 +51,7 @@ class FakeParentAccessUIHandlerDelegate : public ParentAccessUIHandlerDelegate {
   MOCK_METHOD2(SetApproved, void(const std::string&, const base::Time&));
   MOCK_METHOD0(SetDeclined, void());
   MOCK_METHOD0(SetCanceled, void());
+  MOCK_METHOD0(SetDisabled, void());
   MOCK_METHOD0(SetError, void());
 };
 

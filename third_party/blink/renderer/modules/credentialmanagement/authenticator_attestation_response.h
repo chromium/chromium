@@ -44,6 +44,10 @@ class MODULES_EXPORT AuthenticatorAttestationResponse final
 
   Vector<String> getTransports() const;
 
+  absl::variant<AuthenticatorAssertionResponseJSON*,
+                AuthenticatorAttestationResponseJSON*>
+  toJSON() const override;
+
   void Trace(Visitor*) const override;
 
  private:

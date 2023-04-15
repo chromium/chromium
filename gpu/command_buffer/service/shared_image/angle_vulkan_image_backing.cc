@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_egl_image.h"
@@ -63,10 +64,11 @@ gl::ScopedEGLImage CreateEGLImage(VkImage image,
 class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     : public SkiaImageRepresentation {
  public:
-  SkiaAngleVulkanImageRepresentation(SharedImageManager* manager,
+  SkiaAngleVulkanImageRepresentation(GrDirectContext* gr_context,
+                                     SharedImageManager* manager,
                                      AngleVulkanImageBacking* backing,
                                      MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(manager, backing, tracker),
+      : SkiaImageRepresentation(gr_context, manager, backing, tracker),
         context_state_(backing_impl()->context_state_) {}
 
   ~SkiaAngleVulkanImageRepresentation() override = default;
@@ -262,14 +264,7 @@ bool AngleVulkanImageBacking::Initialize(
       return false;
     }
 
-    GrVkImageInfo vk_info = CreateGrVkImageInfo(vulkan_image.get());
-
-    auto& vk_texture = vk_textures_.emplace_back();
-    vk_texture.vulkan_image = std::move(vulkan_image);
-    vk_texture.backend_texture =
-        GrBackendTexture(plane_size.width(), plane_size.height(), vk_info);
-    vk_texture.promise_texture =
-        SkPromiseImageTexture::Make(vk_texture.backend_texture);
+    vk_textures_.emplace_back(std::move(vulkan_image));
   }
 
   if (!data.empty()) {
@@ -302,14 +297,7 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
     return false;
   }
 
-  GrVkImageInfo vk_info = CreateGrVkImageInfo(vulkan_image.get());
-
-  auto& vk_texture = vk_textures_.emplace_back();
-  vk_texture.vulkan_image = std::move(vulkan_image);
-  vk_texture.backend_texture =
-      GrBackendTexture(size().width(), size().height(), vk_info);
-  vk_texture.promise_texture =
-      SkPromiseImageTexture::Make(vk_texture.backend_texture);
+  vk_textures_.emplace_back(std::move(vulkan_image));
 
   SetCleared();
 
@@ -367,8 +355,8 @@ AngleVulkanImageBacking::ProduceSkiaGanesh(
     scoped_refptr<SharedContextState> context_state) {
   if (context_state->GrContextIsVulkan()) {
     DCHECK_EQ(context_state_, context_state.get());
-    return std::make_unique<SkiaAngleVulkanImageRepresentation>(manager, this,
-                                                                tracker);
+    return std::make_unique<SkiaAngleVulkanImageRepresentation>(
+        context_state->gr_context(), manager, this, tracker);
   }
   // If it is not vulkan context, it must be GL context being used with Skia
   // over passthrough command decoder.
@@ -517,9 +505,7 @@ void AngleVulkanImageBacking::SyncImageLayoutFromBackendTexture() {
   DCHECK_GE(kMaxTextures, vk_textures_.size());
 
   for (size_t i = 0; i < vk_textures_.size(); ++i) {
-    GrVkImageInfo info;
-    bool result = vk_textures_[i].backend_texture.getVkImageInfo(&info);
-    DCHECK(result);
+    GrVkImageInfo info = vk_textures_[i].GetGrVkImageInfo();
     gl_layouts_[i] = VkImageLayoutToGLImageLayout(info.fImageLayout);
   }
 }
@@ -652,14 +638,6 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
 
   return true;
 }
-
-AngleVulkanImageBacking::TextureHolderVk::TextureHolderVk() = default;
-AngleVulkanImageBacking::TextureHolderVk::TextureHolderVk(
-    TextureHolderVk&& other) = default;
-AngleVulkanImageBacking::TextureHolderVk&
-AngleVulkanImageBacking::TextureHolderVk::operator=(TextureHolderVk&& other) =
-    default;
-AngleVulkanImageBacking::TextureHolderVk::~TextureHolderVk() = default;
 
 AngleVulkanImageBacking::TextureHolderGL::TextureHolderGL() = default;
 AngleVulkanImageBacking::TextureHolderGL::TextureHolderGL(

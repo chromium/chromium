@@ -49,10 +49,7 @@ std::string GetErrorCodePermissionDenied() {
 
 std::string RunScript(content::RenderFrameHost* render_frame_host,
                       const std::string& script) {
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(render_frame_host, script,
-                                                     &result));
-  return result;
+  return content::EvalJs(render_frame_host, script).ExtractString();
 }
 
 // IFrameLoader ---------------------------------------------------------------
@@ -110,8 +107,7 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
   EXPECT_EQ(base::StringPrintf("\"%d\"", iframe_id), javascript_response_);
   content::WebContentsObserver::Observe(nullptr);
   // Now that we loaded the iframe, let's fetch its src.
-  script = base::StringPrintf(
-      "window.domAutomationController.send(getIFrameSrc(%d))", iframe_id);
+  script = base::StringPrintf("getIFrameSrc(%d)", iframe_id);
   iframe_url_ = GURL(RunScript(web_contents->GetPrimaryMainFrame(), script));
 }
 
@@ -365,9 +361,7 @@ void GeolocationBrowserTest::ExpectValueFromScriptForFrame(
     const std::string& expected,
     const std::string& function,
     content::RenderFrameHost* render_frame_host) {
-  std::string script(base::StringPrintf(
-      "window.domAutomationController.send(%s)", function.c_str()));
-  EXPECT_EQ(expected, RunScript(render_frame_host, script));
+  EXPECT_EQ(expected, RunScript(render_frame_host, function));
 }
 
 void GeolocationBrowserTest::ExpectValueFromScript(
@@ -378,17 +372,13 @@ void GeolocationBrowserTest::ExpectValueFromScript(
 
 bool GeolocationBrowserTest::SetPositionAndWaitUntilUpdated(double latitude,
                                                             double longitude) {
-  content::DOMMessageQueue dom_message_queue(render_frame_host_);
-
   fake_latitude_ = latitude;
   fake_longitude_ = longitude;
 
   geolocation_overrider_->UpdateLocation(fake_latitude_, fake_longitude_);
 
-  std::string result;
-  if (!dom_message_queue.WaitForMessage(&result))
-    return false;
-  return result == "\"geoposition-updated\"";
+  return content::EvalJs(render_frame_host_, "geopositionUpdates.pop();")
+             .ExtractString() == "geoposition-updated";
 }
 
 // Tests ----------------------------------------------------------------------

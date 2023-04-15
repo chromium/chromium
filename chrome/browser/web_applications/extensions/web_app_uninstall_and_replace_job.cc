@@ -186,7 +186,7 @@ void WebAppUninstallAndReplaceJob::OnShortcutLocationGathered(
   }
 
   // When the `from_app` is a web app, we can't wait for it to finish because it
-  // underlying schedules WebAppUninstallCommand which uses a `FullSystemLock`,
+  // underlying schedules WebAppUninstallCommand which uses a `AllAppsLock`,
   // so the uninstall command won't get started until current command that holds
   // the `to_app_lock` finishes.
   proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);

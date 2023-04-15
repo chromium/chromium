@@ -12,6 +12,7 @@
 #include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
@@ -207,6 +208,11 @@ void PersonalizationAppAmbientProviderImpl::SetTopicSource(
 
   // 2. Select Google Photos topic source if at least one album is selected.
   MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
+}
+
+void PersonalizationAppAmbientProviderImpl::SetScreenSaverDuration(
+    int minutes) {
+  Shell::Get()->ambient_controller()->SetScreenSaverDuration(minutes);
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTemperatureUnit(
@@ -674,6 +680,22 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
 
 void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
   Shell::Get()->ambient_controller()->StartScreenSaverPreview();
+}
+
+void PersonalizationAppAmbientProviderImpl::ShouldShowTimeOfDayBanner(
+    ShouldShowTimeOfDayBannerCallback callback) {
+  std::move(callback).Run(
+      features::IsTimeOfDayScreenSaverEnabled() &&
+      contextual_tooltip::ShouldShowNudge(
+          profile_->GetPrefs(),
+          contextual_tooltip::TooltipType::kTimeOfDayFeatureBanner,
+          /*recheck_delay=*/nullptr));
+}
+
+void PersonalizationAppAmbientProviderImpl::HandleTimeOfDayBannerDismissed() {
+  contextual_tooltip::HandleGesturePerformed(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kTimeOfDayFeatureBanner);
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAmbientUiVisibilityChanged(

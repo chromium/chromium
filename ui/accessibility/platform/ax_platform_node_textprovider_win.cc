@@ -89,9 +89,11 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
   DCHECK(!start->IsNullPosition());
   DCHECK(!end->IsNullPosition());
 
-  // Reverse start and end if the selection goes backwards
-  if (*start > *end)
+  start->SnapToMaxTextOffsetIfBeyond();
+  end->SnapToMaxTextOffsetIfBeyond();
+  if (*start > *end) {
     std::swap(start, end);
+  }
 
   Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
       AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(

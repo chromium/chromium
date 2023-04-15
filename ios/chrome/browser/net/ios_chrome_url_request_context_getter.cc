@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"

@@ -91,6 +91,11 @@ void AccessibilityHandler::RegisterMessages() {
       "showChromeVoxTutorial",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxTutorial,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "updateBluetoothBrailleDisplayAddress",
+      base::BindRepeating(
+          &AccessibilityHandler::HandleUpdateBluetoothBrailleDisplayAddress,
+          base::Unretained(this)));
 }
 
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
@@ -153,6 +158,13 @@ void AccessibilityHandler::OnJavascriptDisallowed() {
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
     const base::Value::List& args) {
   AccessibilityManager::Get()->ShowChromeVoxTutorial();
+}
+
+void AccessibilityHandler::HandleUpdateBluetoothBrailleDisplayAddress(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string address = args[0].GetString();
+  AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(address);
 }
 
 void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {

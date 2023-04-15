@@ -14,7 +14,6 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../../settings_shared.css.js';
-import '../../site_favicon.js';
 
 import {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
@@ -58,9 +57,6 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
 
       /** Setting this will display the icon at the given URL. */
       titleIcon: String,
-
-      /** Setting this will display the favicon of the website. */
-      faviconSiteUrl: String,
 
       learnMoreUrl: String,
 
@@ -124,7 +120,6 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
 
   pageTitle: string;
   titleIcon: string;
-  faviconSiteUrl: string;
   learnMoreUrl: string;
   searchLabel: string;
   searchTerm: string;

@@ -76,6 +76,9 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void SetRequestIdempotency(Idempotency idempotency) override;
   const std::set<std::string>& GetDnsAliases() const override;
   base::StringPiece GetAcceptChViaAlps() const override;
+  absl::optional<quic::QuicErrorCode> GetQuicErrorCode() const override;
+  absl::optional<quic::QuicRstStreamErrorCode> GetQuicRstStreamErrorCode()
+      const override;
 
   static HttpResponseInfo::ConnectionInfo ConnectionInfoFromQuicVersion(
       quic::ParsedQuicVersion quic_version);
@@ -204,6 +207,9 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   // the stream was closed. If |stream_| is failed to be created, this takes on
   // the default value of false.
   bool closed_is_first_stream_ = false;
+
+  absl::optional<quic::QuicErrorCode> connection_error_;
+  absl::optional<quic::QuicRstStreamErrorCode> stream_error_;
 
   // The caller's callback to be used for asynchronous operations.
   CompletionOnceCallback callback_;

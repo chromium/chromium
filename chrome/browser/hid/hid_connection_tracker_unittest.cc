@@ -12,7 +12,6 @@
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -34,25 +33,10 @@
 
 namespace {
 
-constexpr char kExtensionName[] = "Fake extension";
+using testing::Pair;
+using testing::UnorderedElementsAre;
+
 constexpr char kTestProfileName[] = "user@gmail.com";
-
-class MockHidConnectionTracker : public HidConnectionTracker {
- public:
-  explicit MockHidConnectionTracker(Profile* profile)
-      : HidConnectionTracker(profile) {}
-  ~MockHidConnectionTracker() override = default;
-  MOCK_METHOD(void, ShowSiteSettings, (const url::Origin& origin), (override));
-};
-
-BrowserContextKeyedServiceFactory::TestingFactory
-GetHidConnectionTrackerTestingFactory() {
-  return base::BindRepeating([](content::BrowserContext* browser_context) {
-    return static_cast<std::unique_ptr<KeyedService>>(
-        std::make_unique<MockHidConnectionTracker>(
-            Profile::FromBrowserContext(browser_context)));
-  });
-}
 
 class MockHidSystemTrayIcon : public HidSystemTrayIcon {
  public:
@@ -62,6 +46,8 @@ class MockHidSystemTrayIcon : public HidSystemTrayIcon {
   MOCK_METHOD(void, RemoveProfile, (Profile*), (override));
   MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
 };
+
+}  // namespace
 
 class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
  public:
@@ -74,77 +60,16 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     BrowserList::SetLastActive(browser());
 
-    // TODO(crbug.com/1399310): Pass testing factory when creating profile.
-    // Ideally, we should inject MockHidConnectionTracker by overriding
-    // BrowserWithTestWindowTest::GetTestingFactories(). However, due to the
-    // fact that:
-    // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown
-    //    as part of setting testing factory.
-    // 2) HidConnectionTrackerFactory::BrowserContextShutdown() at some point
-    //    need valid profile_metrics::GetBrowserProfileType() as part of
-    //    HidConnectionTrackerFactory::GetForProfile().
-    // It will hit failure in profile_metrics::GetBrowserProfileType() because
-    // the profile is not initialized properly before setting testing factory.
-    // As a result, here set the testing factory for MockHidConnectionTracker
-    // after profile() is properly initialized.
-    HidConnectionTrackerFactory::GetInstance()->SetTestingFactory(
-        profile(), GetHidConnectionTrackerTestingFactory());
-
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
     auto hid_system_tray_icon = std::make_unique<MockHidSystemTrayIcon>();
     hid_system_tray_icon_ = hid_system_tray_icon.get();
     TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(
         std::move(hid_system_tray_icon));
 
-    hid_connection_tracker_ = static_cast<MockHidConnectionTracker*>(
-        HidConnectionTrackerFactory::GetForProfile(profile(), /*create=*/true));
-  }
-
-  std::u16string GetExpectedDeviceConnectedByExtensionNotificationTitle() {
-    return u"An extension is using a HID device";
-  }
-
-  std::string GetExpectedNotificationId(const url::Origin& origin) {
-    return base::StringPrintf("webhid.opened.%s.%s",
-                              profile()->UniqueId().c_str(),
-                              origin.host().c_str());
-  }
-
-  void CheckDeviceConnectedNotification(
-      const url::Origin& origin,
-      const std::string& name_in_notification_title) {
-    auto expected_notification_id = GetExpectedNotificationId(origin);
-    EXPECT_EQ(display_service_
-                  ->GetDisplayedNotificationsForType(
-                      NotificationHandler::Type::TRANSIENT)
-                  .size(),
-              1u);
-    auto maybe_notification =
-        display_service_->GetNotification(expected_notification_id);
-    ASSERT_TRUE(maybe_notification);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    EXPECT_EQ(maybe_notification->title(),
-              GetExpectedDeviceConnectedByExtensionNotificationTitle());
-    EXPECT_EQ(maybe_notification->message(),
-              GetExpectedDeviceConnectedByExtensionNotificationMessage(
-                  name_in_notification_title));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-    EXPECT_TRUE(maybe_notification->delegate());
-    EXPECT_CALL(*hid_connection_tracker_, ShowSiteSettings(origin));
-    display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                    expected_notification_id,
-                                    /*action_index=*/absl::nullopt,
-                                    /*reply=*/absl::nullopt);
+    hid_connection_tracker_ =
+        HidConnectionTrackerFactory::GetForProfile(profile(), /*create=*/true);
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::u16string GetExpectedDeviceConnectedByExtensionNotificationMessage(
-      const std::string& name) {
-    return base::UTF8ToUTF16(base::StringPrintf(
-        "Click to manage permissions for \"%s\"", name.c_str()));
-  }
-
   scoped_refptr<const extensions::Extension> CreateExtensionWithName(
       const std::string& extension_name) {
     extensions::DictionaryBuilder manifest;
@@ -180,69 +105,93 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
   }
 
   Profile* CreateTestingProfile(const std::string& profile_name) {
-    // Ideally, we should be able to pass testing factory when calling profile
-    // manager's CreateTestingProfile. However, due to the fact that:
-    // 1) TestingProfile::TestingProfile(...) will call BrowserContextShutdown
-    //    as part of setting testing factory.
-    // 2) HidConnectionTrackerFactory::BrowserContextShutdown() at some point
-    //    need valid profile_metrics::GetBrowserProfileType() as part of
-    //    HidConnectionTrackerFactory::GetForProfile().
-    // It will hit failure in profile_metrics::GetBrowserProfileType() because
-    // the profile is not initialized properly before setting testing factory.
-    // As a result, here create a profile then call SetTestingFactory to inject
-    // MockHidConnectionTracker.
     Profile* profile = profile_manager()->CreateTestingProfile(profile_name);
-    HidConnectionTrackerFactory::GetInstance()->SetTestingFactory(
-        profile, GetHidConnectionTrackerTestingFactory());
     return profile;
   }
 
+  void TestDeviceConnection(bool has_system_tray_icon) {
+    auto origin1 = url::Origin::Create(GURL("https://www.example1.com"));
+    auto origin2 = url::Origin::Create(GURL("https://www.example2.com"));
+
+    // First connection that stages the profile.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
+    }
+    hid_connection_tracker().IncrementConnectionCount(origin1);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
+    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+                UnorderedElementsAre(Pair(origin1, 1)));
+
+    // Connections from two origins come and go.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  NotifyConnectionCountUpdated(profile()))
+          .Times(4);
+    }
+    hid_connection_tracker().IncrementConnectionCount(origin1);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 2);
+    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+                UnorderedElementsAre(Pair(origin1, 2)));
+    hid_connection_tracker().IncrementConnectionCount(origin2);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 3);
+    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+                UnorderedElementsAre(Pair(origin1, 2), Pair(origin2, 1)));
+    hid_connection_tracker().DecrementConnectionCount(origin1);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 2);
+    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+                UnorderedElementsAre(Pair(origin1, 1), Pair(origin2, 1)));
+    hid_connection_tracker().DecrementConnectionCount(origin1);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
+    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+                UnorderedElementsAre(Pair(origin2, 1)));
+
+    // The last connection that will unstage the profile.
+    if (has_system_tray_icon) {
+      EXPECT_CALL(hid_system_tray_icon(),
+                  UnstageProfile(profile(), /*immediate=*/false));
+    }
+    hid_connection_tracker().DecrementConnectionCount(origin2);
+    EXPECT_EQ(hid_connection_tracker().total_connection_count(), 0);
+    EXPECT_TRUE(hid_connection_tracker().GetOriginsForTesting().empty());
+  }
+
  private:
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<MockHidConnectionTracker> hid_connection_tracker_;
+  raw_ptr<HidConnectionTracker> hid_connection_tracker_;
   raw_ptr<MockHidSystemTrayIcon> hid_system_tray_icon_;
 };
 
-}  // namespace
-
 TEST_F(HidConnectionTrackerTest, DeviceConnection) {
-  EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
-  EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
-  EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
-  hid_connection_tracker().DecrementConnectionCount();
-  EXPECT_CALL(hid_system_tray_icon(),
-              UnstageProfile(profile(), /*immediate*/ false));
-  hid_connection_tracker().DecrementConnectionCount();
+  TestDeviceConnection(/*has_system_tray_icon=*/true);
 }
 
+// Test the scenario with null HID system tray icon and it doesn't cause crash.
 TEST_F(HidConnectionTrackerTest, DeviceConnectionWithNullSystemTrayIcon) {
-  // Test the scenario with null HID system tray icon and it doesn't cause
-  // crash.
   TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
-  hid_connection_tracker().IncrementConnectionCount();
-  hid_connection_tracker().IncrementConnectionCount();
-  hid_connection_tracker().DecrementConnectionCount();
-  hid_connection_tracker().DecrementConnectionCount();
+  TestDeviceConnection(/*has_system_tray_icon=*/false);
 }
 
 TEST_F(HidConnectionTrackerTest, ProfileDestroyed) {
-  CreateTestingProfile(kTestProfileName);
-  EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
-  EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
+  auto* profile_to_be_destroyed = CreateTestingProfile(kTestProfileName);
+
+  auto* connection_tracker =
+      HidConnectionTrackerFactory::GetForProfile(profile_to_be_destroyed,
+                                                 /*create=*/true);
+
+  EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile_to_be_destroyed));
+  connection_tracker->IncrementConnectionCount(origin);
+  EXPECT_EQ(connection_tracker->total_connection_count(), 1);
+  EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
+              UnorderedElementsAre(Pair(origin, 1)));
+
   EXPECT_CALL(hid_system_tray_icon(),
-              UnstageProfile(profile(), /*immediate*/ true));
+              NotifyConnectionCountUpdated(profile_to_be_destroyed));
+  connection_tracker->IncrementConnectionCount(origin);
+  EXPECT_EQ(connection_tracker->total_connection_count(), 2);
+  EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
+              UnorderedElementsAre(Pair(origin, 2)));
+
+  EXPECT_CALL(hid_system_tray_icon(),
+              UnstageProfile(profile_to_be_destroyed, /*immediate=*/true));
   profile_manager()->DeleteTestingProfile(kTestProfileName);
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(HidConnectionTrackerTest, DeviceConnectedNotificationByExtension) {
-  std::string extension_name(kExtensionName);
-  auto extension = CreateExtensionWithName(extension_name);
-  hid_connection_tracker().NotifyDeviceConnected(extension->origin());
-  CheckDeviceConnectedNotification(extension->origin(), extension_name);
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

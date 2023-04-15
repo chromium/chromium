@@ -29,7 +29,7 @@
  */
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,SharedStorageWorklet)
 ] interface TextEncoder {
     [CallWith=ExecutionContext, RaisesException, MeasureAs=TextEncoderConstructor] constructor();
     readonly attribute DOMString encoding;

@@ -223,36 +223,11 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-void HoldingSpaceKeyedService::AddDiagnosticsLog(
-    const base::FilePath& diagnostics_log_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kDiagnosticsLog, diagnostics_log_path);
-}
-
-const std::string& HoldingSpaceKeyedService::AddDownload(
-    HoldingSpaceItem::Type type,
-    const base::FilePath& download_file,
-    const HoldingSpaceProgress& progress,
-    HoldingSpaceImage::PlaceholderImageSkiaResolver
-        placeholder_image_skia_resolver) {
-  DCHECK(HoldingSpaceItem::IsDownload(type));
-  return AddItemOfType(type, download_file, progress,
-                       placeholder_image_skia_resolver);
-}
-
-void HoldingSpaceKeyedService::AddNearbyShare(
-    const base::FilePath& nearby_share_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
-}
-
 const std::string& HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
     const base::FilePath& item_path,
     const HoldingSpaceProgress& progress) {
   return AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll, item_path,
                        progress);
-}
-
-void HoldingSpaceKeyedService::AddScan(const base::FilePath& file_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kScan, file_path);
 }
 
 void HoldingSpaceKeyedService::SetSuggestions(
@@ -315,10 +290,17 @@ HoldingSpaceKeyedService::AddItems(
   std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
 
   for (auto& item : items) {
+    // Ignore any `items` that are of Camera app types if Camera app integration
+    // is disabled.
+    if (HoldingSpaceItem::IsCameraAppType(item->type()) &&
+        !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
+      result.push_back(std::cref(base::EmptyString()));
+      continue;
+    }
+    // Ignore any `items` that already exist in the `holding_space_model_` if
+    // `allow_duplicates` is false.
     if (!allow_duplicates &&
         holding_space_model_.ContainsItem(item->type(), item->file_path())) {
-      // Ignore any `items` that already exist in the `holding_space_model_`
-      // if `allow_duplicates` is false.
       result.push_back(std::cref(base::EmptyString()));
       continue;
     }

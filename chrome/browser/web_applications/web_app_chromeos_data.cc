@@ -11,14 +11,16 @@
 namespace web_app {
 
 base::Value WebAppChromeOsData::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICT);
-  root.SetBoolKey("show_in_launcher", show_in_launcher);
-  root.SetBoolKey("show_in_search", show_in_search);
-  root.SetBoolKey("show_in_management", show_in_management);
-  root.SetBoolKey("is_disabled", is_disabled);
-  root.SetBoolKey("oem_installed", oem_installed);
-  root.SetBoolKey("handles_file_open_intents", handles_file_open_intents);
-  return root;
+  base::Value::Dict root =
+      base::Value::Dict()
+          .Set("show_in_launcher", show_in_launcher)
+          .Set("show_in_search", show_in_search)
+          .Set("show_in_management", show_in_management)
+          .Set("is_disabled", is_disabled)
+          .Set("oem_installed", oem_installed)
+          .Set("handles_file_open_intents", handles_file_open_intents);
+
+  return base::Value(std::move(root));
 }
 
 bool operator==(const WebAppChromeOsData& chromeos_data1,

@@ -31,7 +31,6 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   enum RegisterEventResult {
     kSuccess,
     kPwaClosed,
-    kEventAlreadyObserved,
   };
 
   // extensions::BrowserContextKeyedAPI:

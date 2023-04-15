@@ -14,7 +14,6 @@ class FilePath;
 
 namespace net {
 class CertVerifyProc;
-class CRLSet;
 class CertVerifyResult;
 }
 
@@ -33,7 +32,6 @@ bool VerifyUsingCertVerifyProc(
     const std::string& hostname,
     const std::vector<CertInput>& intermediate_der_certs,
     const std::vector<CertInputWithTrustSetting>& der_certs_with_trust_settings,
-    net::CRLSet* crl_set,
     const base::FilePath& dump_path);
 
 #endif  // NET_TOOLS_CERT_VERIFY_TOOL_VERIFY_USING_CERT_VERIFY_PROC_H_

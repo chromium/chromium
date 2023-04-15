@@ -334,6 +334,10 @@ class VisitDatabase {
   // Called by the derived classes to migrate the older visits table which
   // doesn't have the `is_known_to_sync` column.
   bool MigrateVisitsAddIsKnownToSyncColumn();
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `consider_for_ntp_most_visited` column.
+  bool MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn();
 };
 
 // Columns, in order, of the visit table.
@@ -341,7 +345,7 @@ class VisitDatabase {
   " id,url,visit_time,from_visit,transition,segment_id,visit_duration," \
   "incremented_omnibox_typed_score,opener_visit,originator_cache_guid," \
   "originator_visit_id,originator_from_visit,originator_opener_visit,"  \
-  "is_known_to_sync "
+  "is_known_to_sync,consider_for_ntp_most_visited "
 
 }  // namespace history
 

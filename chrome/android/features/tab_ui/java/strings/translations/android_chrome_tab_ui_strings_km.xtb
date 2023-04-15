@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
 <translation id="1075622780330595106">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> របស់អ្នក​មិនត្រូវបាន​ប្រើទេ​នាពេល​ថ្មីៗនេះ។ បិទផ្ទាំង​ទាំងនោះឬ?</translation>
-<translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="125153950246128346">ចុចដើម្បីមើល​ផ្ទាំងផ្សេងទៀត</translation>
 <translation id="1403228085774130835">អ្នកអាចស្វែងរក​ផ្ទាំងដែលអ្នកបានបិទ​នៅក្នុងផ្ទាំង "ថ្មីៗ" ខាងក្រោមម៉ឺនុយ​ចម្បងរបស់ Chrome</translation>
 <translation id="1455506303394048917">សកម្មភាព​របស់អ្នក​នៅក្នុង​ផ្ទាំងឯកជន​ទាំងនេះ​នឹងត្រូវបាន​សម្អាតចេញពី​ឧបករណ៍នេះ</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">ឥឡូវនេះ <ph name="CURRENT_PRICE" /> នៅលើ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{បំបែក​ក្រុម​ផ្ទាំង}other{បំបែក​ក្រុម​ផ្ទាំង}}</translation>
 <translation id="2277224997687551299">កែ​ឈ្មោះក្រុម</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{លុបផ្ទាំង <ph name="TABS_COUNT_ONE" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}other{លុបផ្ទាំង <ph name="TABS_COUNT_MANY" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ចំណាំ​ផ្ទាំង}other{ចំណាំ​ផ្ទាំង}}</translation>
-<translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
 <translation id="2569352796411618312">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> របស់អ្នក​មិនត្រូវបាន​ប្រើទេ​នាពេល​ថ្មីៗនេះ។ បិទផ្ទាំង​ទាំងនោះឬ?</translation>
-<translation id="257674075312929031">ដាក់ជាក្រុម</translation>
 <translation id="2613747923081026172">បង្កើត​ក្រុម</translation>
 <translation id="2662028055331606429">ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">ចូលមើលគេហទំព័រ</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">អូសផ្ទាំង​នានា ដើម្បី​ដាក់ផ្ទាំង​ទាំងនោះ​ជាក្រុម</translation>
 <translation id="5846292395804797011">បិទក្រុម <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="NUMBER_OF_TABS" />ផ្ទាំង</translation>
 <translation id="5972844218283131174">ដកការជ្រើសរើសទាំងអស់</translation>
-<translation id="6040143037577758943">បិទ</translation>
 <translation id="6054741997831917303">តម្លៃទំនិញនេះ​បានធ្លាក់ចុះ​ថ្មីៗនេះ​ពី <ph name="PREVIOUS_PRICE" /> ទៅ <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
 <translation id="6228793724645064692">(ការវាយ​តម្លៃហាង)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">លាក់មុខងារ​ជ្រើសរើសច្រើន</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ចែករំលែក​ផ្ទាំង}other{ចែករំលែក​ផ្ទាំង}}</translation>
 <translation id="7129458170538955174">បានបើក​ព័ត៌មានអំពី​ហាងនេះ​ពាក់កណ្ដាល​អេក្រង់</translation>
-<translation id="7151209024774799310">លុបផ្ទាំង​ចេញពីក្រុម</translation>
 <translation id="7204204600596740190">មុខងារ​ជ្រើសរើសច្រើន</translation>
 <translation id="7326879924029668159">មើលគោលការណ៍បញ្ជូនទំនិញមកវិញ និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="7352298686197644113">មើលថាតើ​ទំនិញមួយ​ណានៅក្នុងផ្ទាំងដែលអ្នក​កំពុង​បើក​មានតម្លៃ​ទាបជាងមុន</translation>

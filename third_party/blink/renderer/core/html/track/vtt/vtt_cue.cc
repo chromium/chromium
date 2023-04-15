@@ -51,8 +51,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/text/bidi_resolver.h"
-#include "third_party/blink/renderer/platform/text/text_run_iterator.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -413,32 +412,6 @@ double VTTCue::CalculateComputedLinePosition() const {
   return n;
 }
 
-class VTTTextRunIterator : public TextRunIterator {
- public:
-  VTTTextRunIterator() = default;
-  VTTTextRunIterator(const TextRun* text_run, unsigned offset)
-      : TextRunIterator(text_run, offset) {}
-
-  bool AtParagraphSeparator() const {
-    // Within a cue, paragraph boundaries are only denoted by Type B characters,
-    // such as U+000A LINE FEED (LF), U+0085 NEXT LINE (NEL),
-    // and U+2029 PARAGRAPH SEPARATOR.
-    return WTF::unicode::Category(Current()) &
-           WTF::unicode::kSeparator_Paragraph;
-  }
-};
-
-// Almost the same as determineDirectionality in core/html/html_element.cc, but
-// that one uses a "plain" TextRunIterator (which only checks for '\n').
-static TextDirection DetermineDirectionality(const String& value,
-                                             bool& has_strong_directionality) {
-  TextRun run(value);
-  BidiResolver<VTTTextRunIterator, BidiCharacterRun> bidi_resolver;
-  bidi_resolver.SetStatus(BidiStatus(TextDirection::kLtr, false));
-  bidi_resolver.SetPositionIgnoringNestedIsolates(VTTTextRunIterator(&run, 0));
-  return bidi_resolver.DetermineDirectionality(&has_strong_directionality);
-}
-
 static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
   DCHECK(vtt_root);
 
@@ -452,11 +425,11 @@ static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
     DCHECK(node->IsDescendantOf(vtt_root));
 
     if (node->IsTextNode()) {
-      bool has_strong_directionality;
-      text_direction =
-          DetermineDirectionality(node->nodeValue(), has_strong_directionality);
-      if (has_strong_directionality)
+      if (const absl::optional<TextDirection> node_direction =
+              BidiParagraph::BaseDirectionForString(node->nodeValue())) {
+        text_direction = *node_direction;
         break;
+      }
     } else if (auto* vtt_element = DynamicTo<VTTElement>(node)) {
       if (vtt_element->WebVTTNodeType() == kVTTNodeTypeRubyText) {
         node = NodeTraversal::NextSkippingChildren(*node);

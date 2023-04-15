@@ -8,7 +8,7 @@
  * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #include=cr-shared-style
+ * #include=cr-shared-style cros-color-overrides
  * #css_wrapper_metadata_end */
 
  :host {
@@ -23,6 +23,21 @@
 
     --diagnostics-regular-font-weight: 400;
     --diagnostics-medium-font-weight: 500;
+  }
+
+  :host-context(body.jelly-enabled) {
+    --diagnostics-box-shadow:
+        0 1px 2px var(--cros-shadow-color-key),
+        0 1px 3px var(--cros-shadow-color-ambient);
+    --diagnostics-box-shadow-elevation-2:
+        0 1px 2px var(--cros-shadow-color-key),
+        0 2px 6px var(--cros-shadow-color-ambient);
+    --diagnostics-card-bg-color: var(--cros-sys-app_base);
+    --diagnostics-chip-bg-color: var(--cros-sys-app_base);
+  }
+
+  :host-context(body.jelly-enabled) .grey-container {
+    background-color: var(--cros-sys-app_base_shaded);
   }
 
   hr {
@@ -275,6 +290,16 @@
       --diagnostics-card-bg-color: var(--cros-bg-color-elevation-1);
       --diagnostics-chip-bg-color: var(--cros-bg-color-elevation-3);
     }
+
+    :host-context(body.jelly-enabled) {
+      --diagnostics-card-bg-color: var(--cros-sys-base_elevated);
+      --diagnostics-chip-bg-color: var(--cros-sys-base_elevated);
+    }
+
+    :host-context(body.jelly-enabled) .grey-container {
+      background-color: var(--cros-sys-app_base_shaded);
+    }
+
 
     .grey-container {
       background-color: var(--cros-bg-color-dropped-elevation-2);

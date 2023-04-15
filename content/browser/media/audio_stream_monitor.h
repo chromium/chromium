@@ -90,17 +90,19 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // Class to help automatically remove audible client.
   class CONTENT_EXPORT AudibleClientRegistration {
    public:
-    explicit AudibleClientRegistration(
-        AudioStreamMonitor* audio_stream_monitor);
+    AudibleClientRegistration(GlobalRenderFrameHostId host_id,
+                              AudioStreamMonitor* audio_stream_monitor);
     ~AudibleClientRegistration();
 
    private:
+    GlobalRenderFrameHostId host_id_;
     raw_ptr<AudioStreamMonitor> audio_stream_monitor_;
   };
 
   // Registers an audible client, which will be unregistered when the returned
   // AudibleClientRegistration is released.
-  std::unique_ptr<AudibleClientRegistration> RegisterAudibleClient();
+  std::unique_ptr<AudibleClientRegistration> RegisterAudibleClient(
+      GlobalRenderFrameHostId host_id);
 
  private:
   friend class AudioStreamMonitorTest;
@@ -136,10 +138,10 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   void UpdateStreams();
 
   // Adds/Removes Audible clients.
-  void AddAudibleClient();
-  void RemoveAudibleClient();
+  void AddAudibleClient(GlobalRenderFrameHostId host_id);
+  void RemoveAudibleClient(GlobalRenderFrameHostId host_id);
 
-  // The WebContents instance to receive indicator toggle notifications.  This
+  // The WebContents instance to receive indicator toggle notifications. This
   // pointer should be valid for the lifetime of AudioStreamMonitor.
   const raw_ptr<WebContents> web_contents_;
 
@@ -156,8 +158,11 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // streams will have an entry in this map.
   base::flat_map<StreamID, bool> streams_;
 
-  // Number of non-stream audible clients, e.g. players not using AudioServices.
-  int audible_clients_ = 0;
+  // Map of non-stream audible clients, e.g. players not using AudioServices.
+  // size_t is the number of audible clients associated with the
+  // GlobalRenderFrameHostId. If size_t count reaches 0 there are no
+  // remaining audible clients for the associated host id.
+  base::flat_map<GlobalRenderFrameHostId, size_t> audible_clients_;
 
   // Records the last time at which all streams became silent.
   base::TimeTicks last_became_silent_time_;

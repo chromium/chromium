@@ -42,7 +42,7 @@ interface Option {
   value: number;
 }
 
-interface SettingsCursorAndTouchpadPageElement {
+export interface SettingsCursorAndTouchpadPageElement {
   $: {
     pointerSubpageButton: CrLinkRowElement,
   };
@@ -52,7 +52,7 @@ const SettingsCursorAndTouchpadPageElementBase =
     DeepLinkingMixin(RouteOriginMixin(
         PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsCursorAndTouchpadPageElement extends
+export class SettingsCursorAndTouchpadPageElement extends
     SettingsCursorAndTouchpadPageElementBase {
   static get is() {
     return 'settings-cursor-and-touchpad-page';
@@ -384,7 +384,7 @@ class SettingsCursorAndTouchpadPageElement extends
   }
 
 
-  private onMouseTap_(): void {
+  private onMouseClick_(): void {
     Router.getInstance().navigateTo(
         routes.POINTERS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);

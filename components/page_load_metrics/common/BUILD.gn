@@ -51,6 +51,10 @@ mojom("page_load_metrics_mojom") {
           mojom = "page_load_metrics.mojom.SubresourceLoadMetrics"
           cpp = "::blink::SubresourceLoadMetrics"
         },
+        {
+          mojom = "page_load_metrics.mojom.ServiceWorkerSubresourceLoadMetrics"
+          cpp = "::blink::ServiceWorkerSubresourceLoadMetrics"
+        },
       ]
       traits_headers = [ "page_load_metrics_mojom_traits.h" ]
       traits_sources = [ "page_load_metrics_mojom_traits.cc" ]

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 
 namespace password_manager {
 class AffiliatedGroup;
@@ -28,7 +29,7 @@ class Browser;
                               (const password_manager::CredentialUIEntry&)
                                   credential
                         reauthModule:(ReauthenticationModule*)reauthModule
-                supportMoveToAccount:(BOOL)supportMoveToAccount
+                             context:(DetailsContext)context
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)
@@ -38,7 +39,7 @@ class Browser;
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
-                supportMoveToAccount:(BOOL)supportMoveToAccount
+                             context:(DetailsContext)context
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

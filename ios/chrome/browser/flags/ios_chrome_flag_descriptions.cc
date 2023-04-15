@@ -139,6 +139,12 @@ const char kAutofillUpstreamAuthenticatePreflightCallDescription[] =
     "Google Payments, in order to provide a better experience for users with "
     "server-side features disabled but not client-side features.";
 
+const char kAutofillUpstreamUseAlternateSecureDataTypeName[] =
+    "Use alternate secure data type for credit card upload save";
+const char kAutofillUpstreamUseAlternateSecureDataTypeDescription[] =
+    "When enabled, the secure data type for cards sent during credit card "
+    "upload save is updated to match newer server requirements.";
+
 const char kAutofillUseMobileLabelDisambiguationName[] =
     "Autofill Uses Mobile Label Disambiguation";
 const char kAutofillUseMobileLabelDisambiguationDescription[] =
@@ -210,6 +216,11 @@ const char kEnablePopoutOmniboxIpadName[] = "Popout omnibox (iPad)";
 const char kEnablePopoutOmniboxIpadDescription[] =
     "Make omnibox popup appear in a detached rounded rectangle below the "
     "omnibox.";
+
+extern const char kMagicStackName[] = "Enable Magic Stack";
+extern const char kMagicStackDescription[] =
+    "When enabled, a Magic Stack will be shown in the Home surface displaying "
+    "a variety of modules.";
 
 extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
 extern const char kMapsExperienceKitDescription[] =
@@ -450,6 +461,10 @@ const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
 const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
     "passed after the last refresh.";
+
+const char kFeedDisableHotStartRefreshName[] = "Disable hot start feed refresh";
+const char kFeedDisableHotStartRefreshDescription[] =
+    "Disables all Discover-controlled foregrounding refreshes.";
 
 const char kFeedExperimentTaggingName[] = "Enable Feed experiment tagging";
 const char kFeedExperimentTaggingDescription[] =
@@ -772,6 +787,11 @@ const char kOmniboxReportSearchboxStatsDescription[] =
     "Enables reporting the serialized Searchbox Stats proto param in search "
     "destination URLs originated from the Omnibox.";
 
+const char kOmniboxTailSuggestName[] = "Omnibox Tail suggestions";
+const char kOmniboxTailSuggestDescription[] =
+    "Enables tail search suggestions. Search suggestions only matching the end "
+    "of users input text.";
+
 const char kOmniboxZeroSuggestInMemoryCachingName[] =
     "Omnibox Zero Prefix Suggestion in-memory caching";
 const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
@@ -794,6 +814,11 @@ const char kOmniboxZeroSuggestPrefetchingOnWebName[] =
 const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
+
+const char kOnlyAccessClipboardAsyncName[] =
+    "Only access the clipboard asynchronously";
+const char kOnlyAccessClipboardAsyncDescription[] =
+    "Only accesses the clipboard asnchronously.";
 
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
@@ -931,6 +956,11 @@ const char kNewOverflowMenuShareChromeActionDescription[] =
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
+
+const char kSyncSegmentsDataName[] = "Use synced segments data";
+const char kSyncSegmentsDataDescription[] =
+    "Enables history's segments to include foreign visits from syncing "
+    "devices.";
 
 const char kSynthesizedRestoreSessionName[] =
     "Use a synthesized native WKWebView sesion restoration (iOS15 only).";

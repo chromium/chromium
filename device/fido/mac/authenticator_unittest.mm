@@ -6,9 +6,11 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/mac/authenticator_config.h"
@@ -25,6 +27,9 @@ namespace {
 using GetInfoCallback =
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
                                FidoRequestHandlerBase::RecognizedCredential>;
+using GetAssertionCallback = test::StatusAndValueCallbackReceiver<
+    CtapDeviceResponseCode,
+    std::vector<AuthenticatorGetAssertionResponse>>;
 
 constexpr char kRp1[] = "one.com";
 constexpr char kRp2[] = "two.com";
@@ -154,6 +159,15 @@ TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
         std::get<1>(*callback.result()),
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
   }
+}
+
+TEST_P(TouchIdAuthenticatorTest, GetAssertionEmpty) {
+  GetAssertionCallback callback;
+  CtapGetAssertionRequest request(kRp1, "{json: true}");
+  authenticator_->GetAssertion(std::move(request), CtapGetAssertionOptions(),
+                               callback.callback());
+  callback.WaitForCallback();
+  EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kCtap2ErrNoCredentials);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TouchIdAuthenticatorTest);

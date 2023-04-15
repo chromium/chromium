@@ -17,10 +17,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/test_reg_util_win.h"
-#endif
-
 class Profile;
 
 namespace base {
@@ -110,12 +106,6 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   base::CallbackListSubscription create_services_subscription_;
-
-#if BUILDFLAG(IS_WIN)
-  // This is used to ensure any registry changes by this test don't affect other
-  // parts of the the trybot and are cleaned up.
-  registry_util::RegistryOverrideManager registry_override_;
-#endif
 
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.

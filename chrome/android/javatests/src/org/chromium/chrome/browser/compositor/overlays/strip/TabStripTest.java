@@ -668,8 +668,12 @@ public class TabStripTest {
         checkTabStrips();
 
         // Open enough regular tabs to cause the strip to scroll.
-        ChromeTabUtils.newTabsFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 10);
+        StripLayoutHelper tabStrip =
+                TabStripUtils.getStripLayoutHelper(sActivityTestRule.getActivity(), false);
+        while (tabStrip.getMinimumScrollOffset() >= 0) {
+            ChromeTabUtils.newTabFromMenu(
+                    InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
+        }
 
         // In RTL the expectation for left/right fade opacities is swapped.
         boolean isLeft = !LocalizationUtils.isLayoutRtl();
@@ -711,14 +715,16 @@ public class TabStripTest {
         // Check scrolling tab strip
         checkTabStrips();
 
-        // Open enough regular tabs to cause the strip to scroll.
-        ChromeTabUtils.newTabsFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 10);
-
-        // Get tab at index 0 and assert it is not visible.
+        // Open enough regular tabs to hide the tab at index 0.
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         final StripLayoutTab tab = TabStripUtils.findStripLayoutTab(
                 sActivityTestRule.getActivity(), false, model.getTabAt(0).getId());
+        while (tab.isVisible()) {
+            ChromeTabUtils.newTabFromMenu(
+                    InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
+        }
+
+        // Assert the tab at index 0 is not visible.
         assertTabVisibility(false, tab);
 
         // Create visibility callback helper.

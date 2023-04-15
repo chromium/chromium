@@ -31,10 +31,12 @@ class StorageBucket final : public ScriptWrappable,
 
  public:
   StorageBucket(NavigatorBase* navigator,
+                const String& name,
                 mojo::PendingRemote<mojom::blink::BucketHost> remote);
 
   ~StorageBucket() override = default;
 
+  const String& name();
   ScriptPromise persist(ScriptState*);
   ScriptPromise persisted(ScriptState*);
   ScriptPromise estimate(ScriptState*);
@@ -68,6 +70,8 @@ class StorageBucket final : public ScriptWrappable,
                      const absl::optional<base::Time> expires,
                      bool success);
   void GetSandboxedFileSystem(ScriptPromiseResolver* resolver);
+
+  String name_;
 
   // BucketHost in the browser process.
   HeapMojoRemote<mojom::blink::BucketHost> remote_;

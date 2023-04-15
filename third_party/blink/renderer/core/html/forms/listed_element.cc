@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/text/bidi_text_run.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -432,7 +432,7 @@ void ListedElement::FindCustomValidationMessageTextDirection(
     TextDirection& message_dir,
     String& sub_message,
     TextDirection& sub_message_dir) {
-  message_dir = DetermineDirectionality(message);
+  message_dir = BidiParagraph::BaseDirectionForStringOrLtr(message);
   if (!sub_message.empty()) {
     sub_message_dir = ToHTMLElement().GetLayoutObject()->Style()->Direction();
   }

@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/histogram_snapshot_manager.h"
@@ -299,7 +298,7 @@ void MetricsLog::RecordUserAction(const std::string& key,
   UserActionEventProto* user_action = uma_proto_.add_user_action_event();
   user_action->set_name_hash(Hash(key));
   user_action->set_time_sec(ToMonotonicSeconds(action_time));
-  base::UmaHistogramBoolean("UMA.UserActionsCount", true);
+  UMA_HISTOGRAM_BOOLEAN("UMA.UserActionsCount", true);
 }
 
 // static
@@ -577,7 +576,7 @@ void MetricsLog::TruncateEvents() {
       // enum that is generated from actions.xml in our processing pipelines.
       // Instead, a histogram description will also be produced in our
       // pipelines.
-      base::UmaHistogramSparse(
+      UMA_HISTOGRAM_SPARSE(
           "UMA.TruncatedEvents.UserAction.Type",
           // Truncate the unsigned 64-bit hash to 31 bits, to make it a suitable
           // histogram sample.

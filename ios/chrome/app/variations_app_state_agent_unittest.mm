@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
@@ -112,7 +112,8 @@ class VariationsAppStateAgentTest : public PlatformTest {
 
   // Simulate that the fetcher has completed fetching.
   void SimulateFetchCompletion(VariationsAppStateAgent* agent) {
-    [mock_fetcher_.delegate didFetchSeedSuccess:NO];
+    [mock_fetcher_.delegate
+        variationsSeedFetcherDidCompleteFetchWithSuccess:NO];
   }
 
   // Setter of the current stage of the mock app state. This also invokes

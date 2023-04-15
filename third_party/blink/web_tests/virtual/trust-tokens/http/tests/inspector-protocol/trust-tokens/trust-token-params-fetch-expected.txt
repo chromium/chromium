@@ -2,7 +2,6 @@ Check that PrivateTokenParams are included in the basic Private Token operations
 Sending request: 
     fetch('https://trusttoken.test', {
       privateToken: {
-        type: 'private-state-token',
         version: 1,
         operation: 'token-request'
       }
@@ -12,7 +11,6 @@ Included privateTokenParams in request: {"operation":"Issuance","refreshPolicy":
 Sending request: 
     fetch('https://trusttoken.test', {
       privateToken: {
-        type: 'private-state-token',
         version: 1,
         operation: 'token-redemption'
       }
@@ -22,7 +20,6 @@ Included privateTokenParams in request: {"operation":"Redemption","refreshPolicy
 Sending request: 
     fetch('https://destination.test', {
       privateToken: {
-        type: 'private-state-token',
         version: 1,
         operation: 'send-redemption-record',
         issuers: ['https://issuer.test']

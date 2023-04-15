@@ -17,6 +17,7 @@ import '../../controls/settings_radio_group.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
+import './input_device_settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -30,8 +31,8 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Mouse, MouseSettings} from './input_device_settings_types.js';
-import {settingsAreEqual} from './input_device_settings_utils.js';
+import {InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
+import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
 const SettingsPerDeviceMouseSubsectionElementBase =
@@ -151,6 +152,10 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         type: Object,
       },
 
+      mousePolicies: {
+        type: Object,
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -179,6 +184,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
           'scrollAccelerationPref.value,' +
           'scrollSensitivityPref.value,' +
           'reverseScrollValue)',
+      'onPoliciesChanged(mousePolicies)',
       'updateSettingsToCurrentPrefs(mouse)',
     ];
   }
@@ -196,6 +202,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   }
 
   private mouse: Mouse;
+  protected mousePolicies: MousePolicies;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
@@ -221,6 +228,13 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         'scrollSensitivityPref.value', this.mouse.settings.scrollSensitivity);
     this.reverseScrollValue = this.mouse.settings.reverseScrolling;
     this.isInitialized = true;
+  }
+
+  private onPoliciesChanged() {
+    this.primaryRightPref = {
+      ...this.primaryRightPref,
+      ...getPrefPolicyFields(this.mousePolicies.swapRightPolicy),
+    };
   }
 
   private onLearnMoreLinkClicked_(event: Event): void {

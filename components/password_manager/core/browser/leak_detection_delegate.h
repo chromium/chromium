@@ -21,6 +21,7 @@ namespace password_manager {
 
 class LeakDetectionCheck;
 class LeakDetectionDelegateHelper;
+enum class LeakDetectionInitiator;
 class PasswordManagerClient;
 struct PasswordForm;
 
@@ -44,7 +45,8 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   LeakDetectionCheck* leak_check() const { return leak_check_.get(); }
 #endif  // defined(UNIT_TEST)
 
-  void StartLeakCheck(const PasswordForm& credentials);
+  void StartLeakCheck(LeakDetectionInitiator initiator,
+                      const PasswordForm& credentials);
 
  private:
   // LeakDetectionDelegateInterface:

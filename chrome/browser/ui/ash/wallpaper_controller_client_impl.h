@@ -125,8 +125,9 @@ class WallpaperControllerClientImpl
                                     ash::WallpaperLayout layout);
   void ShowUserWallpaper(const AccountId& account_id);
   void ShowSigninWallpaper();
-  void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path);
-  void RemoveAlwaysOnTopWallpaper();
+  void ShowOverrideWallpaper(const base::FilePath& image_path,
+                             bool always_on_top);
+  void RemoveOverrideWallpaper();
   void RemoveUserWallpaper(const AccountId& account_id,
                            base::OnceClosure on_removed);
   void RemovePolicyWallpaper(const AccountId& account_id);

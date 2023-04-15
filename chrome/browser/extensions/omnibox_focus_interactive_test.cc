@@ -156,11 +156,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   // is focused.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::string document_body;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "domAutomationController.send(document.body.innerText)",
-      &document_body));
-  EXPECT_EQ("NTP replacement extension", document_body);
+  EXPECT_EQ("NTP replacement extension",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -250,11 +247,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   // is focused.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::string document_body;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "domAutomationController.send(document.body.innerText)",
-      &document_body));
-  EXPECT_EQ("NTP replacement extension", document_body);
+  EXPECT_EQ("NTP replacement extension",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -298,11 +292,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   // is focused.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::string document_body;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "domAutomationController.send(document.body.innerText)",
-      &document_body));
-  EXPECT_EQ("NTP replacement extension", document_body);
+  EXPECT_EQ("NTP replacement extension",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -312,10 +303,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   content::ExecuteScriptAsync(web_contents, "window.location.reload()");
   nav_observer.Wait();
   EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "domAutomationController.send(document.body.innerText)",
-      &document_body));
-  EXPECT_EQ("NTP replacement extension", document_body);
+  EXPECT_EQ("NTP replacement extension",
+            content::EvalJs(web_contents, "document.body.innerText"));
 
   // Verify that `reload` didn't make the focus move away from the omnibox.
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -394,24 +383,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   // menu of Google applications from the NTP).
   const char kFrameInjectionScriptTemplate[] = R"(
       f = document.createElement('iframe');
-      f.src = $1;
-      document.body.appendChild(f);
-      f.onload = function() {
-          domAutomationController.send("Frame injected successfully");
-      }
+      new Promise(resolve => {
+        f.onload = function() {
+            resolve("Frame injected successfully");
+        }
+        f.src = $1;
+        document.body.appendChild(f);
+      });
   )";
   GURL subframe_url = https_server.GetURL("/title1.html");
-  {
-    // The NTP might be in the process of navigating or adding its other
-    // subframes - this is why the test doesn't use TestNavigationObserver, but
-    // instead waits for the frame's onload event.
-    std::string script_result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents,
-        content::JsReplace(kFrameInjectionScriptTemplate, subframe_url),
-        &script_result));
-    ASSERT_EQ("Frame injected successfully", script_result);
-  }
+  // The NTP might be in the process of navigating or adding its other
+  // subframes - this is why the test doesn't use TestNavigationObserver, but
+  // instead waits for the frame's onload event.
+  ASSERT_EQ("Frame injected successfully",
+            content::EvalJs(web_contents,
+                            content::JsReplace(kFrameInjectionScriptTemplate,
+                                               subframe_url)));
   const auto frames =
       CollectAllRenderFrameHosts(web_contents->GetPrimaryPage());
   const auto it = base::ranges::find(

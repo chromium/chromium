@@ -265,6 +265,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
 
     void AddObserver(const AXTreeID tree_id);
     void RemoveObserver(const AXTreeID tree_id);
+    void OnStringAttributeChanged(AXTree* tree,
+                                  AXNode* node,
+                                  ax::mojom::StringAttribute attr,
+                                  const std::string& old_value,
+                                  const std::string& new_value) override;
     void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
     void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
     void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override;

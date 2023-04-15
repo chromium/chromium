@@ -5,6 +5,7 @@
 #include "chrome/browser/dips/dips_features.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace dips {
 
@@ -40,17 +41,27 @@ const base::FeatureParam<base::TimeDelta> kTimerDelay{&kFeature, "timer_delay",
 const base::FeatureParam<base::TimeDelta> kInteractionTtl{
     &kFeature, "interaction_ttl", base::Days(45)};
 
-// Sets the actions which will trigger DIPS clearing for a site. The default is
-// to set to kBounce, but can be overridden by Finch experiment groups or by
-// command-line flags.
 constexpr base::FeatureParam<DIPSTriggeringAction>::Option
     kTriggeringActionOptions[] = {
         {DIPSTriggeringAction::kNone, "none"},
         {DIPSTriggeringAction::kStorage, "storage"},
         {DIPSTriggeringAction::kBounce, "bounce"},
         {DIPSTriggeringAction::kStatefulBounce, "stateful_bounce"}};
+
+// Sets the actions which will trigger DIPS clearing for a site. The default is
+// to set to kBounce, but can be overridden by Finch experiment groups,
+// command-line flags, or chrome flags.
+//
+// Note: Maintain a matching nomenclature of the options with the feature flag
+// entries at about_flags.cc.
 const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction{
     &kFeature, "triggering_action", DIPSTriggeringAction::kNone,
     &kTriggeringActionOptions};
 
+// Denotes the length of a time interval within which any client-side redirect
+// is viewed as a bounce (provided all other criteria are equally met). The
+// interval starts every time a page finishes a navigation (a.k.a. a commit is
+// registered).
+const base::FeatureParam<base::TimeDelta> kBounceTimeout{
+    &kFeature, "bounce_timeout", base::Seconds(10)};
 }  // namespace dips

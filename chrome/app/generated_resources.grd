@@ -2940,6 +2940,15 @@ are declared in tools/grit/grit_rule.gni.
             desc="Accessibility label for retry button.">
         Retry <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW" desc="Text shown on the download bubble to allow users to never show the bubble at download completion">
+        Don't show when downloads are done
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_REMINDER" desc="Text shown on the download bubble to remind users they can customize whether the bubble appears from Chrome settings">
+        You can change this anytime in <ph name="SETTINGS_LINK">$1<ex>settings</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_LINK" desc="Link text to Chrome settings in the download bubble, within IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_REMINDER">
+        settings
+      </message>
 
       <!-- Tailored Warning in Download Bubble -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT"
@@ -4478,20 +4487,17 @@ are declared in tools/grit/grit_rule.gni.
 
       <if expr="enable_extensions">
         <!-- Extension blocked action bubble -->
-        <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_HEADING" desc="Heading of the bubble to tell users that in order to run an extension, they'll need to refresh the page.">
-          Reload page to use this extension
+        <message name="IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING" desc="Heading of the bubble to tell users that in order to run or not run an extension, they'll need to refresh the page. Deliberately similar to IDS_PAGE_INFO_INFOBAR_TEXT, but used for an different permission setting so they are not combined. If updating the one, please update the other or consult the extensions and privacy teams.">
+          To apply your updated settings to this site, reload this page
         </message>
         <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON" desc="The text of the button to proceed with the page refresh for running an extension.">
           Reload
         </message>
         <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_SINGLE_EXTENSION_TITLE" desc="Title of the bubble to tell users that in order to run or block an extension, they'll need to refresh the page.">
-          Reload the page to use "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"
+          To apply your updated settings for "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" to this site, reload this page
         </message>
         <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_MULTIPLE_EXTENSIONS_TITLE" desc="Title of the bubble to tell users that in order to run or block an extension, they'll need to refresh the page.">
-          Reload the page to use these extensions
-        </message>
-        <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_UPDATE_PERMISSIONS_TITLE" desc="Title of the bubble to tell users that in order to apply the changes selected, they'll need to refresh the page.">
-          Reload the page to apply your changes
+          To apply your updated settings to this site for these extensions, reload this page
         </message>
       </if>
 
@@ -4995,6 +5001,9 @@ are declared in tools/grit/grit_rule.gni.
           Add remote apps to the ChromeOS launcher
         </message>
         <if expr="reven">
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_ATTACHED_DEVICE_INFO" desc="Permission string for accessing information of attached devices.">
+            Read attached device information and data
+          </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
             Run ChromeOS Flex diagnostic tests
           </message>
@@ -5012,6 +5021,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <if expr="not reven">
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_ATTACHED_DEVICE_INFO" desc="Permission string for accessing information of attached devices.">
+            Read attached device information and data
+          </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
             Run ChromeOS diagnostic tests
           </message>
@@ -7104,6 +7116,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_LOWER_YOUR" desc="Name of the chrome cart module in lowercase shown in various UIs.">
         your carts
       </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_ANNOTATION" desc="Annotation that shows in the ChromeCart tile in Quest module to let users know that this tile is from pending items in their shopping cart.">
+        In your cart
+      </message>
       <message name="IDS_NTP_MODULES_CART_INFO" desc="Text shown in the body of the info dialog of the cart module.">
         You’re seeing carts that help you easily get back to items you left in shopping carts across the web.
         <ph name="BREAK">&lt;br&gt;</ph>
@@ -7492,14 +7507,26 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_SORT_NEWEST" desc="Label for the newest-first bookmarks sort type">
         Newest
       </message>
+      <message name="IDS_BOOKMARKS_SORT_NEWEST_LOWER" desc="Lowercase label for the newest-first bookmarks sort type">
+        newest
+      </message>
       <message name="IDS_BOOKMARKS_SORT_OLDEST" desc="Label for the oldest-first bookmarks sort type">
         Oldest
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_OLDEST_LOWER" desc="Lowercase label for the oldest-first bookmarks sort type">
+        oldest
       </message>
       <message name="IDS_BOOKMARKS_SORT_ALPHABETICALLY" desc="Label for the alphabetical bookmarks sort type">
         A to Z
       </message>
       <message name="IDS_BOOKMARKS_SORT_REVERSE_ALPHABETICALLY" desc="Label for the reverse alphabetical bookmarks sort type">
         Z to A
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_LAST_OPENED" desc="Label for the last opened bookmarks sort type">
+        Last opened
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_LAST_OPENED_LOWER" desc="Lowercase label for the last opened bookmarks sort type">
+        last opened
       </message>
       <message name="IDS_BOOKMARKS_VISUAL_VIEW" desc="Label for the visual view bookmarks menu option">
         Visual view
@@ -8194,12 +8221,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BATTERY_SAVER_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the battery saver mode in-product promo bubble.">
         Settings
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TEXT" desc="The text shown for the high efficiency info mode in-product promo bubble.">
-        While this tab was inactive, Memory Saver freed up memory for other tasks. You can change this anytime in settings.
-      </message>
-      <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency info mode in-product promo bubble.">
-        Settings
-      </message>
       <if expr="use_titlecase">
         <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
           Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps.
@@ -8516,9 +8537,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION_GPM" desc="The description text of the 'save unsynced credentials' bubble.">
           Google Password Manager couldn't save these passwords in your Google Account. You can save them to this device.
-        </message>
-        <message name="IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH" desc="Body of the in Product Help for profile switching shown in the password manager web app.">
-          You can choose the profile that you want to see the passwords from
         </message>
 
         <if expr="not use_titlecase">
@@ -9403,6 +9421,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_APP_MENU_BUTTON_UPDATE" desc="Short label next to app-menu button when an update is available.">
         Update
       </message>
+      <if expr="is_win or is_macosx or is_linux">
+        <message name="IDS_APP_MENU_BUTTON_UPDATE_ALT1" desc="Alternate short label next to app-menu button when an update is available.">
+          Finish update
+        </message>
+        <message name="IDS_APP_MENU_BUTTON_UPDATE_ALT2" desc="Alternate short label next to app-menu button when an update is available.">
+          Relaunch to update
+        </message>
+        <message name="IDS_APP_MENU_BUTTON_UPDATE_ALT3" desc="Alternate short label next to app-menu button when an update is available.">
+          New Chrome available
+        </message>
+      </if>
       <message name="IDS_APP_MENU_BUTTON_ERROR" desc="Short label next to app-menu button when the user needs to resolve something.">
         Error
       </message>

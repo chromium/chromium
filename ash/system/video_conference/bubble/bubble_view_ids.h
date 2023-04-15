@@ -36,6 +36,9 @@ enum BubbleViewID {
   // `kToggleEffectsContainer`.
   kToggleEffectsButton,
 
+  // Icon which is a child of an individual "toggle" VC effect.
+  kToggleEffectIcon,
+
   // Buttons for setting an individual value of a "set-value" VC effect,
   // children of `kSetValueEffectsContainer`. Since the number of values for a
   // given effect can't be known at compile-time, an allowable range of IDs

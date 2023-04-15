@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/bookmark_activity.h"
@@ -40,7 +41,7 @@
 #error "This file requires ARC support."
 #endif
 
-@protocol HandlerProtocols <BrowserCommands, FindInPageCommands>
+@protocol HandlerProtocols <FindInPageCommands>
 @end
 
 class ActivityServiceMediatorTest : public PlatformTest {
@@ -59,13 +60,14 @@ class ActivityServiceMediatorTest : public PlatformTest {
         OCMStrictClassMock([ChromeActivityItemThumbnailGenerator class]);
 
     mediator_ = [[ActivityServiceMediator alloc]
-            initWithHandler:mocked_handler_
-           bookmarksHandler:mocked_bookmarks_handler_
-        qrGenerationHandler:mocked_qr_generation_handler_
-                prefService:pref_service_.get()
-              bookmarkModel:nil
-         baseViewController:nil
-            navigationAgent:nil];
+                initWithHandler:mocked_handler_
+               bookmarksHandler:mocked_bookmarks_handler_
+            qrGenerationHandler:mocked_qr_generation_handler_
+                    prefService:pref_service_.get()
+                  bookmarkModel:nil
+             baseViewController:nil
+                navigationAgent:nil
+        readingListBrowserAgent:nil];
 
     pref_service_->registry()->RegisterBooleanPref(prefs::kPrintingEnabled,
                                                    true);

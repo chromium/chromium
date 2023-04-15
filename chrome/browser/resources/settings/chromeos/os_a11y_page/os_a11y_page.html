@@ -22,35 +22,35 @@
     <div class="hr" hidden="[[isKioskModeActive_]]"></div>
     <cr-link-row id="text-to-speech-page-trigger"
         label="$i18n{textToSpeechLinkTitle}"
-        on-click="onTextToSpeechTap_"
+        on-click="onTextToSpeechClick_"
         sub-label="$i18n{textToSpeechLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <div class="hr"></div>
     <cr-link-row id="display-and-magnification-page-trigger"
         label="$i18n{displayAndMagnificationLinkTitle}"
-        on-click="onDisplayAndMagnificationTap_"
+        on-click="onDisplayAndMagnificationClick_"
         sub-label="$i18n{displayAndMagnificationLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <div class="hr"></div>
     <cr-link-row id="keyboard-and-text-input-page-trigger"
         label="$i18n{keyboardAndTextInputLinkTitle}"
-        on-click="onKeyboardAndTextInputTap_"
+        on-click="onKeyboardAndTextInputClick_"
         sub-label="$i18n{keyboardAndTextInputLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <div class="hr"></div>
     <cr-link-row id="cursor-and-touchpad-page-trigger"
         label="$i18n{cursorAndTouchpadLinkTitle}"
-        on-click="onCursorAndTouchpadTap_"
+        on-click="onCursorAndTouchpadClick_"
         sub-label="$i18n{cursorAndTouchpadLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <div class="hr"></div>
     <cr-link-row id="audio-and-captions-page-trigger"
         label="$i18n{audioAndCaptionsLinkTitle}"
-        on-click="onAudioAndCaptionsTap_"
+        on-click="onAudioAndCaptionsClick_"
         sub-label="$i18n{audioAndCaptionsLinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
@@ -59,7 +59,9 @@
       <cr-link-row
           id="additionalFeaturesLink" class="hr"
           label="$i18n{additionalFeaturesTitle}"
-          on-click="onAdditionalFeaturesClick_" external>
+          on-click="onAdditionalFeaturesClick_"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>

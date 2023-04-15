@@ -73,7 +73,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetTitle() {
 
   return l10n_util::GetStringUTF16(
       is_migration_to_account_
-          ? IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE
+          ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
           : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 
@@ -88,9 +88,26 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
   CHECK(!account_info.IsEmpty())
       << "User must be logged in when address profile is going to be saved to "
          "user's Google Account";
+  // Notify user that their address is saved only in Chrome and can be migrated
+  // to their Google account.
+  if (is_migration_to_account_) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE,
+        base::UTF8ToUTF16(account_info.email));
+  }
 
+  // Notify user that their address has already been saved in their Google
+  // account and is only going to be updated there.
+  if (original_profile_) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+        base::UTF8ToUTF16(account_info.email));
+  }
+
+  // Notify the user that their address is going to be saved in their Google
+  // account if they accept the prompt.
   return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+      IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
       base::UTF8ToUTF16(account_info.email));
 }
 
@@ -109,6 +126,16 @@ SaveUpdateAddressProfilePromptController::GetPositiveButtonText() {
 
 std::u16string
 SaveUpdateAddressProfilePromptController::GetNegativeButtonText() {
+  if (is_migration_to_account_) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+  }
+  if (!original_profile_ &&
+      profile_.source() == AutofillProfile::Source::kAccount) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_IN_ACCOUNT_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
+  }
+
   return l10n_util::GetStringUTF16(
       IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
 }
@@ -193,7 +220,9 @@ void SaveUpdateAddressProfilePromptController::OnUserDeclined(
     const base::android::JavaParamRef<jobject>& obj) {
   had_user_interaction_ = true;
   RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+      is_migration_to_account_
+          ? AutofillClient::SaveAddressProfileOfferUserDecision::kNever
+          : AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
 
 void SaveUpdateAddressProfilePromptController::OnUserEdited(

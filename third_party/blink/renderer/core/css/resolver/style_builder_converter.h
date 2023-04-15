@@ -139,7 +139,8 @@ class StyleBuilderConverter {
       const CSSValue& value);
   static FontDescription::Size ConvertFontSize(StyleResolverState&,
                                                const CSSValue&);
-  static float ConvertFontSizeAdjust(StyleResolverState&, const CSSValue&);
+  static FontSizeAdjust ConvertFontSizeAdjust(StyleResolverState&,
+                                              const CSSValue&);
 
   static FontSelectionValue ConvertFontStretch(StyleResolverState&,
                                                const CSSValue&);
@@ -364,6 +365,9 @@ class StyleBuilderConverter {
 
   static Vector<TimelineAxis> ConvertViewTimelineAxis(StyleResolverState&,
                                                       const CSSValue&);
+  static Vector<TimelineAttachment> ConvertViewTimelineAttachment(
+      StyleResolverState&,
+      const CSSValue&);
   static Vector<TimelineInset> ConvertViewTimelineInset(StyleResolverState&,
                                                         const CSSValue&);
   static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,

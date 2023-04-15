@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
+#include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -44,7 +44,7 @@ class CONTENT_EXPORT SmartCardReaderTracker
 
     // Called when a error preventing the monitoring of reader changes occurs.
     // Can be retried with a new `Start` call.
-    virtual void OnError(blink::mojom::SmartCardResponseCode response_code) = 0;
+    virtual void OnError(device::mojom::SmartCardError error) = 0;
   };
 
   class ObserverList {
@@ -65,7 +65,7 @@ class CONTENT_EXPORT SmartCardReaderTracker
         const blink::mojom::SmartCardReaderInfo& reader_info);
     void NotifyReaderRemoved(
         const blink::mojom::SmartCardReaderInfo& reader_info);
-    void NotifyError(blink::mojom::SmartCardResponseCode response_code);
+    void NotifyError(device::mojom::SmartCardError error);
 
    private:
     base::ObserverList<Observer> observers_;

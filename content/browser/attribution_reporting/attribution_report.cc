@@ -42,6 +42,8 @@ AttributionReport::EventLevelData::EventLevelData(
   DCHECK_LE(randomized_trigger_rate, 1);
 }
 
+AttributionReport::EventLevelData::EventLevelData() = default;
+
 AttributionReport::EventLevelData::EventLevelData(const EventLevelData&) =
     default;
 
@@ -65,6 +67,9 @@ AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
       id(id),
       attestation_token(std::move(attestation_token)),
       aggregation_coordinator(aggregation_coordinator) {}
+
+AttributionReport::AggregatableAttributionData::AggregatableAttributionData() =
+    default;
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     const AggregatableAttributionData&) = default;
@@ -92,13 +97,12 @@ AttributionReport::AggregatableAttributionData::BudgetRequired() const {
   return budget_required;
 }
 
-AttributionReport::AttributionReport(
-    AttributionInfo attribution_info,
-    base::Time report_time,
-    base::Time initial_report_time,
-    base::GUID external_report_id,
-    int failed_send_attempts,
-    absl::variant<EventLevelData, AggregatableAttributionData> data)
+AttributionReport::AttributionReport(AttributionInfo attribution_info,
+                                     base::Time report_time,
+                                     base::Time initial_report_time,
+                                     base::GUID external_report_id,
+                                     int failed_send_attempts,
+                                     Data data)
     : attribution_info_(std::move(attribution_info)),
       report_time_(report_time),
       initial_report_time_(initial_report_time),

@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/compiler_specific.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"

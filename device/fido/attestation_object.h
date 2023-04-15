@@ -25,7 +25,30 @@ class AttestationStatement;
 // https://www.w3.org/TR/2017/WD-webauthn-20170505/#cred-attestation.
 class COMPONENT_EXPORT(DEVICE_FIDO) AttestationObject {
  public:
+  // ResponseFields contains the parts of an attestation object that are needed
+  // when constructing a browser's response to a create() call.
+  struct COMPONENT_EXPORT(DEVICE_FIDO) ResponseFields {
+    ResponseFields();
+    ~ResponseFields();
+    ResponseFields(ResponseFields&&);
+    ResponseFields(const ResponseFields&) = delete;
+    ResponseFields& operator=(const ResponseFields&) = delete;
+
+    std::vector<uint8_t> attestation_object_bytes;
+    std::vector<uint8_t> authenticator_data;
+    absl::optional<std::vector<uint8_t>> public_key_der;
+    int32_t public_key_algo;
+  };
+
   static absl::optional<AttestationObject> Parse(const cbor::Value& value);
+
+  // ParseForResponseFields parses a serialized attestation object and extracts
+  // the fields needed to build a browser's response to a create() call. If
+  // `attestation_acceptable` is false any attestation will have been removed
+  // in the return value.
+  static absl::optional<ResponseFields> ParseForResponseFields(
+      std::vector<uint8_t> attestation_object_bytes,
+      bool attestation_acceptable);
 
   AttestationObject(AuthenticatorData data,
                     std::unique_ptr<AttestationStatement> statement);

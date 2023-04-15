@@ -24,6 +24,10 @@ class AudioParameters;
 // is how the output is delivered.
 class MEDIA_EXPORT Muxer {
  public:
+  // Defines the type of a callback to be called when a derived muxer
+  // (e.g. WebmMuxer or Mp4Muxer) is ready to write a chunk of data.
+  using WriteDataCB = base::RepeatingCallback<void(base::StringPiece)>;
+
   // Container for the parameters that muxer uses that is extracted from
   // VideoFrame.
   struct MEDIA_EXPORT VideoParameters {

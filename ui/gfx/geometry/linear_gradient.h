@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "ui/gfx/geometry/geometry_skia_export.h"

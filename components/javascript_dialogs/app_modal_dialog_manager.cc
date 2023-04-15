@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/javascript_dialogs/app_modal_dialog_manager_delegate.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/javascript_dialogs/extensions_client.h"
@@ -40,11 +41,6 @@ class DefaultExtensionsClient : public ExtensionsClient {
   // ExtensionsClient:
   void OnDialogOpened(content::WebContents* web_contents) override {}
   void OnDialogClosed(content::WebContents* web_contents) override {}
-  bool GetExtensionName(content::WebContents* web_contents,
-                        const url::Origin& alerting_frame_origin,
-                        std::string* name_out) override {
-    return false;
-  }
 };
 
 bool ShouldDisplaySuppressCheckbox(
@@ -69,6 +65,11 @@ void AppModalDialogManager::SetExtensionsClient(
   extensions_client_ = std::move(extensions_client);
 }
 
+void AppModalDialogManager::SetDelegate(
+    std::unique_ptr<AppModalDialogManagerDelegate> delegate) {
+  delegate_ = std::move(delegate);
+}
+
 AppModalDialogManager::AppModalDialogManager()
     : extensions_client_(new DefaultExtensionsClient) {}
 
@@ -77,15 +78,12 @@ AppModalDialogManager::~AppModalDialogManager() = default;
 std::u16string AppModalDialogManager::GetTitle(
     content::WebContents* web_contents,
     const url::Origin& alerting_frame_origin) {
-  // For extensions, show the extension name, but only if the origin of
-  // the alert matches the top-level WebContents.
-  std::string name;
-  if (extensions_client_->GetExtensionName(web_contents, alerting_frame_origin,
-                                           &name))
-    return base::UTF8ToUTF16(name);
+  if (delegate_) {
+    return delegate_->GetTitle(web_contents, alerting_frame_origin);
+  }
 
   // Otherwise, return the formatted URL.
-  return GetTitleImpl(
+  return GetSiteFrameTitle(
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
       alerting_frame_origin);
 }
@@ -112,7 +110,7 @@ url::Origin UnwrapOriginIfOpaque(const url::Origin& origin) {
 }  // namespace
 
 // static
-std::u16string AppModalDialogManager::GetTitleImpl(
+std::u16string AppModalDialogManager::GetSiteFrameTitle(
     const url::Origin& main_frame_origin,
     const url::Origin& alerting_frame_origin) {
   // Note that `Origin::Create()` handles unwrapping of `blob:` and

@@ -77,12 +77,12 @@ void LacrosDataBackwardMigrationScreen::OnProgress(int percent) {
 }
 
 void LacrosDataBackwardMigrationScreen::OnMigrated(
-    BrowserDataBackMigrator::Result result) {
+    BrowserDataBackMigratorBase::Result result) {
   switch (result) {
-    case BrowserDataBackMigrator::Result::kSucceeded:
+    case BrowserDataBackMigratorBase::Result::kSucceeded:
       chrome::AttemptRestart();
       break;
-    case BrowserDataBackMigrator::Result::kFailed:
+    case BrowserDataBackMigratorBase::Result::kFailed:
       view_->SetFailureStatus();
       break;
   }

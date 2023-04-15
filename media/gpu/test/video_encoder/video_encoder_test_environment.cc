@@ -35,6 +35,7 @@ struct CodecParamToProfile {
     {"h264high", H264PROFILE_HIGH},
     {"vp8", VP8PROFILE_ANY},
     {"vp9", VP9PROFILE_PROFILE0},
+    {"av1", AV1PROFILE_PROFILE_MAIN},
 };
 
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,

@@ -251,6 +251,10 @@ class NET_EXPORT UDPSocketPosix {
   // Returns a net error code.
   int SetDiffServCodePoint(DiffServCodePoint dscp);
 
+  // Sets IPV6_V6ONLY on the socket. If this flag is true, the socket will be
+  // restricted to only IPv6; false allows both IPv4 and IPv6 traffic.
+  int SetIPv6Only(bool ipv6_only);
+
   // Exposes the underlying socket descriptor for testing its state. Does not
   // release ownership of the descriptor.
   SocketDescriptor SocketDescriptorForTesting() const { return socket_; }

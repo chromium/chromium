@@ -10,7 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
-#import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -794,6 +793,22 @@ using feed::FeedUserActionType;
   base::RecordAction(
       hasUserId ? base::UserMetricsAction(kShowFeedSignInOnlyUIWithUserId)
                 : base::UserMetricsAction(kShowFeedSignInOnlyUIWithoutUserId));
+}
+
+- (void)recordShowSignInRelatedUIWithType:(feed::FeedSignInUI)type {
+  base::UmaHistogramEnumeration(kFeedSignInUI, type);
+  switch (type) {
+    case feed::FeedSignInUI::kShowSyncHalfSheet:
+      base::RecordAction(base::UserMetricsAction(kShowSyncHalfSheetFromFeed));
+      break;
+    case feed::FeedSignInUI::kShowSignInOnlyFlow:
+      base::RecordAction(base::UserMetricsAction(kShowSignInOnlyFlowFromFeed));
+      break;
+    case feed::FeedSignInUI::kShowSignInDisableToast:
+      base::RecordAction(
+          base::UserMetricsAction(kShowSignInDisableToastFromFeed));
+      break;
+  }
 }
 
 #pragma mark - Private

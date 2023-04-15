@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
-#include "chrome/browser/metrics/power/usage_scenario.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "components/performance_manager/public/power/battery_level_provider_creator.h"

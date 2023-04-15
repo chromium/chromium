@@ -19,17 +19,15 @@ namespace net {
 class IPEndPoint;
 }  // namespace net
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class NetworkContext;
-}  // namespace mojom
-}  // namespace network
+}  // namespace network::mojom
 
-namespace ash {
-
+namespace chromeos {
 class FirewallHole;
+}  // namespace chromeos
 
-namespace smb_client {
+namespace ash::smb_client {
 
 // NetBiosClient handles a NetBios Name Query Request.
 // On construction, the Name Query Request process starts.
@@ -81,7 +79,8 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
                       const absl::optional<net::IPEndPoint>& local_ip);
 
   // Callback handler for OpenPort. Calls SetBroadcast.
-  void OnOpenPortComplete(std::unique_ptr<FirewallHole> firewall_hole);
+  void OnOpenPortComplete(
+      std::unique_ptr<chromeos::FirewallHole> firewall_hole);
 
   // Callback handler for SetBroadcast. Calls SendPacket.
   void OnSetBroadcastCompleted(int32_t result);
@@ -104,12 +103,11 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
   net::IPEndPoint broadcast_address_;
   uint16_t transaction_id_;
   NetBiosResponseCallback callback_;
-  std::unique_ptr<FirewallHole> firewall_hole_;
+  std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
   mojo::Remote<network::mojom::UDPSocket> server_socket_;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETBIOS_CLIENT_H_

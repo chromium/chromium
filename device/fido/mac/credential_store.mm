@@ -15,6 +15,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -45,9 +46,6 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> DefaultKeychainQuery(
   CFDictionarySetValue(query, kSecAttrAccessGroup,
                        base::SysUTF8ToNSString(config.keychain_access_group));
   if (rp_id) {
-    // Values of `kSecAttrLabel` are CFStringRef. The expected encoding is
-    // undocumented but must be UTF-8; see `_ImportKey()` in
-    // https://opensource.apple.com/source/libsecurity_keychain/libsecurity_keychain-55050.2/lib/SecItem.cpp)
     CFDictionarySetValue(
         query, kSecAttrLabel,
         base::SysUTF8ToNSString(EncodeRpId(config.metadata_secret, *rp_id)));
@@ -197,9 +195,19 @@ bool Credential::RequiresUvForSignature() const {
   return metadata.version < CredentialMetadata::Version::kV4;
 }
 
+struct TouchIdCredentialStore::ObjCStorage {
+  base::scoped_nsobject<LAContext> authentication_context_;
+};
+
 TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
-    : config_(std::move(config)) {}
+    : config_(std::move(config)),
+      objc_storage_(std::make_unique<ObjCStorage>()) {}
 TouchIdCredentialStore::~TouchIdCredentialStore() = default;
+
+void TouchIdCredentialStore::SetAuthenticationContext(
+    LAContext* authentication_context) {
+  objc_storage_->authentication_context_.reset([authentication_context retain]);
+}
 
 absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
 TouchIdCredentialStore::CreateCredential(
@@ -245,14 +253,15 @@ TouchIdCredentialStore::CreateCredential(
       base::FeatureList::IsEnabled(kWebAuthnMacPlatformAuthenticatorOptionalUv)
           ? kSecAccessControlPrivateKeyUsage
           : kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence;
-  CFDictionarySetValue(
-      private_key_params, kSecAttrAccessControl,
+  base::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-          flags, nullptr));
-  if (authentication_context_) {
+          flags, /*error=*/nullptr));
+  CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
+                       access_control);
+  if (objc_storage_->authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
-                         authentication_context_);
+                         objc_storage_->authentication_context_);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -323,15 +332,16 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
   // Credential can only be used when the device is unlocked. Private key is
   // available for signing after user authorization with biometrics or
   // password.
-  CFDictionarySetValue(
-      private_key_params, kSecAttrAccessControl,
+  base::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
           kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
-          nullptr));
-  if (authentication_context_) {
+          /*error=*/nullptr));
+  CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
+                       access_control);
+  if (objc_storage_->authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
-                         authentication_context_);
+                         objc_storage_->authentication_context_);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -492,9 +502,9 @@ TouchIdCredentialStore::FindCredentialsImpl(
   // `kSecAttrLabel` attribute wouldn't match the encoded RP ID.
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query =
       DefaultKeychainQuery(config_, rp_id);
-  if (authentication_context_) {
+  if (objc_storage_->authentication_context_) {
     CFDictionarySetValue(query, kSecUseAuthenticationContext,
-                         authentication_context_);
+                         objc_storage_->authentication_context_);
   }
   CFDictionarySetValue(query, kSecReturnRef, @YES);
   CFDictionarySetValue(query, kSecReturnAttributes, @YES);
@@ -596,9 +606,8 @@ TouchIdCredentialStore::FindCredentialsImpl(
     base::ScopedCFTypeRef<SecKeyRef> private_key(key,
                                                  base::scoped_policy::RETAIN);
 
-    credentials.emplace_back(
-        Credential{std::move(private_key), std::move(credential_id),
-                   std::move(*metadata), std::move(rp_id_value)});
+    credentials.emplace_back(std::move(private_key), std::move(credential_id),
+                             std::move(*metadata), std::move(rp_id_value));
   }
   return std::move(credentials);
 }

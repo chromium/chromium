@@ -272,6 +272,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
       const base::UnguessableToken& auth_token,
       RegisterSensorClientWithTokenCallback callback) final;
+  void BindServiceToMojoServiceManager(
+      const std::string& service_name,
+      mojo::ScopedMessagePipeHandle receiver) final;
 
   // CameraHalServerCallbacks implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
@@ -382,6 +385,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   std::string GetDeviceIdFromCameraId(int32_t camera_id);
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
       base::flat_set<int32_t> camera_ids);
+
+  void BindToMojoServiceManagerOnUIThread(
+      const std::string service_name,
+      mojo::ScopedMessagePipeHandle receiver);
 
   void StopOnProxyThread();
 

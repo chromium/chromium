@@ -50,14 +50,14 @@
   <div slot="button-container">
     <cr-button id="cancel"
         aria-label="[[getCancelBtnA11yLabel_(esimProfileName_)]]"
-        on-click="onCancelTap_"
+        on-click="onCancelClick_"
         class="cancel-button">
       $i18n{eSimRemoveProfileDialogCancel}
     </cr-button>
     <cr-button id="remove"
         aria-label$="[[getRemoveBtnA11yLabel_(esimProfileName_)]]"
         aria-describedby="description warningMessage"
-        on-click="onRemoveProfileTap_"
+        on-click="onRemoveProfileClick_"
         class="action-button">
       $i18n{eSimRemoveProfileDialogRemove}
     </cr-button>

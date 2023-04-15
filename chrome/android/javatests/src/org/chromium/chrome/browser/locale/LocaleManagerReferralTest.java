@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.locale;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,18 +89,18 @@ public class LocaleManagerReferralTest {
 
             // The initial param is empty, so ensure no clid param is passed.
             String url = templateUrlService.getUrlForSearchQuery("blah");
-            Assert.assertThat(url, not(containsString("&clid=")));
+            assertThat(url, not(containsString("&clid=")));
 
             // Initialize the value to something and verify it is included in the generated
             // URL.
             mYandexReferralId = "TESTING_IS_AWESOME";
             url = templateUrlService.getUrlForSearchQuery("blah");
-            Assert.assertThat(url, containsString("&clid=TESTING_IS_AWESOME"));
+            assertThat(url, containsString("&clid=TESTING_IS_AWESOME"));
 
             // Switch to google and ensure the clid param is no longer included.
             templateUrlService.setSearchEngine("google.com");
             url = templateUrlService.getUrlForSearchQuery("blah");
-            Assert.assertThat(url, not(containsString("&clid=")));
+            assertThat(url, not(containsString("&clid=")));
         });
     }
 }

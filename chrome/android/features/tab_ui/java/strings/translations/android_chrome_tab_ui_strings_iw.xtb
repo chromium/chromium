@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
-<translation id="1181037720776840403">הסרה</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1403228085774130835">‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome.</translation>
 <translation id="1455506303394048917">הפעילות שלך בכרטיסיות הפרטיות האלה תימחק מהמכשיר הזה</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{הסרת הכרטיסייה מהקבוצה}one{הסרת הכרטיסיות מהקבוצה}two{הסרת הכרטיסיות מהקבוצה}other{הסרת הכרטיסיות מהקבוצה}}</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{הסרת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה מהקבוצה.}one{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}two{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}other{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{הוספת הכרטיסייה לסימניות}one{הוספת הכרטיסיות לסימניות}two{הוספת הכרטיסיות לסימניות}other{הוספת הכרטיסיות לסימניות}}</translation>
-<translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
-<translation id="257674075312929031">קבוצה</translation>
 <translation id="2613747923081026172">יצירת קבוצה</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">כניסה לאתר</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">ניתן לגרור כרטיסיות כדי לקבץ אותן</translation>
 <translation id="5846292395804797011">סגירה של הקבוצה <ph name="TITLE_OF_GROUP" /> עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
-<translation id="6040143037577758943">סגירה</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה}one{שיתוף הכרטיסיות}two{שיתוף הכרטיסיות}other{שיתוף הכרטיסיות}}</translation>
 <translation id="7129458170538955174">המידע על החנות הזו פתוח בחצי הגובה</translation>
-<translation id="7151209024774799310">הסרת כרטיסיות מהקבוצה</translation>
 <translation id="7204204600596740190">מצב בחירה מרובה</translation>
 <translation id="7326879924029668159">מדיניות החזרת המוצרים ומידע נוסף</translation>
 <translation id="7352298686197644113">הצגת הפריטים שמופיעים עם מחיר נמוך יותר בכרטיסיות הפתוחות שלך</translation>

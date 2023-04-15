@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -70,7 +71,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,8 +84,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 // clang-format off
 @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-@Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                           ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+@Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 public class TabGridDialogMediatorUnitTest {
     // clang-format on
 
@@ -187,12 +186,6 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
         doReturn(null).when(mRecyclerViewPositionSupplier).get();
 
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                    ContextUtils.getApplicationContext())
-                && !TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
-                        ContextUtils.getApplicationContext())) {
-            mTabSelectionEditorController = null;
-        }
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
         mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
@@ -228,26 +221,10 @@ public class TabGridDialogMediatorUnitTest {
                 instanceOf(TextWatcher.class));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER),
                 instanceOf(View.OnFocusChangeListener.class));
-
-        // Setup selection editor for ungrouping.
-        assertThat(mModel.get(TabGridPanelProperties.MENU_CLICK_LISTENER),
-                instanceOf(View.OnClickListener.class));
-
-        mMediator.getToolbarMenuCallbackForTesting().onResult(R.id.ungroup_tab);
-        verify(mTabSelectionEditorController)
-                .configureToolbar(eq(REMOVE_BUTTON_STRING), anyInt(),
-                        any(TabSelectionEditorActionProvider.class), eq(1), eq(null));
-        verify(mRecyclerViewPositionSupplier, never()).get();
-        verify(mTabSelectionEditorController).show(any(), eq(0), eq(null));
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_SELECTION_EDITOR_V2)
-    public void setupTabSelectionEditorV2_flagEnabled() {
-        assertThat(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
-                           ContextUtils.getApplicationContext()),
-                equalTo(true));
-
+    public void setupTabSelectionEditorV2() {
         assertThat(mMediator.getKeyboardVisibilityListenerForTesting(), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER), equalTo(null));
@@ -279,8 +256,8 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER), equalTo(null));
 
-        assertThat(mModel.get(TabGridPanelProperties.MENU_CLICK_LISTENER), equalTo(null));
-        assertNull(mTabSelectionEditorController);
+        assertNotNull(mModel.get(TabGridPanelProperties.MENU_CLICK_LISTENER));
+        assertNotNull(mTabSelectionEditorController);
     }
 
     @Test
@@ -1158,28 +1135,8 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-    public void testDialogToolbarMenu_SelectionMode() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
-        // Mock that currently the title text is focused and the keyboard is showing. The current
-        // tab is tab1 which is in a group of {tab1, tab2}.
-        mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
-        mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
-
-        callback.onResult(R.id.ungroup_tab);
-
-        assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
-        verify(mRecyclerViewPositionSupplier, never()).get();
-        verify(mTabSelectionEditorController).show(eq(tabgroup), eq(0), eq(null));
-    }
-
-    @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    public void
-    testDialogToolbarMenu_SelectionModeV2() {
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    public void testDialogToolbarMenu_SelectionModeV2() {
         Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
         // Mock that currently the title text is focused and the keyboard is showing. The current
         // tab is tab1 which is in a group of {tab1, tab2}.
@@ -1193,35 +1150,6 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
         verify(mRecyclerViewPositionSupplier, times(1)).get();
         verify(mTabSelectionEditorController).show(eq(tabgroup), eq(0), eq(null));
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-    public void testGetTabGroupStringForShare() {
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
-        String url1 = JUnitTestGURLs.SEARCH_URL;
-        String url2 = JUnitTestGURLs.EXAMPLE_URL;
-        String url3 = JUnitTestGURLs.MAPS_URL;
-
-        doReturn(JUnitTestGURLs.getGURL(url1)).when(mTab1).getUrl();
-        doReturn(JUnitTestGURLs.getGURL(url2)).when(mTab2).getUrl();
-        doReturn(JUnitTestGURLs.getGURL(url3)).when(newTab).getUrl();
-        mMediator.setCurrentTabIdForTesting(TAB1_ID);
-
-        // Setup two sets of tab group and share strings.
-        List<Tab> tabgroup1 = new ArrayList<>(Arrays.asList(newTab, mTab1, mTab2));
-        String shareString1 =
-                "1. https://maps.google.com/\n2. https://www.google.com/search?q=test\n3. https://www.example.com/\n";
-
-        List<Tab> tabgroup2 = new ArrayList<>(Arrays.asList(mTab2, newTab, mTab1));
-        String shareString2 =
-                "1. https://www.example.com/\n2. https://maps.google.com/\n3. https://www.google.com/search?q=test\n";
-
-        doReturn(tabgroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
-        assertThat(shareString1, equalTo(mMediator.getTabGroupStringForSharingForTesting()));
-
-        doReturn(tabgroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
-        assertThat(shareString2, equalTo(mMediator.getTabGroupStringForSharingForTesting()));
     }
 
     @Test

@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -191,7 +192,7 @@ void CookieStoreManager::AddSubscriptions(
     return;
   }
 
-  if (!(storage_key == service_worker_registration->key())) {
+  if (storage_key != service_worker_registration->key()) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -205,8 +206,6 @@ void CookieStoreManager::AddSubscriptions(
   }
 
   for (const auto& mojo_subscription : mojo_subscriptions) {
-    // TODO(crbug.com/1246549): This validation step should consider the storage
-    // key.
     if (!blink::ServiceWorkerScopeMatches(service_worker_registration->scope(),
                                           mojo_subscription->url)) {
       // Blink should have validated subscription URLs against the service
@@ -347,8 +346,9 @@ void CookieStoreManager::RemoveSubscriptions(
   // StoreSubscriptions() needs to be called before updating
   // |subscriptions_by_registration_|, because the update may delete the vector
   // holding the subscriptions.
-  StoreSubscriptions(service_worker_registration_id, storage_key,
-                     live_subscriptions, std::move(callback));
+  StoreSubscriptions(service_worker_registration_id,
+                     service_worker_registration->key(), live_subscriptions,
+                     std::move(callback));
   if (live_subscriptions.empty()) {
     subscriptions_by_registration_.erase(all_subscriptions_it);
   } else {
@@ -609,6 +609,34 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
               DCHECK(registration);
               if (!manager)
                 return;
+
+              // If the change is for a partition cookie, we check that its
+              // partition key matches the StorageKey's top-level site.
+              if (auto cookie_partition_key =
+                      registration->key().ToCookiePartitionKey()) {
+                if (change.cookie.IsPartitioned() &&
+                    change.cookie.PartitionKey() != cookie_partition_key) {
+                  return;
+                }
+                // If the cookie partition key for the worker has a nonce, then
+                // only partitioned cookies should be visible.
+                if (net::CookiePartitionKey::HasNonce(cookie_partition_key) &&
+                    !change.cookie.IsPartitioned()) {
+                  return;
+                }
+              }
+
+              if (registration->key().IsThirdPartyContext() &&
+                  !change.cookie.IsEffectivelySameSiteNone()) {
+                return;
+              }
+
+              // TODO(crbug.com/1427879): Third-party partitioned workers should
+              // not have access to unpartitioned state when third-party cookie
+              // blocking is on.
+              // TODO(crbug.com/1427879): Should RSA grant unpartitioned cookie
+              // access?
+
               manager->DispatchChangeEvent(std::move(registration), change);
             },
             weak_factory_.GetWeakPtr(), change));

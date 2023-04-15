@@ -31,27 +31,12 @@
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/platform/text/bidi_text_run.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
 namespace blink {
 
 template <typename CharacterType>
-static inline TextRun ConstructTextRunInternal(const Font& font,
-                                               const CharacterType* characters,
-                                               int length,
-                                               const ComputedStyle& style,
-                                               TextDirection direction) {
-  TextRun::ExpansionBehavior expansion =
-      TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion;
-  bool directional_override = style.RtlOrdering() == EOrder::kVisual;
-  TextRun run(characters, length, 0, 0, expansion, direction,
-              directional_override);
-  return run;
-}
-
-template <typename CharacterType>
-static inline TextRun ConstructTextRunInternal(const Font& font,
-                                               const CharacterType* characters,
+static inline TextRun ConstructTextRunInternal(const CharacterType* characters,
                                                int length,
                                                const ComputedStyle& style,
                                                TextDirection direction,
@@ -72,64 +57,23 @@ static inline TextRun ConstructTextRunInternal(const Font& font,
   return run;
 }
 
-TextRun ConstructTextRun(const Font& font,
-                         const LChar* characters,
-                         int length,
+TextRun ConstructTextRun(const String& string,
                          const ComputedStyle& style,
-                         TextDirection direction) {
-  return ConstructTextRunInternal(font, characters, length, style, direction);
-}
-
-TextRun ConstructTextRun(const Font& font,
-                         const UChar* characters,
-                         int length,
-                         const ComputedStyle& style,
-                         TextDirection direction) {
-  return ConstructTextRunInternal(font, characters, length, style, direction);
-}
-
-TextRun ConstructTextRun(const Font& font,
-                         const LayoutText* text,
-                         unsigned offset,
-                         unsigned length,
-                         const ComputedStyle& style,
-                         TextDirection direction) {
-  DCHECK_LE(offset + length, text->TextLength());
-  if (text->HasEmptyText())
-    return ConstructTextRunInternal(font, static_cast<const LChar*>(nullptr), 0,
-                                    style, direction);
-  if (text->Is8Bit())
-    return ConstructTextRunInternal(font, text->Characters8() + offset, length,
-                                    style, direction);
-  return ConstructTextRunInternal(font, text->Characters16() + offset, length,
-                                  style, direction);
-}
-
-TextRun ConstructTextRun(const Font& font,
-                         const String& string,
-                         const ComputedStyle& style,
-                         TextDirection direction,
                          TextRunFlags flags) {
+  TextDirection direction =
+      string.empty() || string.Is8Bit()
+          ? TextDirection::kLtr
+          : BidiParagraph::BaseDirectionForStringOrLtr(string);
   unsigned length = string.length();
-  if (!length)
-    return ConstructTextRunInternal(font, static_cast<const LChar*>(nullptr),
-                                    length, style, direction, flags);
+  if (!length) {
+    return ConstructTextRunInternal(static_cast<const LChar*>(nullptr), length,
+                                    style, direction, flags);
+  }
   if (string.Is8Bit())
-    return ConstructTextRunInternal(font, string.Characters8(), length, style,
+    return ConstructTextRunInternal(string.Characters8(), length, style,
                                     direction, flags);
-  return ConstructTextRunInternal(font, string.Characters16(), length, style,
+  return ConstructTextRunInternal(string.Characters16(), length, style,
                                   direction, flags);
-}
-
-TextRun ConstructTextRun(const Font& font,
-                         const String& string,
-                         const ComputedStyle& style,
-                         TextRunFlags flags) {
-  return ConstructTextRun(font, string, style,
-                          string.empty() || string.Is8Bit()
-                              ? TextDirection::kLtr
-                              : DetermineDirectionality(string),
-                          flags);
 }
 
 }  // namespace blink

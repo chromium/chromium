@@ -201,6 +201,7 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "battery/battery_status_manager_win_unittest.cc",
+      "compute_pressure/cpu_probe_win_unittest.cc",
       "generic_sensor/platform_sensor_and_provider_unittest_win.cc",
       "geolocation/wifi_data_provider_win_unittest.cc",
     ]
@@ -373,7 +374,10 @@ source_set("tests") {
   }
 
   if (is_mac) {
-    sources += [ "geolocation/core_location_provider_unittest.mm" ]
+    sources += [
+      "compute_pressure/cpu_probe_mac_unittest.cc",
+      "geolocation/core_location_provider_unittest.mm",
+    ]
   }
 
   # UsbContext is a libusb-specific object.

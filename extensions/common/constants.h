@@ -5,6 +5,9 @@
 #ifndef EXTENSIONS_COMMON_CONSTANTS_H_
 #define EXTENSIONS_COMMON_CONSTANTS_H_
 
+#include <cstddef>
+#include <cstdint>
+
 #include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/chromeos_buildflags.h"

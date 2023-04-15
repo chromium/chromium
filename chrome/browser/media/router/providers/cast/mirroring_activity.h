@@ -19,7 +19,9 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
+#include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom-forward.h"
+#include "components/media_router/common/mojom/media_status.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
@@ -37,7 +39,8 @@ struct CastSinkExtraData;
 
 class MirroringActivity : public CastActivity,
                           public mirroring::mojom::SessionObserver,
-                          public mirroring::mojom::CastMessageChannel {
+                          public mirroring::mojom::CastMessageChannel,
+                          public mojom::MediaController {
  public:
   using OnStopCallback = base::OnceClosure;
 
@@ -79,6 +82,21 @@ class MirroringActivity : public CastActivity,
   // CastActivity implementation
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
+
+  // mojom::MediaController implementation
+  void SetMute(bool mute) override {}
+  void SetVolume(float volume) override {}
+  void Seek(base::TimeDelta time) override {}
+  void NextTrack() override {}
+  void PreviousTrack() override {}
+  // Used during access code casting to resume the mirroring session, if
+  // frozen. This will send a request to the video capture host to resume
+  // displaying the casting session.
+  void Play() override;
+  // Used during access code casting to freeze the mirroring session. This will
+  // send a request to the video capture host to pause the display of the
+  // mirroring session.
+  void Pause() override;
 
   mirroring::MirroringServiceHost* GetHost() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
@@ -160,6 +178,14 @@ class MirroringActivity : public CastActivity,
   // To handle Cast messages from the mirroring service to the mirroring
   // receiver.
   mojo::Receiver<mirroring::mojom::CastMessageChannel> channel_receiver_{this};
+
+  // To handle freeze and unfreeze requests from the mirroring media controller
+  // host to the mirroring service host.
+  mojo::Receiver<mojom::MediaController> media_controller_receiver_{this};
+
+  // Sends media status updates with mirroring information needed for freezing
+  // the session.
+  mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
 
   // Set before and after a mirroring session is established, for metrics.
   absl::optional<base::Time> will_start_mirroring_timestamp_;

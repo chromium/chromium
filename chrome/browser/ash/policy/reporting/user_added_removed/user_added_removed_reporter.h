@@ -25,11 +25,13 @@ class UserAddedRemovedReporter
  public:
   // For prod. Uses the default implementation of UserEventReporterHelper.
   static std::unique_ptr<UserAddedRemovedReporter> Create(
+      base::flat_map<AccountId, bool> users_to_be_removed,
       policy::ManagedSessionService* managed_session_service);
 
   // For use in testing only. Allows user to pass in a test helper.
   static std::unique_ptr<UserAddedRemovedReporter> CreateForTesting(
       std::unique_ptr<UserEventReporterHelper> helper,
+      base::flat_map<AccountId, bool> users_to_be_removed,
       policy::ManagedSessionService* managed_session_service);
 
   UserAddedRemovedReporter(const UserAddedRemovedReporter& other) = delete;
@@ -59,6 +61,7 @@ class UserAddedRemovedReporter
  private:
   UserAddedRemovedReporter(
       std::unique_ptr<UserEventReporterHelper> helper,
+      base::flat_map<AccountId, bool> users_to_be_removed,
       policy::ManagedSessionService* managed_session_service);
 
   std::unique_ptr<UserEventReporterHelper> helper_;

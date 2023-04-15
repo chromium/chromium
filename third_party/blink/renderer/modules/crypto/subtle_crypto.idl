@@ -36,7 +36,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
 
 [
     SecureContext,
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,SharedStorageWorklet)
 ] interface SubtleCrypto {
     [CallWith=ScriptState, MeasureAs=SubtleCryptoEncrypt, RaisesException] Promise<any> encrypt(AlgorithmIdentifier algorithm, CryptoKey key, BufferSource data);
     [CallWith=ScriptState, MeasureAs=SubtleCryptoDecrypt, RaisesException] Promise<any> decrypt(AlgorithmIdentifier algorithm, CryptoKey key, BufferSource data);

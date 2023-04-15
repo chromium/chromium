@@ -44,6 +44,7 @@ class Tab;
 class TabHoverCardController;
 class TabStripController;
 class TabStripObserver;
+class TabStyle;
 
 namespace gfx {
 class Rect;
@@ -440,6 +441,8 @@ class TabStrip : public views::View,
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   absl::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
+
+  const raw_ptr<const TabStyle> style_;
 
   // Number of mouse moves.
   int mouse_move_count_ = 0;

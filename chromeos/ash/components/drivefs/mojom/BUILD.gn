@@ -40,3 +40,13 @@ mojom_component("mojom") {
     },
   ]
 }
+
+mojom_component("pin_manager_types") {
+  sources = [ "pin_manager_types.mojom" ]
+
+  output_prefix = "pin_manager_types_mojom"
+  macro_prefix = "PIN_MANAGER_TYPES_MOJOM"
+
+  webui_module_path = "/"
+  use_typescript_sources = true
+}

@@ -262,6 +262,15 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
     }
+
+    // <if expr="_google_chrome">
+    if (visibility.getMostChrome !== false &&
+        loadTimeData.getBoolean('showGetTheMostOutOfChromeSection')) {
+      r.GET_MOST_CHROME = r.ADVANCED.createSection(
+          '/getMostChrome', 'getMostChrome',
+          loadTimeData.getString('getTheMostOutOfChrome'));
+    }
+    // </if>
   }
   return r as unknown as SettingsRoutes;
 }

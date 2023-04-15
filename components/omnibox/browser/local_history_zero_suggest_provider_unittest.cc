@@ -376,8 +376,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
 
 // Tests that extracted search terms are normalized (their whitespaces are
 // collapsed, are lowercased and deduplicated) without loss of unicode encoding.
-// Note: Disabled for now due to flakes; see: https://crbug.com/1174382
-TEST_F(LocalHistoryZeroSuggestProviderTest, DISABLED_Normalization) {
+TEST_F(LocalHistoryZeroSuggestProviderTest, Normalization) {
   LoadURLs({
       // Issued too closely to the original query; will be ignored:
       {default_search_provider(), "HELLO   WORLD  ", "&foo=bar4", 1},

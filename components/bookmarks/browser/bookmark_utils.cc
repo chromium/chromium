@@ -565,10 +565,10 @@ const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model,
                   [id](const BookmarkNode* node) { return node->id() == id; });
 }
 
-const BookmarkNode* GetBookmarkNodeByGUID(const BookmarkModel* model,
-                                          const base::Uuid& guid) {
-  return FindNode(model->root_node(), [&guid](const BookmarkNode* node) {
-    return node->guid() == guid;
+const BookmarkNode* GetBookmarkNodeByUuid(const BookmarkModel* model,
+                                          const base::Uuid& uuid) {
+  return FindNode(model->root_node(), [&uuid](const BookmarkNode* node) {
+    return node->uuid() == uuid;
   });
 }
 

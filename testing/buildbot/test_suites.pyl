@@ -515,6 +515,10 @@
       },
     },
 
+    'chrome_private_code_test_isolated_scripts': {
+      'chrome_private_code_test': {},
+    },
+
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
@@ -3779,6 +3783,7 @@
       'cast_unittests': {},
       'cc_unittests': {},
       'color_unittests': {},
+      'components_unittests': {},
       'content_unittests': {},
       'crashpad_tests': {},
       'crypto_unittests': {},
@@ -3799,11 +3804,7 @@
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
-      'net_unittests': {
-        'args': [
-          '--gtest_filter=-*WebSocket*',
-        ],
-      },
+      'net_unittests': {},
       'perfetto_unittests': {},
       'services_unittests': {},
       'shell_dialogs_unittests': {},
@@ -4043,6 +4044,7 @@
       'lacros_all_tast_tests': {
         'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
         'timeout_sec': 10800,
+        'test_level_retries': 2,
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -4728,6 +4730,8 @@
     # Rust tests run on all targets.
     'rust_common_gtests': {
       'base_unittests': {},
+      'mojo_rust_integration_unittests': {},
+      'mojo_rust_unittests': {},
       'rust_gtest_interop_unittests': {},
       'test_cpp_including_rust_unittests': {
         'swarming': {},
@@ -4743,10 +4747,6 @@
       'build_rust_tests': {
         'swarming': {},
         'test': 'build_rust_tests',
-      },
-      'mojo_rust_tests': {
-        'swarming': {},
-        'test': 'mojo_rust_tests',
       },
     },
 
@@ -5839,6 +5839,11 @@
       'bfcache_linux_specific_gtests',
     ],
 
+    'chrome_linux_isolated_script_tests': [
+      'chrome_isolated_script_tests',
+      'chrome_private_code_test_isolated_scripts',
+    ],
+
     'chromeos_device_gtests': [
       'chromeos_browser_all_tast_tests',
       'chromeos_browser_integration_tests',
@@ -6226,6 +6231,10 @@
     'gpu_dawn_telemetry_tests': [
       'gpu_dawn_webgpu_cts',
       'gpu_dawn_web_platform_webgpu_cts_force_swiftshader',
+    ],
+
+    'gpu_dawn_tsan_gtests': [
+      'gpu_dawn_gtests',
     ],
 
     'gpu_desktop_mac_gtests': [
@@ -6694,6 +6703,14 @@
       },
     },
 
+    'chromeos_jacuzzi_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
+        ]
+      },
+    },
+
     'chromeos_octopus_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
@@ -6788,6 +6805,19 @@
       'gpu_webgl2_conformance_validating_telemetry_tests': {
         'variants': [
           'CROS_KEVIN_PUBLIC_LKGM',
+        ],
+      },
+    },
+
+    'gpu_fyi_lacros_device_release_telemetry_tests': {
+      'gpu_passthrough_telemetry_tests': {
+        'variants': [
+          'LACROS_ASH_TOT',
+        ],
+      },
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
+        'variants': [
+          'LACROS_ASH_TOT',
         ],
       },
     },
@@ -7352,7 +7382,7 @@
     'lacros_skylab_tests_amd64_generic_rel': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_ZORK_PUBLIC',
+          'CROS_EVE_PUBLIC_LKGM',
         ]
       },
     },

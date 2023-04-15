@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_context.h"
@@ -113,9 +114,11 @@ class DevToolsAgentHostImplTest : public RenderViewHostImplTestHarness {
     browser_content_client_ = std::make_unique<BrowserClient>();
     original_client_ =
         SetBrowserClientForTesting(browser_content_client_.get());
+    DevToolsManager::ShutdownForTests();
   }
   void TearDown() override {
     SetBrowserClientForTesting(original_client_);
+    DevToolsManager::ShutdownForTests();
 
     RenderViewHostImplTestHarness::TearDown();
   }

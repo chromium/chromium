@@ -2,12 +2,13 @@
   #container {
     display: grid;
     grid-template-areas:
-      '. . userpreview  . .'
-      '. . middle       . .'
-      '. . rbg-keyboard . .'
-      '. . .            . .';
+      '. . userpreview        . .'
+      '. . time-of-day-banner . .'
+      '. . middle             . .'
+      '. . rbg-keyboard       . .'
+      '. . .                  . .';
     grid-template-columns: 1fr 24px minmax(480px, 960px) 24px 1fr;
-    grid-template-rows: 108px 1fr auto 32px;
+    grid-template-rows: 108px auto 1fr auto 32px;
     height: 100%;
     position: relative;
     width: 100%;
@@ -15,6 +16,12 @@
 
   user-preview {
     grid-area: userpreview;
+  }
+
+  time-of-day-banner {
+    grid-area: time-of-day-banner;
+    margin-bottom: 23px;
+    min-height: 72px;
   }
 
   #middle {
@@ -56,6 +63,9 @@
 <div id="container">
   <user-preview path="[[path]]">
   </user-preview>
+  <template is="dom-if" if="[[shouldShowTimeOfDayBanner_]]">
+    <time-of-day-banner></time-of-day-banner>
+  </template>
   <div id="middle">
     <wallpaper-preview>
       <template is="dom-if" if="[[isDarkLightModeEnabled_]]">

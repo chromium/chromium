@@ -4,6 +4,7 @@
 
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
+import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 
 import {PrivacySandboxCombinedDialogAppElement, PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
@@ -13,6 +14,7 @@ import {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-d
 import {PrivacySandboxDialogMixin} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_mixin.js';
 import {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step';
 import {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
+import {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -732,6 +734,49 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     await verifyActionOccured(
         PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
+  });
+});
+
+suite('PrivacySandboxDialogNoticeRestricted', function() {
+  let page: PrivacySandboxNoticeRestrictedDialogAppElement;
+  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+
+  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, targetAction);
+    browserProxy.reset();
+  }
+
+  function testClickButton(
+      buttonSelector: string, element: HTMLElement = page) {
+    const actionButton =
+        element.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    actionButton.click();
+  }
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
+    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page =
+        document.createElement('privacy-sandbox-notice-restricted-dialog-app');
+    document.body.appendChild(page);
+    await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
+  });
+
+  test('validDialog', async function() {
+    // Asserting very basic functionality for now.
+    // TODO(b/277180677): add more tests as functionality is implemented.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    assertTrue(!!page.shadowRoot!.querySelector('div'));
+  });
+
+  test('settingsClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#settingsButton');
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 });
 

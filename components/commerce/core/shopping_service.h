@@ -168,6 +168,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       optimization_guide::NewOptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       SessionProtoStorage<
           commerce_subscription_db::CommerceSubscriptionContentProto>*
@@ -269,6 +270,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // if the user has the feature flag enabled or (if applicable) is in an
   // enabled country and locale.
   virtual bool IsMerchantViewerEnabled();
+
+  // This is a feature check for the "price tracking", which will return true
+  // if the user has the feature flag enabled or (if applicable) is in an
+  // enabled country and locale.
+  virtual bool IsCommercePriceTrackingEnabled();
 
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();

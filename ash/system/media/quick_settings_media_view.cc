@@ -171,4 +171,26 @@ void QuickSettingsMediaView::HideItem(const std::string& id) {
   controller_->SetShowMediaView(!items_.empty());
 }
 
+void QuickSettingsMediaView::UpdateItemOrder(std::list<std::string> ids) {
+  if (ids.empty()) {
+    return;
+  }
+
+  // Remove all the media views for re-ordering.
+  std::map<const std::string,
+           std::unique_ptr<global_media_controls::MediaItemUIView>>
+      media_items;
+  for (auto& item : items_) {
+    media_items[item.first] =
+        media_scroll_view_->contents()->RemoveChildViewT(item.second);
+  }
+
+  // Add back the media views given the new order.
+  for (auto& id : ids) {
+    DCHECK(base::Contains(media_items, id));
+    items_[id] = media_scroll_view_->contents()->AddChildView(
+        std::move(media_items[id]));
+  }
+}
+
 }  // namespace ash

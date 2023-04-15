@@ -7,16 +7,31 @@
   /* Header */
   #themeHeader {
     align-items: center;
-    display: flex;
+    display: grid;
+    grid-template-areas:
+      'title       .'
+      '.           .'
+      'description toggle';
+    grid-template-columns: auto fit-content(40px);
+    grid-template-rows: 20px 6px 18px;
   }
 
   #themeTitle {
-    flex-grow: 1;
+    color: var(--cros-text-color-primary);
+    font-size: var(--cros-body-2-font-size);
+    font-weight: var(--cros-display-6-font-weight);
+    grid-area: title;
   }
 
   #dynamicColorToggleDescription {
+    color: var(--cros-sys-secondary);
+    font-size: 12px;
     font-weight: var(--cros-body-1-font-weight);
-    margin-inline-end: 12px;
+    grid-area: description;
+  }
+
+  #dynamicColorToggle {
+    grid-area: toggle;
   }
 
   /* Buttons */
@@ -24,10 +39,10 @@
     display: grid;
     gap: 12px;
     grid-template-columns: repeat(4, minmax(0,1fr));
-    margin: 16px 0;
+    margin: 16px 0 12px;
   }
 
-  cr-button {
+  #container cr-button {
     background-color: var(--cros-sys-app_base_shaded);
     border: none;
     border-radius: 16px;
@@ -69,12 +84,11 @@
 </style>
 <div id="container">
   <div id="themeHeader">
-    <!-- TODO(b/253089237): Add the final translated text. -->
-    <div id="themeTitle">[temp]Theme color</div>
-    <!-- TODO(b/253089237): Add the final translated text. -->
-    <div id="dynamicColorToggleDescription">[temp]Auto</div>
+    <div id="themeTitle">$i18n{dynamicColorLabel}</div>
+    <div id="dynamicColorToggleDescription">$i18n{dynamicColorDescription}</div>
     <!-- TODO(b/253089237): Add the translated aria label. -->
-    <cr-toggle checked="{{automaticSeedColorEnabled}}" on-change="onToggleChanged_">
+    <cr-toggle checked="{{automaticSeedColorEnabled}}" id="dynamicColorToggle"
+        on-change="onToggleChanged_">
     </cr-toggle>
   </div>
   <iron-a11y-keys id="colorSchemeKeys" keys="left right" on-keys-pressed="onColorSchemeKeysPress_">
@@ -106,13 +120,12 @@
       hidden$="[[automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
       <cr-button
-          tabindex$="[[getStaticColorTabIndex_(staticColor)]]"
+          tabindex$="[[getStaticColorTabIndex_(staticColor.hexVal)]]"
           on-click="onClickStaticColorButton_"
-          aria-checked$="[[getStaticColorAriaChecked_(staticColor, staticColorSelected_)]]"
-          data-static-color$="[[staticColor]]">
+          aria-checked$="[[getStaticColorAriaChecked_(staticColor.hexVal, staticColorSelected_)]]">
         <div class="container">
           <svg>
-            <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
+            <circle style$="fill: [[staticColor.hexVal]]" cx="24" cy="24" r="24"></circle>
           </svg>
           <iron-icon icon="personalization:circle_checkmark"></iron-icon>
         </div>

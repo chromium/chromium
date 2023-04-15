@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
 
 namespace password_manager {
@@ -198,6 +199,25 @@ std::string CredentialUIEntry::GetAffiliatedWebRealm() const {
 GURL CredentialUIEntry::GetURL() const {
   DCHECK(!facets.empty());
   return facets[0].url;
+}
+
+absl::optional<GURL> CredentialUIEntry::GetChangePasswordURL() const {
+  GURL change_password_origin;
+  auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+      GetFirstSignonRealm());
+
+  if (facetUri.IsValidAndroidFacetURI()) {
+    // Change url needs special handling for Android. Here we use
+    // affiliation information instead of the origin.
+    if (!GetAffiliatedWebRealm().empty()) {
+      return password_manager::CreateChangePasswordUrl(
+          GURL(GetAffiliatedWebRealm()));
+    }
+  } else if (GetURL().is_valid()) {
+    return password_manager::CreateChangePasswordUrl(GetURL());
+  }
+
+  return absl::nullopt;
 }
 
 std::vector<CredentialUIEntry::DomainInfo>

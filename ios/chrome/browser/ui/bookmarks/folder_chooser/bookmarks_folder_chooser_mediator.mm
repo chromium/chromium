@@ -120,7 +120,8 @@ using bookmarks::BookmarkNode;
 }
 
 - (BOOL)shouldDisplayCloudIconForProfileBookmarks {
-  return bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+  return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+      _syncSetupService);
 }
 
 // TODO(crbug.com/1430453): Update logic when API to check whether butter is

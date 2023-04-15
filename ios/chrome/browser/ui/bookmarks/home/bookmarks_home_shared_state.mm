@@ -44,10 +44,17 @@ bool IsABookmarkNodeSectionIdentifier(
 
 - (instancetype)
     initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
                displayedRootNode:
                    (const bookmarks::BookmarkNode*)displayedRootNode {
   if ((self = [super init])) {
+    CHECK(profileBookmarkModel);
+    CHECK(!base::FeatureList::IsEnabled(
+              bookmarks::kEnableBookmarksAccountStorage) ||
+          accountBookmarkModel);
+    CHECK(displayedRootNode);
     _profileBookmarkModel = profileBookmarkModel;
+    _accountBookmarkModel = accountBookmarkModel;
     _tableViewDisplayedRootNode = displayedRootNode;
   }
   return self;
@@ -87,15 +94,6 @@ bool IsABookmarkNodeSectionIdentifier(
 
 + (NSUInteger)maxDownloadFaviconCount {
   return kMaxDownloadFaviconCount;
-}
-
-- (bookmarks::BookmarkModel*)accountBookmarkModel {
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
-    // TODO(crbug.com/1404250)
-    // For manual testing, waiting for an actual account storage.
-    return self.profileBookmarkModel;
-  }
-  return nil;
 }
 
 @end

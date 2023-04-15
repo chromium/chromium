@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -82,19 +82,6 @@ ui::InputDevice InputDeviceFromCapabilities(
                          device_info.name(), device_info.phys(),
                          base::FilePath(sys_path), device_info.vendor_id(),
                          device_info.product_id(), device_info.version());
-}
-
-// Creates MutableKeyState event for given FKey KeyCode
-ui::EventRewriterChromeOS::MutableKeyState MakeMutableKeyStateForFKey(
-    ui::KeyboardCode key_code) {
-  EXPECT_LE(ui::KeyboardCode::VKEY_F1, key_code);
-  EXPECT_GE(ui::KeyboardCode::VKEY_F15, key_code);
-
-  const uint32_t diff = key_code - ui::VKEY_F1;
-  return ui::EventRewriterChromeOS::MutableKeyState(
-      /*input_flags=*/0,
-      ui::DomCode((static_cast<uint32_t>(ui::DomCode::F1) + diff)),
-      ui::DomKey(ui::DomKey::F1 + diff), key_code);
 }
 
 void SetCurrentImeId(const std::string& current_ime_id) {
@@ -182,14 +169,14 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
 
   void TearDown() override {
     InputDataProviderKeyboardTest::TearDown();
-    keyboard_scan_code_map_.clear();
+    top_row_scan_codes_.clear();
     top_row_keys_.clear();
   }
 
   void AddTopRowKey(VivaldiTopRowScanCode scancode,
                     ui::KeyboardCode key_code,
                     mojom::TopRowKey top_row_key) {
-    keyboard_scan_code_map_[scancode] = MakeMutableKeyStateForFKey(key_code);
+    top_row_scan_codes_.push_back(scancode);
     top_row_keys_.push_back(top_row_key);
   }
 
@@ -225,7 +212,7 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
     AddTopRowKey(VivaldiTopRowScanCode::kMicrophoneMute, ui::VKEY_F15,
                  mojom::TopRowKey::kMicrophoneMute);
 
-    device_information.keyboard_scan_code_map = keyboard_scan_code_map_;
+    device_information.keyboard_scan_codes = top_row_scan_codes_;
   }
 
   void PopulateCustomScanCodeSet2() {
@@ -238,12 +225,11 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
     AddTopRowKey(VivaldiTopRowScanCode::kForward, ui::VKEY_F4,
                  mojom::TopRowKey::kForward);
 
-    device_information.keyboard_scan_code_map = keyboard_scan_code_map_;
+    device_information.keyboard_scan_codes = top_row_scan_codes_;
   }
 
  protected:
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      keyboard_scan_code_map_;
+  std::vector<uint32_t> top_row_scan_codes_;
   std::vector<mojom::TopRowKey> top_row_keys_;
 };
 
@@ -255,10 +241,7 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesSet1) {
   for (const auto& val : aux_data_.top_row_key_scancode_indexes) {
     const uint32_t scancode = val.first;
     const uint32_t index = val.second;
-
-    EXPECT_EQ(static_cast<uint32_t>(keyboard_scan_code_map_[scancode].key_code -
-                                    ui::VKEY_F1),
-              index);
+    EXPECT_EQ(top_row_scan_codes_[index], scancode);
   }
 
   EXPECT_EQ(top_row_keys_, keyboard_info_->top_row_keys);
@@ -272,10 +255,7 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesSet2) {
   for (const auto& val : aux_data_.top_row_key_scancode_indexes) {
     const uint32_t scancode = val.first;
     const uint32_t index = val.second;
-
-    EXPECT_EQ(static_cast<uint32_t>(keyboard_scan_code_map_[scancode].key_code -
-                                    ui::VKEY_F1),
-              index);
+    EXPECT_EQ(top_row_scan_codes_[index], scancode);
   }
 
   EXPECT_EQ(top_row_keys_, keyboard_info_->top_row_keys);
@@ -290,10 +270,13 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesWithZeroScanCodes) {
                mojom::TopRowKey::kBack);
   AddTopRowKey(VivaldiTopRowScanCode::kRefresh, ui::VKEY_F2,
                mojom::TopRowKey::kRefresh);
-  keyboard_scan_code_map_[0] = MakeMutableKeyStateForFKey(ui::VKEY_F5);
+  // Populate with TK_ABSENT for F3-F5
+  top_row_scan_codes_.push_back(0);
+  top_row_scan_codes_.push_back(0);
+  top_row_scan_codes_.push_back(0);
   AddTopRowKey(VivaldiTopRowScanCode::kFullscreen, ui::VKEY_F6,
                mojom::TopRowKey::kFullscreen);
-  device_information.keyboard_scan_code_map = keyboard_scan_code_map_;
+  device_information.keyboard_scan_codes = top_row_scan_codes_;
 
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
       &device_information, &aux_data_);

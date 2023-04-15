@@ -32,7 +32,11 @@ namespace {
 
 // Minimum number of bitstream buffers we need to make sure we don't risk a
 // deadlock. See crrev/c/2340653.
-static unsigned int kMinInFlightFrames = 10;
+// FFmpeg decoder buffers until its thread pool is full. The number of desired
+// threads is 12 in 4k.
+// https://source.chromium.org/chromium/chromium/src/+/main:media/filters/ffmpeg_video_decoder.cc;l=94;drc=002c0bc1ac64f33a327a42a54afb87500943a3b3
+// Therefore, we need to have the number of bitstream buffers. See b/277368164.
+static unsigned int kMinInFlightFrames = 12;
 
 // TODO(crbug.com/1045825): Support encoding parameter changes.
 
@@ -464,8 +468,11 @@ void VideoEncoderClient::BitstreamBufferProcessed(int32_t bitstream_buffer_id) {
   encoder_->UseOutputBitstreamBuffer(std::move(bitstream_buffer));
 }
 
-void VideoEncoderClient::NotifyError(VideoEncodeAccelerator::Error error) {
-  LOG(ERROR) << "NotifyError() is called: " << static_cast<int>(error);
+void VideoEncoderClient::NotifyErrorStatus(const EncoderStatus& status) {
+  ASSERT_FALSE(status.is_ok());
+  LOG(ERROR) << "NotifyErrorStatus() is called, code="
+             << static_cast<int>(status.code())
+             << ", message=" << status.message();
   FireEvent(VideoEncoder::EncoderEvent::kError);
 }
 

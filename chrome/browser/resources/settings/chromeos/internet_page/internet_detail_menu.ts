@@ -211,7 +211,7 @@ class SettingsInternetDetailMenuElement extends
     return OncMojo.deviceIsInhibited(this.deviceState);
   }
 
-  private onRenameEsimProfileTap_(): void {
+  private onRenameEsimProfileClick_(): void {
     this.closeMenu_();
     const event = new CustomEvent('show-esim-profile-rename-dialog', {
       bubbles: true,
@@ -221,7 +221,7 @@ class SettingsInternetDetailMenuElement extends
     this.dispatchEvent(event);
   }
 
-  private onRemoveEsimProfileTap_(): void {
+  private onRemoveEsimProfileClick_(): void {
     this.closeMenu_();
     const event = new CustomEvent('show-esim-remove-profile-dialog', {
       bubbles: true,

@@ -316,9 +316,7 @@ void InstallableManager::GetAllErrors(
   params.valid_manifest = true;
   params.check_webapp_manifest_display = true;
   params.fetch_screenshots = true;
-  params.has_worker = true;
   params.valid_primary_icon = true;
-  params.wait_for_worker = false;
   params.is_debug_mode = true;
   GetData(params,
           base::BindOnce(OnDidCompleteGetAllErrors, std::move(callback)));

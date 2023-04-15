@@ -3001,10 +3001,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestWasDiscarded) {
 #if !BUILDFLAG(IS_ANDROID)
 // Power saver mode only exists on desktop.
 TEST_F(UkmPageLoadMetricsObserverTest, TestRefreshRateThrottled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      performance_manager::features::kBatterySaverModeAvailable);
-
   TestingPrefServiceSimple local_state;
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
       local_state.registry());

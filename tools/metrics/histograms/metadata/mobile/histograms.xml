@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -641,16 +641,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records a histogram for an infobar (both legacy and Messages) that the user
     did not interact with throughout its lifetime.
-  </summary>
-</histogram>
-
-<histogram name="MobileDownload.Background.TargetDeterminationResult"
-    enum="MobileDownloadBackgroundTargetDeterminationResult"
-    expires_after="2020-12-13">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the target determination result for downloads started in
-    the background, that is, while the browser process is not running.
   </summary>
 </histogram>
 
@@ -1285,7 +1275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.IntentToCreationTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

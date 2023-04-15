@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Pred 1 dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pred 1 minuto}one{Pred # minuto}two{Pred # minutama}few{Pred # minutami}other{Pred # minutami}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}one{# m}two{# m}few{# m}other{# m}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{pred 1 dnevom}one{pred # dnevom}two{pred # dnevoma}few{pred # dnevi}other{pred # dnevi}}</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Od leve proti desni</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1398853756734560583">Povečaj</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{pred 1 minuto}one{pred # minuto}two{pred # minutama}few{pred # minutami}other{pred # minutami}}</translation>
 <translation id="1450753235335490080">Ni mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{pred 1 mesecem}one{pred # mesecem}two{pred # mesecema}few{pred # meseci}other{pred # meseci}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 min in }one{# min in }two{# min in }few{# min in }other{# min in }}</translation>
 <translation id="1643823602425662293">Obvestilo</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Slika</translation>
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4588090240171750605">Pomik desno</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{pred 1 letom}one{pred # letom}two{pred # letoma}few{pred # leti}other{pred # leti}}</translation>
 <translation id="4724120544754982507">Središče za obvestila, št. neprebranih sporočil: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">številke</translation>
 <translation id="4746179598275229723">Razširitev je odpeta</translation>
@@ -200,6 +204,7 @@
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
 <translation id="8394908167088220973">Ustavitev/začasna ustavitev</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 l}one{# l}two{# l}few{# l}other{# l}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" /> %</translation>
 <translation id="8602707065186045623">Datoteka <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">in še <ph name="NUMBER" /></translation>
@@ -210,10 +215,12 @@
 <translation id="8867568208303837180">Pošiljanje ...</translation>
 <translation id="8876215549894133151">Oblika:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{pred 1 uro}one{pred # uro}two{pred # urama}few{pred # urami}other{pred # urami}}</translation>
 <translation id="8996630695507351249">Naprava <ph name="TARGET_DEVICE_NAME" /> mora biti povezana v internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}one{# s}two{# s}few{# s}other{# s}}</translation>
 <translation id="9059834730836941392">Strni obvestilo</translation>
 <translation id="9170848237812810038">&amp;Razveljavi</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="944069440740578670">Neprebrana obvestila</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{pred 1 sekundo}one{pred # sekundo}two{pred # sekundama}few{pred # sekundami}other{pred # sekundami}}</translation>
 </translationbundle>

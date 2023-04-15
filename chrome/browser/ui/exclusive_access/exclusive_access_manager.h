@@ -74,7 +74,6 @@ class ExclusiveAccessManager {
 
   // Called by platform ExclusiveAccessExitBubble.
   void ExitExclusiveAccess();
-  void RecordBubbleReshownUMA(ExclusiveAccessBubbleType type);
 
  private:
   const raw_ptr<ExclusiveAccessContext> exclusive_access_context_;

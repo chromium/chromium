@@ -119,6 +119,9 @@ extern const char KCustomizeChromeSidePanelDescription[];
 extern const char kDebugHistoryInterventionNoUserActivationName[];
 extern const char kDebugHistoryInterventionNoUserActivationDescription[];
 
+extern const char kDIPSName[];
+extern const char kDIPSDescription[];
+
 extern const char kDocumentPictureInPictureApiName[];
 extern const char kDocumentPictureInPictureApiDescription[];
 
@@ -142,6 +145,9 @@ extern const char kMainThreadCompositingPriorityDescription[];
 
 extern const char kPasspointARCSupportName[];
 extern const char kPasspointARCSupportDescription[];
+
+extern const char kPasspointSettingsName[];
+extern const char kPasspointSettingsDescription[];
 
 extern const char kPasswordNotesWithBackupName[];
 extern const char kPasswordNotesWithBackupDescription[];
@@ -408,14 +414,6 @@ extern const char kContextMenuGoogleLensSearchOptimizationsDescription[];
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kChromeTipsInMainMenuName[];
-extern const char kChromeTipsInMainMenuDescription[];
-
-extern const char kChromeTipsInMainMenuNewBadgeName[];
-extern const char kChromeTipsInMainMenuNewBadgeDescription[];
-#endif
 
 extern const char kChromeWhatsNewUIName[];
 extern const char kChromeWhatsNewUIDescription[];
@@ -688,6 +686,9 @@ extern const char kDownloadRangeDescription[];
 extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[];
 extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[];
 
+extern const char kEnableTailoredSecurityUpdatedMessagesName[];
+extern const char kEnableTailoredSecurityUpdatedMessagesDescription[];
+
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 
@@ -773,9 +774,6 @@ extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 
 extern const char kEnableZeroCopyTabCaptureName[];
 extern const char kEnableZeroCopyTabCaptureDescription[];
-
-extern const char kEnableRegionCaptureExperimentalSubtypesName[];
-extern const char kEnableRegionCaptureExperimentalSubtypesDescription[];
 
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
@@ -892,6 +890,9 @@ extern const char kForceUiDirectionDescription[];
 
 extern const char kFullUserAgentName[];
 extern const char kFullUserAgentDescription[];
+
+extern const char kFullscreenPopupWindowsName[];
+extern const char kFullscreenPopupWindowsDescription[];
 
 extern const char kGalleryAppPdfEditNotificationName[];
 extern const char kGalleryAppPdfEditNotificationDescription[];
@@ -1154,8 +1155,16 @@ extern const char kOriginAgentClusterDefaultDescription[];
 extern const char kOmitCorsClientCertName[];
 extern const char kOmitCorsClientCertDescription[];
 
+extern const char kOmniboxActionsInSuggestName[];
+extern const char kOmniboxActionsInSuggestDescription[];
+
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
+
+extern const char
+    kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateName[];
+extern const char
+    kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdateDescription[];
 
 extern const char kOmniboxAdaptNarrowTabletWindowsName[];
 extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
@@ -1172,6 +1181,12 @@ extern const char kOmniboxClosePopupWithEscapeDescription[];
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 
+extern const char kOmniboxCR23ActionChipsName[];
+extern const char kOmniboxCR23ActionChipsDescription[];
+
+extern const char kOmniboxCR23ExpandedStateColorsName[];
+extern const char kOmniboxCR23ExpandedStateColorsDescription[];
+
 extern const char kOmniboxCR23ExpandedStateHeightName[];
 extern const char kOmniboxCR23ExpandedStateHeightDescription[];
 
@@ -1183,6 +1198,9 @@ extern const char kOmniboxCR23SteadyStateIconsDescription[];
 
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
+
+extern const char kOmniboxIgnoreIntermediateResultsName[];
+extern const char kOmniboxIgnoreIntermediateResultsDescription[];
 
 extern const char kOmniboxDiscardTemporaryInputOnTabSwitchName[];
 extern const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[];
@@ -1220,14 +1238,11 @@ extern const char
 extern const char kOmniboxInspireMeName[];
 extern const char kOmniboxInspireMeDescription[];
 
-extern const char kOmniboxKeepSecondaryZeroSuggestName[];
-extern const char kOmniboxKeepSecondaryZeroSuggestDescription[];
-
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
-extern const char kOmniboxMlRelevanceScoringName[];
-extern const char kOmniboxMlRelevanceScoringDescription[];
+extern const char kOmniboxMlUrlScoringName[];
+extern const char kOmniboxMlUrlScoringDescription[];
 
 extern const char kOmniboxMlUrlScoringModelName[];
 extern const char kOmniboxMlUrlScoringModelDescription[];
@@ -1259,8 +1274,8 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxRedoCurrentMatchName[];
 extern const char kOmniboxRedoCurrentMatchDescription[];
 
-extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[];
-extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[];
+extern const char kOmniboxWarmRecycledViewPoolName[];
+extern const char kOmniboxWarmRecycledViewPoolDescription[];
 
 extern const char kOmniboxRevertModelBeforeClosingPopupName[];
 extern const char kOmniboxRevertModelBeforeClosingPopupDescription[];
@@ -1435,9 +1450,6 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
-
-extern const char kPasswordImportName[];
-extern const char kPasswordImportDescription[];
 
 extern const char kPasswordsImportM2Name[];
 extern const char kPasswordsImportM2Description[];
@@ -1761,6 +1773,9 @@ extern const char kDiscoverFeedMultiColumnAndroidDescription[];
 extern const char kTabStripRedesignAndroidName[];
 extern const char kTabStripRedesignAndroidDescription[];
 
+extern const char kEmptyStatesAndroidName[];
+extern const char kEmptyStatesAndroidDescription[];
+
 extern const char kFoldableJankFixAndroidName[];
 extern const char kFoldableJankFixAndroidDescription[];
 
@@ -2030,11 +2045,20 @@ extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
-extern const char kAccessibilityFormControlsModeName[];
-extern const char kAccessibilityFormControlsModeDescription[];
+extern const char kAccessibilityAXModesName[];
+extern const char kAccessibilityAXModesDescription[];
 
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
+
+extern const char kAdaptiveButtonInTopToolbarName[];
+extern const char kAdaptiveButtonInTopToolbarDescription[];
+extern const char kAdaptiveButtonInTopToolbarTranslateName[];
+extern const char kAdaptiveButtonInTopToolbarTranslateDescription[];
+extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
+extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
+extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
+extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
 
 extern const char kAddToHomescreenIPHName[];
 extern const char kAddToHomescreenIPHDescription[];
@@ -2135,11 +2159,20 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
+extern const char kCormorantName[];
+extern const char kCormorantDescription[];
+
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 
+extern const char kDrawEdgeToEdgeName[];
+extern const char kDrawEdgeToEdgeDescription[];
+
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
+
+extern const char kEnableAndroidGamepadVibrationName[];
+extern const char kEnableAndroidGamepadVibrationDescription[];
 
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
@@ -2186,6 +2219,9 @@ extern const char kFeedVideoInlinePlaybackDescription[];
 
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
+
+extern const char kForceOffTextAutosizingName[];
+extern const char kForceOffTextAutosizingDescription[];
 
 extern const char kHighlightManagedPrefDisclaimerAndroidName[];
 extern const char kHighlightManagedPrefDisclaimerAndroidDescription[];
@@ -2247,11 +2283,19 @@ extern const char kNotificationPermissionRationaleBottomSheetDescription[];
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 
+extern const char kOmahaMinSdkVersionAndroidName[];
+extern const char kOmahaMinSdkVersionAndroidDescription[];
+extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];
+extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
+
 extern const char kPageInfoHistoryName[];
 extern const char kPageInfoHistoryDescription[];
 
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetName[];
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[];
+
+extern const char kPasswordEditDialogWithDetailsName[];
+extern const char kPasswordEditDialogWithDetailsDescription[];
 
 extern const char kPasswordGenerationBottomSheetName[];
 extern const char kPasswordGenerationBottomSheetDescription[];
@@ -2336,9 +2380,6 @@ extern const char kRequestDesktopSitePerSiteIphDescription[];
 
 extern const char kRequestDesktopSiteZoomName[];
 extern const char kRequestDesktopSiteZoomDescription[];
-
-extern const char kForceOffTextAutosizingName[];
-extern const char kForceOffTextAutosizingDescription[];
 
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
@@ -2431,30 +2472,19 @@ extern const char kUpdateMenuTypeNone[];
 extern const char kUpdateMenuTypeUpdateAvailable[];
 extern const char kUpdateMenuTypeUnsupportedOSVersion[];
 
-extern const char kOmahaMinSdkVersionAndroidName[];
-extern const char kOmahaMinSdkVersionAndroidDescription[];
-extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];
-extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
-
 extern const char kUseRealColorSpaceForAndroidVideoName[];
 extern const char kUseRealColorSpaceForAndroidVideoDescription[];
+
+extern const char kUseToastManagerName[];
+extern const char kUseToastManagerDescription[];
 
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 extern const char kVideoTutorialsInstantFetchName[];
 extern const char kVideoTutorialsInstantFetchDescription[];
 
-extern const char kAdaptiveButtonInTopToolbarName[];
-extern const char kAdaptiveButtonInTopToolbarDescription[];
-extern const char kAdaptiveButtonInTopToolbarTranslateName[];
-extern const char kAdaptiveButtonInTopToolbarTranslateDescription[];
-extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
-extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
-extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
-extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
-
-extern const char kUseToastManagerName[];
-extern const char kUseToastManagerDescription[];
+extern const char kWebAuthnAndroidCredManName[];
+extern const char kWebAuthnAndroidCredManDescription[];
 
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
@@ -2474,18 +2504,12 @@ extern const char kWebXrSharedBuffersDescription[];
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 
-extern const char kPasswordEditDialogWithDetailsName[];
-extern const char kPasswordEditDialogWithDetailsDescription[];
-
-extern const char kEnableAndroidGamepadVibrationName[];
-extern const char kEnableAndroidGamepadVibrationDescription[];
-
-extern const char kCormorantName[];
-extern const char kCormorantDescription[];
-
 // Non-Android ----------------------------------------------------------------
 
 #else  // !BUILDFLAG(IS_ANDROID)
+
+extern const char kAccessCodeCastFreezeUiName[];
+extern const char kAccessCodeCastFreezeUiDescription[];
 
 extern const char kAppManagementAppDetailsName[];
 extern const char kAppManagementAppDetailsDescription[];
@@ -2557,6 +2581,9 @@ extern const char kNtpDummyModulesDescription[];
 
 extern const char kNtpHistoryClustersModuleName[];
 extern const char kNtpHistoryClustersModuleDescription[];
+
+extern const char kNtpChromeCartInHistoryClustersModuleName[];
+extern const char kNtpChromeCartInHistoryClustersModuleDescription[];
 
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
@@ -2635,6 +2662,9 @@ extern const char kPasswordsGroupingDescription[];
 
 extern const char kPasswordManagerRedesignName[];
 extern const char kPasswordManagerRedesignDescription[];
+
+extern const char kRealboxSecondaryZeroSuggestName[];
+extern const char kRealboxSecondaryZeroSuggestDescription[];
 
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
@@ -2727,8 +2757,6 @@ extern const char kUseXpsForPrintingFromPdfName[];
 extern const char kUseXpsForPrintingFromPdfDescription[];
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-extern const char kWin10TabSearchCaptionButtonName[];
-extern const char kWin10TabSearchCaptionButtonDescription[];
 #endif  // BUILDFLAG(IS_WIN)
 
 // Mac ------------------------------------------------------------------------
@@ -2737,6 +2765,9 @@ extern const char kWin10TabSearchCaptionButtonDescription[];
 
 extern const char kBiometricAuthenticationInSettingsName[];
 extern const char kBiometricAuthenticationInSettingsDescription[];
+
+extern const char kCr2023MacFontSmoothingName[];
+extern const char kCr2023MacFontSmoothingDescription[];
 
 #if BUILDFLAG(ENABLE_PRINTING)
 extern const char kCupsIppPrintingBackendName[];
@@ -3683,6 +3714,12 @@ extern const char kLauncherOmniboxPublishLogicLogDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
+extern const char kSmdsSupportName[];
+extern const char kSmdsSupportDescription[];
+
+extern const char kSmdsSupportEuiccUploadName[];
+extern const char kSmdsSupportEuiccUploadDescription[];
+
 extern const char kSmdsDbusMigrationName[];
 extern const char kSmdsDbusMigrationDescription[];
 
@@ -3727,6 +3764,9 @@ extern const char kGetAllScreensMediaDescription[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kRunOnOsLoginName[];
 extern const char kRunOnOsLoginDescription[];
+
+extern const char kPreventCloseName[];
+extern const char kPreventCloseDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3832,6 +3872,9 @@ extern const char kZeroCopyVideoCaptureDescription[];
 #if defined(TOOLKIT_VIEWS)
 extern const char kRevampedPasswordManagementBubbleName[];
 extern const char kRevampedPasswordManagementBubbleDescription[];
+
+extern const char kSideSearchName[];
+extern const char kSideSearchDescription[];
 
 extern const char kSearchWebInSidePanelName[];
 extern const char kSearchWebInSidePanelDescription[];

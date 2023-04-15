@@ -123,19 +123,6 @@ bool SyncSetupService::CanSyncFeatureStart() const {
   return sync_service_->CanSyncFeatureStart();
 }
 
-void SyncSetupService::SetSyncEnabled(bool sync_enabled) {
-  if (!sync_blocker_)
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  if (!sync_enabled) {
-    UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", syncer::CHROME_SYNC_SETTINGS,
-                              syncer::STOP_SOURCE_LIMIT);
-  }
-  sync_service_->GetUserSettings()->SetSyncRequested(sync_enabled);
-
-  if (sync_enabled && GetPreferredDataTypes().Empty())
-    SetSyncingAllDataTypes(true);
-}
-
 bool SyncSetupService::IsEncryptEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }

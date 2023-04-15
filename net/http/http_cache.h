@@ -395,8 +395,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     // True if entry is doomed.
     bool doomed = false;
-
-    absl::optional<bool> writers_done_writing_to_entry_history;
   };
 
   using ActiveEntriesMap =

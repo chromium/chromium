@@ -133,7 +133,7 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
    * @param {Event} event
    * @private
    */
-  private async onRenameDialogDoneTap_(): Promise<void> {
+  private async onRenameDialogDoneClick_(): Promise<void> {
     if (this.errorMessage_) {
       this.$.profileRenameDialog.close();
       return;
@@ -165,7 +165,7 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     this.$.profileRenameDialog.close();
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.profileRenameDialog.close();
   }
 

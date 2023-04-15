@@ -13,14 +13,22 @@ namespace chromeos::converters {
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackState) {
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryAudioJackEventInfo::State::
                         kUnmappedEnumField),
-            api::os_events::AudioJackEventState::kNone);
+            api::os_events::AudioJackEvent::kNone);
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd),
-            api::os_events::AudioJackEventState::kAdd);
+            api::os_events::AudioJackEvent::kConnected);
 
   EXPECT_EQ(
       Convert(crosapi::mojom::TelemetryAudioJackEventInfo::State::kRemove),
-      api::os_events::AudioJackEventState::kRemove);
+      api::os_events::AudioJackEvent::kDisconnected);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
+  EXPECT_EQ(Convert(api::os_events::EventCategory::kNone),
+            crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(api::os_events::EventCategory::kAudioJack),
+            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
@@ -30,7 +38,7 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
   auto result =
       ConvertEventPtr<api::os_events::AudioJackEventInfo>(std::move(input));
 
-  EXPECT_EQ(result.event_state, api::os_events::AudioJackEventState::kAdd);
+  EXPECT_EQ(result.event, api::os_events::AudioJackEvent::kConnected);
 }
 
 }  // namespace chromeos::converters

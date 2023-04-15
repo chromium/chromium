@@ -132,19 +132,14 @@ class BASE_EXPORT CancelableTaskTracker {
   // See https://crbug.com/918948.
   using TaskCancellationFlag = RefCountedData<AtomicFlag>;
 
-  static void RunIfNotCanceled(
-      const scoped_refptr<SequencedTaskRunner>& origin_task_runner,
-      const scoped_refptr<TaskCancellationFlag>& flag,
-      OnceClosure task);
+  static void RunIfNotCanceled(const scoped_refptr<TaskCancellationFlag>& flag,
+                               OnceClosure task);
   static void RunThenUntrackIfNotCanceled(
-      const scoped_refptr<SequencedTaskRunner>& origin_task_runner,
       const scoped_refptr<TaskCancellationFlag>& flag,
       OnceClosure task,
       OnceClosure untrack);
-  static bool IsCanceled(
-      const scoped_refptr<SequencedTaskRunner>& origin_task_runner,
-      const scoped_refptr<TaskCancellationFlag>& flag,
-      const ScopedClosureRunner& cleanup_runner);
+  static bool IsCanceled(const scoped_refptr<TaskCancellationFlag>& flag,
+                         const ScopedClosureRunner& cleanup_runner);
 
   void Track(TaskId id, scoped_refptr<TaskCancellationFlag> flag);
   void Untrack(TaskId id);

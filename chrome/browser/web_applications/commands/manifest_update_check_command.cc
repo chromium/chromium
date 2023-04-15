@@ -8,10 +8,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/callback_utils.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -21,12 +23,14 @@ namespace web_app {
 ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     const GURL& url,
     const AppId& app_id,
+    base::Time check_time,
     base::WeakPtr<content::WebContents> web_contents,
     CompletedCallback callback,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<AppLock>("ManifestUpdateCheckCommand"),
       url_(url),
       app_id_(app_id),
+      check_time_(check_time),
       completed_callback_(std::move(callback)),
       lock_description_(app_id),
       web_contents_(web_contents),
@@ -158,10 +162,10 @@ void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
   base::flat_set<GURL> icon_urls =
       GetValidIconUrlsToDownload(new_install_info_);
 
+  IconDownloaderOptions options = {.skip_page_favicons = true,
+                                   .fail_all_if_any_fail = true};
   icon_downloader_.emplace(web_contents_.get(), std::move(icon_urls),
-                           std::move(next_step_callback));
-  icon_downloader_->SkipPageFavicons();
-  icon_downloader_->FailAllIfAnyFail();
+                           std::move(next_step_callback), options);
   icon_downloader_->Start();
 }
 
@@ -333,6 +337,18 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
   const WebApp& web_app = GetWebApp();
   if (CanWebAppSilentlyUpdateIdentity(web_app) ||
       base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating)) {
+    return IdentityUpdateDecision::kSilentlyAllow;
+  }
+
+  // Web apps that were installed by sync but have generated icons get a window
+  // of time where they can "fix" themselves silently to use the site provided
+  // icons.
+  constexpr base::TimeDelta kSyncGeneratedIconFixWindowDuration = base::Days(7);
+  if (base::FeatureList::IsEnabled(features::kWebAppSyncGeneratedIconFix) &&
+      web_app.is_generated_icon() &&
+      web_app.latest_install_source() == webapps::WebappInstallSource::SYNC &&
+      check_time_ <
+          (web_app.install_time() + kSyncGeneratedIconFixWindowDuration)) {
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 

@@ -53,7 +53,8 @@ struct SameSizeAsFontDescription {
   scoped_refptr<FontPalette> palette_;
   scoped_refptr<FontVariantAlternates> font_variant_alternates_;
   AtomicString locale;
-  float sizes[6];
+  float sizes[5];
+  FontSizeAdjust size_adjust_;
   FontSelectionRequest selection_request_;
   FieldsAsUnsignedType bitfields;
 };
@@ -81,7 +82,6 @@ FontDescription::FontDescription()
     : specified_size_(0),
       computed_size_(0),
       adjusted_size_(0),
-      size_adjust_(kFontSizeAdjustNone),
       letter_spacing_(0),
       word_spacing_(0),
       font_selection_request_(NormalWeightValue(),
@@ -394,7 +394,7 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   WTF::AddFloatToHash(hash, NormalizeSign(specified_size_));
   WTF::AddFloatToHash(hash, NormalizeSign(computed_size_));
   WTF::AddFloatToHash(hash, NormalizeSign(adjusted_size_));
-  WTF::AddFloatToHash(hash, NormalizeSign(size_adjust_));
+  WTF::AddFloatToHash(hash, NormalizeSign(size_adjust_.Value()));
   WTF::AddFloatToHash(hash, NormalizeSign(letter_spacing_));
   WTF::AddFloatToHash(hash, NormalizeSign(word_spacing_));
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[0]);
@@ -735,7 +735,7 @@ String FontDescription::ToString() const {
       // hyphenation and script. Consider adding a more detailed
       // string method.
       (locale_ ? locale_->LocaleString().Ascii().c_str() : ""), specified_size_,
-      computed_size_, adjusted_size_, size_adjust_, letter_spacing_,
+      computed_size_, adjusted_size_, size_adjust_.Value(), letter_spacing_,
       word_spacing_, font_selection_request_.ToString().Ascii().c_str(),
       blink::ToString(
           static_cast<TypesettingFeatures>(fields_.typesetting_features_))

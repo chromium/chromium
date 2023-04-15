@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -276,15 +277,38 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // those events are depends on the cache limit policy.
   void EnforceCacheSizeLimit();
 
+  enum GetEntryFailureCase {
+    // No matched BFCache entry is found.
+    kEntryNotFound,
+    // BFCache entry is found, but it was evicted before the `GetOrEvictEntry()`
+    // call.
+    kEntryEvictedBefore,
+    // BFCache entry is found and not evicted, but it's no longer eligible for
+    // BFCache, and gets evicted in the `GetOrEvictEntry()` call.
+    kEntryIneligibleAndEvicted,
+  };
+
   // Returns a pointer to a cached BackForwardCache entry matching
-  // |navigation_entry_id| if it exists in the BackForwardCache. Returns nullptr
-  // if no matching entry is found.
-  //
+  // `navigation_entry_id`.
+  // Returns nullptr if no matching entry is found or if the entry is evicted.
+  // If the returned entry is null, this method will also return a
+  // `BackForwardCacheImpl::GetEntryResult`, which contains information about
+  // whether it's because a matching entry was found or the entry was evicted.
+
   // Note: The returned pointer should be used temporarily only within the
   // execution of a single task on the event loop. Beyond that, there is no
   // guarantee the pointer will be valid, because the document may be
   // removed/evicted from the cache.
-  Entry* GetEntry(int navigation_entry_id);
+
+  // WARNING: Calling this method may result in the eviction of the BFCache
+  // entry if it is no longer eligible for the BFCache but has not been evicted
+  // yet. If the eviction is triggered while there is an ongoing BFCache
+  // restore, the caller must discard the NavigationRequest that is about to
+  // commit the restore, otherwise the NavigationRequest may try to access the
+  // RenderFrameHost after it has been deleted.
+  base::expected<BackForwardCacheImpl::Entry*,
+                 BackForwardCacheImpl::GetEntryFailureCase>
+  GetOrEvictEntry(int navigation_entry_id);
 
   // During a history navigation, moves an entry out of the BackForwardCache
   // knowing its |navigation_entry_id|. |page_restore_params| includes
@@ -356,6 +380,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   }
 
   const std::list<std::unique_ptr<Entry>>& GetEntries();
+  std::list<Entry*> GetEntriesForRenderViewHostImpl(
+      const RenderViewHostImpl* rvhi) const;
 
   // BackForwardCache overrides:
   void Flush() override;

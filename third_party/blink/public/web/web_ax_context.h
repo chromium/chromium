@@ -65,8 +65,7 @@ class BLINK_EXPORT WebAXContext {
 
   void Thaw();
 
-  bool SerializeEntireTree(bool exclude_offscreen,
-                           size_t max_node_count,
+  bool SerializeEntireTree(size_t max_node_count,
                            base::TimeDelta timeout,
                            ui::AXTreeUpdate* response);
 

@@ -53,7 +53,7 @@ class SettingsBluetoothRemoveSavedDeviceDialogElement extends
         loadTimeData.getString('primaryUserEmail'));
   }
 
-  private onRemoveTap_(event: Event): void {
+  private onRemoveClick_(event: Event): void {
     recordSavedDevicesUiEventMetrics(
         FastPairSavedDevicesUiEvent.SETTINGS_SAVED_DEVICE_LIST_REMOVE);
     const fireEvent = new CustomEvent('remove-saved-device', {

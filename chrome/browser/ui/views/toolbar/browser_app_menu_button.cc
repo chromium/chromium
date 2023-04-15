@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -151,7 +153,22 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   } else if (type_and_severity_.type ==
              AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
     tooltip_message_id = IDS_APPMENU_TOOLTIP_UPDATE_AVAILABLE;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+    int message_id = IDS_APP_MENU_BUTTON_UPDATE;
+    if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
+      if (features::kUpdateTextOptionNumber.Get() == 1) {
+        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
+      } else if (features::kUpdateTextOptionNumber.Get() == 2) {
+        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
+      } else {
+        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
+      }
+    }
+    text = l10n_util::GetStringUTF16(message_id);
+#else
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_UPDATE);
+#endif
   } else {
     tooltip_message_id = IDS_APPMENU_TOOLTIP_ALERT;
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_ERROR);

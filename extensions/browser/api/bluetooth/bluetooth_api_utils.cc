@@ -30,13 +30,13 @@ bool ConvertVendorIDSourceToApi(const BluetoothDevice::VendorIDSource& input,
                                 bluetooth::VendorIdSource* output) {
   switch (input) {
     case BluetoothDevice::VENDOR_ID_UNKNOWN:
-      *output = bluetooth::VENDOR_ID_SOURCE_NONE;
+      *output = bluetooth::VendorIdSource::kNone;
       return true;
     case BluetoothDevice::VENDOR_ID_BLUETOOTH:
-      *output = bluetooth::VENDOR_ID_SOURCE_BLUETOOTH;
+      *output = bluetooth::VendorIdSource::kBluetooth;
       return true;
     case BluetoothDevice::VENDOR_ID_USB:
-      *output = bluetooth::VENDOR_ID_SOURCE_USB;
+      *output = bluetooth::VendorIdSource::kUsb;
       return true;
     default:
       NOTREACHED();
@@ -48,46 +48,46 @@ bool ConvertDeviceTypeToApi(const BluetoothDeviceType& input,
                             bluetooth::DeviceType* output) {
   switch (input) {
     case BluetoothDeviceType::UNKNOWN:
-      *output = bluetooth::DEVICE_TYPE_NONE;
+      *output = bluetooth::DeviceType::kNone;
       return true;
     case BluetoothDeviceType::COMPUTER:
-      *output = bluetooth::DEVICE_TYPE_COMPUTER;
+      *output = bluetooth::DeviceType::kComputer;
       return true;
     case BluetoothDeviceType::PHONE:
-      *output = bluetooth::DEVICE_TYPE_PHONE;
+      *output = bluetooth::DeviceType::kPhone;
       return true;
     case BluetoothDeviceType::MODEM:
-      *output = bluetooth::DEVICE_TYPE_MODEM;
+      *output = bluetooth::DeviceType::kModem;
       return true;
     case BluetoothDeviceType::AUDIO:
-      *output = bluetooth::DEVICE_TYPE_AUDIO;
+      *output = bluetooth::DeviceType::kAudio;
       return true;
     case BluetoothDeviceType::CAR_AUDIO:
-      *output = bluetooth::DEVICE_TYPE_CARAUDIO;
+      *output = bluetooth::DeviceType::kCarAudio;
       return true;
     case BluetoothDeviceType::VIDEO:
-      *output = bluetooth::DEVICE_TYPE_VIDEO;
+      *output = bluetooth::DeviceType::kVideo;
       return true;
     case BluetoothDeviceType::PERIPHERAL:
-      *output = bluetooth::DEVICE_TYPE_PERIPHERAL;
+      *output = bluetooth::DeviceType::kPeripheral;
       return true;
     case BluetoothDeviceType::JOYSTICK:
-      *output = bluetooth::DEVICE_TYPE_JOYSTICK;
+      *output = bluetooth::DeviceType::kJoystick;
       return true;
     case BluetoothDeviceType::GAMEPAD:
-      *output = bluetooth::DEVICE_TYPE_GAMEPAD;
+      *output = bluetooth::DeviceType::kGamepad;
       return true;
     case BluetoothDeviceType::KEYBOARD:
-      *output = bluetooth::DEVICE_TYPE_KEYBOARD;
+      *output = bluetooth::DeviceType::kKeyboard;
       return true;
     case BluetoothDeviceType::MOUSE:
-      *output = bluetooth::DEVICE_TYPE_MOUSE;
+      *output = bluetooth::DeviceType::kMouse;
       return true;
     case BluetoothDeviceType::TABLET:
-      *output = bluetooth::DEVICE_TYPE_TABLET;
+      *output = bluetooth::DeviceType::kTablet;
       return true;
     case BluetoothDeviceType::KEYBOARD_MOUSE_COMBO:
-      *output = bluetooth::DEVICE_TYPE_KEYBOARDMOUSECOMBO;
+      *output = bluetooth::DeviceType::kKeyboardMouseCombo;
       return true;
     default:
       return false;
@@ -99,16 +99,16 @@ bool ConvertTransportToApi(const BluetoothTransport& input,
                            bluetooth::Transport* output) {
   switch (input) {
     case BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID:
-      *output = bluetooth::TRANSPORT_INVALID;
+      *output = bluetooth::Transport::kInvalid;
       return true;
     case BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC:
-      *output = bluetooth::TRANSPORT_CLASSIC;
+      *output = bluetooth::Transport::kClassic;
       return true;
     case BluetoothTransport::BLUETOOTH_TRANSPORT_LE:
-      *output = bluetooth::TRANSPORT_LE;
+      *output = bluetooth::Transport::kLe;
       return true;
     case BluetoothTransport::BLUETOOTH_TRANSPORT_DUAL:
-      *output = bluetooth::TRANSPORT_DUAL;
+      *output = bluetooth::Transport::kDual;
       return true;
     default:
       return false;
@@ -132,7 +132,7 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
   // always include all or none.
   if (ConvertVendorIDSourceToApi(device.GetVendorIDSource(),
                                  &(out->vendor_id_source)) &&
-      out->vendor_id_source != VENDOR_ID_SOURCE_NONE) {
+      out->vendor_id_source != VendorIdSource::kNone) {
     out->vendor_id = device.GetVendorID();
     out->product_id = device.GetProductID();
     out->device_id = device.GetDeviceID();
@@ -189,10 +189,10 @@ void PopulateAdapterState(const device::BluetoothAdapter& adapter,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type) {
   switch (type) {
-    case FilterType::FILTER_TYPE_NONE:
-    case FilterType::FILTER_TYPE_ALL:
+    case FilterType::kNone:
+    case FilterType::kAll:
       return device::BluetoothFilterType::ALL;
-    case FilterType::FILTER_TYPE_KNOWN:
+    case FilterType::kKnown:
       return device::BluetoothFilterType::KNOWN;
     default:
       NOTREACHED();

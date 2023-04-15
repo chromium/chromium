@@ -206,15 +206,4 @@ public class ListModelBase<T, P> extends ListObservableImpl<P> implements Simple
     public void clear() {
         if (size() > 0) removeRange(0, size());
     }
-
-    /** Swaps elements at a & b. */
-    public void swap(int a, int b) {
-        T aValue = mItems.get(a);
-        mItems.set(a, mItems.get(b));
-        notifyItemMoved(a, b);
-        mItems.set(b, aValue);
-        notifyItemMoved(b, a);
-
-        notifyItemSwapped(a, b);
-    }
 }

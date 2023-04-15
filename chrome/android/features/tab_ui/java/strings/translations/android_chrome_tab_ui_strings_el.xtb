@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
-<translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
 <translation id="1403228085774130835">Μπορείτε να βρείτε τις κλειστές καρτέλες σας στις Πρόσφατες καρτέλες στο κύριο μενού του Chrome</translation>
 <translation id="1455506303394048917">Η δραστηριότητά σας σε αυτές τις καρτέλες ανώνυμης περιήγησης θα διαγραφεί από αυτήν τη συσκευή</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Τώρα <ph name="CURRENT_PRICE" /> στο <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Κατάργηση ομαδοπ. καρτέλας}other{Κατάργηση ομαδοπ. καρτελών}}</translation>
 <translation id="2277224997687551299">Επεξεργασία ονόματος ομάδας</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Αφαιρέστε <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα από την ομάδα.}other{Αφαιρέστε <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες από την ομάδα.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Δημιουργία σελιδ. καρτέλας}other{Δημιουργία σελιδ. καρτελών}}</translation>
-<translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
-<translation id="257674075312929031">Ομάδα</translation>
 <translation id="2613747923081026172">Δημιουργία ομάδας</translation>
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Σύρετε καρτέλες για να τις ομαδοποιήσετε.</translation>
 <translation id="5846292395804797011">Κλείσιμο της ομάδας <ph name="TITLE_OF_GROUP" /> με τις <ph name="NUMBER_OF_TABS" /> καρτέλες</translation>
 <translation id="5972844218283131174">Αποεπιλογή όλων</translation>
-<translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Απόκρυψη λειτουργίας πολλαπλής επιλογής</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Κοινοποίηση καρτέλας}other{Κοινοποίηση καρτελών}}</translation>
 <translation id="7129458170538955174">Άνοιγμα στο μισό ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
-<translation id="7151209024774799310">Κατάργηση καρτελών από την ομάδα</translation>
 <translation id="7204204600596740190">Λειτουργία πολλαπλής επιλογής</translation>
 <translation id="7326879924029668159">Δείτε την πολιτική επιστροφής και άλλα.</translation>
 <translation id="7352298686197644113">Δείτε ποιο στοιχείο στις ανοικτές καρτέλες σας έχει τη χαμηλότερη τιμή.</translation>

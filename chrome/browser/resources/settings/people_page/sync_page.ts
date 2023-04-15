@@ -31,6 +31,7 @@ import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {FocusConfig} from '../focus_config.js';
@@ -41,7 +42,6 @@ import {SettingsPersonalizationOptionsElement} from '../privacy_page/personaliza
 
 import {RouteObserverMixin, Router} from '../router.js';
 
-import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 // <if expr="chromeos_ash">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
@@ -548,7 +548,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   /**
    * Sends the user-entered existing password to re-enable sync.
    */
-  private onSubmitExistingPassphraseTap_(e: KeyboardEvent) {
+  private onSubmitExistingPassphraseClick_(e: KeyboardEvent) {
     if (e.type === 'keypress' && e.key !== 'Enter') {
       return;
     }
@@ -609,7 +609,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  private onLearnMoreTap_(event: Event) {
+  private onLearnMoreClick_(event: Event) {
     if ((event.target as HTMLElement).tagName === 'A') {
       // Stop the propagation of events, so that clicking on links inside
       // checkboxes or radio buttons won't change the value.

@@ -18,9 +18,10 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/tabs/inactive_tabs",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
-    "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
 

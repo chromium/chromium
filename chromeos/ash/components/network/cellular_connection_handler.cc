@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,7 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
 namespace ash {
 namespace {
@@ -61,12 +63,19 @@ absl::optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
     return absl::nullopt;
 
   const std::vector<dbus::ObjectPath>& profile_paths =
-      euicc_properties->installed_carrier_profiles().value();
+      ash::features::IsSmdsDbusMigrationEnabled()
+          ? euicc_properties->profiles().value()
+          : euicc_properties->installed_carrier_profiles().value();
   for (const auto& profile_path : profile_paths) {
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(profile_path);
-    if (profile_properties && profile_properties->iccid().value() == iccid)
+    if (profile_properties && profile_properties->iccid().value() == iccid) {
+      const hermes::profile::State state = profile_properties->state().value();
+      DCHECK(state == hermes::profile::State::kInactive ||
+             state == hermes::profile::State::kActive ||
+             ash::features::IsSmdsDbusMigrationEnabled());
       return profile_path;
+    }
   }
 
   return absl::nullopt;

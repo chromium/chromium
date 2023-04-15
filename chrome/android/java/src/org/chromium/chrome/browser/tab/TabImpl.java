@@ -565,7 +565,7 @@ public class TabImpl implements Tab {
             if (webContents == null) {
                 Profile profile =
                         IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-                webContents = WebContentsFactory.createWebContents(profile, isHidden());
+                webContents = WebContentsFactory.createWebContents(profile, isHidden(), false);
             }
             initWebContents(webContents);
             loadUrl(mPendingLoadParams);
@@ -921,7 +921,8 @@ public class TabImpl implements Tab {
                 if (webContents == null) {
                     Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
                             mWindowAndroid, isIncognito());
-                    webContents = WebContentsFactory.createWebContents(profile, initiallyHidden);
+                    webContents =
+                            WebContentsFactory.createWebContents(profile, initiallyHidden, false);
                 }
             }
 
@@ -1553,7 +1554,7 @@ public class TabImpl implements Tab {
                 // an error page instead of a blank page in that case (and the last loaded URL).
                 Profile profile =
                         IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-                webContents = WebContentsFactory.createWebContents(profile, isHidden());
+                webContents = WebContentsFactory.createWebContents(profile, isHidden(), false);
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
             }

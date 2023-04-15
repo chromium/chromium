@@ -351,9 +351,19 @@ void SetupFragmentBuilderForFragmentation(
   DCHECK(!node.IsMonolithic() || space.IsAnonymous());
   // If we turn off fragmentation on a non-monolithic node, we need to treat the
   // resulting fragment as monolithic. This matters when it comes to determining
-  // the containing block of out-of-flow positioned descendants.
+  // the containing block of out-of-flow positioned descendants. In order to
+  // match the behavior in OOF layout, however, the fragment should only become
+  // monolithic when fragmentation is forced off at the first fragment. If we
+  // reach the end of the visible area after the containing block has inserted a
+  // break, it should not be set as monolithic. (How can we be monolithic, if we
+  // create more than one fragment, anyway?) An OOF fragment will always become
+  // a direct child of the fragmentainer if the containing block generates more
+  // than one fragment. The monolithicness flag is ultimately checked by
+  // pre-paint, in order to know where in the tree to look for the OOF fragment
+  // (direct fragmentainer child vs. child of the actual containing block).
   builder->SetIsMonolithic(!space.IsAnonymous() &&
-                           space.IsBlockFragmentationForcedOff());
+                           space.IsBlockFragmentationForcedOff() &&
+                           !IsBreakInside(previous_break_token));
 
   if (space.HasBlockFragmentation())
     builder->SetHasBlockFragmentation();

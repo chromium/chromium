@@ -362,6 +362,10 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       switches::kEnableResourcesFileSharing,
 #endif
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+      switches::kChromeOSVideoDecoderTaskRunner,
+      switches::kHardwareVideoDecodeFrameRate,
+#endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                                std::size(kSwitchNames));

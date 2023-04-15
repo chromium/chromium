@@ -54,7 +54,7 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
     sync_setup_service_ = std::make_unique<FakeSyncSetupService>(sync_service_);
 
     mediator_ = [[BookmarkMediator alloc]
-        initWithWithBookmarkModel:bookmark_model_
+        initWithWithBookmarkModel:profile_bookmark_model_
                             prefs:chrome_browser_state_->GetPrefs()
             authenticationService:authentication_service_
                  syncSetupService:sync_setup_service_.get()];
@@ -124,7 +124,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedOutInFolder) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
                                                      title:@"folder name"
                                                      count:1],
-              @"Bookmarked to folder name");
+              @"Bookmarked to \"folder name\"");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedOutInFolder) {
@@ -132,7 +132,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedOutInFolder) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
                                                      title:@"folder name"
                                                      count:1],
-              @"Bookmarked to folder name");
+              @"Bookmarked to \"folder name\"");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInNoFolder) {
@@ -195,16 +195,17 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInInFolder) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
                                                      title:@"folder name"
                                                      count:1],
-              @"Bookmarked to folder name");
+              @"Bookmarked to \"folder name\"");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInInFolder) {
   SignInAndSync();
   setEmailInSnackbarFlag(true);
-  ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:YES
-                                                     title:@"folder name"
-                                                     count:1],
-              @"Bookmark saved to folder name in your account, foo1@gmail.com");
+  ASSERT_NSEQ(
+      [mediator_ messageForAddingBookmarksInFolder:YES
+                                             title:@"folder name"
+                                             count:1],
+      @"Bookmark saved to \"folder name\" in your account, foo1@gmail.com");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInInFolderPlural) {
@@ -214,7 +215,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInInFolderPlural) {
       [mediator_ messageForAddingBookmarksInFolder:YES
                                              title:@"folder name"
                                              count:2],
-      @"Bookmarks saved to folder name in your account, foo1@gmail.com");
+      @"Bookmarks saved to \"folder name\" in your account, foo1@gmail.com");
 }
 
 }  // namespace

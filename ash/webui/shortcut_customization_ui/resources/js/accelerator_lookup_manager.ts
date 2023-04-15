@@ -158,6 +158,7 @@ export class AcceleratorLookupManager {
     // Reset the lookup maps every time we update the accelerator mappings.
     this.reverseAcceleratorLookup.clear();
     this.standardAcceleratorLookup.clear();
+    this.textAcceleratorLookup.clear();
 
     for (const [source, accelInfoMap] of Object.entries(acceleratorConfig)) {
       // When calling Object.entries on an object with optional enum keys,

@@ -46,8 +46,8 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
   // this view host. The profiles may not be identical (i.e., one may be the
   // off-the-record version of the other) in the case of a spanning-mode
   // extension creating a popup in an incognito window.
-  DCHECK(!browser_ || Profile::FromBrowserContext(browser_context())
-                          ->IsSameOrParent(browser_->profile()));
+  DCHECK(!GetBrowser() || Profile::FromBrowserContext(browser_context())
+                              ->IsSameOrParent(GetBrowser()->profile()));
 
   // Attach WebContents helpers. Extension tabs automatically get them attached
   // in TabHelpers::AttachTabHelpers, but popups don't.
@@ -80,6 +80,10 @@ void ExtensionViewHost::SetAssociatedWebContents(
     content::WebContents* web_contents) {
   associated_web_contents_ =
       web_contents ? web_contents->GetWeakPtr() : nullptr;
+}
+
+Browser* ExtensionViewHost::GetBrowser() {
+  return browser_;
 }
 
 bool ExtensionViewHost::UnhandledKeyboardEvent(
@@ -131,7 +135,7 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
     case WindowOpenDisposition::OFF_THE_RECORD: {
       // Only allow these from hosts that are bound to a browser (e.g. popups).
       // Otherwise they are not driven by a user gesture.
-      return browser_ ? browser_->OpenURL(params) : nullptr;
+      return GetBrowser() ? GetBrowser()->OpenURL(params) : nullptr;
     }
     default:
       return nullptr;
@@ -154,8 +158,8 @@ ExtensionViewHost::PreHandleKeyboardEvent(
     return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
 
   // Handle higher priority browser shortcuts such as ctrl-w.
-  return browser_ ? browser_->PreHandleKeyboardEvent(source, event)
-                  : content::KeyboardEventProcessingResult::NOT_HANDLED;
+  return GetBrowser() ? GetBrowser()->PreHandleKeyboardEvent(source, event)
+                      : content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
 bool ExtensionViewHost::HandleKeyboardEvent(
@@ -188,7 +192,7 @@ void ExtensionViewHost::RunFileChooser(
 std::unique_ptr<content::EyeDropper> ExtensionViewHost::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return browser_ ? browser_->OpenEyeDropper(frame, listener) : nullptr;
+  return GetBrowser() ? GetBrowser()->OpenEyeDropper(frame, listener) : nullptr;
 }
 
 void ExtensionViewHost::ResizeDueToAutoResize(content::WebContents* source,

@@ -139,6 +139,8 @@ dictionary MLTransposeOptions{
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
   [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
 
+  [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);
+
   [RaisesException] MLOperand relu(MLOperand input);
   [RaisesException] MLActivation relu();
 

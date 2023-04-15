@@ -214,7 +214,8 @@ class MockServiceWorkerContextClient final
             service_worker_object.InitWithNewEndpointAndPassReceiver()),
         mojom::blink::FetchHandlerExistence::EXISTS,
         /*reporting_observer_receiver=*/mojo::NullReceiver(),
-        /*ancestor_frame_type=*/mojom::blink::AncestorFrameType::kNormalFrame);
+        /*ancestor_frame_type=*/mojom::blink::AncestorFrameType::kNormalFrame,
+        blink::BlinkStorageKey());
 
     // To make the other side callable.
     host_receiver.EnableUnassociatedUsage();

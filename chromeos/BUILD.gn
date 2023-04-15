@@ -109,6 +109,7 @@ test("chromeos_unittests") {
 
   # Tests that are common to Ash and Lacros.
   deps += [
+    "//chromeos/components/firewall_hole:unit_tests",
     "//chromeos/constants:unit_tests",
     "//chromeos/system:unit_tests",
   ]

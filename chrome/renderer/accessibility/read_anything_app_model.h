@@ -73,7 +73,6 @@ class ReadAnythingAppModel {
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
 
-  void InsertDisplayNode(ui::AXNodeID node);
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
   bool PostProcessSelection();
   // Helper functions for the rendering algorithm. Post-process the AXTree and
@@ -123,6 +122,7 @@ class ReadAnythingAppModel {
   double GetLineSpacingValue(
       read_anything::mojom::LineSpacing line_spacing) const;
 
+  void InsertDisplayNode(ui::AXNodeID node);
   void ResetSelection();
   void InsertSelectionNode(ui::AXNodeID node);
   void UpdateSelection();

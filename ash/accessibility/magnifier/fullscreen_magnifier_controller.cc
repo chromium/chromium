@@ -19,7 +19,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "base/cxx17_backports.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
@@ -750,7 +749,7 @@ gfx::Size FullscreenMagnifierController::GetHostSizeDIP() const {
 }
 
 void FullscreenMagnifierController::ValidateScale(float* scale) {
-  *scale = base::clamp(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
+  *scale = std::clamp(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
   DCHECK(kNonMagnifiedScale <= *scale && *scale <= kMaxMagnifiedScale);
 }
 

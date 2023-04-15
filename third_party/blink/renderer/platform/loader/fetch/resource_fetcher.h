@@ -521,6 +521,8 @@ class PLATFORM_EXPORT ResourceFetcher
                                         const PendingResourceTimingInfo& info,
                                         base::TimeTicks response_end);
   SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
+  void UpdateServiceWorkerSubresourceMetrics(ResourceType resource_type,
+                                             bool handled_by_serviceworker);
 
   void RecordResourceHistogram(base::StringPiece prefix,
                                ResourceType type,

@@ -204,9 +204,6 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kInvalidEligibleHeader:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InvalidEligibleHeader;
-    case AttributionReportingIssueType::kTooManyConcurrentRequests:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          TooManyConcurrentRequests;
     case AttributionReportingIssueType::kSourceAndTriggerHeaders:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           SourceAndTriggerHeaders;

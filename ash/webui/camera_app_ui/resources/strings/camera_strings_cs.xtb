@@ -27,7 +27,6 @@
 <translation id="199526504800285197">Nahrávání bylo ukončeno</translation>
 <translation id="1995951722691075581">Nahrávání bylo ukončeno kvůli nedostatku místa v úložišti. Pokud chcete nahrát další videa, je třeba v zařízení uvolnit místo.</translation>
 <translation id="2036868001356139588">Trvání časovače</translation>
-<translation id="2050339315714019657">Na výšku</translation>
 <translation id="2064538373111010176">Aktivní: <ph name="CAMERA" /></translation>
 <translation id="2128052519899549250">Nahrát časosběrné video</translation>
 <translation id="2134029355740465625">Nastavení videa</translation>
@@ -123,6 +122,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="6888362557094394345">Pohyb dolů</translation>
 <translation id="695140971690006676">Resetovat vše</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965830616442491568">Portrét</translation>
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="7134221860976209830">10sekundový časovač</translation>
 <translation id="7191890674911603392">Typ záznamu</translation>

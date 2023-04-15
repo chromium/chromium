@@ -284,6 +284,8 @@ void BrowserDesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
 
 void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
     bool restored) {
+  DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(restored);
+
   // This is necessary since OnWidgetVisibilityChanged() doesn't get called on
   // Windows when the window is minimized or restored.
   if (base::FeatureList::IsEnabled(

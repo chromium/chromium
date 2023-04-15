@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -107,7 +109,7 @@ public class UrlBarUiUnitTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             float scrollXPosForEndOfUrlText =
                     mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());
-            Assert.assertThat(scrollXPosForEndOfUrlText,
+            assertThat(scrollXPosForEndOfUrlText,
                     Matchers.lessThan((float) mUrlBar.getMeasuredWidth()));
         });
 
@@ -125,7 +127,7 @@ public class UrlBarUiUnitTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             float scrollXPosForEndOfUrlText =
                     mUrlBar.getLayout().getPrimaryHorizontal(mUrlBar.getText().length());
-            Assert.assertThat(scrollXPosForEndOfUrlText,
+            assertThat(scrollXPosForEndOfUrlText,
                     Matchers.greaterThan((float) mUrlBar.getMeasuredWidth()));
         });
 
@@ -134,7 +136,7 @@ public class UrlBarUiUnitTest {
         Assert.assertNotNull(prefixHint);
         Assert.assertTrue("Expected url text: '" + urlText + "' starts with " + prefixHint,
                 TextUtils.indexOf(urlText, prefixHint) == 0);
-        Assert.assertThat(prefixHint.length(), Matchers.lessThan(urlText.length()));
+        assertThat(prefixHint.length(), Matchers.lessThan(urlText.length()));
 
         // Append a string to the already long initial text and validate the prefix doesn't change.
         updateUrlBarText(getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb", UrlBar.ScrollType.SCROLL_TO_TLD,

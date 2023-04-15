@@ -47,8 +47,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -995,6 +997,25 @@ FileManagerPrivatePollDriveHostedFilePinStatesFunction::Run() {
     integration_service->PollHostedFilePinStates();
   }
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetBulkPinProgressFunction::Run() {
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::DriveIntegrationService* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile);
+  if (!integration_service) {
+    return RespondNow(Error("Drive not available"));
+  }
+
+  if (!integration_service->GetPinManager()) {
+    return RespondNow(Error("Pin Manager not available"));
+  }
+
+  return RespondNow(ArgumentList(
+      api::file_manager_private::GetBulkPinProgress::Results::Create(
+          file_manager::util::BulkPinProgressToJs(
+              integration_service->GetPinManager()->GetProgress()))));
 }
 
 ExtensionFunction::ResponseAction

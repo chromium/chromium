@@ -180,6 +180,11 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                          DecodeCB decode_cb) {
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   if (buffer->end_of_stream()) {
     switch (decoder_->ProcessMessage(MFT_MESSAGE_COMMAND_DRAIN, 0)) {
       case S_OK: {
@@ -284,7 +289,7 @@ void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {
   if (hr != S_OK) {
     DLOG(ERROR) << "Reset failed with \"" << PrintHr(hr) << "\"";
   }
-  std::move(reset_cb).Run();
+  base::BindPostTaskToCurrentDefault(std::move(reset_cb)).Run();
 }
 
 bool MediaFoundationAudioDecoder::NeedsBitstreamConversion() const {

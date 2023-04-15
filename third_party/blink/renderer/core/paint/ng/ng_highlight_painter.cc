@@ -1284,7 +1284,8 @@ NGHighlightPainter::LayerPaintState::LayerPaintState(
     : id(id),
       style(style),
       text_style(text_style),
-      decorations_in_effect(style ? style->TextDecorationsInEffect()
+      decorations_in_effect(style && style->HasAppliedTextDecorations()
+                                  ? style->TextDecorationsInEffect()
                                   : TextDecorationLine::kNone) {}
 
 bool NGHighlightPainter::LayerPaintState::operator==(

@@ -3,3 +3,7 @@
 # If you want to disable a test only for version skew testing,
 # you should add the test here, not in the source code.
 
+# ash-chrome < M114 has an older "fake shill" which doesn't mark other services
+# as "idle" when connecting a new service.
+-NetworkingPrivateChromeOSApiTest.OnNetworksChangedEventConnect
+

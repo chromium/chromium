@@ -1030,18 +1030,11 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       field->section = cached_field->section;
       field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
 
-      // Only retrieve an overall prediction from cache if a server prediction
-      // is set.
-      // The following is just gated behind a flag because it changes behavior.
-      // We are pretty convinced that this should be enabled by default.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillRetrieveOverallPredictionsFromCache)) {
-        // During import the final field type is used to decide which
-        // information to store in an address profile or credit card. As
-        // rationalization is an important component of determining the final
-        // field type, the output should be preserved.
-        field->SetTypeTo(cached_field->Type());
-      }
+      // During import, the final field type is used to decide which
+      // information to store in an address profile or credit card. As
+      // rationalization is an important component of determining the final
+      // field type, the output should be preserved.
+      field->SetTypeTo(cached_field->Type());
     }
     field->set_field_log_events(cached_field->field_log_events());
   }

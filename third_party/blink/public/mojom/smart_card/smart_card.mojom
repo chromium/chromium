@@ -4,39 +4,7 @@
 
 module blink.mojom;
 
-// Errors that can arise from PC/SC requests.
-enum SmartCardResponseCode {
-  // SmartCardError:
-  // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
-  kNoService,
-  kNoSmartCard,
-  kNotReady,
-  kNotTransacted,
-  kProtoMismatch,
-  kReaderUnavailable,
-  kRemovedCard,
-  kResetCard,
-  kServerTooBusy,
-  kSharingViolation,
-  kSystemCancelled,
-  kUnpoweredCard,
-  kUnresponsiveCard,
-  kUnsupportedCard,
-  kUnsupportedFeature,
-
-  // DOMException:
-  // "InvalidStateError"
-  kInvalidConnection, // Derived from SCARD_E_INVALID_HANDLE in winscard.h
-  kServiceStopped, // SCARD_E_SERVICE_STOPPED in winscard.h
-  // "AbortError"
-  kShutdown, // SCARD_P_SHUTDOWN in winscard.h
-  // "UnknownError"
-  kCommError, // SCARD_F_COMM_ERROR in winscard.h
-  kInternalError, // SCARD_F_INTERNAL_ERROR in winscard.h
-  kNoMemory, // SCARD_E_NO_MEMORY in winscard.h
-  kUnexpected, // SCARD_E_UNEXPECTED in winscard.h
-  kUnknownError, // SCARD_F_UNKNOWN_ERROR in winscard.h
-};
+import "services/device/public/mojom/smart_card.mojom";
 
 // Information about a smart card reader.
 // Usually corresponds to a physical USB smart card reader device or some
@@ -55,7 +23,7 @@ struct SmartCardReaderInfo {
 };
 
 union SmartCardGetReadersResult {
-  SmartCardResponseCode response_code;
+  device.mojom.SmartCardError error;
   array<SmartCardReaderInfo> readers;
 };
 
@@ -86,7 +54,7 @@ interface SmartCardServiceClient {
   // Notifies that a runtime error prevents monitoring of smart card reader
   // changes/additions/removals from continuing. Can be retried by calling:
   // SmartCardService::GetReadersAndStartTracking again.
-  Error(SmartCardResponseCode response_code);
+  Error(device.mojom.SmartCardError error);
 };
 
 // Interface for accessing smart card readers from the render process.

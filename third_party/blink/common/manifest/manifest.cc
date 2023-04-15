@@ -122,12 +122,24 @@ bool Manifest::TranslationItem::operator==(const TranslationItem& other) const {
   return AsTuple(*this) == AsTuple(other);
 }
 
+Manifest::UrlPattern::UrlPattern() = default;
+
+Manifest::UrlPattern::~UrlPattern() = default;
+
+bool operator==(const Manifest::UrlPattern& left,
+                const Manifest::UrlPattern& right) {
+  return left.pathname == right.pathname;
+}
+
 Manifest::HomeTabParams::HomeTabParams() = default;
 
 Manifest::HomeTabParams::~HomeTabParams() = default;
 
 bool Manifest::HomeTabParams::operator==(const HomeTabParams& other) const {
-  return icons == other.icons;
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.icons, item.scope_patterns);
+  };
+  return AsTuple(*this) == AsTuple(other);
 }
 
 Manifest::NewTabButtonParams::NewTabButtonParams() = default;

@@ -7,7 +7,7 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 
@@ -53,7 +53,7 @@ ui::EventDispatchDetails KeyboardDrivenEventRewriter::Rewrite(
     return SendEvent(continuation, &event);
   }
 
-  ui::EventRewriterChromeOS::MutableKeyState state = {
+  ui::EventRewriterAsh::MutableKeyState state = {
       flags & ~(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN),
       key_event.code(), key_event.GetDomKey(), key_event.key_code()};
 
@@ -70,8 +70,8 @@ ui::EventDispatchDetails KeyboardDrivenEventRewriter::Rewrite(
   }
 
   std::unique_ptr<ui::Event> rewritten_event;
-  ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(key_event, state,
-                                                    &rewritten_event);
+  ui::EventRewriterAsh::BuildRewrittenKeyEvent(key_event, state,
+                                               &rewritten_event);
   return SendEventFinally(continuation, rewritten_event.get());
 }
 

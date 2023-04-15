@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "ios/web/public/webui/url_data_source_ios.h"

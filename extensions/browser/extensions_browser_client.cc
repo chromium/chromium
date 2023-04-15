@@ -147,6 +147,11 @@ bool ExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
   return false;
 }
 
+void ExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::vector<api::declarative_net_request::Rule>& rules) const {}
+
 void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     content::BrowserContext* context,
     const ExtensionId& extension_id,

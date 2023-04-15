@@ -437,7 +437,13 @@ void ExtensionsMenuViewController::OnToolbarPinnedActionsChanged() {
 
   auto* main_page = GetMainPage(current_page_);
   DCHECK(main_page);
-  main_page->UpdatePinButtons();
+
+  std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
+  for (auto* menu_item : menu_items) {
+    bool is_action_pinned =
+        toolbar_model_->IsActionPinned(menu_item->view_controller()->GetId());
+    menu_item->UpdateContextMenuButton(is_action_pinned);
+  }
 }
 
 void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(

@@ -12,8 +12,10 @@
     // it immediately. Then manually trigger GC and check the number of
     // living WebAudio objects. See: https://crbug.com/1298955
     promise_test(async () => {
-      // Check the pre-condition first.
-      assert_equals(internals.audioHandlerCount(), 0);
+      // Just to make sure there's no residues from other internal tests.
+      await asyncGC();
+      assert_equals(internals.audioHandlerCount(), 0,
+                    'the initial handler count should be zero.');
 
       const context = new AudioContext();
       const filePath = 'worklet-processors/falsy-processor.js';
@@ -39,7 +41,8 @@
           // will be deleted a bit later.
           await context.close();
 
-          assert_equals(internals.audioHandlerCount(), 1);
+          assert_equals(internals.audioHandlerCount(), 1,
+                        'the handler count after GC should be 1.');
           resolve();
         };
 
@@ -47,7 +50,9 @@
         workletNode.connect(context.destination);
 
         // Two handlers: the destination node and a woklet node.
-        assert_equals(internals.audioHandlerCount(), 2);
+        assert_equals(
+            internals.audioHandlerCount(), 2,
+            'the handler count should be 2 (destination and worklet)');
       });
     }, 'Test GC of AudioWorkletNode');
   </script>

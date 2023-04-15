@@ -346,8 +346,10 @@ public class TabSwitcherTabletTest {
         boolean checkThumbnail = !currentTab.isNativePage();
 
         if (checkThumbnail) {
-            sActivityTestRule.getActivity().getTabContentManager().removeTabThumbnail(
-                    currentTab.getId());
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                sActivityTestRule.getActivity().getTabContentManager().removeTabThumbnail(
+                        currentTab.getId());
+            });
         }
         TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
 

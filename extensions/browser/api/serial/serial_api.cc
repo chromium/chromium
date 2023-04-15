@@ -34,9 +34,9 @@ namespace {
 // good balance between popularity and speed. So 9600 it is.
 const int kDefaultBufferSize = 4096;
 const int kDefaultBitrate = 9600;
-const serial::DataBits kDefaultDataBits = serial::DATA_BITS_EIGHT;
-const serial::ParityBit kDefaultParityBit = serial::PARITY_BIT_NO;
-const serial::StopBits kDefaultStopBits = serial::STOP_BITS_ONE;
+const serial::DataBits kDefaultDataBits = serial::DataBits::kEight;
+const serial::ParityBit kDefaultParityBit = serial::ParityBit::kNo;
+const serial::StopBits kDefaultStopBits = serial::StopBits::kOne;
 const int kDefaultReceiveTimeout = 0;
 const int kDefaultSendTimeout = 0;
 
@@ -124,12 +124,15 @@ ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
   SetDefaultOptionalValue(options.receive_timeout, kDefaultReceiveTimeout);
   SetDefaultOptionalValue(options.send_timeout, kDefaultSendTimeout);
 
-  if (options.data_bits == serial::DATA_BITS_NONE)
+  if (options.data_bits == serial::DataBits::kNone) {
     options.data_bits = kDefaultDataBits;
-  if (options.parity_bit == serial::PARITY_BIT_NONE)
+  }
+  if (options.parity_bit == serial::ParityBit::kNone) {
     options.parity_bit = kDefaultParityBit;
-  if (options.stop_bits == serial::STOP_BITS_NONE)
+  }
+  if (options.stop_bits == serial::StopBits::kNone) {
     options.stop_bits = kDefaultStopBits;
+  }
 
   auto* manager = SerialPortManager::Get(browser_context());
   DCHECK(manager);

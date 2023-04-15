@@ -50,13 +50,6 @@ class ExclusiveAccessControllerBase {
   virtual void OnTabDetachedFromView(content::WebContents* web_contents);
   virtual void OnTabClosing(content::WebContents* web_contents);
 
-  // Callbacks ////////////////////////////////////////////////////////////////
-
-  // For recording UMA.
-  void RecordBubbleReshownUMA();
-  // Called when the exclusive access session ends.
-  void RecordExitingUMA();
-
  protected:
   void SetTabWithExclusiveAccess(content::WebContents* tab);
 
@@ -68,10 +61,6 @@ class ExclusiveAccessControllerBase {
   // Notifies the tab that it has been forced out of exclusive access mode
   // if necessary.
   virtual void NotifyTabExclusiveAccessLost() = 0;
-
-  // Records the BubbleReshowsPerSession data to the appropriate histogram for
-  // this controller.
-  virtual void RecordBubbleReshowsHistogram(int bubble_reshow_count) = 0;
 
  private:
   const raw_ptr<ExclusiveAccessManager> manager_;
@@ -88,9 +77,6 @@ class ExclusiveAccessControllerBase {
    private:
     const base::raw_ref<ExclusiveAccessControllerBase> controller_;
   } web_contents_observer_{*this};
-
-  // The number of bubble re-shows for the current session (reset upon exiting).
-  int bubble_reshow_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTROLLER_BASE_H_

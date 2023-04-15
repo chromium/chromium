@@ -9,6 +9,13 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 
+const modifiers: Modifier[] = [
+  Modifier.SHIFT,
+  Modifier.CONTROL,
+  Modifier.ALT,
+  Modifier.COMMAND,
+];
+
 // Returns true if shortcut customization is disabled via the feature flag.
 export const isCustomizationDisabled = (): boolean => {
   return !loadTimeData.getBoolean('isCustomizationEnabled');
@@ -152,13 +159,44 @@ export const getAccelerator =
  * Sort the modifiers in the order of ctrl, alt, shift, meta.
  */
 export const getSortedModifiers = (modifierStrings: string[]): string[] => {
-  const sortOrder = ['ctrl', 'alt', 'shift', 'meta'];
+  const sortOrder = ['meta', 'ctrl', 'alt', 'shift'];
   if (modifierStrings.length <= 1) {
     return modifierStrings;
   }
   return modifierStrings.sort(
       (a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 };
+
+function getModifierCount(accelerator: Accelerator): number {
+  let count = 0;
+
+  for (const modifier of modifiers) {
+    if (accelerator.modifiers & modifier) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+// Comparison function that checks the number of modifiers in an accelerator.
+// Lower number of modifiers get higher priority.
+// @returns a negative number if the first accelerator info should be higher in
+// the list, a positive number if it should be lower, 0 if it should have the
+// same position
+export function compareAcceleratorInfos(
+    first: AcceleratorInfo, second: AcceleratorInfo): number {
+  // Ignore non-standard accelerator infos as they only have one entry and is
+  // a no-opt.
+  if (!isStandardAcceleratorInfo(first) || !isStandardAcceleratorInfo(second)) {
+    return 0;
+  }
+
+  const firstModifierCount =
+      getModifierCount(first.layoutProperties.standardAccelerator.accelerator);
+  const secondModifierCount =
+      getModifierCount(second.layoutProperties.standardAccelerator.accelerator);
+  return firstModifierCount - secondModifierCount;
+}
 
 /**
  * Returns the converted modifier flag as a readable string.
@@ -184,12 +222,6 @@ export function getModifierString(modifier: Modifier): string {
  */
 export function getModifiersForAcceleratorInfo(
     acceleratorInfo: StandardAcceleratorInfo): string[] {
-  const modifiers: Modifier[] = [
-    Modifier.SHIFT,
-    Modifier.CONTROL,
-    Modifier.ALT,
-    Modifier.COMMAND,
-  ];
   const modifierStrings: string[] = [];
   for (const modifier of modifiers) {
     if ((getAccelerator(acceleratorInfo)).modifiers & modifier) {

@@ -580,57 +580,6 @@ IN_PROC_BROWSER_TEST_P(SyncConsentPolicyDisabledTest,
 
 INSTANTIATE_TEST_SUITE_P(All, SyncConsentPolicyDisabledTest, testing::Bool());
 
-// Tests for Active Directory accounts, which skip the dialog because they do
-// not use sync.
-class SyncConsentActiveDirectoryTest : public OobeBaseTest {
- public:
-  SyncConsentActiveDirectoryTest() {
-    // All tests related to Active Directory login don't make sense when the
-    // kChromadAvailable feature is disabled. We also don't need to verify that
-    // the device is disabled in that case, because the Chromad disabling
-    // feature is already tested in `device_disabling_manager_unittest.cc`.
-    scoped_feature_list_.InitAndEnableFeature(features::kChromadAvailable);
-  }
-
-  ~SyncConsentActiveDirectoryTest() override = default;
-
- protected:
-  DeviceStateMixin device_state_{
-      &mixin_host_,
-      DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};
-  ActiveDirectoryLoginMixin ad_login_{&mixin_host_};
-  base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SyncConsentActiveDirectoryTest, LoginDoesNotStartSync) {
-  // Sign in Active Directory user.
-  ad_login_.TestLoginVisible();
-  ad_login_.SubmitActiveDirectoryCredentials(
-      "test-user@locally-managed.localhost", "password");
-  test::WaitForPrimaryUserSessionStart();
-
-  // Browser sync is off.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_FALSE(settings->IsSyncRequested());
-  EXPECT_FALSE(settings->IsFirstSetupComplete());
-
-  // Dialog is marked completed (because it was skipped).
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kSyncOobeCompleted));
-
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Sync-consent.Next", 0);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Sync-consent", 0);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.Behavior",
-      SyncConsentScreen::SyncScreenBehavior::kSkipNonGaiaAccount, 1);
-  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
-                                       false, 1);
-}
-
 // Tests that the SyncConsent screen performs a timezone request so that
 // subsequent screens can have a timezone to work with, and that the timezone
 // is properly stored in a preference.
@@ -638,14 +587,14 @@ class SyncConsentTimezoneOverride : public SyncConsentTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kOobeTimezoneOverrideForTests,
-                                    "TimezeonPropagationTest");
+                                    "TimezonePropagationTest");
     SyncConsentTest::SetUpCommandLine(command_line);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTimezoneOverride, MakesTimezoneRequest) {
   LoginAndShowSyncConsentScreenWithCapability();
-  EXPECT_EQ("TimezeonPropagationTest",
+  EXPECT_EQ("TimezonePropagationTest",
             g_browser_process->local_state()->GetString(
                 ::prefs::kSigninScreenTimezone));
 }

@@ -614,8 +614,7 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       base::BindOnce(&web_app::RecordPwaLauncherResult));
 
   // Possibly migrate pinned taskbar shortcuts.
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT,
-                                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&MigratePinnedTaskBarShortcutsIfNeeded));
 

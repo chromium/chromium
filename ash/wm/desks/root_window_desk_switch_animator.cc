@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
@@ -13,7 +15,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -246,10 +247,10 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
   float translation_x =
       animation_layer->transform().To2dTranslation().x() + translation_delta_x;
   translation_x =
-      base::clamp(translation_x,
-                  static_cast<float>(-animation_layer->bounds().width() +
-                                     visible_bounds_width),
-                  0.f);
+      std::clamp(translation_x,
+                 static_cast<float>(-animation_layer->bounds().width() +
+                                    visible_bounds_width),
+                 0.f);
   gfx::Transform transform;
   transform.Translate(translation_x, 0.f);
   base::AutoReset<bool> auto_reset(&setting_new_transform_, true);

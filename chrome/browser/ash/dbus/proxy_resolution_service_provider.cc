@@ -16,6 +16,9 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -246,11 +249,25 @@ ProxyResolutionServiceProvider::GetNetworkContext() {
   // TODO(eroman): Instead of retrieving the profile globally (which could be in
   // a variety of states during startup/shutdown), pass the BrowserContext in as
   // a dependency.
-  auto* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  if (!primary_profile)
-    return nullptr;
 
-  auto* storage_partition = primary_profile->GetDefaultStoragePartition();
+  // Can be the profile of the primary user logged in the session or the profile
+  // associated with the sign-in screen.
+  Profile* profile = nullptr;
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (primary_user) {
+    profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+            primary_user));
+  }
+
+  if (!profile) {
+    profile = ProfileManager::GetActiveUserProfile();
+    if (!profile || !ash::IsSigninBrowserContext(profile)) {
+      return nullptr;
+    }
+  }
+
+  auto* storage_partition = profile->GetDefaultStoragePartition();
 
   if (!storage_partition)
     return nullptr;

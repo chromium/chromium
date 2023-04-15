@@ -64,6 +64,10 @@ class ASH_EXPORT InputDeviceTracker
   StringListPrefMember* GetObservedDevicesForCategory(
       InputDeviceCategory category) const;
 
+  bool HasSeenPrimaryDeviceKeyAlias(
+      const std::vector<std::string>& previously_observed_devices,
+      base::StringPiece device_key);
+
   std::unique_ptr<StringListPrefMember> keyboard_observed_devices_;
   std::unique_ptr<StringListPrefMember> mouse_observed_devices_;
   std::unique_ptr<StringListPrefMember> touchpad_observed_devices_;

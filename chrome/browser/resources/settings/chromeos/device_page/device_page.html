@@ -1,4 +1,15 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  .restore-defaults-button {
+    border-radius: 16px;
+    height: 32px;
+    margin-inline: 16px;
+  }
+
+  .restore-defaults-icon {
+    --iron-icon-fill-color: currentColor;
+    margin-inline-end: 8px;
+  }
+</style>
 <os-settings-animated-pages id="pages" section="device"
     focus-config="[[focusConfig_]]">
   <div id="main" route-path="default">
@@ -8,14 +19,14 @@
       <cr-link-row id="pointersRow"
           label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
                                      hasTouchpad_)]]"
-          on-click="onPointersTap_"
+          on-click="onPointersClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
     <template is="dom-if"
         if="[[showPerDeviceMouseRow_(hasMouse_,
                                      isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
-          on-click="onPerDeviceMouseTap_" aria-label="$i18n{mouseTitle}"
+          on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -24,7 +35,7 @@
                                         isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceTouchpadRow"
           aria-label="$i18n{touchpadTitle}"
-          label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadTap_"
+          label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -34,42 +45,42 @@
       <cr-link-row class="hr" id="perDevicePointingStickRow"
           aria-label="$i18n{pointingStickTitle}"
           label="$i18n{pointingStickTitle}"
-          on-click="onPerDevicePointingStickTap_"
+          on-click="onPerDevicePointingStickClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
       <cr-link-row class="hr" id="perDeviceKeyboardRow"
           label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
-          on-click="onPerDeviceKeyboardTap_"
+          on-click="onPerDeviceKeyboardClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
       <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
-          on-click="onKeyboardTap_"
+          on-click="onKeyboardClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
     <template is="dom-if" if="[[hasStylus_]]">
       <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
-          on-click="onStylusTap_"
+          on-click="onStylusClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
     <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
-        on-click="onDisplayTap_"
+        on-click="onDisplayClick_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     <template is="dom-if" if="[[showAudioInfo_]]">
       <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
-          on-click="onAudioTap_"
+          on-click="onAudioClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
     <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
-        label="$i18n{storageTitle}" on-click="onStorageTap_"
+        label="$i18n{storageTitle}" on-click="onStorageClick_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
-        on-click="onPowerTap_"
+        on-click="onPowerClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
   </div>
@@ -89,7 +100,8 @@
     <os-settings-subpage page-title="$i18n{mouseTitle}">
       <settings-per-device-mouse
           is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]"
-          mice="[[mice]]">
+          mice="[[mice]]"
+          mouse-policies="[[mousePolicies]]">
       </settings-per-device-mouse>
     </os-settings-subpage>
   </template>
@@ -161,7 +173,15 @@
       route-path="/per-device-keyboard/remap-keys">
     <os-settings-subpage id="perDeviceKeyboardRemapKeysRow"
         page-title="$i18n{remapKeyboardKeysRowLabel}">
-      <settings-per-device-keyboard-remap-keys keyboards="[[keyboards]]">
+        <cr-button id="restoreDefaultsButton" slot="subpage-title-extra"
+            on-click="restoreDefaults"
+            class="restore-defaults-button">
+        <iron-icon icon="os-settings:restore" class="restore-defaults-icon">
+        </iron-icon>
+        <span>$i18n{keyboardRemapRestoreDefaultsLabel}</span>
+    </cr-button>
+      <settings-per-device-keyboard-remap-keys keyboards="[[keyboards]]"
+          id="remap-keys">
       </settings-per-device-keyboard-remap-keys>
     </os-settings-subpage>
   </template>

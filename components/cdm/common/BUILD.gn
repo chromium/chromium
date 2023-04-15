@@ -13,6 +13,8 @@ static_library("common") {
   if (is_android) {
     sources += [
       "cdm_messages_android.h",
+      "clearkey_drm_delegate_android.cc",
+      "clearkey_drm_delegate_android.h",
       "widevine_drm_delegate_android.cc",
       "widevine_drm_delegate_android.h",
     ]

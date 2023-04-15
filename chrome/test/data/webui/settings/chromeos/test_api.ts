@@ -5,10 +5,10 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrButtonElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
+import {GoogleDriveSettingsInterface, GoogleDriveSettingsReceiver, GoogleDriveSettingsRemote, LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, hasStringProperty, Lazy, querySelectorShadow, retry, retryUntilSome, sleep} from './utils.js';
 
 enum PinDialogType {
@@ -360,6 +360,12 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
   async tryEnableRecoveryConfiguration(): Promise<void> {
     const toggle = await retryUntilSome(() => this.recoveryToggle());
     assertTrue(!toggle.checked);
+    toggle.click();
+  }
+
+  async tryDisableRecoveryConfiguration(): Promise<void> {
+    const toggle = await retryUntilSome(() => this.recoveryToggle());
+    assertTrue(toggle.checked);
     toggle.click();
   }
 
@@ -746,6 +752,28 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
   }
 }
 
+// Page object that implements the Mojo remote to interact with the Google drive
+// subpage.
+export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
+  constructor(private googleDriveSubpage_: SettingsGoogleDriveSubpageElement) {}
+
+  // Ensure the string supplied matched the value that are stored on the google
+  // drive subpage element.
+  assertRequiredSpace(requiredSpace: string) {
+    assertTrue(this.googleDriveSubpage_?.requiredSpace === requiredSpace);
+  }
+
+  assertRemainingSpace(remainingSpace: string) {
+    assertTrue(this.googleDriveSubpage_?.remainingSpace === remainingSpace);
+  }
+
+  async assertBulkPinningSpace(requiredSpace: string, remainingSpace: string):
+      Promise<void> {
+    this.assertRequiredSpace(requiredSpace);
+    this.assertRemainingSpace(remainingSpace);
+  }
+}
+
 class OsSettingsDriver implements OSSettingsDriverInterface {
   private privacyPage(): HTMLElement {
     const privacyPage = querySelectorShadow(document.body, [
@@ -805,6 +833,34 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
     trigger.click();
 
     return await this.assertOnLockScreenSettings();
+  }
+
+  private googleDriveSubpage(): SettingsGoogleDriveSubpageElement {
+    const googleDriveSubpage = querySelectorShadow(document.body, [
+      'os-settings-ui',
+      'os-settings-main',
+      'os-settings-page',
+      'os-settings-files-page',
+      'settings-google-drive-subpage',
+    ]);
+    assertTrue(googleDriveSubpage instanceof HTMLElement);
+    return googleDriveSubpage as SettingsGoogleDriveSubpageElement;
+  }
+
+  // Finds the google drive settings subpage element.
+  private googleDriveSettings(): GoogleDriveSettings {
+    const googleDriveSubpage = this.googleDriveSubpage();
+    assertTrue(googleDriveSubpage.shadowRoot !== null);
+    return new GoogleDriveSettings(googleDriveSubpage);
+  }
+
+  // Ensures the page is navigated to the google drive settings.
+  async assertOnGoogleDriveSettings():
+      Promise<{googleDriveSettings: GoogleDriveSettingsRemote}> {
+    const googleDriveSettings = await retry(() => this.googleDriveSettings());
+    const receiver = new GoogleDriveSettingsReceiver(googleDriveSettings);
+    const remote = receiver.$.bindNewPipeAndPassRemote();
+    return {googleDriveSettings: remote};
   }
 }
 

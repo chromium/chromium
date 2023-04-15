@@ -175,13 +175,20 @@ GridItemData::GridItemData(
       /* is_parallel_context */ true,
       /* is_last_baseline */ block_axis_alignment == AxisEdge::kLastBaseline);
 
-  if (node.IsGrid()) {
-    // TODO(ethavar): Don't consider subgrids with size containment.
+  // From https://drafts.csswg.org/css-grid-2/#subgrid-listing:
+  //   "...if the grid container is otherwise forced to establish an independent
+  //   formatting context... the grid container is not a subgrid."
+  //
+  // Only layout and paint containment establish an independent formatting
+  // context as specified in:
+  //   https://drafts.csswg.org/css-contain-2/#containment-layout
+  //   https://drafts.csswg.org/css-contain-2/#containment-paint
+  if (node.IsGrid() && !node.ShouldApplyLayoutContainment() &&
+      !node.ShouldApplyPaintContainment()) {
     has_subgridded_columns =
         is_parallel_with_root_grid
             ? style.GridTemplateColumns().IsSubgriddedAxis()
             : style.GridTemplateRows().IsSubgriddedAxis();
-
     has_subgridded_rows = is_parallel_with_root_grid
                               ? style.GridTemplateRows().IsSubgriddedAxis()
                               : style.GridTemplateColumns().IsSubgriddedAxis();

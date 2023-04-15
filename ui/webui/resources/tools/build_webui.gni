@@ -13,6 +13,7 @@ import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
 if (use_blink) {
@@ -38,7 +39,10 @@ template("build_webui") {
     optimize = invoker.optimize
   }
 
-  optimize_ts = optimize && defined(invoker.optimize_webui_in_files)
+  minify_and_bundle = optimize && defined(invoker.optimize_webui_in_files)
+  if (!minify_and_bundle) {
+    minify_only = optimize && !defined(invoker.optimize_webui_in_files)
+  }
 
   enable_source_maps = false
   if (defined(invoker.enable_source_maps)) {
@@ -130,9 +134,10 @@ template("build_webui") {
   #  4) ts_library()
   #  5) merge_js_source_maps() (only if the |invoker.enable_source_maps| flag is
   #     true)
-  #  6) optimize_webui() (only if |invoker.optimize| is true)
-  #  7) generate_grd()
-  #  8) grit()
+  #  6) optimize_webui() (only if invoker.optimize && defined(invoker.optimize_webui_in_files))
+  #  7) minify_js() (only if invoker.optimize && !defined(invoker.optimize_webui_in_files))
+  #  8) generate_grd()
+  #  9) grit()
 
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
@@ -275,6 +280,7 @@ template("build_webui") {
       visibility = [
         ":$generate_grd_target_name",
         ":build_bundle",
+        ":build_min_js",
       ]
 
       if (enable_source_maps) {
@@ -363,7 +369,7 @@ template("build_webui") {
     }
   }
 
-  if (optimize_ts) {
+  if (minify_and_bundle) {
     bundle_manifest = "bundle_manifest.json"
 
     optimize_webui("build_bundle") {
@@ -376,6 +382,22 @@ template("build_webui") {
         excludes = invoker.optimize_webui_excludes
       }
 
+      if (defined(invoker.optimize_webui_external_paths)) {
+        external_paths = invoker.optimize_webui_external_paths
+      }
+
+      deps = [ ":build_ts" ]
+    }
+  } else if (minify_only) {
+    minify_js("build_min_js") {
+      visibility = [ ":$generate_grd_target_name" ]
+      in_folder = ts_out_dir
+      out_folder = "$target_gen_dir/minified"
+      in_files = []
+      js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
+      foreach(_js_file, js_files) {
+        in_files += [ string_replace(_js_file, "$ts_out_dir/", "") ]
+      }
       deps = [ ":build_ts" ]
     }
   }
@@ -403,7 +425,7 @@ template("build_webui") {
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
 
-    if (optimize_ts) {
+    if (minify_and_bundle) {
       deps += [ ":build_bundle" ]
       manifest_files += [ "$target_gen_dir/$bundle_manifest" ]
       resource_path_rewrites = []
@@ -412,6 +434,9 @@ template("build_webui") {
         output_file = string_replace(f, "${name}.js", "${name}.rollup.js")
         resource_path_rewrites += [ "${output_file}|${f}" ]
       }
+    } else if (minify_only) {
+      deps += [ ":build_min_js" ]
+      manifest_files += [ "$target_gen_dir/minify_js_manifest.json" ]
     } else {
       if (enable_source_maps) {
         deps += [ ":merge_source_maps" ]

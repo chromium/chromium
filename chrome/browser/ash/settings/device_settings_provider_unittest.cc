@@ -110,6 +110,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_login_logout(enable_reporting);
     proto->set_report_crd_sessions(enable_reporting);
     proto->set_device_activity_heartbeat_enabled(enable_reporting);
+    proto->set_report_network_events(enable_reporting);
     proto->set_report_network_telemetry_collection_rate_ms(frequency);
     proto->set_report_network_telemetry_event_checking_rate_ms(frequency);
     proto->set_device_status_frequency(frequency);
@@ -186,7 +187,8 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         kReportDeviceSecurityStatus, kReportDeviceGraphicsStatus,
         kReportDeviceCrashReportInfo, kReportDeviceAppInfo,
         kReportDevicePrintJobs, kReportDeviceLoginLogout, kReportOsUpdateStatus,
-        kReportRunningKioskApp, kDeviceActivityHeartbeatEnabled};
+        kReportRunningKioskApp, kDeviceActivityHeartbeatEnabled,
+        kDeviceReportNetworkEvents};
 
     const base::Value expected_enable_value(expected_enable_state);
     for (auto* setting : reporting_settings) {

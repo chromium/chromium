@@ -87,11 +87,11 @@ web::WebState* TabInsertionBrowserAgent::InsertWebStateOpenedByDOM(
   createParams.created_with_opener = YES;
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(createParams);
-  int insertionFlags =
+  int insertion_flags =
       WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE;
-  int insertedIndex = web_state_list_->InsertWebState(
-      web_state_list_->count(), std::move(web_state), insertionFlags,
+  int inserted_index = web_state_list_->InsertWebState(
+      web_state_list_->count(), std::move(web_state), insertion_flags,
       WebStateOpener(parent));
 
-  return web_state_list_->GetWebStateAt(insertedIndex);
+  return web_state_list_->GetWebStateAt(inserted_index);
 }

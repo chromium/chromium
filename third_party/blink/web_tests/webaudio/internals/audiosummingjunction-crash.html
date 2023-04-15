@@ -26,6 +26,7 @@
             // Test passes if we get here because we didn't crash
             should(true, 'Test survived GC')
                 .message('correctly', 'incorrectly');
+            context.close();
             task.done();
           });
 

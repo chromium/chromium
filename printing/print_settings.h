@@ -116,6 +116,11 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   void SetPrinterPrintableArea(const gfx::Size& physical_size_device_units,
                                const gfx::Rect& printable_area_device_units,
                                bool landscape_needs_flip);
+#if BUILDFLAG(IS_WIN)
+  // Update the printer printable area for the current media using the
+  // provided area in microns.
+  void UpdatePrinterPrintableArea(const gfx::Rect& printable_area_um);
+#endif
   const PageSetup& page_setup_device_units() const {
     return page_setup_device_units_;
   }

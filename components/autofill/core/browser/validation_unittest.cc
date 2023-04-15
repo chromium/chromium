@@ -107,6 +107,32 @@ TEST(AutofillValidation, IsValidCreditCardNumber) {
   }
 }
 
+// Tests the plausibility of the length of the supplied credit card number.
+TEST(AutofillValidation, IsValidCreditCardNumberLength) {
+  for (const char16_t* valid_number : kValidNumbers) {
+    SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
+    EXPECT_TRUE(HasCorrectLength(CreditCard::StripSeparators(valid_number)));
+  }
+  // Only the first 2 invalid numbers in kInvalidNumbers have a bad length.
+  for (size_t i = 0; i < 2; ++i) {
+    const char16_t* invalid_number = kInvalidNumbers[i];
+    SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
+    EXPECT_FALSE(HasCorrectLength(CreditCard::StripSeparators(invalid_number)));
+  }
+}
+
+// Tests the validation of credit card numbers using the Luhn check.
+TEST(AutofillValidation, CreditCardNumberLuhnTest) {
+  for (const char16_t* valid_number : kValidNumbers) {
+    SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
+    EXPECT_TRUE(PassesLuhnCheck(CreditCard::StripSeparators(valid_number)));
+  }
+
+  const char16_t* invalid_luhn_number = kInvalidNumbers[2];
+  SCOPED_TRACE(base::UTF16ToUTF8(invalid_luhn_number));
+  EXPECT_FALSE(PassesLuhnCheck(invalid_luhn_number));
+}
+
 // Tests the plausibility of supplied credit card expiration years.
 TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
   for (const char16_t* plausible_year : kPlausibleCreditCardExpirationYears) {

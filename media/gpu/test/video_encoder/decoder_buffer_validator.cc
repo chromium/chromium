@@ -606,5 +606,71 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
 
   return true;
 }
+
+AV1Validator::AV1Validator(const gfx::Rect& visible_rect)
+    : DecoderBufferValidator(visible_rect, /*num_temporal_layers=*/1),
+      buffer_pool_(libgav1::OnInternalFrameBufferSizeChanged,
+                   libgav1::GetInternalFrameBuffer,
+                   libgav1::ReleaseInternalFrameBuffer,
+                   &buffer_list_) {}
+
+// TODO(b/268487938): Add more robust testing here. Currently we only perform
+// the most basic validation that the bitstream parses correctly and has the
+// right dimensions.
+bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
+                            const BitstreamBufferMetadata& metadata) {
+  libgav1::ObuParser av1_parser(decoder_buffer.data(),
+                                decoder_buffer.data_size(), 0, &buffer_pool_,
+                                &decoder_state_);
+  libgav1::RefCountedBufferPtr curr_frame;
+
+  if (sequence_header_) {
+    av1_parser.set_sequence_header(*sequence_header_);
+  }
+
+  auto parse_status = av1_parser.ParseOneFrame(&curr_frame);
+  if (parse_status != libgav1::kStatusOk) {
+    LOG(ERROR) << "Failed parsing frame. Status: " << parse_status;
+    return false;
+  }
+
+  if (av1_parser.frame_header().width != visible_rect_.width() ||
+      av1_parser.frame_header().height != visible_rect_.height()) {
+    LOG(ERROR) << "Mismatched frame dimensions.";
+    LOG(ERROR) << "Got width=" << av1_parser.frame_header().width
+               << " height=" << av1_parser.frame_header().height;
+    LOG(ERROR) << "Expected width=" << visible_rect_.width()
+               << " height=" << visible_rect_.height();
+    return false;
+  }
+
+  if (av1_parser.frame_header().frame_type != libgav1::FrameType::kFrameKey &&
+      frame_num_ == 0) {
+    LOG(ERROR) << "First frame must be keyframe";
+    return false;
+  }
+
+  if (av1_parser.frame_header().frame_type == libgav1::FrameType::kFrameKey) {
+    frame_num_ = 0;
+  }
+
+  if (av1_parser.frame_header().order_hint != (frame_num_ & 0xFF)) {
+    LOG(ERROR) << "Incorrect frame order hint";
+    LOG(ERROR) << "Got: " << av1_parser.frame_header().order_hint;
+    LOG(ERROR) << "Expected: " << (int)(frame_num_ & 0xFF);
+    return false;
+  }
+
+  // Update our state for the next frame.
+  if (av1_parser.frame_header().frame_type == libgav1::FrameType::kFrameKey) {
+    sequence_header_ = av1_parser.sequence_header();
+  }
+  decoder_state_.UpdateReferenceFrames(
+      curr_frame, av1_parser.frame_header().refresh_frame_flags);
+
+  frame_num_++;
+
+  return true;
+}
 }  // namespace test
 }  // namespace media

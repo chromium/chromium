@@ -75,6 +75,7 @@ class ASH_EXPORT PaginationView : public views::View,
   void OnArrowButtonPressed(bool forward, const ui::Event& event);
   void MaybeSetUpScroll();
 
+  bool ShouldShowSelectorDot() const;
   void CreateSelectorDot();
   void RemoveSelectorDot();
   void UpdateSelectorDot();

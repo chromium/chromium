@@ -46,7 +46,7 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
       std::unique_ptr<base::MessagePump> message_pump = nullptr);
 
   // Returns main thread scheduler for the main thread of the current process.
-  static WebThreadScheduler* MainThreadScheduler();
+  static WebThreadScheduler& MainThreadScheduler();
 
   // Returns the compositor task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();

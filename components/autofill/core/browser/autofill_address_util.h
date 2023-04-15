@@ -104,6 +104,12 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& second_profile,
     const std::string& app_locale);
 
+// Returns a multi line `profile` description comprising of full name, address,
+// email and phone in separate lines if they are non-empty.
+std::u16string GetProfileSummaryForMigrationPrompt(
+    const AutofillProfile& profile,
+    const std::string& app_locale);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_ADDRESS_UTIL_H_

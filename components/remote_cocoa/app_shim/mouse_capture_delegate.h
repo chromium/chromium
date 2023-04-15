@@ -5,13 +5,7 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_MOUSE_CAPTURE_DELEGATE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_MOUSE_CAPTURE_DELEGATE_H_
 
-#if defined(__OBJC__)
-@class NSEvent;
-@class NSWindow;
-#else
-class NSEvent;
-class NSWindow;
-#endif
+#import <Cocoa/Cocoa.h>
 
 namespace remote_cocoa {
 

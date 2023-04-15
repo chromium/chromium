@@ -170,33 +170,40 @@
     </div>
   </div>
 </div>
-<cr-link-row id="myFilesSize" class="hr" on-click="onMyFilesTap_"
+<cr-link-row id="myFilesSize" class="hr" on-click="onMyFilesClick_"
     label="$i18n{storageItemMyFiles}"
-    sub-label="$i18n{storageSizeComputing}" external>
+    sub-label="$i18n{storageSizeComputing}"
+    external
+    button-aria-description="$i18n{opensInNewTab}">
 </cr-link-row>
-<cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataTap_"
+<cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataClick_"
     label="$i18n{storageItemBrowsingData}"
-    sub-label="$i18n{storageSizeComputing}" external>
+    sub-label="$i18n{storageSizeComputing}"
+    external
+    button-aria-description="$i18n{opensInNewTab}">
 </cr-link-row>
-<cr-link-row id="appsSize" class="hr" on-click="onAppsTap_"
+<cr-link-row id="appsSize" class="hr" on-click="onAppsClick_"
     label="$i18n{storageItemApps}"
-    sub-label="$i18n{storageSizeComputing}" external>
+    sub-label="$i18n{storageSizeComputing}"
+    external
+    button-aria-description="$i18n{opensInNewTab}">
 </cr-link-row>
 <template is="dom-if" if="[[showDriveOfflineStorage_]]">
-  <cr-link-row id="driveOfflineSize" class="hr" on-click="onDriveOfflineTap_"
+  <cr-link-row id="driveOfflineSize" class="hr" on-click="onDriveOfflineClick_"
       label="$i18n{storageItemOffline}"
-      sub-label="$i18n{storageSizeComputing}" external>
+      sub-label="$i18n{storageSizeComputing}"
+      role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
 <template is="dom-if" if="[[showCrostiniStorage_]]">
-  <cr-link-row id="crostiniSize" class="hr" on-click="onCrostiniTap_"
+  <cr-link-row id="crostiniSize" class="hr" on-click="onCrostiniClick_"
       label="$i18n{storageItemCrostini}"
       sub-label="$i18n{storageSizeComputing}"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
 <template is="dom-if" if="[[showOtherUsers_]]">
-  <cr-link-row id="otherUsersSize" class="hr" on-click="onOtherUsersTap_"
+  <cr-link-row id="otherUsersSize" class="hr" on-click="onOtherUsersClick_"
       label="$i18n{storageItemOtherUsers}"
       sub-label="$i18n{storageSizeComputing}"
       role-description="$i18n{subpageArrowRoleDescription}">
@@ -217,7 +224,7 @@
 </template>
 <template is="dom-if" if="[[androidEnabled]]">
   <cr-link-row id="externalStoragePreferences" class="hr"
-      on-click="onExternalStoragePreferencesTap_"
+      on-click="onExternalStoragePreferencesClick_"
       label="$i18n{storageExternal}"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>

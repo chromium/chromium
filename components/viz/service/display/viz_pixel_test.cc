@@ -15,8 +15,8 @@ cc::PixelTest::GraphicsBackend VizPixelTest::RenderTypeToBackend(
     RendererType renderer_type) {
   if (renderer_type == RendererType::kSkiaVk) {
     return GraphicsBackend::kSkiaVulkan;
-  } else if (renderer_type == RendererType::kSkiaDawn) {
-    return GraphicsBackend::kSkiaDawn;
+  } else if (renderer_type == RendererType::kSkiaGraphite) {
+    return GraphicsBackend::kSkiaGraphite;
   }
 
   return GraphicsBackend::kDefault;
@@ -32,7 +32,7 @@ void VizPixelTest::SetUp() {
       break;
     case RendererType::kSkiaGL:
     case RendererType::kSkiaVk:
-    case RendererType::kSkiaDawn:
+    case RendererType::kSkiaGraphite:
       SetUpSkiaRenderer(GetSurfaceOrigin());
       break;
   }

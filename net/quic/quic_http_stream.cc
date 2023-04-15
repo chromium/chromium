@@ -433,6 +433,21 @@ base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
   return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
+absl::optional<quic::QuicErrorCode> QuicHttpStream::GetQuicErrorCode() const {
+  if (stream_) {
+    return stream_->connection_error();
+  }
+  return connection_error_;
+}
+
+absl::optional<quic::QuicRstStreamErrorCode>
+QuicHttpStream::GetQuicRstStreamErrorCode() const {
+  if (stream_) {
+    return stream_->stream_error();
+  }
+  return stream_error_;
+}
+
 void QuicHttpStream::ReadTrailingHeaders() {
   int rv = stream_->ReadTrailingHeaders(
       &trailing_header_block_,
@@ -762,6 +777,8 @@ void QuicHttpStream::ResetStream() {
   closed_stream_received_bytes_ = stream_->NumBytesConsumed();
   closed_stream_sent_bytes_ = stream_->stream_bytes_written();
   closed_is_first_stream_ = stream_->IsFirstStream();
+  connection_error_ = stream_->connection_error();
+  stream_error_ = stream_->stream_error();
 }
 
 int QuicHttpStream::MapStreamError(int rv) {

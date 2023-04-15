@@ -45,7 +45,7 @@ void RecordEvent(CableV2DiscoveryEvent event) {
 }  // namespace
 
 Discovery::Discovery(
-    CableRequestType request_type,
+    FidoRequestType request_type,
     network::mojom::NetworkContext* network_context,
     absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,

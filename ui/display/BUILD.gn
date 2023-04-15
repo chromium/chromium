@@ -249,7 +249,6 @@ test("display_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//cc/base",
-    "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
@@ -280,6 +279,7 @@ test("display_unittests") {
       "manager/display_configurator_unittest.cc",
       "manager/display_manager_util_unittest.cc",
       "manager/display_manager_utilities_unittest.cc",
+      "manager/display_properties_parser_unittest.cc",
       "manager/json_converter_unittest.cc",
       "manager/managed_display_info_unittest.cc",
       "manager/query_content_protection_task_unittest.cc",
@@ -287,15 +287,24 @@ test("display_unittests") {
       "manager/touch_transform_controller_unittest.cc",
       "manager/update_display_configuration_task_unittest.cc",
     ]
+
     deps += [
       ":display_manager_test_api",
+      "//ui/base:run_all_unittests",
       "//ui/display/manager",
       "//ui/ozone:ozone_switches",
     ]
+
+    data_deps = [
+      "//ui/base:ui_base_test_resources_pak",
+      "//ui/resources:ui_test_pak_data",
+    ]
+  } else {
+    deps += [ "//mojo/core/test:run_all_unittests" ]
   }
 }
 
-# This target is added as a dependency of browser interactive_ui_tests. It must
+# This target is added as a dependency of browser interactive_ui_tests.It must
 # be source_set, otherwise the linker will drop the tests as dead code.
 source_set("display_interactive_ui_tests") {
   testonly = true

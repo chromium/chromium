@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -43,7 +44,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
@@ -213,7 +213,7 @@
 
 - (void)dismissButtonTapped {
   base::RecordAction(base::UserMetricsAction("MobileReadingListClose"));
-  [self stop];
+  [_delegate closeReadingList];
 }
 
 - (void)stop {
@@ -225,6 +225,9 @@
                          completion:nil];
   self.tableViewController = nil;
   self.navigationController = nil;
+
+  [self.mediator disconnect];
+  self.mediator = nil;
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
@@ -252,7 +255,7 @@
 - (void)dismissReadingListListViewController:(UIViewController*)viewController {
   DCHECK_EQ(self.tableViewController, viewController);
   [self.tableViewController willBeDismissed];
-  [self stop];
+  [_delegate closeReadingList];
 }
 
 - (void)readingListListViewController:(UIViewController*)viewController
@@ -382,7 +385,7 @@
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
 
-  [self stop];
+  [_delegate closeReadingList];
 }
 
 - (void)openItemOfflineInNewTab:(id<ReadingListListItem>)item {

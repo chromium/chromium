@@ -4,11 +4,12 @@
 
 #include "chrome/browser/google/google_brand.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -111,17 +112,17 @@ bool IsOrganic(const std::string& brand) {
     return true;
   }
 
-  const char* const kOrganicBrands[] = {
-      "CHCA", "CHCB", "CHCG", "CHCH", "CHCI", "CHCJ", "CHCK", "CHCL", "CHFO",
-      "CHFT", "CHHS", "CHHM", "CHMA", "CHMB", "CHME", "CHMF", "CHMG", "CHMH",
-      "CHMI", "CHMQ", "CHMV", "CHNB", "CHNC", "CHNG", "CHNH", "CHNI", "CHOA",
-      "CHOB", "CHOC", "CHON", "CHOO", "CHOP", "CHOQ", "CHOR", "CHOS", "CHOT",
-      "CHOU", "CHOX", "CHOY", "CHOZ", "CHPD", "CHPE", "CHPF", "CHPG", "ECBA",
-      "ECBB", "ECDA", "ECDB", "ECSA", "ECSB", "ECVA", "ECVB", "ECWA", "ECWB",
-      "ECWC", "ECWD", "ECWE", "ECWF", "EUBB", "EUBC", "GGLA", "GGLS"};
-  const char* const* end = &kOrganicBrands[std::size(kOrganicBrands)];
-  if (std::binary_search(&kOrganicBrands[0], end, brand))
+  constexpr auto kOrganicBrands = base::MakeFixedFlatSet<base::StringPiece>(
+      {"CHCA", "CHCB", "CHCG", "CHCH", "CHCI", "CHCJ", "CHCK", "CHCL", "CHFO",
+       "CHFT", "CHHS", "CHHM", "CHMA", "CHMB", "CHME", "CHMF", "CHMG", "CHMH",
+       "CHMI", "CHMQ", "CHMV", "CHNB", "CHNC", "CHNG", "CHNH", "CHNI", "CHOA",
+       "CHOB", "CHOC", "CHON", "CHOO", "CHOP", "CHOQ", "CHOR", "CHOS", "CHOT",
+       "CHOU", "CHOX", "CHOY", "CHOZ", "CHPD", "CHPE", "CHPF", "CHPG", "ECBA",
+       "ECBB", "ECDA", "ECDB", "ECSA", "ECSB", "ECVA", "ECVB", "ECWA", "ECWB",
+       "ECWC", "ECWD", "ECWE", "ECWF", "EUBB", "EUBC", "GCEL", "GGLA", "GGLS"});
+  if (kOrganicBrands.contains(brand)) {
     return true;
+  }
 
   // The Chrome enterprise brand code is the only GGR* brand to be non-organic.
   if (brand == "GGRV")
@@ -151,8 +152,18 @@ bool IsInternetCafeBrandCode(const std::string& brand) {
 }
 
 bool IsEnterprise(const std::string& brand) {
+  // GCEL is the only GCE* code that is actually organic.
+  if (brand == "GCEL") {
+    return false;
+  }
+  const char* const kEnterpriseBrands[] = {
+      "GCE", "GCF", "GCG", "GCH",  // CBE brands codes.
+      "GCC", "GCK", "GCL", "GCM"   // CBE+CBCM brand codes.
+  };
   return brand == "GGRV" ||
-         base::StartsWith(brand, "GCE", base::CompareCase::SENSITIVE);
+         base::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {
+           return base::StartsWith(brand, br, base::CompareCase::SENSITIVE);
+         });
 }
 
 // BrandForTesting ------------------------------------------------------------

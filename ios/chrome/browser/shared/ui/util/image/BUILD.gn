@@ -1,0 +1,41 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("image") {
+  sources = [
+    "image_util.h",
+    "image_util.mm",
+  ]
+  deps = [ "//ui/base" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  frameworks = [ "UniformTypeIdentifiers.framework" ]
+}
+
+source_set("web") {
+  sources = [
+    "image_copier.h",
+    "image_copier.mm",
+    "image_saver.h",
+    "image_saver.mm",
+  ]
+  deps = [
+    ":image",
+    "//base",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/ios",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/web/image_fetch",
+    "//ios/web",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Photos.framework",
+    "UniformTypeIdentifiers.framework",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

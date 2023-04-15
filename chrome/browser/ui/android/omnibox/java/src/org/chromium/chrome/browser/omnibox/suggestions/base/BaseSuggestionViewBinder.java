@@ -22,6 +22,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
@@ -53,11 +55,31 @@ import java.util.List;
  */
 public final class BaseSuggestionViewBinder<T extends View>
         implements ViewBinder<PropertyModel, BaseSuggestionView<T>, PropertyKey> {
+    /**
+     * Holder of metadata about a view's current state w.r.t. a suggestion's visual properties.
+     * This allows us to avoid calling setters when the current state of the view is already
+     * correct.
+     */
+    private static class BaseSuggestionViewMetadata {
+        @Nullable
+        public Drawable.ConstantState backgroundConstantState;
+    }
+
     /** Drawable ConstantState used to expedite creation of Focus ripples. */
     private static Drawable.ConstantState sFocusableDrawableState;
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
     private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
+
+    private static boolean sDimensionsInitialized;
+    private static int sIconWidthPx;
+    private static int sPaddingStart;
+    private static int sPaddingStartLargeIcon;
+    private static int sPaddingEnd;
+    private static int sPaddingEndLargeIcon;
+    private static int sEdgeSize;
+    private static int sEdgeSizeLargeIcon;
+    private static int sSideSpacing;
 
     public BaseSuggestionViewBinder(ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
         mContentBinder = contentBinder;
@@ -65,6 +87,11 @@ public final class BaseSuggestionViewBinder<T extends View>
 
     @Override
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
+        if (!sDimensionsInitialized) {
+            initializeDimensions(view.getContext());
+            sDimensionsInitialized = true;
+        }
+
         mContentBinder.bind(model, view.getContentView(), propertyKey);
         ActionChipsBinder.bind(model, view.getActionChipsView(), propertyKey);
 
@@ -176,35 +203,38 @@ public final class BaseSuggestionViewBinder<T extends View>
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
-            final Resources res = rciv.getContext().getResources();
-            boolean showModernizeVisualUpdate =
-                    OmniboxFeatures.shouldShowModernizeVisualUpdate(rciv.getContext());
-            int iconWidthPx = res.getDimensionPixelSize(showModernizeVisualUpdate
-                            ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                            : R.dimen.omnibox_suggestion_icon_area_size);
-
-            rciv.setLayoutParams(new SuggestionLayout.LayoutParams(iconWidthPx,
+            rciv.setLayoutParams(new SuggestionLayout.LayoutParams(sIconWidthPx,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     SuggestionLayout.LayoutParams.SuggestionViewType.DECORATION));
 
-            final int paddingStart = res.getDimensionPixelSize(sds.isLarge
-                            ? R.dimen.omnibox_suggestion_36dp_icon_margin_start
-                            : showModernizeVisualUpdate
-                            ? R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern
-                            : R.dimen.omnibox_suggestion_24dp_icon_margin_start);
-            final int paddingEnd = res.getDimensionPixelSize(sds.isLarge
-                            ? R.dimen.omnibox_suggestion_36dp_icon_margin_end
-                            : R.dimen.omnibox_suggestion_24dp_icon_margin_end);
-            final int edgeSize = res.getDimensionPixelSize(sds.isLarge
-                            ? R.dimen.omnibox_suggestion_36dp_icon_size
-                            : R.dimen.omnibox_suggestion_24dp_icon_size);
-
+            int paddingStart = sds.isLarge ? sPaddingStartLargeIcon : sPaddingStart;
+            int paddingEnd = sds.isLarge ? sPaddingEndLargeIcon : sPaddingEnd;
+            int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
             rciv.setPadding(paddingStart, 0, paddingEnd, 0);
             rciv.setMinimumHeight(edgeSize);
             rciv.setClipToOutline(sds.useRoundedCorners);
         }
 
         updateIcon(rciv, sds, ChromeColors.getSecondaryIconTintRes(isIncognito(model)));
+    }
+
+    /**
+     * Access the BaseSuggestionViewMetadata for the given view, creating and attaching a new one
+     * if none is currently associated. Returns an unattached metadata if {@link
+     * OmniboxFeatures#shouldCacheSuggestionResources} returns false.
+     */
+    private static @NonNull BaseSuggestionViewMetadata ensureViewMetadata(View view) {
+        if (!OmniboxFeatures.shouldCacheSuggestionResources()) {
+            return new BaseSuggestionViewMetadata();
+        }
+
+        BaseSuggestionViewMetadata metadata =
+                (BaseSuggestionViewMetadata) view.getTag(R.id.base_suggestion_view_metadata_key);
+        if (metadata == null) {
+            metadata = new BaseSuggestionViewMetadata();
+            view.setTag(R.id.base_suggestion_view_metadata_key, metadata);
+        }
+        return metadata;
     }
 
     /**
@@ -217,8 +247,14 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @param view A view that receives background.
      */
     public static void applySelectableBackground(PropertyModel model, View view) {
+        // Use a throwaway metadata object if caching is off to simplify branching; the performance
+        // difference will still manifest because it's not persisted.
+        BaseSuggestionViewMetadata metadata = ensureViewMetadata(view);
+
         if (sFocusableDrawableState != null) {
+            if (sFocusableDrawableState == metadata.backgroundConstantState) return;
             view.setBackground(sFocusableDrawableState.newDrawable());
+            metadata.backgroundConstantState = sFocusableDrawableState;
             return;
         }
 
@@ -235,6 +271,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         // Cache the drawable state for faster retrieval.
         // See go/omnibox:drawables for more details.
         sFocusableDrawableState = layer.getConstantState();
+        metadata.backgroundConstantState = sFocusableDrawableState;
         view.setBackground(layer);
     }
 
@@ -311,10 +348,8 @@ public final class BaseSuggestionViewBinder<T extends View>
         if (layoutParams instanceof MarginLayoutParams) {
             int topSpacing = model.get(DropdownCommonProperties.TOP_MARGIN);
             int bottomSpacing = model.get(DropdownCommonProperties.BOTTOM_MARGIN);
-            int sideSpacing = view.getContext().getResources().getDimensionPixelOffset(
-                    R.dimen.omnibox_suggestion_side_spacing);
             ((MarginLayoutParams) layoutParams)
-                    .setMargins(sideSpacing, topSpacing, sideSpacing, bottomSpacing);
+                    .setMargins(sSideSpacing, topSpacing, sSideSpacing, bottomSpacing);
         }
         view.setLayoutParams(layoutParams);
     }
@@ -344,7 +379,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         // TODO(crbug.com/1418077): This should be part of BaseSuggestionView.
         // Move this once we reconcile Pedals with Base.
         var outlineProvider = view.getOutlineProvider();
-        if (outlineProvider == null || !(outlineProvider instanceof RoundedCornerOutlineProvider)) {
+        if (!(outlineProvider instanceof RoundedCornerOutlineProvider)) {
             outlineProvider =
                     new RoundedCornerOutlineProvider(view.getResources().getDimensionPixelSize(
                             R.dimen.omnibox_suggestion_bg_round_corner_radius));
@@ -354,6 +389,29 @@ public final class BaseSuggestionViewBinder<T extends View>
                 (RoundedCornerOutlineProvider) outlineProvider;
         roundedCornerOutlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
         view.setClipToOutline(true);
+    }
+
+    private static void initializeDimensions(Context context) {
+        boolean showModernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
+        Resources resources = context.getResources();
+        sIconWidthPx = resources.getDimensionPixelSize(showModernizeVisualUpdate
+                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                        : R.dimen.omnibox_suggestion_icon_area_size);
+
+        sPaddingStart = resources.getDimensionPixelSize(showModernizeVisualUpdate
+                        ? R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern
+                        : R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        sPaddingStartLargeIcon =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+        sPaddingEnd =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_end);
+        sPaddingEndLargeIcon =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_end);
+        sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
+        sEdgeSizeLargeIcon =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
+        sSideSpacing = resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_side_spacing);
     }
 
     /** @return Cached ConstantState for testing. */

@@ -2,3 +2,13 @@ include_rules = [
   "+components/live_caption",
   "+content/public/browser/tts_controller.h",
 ]
+
+specific_include_rules = {
+  "settings_security_key_handler(|_unittest)\.(cc|h)": [
+    "+device/fido",
+  ],
+  "settings_localized_strings_provider.cc": [
+    "+device/fido/features.h",
+    "+device/fido/win/webauthn_api.h",
+  ],
+}

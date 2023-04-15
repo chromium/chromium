@@ -56,7 +56,7 @@ std::string UploadCardRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   if (base::FeatureList::IsEnabled(
           features::kAutofillUpstreamUseAlternateSecureDataType)) {
-    request_dict.Set("encrypted_pan", "__param:s7e_38_pan");
+    request_dict.Set("ephemeral_pan", "__param:s7e_38_pan");
   } else {
     request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
   }

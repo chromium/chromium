@@ -6,7 +6,14 @@
   :host {
     display: flex;
     flex-direction: row;
+  }
+
+  :host-context([theme='legacy']):host {
     margin: 12px 16px;
+  }
+
+  :host-context([theme='refresh23']):host {
+    margin: 12px 20px;
   }
 </style>
 

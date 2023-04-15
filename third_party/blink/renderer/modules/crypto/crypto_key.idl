@@ -32,7 +32,7 @@
 
 [
     SecureContext,
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,SharedStorageWorklet)
 ] interface CryptoKey {
     readonly attribute DOMString type;
     readonly attribute boolean extractable;

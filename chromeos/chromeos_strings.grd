@@ -2367,6 +2367,12 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_LABEL" desc="Label for theme element in personalization hub">
           Theme
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_LABEL" desc="Label for dynamic color theme element in personalization hub">
+          Accent colors
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_DESCRIPTION" desc="Description for dynamic color theme element in personalization hub">
+          Use color sets that match your wallpaper
+        </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE" desc="Label for dark color mode setting">
           Dark
         </message>
@@ -2651,6 +2657,12 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
           Chromebook Plus exclusive
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE" desc="Title for the Time of Day promo banner.">
+          Exclusive Chromebook Plus assets now available
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION" desc="Description shown in the Time of Day promo banner.">
+          You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE">&lt;a href="chrome://personalization/wallpaper"&gt;</ph>wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE">&lt;a href="chrome://personalization/ambient"&gt;</ph>screen saver<ph name="END_LINK_SCREENSAVER_SUBPAGE">&lt;/a&gt;</ph>
         </message>
 
         <!-- Personalization App Search Results -->
@@ -3192,6 +3204,10 @@
         </message>
         <message name="IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the lid of the device.">
           Before proceeding, place your whole device (base and lid) on a flat surface.
+        </message>
+        <!-- Nearby Presence -->
+        <message name="IDS_NEARBY_PRESENCE_DEVICE_NAME" is_accessibility_with_no_ui="true" desc="The device name used to advertise the user's device during a feature flow. Displayed to other devices.">
+          <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
         </message>
         <!-- Finalize device page -->
         <message name="IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE" translateable="false" desc="Title for the page shown when finalizing the device. Finalizing is the process of confirming the device is ready to return to the owner.">
@@ -3833,6 +3849,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys in search results." translateable="false">
           or
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result." translateable="false">
+          Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab</ex></ph>. Press Enter to navigate to shortcut.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">
           General
         </message>
@@ -4036,6 +4055,12 @@
         </message>
         <message name="IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK" desc="Text describing APN settings menu with a link to more detailed information.">
           Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION" desc="Text explaining there is no APN information to show because the network has not been attempted to be connected with, and that the user might need to add a custom APN.">
+          You are not connected yet. If your mobile carrier recommends a custom APN, enter the APN information by selecting "+ New APN"
+        </message>
+        <message name="IDS_SETTINGS_APN_CUSTOM_APNS_ERROR_MESSAGE" desc="Error message displayed when a cellular network fails to connect due to APN-related reasons, informing the user that none of the enabled custom APNs were successful in being used to connect.">
+          Can't connect to any enabled custom APNs. Contact your mobile carrier for more information.
         </message>
         <message name="IDS_SETTINGS_APN_MENU_DETAILS" desc="Details button in three dotted menu for APNs">
           Details

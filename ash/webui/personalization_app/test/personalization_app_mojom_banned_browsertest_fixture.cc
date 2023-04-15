@@ -41,6 +41,7 @@ class MockPersonalizationAppAmbientProvider
               SetAnimationTheme,
               (ash::AmbientTheme animation_theme),
               (override));
+  MOCK_METHOD(void, SetScreenSaverDuration, (int minutes), (override));
   MOCK_METHOD(void,
               SetTopicSource,
               (ash::AmbientModeTopicSource topic_source),
@@ -58,6 +59,11 @@ class MockPersonalizationAppAmbientProvider
   MOCK_METHOD(void, SetPageViewed, (), (override));
   MOCK_METHOD(void, StartScreenSaverPreview, (), (override));
   MOCK_METHOD(void, FetchSettingsAndAlbums, (), (override));
+  MOCK_METHOD(void,
+              ShouldShowTimeOfDayBanner,
+              (ShouldShowTimeOfDayBannerCallback callback),
+              (override));
+  MOCK_METHOD(void, HandleTimeOfDayBannerDismissed, (), (override));
 };
 
 class MockPersonalizationAppKeyboardBacklightProvider

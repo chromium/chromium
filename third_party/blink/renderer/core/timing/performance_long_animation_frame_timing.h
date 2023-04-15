@@ -32,6 +32,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DOMHighResTimeStamp desiredRenderStart() const;
   DOMHighResTimeStamp styleAndLayoutStart() const;
   DOMHighResTimeStamp firstUIEventTimestamp() const;
+  DOMHighResTimeStamp blockingDuration() const;
 
   const PerformanceScriptVector& scripts() const;
 

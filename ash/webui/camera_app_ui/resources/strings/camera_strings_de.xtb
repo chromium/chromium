@@ -27,7 +27,6 @@
 <translation id="199526504800285197">Aufzeichnung wurde beendet</translation>
 <translation id="1995951722691075581">Die Aufzeichnung wurde beendet, da zu wenig Gerätespeicherplatz vorhanden ist. Wenn du weitere Videos aufnehmen möchtest, musst du Speicherplatz auf deinem Gerät freigeben.</translation>
 <translation id="2036868001356139588">Timerdauer</translation>
-<translation id="2050339315714019657">Hochformat</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
 <translation id="2128052519899549250">Video im Zeitraffer aufnehmen</translation>
 <translation id="2134029355740465625">Videoeinstellungen</translation>
@@ -123,6 +122,7 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="6888362557094394345">Wird nach unten verschoben</translation>
 <translation id="695140971690006676">Alle zurücksetzen</translation>
 <translation id="6965382102122355670">Ok</translation>
+<translation id="6965830616442491568">Hochformat</translation>
 <translation id="698156982839284926">3 Sekunden</translation>
 <translation id="7134221860976209830">10-Sekunden-Timer</translation>
 <translation id="7191890674911603392">Aufnahmetyp</translation>

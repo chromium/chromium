@@ -6,9 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -19,7 +17,6 @@
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -30,11 +27,18 @@
 #endif
 
 namespace {
+// Base height value for the bottom sheet without the table view.
+// TODO(crbug.com/1422350): This needs some proper calculation.
+CGFloat const kBaseHeightForBottomSheet = 190;
+
 // Spacing size before image if there are no navigation bar.
 CGFloat const kCustomSpacingBeforeImageIfNoNavigationBar = 24;
 
 // Spacing size after image.
 CGFloat const kCustomSpacingAfterImage = 30;
+
+// Sets a custom radius for the half sheet presentation.
+CGFloat const kHalfSheetCornerRadius = 20;
 
 // Row height for each cell in the table view.
 CGFloat const kTableViewRowHeight = 75;
@@ -67,23 +71,16 @@ CGFloat const kTableViewCornerRadius = 10;
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
   NSArray<FormSuggestion*>* _suggestions;
-
-  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
-  // favicon images.
-  raw_ptr<FaviconLoader> _faviconLoader;
 }
-
-// Temporary favicon to load for now.
-@property(nonatomic, strong) FaviconAttributes* defaultWorldIconAttributes;
 
 @end
 
 @implementation PasswordSuggestionBottomSheetViewController
 
-- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _faviconLoader = faviconLoader;
+    [self setUpBottomSheet];
   }
   return self;
 }
@@ -96,7 +93,10 @@ CGFloat const kTableViewCornerRadius = 10;
   self.titleView = [self setUpTitleView];
   self.underTitleView = [self createTableView];
 
+  // Set the properties read by the super when constructing the
+  // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.imageHasFixedSize = YES;
+  self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.customSpacingBeforeImageIfNoNavigationBar =
       kCustomSpacingBeforeImageIfNoNavigationBar;
@@ -131,14 +131,10 @@ CGFloat const kTableViewCornerRadius = 10;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  _row = indexPath.row;
+
   if (_tableViewIsMinimized) {
     _tableViewIsMinimized = NO;
-
-    _row = indexPath.row;
-
-    // To be used later to show the checkmark icon next to the selected
-    // suggestion.
-    [_tableViewController.tableView reloadData];
 
     // Update table view height.
     __weak __typeof(self) weakSelf = self;
@@ -146,7 +142,12 @@ CGFloat const kTableViewCornerRadius = 10;
                      animations:^{
                        [weakSelf expandTableView];
                      }];
+
+    [self expand];
   }
+
+  // Refresh cells to show the checkmark icon next to the selected suggestion.
+  [_tableViewController.tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
@@ -166,9 +167,14 @@ CGFloat const kTableViewCornerRadius = 10;
       [tableView dequeueReusableCellWithIdentifier:@"cell"];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
+  // Note that both the credentials and URLs will use middle truncation, as it
+  // generally makes it easier to differentiate between different ones, without
+  // having to resort to displaying multiple lines to show the full username
+  // and URL.
   cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+  cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.text = [self descriptionAtRow:indexPath.row];
+  cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
 
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -217,6 +223,34 @@ CGFloat const kTableViewCornerRadius = 10;
 
 #pragma mark - Private
 
+// Configures the bottom sheet's appearance and detents.
+- (void)setUpBottomSheet {
+  self.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  if (@available(iOS 16, *)) {
+    CGFloat bottomSheetHeight = [self initialHeight];
+    auto detentBlock = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      return bottomSheetHeight;
+    };
+    UISheetPresentationControllerDetent* customDetent =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:@"customDetent"
+                              resolver:detentBlock];
+    presentationController.detents = @[ customDetent ];
+    presentationController.selectedDetentIdentifier = @"customDetent";
+  } else {
+    presentationController.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
+    ];
+  }
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+}
+
 // Configures the title view of this ViewController.
 - (UIView*)setUpTitleView {
   NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
@@ -243,8 +277,7 @@ CGFloat const kTableViewCornerRadius = 10;
 
   UITableView* tableView = _tableViewController.tableView;
   tableView.layer.cornerRadius = kTableViewCornerRadius;
-  // FIXME(sugoi): The row height below must be dynamic for accessibility.
-  tableView.rowHeight = kTableViewRowHeight;
+  tableView.rowHeight = [self rowHeight];
   tableView.showsVerticalScrollIndicator = NO;
   tableView.delegate = self;
   tableView.dataSource = self;
@@ -278,29 +311,26 @@ CGFloat const kTableViewCornerRadius = 10;
 // Defaults to the globe symbol if no URL is associated with the cell.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
                        forCell:(UITableViewCell*)cell {
-  CHECK(_faviconLoader);
-  // Try loading the url's favicon.
-  GURL url(base::SysNSStringToUTF8([self descriptionAtRow:indexPath.row]));
-  if (!url.is_empty()) {
-    __weak __typeof(self) weakSelf = self;
-    auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-      [weakSelf configureFaviconAttributes:attributes forCell:cell];
-    };
+  DCHECK(cell);
 
-    _faviconLoader->FaviconForPageUrl(
-        url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-        /*fallback_to_google_server=*/NO, faviconLoadedBlock);
-  } else {
-    [self configureFaviconAttributes:[self defaultWorldIconAttributes]
-                             forCell:cell];
-  }
-}
-
-// Sets favicon attributes for the provided cell.
-- (void)configureFaviconAttributes:(FaviconAttributes*)attributes
-                           forCell:(UITableViewCell*)cell {
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-  [URLCell.faviconView configureWithAttributes:attributes];
+
+  // Set the cell identifier to the associated URL, which we use to fetch the
+  // favicon.
+  NSString* cellIdentifier = [self descriptionAtRow:indexPath.row];
+  URLCell.cellUniqueIdentifier = cellIdentifier;
+
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+    // If the user scrolls quickly, the cell could be reused, so make sure the
+    // favicon still matches the URL used to fetch the favicon (as the favicon
+    // fetch is asynchronous).
+    if ([URLCell.cellUniqueIdentifier isEqualToString:cellIdentifier]) {
+      DCHECK(attributes);
+      [URLCell.faviconView configureWithAttributes:attributes];
+    }
+  };
+  [self.delegate loadFaviconAtIndexPath:indexPath
+                    faviconBlockHandler:faviconLoadedBlock];
 }
 
 // Sets the password bottom sheet's table view to full height.
@@ -315,25 +345,58 @@ CGFloat const kTableViewCornerRadius = 10;
   [self.delegate didSelectSuggestion:_row];
 }
 
-// Returns the default globe symbol
-- (UIImage*)globeIcon {
-  if (@available(iOS 15, *)) {
-    return DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
-                                      kDesiredMediumFaviconSizePt);
-  } else {
-    return DefaultSymbolWithPointSize(kGlobeSymbol,
-                                      kDesiredMediumFaviconSizePt);
-  }
+- (CGFloat)rowHeight {
+  // TODO(crbug.com/1422350): The row height below must be dynamic for
+  // accessibility.
+  return kTableViewRowHeight;
 }
 
-// Returns the default favicon attributes after making sure they are
-// initialized.
-- (FaviconAttributes*)defaultWorldIconAttributes {
-  if (!_defaultWorldIconAttributes) {
-    _defaultWorldIconAttributes =
-        [FaviconAttributes attributesWithImage:[self globeIcon]];
+// Returns the initial height of the bottom sheet.
+- (CGFloat)initialHeight {
+  // Initial height for the bottom sheet while showing a single row.
+  return kBaseHeightForBottomSheet + [self rowHeight];
+}
+
+// Returns the desired height for the bottom sheet (can be larger than the
+// screen).
+- (CGFloat)fullHeight {
+  // Desired height for the bottom sheet while showing all rows.
+  return kBaseHeightForBottomSheet + ([self rowHeight] * _suggestions.count);
+}
+
+// Performs the expand bottom sheet animation.
+- (void)expand {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
+  CGFloat fullHeight = [self fullHeight];
+  if (@available(iOS 16, *)) {
+    if (fullHeight < screenHeight) {
+      // Expand to custom size (only available for iOS 16+).
+      auto fullHeightBlock = ^CGFloat(
+          id<UISheetPresentationControllerDetentResolutionContext> context) {
+        return fullHeight;
+      };
+      UISheetPresentationControllerDetent* customDetentExpand =
+          [UISheetPresentationControllerDetent
+              customDetentWithIdentifier:@"customDetentExpand"
+                                resolver:fullHeightBlock];
+      NSMutableArray* currentDetents =
+          [presentationController.detents mutableCopy];
+      [currentDetents addObject:customDetentExpand];
+      presentationController.detents = [currentDetents copy];
+      [presentationController animateChanges:^{
+        presentationController.selectedDetentIdentifier = @"customDetentExpand";
+      }];
+      return;
+    }
   }
-  return _defaultWorldIconAttributes;
+
+  // Expand to large detent.
+  [presentationController animateChanges:^{
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }];
 }
 
 @end

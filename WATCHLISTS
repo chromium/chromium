@@ -489,6 +489,10 @@
                   '|third_party/blink/web_tests/http/tests/csspaint/' \
                   '|third_party/blink/web_tests/externla/wpt/css/css-paint-api/'
     },
+    'blink_peerconnection': {
+      'filepath': 'third_party/blink/renderer/modules/peerconnection/' \
+                  '|third_party/blink/renderer/platform/peerconnection/',
+    },
     'blink_permissions': {
       'filepath': 'third_party/blink/renderer/modules/permissions/' \
                   '|third_party/blink/public/mojom/permissions/',
@@ -1559,12 +1563,8 @@
         'chrome/android/junit/src/org/chromium/chrome/browser/ntp/|'\
         'chrome/android/java/src/org/chromium/chrome/browser/suggestions/|'\
         'chrome/android/javatests/src/org/chromium/chrome/browser/suggestions/|'\
-        'chrome/browser/android/ntp/ntp_snippets|'\
-        'chrome/browser/ntp_snippets/|'\
-        'components/ntp_snippets/|'\
         'chrome/android/java/res/layout/new_tab_page|'\
-        'chrome/android/java/res/layout/most_visited|'\
-        'ios/chrome/browser/ntp_snippets'
+        'chrome/android/java/res/layout/most_visited'
     },
     'ntp_tiles': {
       'filepath': 'chrome/browser/android/ntp/|'\
@@ -2451,6 +2451,7 @@
     'blink_out_of_process_frames': ['dcheng@chromium.org'],
     'blink_paint' : ['blink-reviews-paint@chromium.org'],
     'blink_paintworklet' : ['xidachen@chromium.org'],
+    'blink_peerconnection' : ['video-networking+chromium-reviews@google.com'],
     'blink_permissions': ['permissions-reviews@chromium.org'],
     'blink_platform': ['kinuko+watch@chromium.org'],
     'blink_platform_graphics': ['blink-reviews-platform-graphics@chromium.org',
@@ -2587,7 +2588,7 @@
                               'chrome-os-gardeners+watch@google.com'],
     'chromeos_timezone': ['alemate+watch@chromium.org'],
     'chromeos_webui': ['alemate+watch@chromium.org'],
-    'chromeos_wifi_sync': ['danlee+watch@google.com',
+    'chromeos_wifi_sync': ['ajayramamurthy+watch@google.com',
                            'jonmann+watch@chromium.org',
                            'stevenjb+watch@chromium.org'],
     'chrometto_proto_extensions': ['ddrone+watch@google.com'],
@@ -2838,7 +2839,7 @@
     'multi_apps': ['samicolon+watch@google.com',
                    'isandrk+watch@chromium.org',
                    'phweiss+watch@chromium.org'],
-    'multidevice': ['danlee+watch-multidevice@google.com',
+    'multidevice': ['ajayramamurthy+watch-multidevice@google.com',
                     'hansberry+watch-multidevice@chromium.org',
                     'joeantonetti+watch-multidevice@google.com',
                     'jonmann+watch-multidevice@chromium.org'],
@@ -2854,7 +2855,7 @@
                    'navigation-cc+reviews@chromium.org'],
     'nearby': ['cclem+watch-nearby@google.com',
                'crisrael+watch-nearby@google.com',
-               'danlee+watch-nearby@google.com',
+               'ajayramamurthy+watch-nearby@google.com',
                'hais+watch-nearby@google.com',
                'hansberry+watch-nearby@chromium.org',
                'hansenmichael+watch-nearby@google.com',
@@ -2928,6 +2929,7 @@
                            'iclelland+watch@chromium.org',
                            'jmedley+watch@chromium.org'],
     'phonehub': ['crisrael+watch-phonehub@google.com',
+                 'ajayramamurthy+watch-phonehub@google.com',
                  'hansberry+watch-phonehub@chromium.org',
                  'jonmann+watch-phonehub@chromium.org',
                  'joeantonetti+watch-phonehub@google.com',
@@ -3011,7 +3013,7 @@
                       'creis+watch@chromium.org'],
     'smartlock': ['bhartmire+watch-smartlock@google.com',
                   'cclem+watch-smartlock@google.com',
-                  'danlee+watch-smartlock@google.com',
+                  'ajayramamurthy+watch-smartlock@google.com',
                   'hansberry+watch-smartlock@chromium.org',
                   'jasonrhee+watch-smartlock@google.com'],
     'smb': ['cros-enterprise-lax+smbwatch@chromium.org'],
@@ -3066,7 +3068,7 @@
     'tests': [],
     'tether': ['bhartmire+watch-tether@google.com',
                'cclem+watch-tether@google.com',
-               'danlee+watch-tether@google.com',
+               'ajayramamurthy+watch-tether@google.com',
                'hansberry+watch-tether@chromium.org',
                'jasonrhee+watch-tether@google.com'],
     'text_to_speech': ['dtseng+watch@chromium.org'],

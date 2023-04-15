@@ -254,12 +254,35 @@ void DecodeImage(
 
 void OnAnimationDecoded(
     LoadedCallback loaded_cb,
+    bool require_encode,
+    std::unique_ptr<std::string> maybe_safe_encoded_data,
     std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
   auto frame_size = mojo_frames.size();
   if (!frame_size) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
+    return;
+  }
+
+  // If `require_encode` is false, do not encode again, return with
+  // `maybe_safe_encoded_data`.
+  if (!require_encode) {
+    auto image_skia =
+        gfx::ImageSkia::CreateFrom1xBitmap(mojo_frames[0]->bitmap);
+    image_skia.MakeThreadSafe();
+
+    auto bytes = base::MakeRefCounted<base::RefCountedBytes>(
+        reinterpret_cast<const uint8_t*>(maybe_safe_encoded_data->data()),
+        maybe_safe_encoded_data->size());
+    auto user_image = std::make_unique<user_manager::UserImage>(
+        image_skia, bytes,
+        frame_size == 1 ? user_manager::UserImage::FORMAT_PNG
+                        : user_manager::UserImage::FORMAT_WEBP);
+    user_image->MarkAsSafe();
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(loaded_cb), std::move(user_image)));
     return;
   }
 
@@ -332,20 +355,21 @@ void OnAnimationDecoded(
       std::move(loaded_cb));
 }
 
-void DecodeAnimation(LoadedCallback loaded_cb, base::StringPiece data) {
-  if (data.empty()) {
+void DecodeAnimation(LoadedCallback loaded_cb,
+                     bool require_encode,
+                     std::unique_ptr<std::string> data) {
+  if (!data || data->empty()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
     return;
   }
 
-  base::span<const uint8_t> bytes = base::make_span(
-      reinterpret_cast<const uint8_t*>(data.data()), data.size());
-
+  auto bytes = base::as_bytes(base::make_span(*data));
   data_decoder::DecodeAnimationIsolated(
       bytes, /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
-      base::BindOnce(&OnAnimationDecoded, std::move(loaded_cb)));
+      base::BindOnce(&OnAnimationDecoded, std::move(loaded_cb), require_encode,
+                     std::move(data)));
 }
 
 void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
@@ -359,7 +383,8 @@ void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
     return;
   }
   base::UmaHistogramBoolean(kURLLoaderDownloadSuccessHistogramName, true);
-  DecodeAnimation(std::move(loaded_cb), *body);
+  DecodeAnimation(std::move(loaded_cb), /*require_encode=*/true,
+                  std::move(body));
 }
 
 }  // namespace
@@ -390,10 +415,6 @@ void StartWithData(
               background_task_runner, data.get(), true /* data_is_ready */);
 }
 
-void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb) {
-  DecodeAnimation(std::move(loaded_cb), data);
-}
-
 void StartWithFilePathAnimated(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& file_path,
@@ -404,12 +425,13 @@ void StartWithFilePathAnimated(
           [](const base::FilePath& file_path) {
             std::string data;
             if (!base::ReadFileToString(file_path, &data)) {
-              return std::string();
+              data.clear();
             }
-            return data;
+            return std::make_unique<std::string>(std::move(data));
           },
           file_path),
-      base::BindOnce(&DecodeAnimation, std::move(loaded_cb)));
+      base::BindOnce(&DecodeAnimation, std::move(loaded_cb),
+                     /*require_encode=*/false));
 }
 
 // Used to load user images from GURL, specifically in the case of

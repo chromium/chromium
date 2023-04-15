@@ -18,9 +18,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -79,11 +80,13 @@ class ChromeVoxTestDelegate : public AccessibilityEventRewriterDelegate {
 
 class ChromeVoxAccessibilityEventRewriterTest
     : public ash::AshTestBase,
-      public ui::EventRewriterChromeOS::Delegate {
+      public ui::EventRewriterAsh::Delegate {
  public:
   ChromeVoxAccessibilityEventRewriterTest() {
-    event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        this, nullptr, false, &fake_ime_keyboard_);
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
+    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
+        this, keyboard_capability_.get(), nullptr, false, &fake_ime_keyboard_);
   }
   ChromeVoxAccessibilityEventRewriterTest(
       const ChromeVoxAccessibilityEventRewriterTest&) = delete;
@@ -94,8 +97,8 @@ class ChromeVoxAccessibilityEventRewriterTest
     ash::AshTestBase::SetUp();
     generator_ = AshTestBase::GetEventGenerator();
     accessibility_event_rewriter_ =
-        std::make_unique<AccessibilityEventRewriter>(
-            event_rewriter_chromeos_.get(), &delegate_);
+        std::make_unique<AccessibilityEventRewriter>(event_rewriter_ash_.get(),
+                                                     &delegate_);
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
         accessibility_event_rewriter_.get());
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
@@ -170,10 +173,11 @@ class ChromeVoxAccessibilityEventRewriterTest
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
 
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 
  private:
-  // ui::EventRewriterChromeOS::Delegate:
+  // ui::EventRewriterAsh::Delegate:
   bool RewriteModifierKeys() override { return true; }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
   bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
@@ -373,7 +377,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
   // Anything with Search gets captured.
   generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
-  // EventRewriterChromeOS actually omits the modifier flag.
+  // EventRewriterAsh actually omits the modifier flag.
   generator_->ReleaseKey(ui::VKEY_CONTROL, 0);
   ExpectCounts(recorded_count, ++delegate_count, ++captured_count);
 
@@ -492,11 +496,13 @@ class SwitchAccessTestDelegate : public AccessibilityEventRewriterDelegate {
 
 class SwitchAccessAccessibilityEventRewriterTest
     : public AshTestBase,
-      public ui::EventRewriterChromeOS::Delegate {
+      public ui::EventRewriterAsh::Delegate {
  public:
   SwitchAccessAccessibilityEventRewriterTest() {
-    event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        this, nullptr, false, &fake_ime_keyboard_);
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
+    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
+        this, keyboard_capability_.get(), nullptr, false, &fake_ime_keyboard_);
   }
   ~SwitchAccessAccessibilityEventRewriterTest() override = default;
 
@@ -510,8 +516,8 @@ class SwitchAccessAccessibilityEventRewriterTest
 
     delegate_ = std::make_unique<SwitchAccessTestDelegate>();
     accessibility_event_rewriter_ =
-        std::make_unique<AccessibilityEventRewriter>(
-            event_rewriter_chromeos_.get(), delegate_.get());
+        std::make_unique<AccessibilityEventRewriter>(event_rewriter_ash_.get(),
+                                                     delegate_.get());
     generator_ = AshTestBase::GetEventGenerator();
     GetContext()->AddPreTargetHandler(&event_capturer_);
 
@@ -571,7 +577,7 @@ class SwitchAccessAccessibilityEventRewriterTest
   }
 
  private:
-  // ui::EventRewriterChromeOS::Delegate:
+  // ui::EventRewriterAsh::Delegate:
   bool RewriteModifierKeys() override { return true; }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
   bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
@@ -613,7 +619,8 @@ class SwitchAccessAccessibilityEventRewriterTest
   std::unique_ptr<SwitchAccessTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
-  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 };
 
 TEST_F(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
@@ -813,7 +820,7 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
   // Send a key event for Control.
   generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN,
                        1 /* keyboard id */);
-  // EventRewriterChromeOS actually omits the modifier flag on release.
+  // EventRewriterAsh actually omits the modifier flag on release.
   generator_->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE, 1 /* keyboard id */);
 
   // Verify Switch Access treated it like Alt.
@@ -822,7 +829,7 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
 
   // Send a key event for Alt.
   generator_->PressKey(ui::VKEY_MENU, ui::EF_ALT_DOWN, 1 /* keyboard id */);
-  // EventRewriterChromeOS actually omits the modifier flag on release.
+  // EventRewriterAsh actually omits the modifier flag on release.
   generator_->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE, 1 /* keyboard id */);
 
   // Verify Switch Access also treats that like Alt.
@@ -887,8 +894,11 @@ class MagnifierTestDelegate : public AccessibilityEventRewriterDelegate {
 class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
  public:
   MagnifierAccessibilityEventRewriterTest() {
-    event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        nullptr, nullptr, false, &fake_ime_keyboard_);
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
+    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
+        nullptr, keyboard_capability_.get(), nullptr, false,
+        &fake_ime_keyboard_);
   }
   ~MagnifierAccessibilityEventRewriterTest() override = default;
 
@@ -902,8 +912,8 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
 
     delegate_ = std::make_unique<MagnifierTestDelegate>();
     accessibility_event_rewriter_ =
-        std::make_unique<AccessibilityEventRewriter>(
-            event_rewriter_chromeos_.get(), delegate_.get());
+        std::make_unique<AccessibilityEventRewriter>(event_rewriter_ash_.get(),
+                                                     delegate_.get());
     generator_ = AshTestBase::GetEventGenerator();
     GetContext()->AddPreTargetHandler(&event_capturer_);
 
@@ -931,7 +941,8 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
   std::unique_ptr<MagnifierTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
-  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 };
 
 TEST_F(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {

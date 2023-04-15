@@ -89,8 +89,7 @@ class BrowserFocusTest : public InProcessBrowserTest {
   void ClickOnView(ViewID vid) { ui_test_utils::ClickOnView(browser(), vid); }
 
   void TestFocusTraversal(WebContents* tab, bool reverse) {
-    const char kGetFocusedElementJS[] =
-        "window.domAutomationController.send(getFocusedElement());";
+    const char kGetFocusedElementJS[] = "getFocusedElement();";
     const char* kExpectedIDs[] = {"textEdit",   "searchButton", "luckyButton",
                                   "googleLink", "gmailLink",    "gmapLink"};
     SCOPED_TRACE(base::StringPrintf("TestFocusTraversal: reverse=%d", reverse));
@@ -147,10 +146,8 @@ class BrowserFocusTest : public InProcessBrowserTest {
         auto observed_details = observer.Wait();
         EXPECT_EQ(is_editable_node, observed_details.is_editable_node);
 
-        std::string focused_id;
-        EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-            tab, kGetFocusedElementJS, &focused_id));
-        EXPECT_STREQ(kExpectedIDs[index], focused_id.c_str());
+        EXPECT_EQ(kExpectedIDs[index],
+                  content::EvalJs(tab, kGetFocusedElementJS));
       }
 
       // On the last Tab key press, focus returns to the browser.

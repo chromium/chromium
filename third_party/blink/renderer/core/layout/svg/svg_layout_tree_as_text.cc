@@ -341,10 +341,10 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
                        length_context.ValueForLength(style.Y(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "width",
-                       length_context.ValueForLength(style.Width(), style,
+                       length_context.ValueForLength(style.UsedWidth(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "height",
-                       length_context.ValueForLength(style.Height(), style,
+                       length_context.ValueForLength(style.UsedHeight(), style,
                                                      SVGLengthMode::kHeight));
   } else if (auto* element = DynamicTo<SVGLineElement>(*svg_element)) {
     WriteNameValuePair(ts, "x1",

@@ -34,10 +34,10 @@
 </style>
 
 <cr-action-menu role-description="$i18n{menu}">
-  <button id="editButton" class="dropdown-item" on-click="onEditTap_">
+  <button id="editButton" class="dropdown-item" on-click="onEditClick_">
     $i18n{editPrinter}
   </button>
-  <button id="removeButton" class="dropdown-item" on-click="onRemoveTap_">
+  <button id="removeButton" class="dropdown-item" on-click="onRemoveClick_">
     $i18n{removePrinter}
   </button>
 </cr-action-menu>
@@ -60,7 +60,7 @@
     <div id="show-more-text">$i18n{showMorePrinters}</div>
     <cr-icon-button class="action-button" id="show-more-icon"
         iron-icon="cr:expand-more"
-        on-click="onShowMoreTap_"
+        on-click="onShowMoreClick_"
         title="$i18n{showMorePrinters}">
     </cr-icon-button>
   </div>

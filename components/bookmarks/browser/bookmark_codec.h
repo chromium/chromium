@@ -86,9 +86,9 @@ class BookmarkCodec {
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
 
-  // Returns whether the GUIDs were reassigned during decoding. Always returns
+  // Returns whether the UUIDs were reassigned during decoding. Always returns
   // false after encoding.
-  bool guids_reassigned() const { return guids_reassigned_; }
+  bool uuids_reassigned() const { return uuids_reassigned_; }
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
@@ -190,22 +190,22 @@ class BookmarkCodec {
   void FinalizeChecksum();
 
   // Whether or not IDs were reassigned by the codec.
-  bool ids_reassigned_;
+  bool ids_reassigned_{false};
 
-  // Whether or not GUIDs were reassigned by the codec.
-  bool guids_reassigned_;
+  // Whether or not UUIDs were reassigned by the codec.
+  bool uuids_reassigned_{false};
 
   // Whether or not IDs are valid. This is initially true, but set to false
   // if an id is missing or not unique.
-  bool ids_valid_;
+  bool ids_valid_{true};
 
   // Contains the id of each of the nodes found in the file. Used to determine
   // if we have duplicates.
   std::set<int64_t> ids_;
 
-  // Contains the GUID of each of the nodes found in the file. Used to determine
+  // Contains the UUID of each of the nodes found in the file. Used to determine
   // if we have duplicates.
-  std::set<base::Uuid> guids_;
+  std::set<base::Uuid> uuids_;
 
   // MD5 context used to compute MD5 hash of all bookmark data.
   base::MD5Context md5_context_;
@@ -215,7 +215,7 @@ class BookmarkCodec {
   std::string stored_checksum_;
 
   // Maximum ID assigned when decoding data.
-  int64_t maximum_id_;
+  int64_t maximum_id_{0};
 
   // Meta info set on bookmark model root.
   BookmarkNode::MetaInfoMap model_meta_info_map_;

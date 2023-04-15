@@ -263,11 +263,6 @@ class SyncServiceImpl : public SyncService,
   void AccountStateChanged();
   void CredentialsChanged();
 
-  // A wrapper around SyncUserSettings::SetSyncRequested(), such that the
-  // notification which is synchronously triggered will be ignored in the
-  // implementation of OnSyncRequestedPrefChange().
-  void SetSyncRequestedAndIgnoreNotification(bool is_requested);
-
   bool IsEngineAllowedToRun() const;
 
   // Reconfigures the data type manager with the latest enabled types.

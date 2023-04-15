@@ -377,7 +377,7 @@ TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStore) {
   SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
-  tested_controller_->set_retailer_name("Retailer");
+  tested_controller_->SetAndCanonicalizeRetailerName("Retailer");
   tested_controller_->set_store_number("1234");
   tested_controller_->Enroll(
       base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
@@ -390,11 +390,50 @@ TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStore) {
   EXPECT_TRUE(
       helper_->WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
   EXPECT_EQ("", GetDeviceRequisition());
-  EXPECT_EQ("Retailer", g_browser_process->local_state()->GetString(
+  EXPECT_EQ("retailer", g_browser_process->local_state()->GetString(
                             prefs::kDemoModeRetailerId));
   EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
                         prefs::kDemoModeStoreId));
 }
+
+struct RetailerNameCanonicalizationTestCase {
+  std::string retailer_name;
+  std::string canonicalized_retailer_name;
+};
+
+class RetailerNameCanonicalizationTest
+    : public DemoSetupControllerTest,
+      public ::testing::WithParamInterface<
+          RetailerNameCanonicalizationTestCase> {
+ public:
+  RetailerNameCanonicalizationTest() = default;
+  ~RetailerNameCanonicalizationTest() override = default;
+};
+
+TEST_P(RetailerNameCanonicalizationTest, SetAndCanonicalizeRetailerName) {
+  tested_controller_->SetAndCanonicalizeRetailerName(GetParam().retailer_name);
+  ASSERT_EQ(tested_controller_->get_retailer_name_for_testing(),
+            GetParam().canonicalized_retailer_name);
+}
+
+const RetailerNameCanonicalizationTestCase kRetailerNameTestCases[] = {
+    {"retailer", "retailer"},
+    {"RETAILER", "retailer"},
+    {"ReTaiLeR", "retailer"},
+    {"retailer with spaces", "retailerwithspaces"},
+    {"retailer' w:th $ymbols", "retailerwthymbols"},
+    // Don't remove numeric chars
+    {"r3ta1ler", "r3ta1ler"},
+    // Test various case-sensitive diacritics and non-latin characters
+    {"rétailër", "rétailër"},
+    {"RÉTAILËR", "rétailër"},
+    {"RÆTÅILØR", "rætåilør"},
+    {"بائع تجزئة", "بائعتجزئة"},
+    {"小売業者.com", "小売業者com"}};
+
+INSTANTIATE_TEST_SUITE_P(TestRetailerNameTransformations,
+                         RetailerNameCanonicalizationTest,
+                         testing::ValuesIn(kRetailerNameTestCases));
 
 }  // namespace
 }  //  namespace ash

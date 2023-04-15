@@ -52,6 +52,9 @@ const char kEnableGpuBenchmarking[] = "enable-gpu-benchmarking";
 const char kDisableLayerTreeHostMemoryPressure[] =
     "disable-layer-tree-host-memory-pressure";
 
+// Controls the number of threads to use for raster tasks.
+const char kNumRasterThreads[] = "num-raster-threads";
+
 // Renders a border around compositor layers to help debug and study
 // layer compositing.
 const char kShowCompositedLayerBorders[] = "show-composited-layer-borders";

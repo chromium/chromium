@@ -817,7 +817,6 @@ PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
     if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // layout-clean. It looks like there are cases where the layout is dirty.
-      base::debug::DumpWithoutCrashing();
       continue;
     }
     if (UNLIKELY(item->HasSelfPaintingLayer()))

@@ -182,8 +182,8 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
   // Create test office files and store in `files_` and create `num_tasks_` fake
   // web apps for all office file types.
   void SetUpTasksAndFiles() {
-    // Create `n` fake web apps for office files with the Doc extension and
-    // store the created `urls_` and `tasks_`.
+    // Create `num_tasks_` fake web apps for office files with the Doc extension
+    // and store the created `urls_` and `tasks_`.
     CreateFakeWebApps(
         profile(), &urls_, &tasks_,
         {kDocxFileExtension, kPptxFileExtension, kXlsxFileExtension},
@@ -403,11 +403,11 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
     dialog_init_complete = !observed_app_ids.empty();
   }
 
-// Check QuickOffice was not observed by the dialog.
+// Check QuickOffice was observed by the dialog as it should always be shown.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ASSERT_TRUE(file_manager::file_tasks::IsExtensionInstalled(
       profile(), extension_misc::kQuickOfficeComponentExtensionId));
-  ASSERT_LT(PositionInList(observed_app_ids,
+  ASSERT_GE(PositionInList(observed_app_ids,
                            extension_misc::kQuickOfficeComponentExtensionId),
             0);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

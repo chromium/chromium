@@ -25,7 +25,6 @@ export const LAYOUT_2_MIN_IMAGE_VISITS = 1;
 export const LAYOUT_2_MIN_VISITS = 3;
 export const LAYOUT_3_MIN_IMAGE_VISITS = 2;
 export const LAYOUT_3_MIN_VISITS = 4;
-export const MIN_RELATED_SEARCHES = 3;
 
 /**
  * Available module UI layouts. This enum must match the numbering for
@@ -221,20 +220,19 @@ function processLayoutVisits(
 }
 
 async function createElement(): Promise<HistoryClustersModuleElement|null> {
-  const data =
-      await HistoryClustersProxyImpl.getInstance().handler.getCluster();
-  // Do not show module if no cluster or not enough related search results.
-  if (!data.cluster ||
-      data.cluster.relatedSearches.length < MIN_RELATED_SEARCHES) {
+  const {clusters} =
+      await HistoryClustersProxyImpl.getInstance().handler.getClusters();
+  // Do not show module if there are no clusters.
+  if (clusters.length === 0) {
     recordSelectedLayout(HistoryClusterLayoutType.NONE);
     return null;
   }
 
   const element = new HistoryClustersModuleElement();
-  element.cluster = data.cluster!;
+  element.cluster = clusters[0];
   // Pull out the SRP to be used in the header and to open the cluster
   // in tab group.
-  element.searchResultPage = data.cluster!.visits[0];
+  element.searchResultPage = clusters[0]!.visits[0];
 
   // History cluster visits minus the SRP that is included, since the SRP
   // isn't used in the layout.

@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel",
   "+chrome/browser/thumbnail/generator/android/java",
   "+chrome/browser/ui/android/appmenu",
+  "+chrome/browser/ui/android/device_lock",
   "-chrome/browser/ui/android/appmenu/internal",
   "+chrome/browser/ui/android/default_browser_promo",
   "+chrome/browser/ui/messages/android/java",

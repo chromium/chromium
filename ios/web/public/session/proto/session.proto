@@ -1,0 +1,28 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package web.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents a single certificate attached to a host.
+//
+// The certificate field is an x509 certificate serialized using the
+// net::x509_util::CryptoBufferAsStringPiece() function and can be
+// unserialized using net::X509Certificate::CreateFromBytes().
+//
+// All the fields are required.
+message CertificateStorage {
+  bytes certificate = 1;
+  string host = 2;
+  uint32 status = 3;
+}
+
+// Represents a collection of certificates.
+//
+// All the fields are required.
+message CertificatesCacheStorage {
+  repeated CertificateStorage certs = 1;
+}

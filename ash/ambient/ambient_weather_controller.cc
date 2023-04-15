@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -17,6 +18,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,10 +69,32 @@ void DownloadImageFromUrl(const std::string& url,
 
 }  // namespace
 
+AmbientWeatherController::ScopedRefresher::ScopedRefresher(
+    AmbientWeatherController* controller)
+    : controller_(controller) {
+  CHECK(controller_);
+}
+
+AmbientWeatherController::ScopedRefresher::~ScopedRefresher() {
+  controller_->OnScopedRefresherDestroyed();
+}
+
 AmbientWeatherController::AmbientWeatherController()
     : weather_model_(std::make_unique<AmbientWeatherModel>()) {}
 
 AmbientWeatherController::~AmbientWeatherController() = default;
+
+std::unique_ptr<AmbientWeatherController::ScopedRefresher>
+AmbientWeatherController::CreateScopedRefresher() {
+  ++num_active_scoped_refreshers_;
+  if (!weather_refresh_timer_.IsRunning()) {
+    FetchWeather();
+    weather_refresh_timer_.Start(FROM_HERE, kWeatherRefreshInterval, this,
+                                 &AmbientWeatherController::FetchWeather);
+  }
+  // `WrapUnique()` needed for ScopedRefresher's private constructor.
+  return base::WrapUnique(new ScopedRefresher(this));
+}
 
 void AmbientWeatherController::FetchWeather() {
   Shell::Get()
@@ -121,6 +146,16 @@ void AmbientWeatherController::OnWeatherConditionIconDownloaded(
     return;
 
   weather_model_->UpdateWeatherInfo(icon, temp_f, show_celsius);
+}
+
+void AmbientWeatherController::OnScopedRefresherDestroyed() {
+  --num_active_scoped_refreshers_;
+  CHECK_GE(num_active_scoped_refreshers_, 0);
+  if (num_active_scoped_refreshers_ == 0) {
+    // This may not have user-visible effects, but refreshing the weather when
+    // there's no UI using it is wasting network/server resources.
+    weather_refresh_timer_.Stop();
+  }
 }
 
 }  // namespace ash

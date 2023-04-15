@@ -251,6 +251,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.ClassifyUrlRequest.NetOrHttpStatus"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The status of the net or http communication to the Kids Management
+    API::ClassifyURL with JSON message format in expected response. This is
+    recorded for each request to the Kids Management API.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
     units="ms" expires_after="2023-12-12">
   <owner>anthie@google.com</owner>
@@ -319,19 +330,6 @@ chromium-metrics-reviews@google.com.
     foreground time of Chrome browser. Ignores the time when video or audio is
     playing in the background, or Chrome browser is invisible. Also ignores the
     time when UsageTimeStateNotifier::UsageTimeState is inactive.
-  </summary>
-</histogram>
-
-<histogram name="FamilyUser.DenylistSource" enum="FamilyUserDenylistSource"
-    expires_after="2023-12-12">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Records the source from which the website filter denylist was loaded either
-    at login or when web content filter settings change. The default behavior is
-    to load the current denylist. If that fails, then loading the old denylist
-    will be attempted. If that also fails, then it is logged that there is no
-    denylist source.
   </summary>
 </histogram>
 
@@ -567,17 +565,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ManagedUsers.ClassifyUrlRequest.NetOrHttpStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    The status of the net or http communication to the Kids Management
-    API::ClassifyURL with JSON message format in expected response. This is
-    recorded for each request to the Kids Management API.
-  </summary>
-</histogram>
-
 <histogram name="ManagedUsers.FilteringResult"
     enum="SupervisedUserSafetyFilterResult" expires_after="2023-12-12">
   <owner>agawronska@chromium.org</owner>
@@ -645,19 +632,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The extra page load delays introduced by network requests due to the
     supervised user SafeSites feature, measured once per page load.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.SafetyFilter"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2023-12-12">
-  <owner>agawronska@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The counts of results from the supervised user safety filter. Each entry
-    includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
-    the page transition type (how the user got there, e.g. typed URL, clicked
-    link). This only includes URL requests that were handled by the SafeSites
-    filter (both online and the static blocklist).
   </summary>
 </histogram>
 

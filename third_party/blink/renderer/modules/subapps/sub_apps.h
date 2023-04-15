@@ -42,7 +42,7 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
       ExceptionState&);
   ScriptPromise list(ScriptState*, ExceptionState&);
   ScriptPromise remove(ScriptState*,
-                       const String& unhashed_app_id_path,
+                       const Vector<String>& unhashed_app_id_paths,
                        ExceptionState&);
 
  private:

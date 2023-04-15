@@ -87,6 +87,10 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         readOnly: true,
       },
 
+      /**
+       * The full URL (e.g. chrome://os-settings/internet) of the currently
+       * selected menu item. Not to be confused with the href attribute.
+       */
       selectedUrl_: {
         type: String,
         value: '',
@@ -276,8 +280,16 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.selectedUrl_ = url;
   }
 
-  private onSelectorActivate_(event: CustomEvent<{selected: string}>): void {
+  private onItemActivated_(event: CustomEvent<{selected: string}>): void {
     this.setSelectedUrl_(event.detail.selected);
+  }
+
+  private onItemSelected_(e: CustomEvent<{item: HTMLElement}>) {
+    e.detail.item.setAttribute('aria-current', 'true');
+  }
+
+  private onItemDeselected_(e: CustomEvent<{item: HTMLElement}>) {
+    e.detail.item.removeAttribute('aria-current');
   }
 
   /**

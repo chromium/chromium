@@ -7,23 +7,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/test_reg_util_win.h"
-#endif
-
-WebAppTest::WebAppTest() {
-#if BUILDFLAG(IS_WIN)
-  registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
-  base::win::RegKey key;
-  // In a real registry, this key would exist, but since we're using
-  // hive override, it's empty, so we create this key.
-  // TODO(https://b/273981744): Move this and the registry override to the
-  // OsIntegrationTestOverride class.
-  key.Create(HKEY_CURRENT_USER,
-             L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-             KEY_SET_VALUE);
-#endif
-}
+WebAppTest::WebAppTest() = default;
 
 void WebAppTest::SetUp() {
   ASSERT_TRUE(testing_profile_manager_.SetUp());

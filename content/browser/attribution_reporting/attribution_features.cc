@@ -12,8 +12,4 @@ BASE_FEATURE(kAttributionVerboseDebugReporting,
              "AttributionVerboseDebugReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAttributionFencedFrameReportingBeacon,
-             "AttributionFencedFrameReportingBeacon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace content

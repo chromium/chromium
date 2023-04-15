@@ -474,7 +474,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Stores the current variable refresh rate enabled state.
   bool current_vrr_state_ = false;
   // Stores the requested variable refresh rate enabled state.
-  absl::optional<bool> pending_vrr_state_ = absl::nullopt;
+  absl::optional<bool> pending_vrr_state_;
 
   // This must be the last variable.
   base::WeakPtrFactory<DisplayConfigurator> weak_ptr_factory_{this};

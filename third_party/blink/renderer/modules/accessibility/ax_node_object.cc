@@ -1395,10 +1395,10 @@ ax::mojom::blink::Role InferredCSSToggleRole(Node* node) {
     case CSSToggleRole::kAccordionItemButton:
       return ax::mojom::blink::Role::kButton;
     case CSSToggleRole::kTabContainer:
-      // TODO(dbaron): We should verify that using kTabList really
-      // works here, since this is a container that has both the tab
-      // list *and* the tab panels.  We should also make sure that
-      // posinset/setsize work correctly for the tabs.
+      // TODO(https://crbug.com/1250716): We should verify that using
+      // kTabList really works here, since this is a container that has
+      // both the tab list *and* the tab panels.  We should also make
+      // sure that posinset/setsize work correctly for the tabs.
       return ax::mojom::blink::Role::kTabList;
     case CSSToggleRole::kTab:
       return ax::mojom::blink::Role::kTab;
@@ -1445,8 +1445,8 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
   //   3. Native markup role
   // but we may decide to change how the CSS Toggle inference fits in.
   //
-  // TODO(dbaron): Perhaps revisit whether there are types of elements
-  // where toggles should not work.
+  // TODO(https://crbug.com/1250716): Perhaps revisit whether there are
+  // types of elements where toggles should not work.
 
   if (aria_role_ != ax::mojom::blink::Role::kUnknown) {
     return aria_role_;

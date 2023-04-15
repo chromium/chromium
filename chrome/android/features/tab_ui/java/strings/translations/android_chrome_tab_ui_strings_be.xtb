@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
-<translation id="1181037720776840403">Выдаліць</translation>
 <translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1403228085774130835">Закрытыя ўкладкі можна знайсці ў раздзеле "Нядаўнія ўкладкі" ў галоўным меню браўзера Chrome</translation>
 <translation id="1455506303394048917">Звесткі пра вашы дзеянні на гэтых укладках у рэжыме інкогніта будуць выдалены з прылады</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Выдаліць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку з групы.}one{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку з групы.}few{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі з групы.}many{Выдаліць <ph name="TABS_COUNT_MANY" /> выбраных укладак з групы.}other{Выдаліць <ph name="TABS_COUNT_MANY" /> выбранай укладкі з групы.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Дадаць укладку ў закладкі}one{Дадаць укладкі ў закладкі}few{Дадаць укладкі ў закладкі}many{Дадаць укладкі ў закладкі}other{Дадаць укладкі ў закладкі}}</translation>
-<translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
-<translation id="257674075312929031">Група</translation>
 <translation id="2613747923081026172">Стварыць групу</translation>
 <translation id="2662028055331606429">Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Наведаць сайт</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Каб згрупаваць укладкі, перацягвайце іх</translation>
 <translation id="5846292395804797011">Закрыць групу "<ph name="TITLE_OF_GROUP" />" з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
-<translation id="6040143037577758943">Закрыць</translation>
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Схаваць рэжым множнага выбару</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Абагуліць укладку}one{Абагуліць укладкі}few{Абагуліць укладкі}many{Абагуліць укладкі}other{Абагуліць укладкі}}</translation>
 <translation id="7129458170538955174">Інфармацыя пра гэту краму разгорнута на палову экрана</translation>
-<translation id="7151209024774799310">Выдаліць укладкі з групы</translation>
 <translation id="7204204600596740190">Рэжым множнага выбару</translation>
 <translation id="7326879924029668159">Паглядзець палітыку вяртання і іншую інфармацыю</translation>
 <translation id="7352298686197644113">Даведайцеся, які тавар на адкрытых вамі ўкладках патаннеў</translation>

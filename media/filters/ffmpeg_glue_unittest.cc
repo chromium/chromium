@@ -46,8 +46,7 @@ class MockProtocol : public FFmpegURLProtocol {
 
 class FFmpegGlueTest : public ::testing::Test {
  public:
-  FFmpegGlueTest()
-      : protocol_(new StrictMock<MockProtocol>()) {
+  FFmpegGlueTest() : protocol_(std::make_unique<StrictMock<MockProtocol>>()) {
     // IsStreaming() is called when opening.
     EXPECT_CALL(*protocol_.get(), IsStreaming()).WillOnce(Return(true));
     glue_ = std::make_unique<FFmpegGlue>(protocol_.get());

@@ -4,7 +4,10 @@
 
 #include "services/network/network_sandbox_hook_linux.h"
 
+#include <dlfcn.h>
+
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
@@ -38,9 +41,10 @@ std::vector<BrokerFilePermission> GetNetworkFilePermissions(
             BrokerFilePermission::AllPermissionsRecursive("/")};
   }
 
-  const std::array<base::FilePath, 4> system_config_files = {
+  const std::array<base::FilePath, 5> system_config_files = {
       base::FilePath("/etc/hosts"), base::FilePath("/etc/resolv.conf"),
-      base::FilePath("/etc/nsswitch.conf"), base::FilePath("/etc/host.conf")};
+      base::FilePath("/etc/nsswitch.conf"), base::FilePath("/etc/host.conf"),
+      base::FilePath("/etc/gai.conf")};
 
   // Each system config file needs read permissions and watch permissions, and
   // read and watch permissions for its symlink target, if any. This is up to
@@ -81,8 +85,30 @@ std::vector<BrokerFilePermission> GetNetworkFilePermissions(
   return perms;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void LoadNetworkLibraries() {
+  const std::string libraries[]{
+      // On ChromeOS DNS resolution will occur in process, so load the libraries
+      // now. Note that depending on the glibc version, these libraries may have
+      // been built directly into libc.so, so it's not an error if they fail to
+      // load.
+      "libnss_files.so.2", "libnss_dns.so.2"};
+  for (const auto& library_name : libraries) {
+    if (!dlopen(library_name.c_str(),
+                RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE)) {
+      VLOG(1) << "LoadNetworkLibraries() dlopen() of " << library_name
+              << " failed with error: " << dlerror();
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool NetworkPreSandboxHook(std::vector<std::string> network_context_parent_dirs,
                            sandbox::policy::SandboxLinux::Options options) {
+#if BUILDFLAG(IS_CHROMEOS)
+  LoadNetworkLibraries();
+#endif
+
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
 
   VLOG(1) << "Using network service sandbox.";

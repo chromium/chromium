@@ -4,7 +4,6 @@
 
 import("//build/config/win/visual_studio_version.gni")
 import("//build/toolchain/win/toolchain.gni")
-import("//build/toolchain/win/win_toolchain_data.gni")
 
 assert(is_win, "Should only be running on Windows")
 
@@ -64,15 +63,24 @@ win_toolchains("nacl_win64") {
 # WinUWP toolchains. Only define these when targeting them.
 
 if (target_os == "winuwp") {
-  if (target_cpu == "x86") {
-    store_cpu_toolchain_data = win_toolchain_data_x86
-  } else if (target_cpu == "x64") {
-    store_cpu_toolchain_data = win_toolchain_data_x64
-  } else if (target_cpu == "arm64") {
-    store_cpu_toolchain_data = win_toolchain_data_arm64
-  } else {
-    error("Unsupported target_cpu, add it to win_toolchain_data.gni")
-  }
+  assert(target_cpu == "x64" || target_cpu == "x86" || target_cpu == "arm" ||
+         target_cpu == "arm64")
+
+  # Note that //build/toolchain/win/win_toolchain_data.gni collects the output
+  # of setup_toolchain.py, however it's not compatible with the UWP toolchain,
+  # as the UWP toolchain requires the `environment.store_$CPU` variable, instead
+  # of the usual `environment.$CPU`.
+  store_cpu_toolchain_data =
+      exec_script("//build/toolchain/win/setup_toolchain.py",
+                  [
+                    visual_studio_path,
+                    windows_sdk_path,
+                    visual_studio_runtime_dirs,
+                    target_os,
+                    target_cpu,
+                    "environment.store_" + target_cpu,
+                  ],
+                  "scope")
 
   msvc_toolchain("uwp_" + target_cpu) {
     environment = "environment.store_" + target_cpu

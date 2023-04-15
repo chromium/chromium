@@ -39,11 +39,11 @@
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/keyboard_capability.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/event.h"
@@ -75,24 +75,11 @@ constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
 constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 
-// A tag that should fail parsing for the top row layout.
-constexpr char kKbdTopRowLayoutInvalidTag[] = "X";
-
 // A default example of the layout string read from the function_row_physmap
 // sysfs attribute. The values represent the scan codes for each position
 // in the top row, which maps to F-Keys.
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
-
-// A tag that should fail parsing for the top row custom scan code string.
-constexpr char kKbdInvalidCustomTopRowLayout[] = "X X X";
-
-// Values for enum output parameters to IdentifyKeyboard() that do not
-// match any enum types.
-const auto kImpossibleDeviceType =
-    static_cast<ui::KeyboardCapability::DeviceType>(-1);
-const auto kImpossibleKeyboardTopRowLayout =
-    static_cast<ui::KeyboardCapability::KeyboardTopRowLayout>(-1);
 
 class TestEventRewriterContinuation
     : public ui::test::TestEventRewriterContinuation {
@@ -203,6 +190,8 @@ class EventRewriterTest : public ChromeAshTestBase {
   ~EventRewriterTest() override {}
 
   void SetUp() override {
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
     input_method_manager_mock_ = new input_method::MockInputMethodManagerImpl;
     input_method::InitializeForTesting(
         input_method_manager_mock_);  // pass ownership
@@ -213,8 +202,9 @@ class EventRewriterTest : public ChromeAshTestBase {
         nullptr, std::move(deprecation_controller), nullptr);
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
-    rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
-        delegate_.get(), nullptr, false, &fake_ime_keyboard_);
+    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+        delegate_.get(), keyboard_capability_.get(), nullptr, false,
+        &fake_ime_keyboard_);
     ChromeAshTestBase::SetUp();
   }
 
@@ -290,7 +280,6 @@ class EventRewriterTest : public ChromeAshTestBase {
 
     // Reset the state of the EventRewriter.
     rewriter_->ResetStateForTesting();
-    rewriter_->KeyboardDeviceAddedForTesting(kKeyboardDeviceId);
     rewriter_->set_last_keyboard_device_id_for_testing(kKeyboardDeviceId);
 
     return keyboard;
@@ -390,8 +379,9 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
+  std::unique_ptr<ui::EventRewriterAsh> rewriter_;
   DeprecationNotificationController* deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
 };
@@ -4392,8 +4382,9 @@ class EventRewriterAshTest : public ChromeAshTestBase {
     sticky_keys_controller_ = Shell::Get()->sticky_keys_controller();
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(nullptr);
     delegate_->set_pref_service_for_testing(prefs());
-    rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
-        delegate_.get(), sticky_keys_controller_, false, &fake_ime_keyboard_);
+    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+        delegate_.get(), keyboard_capability_.get(), sticky_keys_controller_,
+        false, &fake_ime_keyboard_);
     Preferences::RegisterProfilePrefs(prefs_.registry());
     source_.AddEventRewriter(rewriter_.get());
     sticky_keys_controller_->Enable(true);
@@ -4409,8 +4400,9 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
  private:
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
+  std::unique_ptr<ui::EventRewriterAsh> rewriter_;
 
   EventBuffer buffer_;
   TestEventSource source_;
@@ -4726,122 +4718,6 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     // No notification expected for this case.
     EXPECT_EQ(message_center_.NotificationCount(), 0u);
   }
-}
-
-TEST_F(EventRewriterTest, IdentifyKeyboardUnspecified) {
-  ui::InputDevice input_device =
-      SetupKeyboard("Internal Keyboard", kKbdTopRowLayoutUnspecified,
-                    ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/false);
-
-  auto out_type = kImpossibleDeviceType;
-  auto out_layout = kImpossibleKeyboardTopRowLayout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      scan_code_map;
-
-  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
-      input_device, &out_type, &out_layout, &scan_code_map);
-  EXPECT_TRUE(result);
-  EXPECT_EQ(out_type,
-            ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
-  EXPECT_EQ(
-      out_layout,
-      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault);
-  EXPECT_TRUE(scan_code_map.empty());
-}
-
-TEST_F(EventRewriterTest, IdentifyKeyboardInvalidLayoutTag) {
-  ui::InputDevice input_device =
-      SetupKeyboard("Internal Keyboard", kKbdTopRowLayoutInvalidTag,
-                    ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/false);
-
-  auto out_type = kImpossibleDeviceType;
-  auto out_layout = kImpossibleKeyboardTopRowLayout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      scan_code_map;
-
-  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
-      input_device, &out_type, &out_layout, &scan_code_map);
-  EXPECT_FALSE(result);
-  EXPECT_EQ(out_type, ui::KeyboardCapability::DeviceType::kDeviceUnknown);
-  EXPECT_EQ(
-      out_layout,
-      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault);
-  EXPECT_TRUE(scan_code_map.empty());
-}
-
-TEST_F(EventRewriterTest, IdentifyKeyboardInvalidCustomLayout) {
-  ui::InputDevice input_device =
-      SetupKeyboard("Internal Keyboard", kKbdInvalidCustomTopRowLayout,
-                    ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true);
-
-  auto out_type = kImpossibleDeviceType;
-  auto out_layout = kImpossibleKeyboardTopRowLayout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      scan_code_map;
-
-  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
-      input_device, &out_type, &out_layout, &scan_code_map);
-  // Unparsable custom top row layout attributes are ignored and the
-  // keyboard treated as default layout.
-  EXPECT_TRUE(result);
-  EXPECT_EQ(out_type,
-            ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
-  EXPECT_EQ(
-      out_layout,
-      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault);
-  EXPECT_TRUE(scan_code_map.empty());
-}
-
-TEST_F(EventRewriterTest, IdentifyKeyboardExternalChrome) {
-  ui::InputDevice input_device =
-      SetupKeyboard("External Chrome Keyboard", kKbdTopRowLayout2Tag,
-                    ui::INPUT_DEVICE_UNKNOWN, /*has_custom_top_row=*/false);
-
-  auto out_type = kImpossibleDeviceType;
-  auto out_layout = kImpossibleKeyboardTopRowLayout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      scan_code_map;
-
-  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
-      input_device, &out_type, &out_layout, &scan_code_map);
-  EXPECT_TRUE(result);
-  EXPECT_EQ(
-      out_type,
-      ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard);
-  EXPECT_EQ(out_layout,
-            ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2);
-  EXPECT_TRUE(scan_code_map.empty());
-}
-
-TEST_F(EventRewriterTest, IdentifyKeyboardCustomLayout) {
-  ui::InputDevice input_device = SetupKeyboard(
-      "Internal Custom Layout Keyboard", kKbdDefaultCustomTopRowLayout,
-      ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true);
-
-  auto out_type = kImpossibleDeviceType;
-  auto out_layout = kImpossibleKeyboardTopRowLayout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      scan_code_map;
-
-  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
-      input_device, &out_type, &out_layout, &scan_code_map);
-
-  EXPECT_TRUE(result);
-  EXPECT_EQ(out_type,
-            ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
-  EXPECT_EQ(
-      out_layout,
-      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom);
-
-  // Basic inspection to match kKbdDefaultCustomTopRowLayout
-  EXPECT_EQ(15u, scan_code_map.size());
-
-  ASSERT_TRUE(scan_code_map.contains(1));
-  EXPECT_EQ(ui::VKEY_F1, scan_code_map[1].key_code);
-  ASSERT_TRUE(scan_code_map.contains(2));
-  EXPECT_EQ(ui::VKEY_F2, scan_code_map[2].key_code);
-  ASSERT_TRUE(scan_code_map.contains(15));
-  EXPECT_EQ(ui::VKEY_F15, scan_code_map[15].key_code);
 }
 
 TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
@@ -5317,7 +5193,7 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
 }
 
 class ExtensionRewriterInputTest : public EventRewriterAshTest,
-                                   public ui::EventRewriterChromeOS::Delegate {
+                                   public ui::EventRewriterAsh::Delegate {
  public:
   ExtensionRewriterInputTest() = default;
   ExtensionRewriterInputTest(const ExtensionRewriterInputTest&) = delete;
@@ -5327,8 +5203,9 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
 
   void SetUp() override {
     EventRewriterAshTest::SetUp();
-    event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        this, nullptr, false, &fake_ime_keyboard_);
+    event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
+        this, Shell::Get()->keyboard_capability(), nullptr, false,
+        &fake_ime_keyboard_);
   }
 
   void SetModifierRemapping(const std::string& pref_name,
@@ -5350,16 +5227,16 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
   }
 
   void ExpectEventRewrittenTo(const KeyTestCase& test) {
-    CheckKeyTestCase(event_rewriter_chromeos_.get(), test);
+    CheckKeyTestCase(event_rewriter_ash_.get(), test);
   }
 
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
-  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 
  private:
-  // ui::EventRewriterChromeOS::Delegate:
+  // ui::EventRewriterAsh::Delegate:
   bool RewriteModifierKeys() override { return true; }
   bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
     return true;
@@ -5470,7 +5347,7 @@ class ModifierPressedMetricsTest
     : public EventRewriterTest,
       public testing::WithParamInterface<
           std::tuple<KeyTestCase::Event,
-                     ui::EventRewriterChromeOS::ModifierKeyUsageMetric,
+                     ui::EventRewriterAsh::ModifierKeyUsageMetric,
                      std::vector<std::string>>> {
  public:
   void SetUp() override {
@@ -5480,7 +5357,7 @@ class ModifierPressedMetricsTest
 
  protected:
   KeyTestCase::Event event_;
-  ui::EventRewriterChromeOS::ModifierKeyUsageMetric modifier_key_usage_mapping_;
+  ui::EventRewriterAsh::ModifierKeyUsageMetric modifier_key_usage_mapping_;
   std::vector<std::string> key_pref_names_;
 };
 
@@ -5488,65 +5365,64 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ModifierPressedMetricsTest,
     testing::ValuesIn(
-        std::vector<
-            std::tuple<KeyTestCase::Event,
-                       ui::EventRewriterChromeOS::ModifierKeyUsageMetric,
-                       std::vector<std::string>>>{
+        std::vector<std::tuple<KeyTestCase::Event,
+                               ui::EventRewriterAsh::ModifierKeyUsageMetric,
+                               std::vector<std::string>>>{
             {{ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
               ui::DomKey::META},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kMetaLeft,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kMetaLeft,
              {::prefs::kLanguageRemapSearchKeyTo,
               ::prefs::kLanguageRemapExternalCommandKeyTo,
               ::prefs::kLanguageRemapExternalMetaKeyTo}},
             {{ui::VKEY_RWIN, ui::DomCode::META_RIGHT, ui::EF_COMMAND_DOWN,
               ui::DomKey::META},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kMetaRight,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kMetaRight,
              {::prefs::kLanguageRemapSearchKeyTo,
               ::prefs::kLanguageRemapExternalCommandKeyTo,
               ::prefs::kLanguageRemapExternalMetaKeyTo}},
             {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
               ui::DomKey::CONTROL},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kControlLeft,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlLeft,
              {::prefs::kLanguageRemapControlKeyTo}},
             {{ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT, ui::EF_CONTROL_DOWN,
               ui::DomKey::CONTROL},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kControlRight,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlRight,
              {::prefs::kLanguageRemapControlKeyTo}},
             {{ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
               ui::DomKey::ALT},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kAltLeft,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kAltLeft,
              {::prefs::kLanguageRemapAltKeyTo}},
             {{ui::VKEY_MENU, ui::DomCode::ALT_RIGHT, ui::EF_ALT_DOWN,
               ui::DomKey::ALT},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kAltRight,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kAltRight,
              {::prefs::kLanguageRemapAltKeyTo}},
             {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN,
               ui::DomKey::SHIFT},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kShiftLeft,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kShiftLeft,
              // Shift keys cannot be remapped and therefore do not have a real
              // "pref" path.
              {"fakePrefPath"}},
             {{ui::VKEY_SHIFT, ui::DomCode::SHIFT_RIGHT, ui::EF_SHIFT_DOWN,
               ui::DomKey::SHIFT},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kShiftRight,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kShiftRight,
              // Shift keys cannot be remapped and therefore do not have a real
              // "pref" path.
              {"fakePrefPath"}},
             {{ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
               ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kCapsLock,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kCapsLock,
              {::prefs::kLanguageRemapCapsLockKeyTo}},
             {{ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
               ui::DomKey::BACKSPACE},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kBackspace,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace,
              {::prefs::kLanguageRemapBackspaceKeyTo}},
             {{ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE,
               ui::DomKey::ESCAPE},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kEscape,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kEscape,
              {::prefs::kLanguageRemapEscapeKeyTo}},
             {{ui::VKEY_ASSISTANT, ui::DomCode::LAUNCH_ASSISTANT, ui::EF_NONE,
               ui::DomKey::LAUNCH_ASSISTANT},
-             ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kAssistant,
+             ui::EventRewriterAsh::ModifierKeyUsageMetric::kAssistant,
              {::prefs::kLanguageRemapAssistantKeyTo}}}));
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
@@ -5607,7 +5483,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
-      ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
 
   TestExternalChromeKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
   histogram_tester.ExpectUniqueSample(
@@ -5615,7 +5491,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
-      ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
 
   TestExternalAppleKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
   histogram_tester.ExpectUniqueSample(
@@ -5623,7 +5499,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
-      ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
 
   TestExternalGenericKeyboard({{ui::ET_KEY_PRESSED, event_, backspace_event}});
   histogram_tester.ExpectUniqueSample(
@@ -5631,7 +5507,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
       modifier_key_usage_mapping_, 1);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
-      ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kBackspace, 1);
+      ui::EventRewriterAsh::ModifierKeyUsageMetric::kBackspace, 1);
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
@@ -5645,11 +5521,10 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
 
   const bool right = ui::KeycodeConverter::DomCodeToLocation(event_.code) ==
                      ui::DomKeyLocation::RIGHT;
-  const ui::EventRewriterChromeOS::ModifierKeyUsageMetric
+  const ui::EventRewriterAsh::ModifierKeyUsageMetric
       remapped_modifier_key_usage_mapping =
-          right
-              ? ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kControlRight
-              : ui::EventRewriterChromeOS::ModifierKeyUsageMetric::kControlLeft;
+          right ? ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlRight
+                : ui::EventRewriterAsh::ModifierKeyUsageMetric::kControlLeft;
 
   const KeyTestCase::Event control_event{
       ui::VKEY_CONTROL,
@@ -5782,8 +5657,9 @@ class EventRewriterSettingsSplitTest : public EventRewriterTest {
     deprecation_controller_ = deprecation_controller.get();
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(
         nullptr, std::move(deprecation_controller), mock_controller_.get());
-    rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
-        delegate_.get(), nullptr, false, &fake_ime_keyboard_);
+    rewriter_ = std::make_unique<ui::EventRewriterAsh>(
+        delegate_.get(), Shell::Get()->keyboard_capability(), nullptr, false,
+        &fake_ime_keyboard_);
   }
 
   void TearDown() override {

@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -118,21 +119,27 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
 
   // Call a method on both IDBFactory remotes and wait for both replies
   // to ensure that BindIndexedDB has completed for both storage keys.
-  base::RunLoop loop;
-  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
-      /*expect_connection=*/false);
-  callbacks->CallOnInfoSuccess(base::BarrierClosure(2, loop.QuitClosure()));
+  base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                         blink::mojom::IDBErrorPtr>
+      info_future;
   auto example_bucket_locator = storage::BucketLocator();
   example_bucket_locator.storage_key = example_storage_key_;
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      callbacks, example_bucket_locator,
-      indexed_db_context_->GetDataPath(example_bucket_locator));
+      example_bucket_locator,
+      indexed_db_context_->GetDataPath(example_bucket_locator),
+      info_future.GetCallback());
+  ASSERT_TRUE(info_future.Wait());
+
+  base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                         blink::mojom::IDBErrorPtr>
+      info_future2;
   auto google_bucket_locator = storage::BucketLocator();
   google_bucket_locator.storage_key = google_storage_key_;
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      callbacks, google_bucket_locator,
-      indexed_db_context_->GetDataPath(google_bucket_locator));
-  loop.Run();
+      google_bucket_locator,
+      indexed_db_context_->GetDataPath(google_bucket_locator),
+      info_future2.GetCallback());
+  ASSERT_TRUE(info_future2.Wait());
 
   // Check default bucket exists for https://example.com.
   storage::QuotaErrorOr<storage::BucketInfo> result =
@@ -167,22 +174,17 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
       example_remote.BindNewPipeAndPassReceiver());
 
   // IDBFactory::GetDatabaseInfo
-  base::RunLoop loop_1;
-  auto mock_callbacks =
-      std::make_unique<testing::StrictMock<MockMojoIndexedDBCallbacks>>();
-  EXPECT_CALL(*mock_callbacks, Error(blink::mojom::IDBException::kUnknownError,
-                                     std::u16string(u"Internal error.")))
-      .Times(1)
-      .WillOnce(base::test::RunClosure(loop_1.QuitClosure()));
-
-  example_remote->GetDatabaseInfo(mock_callbacks->CreateInterfacePtrAndBind());
-  loop_1.Run();
-
-  testing::Mock::VerifyAndClear(&mock_callbacks);
+  base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                         blink::mojom::IDBErrorPtr>
+      info_future;
+  example_remote->GetDatabaseInfo(info_future.GetCallback());
+  auto [info, error] = info_future.Take();
+  EXPECT_EQ(blink::mojom::IDBException::kUnknownError, error->error_code);
+  EXPECT_EQ(u"Internal error.", error->error_message);
 
   // IDBFactory::Open
   base::RunLoop loop_2;
-  mock_callbacks =
+  auto mock_callbacks =
       std::make_unique<testing::StrictMock<MockMojoIndexedDBCallbacks>>();
   auto database_callbacks =
       std::make_unique<MockMojoIndexedDBDatabaseCallbacks>();

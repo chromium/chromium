@@ -612,6 +612,38 @@ mojom("mojom_platform") {
       traits_headers = [ "//third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/public/common:headers" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ManifestUrlPattern"
+          cpp = "::blink::Manifest::UrlPattern"
+        },
+        {
+          mojom = "blink.mojom.UrlPatternPart"
+          cpp = "::liburlpattern::Part"
+        },
+        {
+          mojom = "blink.mojom.PatternTemplate"
+          cpp = "::liburlpattern::Part"
+        },
+        {
+          mojom = "blink.mojom.FixedPattern"
+          cpp = "::liburlpattern::Part"
+        },
+        {
+          mojom = "blink.mojom.WildcardPattern"
+          cpp = "::liburlpattern::Part"
+        },
+        {
+          mojom = "blink.mojom.Modifier"
+          cpp = "::liburlpattern::Modifier"
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/manifest/manifest_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
   ]
   cpp_typemaps = [
     {
@@ -1506,7 +1538,6 @@ mojom("mojom_modules") {
         "//third_party/blink/renderer/modules/indexeddb/idb_key_path.h",
         "//third_party/blink/renderer/modules/indexeddb/idb_key_range.h",
         "//third_party/blink/renderer/modules/indexeddb/idb_metadata.h",
-        "//third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h",
         "//third_party/blink/renderer/modules/indexeddb/idb_value.h",
       ]
       traits_deps = [ "//third_party/blink/renderer/platform/wtf" ]

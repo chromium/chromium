@@ -62,11 +62,6 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 
  private:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {performance_manager::features::kHighEfficiencyModeAvailable,
-         performance_manager::features::kBatterySaverModeAvailable},
-        {});
-
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());
 
@@ -89,7 +84,6 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple local_state_;
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<performance_manager::user_tuning::
                       TestUserPerformanceTuningManagerEnvironment>

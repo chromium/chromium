@@ -57,6 +57,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
     kSecure,
   };
 
+  // Flags for changing how Floss constructs a socket.
+  enum class SocketFlags : int {
+    kSocketFlagsEncrypt = 1 << 0,
+    kSocketFlagsAuth = 1 << 1,
+    kSocketFlagsNoSdp = 1 << 2,
+    kSocketFlagsAuthMitm = 1 << 3,
+    kSocketFlagsAuth16Digit = 1 << 4
+  };
+
+  static int GetRawFlossFlagsFromBluetoothFlags(bool encrypt,
+                                                bool auth,
+                                                bool auth_mitm,
+                                                bool auth_16_digit,
+                                                bool no_sdp);
+
   // Represents a listening socket.
   struct FlossListeningSocket {
     SocketId id = FlossSocketManager::kInvalidSocketId;
@@ -134,11 +149,30 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   FlossSocketManager();
   ~FlossSocketManager() override;
 
-  // Listen for connections using a connection oriented LE L2Cap channel.
+  // Listen for connections using a L2Cap channel.
   virtual void ListenUsingL2cap(const Security security_level,
                                 ResponseCallback<BtifStatus> callback,
                                 ConnectionStateChanged ready_cb,
                                 ConnectionAccepted new_connection_cb);
+
+  // Listen for connections using a connection oriented LE L2Cap channel.
+  virtual void ListenUsingL2capLe(const Security security_level,
+                                  ResponseCallback<BtifStatus> callback,
+                                  ConnectionStateChanged ready_cb,
+                                  ConnectionAccepted new_connection_cb);
+
+  // Listen for connections using an RFCOMM channel. This API exposes all of the
+  // options supported by Floss and should only be used if there are no safer
+  // variants capable of supporting a use-case, such as when manually
+  // constructing SDP records for a listening socket.
+  virtual void ListenUsingRfcommAlt(
+      const absl::optional<std::string> name,
+      const absl::optional<device::BluetoothUUID> application_uuid,
+      const absl::optional<int> channel,
+      const absl::optional<int> flags,
+      ResponseCallback<BtifStatus> callback,
+      ConnectionStateChanged ready_cb,
+      ConnectionAccepted new_connection_cb);
 
   // Listen for connections using an RFCOMM channel. Creates SDP record with
   // given name and UUID.
@@ -149,11 +183,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
                                  ConnectionStateChanged ready_cb,
                                  ConnectionAccepted new_connection_cb);
 
-  // Connect via a connection oriented LE L2Cap channel on given psm.
+  // Connect via a L2Cap channel on given psm.
   virtual void ConnectUsingL2cap(const FlossDeviceId& remote_device,
                                  const int psm,
                                  const Security security_level,
                                  ConnectionCompleted callback);
+
+  // Connect via a connection oriented LE L2Cap channel on given psm.
+  virtual void ConnectUsingL2capLe(const FlossDeviceId& remote_device,
+                                   const int psm,
+                                   const Security security_level,
+                                   ConnectionCompleted callback);
 
   // Connect to a remote service using a RFCOMM channel.
   virtual void ConnectUsingRfcomm(const FlossDeviceId& remote_device,

@@ -63,6 +63,7 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
           "service_worker": "sw.js"
         },
         "permissions": [
+          "os.attached_device_info",
           "os.diagnostics",
           "os.telemetry",
           "os.telemetry.serial_number",

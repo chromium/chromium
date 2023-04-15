@@ -6,6 +6,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 
+#include "base/mac/wrap_cg_display.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/media/capture/io_surface_capture_device_base_mac.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -73,9 +74,11 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
 
       const size_t kNumKeys = 5;
       const void* keys[kNumKeys] = {
-          kCGDisplayStreamShowCursor,       kCGDisplayStreamPreserveAspectRatio,
-          kCGDisplayStreamMinimumFrameTime, kCGDisplayStreamColorSpace,
-          kCGDisplayStreamDestinationRect,
+          wrapkCGDisplayStreamShowCursor(),
+          wrapkCGDisplayStreamPreserveAspectRatio(),
+          wrapkCGDisplayStreamMinimumFrameTime(),
+          wrapkCGDisplayStreamColorSpace(),
+          wrapkCGDisplayStreamDestinationRect(),
       };
       const void* values[kNumKeys] = {
           kCFBooleanTrue,
@@ -89,7 +92,7 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
           &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     }
 
-    display_stream_.reset(CGDisplayStreamCreate(
+    display_stream_.reset(wrapCGDisplayStreamCreate(
         display_id_, requested_format_.frame_size.width(),
         requested_format_.frame_size.height(),
         kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, properties, handler));
@@ -99,7 +102,7 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
           FROM_HERE, "CGDisplayStreamCreate failed");
       return;
     }
-    CGError error = CGDisplayStreamStart(display_stream_);
+    CGError error = wrapCGDisplayStreamStart(display_stream_);
     if (error != kCGErrorSuccess) {
       client()->OnError(
           media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart,
@@ -111,17 +114,18 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
     // worker thread where the CFRunLoop does not get serviced.
     // https://crbug.com/1185388
     CFRunLoopAddSource(CFRunLoopGetMain(),
-                       CGDisplayStreamGetRunLoopSource(display_stream_),
+                       wrapCGDisplayStreamGetRunLoopSource(display_stream_),
                        kCFRunLoopCommonModes);
     client()->OnStarted();
   }
   void OnStop() override {
     weak_factory_.InvalidateWeakPtrs();
     if (display_stream_) {
-      CFRunLoopRemoveSource(CFRunLoopGetMain(),
-                            CGDisplayStreamGetRunLoopSource(display_stream_),
-                            kCFRunLoopCommonModes);
-      CGDisplayStreamStop(display_stream_);
+      CFRunLoopRemoveSource(
+          CFRunLoopGetMain(),
+          wrapCGDisplayStreamGetRunLoopSource(display_stream_),
+          kCFRunLoopCommonModes);
+      wrapCGDisplayStreamStop(display_stream_);
     }
     display_stream_.reset();
   }

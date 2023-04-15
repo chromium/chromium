@@ -161,6 +161,10 @@ void VideoConferenceTrayButton::PaintButtonContents(gfx::Canvas* canvas) {
 VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kVideoConferenceTray) {
+  // If the user pressed the body of the tray, just toggle the bubble.
+  SetPressedCallback(base::BindRepeating(&VideoConferenceTray::ToggleBubble,
+                                         weak_ptr_factory_.GetWeakPtr()));
+
   tray_container()->SetSpacingBetweenChildren(kTrayButtonsSpacing);
 
   audio_icon_ = tray_container()->AddChildView(

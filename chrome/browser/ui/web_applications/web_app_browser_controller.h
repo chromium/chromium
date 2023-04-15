@@ -24,6 +24,9 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/liburlpattern/options.h"
+#include "third_party/liburlpattern/pattern.h"
+#include "third_party/re2/src/re2/set.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 
@@ -87,6 +90,7 @@ class WebAppBrowserController : public AppBrowserController,
   std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
   GURL GetAppNewTabUrl() const override;
+  bool IsUrlInHomeTabScope(const GURL& url) const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;
   bool CanUserUninstall() const override;
@@ -122,7 +126,9 @@ class WebAppBrowserController : public AppBrowserController,
 #endif
 
   // WebAppInstallManagerObserver:
-  void OnWebAppUninstalled(const AppId& app_id) override;
+  void OnWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
   void OnWebAppInstallManagerDestroyed() override;
@@ -169,6 +175,10 @@ class WebAppBrowserController : public AppBrowserController,
   // given the current state of dark/light mode.
   absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
 
+  // Returns the set of scope patterns for the home tab scope of tabbed web
+  // apps.
+  absl::optional<RE2::Set> GetTabbedHomeTabScope() const;
+
   const raw_ref<WebAppProvider> provider_;
 
   // Save the display mode at time of launch. The web app display mode may
@@ -183,6 +193,8 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   mutable absl::optional<ui::ImageModel> app_icon_;
   mutable absl::optional<gfx::ImageSkia> home_tab_icon_;
+
+  mutable absl::optional<RE2::Set> home_tab_scope_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.

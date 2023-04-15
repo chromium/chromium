@@ -634,13 +634,41 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
+  bool open_in_external_preview =
+      job_settings.contains(kSettingOpenPDFInPreview);
+  if (!open_in_external_preview &&
+      (printer_type == mojom::PrinterType::kPdf ||
+       printer_type == mojom::PrinterType::kExtension)) {
+    if (print_settings->page_setup_device_units().printable_area().IsEmpty()) {
+      PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
+          *print_settings);
+    }
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`
+  // for in-browser queries.
+  if (printer_type == mojom::PrinterType::kLocal &&
+      !base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    if (!PrinterQuery::UpdatePrintableArea(*print_settings)) {
+      PRINTER_LOG(ERROR) << "Unable to update printable area for "
+                         << base::UTF16ToUTF8(print_settings->device_name());
+      std::move(callback).Run(nullptr);
+      return;
+    }
+  }
+#endif
+
   mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
   settings->pages = GetPageRangesFromJobSettings(job_settings);
   settings->params = mojom::PrintParams::New();
   RenderParamsFromPrintSettings(*print_settings, settings->params.get());
   settings->params->document_cookie = PrintSettings::NewCookie();
   if (!PrintMsgPrintParamsIsValid(*settings->params)) {
-    PRINTER_LOG(ERROR) << "Printer settings invalid: "
+    PRINTER_LOG(ERROR) << "Printer settings invalid for "
+                       << base::UTF16ToUTF8(print_settings->device_name())
+                       << " (destination type " << printer_type << "): "
                        << PrintMsgPrintParamsErrorDetails(*settings->params);
     std::move(callback).Run(nullptr);
     return;

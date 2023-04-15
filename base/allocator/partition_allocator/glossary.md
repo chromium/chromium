@@ -4,8 +4,6 @@ This page describes some core terminology used in PartitionAlloc.
 A weak attempt is made to present terms "in conceptual order" s.t.
 each term depends mainly upon previously defined ones.
 
-## Top-Level Terms
-
 * **Partition**: A heap that is separated and protected both from other
   partitions and from non-PartitionAlloc memory. Each partition holds
   multiple buckets.
@@ -14,18 +12,6 @@ each term depends mainly upon previously defined ones.
 **NOTE**: In code (and comments), "partition," "root," and even
 "allocator" are all conceptually the same thing.
 ***
-
-* **Bucket**: A collection of regions in a partition that contains
-  similar-sized objects. For example, one bucket may hold objects of
-  size (224,&nbsp;256], another (256,&nbsp;320], etc. Bucket size
-  brackets are geometrically spaced,
-  [going up to `kMaxBucketed`][max-bucket-comment].
-* **Normal Bucket**: Any bucket whose size ceiling does not exceed
-  `kMaxBucketed`. This is the common case in PartitionAlloc, and
-  the "normal" modifier is often dropped in casual reference.
-* **Direct Map (Bucket)**: Any allocation whose size exceeds `kMaxBucketed`.
-
-Buckets consist of slot spans, organized as linked lists (see below).
 
 ## Pages
 
@@ -77,6 +63,24 @@ Buckets consist of slot spans, organized as linked lists (see below).
       classified as small buckets. The reason is that single-slot spans
       are often handled by a different code path, and that distinction
       is made purely based on slot size, for simplicity and efficiency.
+
+## Buckets
+
+* **Bucket**: A collection of regions in a partition that contains
+  similar-sized objects. For example, one bucket may hold objects of
+  size (224,&nbsp;256], another (256,&nbsp;320], etc. Bucket size
+  brackets are geometrically spaced,
+  [going up to `kMaxBucketed`][max-bucket-comment].
+  * Plainly put, all slots (ergo the resulting spans) of a given size
+    class are logically chained into one bucket.
+
+![A bucket, spanning multiple super pages, collects spans whose
+  slots are of a particular size class.](./dot/bucket.png)
+
+* **Normal Bucket**: Any bucket whose size ceiling does not exceed
+  `kMaxBucketed`. This is the common case in PartitionAlloc, and
+  the "normal" modifier is often dropped in casual reference.
+* **Direct Map (Bucket)**: Any allocation whose size exceeds `kMaxBucketed`.
 
 ## Other Terms
 

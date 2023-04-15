@@ -25,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -179,12 +180,20 @@ class DevToolsHttpHandlerTest : public testing::Test {
   void SetUp() override {
     content_client_ = std::make_unique<ContentClient>();
     browser_content_client_ = std::make_unique<BrowserClient>();
-    SetBrowserClientForTesting(browser_content_client_.get());
+    original_client_ =
+        SetBrowserClientForTesting(browser_content_client_.get());
+    DevToolsManager::ShutdownForTests();
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(original_client_);
+    DevToolsManager::ShutdownForTests();
   }
 
  private:
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<ContentBrowserClient> browser_content_client_;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
 };
 

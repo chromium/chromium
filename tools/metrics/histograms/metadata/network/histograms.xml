@@ -690,7 +690,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.CaptivePortalResult" enum="CaptivePortalNetworkState"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Captive portal detection state from Shill received by NetworkState. NOTE:
     This metric used to be CaptivePortal.NetworkPortalDetectorResult which was
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.CaptivePortalStatusCode" enum="HttpResponseCode"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Captive portal status code reported by Shill and received by NetworkState.
     NOTE: This metric used to be CaptivePortal.NetworkStateStatusCode which was
@@ -1756,7 +1756,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.NetworkPortalDetectorHasProxy" enum="Boolean"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Whether a proxy is configured when Chrome captive portal detection
     completes. This will be used to help prioritize better captive portal
@@ -1767,7 +1767,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.NetworkPortalDetectorResult"
     enum="NetworkPortalStatus" expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Chrome captive portal detection results on ChromeOS. NOTE: This metric used
     to be CaptivePortal.NetworkPortalDetectorResult which was expired from
@@ -1778,7 +1778,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.NetworkPortalDetectorRunCount" units="attempts"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Number of Chrome portal detection attempts per network connection on
     ChromeOS.
@@ -1788,7 +1788,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.NetworkPortalDetectorType" enum="NetworkTechnology"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Captive portal detection network type recorded when Chrome on ChromeOS
     detects a captive portal. NOTE: This metric used to be
@@ -1800,7 +1800,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.NetworkPortalNotificationState"
     enum="CaptivePortalNetworkState" expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Captive portal detection state when a notification is shown. Can be used
     with Network.NetworkPortalSigninMode to compare notification to signin
@@ -1809,12 +1809,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalSigninMode"
-    enum="NetworkPortalSigninMode" expires_after="2023-08-20">
+    enum="NetworkPortalSigninMode" expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
-    Captive portal signin UI display mode. The signin UI may be displayed when
-    clicking on a notification or from the settings UI (M108+).
+    Captive portal signin display mode when a UI element requests to show the
+    signin UI. See also NetworkPortalSigninSource.
+  </summary>
+</histogram>
+
+<histogram name="Network.NetworkPortalSigninSource"
+    enum="NetworkPortalSigninSource" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health-team@google.com</owner>
+  <summary>
+    Captive portal signin display source (notification, settings, etc.) when a
+    UI element requests to show the signin UI. See also NetworkPortalSigninMode.
   </summary>
 </histogram>
 
@@ -1850,7 +1860,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.PortalSuspectedToOnlineTime" units="ms"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Captive portal time from a portal-suspected state to an online state on
     ChromeOS. NOTE: Prior to M110 this used a range that was too small so those
@@ -1883,7 +1893,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.RedirectFoundToOnlineTime" units="ms"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
   <summary>
     Captive portal time from a redirect-found state to an online state on
     ChromeOS. NOTE: Prior to M110 this used a range that was too small so those
@@ -2121,7 +2131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToRedirectFound" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -3363,7 +3373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.SecurityChange"
-    enum="NetworkSecurityChange" expires_after="2023-08-08">
+    enum="NetworkSecurityChange" expires_after="2023-10-08">
   <owner>andrzejo@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -3669,7 +3679,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.Connection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2023-08-20">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for all connection attempts,
     manual or automatic, to Wi-Fi networks which were added from Chrome Sync.
@@ -3679,7 +3690,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.Connection.Result" enum="BooleanSuccess"
     expires_after="2023-08-20">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of all connection attempts, manual or
     automatic, to Wi-Fi networks which were added from Chrome Sync.
@@ -3702,7 +3714,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.ManualConnection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for manual connection
     attempts to Wi-Fi networks which were added from Chrome Sync.
@@ -3712,7 +3725,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.ManualConnection.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of manual connection attempts to
     Wi-Fi networks which were added from Chrome Sync.
@@ -3722,7 +3736,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.TotalCount" units="units"
     expires_after="2023-08-20">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the total number of Wi-Fi networks which are
     stored in Chrome Sync for the active user.
@@ -3732,7 +3747,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.UpdateOperation.FailureReason"
     enum="ConnectionFailureReason" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for update attempts to synced
     Wi-Fi networks. This includes create/modify/remove operations. Each retry is
@@ -3744,6 +3760,7 @@ chromium-metrics-reviews@google.com.
     name="Network.Wifi.Synced.UpdateOperation.GenerateLocalNetworkConfig.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the success or failure to generate a local
@@ -3754,7 +3771,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.UpdateOperation.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of update attempts to synced Wi-Fi
     networks. This includes create/modify/remove operations. failures are only
@@ -3765,7 +3783,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason"
     enum="NetworkEligibilityStatus" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric logged for users who have the feature enabled but have zero
     networks eligible for sync. Tracks the reasons why none of the networks are
@@ -3929,7 +3948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.TimeToGrantCacheAccess" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -3943,7 +3962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.TimeToGrantDataAccess" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>

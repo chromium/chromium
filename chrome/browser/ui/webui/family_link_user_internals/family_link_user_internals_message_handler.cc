@@ -202,7 +202,6 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       GetSupervisedUserService()->GetURLFilter();
 
   base::Value::List* section_filter = AddSection(&section_list, "Filter");
-  AddSectionEntry(section_filter, "Denylist active", filter->HasDenylist());
   AddSectionEntry(section_filter, "Online checks active",
                   filter->HasAsyncURLChecker());
   AddSectionEntry(

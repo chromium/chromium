@@ -144,7 +144,7 @@ export class SettingsLanguagesPageElement extends
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
    */
-  private onAddLanguagesTap_(e: Event) {
+  private onAddLanguagesClick_(e: Event) {
     e.preventDefault();
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
@@ -353,7 +353,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Handler for the restart button.
    */
-  private onRestartTap_() {
+  private onRestartClick_() {
     this.performRestart(RestartType.RESTART);
   }
   // </if>
@@ -414,7 +414,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Moves the language to the top of the list.
    */
-  private onMoveToTopTap_() {
+  private onMoveToTopClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -430,7 +430,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Moves the language up in the list.
    */
-  private onMoveUpTap_() {
+  private onMoveUpClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -446,7 +446,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Moves the language down in the list.
    */
-  private onMoveDownTap_() {
+  private onMoveDownClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -462,7 +462,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Disables the language.
    */
-  private onRemoveLanguageTap_() {
+  private onRemoveLanguageClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -490,7 +490,7 @@ export class SettingsLanguagesPageElement extends
     return '';
   }
 
-  private onDotsTap_(e: DomRepeatEvent<LanguageState>) {
+  private onDotsClick_(e: DomRepeatEvent<LanguageState>) {
     // Set a copy of the LanguageState object since it is not data-bound to
     // the languages model directly.
     this.detailLanguage_ = Object.assign({}, e.model.item);

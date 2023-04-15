@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 #include "url/url_util.h"
@@ -213,11 +215,145 @@ bool StructTraits<blink::mojom::ManifestTranslationItemDataView,
   return true;
 }
 
+bool EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(
+    blink::mojom::Modifier data,
+    ::liburlpattern::Modifier* out) {
+  switch (data) {
+    case blink::mojom::Modifier::kZeroOrMore:
+      *out = liburlpattern::Modifier::kZeroOrMore;
+      return true;
+    case blink::mojom::Modifier::kOptional:
+      *out = liburlpattern::Modifier::kOptional;
+      return true;
+    case blink::mojom::Modifier::kOneOrMore:
+      *out = liburlpattern::Modifier::kOneOrMore;
+      return true;
+    case blink::mojom::Modifier::kNone:
+      *out = liburlpattern::Modifier::kNone;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool StructTraits<blink::mojom::FixedPatternDataView, ::liburlpattern::Part>::
+    Read(blink::mojom::FixedPatternDataView data, ::liburlpattern::Part* out) {
+  if (!data.ReadValue(&out->value)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool StructTraits<
+    blink::mojom::WildcardPatternDataView,
+    ::liburlpattern::Part>::Read(blink::mojom::WildcardPatternDataView data,
+                                 ::liburlpattern::Part* out) {
+  if (!data.ReadName(&out->name)) {
+    return false;
+  }
+  if (!data.ReadPrefix(&out->prefix)) {
+    return false;
+  }
+  if (!data.ReadValue(&out->value)) {
+    return false;
+  }
+  if (!data.ReadSuffix(&out->suffix)) {
+    return false;
+  }
+
+  return true;
+}
+
+blink::mojom::PatternTemplateDataView::Tag
+UnionTraits<blink::mojom::PatternTemplateDataView,
+            ::liburlpattern::Part>::GetTag(const ::liburlpattern::Part& value) {
+  switch (value.type) {
+    case liburlpattern::PartType::kFixed:
+      return blink::mojom::PatternTemplate::Tag::kFixed;
+    case liburlpattern::PartType::kFullWildcard:
+      return blink::mojom::PatternTemplate::Tag::kFullWildcard;
+    case liburlpattern::PartType::kSegmentWildcard:
+      return blink::mojom::PatternTemplate::Tag::kSegmentWildcard;
+    case liburlpattern::PartType::kRegex:
+      NOTREACHED();
+      return blink::mojom::PatternTemplate::Tag::kFixed;
+  }
+}
+
+bool UnionTraits<blink::mojom::PatternTemplateDataView, ::liburlpattern::Part>::
+    Read(blink::mojom::PatternTemplateDataView data, liburlpattern::Part* out) {
+  ::liburlpattern::Part part;
+  switch (data.tag()) {
+    case blink::mojom::PatternTemplateDataView::Tag::kFixed:
+      if (!data.ReadFixed(&part)) {
+        return false;
+      }
+      part.type = liburlpattern::PartType::kFixed;
+      *out = part;
+      return true;
+    case blink::mojom::PatternTemplateDataView::Tag::kFullWildcard:
+      if (!data.ReadFullWildcard(&part)) {
+        return false;
+      }
+      part.type = liburlpattern::PartType::kFullWildcard;
+      *out = part;
+      return true;
+    case blink::mojom::PatternTemplateDataView::Tag::kSegmentWildcard:
+      if (!data.ReadSegmentWildcard(&part)) {
+        return false;
+      }
+      part.type = liburlpattern::PartType::kSegmentWildcard;
+      *out = part;
+      return true;
+  }
+  return false;
+}
+
+bool StructTraits<blink::mojom::UrlPatternPartDataView, ::liburlpattern::Part>::
+    Read(blink::mojom::UrlPatternPartDataView data,
+         ::liburlpattern::Part* out) {
+  liburlpattern::Part part;
+  if (!data.ReadPattern(&part)) {
+    return false;
+  }
+  out->name = part.name;
+  out->prefix = part.prefix;
+  out->value = part.value;
+  out->suffix = part.suffix;
+  out->type = part.type;
+
+  if (!data.ReadModifier(&out->modifier)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool StructTraits<blink::mojom::ManifestUrlPatternDataView,
+                  ::blink::Manifest::UrlPattern>::
+    Read(blink::mojom::ManifestUrlPatternDataView data,
+         ::blink::Manifest::UrlPattern* out) {
+  if (!data.ReadPathname(&out->pathname)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool StructTraits<blink::mojom::HomeTabParamsDataView,
                   ::blink::Manifest::HomeTabParams>::
     Read(blink::mojom::HomeTabParamsDataView data,
          ::blink::Manifest::HomeTabParams* out) {
-  return data.ReadIcons(&out->icons);
+  if (!data.ReadIcons(&out->icons)) {
+    return false;
+  }
+
+  if (!data.ReadScopePatterns(&out->scope_patterns)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool StructTraits<blink::mojom::NewTabButtonParamsDataView,
@@ -225,6 +361,28 @@ bool StructTraits<blink::mojom::NewTabButtonParamsDataView,
     Read(blink::mojom::NewTabButtonParamsDataView data,
          ::blink::Manifest::NewTabButtonParams* out) {
   return data.ReadUrl(&out->url);
+}
+
+blink::mojom::HomeTabUnionDataView::Tag
+UnionTraits<blink::mojom::HomeTabUnionDataView,
+            ::blink::Manifest::TabStrip::HomeTab>::
+    GetTag(const ::blink::Manifest::TabStrip::HomeTab& value) {
+  if (absl::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
+    return blink::mojom::HomeTabUnion::Tag::kVisibility;
+  } else {
+    return blink::mojom::HomeTabUnion::Tag::kParams;
+  }
+}
+
+blink::mojom::NewTabButtonUnionDataView::Tag
+UnionTraits<blink::mojom::NewTabButtonUnionDataView,
+            ::blink::Manifest::TabStrip::NewTabButton>::
+    GetTag(const ::blink::Manifest::TabStrip::NewTabButton& value) {
+  if (absl::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
+    return blink::mojom::NewTabButtonUnion::Tag::kVisibility;
+  } else {
+    return blink::mojom::NewTabButtonUnion::Tag::kParams;
+  }
 }
 
 bool UnionTraits<blink::mojom::HomeTabUnionDataView,

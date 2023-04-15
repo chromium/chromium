@@ -49,6 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

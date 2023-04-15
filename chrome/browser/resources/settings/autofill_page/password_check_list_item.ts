@@ -177,7 +177,7 @@ export class PasswordCheckListItemElement extends
         .then(password => this.set('item.password', password), _error => {});
   }
 
-  private onReadonlyInputTap_() {
+  private onReadonlyInputClick_() {
     if (this.isPasswordVisible) {
       (this.shadowRoot!.querySelector('#leakedPassword') as HTMLInputElement)
           .select();

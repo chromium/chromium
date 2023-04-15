@@ -21,7 +21,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossGattManagerClient
 
   void Connect(ResponseCallback<Void> callback,
                const std::string& remote_device,
-               const BluetoothTransport& transport) override;
+               const BluetoothTransport& transport,
+               bool is_direct) override;
 
   void AddService(ResponseCallback<Void> callback,
                   GattService service) override;

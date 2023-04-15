@@ -83,6 +83,9 @@ class AppShimController : public chrome::mojom::AppShim {
 
   NSMenu* GetApplicationDockMenu();
 
+  // Called when the app is about to terminate.
+  void ApplicationWillTerminate();
+
  private:
   friend class TestShimClient;
   friend class apps::MachBootstrapAcceptorTest;

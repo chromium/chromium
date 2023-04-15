@@ -28,6 +28,7 @@ source_set("flags") {
     "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/flags_ui:switches",
+    "//components/history/core/browser",
     "//components/invalidation/impl:feature_list",
     "//components/ntp_tiles",
     "//components/omnibox/browser",

@@ -39,12 +39,9 @@ void AwaitTabsReady(content::DOMMessageQueue* message_queue, int tabs) {
 void CheckVisbility(TabStripModel* tab_strip_model, int visible_index) {
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-    std::string document_visibility_state;
-    const char kGetStateJS[] =
-        "window.domAutomationController.send("
-        "window.document.visibilityState);";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        contents, kGetStateJS, &document_visibility_state));
+    const char kGetStateJS[] = "window.document.visibilityState;";
+    std::string document_visibility_state =
+        content::EvalJs(contents, kGetStateJS).ExtractString();
     if (i == visible_index) {
       EXPECT_EQ("visible", document_visibility_state);
     } else {

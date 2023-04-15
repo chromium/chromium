@@ -68,7 +68,10 @@ BookmarkModelType GetBookmarkModelType(
     bookmarks::BookmarkModel* account_model);
 
 // Whether the Cloud Slash icon should be displayed for `bookmark_node`.
-bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service);
+// This method should be called only for nodes part of the profile model.
+// For nodes in account model, the icon should never been shown.
+bool ShouldDisplayCloudSlashIconForProfileModel(
+    SyncSetupService* sync_setup_service);
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
 // `folder` is the intended parent of `node`.

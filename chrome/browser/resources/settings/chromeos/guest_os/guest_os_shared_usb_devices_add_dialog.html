@@ -43,11 +43,11 @@
   </div>
   <div slot="body" class="custom-body">
     <div slot="button-container" class="custom-button-container">
-      <cr-button id="cancel" class="cancel-button" on-click="onCancelTap_">
+      <cr-button id="cancel" class="cancel-button" on-click="onCancelClick_">
         $i18n{cancel}
       </cr-button>
       <cr-button id="continue" class="action-button"
-          disabled="[[!sharedUsbDevices.length]]" on-click="onAddTap_">
+          disabled="[[!sharedUsbDevices.length]]" on-click="onAddClick_">
         $i18n{add}
       </cr-button>
     </div>

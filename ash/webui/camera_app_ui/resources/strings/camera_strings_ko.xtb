@@ -27,7 +27,6 @@
 <translation id="199526504800285197">녹화 중지됨</translation>
 <translation id="1995951722691075581">기기 저장공간이 부족하여 녹화가 중단되었습니다. 동영상을 더 녹화하려면 기기에서 여유 공간을 확보해야 합니다.</translation>
 <translation id="2036868001356139588">타이머 시간</translation>
-<translation id="2050339315714019657">세로 방향</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> 사용 중</translation>
 <translation id="2128052519899549250">타임랩스 동영상 녹화</translation>
 <translation id="2134029355740465625">동영상 설정</translation>
@@ -123,6 +122,7 @@
 <translation id="6888362557094394345">하단으로 이동</translation>
 <translation id="695140971690006676">모두 재설정</translation>
 <translation id="6965382102122355670">확인</translation>
+<translation id="6965830616442491568">세로 모드</translation>
 <translation id="698156982839284926">3초</translation>
 <translation id="7134221860976209830">10초 타이머</translation>
 <translation id="7191890674911603392">녹화 유형</translation>

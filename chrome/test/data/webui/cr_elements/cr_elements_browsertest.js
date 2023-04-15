@@ -39,7 +39,7 @@ TEST_F('CrElementsA11yAnnouncerTest', 'All', function() {
 var CrElementsButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_button_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_button_test.js';
   }
 };
 
@@ -72,7 +72,7 @@ TEST_F('CrElementsDialogTest', 'All', function() {
 var CrElementsDrawerTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_drawer_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_drawer_test.js';
   }
 };
 
@@ -90,7 +90,7 @@ TEST_F('CrElementsDrawerTest', 'MAYBE_Drawer', function() {
 var CrElementsExpandButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_expand_button_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_expand_button_test.js';
   }
 };
 
@@ -112,7 +112,7 @@ TEST_F('CrElementsFindShortcutMixinTest', 'All', function() {
 var CrElementsFingerprintProgressArcTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_fingerprint_progress_arc_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_fingerprint_progress_arc_test.js';
   }
 
   /** @override */
@@ -146,7 +146,7 @@ TEST_F('CrElementsI18nMixinTest', 'All', function() {
 var CrElementsIconButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_icon_button_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_icon_button_test.js';
   }
 };
 
@@ -157,7 +157,7 @@ TEST_F('CrElementsIconButtonTest', 'All', function() {
 var CrElementsLazyRenderTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_lazy_render_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_lazy_render_test.js';
   }
 };
 
@@ -168,7 +168,7 @@ TEST_F('CrElementsLazyRenderTest', 'All', function() {
 var CrElementsLinkRowTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_link_row_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_link_row_test.js';
   }
 };
 
@@ -180,7 +180,7 @@ var CrElementsListPropertyUpdateMixinTest =
     class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/list_property_update_mixin_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/list_property_update_mixin_test.js';
   }
 };
 
@@ -225,7 +225,7 @@ TEST_F('CrElementsRadioGroupTest', 'All', function() {
 var CrElementsScrollableMixinTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_scrollable_mixin_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_scrollable_mixin_test.js';
   }
 };
 
@@ -236,7 +236,7 @@ TEST_F('CrElementsScrollableMixinTest', 'All', function() {
 var CrElementsSearchFieldTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_search_field_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_search_field_test.js';
   }
 };
 
@@ -248,7 +248,7 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsSearchableDropDownTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_searchable_drop_down_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_searchable_drop_down_test.js';
   }
 };
 
@@ -315,7 +315,7 @@ TEST_F('CrElementsViewManagerTest', 'All', function() {
 var CrElementsPolicyIndicatorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_policy_indicator_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_policy_indicator_test.js';
   }
 };
 
@@ -327,7 +327,7 @@ var CrElementsPolicyPrefIndicatorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
     // Preload a settings URL, so that the test can access settingsPrivate.
-    return 'chrome://settings/test_loader.html?module=cr_elements/cr_policy_pref_indicator_tests.js';
+    return 'chrome://settings/test_loader.html?module=cr_elements/cr_policy_pref_indicator_test.js';
   }
 };
 
@@ -338,7 +338,7 @@ TEST_F('CrElementsPolicyPrefIndicatorTest', 'All', function() {
 var CrElementsPolicyIndicatorMixinTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_policy_indicator_mixin_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_policy_indicator_mixin_test.js';
   }
 };
 
@@ -349,7 +349,7 @@ TEST_F('CrElementsPolicyIndicatorMixinTest', 'All', function() {
 var CrElementsLottieTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_lottie_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_lottie_test.js';
   }
 
   /** @override */

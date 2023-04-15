@@ -54,7 +54,7 @@ void ShellFeedbackPrivateDelegate::FetchExtraLogs(
 api::feedback_private::LandingPageType
 ShellFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
-  return api::feedback_private::LANDING_PAGE_TYPE_NOLANDINGPAGE;
+  return api::feedback_private::LandingPageType::kNoLandingPage;
 }
 
 void ShellFeedbackPrivateDelegate::GetLacrosHistograms(

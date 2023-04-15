@@ -47,6 +47,7 @@
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 
 using testing::_;
 using testing::StrictMock;
@@ -664,8 +665,9 @@ class GpuImageDecodeCacheTest
             draw_image, static_cast<YUVIndex>(i));
       }
       ASSERT_TRUE(original_uploaded_plane);
-      auto plane_with_mips = original_uploaded_plane->makeTextureImage(
-          context_provider()->GrContext(), GrMipMapped::kYes);
+      auto plane_with_mips = SkImages::TextureFromImage(
+          context_provider()->GrContext(), original_uploaded_plane,
+          GrMipMapped::kYes);
       ASSERT_TRUE(plane_with_mips);
       EXPECT_EQ(should_have_mips, original_uploaded_plane == plane_with_mips);
     }
@@ -3185,15 +3187,15 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
     EXPECT_EQ(should_have_mips, decoded_draw_image.image()->hasMipmaps());
 
     if (do_yuv_decode_) {
-      // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,
+      // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus,
       // we must separately request mips for each plane and compare to the
       // original uploaded planes.
       CompareAllPlanesToMippedVersions(
           cache.get(), draw_image, transfer_cache_entry_id, should_have_mips);
     } else {
-      sk_sp<SkImage> image_with_mips =
-          decoded_draw_image.image()->makeTextureImage(
-              context_provider()->GrContext(), GrMipMapped::kYes);
+      sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
+          context_provider()->GrContext(), decoded_draw_image.image(),
+          GrMipMapped::kYes);
       EXPECT_EQ(should_have_mips,
                 image_with_mips == decoded_draw_image.image());
     }
@@ -3255,16 +3257,16 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
 
     // No mips should be generated.
     if (do_yuv_decode_) {
-      // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,
+      // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus,
       // we must separately request mips for each plane and compare to the
       // original uploaded planes.
       CompareAllPlanesToMippedVersions(cache.get(), draw_image,
                                        transfer_cache_entry_id,
                                        false /* should_have_mips */);
     } else {
-      sk_sp<SkImage> image_with_mips =
-          decoded_draw_image.image()->makeTextureImage(
-              context_provider()->GrContext(), GrMipMapped::kYes);
+      sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
+          context_provider()->GrContext(), decoded_draw_image.image(),
+          GrMipMapped::kYes);
       ASSERT_TRUE(image_with_mips);
       EXPECT_NE(image_with_mips, decoded_draw_image.image());
     }
@@ -3303,16 +3305,16 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
 
     // Mips should be generated
     if (do_yuv_decode_) {
-      // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,
+      // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus,
       // we must separately request mips for each plane and compare to the
       // original uploaded planes.
       CompareAllPlanesToMippedVersions(cache.get(), draw_image,
                                        transfer_cache_entry_id,
                                        true /* should_have_mips */);
     } else {
-      sk_sp<SkImage> image_with_mips =
-          decoded_draw_image.image()->makeTextureImage(
-              context_provider()->GrContext(), GrMipMapped::kYes);
+      sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
+          context_provider()->GrContext(), decoded_draw_image.image(),
+          GrMipMapped::kYes);
       EXPECT_EQ(image_with_mips, decoded_draw_image.image());
     }
     cache->DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -3358,16 +3360,16 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
 
     // No mips should be generated.
     if (do_yuv_decode_) {
-      // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,
+      // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus,
       // we must separately request mips for each plane and compare to the
       // original uploaded planes.
       CompareAllPlanesToMippedVersions(cache.get(), draw_image,
                                        transfer_cache_entry_id,
                                        false /* should_have_mips */);
     } else {
-      sk_sp<SkImage> image_with_mips =
-          decoded_draw_image.image()->makeTextureImage(
-              context_provider()->GrContext(), GrMipMapped::kYes);
+      sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
+          context_provider()->GrContext(), decoded_draw_image.image(),
+          GrMipMapped::kYes);
       EXPECT_NE(image_with_mips, decoded_draw_image.image());
     }
     images_to_unlock.push_back({draw_image, decoded_draw_image});
@@ -3399,16 +3401,16 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
 
     // Mips should be generated.
     if (do_yuv_decode_) {
-      // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,
+      // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus,
       // we must separately request mips for each plane and compare to the
       // original uploaded planes.
       CompareAllPlanesToMippedVersions(cache.get(), draw_image,
                                        transfer_cache_entry_id,
                                        true /* should_have_mips */);
     } else {
-      sk_sp<SkImage> image_with_mips =
-          decoded_draw_image.image()->makeTextureImage(
-              context_provider()->GrContext(), GrMipMapped::kYes);
+      sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
+          context_provider()->GrContext(), decoded_draw_image.image(),
+          GrMipMapped::kYes);
       EXPECT_EQ(image_with_mips, decoded_draw_image.image());
     }
     images_to_unlock.push_back({draw_image, decoded_draw_image});
@@ -3493,7 +3495,7 @@ TEST_P(GpuImageDecodeCacheTest,
     EXPECT_TRUE(decoded_draw_image.image());
     EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
 
-    // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus, we
+    // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus, we
     // must separately request mips for each plane and compare to the original
     // uploaded planes.
     CompareAllPlanesToMippedVersions(cache, draw_image, transfer_cache_entry_id,
@@ -3597,7 +3599,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                    cache->SupportsColorSpaceConversion();
 
     if (decodes_to_yuv && !color_converted_to_rgba) {
-      // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus, we
+      // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus, we
       // must separately request mips for each plane and compare to the original
       // uploaded planes.
       CompareAllPlanesToMippedVersions(cache, draw_image,
@@ -3809,7 +3811,7 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
         EXPECT_TRUE(decoded_draw_image.image());
         EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
 
-        // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus,
+        // Skia will flatten a YUV SkImage upon calling TextureFromImage. Thus,
         // we must separately request mips for each plane and compare to the
         // original uploaded planes.
         CompareAllPlanesToMippedVersions(cache, draw_image,

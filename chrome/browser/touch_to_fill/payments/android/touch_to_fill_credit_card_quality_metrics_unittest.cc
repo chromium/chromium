@@ -22,30 +22,6 @@ using ::testing::TestWithParam;
 
 namespace autofill::autofill_metrics {
 
-class MockFastCheckoutClient : public FastCheckoutClient {
- public:
-  MockFastCheckoutClient() = default;
-  ~MockFastCheckoutClient() override = default;
-  MOCK_METHOD(bool,
-              TryToStart,
-              (const GURL&,
-               const autofill::FormData&,
-               const autofill::FormFieldData&,
-               base::WeakPtr<autofill::AutofillManager>),
-              (override));
-  MOCK_METHOD(void, Stop, (bool), (override));
-  MOCK_METHOD(bool, IsRunning, (), (const, override));
-  MOCK_METHOD(bool, IsShowing, (), (const, override));
-  MOCK_METHOD(void, OnNavigation, (const GURL&, bool), (override));
-  MOCK_METHOD(bool,
-              IsSupported,
-              (const autofill::FormData&,
-               const autofill::FormFieldData&,
-               const autofill::AutofillManager&),
-              (override));
-  MOCK_METHOD(bool, IsNotShownYet, (), (const, override));
-};
-
 struct TouchToFillForCreditCardsTestCase {
   std::vector<ServerFieldType> field_types;
   std::vector<bool> fields_have_autofilled_values;
@@ -63,11 +39,13 @@ class TouchToFillForCreditCardsTest
         .WillByDefault(testing::Return(true));
     ON_CALL(*autofill_client_, IsTouchToFillCreditCardSupported)
         .WillByDefault(testing::Return(true));
-    ON_CALL(fast_checkout_client_, IsNotShownYet)
+    MockFastCheckoutClient* fast_checkout_client =
+        static_cast<MockFastCheckoutClient*>(
+            autofill_client_->GetFastCheckoutClient());
+    ON_CALL(*fast_checkout_client, IsNotShownYet)
         .WillByDefault(testing::Return(true));
     autofill_manager().set_touch_to_fill_delegate(
-        std::make_unique<TouchToFillDelegateAndroidImpl>(
-            &autofill_manager(), &fast_checkout_client_));
+        std::make_unique<TouchToFillDelegateAndroidImpl>(&autofill_manager()));
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -123,9 +101,6 @@ class TouchToFillForCreditCardsTest
     return *static_cast<TouchToFillDelegateAndroidImpl*>(
         autofill_manager().touch_to_fill_delegate());
   }
-
- private:
-  NiceMock<MockFastCheckoutClient> fast_checkout_client_;
 };
 
 // The test workflow:

@@ -160,18 +160,18 @@
       </div>
     </div>
     <div>
-      <cr-button class="cancel-button" on-click="onCancelTap_"
+      <cr-button class="cancel-button" on-click="onCancelClick_"
           hidden="[[pendingPrinter_.isManaged]]">
         $i18n{cancel}
       </cr-button>
-      <cr-button class="action-button" on-click="onSaveTap_"
+      <cr-button class="action-button" on-click="onSaveClick_"
           disabled="[[!canSavePrinter_(pendingPrinter_.*,
               printerInfoChanged_,
               isOnline_, isManufacturerInvalid_, isModelInvalid_)]]"
               hidden="[[pendingPrinter_.isManaged]]">
         $i18n{editPrinterButtonText}
       </cr-button>
-      <cr-button class="close-button" on-click="onCancelTap_"
+      <cr-button class="close-button" on-click="onCancelClick_"
        hidden="[[!pendingPrinter_.isManaged]]">
        $i18n{close}
       </cr-button>

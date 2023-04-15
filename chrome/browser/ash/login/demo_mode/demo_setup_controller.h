@@ -202,9 +202,11 @@ class DemoSetupController
     demo_config_ = demo_config;
   }
 
-  void set_retailer_name(const std::string& retailer_name) {
-    retailer_name_ = retailer_name;
-  }
+  // Set a canonicalized (whitespace and punctuation removed, case homogenized)
+  // version of the retailer name string.
+  void SetAndCanonicalizeRetailerName(const std::string& retailer_name);
+
+  std::string get_retailer_name_for_testing() { return retailer_name_; }
 
   void set_store_number(const std::string& store_number) {
     store_number_ = store_number;

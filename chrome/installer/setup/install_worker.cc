@@ -16,6 +16,8 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
@@ -576,12 +578,43 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   if (!GoogleUpdateSettings::GetBrand(&brand))
     return;
 
-  std::wstring new_brand = GetUpdatedBrandCode(brand);
-  if (new_brand.empty())
-    return;
-
   // Only update if this machine is a managed device, including domain join.
   if (!base::IsManagedDevice()) {
+    return;
+  }
+
+  std::wstring new_brand = GetUpdatedBrandCode(brand);
+  // Rewrite the old brand so that the next step can potentially apply both
+  // changes at once.
+  if (!new_brand.empty()) {
+    brand = new_brand;
+  }
+
+  // Furthermore do the CBCM brand code conversion both ways.
+  base::win::RegKey key;
+  std::wstring value_name;
+  bool has_valid_dm_token = false;
+  std::tie(key, value_name) = InstallUtil::GetCloudManagementDmTokenLocation(
+      InstallUtil::ReadOnly(true), InstallUtil::BrowserLocation(false));
+  if (key.Valid()) {
+    std::wstring dmtoken_value;
+    auto result = key.ReadValue(value_name.c_str(), &dmtoken_value);
+    if (result == ERROR_SUCCESS && !dmtoken_value.empty() &&
+        dmtoken_value.compare(L"INVALID_DM_TOKEN")) {
+      has_valid_dm_token = true;
+    }
+  }
+
+  bool is_cbcm_enrolled =
+      !InstallUtil::GetCloudManagementEnrollmentToken().empty() &&
+      has_valid_dm_token;
+  std::wstring cbcm_brand =
+      TransformCloudManagementBrandCode(brand, /*to_cbcm=*/is_cbcm_enrolled);
+  if (!cbcm_brand.empty()) {
+    new_brand = cbcm_brand;
+  }
+
+  if (new_brand.empty()) {
     return;
   }
 
@@ -603,6 +636,40 @@ std::wstring GetUpdatedBrandCode(const std::wstring& brand_code) {
   for (auto mapping : kEnterpriseBrandRemapping) {
     if (brand_code == mapping.old_brand)
       return mapping.new_brand;
+  }
+  return std::wstring();
+}
+
+std::wstring TransformCloudManagementBrandCode(const std::wstring& brand_code,
+                                               bool to_cbcm) {
+  // Brand codes to be remapped on enterprise installs.
+  // We are extracting the 4th letter below so we should better have one.
+  if (brand_code.length() != 4 || brand_code == L"GCEL") {
+    return std::wstring();
+  }
+  static constexpr struct CbcmBrandRemapping {
+    const wchar_t* cbe_brand;
+    const wchar_t* cbcm_brand;
+  } kCbcmBrandRemapping[] = {
+      {L"GCE", L"GCC"},
+      {L"GCF", L"GCK"},
+      {L"GCG", L"GCL"},
+      {L"GCH", L"GCM"},
+  };
+  if (to_cbcm) {
+    for (auto mapping : kCbcmBrandRemapping) {
+      if (base::StartsWith(brand_code, mapping.cbe_brand,
+                           base::CompareCase::SENSITIVE)) {
+        return std::wstring(mapping.cbcm_brand) + brand_code[3];
+      }
+    }
+  } else {
+    for (auto mapping : kCbcmBrandRemapping) {
+      if (base::StartsWith(brand_code, mapping.cbcm_brand,
+                           base::CompareCase::SENSITIVE)) {
+        return std::wstring(mapping.cbe_brand) + brand_code[3];
+      }
+    }
   }
   return std::wstring();
 }

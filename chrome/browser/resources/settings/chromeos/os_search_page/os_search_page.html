@@ -21,7 +21,7 @@
       <cr-link-row
           id="searchSubpageTrigger"
           label="$i18n{searchSubpageTitle}"
-          on-click="onSearchTap_"
+          on-click="onSearchClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -33,7 +33,7 @@
           label="$i18n{searchGoogleAssistant}"
           sub-label="[[getAssistantEnabledDisabledLabel_(
               prefs.settings.voice_interaction.enabled.value)]]"
-          on-click="onGoogleAssistantTap_"
+          on-click="onGoogleAssistantClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>

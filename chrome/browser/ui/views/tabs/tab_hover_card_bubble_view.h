@@ -34,6 +34,7 @@ class RenderText;
 }
 
 class Tab;
+class TabStyle;
 
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
@@ -150,6 +151,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<FadeLabel> domain_label_ = nullptr;
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
   absl::optional<TabAlertState> alert_state_;
+  const raw_ptr<const TabStyle> tab_style_;
 
   int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);

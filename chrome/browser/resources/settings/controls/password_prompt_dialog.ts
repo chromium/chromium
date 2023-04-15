@@ -108,7 +108,7 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     }, 1);
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }

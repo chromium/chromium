@@ -551,7 +551,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
       CreateMinimalInterestGroup();
 
   // Name length that will result in a `blink_interest_group` having an
-  // estimated size of exactly `kMaxInterestGroupSize`, which is 51200 bytes.
+  // estimated size of exactly `kMaxInterestGroupSize`, which is 1048576 bytes.
   // Note that kMaxInterestGroupSize is actually one greater than the maximum
   // size, so no need to add 1 to exceed it.
   blink_interest_group->name = "";
@@ -563,8 +563,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
   blink_interest_group->name = String(long_string);
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too long should still work.
   long_string = std::string(kTooLongNameLength - 1, 'n');
@@ -602,8 +602,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePriorityVector) {
 
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -641,8 +641,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePrioritySignalsOverride) {
 
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -685,8 +685,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSellerCapabilities) {
 
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -730,8 +730,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAdSizes) {
 
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -780,8 +780,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
 
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too long should still work.
   too_long_name = std::string(kTooLongNameLength - 1, 'n');
@@ -792,9 +792,10 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  blink_interest_group->name = "paddingTo51200";
+  blink_interest_group->name =
+      WTF::String("paddingTo1048576" + std::string(24, 'P'));
   blink_interest_group->ad_components.emplace();
-  for (int i = 0; i < 682; ++i) {
+  for (int i = 0; i < 13980; ++i) {
     // Each ad component is 75 bytes.
     auto mojo_ad_component1 = mojom::blink::InterestGroupAd::New();
     mojo_ad_component1->render_url =
@@ -806,8 +807,8 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   }
   ExpectInterestGroupIsNotValid(
       blink_interest_group, /*expected_error_field_name=*/"size",
-      /*expected_error_field_value=*/"51200",
-      /*expected_error=*/"interest groups must be less than 51200 bytes");
+      /*expected_error_field_value=*/"1048576",
+      /*expected_error=*/"interest groups must be less than 1048576 bytes");
 
   // Almost too big should still work.
   blink_interest_group->ad_components->resize(681);

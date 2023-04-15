@@ -21,8 +21,10 @@ found in the LICENSE file.
 
         <ImageView
             android:id="@+id/image"
-            android:layout_height="@dimen/setting_step_illustration_height"
-            android:layout_width="@dimen/setting_step_illustration_width"
+            android:layout_marginHorizontal="@dimen/setting_step_illustration_marginHorizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:adjustViewBounds="true"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/privacy_guide_sb_image"
             android:importantForAccessibility="no" />

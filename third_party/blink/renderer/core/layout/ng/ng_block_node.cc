@@ -791,8 +791,8 @@ const NGLayoutResult* NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
   // TODO(layout-dev): We might be able to determine what the previous
   // static-position was based on |NGLayoutResult::OutOfFlowPositionedOffset|.
   bool depends_on_static_position =
-      (Style().Left().IsAuto() && Style().Right().IsAuto()) ||
-      (Style().Top().IsAuto() && Style().Bottom().IsAuto());
+      (Style().UsedLeft().IsAuto() && Style().UsedRight().IsAuto()) ||
+      (Style().UsedTop().IsAuto() && Style().UsedBottom().IsAuto());
 
   if (depends_on_static_position)
     return nullptr;

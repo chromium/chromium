@@ -18,9 +18,8 @@ using storage_monitor::StorageMonitor;
 
 namespace extensions {
 
-using api::system_storage::STORAGE_UNIT_TYPE_FIXED;
-using api::system_storage::STORAGE_UNIT_TYPE_REMOVABLE;
 using api::system_storage::StorageUnitInfo;
+using api::system_storage::StorageUnitType;
 
 namespace systeminfo {
 
@@ -30,8 +29,8 @@ void BuildStorageUnitInfo(const StorageInfo& info, StorageUnitInfo* unit) {
   unit->name = base::UTF16ToUTF8(info.GetDisplayName(false));
   // TODO(hmin): Might need to take MTP device into consideration.
   unit->type = StorageInfo::IsRemovableDevice(info.device_id())
-                   ? STORAGE_UNIT_TYPE_REMOVABLE
-                   : STORAGE_UNIT_TYPE_FIXED;
+                   ? StorageUnitType::kRemovable
+                   : StorageUnitType::kFixed;
   unit->capacity = static_cast<double>(info.total_size_in_bytes());
 }
 

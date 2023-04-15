@@ -150,7 +150,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                 accessibilityIdentifier:(NSString*)accessibilityIdentifier
                      accessibilityLabel:(NSString*)accessibilityLabel {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* image = [UIImage imageNamed:imageName];
+  UIImage* image = [[UIImage imageNamed:imageName]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   [button setImage:image forState:UIControlStateNormal];
   button.tintColor = IconActiveTintColor();
   button.translatesAutoresizingMaskIntoConstraints = NO;

@@ -27,7 +27,6 @@
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/macros.h"
 
 namespace arc {
@@ -109,7 +108,7 @@ void GpuArcVideoDecoder::Initialize(
       gpu::GpuDriverBugWorkarounds(), client_task_runner_,
       std::make_unique<media::VdaVideoFramePool>(video_frame_pool_->WeakThis(),
                                                  client_task_runner_),
-      std::make_unique<media::VideoFrameConverter>(),
+      /*frame_converter=*/nullptr,
       media::VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::make_unique<media::NullMediaLog>(),
       /*oop_video_decoder=*/{});

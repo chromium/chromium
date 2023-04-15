@@ -50,6 +50,13 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     // Native system renders the browser frame. Currently GTK only.
     kNative,
   };
+  // The type of color palette that is generated.
+  enum class SchemeVariant {
+    kTonalSpot,
+    kNeutral,
+    kVibrant,
+    kExpressive,
+  };
 
   class COMPONENT_EXPORT(COLOR) InitializerSupplier {
    public:
@@ -99,6 +106,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
         SystemTheme system_theme,
         FrameType frame_type,
         absl::optional<SkColor> user_color = absl::nullopt,
+        absl::optional<SchemeVariant> scheme_variant = absl::nullopt,
         scoped_refptr<ThemeInitializerSupplier> custom_theme = nullptr);
     Key(const Key&);
     Key& operator=(const Key&);
@@ -109,6 +117,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     SystemTheme system_theme;
     FrameType frame_type;
     absl::optional<SkColor> user_color;
+    absl::optional<SchemeVariant> scheme_variant;
     scoped_refptr<ThemeInitializerSupplier> custom_theme;
     // Only dereferenced when populating the ColorMixer. After that, used to
     // compare addresses during lookup.
@@ -119,12 +128,12 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
       auto* lhs_app_controller = app_controller.get();
       auto* rhs_app_controller = other.app_controller.get();
       return std::tie(color_mode, contrast_mode, elevation_mode, system_theme,
-                      frame_type, user_color, custom_theme,
+                      frame_type, user_color, scheme_variant, custom_theme,
                       lhs_app_controller) <
              std::tie(other.color_mode, other.contrast_mode,
                       other.elevation_mode, other.system_theme,
-                      other.frame_type, other.user_color, other.custom_theme,
-                      rhs_app_controller);
+                      other.frame_type, other.user_color, other.scheme_variant,
+                      other.custom_theme, rhs_app_controller);
     }
   };
 

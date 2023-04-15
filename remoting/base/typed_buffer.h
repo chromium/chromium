@@ -21,10 +21,10 @@ namespace remoting {
 template <typename T>
 class TypedBuffer {
  public:
-  TypedBuffer() : TypedBuffer(0) {}
+  TypedBuffer() = default;
 
   // Creates an instance of the object allocating a buffer of the given size.
-  explicit TypedBuffer(uint32_t length) : buffer_(nullptr), length_(length) {
+  explicit TypedBuffer(uint32_t length) : length_(length) {
     if (length_ > 0) {
       buffer_ = reinterpret_cast<T*>(new uint8_t[length_]);
     }
@@ -37,8 +37,7 @@ class TypedBuffer {
 
   ~TypedBuffer() {
     if (buffer_) {
-      delete[] reinterpret_cast<uint8_t*>(buffer_.get());
-      buffer_ = nullptr;
+      delete[] reinterpret_cast<uint8_t*>(buffer_.ExtractAsDangling().get());
     }
   }
 
@@ -79,10 +78,10 @@ class TypedBuffer {
 
  private:
   // Points to the owned buffer.
-  raw_ptr<T> buffer_;
+  raw_ptr<T> buffer_ = nullptr;
 
   // Length of the owned buffer in bytes.
-  uint32_t length_;
+  uint32_t length_ = 0;
 };
 
 }  // namespace remoting

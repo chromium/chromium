@@ -20,7 +20,7 @@ found in the LICENSE file.
       android:ellipsize="end"
       android:maxLines="1"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-      tools:text="For Alex Park — 345 Spear street" />
+      tools:text="For John Doe — 1600 Amphitheatre Parkway" />
 
   <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
       android:layout_width="match_parent"
@@ -38,8 +38,7 @@ found in the LICENSE file.
       <RelativeLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:paddingStart="@dimen/dialog_padding_sides"
-          tools:ignore="RtlSymmetry">
+          android:paddingStart="@dimen/dialog_padding_sides">
 
         <Space
             android:id="@+id/no_header_space"
@@ -67,23 +66,22 @@ found in the LICENSE file.
             android:layout_toStartOf="@id/edit_button"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             app:leading="@dimen/text_size_large_leading"
-            tools:text="Alex Johnson Park\n+1 858 230 4000" />
+            tools:text="John Robert Doe\n+1 111 111 0000" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/edit_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/address_prompt_edit_button_size"
+            android:layout_height="@dimen/address_prompt_edit_button_size"
             android:layout_alignBaseline="@id/details_new"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="@dimen/address_prompt_end_margin"
             android:baseline="32dp"
-            android:padding="12dp"
+            android:padding="@dimen/address_prompt_edit_button_padding"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/edit_icon"
-            app:tint="@color/default_icon_color_tint_list"
-            tools:src="@drawable/edit_icon" />
+            app:tint="@color/default_icon_color_tint_list" />
       </RelativeLayout>
 
       <TextView
@@ -105,9 +103,14 @@ found in the LICENSE file.
           android:paddingEnd="@dimen/dialog_padding_sides"
           android:textAppearance="@style/TextAppearance.TextLarge.Primary"
           app:leading="@dimen/text_size_large_leading"
-          tools:text="Alex Park" />
+          tools:text="John Doe" />
     </LinearLayout>
   </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
-  <include layout="@layout/autofill_save_update_address_profile_prompt_footer"/>
+  <include
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/address_prompt_end_margin"
+      android:layout_marginTop="12dp"
+      layout="@layout/autofill_address_profile_prompt_source_notice" />
 </LinearLayout>

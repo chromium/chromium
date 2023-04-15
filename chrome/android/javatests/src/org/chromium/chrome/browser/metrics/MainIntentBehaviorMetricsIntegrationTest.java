@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;

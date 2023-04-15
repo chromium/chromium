@@ -292,6 +292,11 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     return CONTENT_SETTING_BLOCK;
   }
 
+  // Permission query from top-level frame should be "granted" by default.
+  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
+    return CONTENT_SETTING_ALLOW;
+  }
+
   ContentSetting setting = PermissionContextBase::GetPermissionStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 

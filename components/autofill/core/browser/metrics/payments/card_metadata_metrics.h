@@ -32,6 +32,8 @@ enum class CardMetadataLoggingEvent {
   kMaxValue = kSelected,
 };
 
+using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;
+
 // Struct that groups metadata-related information together for some set of
 // credit cards. Used for metrics logging.
 struct CardMetadataLoggingContext {
@@ -54,9 +56,12 @@ struct CardMetadataLoggingContext {
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards);
 
+// Log the suggestion event regarding card metadata. `has_been_logged` indicates
+// whether the event has already been logged since last page load.
 void LogCardWithMetadataFormEventMetric(
     CardMetadataLoggingEvent event,
-    const CardMetadataLoggingContext& context);
+    const CardMetadataLoggingContext& context,
+    HasBeenLogged has_been_logged);
 
 // Log the latency between suggestions being shown and a suggestion was
 // selected, in milliseconds, and it is broken down by metadata availability

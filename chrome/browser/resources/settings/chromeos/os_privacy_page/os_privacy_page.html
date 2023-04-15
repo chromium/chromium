@@ -17,7 +17,7 @@
   <div route-path="default">
     <template is="dom-if" if="[[!isGuestMode_]]" restamp>
       <cr-link-row id="lockScreenSubpageTrigger"
-          on-click="onConfigureLockTap_"
+          on-click="onConfigureLockClick_"
           label="[[selectLockScreenTitleString_(hasPinLogin)]]"
           sub-label="[[getPasswordState_(hasPin,
               prefs.settings.enable_screen_lock.value)]]"

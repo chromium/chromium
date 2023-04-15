@@ -25,7 +25,6 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   ~HoldingSpaceClientImpl() override;
 
   // HoldingSpaceClient:
-  void AddDiagnosticsLog(const base::FilePath& file_path) override;
   const std::string& AddItemOfType(HoldingSpaceItem::Type type,
                                    const base::FilePath& file_path) override;
   void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;

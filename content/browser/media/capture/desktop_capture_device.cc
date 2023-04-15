@@ -308,9 +308,9 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   resolution_chooser_.SetConstraints(constraints.min_frame_size,
                                      constraints.max_frame_size,
                                      constraints.fixed_aspect_ratio);
-  DVLOG(1) << __func__ << " (requested_frame_rate=" << requested_frame_rate_
-           << ", max_frame_size=" << constraints.max_frame_size.ToString()
-           << ")";
+  VLOG(2) << __func__ << " (requested_frame_rate=" << requested_frame_rate_
+          << ", max_frame_size=" << constraints.max_frame_size.ToString()
+          << ")";
 
   DCHECK(!wake_lock_);
   RequestWakeLock();
@@ -325,7 +325,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
 void DesktopCaptureDevice::Core::RequestRefreshFrame() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("webrtc", __func__);
-  DVLOG(1) << __func__ << " is called by the client";
+  VLOG(2) << __func__ << " is called by the client";
   // Simply send the last received frame, if we ever received one. Don't
   // schedule a new frame.
   if (output_frame_) {
@@ -371,6 +371,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
 
   if (!success) {
+    VLOG(2) << __func__ << " [ERROR]";
     if (result == webrtc::DesktopCapturer::Result::ERROR_PERMANENT) {
       if (!first_permanent_error_logged) {
         first_permanent_error_logged = true;
@@ -401,6 +402,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   const bool zero_hertz_is_active = zero_hertz_is_supported() &&
                                     output_frame_ &&
                                     frame->updated_region().is_empty();
+  VLOG(2) << __func__ << " [SUCCESS]" << (zero_hertz_is_active ? "[0Hz]" : "");
   if (zero_hertz_is_supported()) {
     LogDesktopCaptureZeroHzIsActive(capturer_type_, zero_hertz_is_active);
   }
@@ -416,6 +418,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     resolution_chooser_.SetSourceSize(
         gfx::Size(frame->size().width(), frame->size().height()));
     last_frame_size_ = frame->size();
+    VLOG(2) << "  last_frame_size=(" << last_frame_size_.width() << "x"
+            << last_frame_size_.height() << ")";
   }
   // Align to 2x2 pixel boundaries, as required by OnIncomingCapturedData() so
   // it can convert the frame to I420 format.
@@ -427,6 +431,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     // be guaranteed.
     output_size.set(2, 2);
   }
+  VLOG(2) << "  output_size=(" << output_size.width() << "x"
+          << output_size.height() << ")";
 
   gfx::ColorSpace frame_color_space;
   if (!frame->icc_profile().empty()) {
@@ -471,6 +477,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     DCHECK(!frame->size().is_empty());
 
     if (!frame->size().equals(output_size)) {
+      VLOG(2) << "  Downscaling: frame->size=(" << frame->size().width() << "x"
+              << frame->size().height() << ")";
       // Down-scale and/or letterbox to the target format if the frame does
       // not match the output size.
 
@@ -496,6 +504,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
                         output_rect.height(), libyuv::kFilterBilinear);
       output_frame_is_black_ = false;
     } else if (IsFrameUnpackedOrInverted(frame.get())) {
+      VLOG(2) << "  FrameUnpackedOrInverted";
       // If |frame| is not packed top-to-bottom then create a packed
       // top-to-bottom copy. This is required if the frame is inverted (see
       // crbug.com/306876), or if |frame| is cropped form a larger frame (see
@@ -509,6 +518,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
           webrtc::DesktopRect::MakeSize(frame->size()));
       output_frame_is_black_ = false;
     } else {
+      VLOG(2) << "  output_frame_ = std::move(frame)";
       // If the captured frame matches the output size, we can use the incoming
       // frame as is without any modifications.
       output_frame_ = std::move(frame);
@@ -531,6 +541,8 @@ void DesktopCaptureDevice::Core::SendLastReceivedFrameToClient(
                         output_frame_->size().height() *
                         webrtc::DesktopFrame::kBytesPerPixel;
 
+  VLOG(2) << __func__ << " [output_size=(" << output_frame_->size().width()
+          << "x" << output_frame_->size().height() << ")]";
   base::TimeTicks now = NowTicks();
   if (first_ref_time_.is_null())
     first_ref_time_ = now;
@@ -557,6 +569,7 @@ void DesktopCaptureDevice::Core::CaptureFrame() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!capture_in_progress_);
   TRACE_EVENT0("webrtc", __func__);
+  VLOG(2) << __func__;
 
   capture_start_time_ = NowTicks();
   capture_in_progress_ = true;
@@ -569,12 +582,16 @@ void DesktopCaptureDevice::Core::ScheduleNextCaptureFrame() {
   DCHECK(!capture_start_time_.is_null());
 
   base::TimeDelta last_capture_duration = NowTicks() - capture_start_time_;
+  VLOG(2) << __func__ << " [last_capture_duration="
+          << last_capture_duration.InMilliseconds() << "]";
 
   // Limit frame-rate to reduce CPU consumption.
   base::TimeDelta capture_period =
       std::max((last_capture_duration * 100) / max_cpu_consumption_percentage_,
                requested_frame_duration_);
 
+  VLOG(2) << "  timer(dT="
+          << (capture_period - last_capture_duration).InMilliseconds() << ")";
   // Schedule a task for the next frame.
   capture_timer_->Start(FROM_HERE, capture_period - last_capture_duration, this,
                         &Core::OnCaptureTimer);

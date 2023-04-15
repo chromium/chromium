@@ -541,6 +541,42 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, BasicFullscreen) {
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 }
 
+IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, AboutBlankFullscreen) {
+  SetUpWebServer();
+  SetUpWindowManagement();
+  Browser* new_popup =
+      OpenPopup(browser(), "open('about:blank', '_blank', 'popup,fullscreen')");
+  content::WebContents* new_contents =
+      new_popup->tab_strip_model()->GetActiveWebContents();
+  if (ShouldTestWindowManagement()) {
+    WaitForHTMLFullscreen(new_contents);
+  }
+  EXPECT_EQ(EvalJs(new_contents,
+                   "!!document.fullscreenElement && document.fullscreenElement "
+                   "== document.documentElement")
+                .ExtractBool(),
+            ShouldTestWindowManagement());
+  FullscreenController* fullscreen_controller =
+      new_popup->exclusive_access_manager()->fullscreen_controller();
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(fullscreen_controller->IsTabFullscreen(),
+            ShouldTestWindowManagement());
+  EXPECT_EQ(EvalJs(new_contents, "document.exitFullscreen()").error.empty(),
+            ShouldTestWindowManagement());
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // Test that a navigation doesn't re-trigger fullscreen.
+  EXPECT_TRUE(EvalJs(new_contents,
+                     "window.location.href = '" +
+                         embedded_test_server()->GetURL("/title1.html").spec() +
+                         "'")
+                  .error.empty());
+  EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+}
+
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, FullscreenWithBounds) {
   SetUpWebServer();
   SetUpWindowManagement();

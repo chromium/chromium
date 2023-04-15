@@ -17,7 +17,7 @@
 #include "ash/shell.h"
 #include "key_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/insets.h"

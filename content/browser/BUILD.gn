@@ -2247,6 +2247,8 @@ source_set("browser") {
     "webid/flags.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
+    "webid/mdocs/mdoc_provider.cc",
+    "webid/mdocs/mdoc_provider.h",
     "webid/webid_utils.cc",
     "webid/webid_utils.h",
     "webrtc/webrtc_connections_observer.cc",
@@ -2287,6 +2289,8 @@ source_set("browser") {
     "webui/web_ui_impl.h",
     "webui/web_ui_main_frame_observer.cc",
     "webui/web_ui_main_frame_observer.h",
+    "webui/web_ui_managed_interface.cc",
+    "webui/web_ui_managed_interface.h",
     "webui/web_ui_message_handler.cc",
     "webui/web_ui_url_loader_factory.cc",
     "worker_host/dedicated_worker_host.cc",
@@ -2393,7 +2397,6 @@ source_set("browser") {
       "lock_screen/lock_screen_storage_impl.h",
       "ml/ml_service_impl_cros.cc",
       "ml/ml_service_impl_cros.h",
-      "renderer_host/pepper/firewall_hole_proxy.cc",
       "smart_card/smart_card_reader_tracker.cc",
       "smart_card/smart_card_reader_tracker.h",
       "smart_card/smart_card_reader_tracker_impl.cc",
@@ -2402,6 +2405,7 @@ source_set("browser") {
       "smart_card/smart_card_service.h",
     ]
     deps += [
+      "//chromeos/components/firewall_hole",
       "//chromeos/crosapi/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
@@ -2612,6 +2616,8 @@ source_set("browser") {
       "renderer_host/browser_compositor_ios.mm",
       "renderer_host/delegated_frame_host_client_ios.cc",
       "renderer_host/delegated_frame_host_client_ios.h",
+      "renderer_host/popup_menu_helper_ios.h",
+      "renderer_host/popup_menu_helper_ios.mm",
       "renderer_host/render_widget_host_view_ios.h",
       "renderer_host/render_widget_host_view_ios.mm",
       "web_contents/web_contents_view_ios.h",
@@ -3100,6 +3106,8 @@ source_set("browser") {
       "web_contents/web_contents_view_android.cc",
       "web_contents/web_contents_view_android.h",
       "webauth/web_authentication_delegate_android.cc",
+      "webid/mdocs/mdoc_provider_android.cc",
+      "webid/mdocs/mdoc_provider_android.h",
     ]
 
     deps += [

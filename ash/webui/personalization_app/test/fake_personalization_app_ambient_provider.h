@@ -45,6 +45,7 @@ class FakePersonalizationAppAmbientProvider
           observer) override {}
   void SetAmbientModeEnabled(bool enabled) override {}
   void SetAnimationTheme(ash::AmbientTheme animation_theme) override {}
+  void SetScreenSaverDuration(int) override {}
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override {}
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override {}
@@ -54,6 +55,9 @@ class FakePersonalizationAppAmbientProvider
   void SetPageViewed() override {}
   void StartScreenSaverPreview() override {}
   void FetchSettingsAndAlbums() override {}
+  void ShouldShowTimeOfDayBanner(
+      ShouldShowTimeOfDayBannerCallback callback) override;
+  void HandleTimeOfDayBannerDismissed() override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

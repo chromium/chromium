@@ -182,7 +182,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
-  params.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params.source = api::feedback_private::LogSource::kMessages;
   params.incremental = true;
   params.reader_id = 9999;
 
@@ -194,7 +194,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceNonIncremental) {
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
-  params.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params.source = api::feedback_private::LogSource::kMessages;
   params.incremental = false;
 
   // Test multiple non-incremental reads.
@@ -225,7 +225,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceIncremental) {
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
-  params.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params.source = api::feedback_private::LogSource::kMessages;
   params.incremental = true;
 
   int result_reader_id = 0;
@@ -263,7 +263,7 @@ TEST_F(FeedbackPrivateApiUnittest, Redact) {
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
-  params.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params.source = api::feedback_private::LogSource::kMessages;
   params.incremental = true;
 
   int result_reader_id = 0;
@@ -292,7 +292,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
 
   // Attempt to open LOG_SOURCE_MESSAGES twice.
   ReadLogSourceParams params_1st_read;
-  params_1st_read.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params_1st_read.source = api::feedback_private::LogSource::kMessages;
   params_1st_read.incremental = true;
   EXPECT_TRUE(RunReadLogSourceFunction(params_1st_read, &result_reader_id,
                                        &result_string));
@@ -302,14 +302,14 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
 
   // Create a second reader from the same log source.
   ReadLogSourceParams params_1st_read_repeated;
-  params_1st_read_repeated.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params_1st_read_repeated.source = api::feedback_private::LogSource::kMessages;
   params_1st_read_repeated.incremental = true;
   EXPECT_TRUE(RunReadLogSourceFunction(params_1st_read_repeated,
                                        &result_reader_id, &result_string));
 
   // Attempt to open LOG_SOURCE_UI_LATEST twice.
   ReadLogSourceParams params_2nd_read;
-  params_2nd_read.source = api::feedback_private::LOG_SOURCE_UILATEST;
+  params_2nd_read.source = api::feedback_private::LogSource::kUiLatest;
   params_2nd_read.incremental = true;
   result_reader_id = -1;
   EXPECT_TRUE(RunReadLogSourceFunction(params_2nd_read, &result_reader_id,
@@ -321,7 +321,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
 
   // Create a second reader from the same log source.
   ReadLogSourceParams params_2nd_read_repeated;
-  params_2nd_read_repeated.source = api::feedback_private::LOG_SOURCE_UILATEST;
+  params_2nd_read_repeated.source = api::feedback_private::LogSource::kUiLatest;
   params_2nd_read_repeated.incremental = true;
   EXPECT_TRUE(RunReadLogSourceFunction(params_2nd_read_repeated,
                                        &result_reader_id, &result_string));
@@ -363,7 +363,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
       ->SetTickClockForTesting(&test_clock);
 
   ReadLogSourceParams params;
-  params.source = api::feedback_private::LOG_SOURCE_MESSAGES;
+  params.source = api::feedback_private::LogSource::kMessages;
   params.incremental = true;
   int result_reader_id = 0;
   std::string result_string;

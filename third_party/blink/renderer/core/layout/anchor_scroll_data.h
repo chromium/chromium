@@ -74,12 +74,6 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   // as its AnchroScrollData.
   bool IsActive() const;
 
-  // For fallback position validation.
-  void SetNonOverflowingScrollRanges(
-      Vector<PhysicalScrollRange>&& non_overflowing_scroll_ranges) {
-    non_overflowing_scroll_ranges_ = std::move(non_overflowing_scroll_ranges);
-  }
-
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
@@ -113,13 +107,6 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   // Sum of the scroll origins of the above scroll containers. Used by
   // compositor to deal with writing modes.
   gfx::Vector2d accumulated_scroll_origin_;
-
-  // TODO(crbug.com/1371217): Pass these ranges to compositor, so that
-  // compositor doesn't need to always trigger a main frame on every scroll, but
-  // only when the element overflows the container. See also crbug.com/1381276.
-
-  // See documentation of non-overflowing ranges above.
-  Vector<PhysicalScrollRange> non_overflowing_scroll_ranges_;
 };
 
 }  // namespace blink

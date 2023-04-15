@@ -1,0 +1,134 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider_impl.h"
+
+#include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
+#include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
+
+namespace {
+
+// Using the alphanumeric characters below, this provides 36^10 unique device
+// IDs. Note that the uniqueness requirement is not global; the IDs are only
+// used to differentiate between devices associated with a single GAIA account.
+const size_t kDeviceIdLength = 10;
+
+// Possible characters used in a randomly generated device ID.
+constexpr std::array<char, 36> kAlphaNumericChars = {
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+    'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+}  // namespace
+
+namespace ash::nearby::presence {
+
+LocalDeviceDataProviderImpl::LocalDeviceDataProviderImpl(
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager)
+    : pref_service_(pref_service), identity_manager_(identity_manager) {
+  CHECK(identity_manager_);
+  CHECK(pref_service_);
+}
+
+LocalDeviceDataProviderImpl::~LocalDeviceDataProviderImpl() = default;
+
+void LocalDeviceDataProviderImpl::UpdatePersistedSharedCredentials(
+    const std::vector<::nearby::internal::SharedCredential>&
+        shared_credentials) {}
+
+bool LocalDeviceDataProviderImpl::HaveSharedCredentialsChanged(
+    const std::vector<::nearby::internal::SharedCredential>&
+        shared_credentials) {
+  // TODO (b/276307539): Implement `HavePublicCredentialsChanged`, this
+  // default implementation is to get the skeleton class to compile.
+  return true;
+}
+
+std::string LocalDeviceDataProviderImpl::GetDeviceId() {
+  std::string id =
+      pref_service_->GetString(prefs::kNearbyPresenceDeviceIdPrefName);
+
+  // If the local device ID has already been generated, then return it. If this
+  // this is the first time `GetDeviceID` has been called, then generate the
+  // local device ID, persist it, and return it to callers.
+  if (!id.empty()) {
+    return id;
+  }
+
+  for (size_t i = 0; i < kDeviceIdLength; ++i) {
+    id += kAlphaNumericChars[base::RandGenerator(kAlphaNumericChars.size())];
+  }
+
+  pref_service_->SetString(prefs::kNearbyPresenceDeviceIdPrefName, id);
+  return id;
+}
+
+std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
+  std::u16string device_type = ui::GetChromeOSDeviceName();
+
+  const CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  std::string given_name =
+      identity_manager_->FindExtendedAccountInfo(account_info).given_name;
+
+  if (given_name.empty()) {
+    return base::UTF16ToUTF8(device_type);
+  }
+
+  std::string device_name =
+      l10n_util::GetStringFUTF8(IDS_NEARBY_PRESENCE_DEVICE_NAME,
+                                base::UTF8ToUTF16(given_name), device_type);
+  return device_name;
+}
+
+::nearby::internal::Metadata LocalDeviceDataProviderImpl::GetDeviceMetadata() {
+  std::string user_name =
+      pref_service_->GetString(prefs::kNearbyPresenceUserNamePrefName);
+  std::string profile_url =
+      pref_service_->GetString(prefs::kNearbyPresenceProfileUrlPrefName);
+
+  // At this point in the Nearby Presence flow, if the `user_name` and
+  // `profile_url` are not available, something is wrong. The `user_name` and
+  // `profile_url` are persisted to prefs during first time registration flow,
+  // which happens before the Device Metadata is needed to construct
+  // credentials.
+  CHECK(!user_name.empty());
+  CHECK(!profile_url.empty());
+
+  // TODO (b/276307539): Change `device_type` to DEVICE_TYPE_CHROMEOS once
+  // available in //third_party/nearby protos.
+  //
+  // `mac_address` is empty for Nearby Presence MVP on ChromeOS since
+  // broadcasting is not supported.
+  return BuildMetadata(
+      /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP,
+      /*account_name=*/GetAccountName(),
+      /*device_name=*/GetDeviceName(),
+      /*user_name=*/user_name,
+      /*profile_url=*/profile_url,
+      /*mac_address=*/std::string());
+}
+
+std::string LocalDeviceDataProviderImpl::GetAccountName() {
+  const std::string& email =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  return gaia::CanonicalizeEmail(email);
+}
+
+void LocalDeviceDataProviderImpl::SaveUserRegistrationInfo(
+    const std::string& display_name,
+    const std::string& image_url) {}
+
+}  // namespace ash::nearby::presence

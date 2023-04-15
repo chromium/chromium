@@ -39,7 +39,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "content/public/browser/firewall_hole_proxy.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ppapi::NetAddressPrivateImpl;
@@ -277,7 +277,7 @@ void PepperTCPServerSocketMessageFilter::OpenFirewallHole(
 
 void PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened(
     const ppapi::host::ReplyMessageContext& context,
-    std::unique_ptr<FirewallHoleProxy> hole) {
+    std::unique_ptr<chromeos::FirewallHole> hole) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";

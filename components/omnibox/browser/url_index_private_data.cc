@@ -41,6 +41,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
 
@@ -704,7 +705,7 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
     if (new_scored_match.raw_score_before_domain_boosting <
         new_scored_match.raw_score_after_domain_boosting) {
       triggered_feature_service->FeatureTriggered(
-          OmniboxTriggeredFeatureService::Feature::kDomainSuggestions);
+          metrics::OmniboxEventProto_Feature_DOMAIN_SUGGESTIONS);
     }
 
     // Filter new matches that ended up scoring 0. (These are usually matches

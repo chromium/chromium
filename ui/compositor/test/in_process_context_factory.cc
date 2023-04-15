@@ -127,12 +127,17 @@ class InProcessContextFactory::PerCompositorData
   void SetDisplay(std::unique_ptr<viz::Display> display) {
     display_ = std::move(display);
   }
+  void SetMaxVrrInterval(
+      absl::optional<base::TimeDelta> max_vrr_interval) override {
+    max_vrr_interval_ = max_vrr_interval;
+  }
 
   void ResetDisplayOutputParameters() {
     output_color_matrix_ = SkM44();
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
+    max_vrr_interval_ = absl::nullopt;
   }
 
   void Bind(
@@ -153,6 +158,9 @@ class InProcessContextFactory::PerCompositorData
   }
   base::TimeTicks vsync_timebase() { return vsync_timebase_; }
   base::TimeDelta vsync_interval() { return vsync_interval_; }
+  absl::optional<base::TimeDelta> max_vrr_interval() {
+    return max_vrr_interval_;
+  }
 
  private:
   gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
@@ -163,6 +171,7 @@ class InProcessContextFactory::PerCompositorData
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
+  absl::optional<base::TimeDelta> max_vrr_interval_;
 
   mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> receiver_{this};
 };
@@ -373,6 +382,15 @@ base::TimeDelta InProcessContextFactory::GetDisplayVSyncTimeInterval(
   if (iter == per_compositor_data_.end())
     return viz::BeginFrameArgs::DefaultInterval();
   return iter->second->vsync_interval();
+}
+
+absl::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
+    Compositor* compositor) const {
+  auto iter = per_compositor_data_.find(compositor);
+  if (iter == per_compositor_data_.end()) {
+    return absl::nullopt;
+  }
+  return iter->second->max_vrr_interval();
 }
 
 void InProcessContextFactory::ResetDisplayOutputParameters(

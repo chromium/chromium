@@ -18,6 +18,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 
+#if defined(USE_DBUS)
+#include "chrome/browser/ui/views/dark_mode_manager_linux.h"
+#endif
+
 namespace {
 
 class LinuxUiGetterImpl : public ui::LinuxUiGetter {
@@ -56,6 +60,9 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     UMA_HISTOGRAM_ENUMERATION("Linux.SystemTheme.Default",
                               linux_ui_theme->GetNativeTheme()->system_theme());
   }
+#if defined(USE_DBUS)
+  dark_mode_manager_ = std::make_unique<ui::DarkModeManagerLinux>();
+#endif
 }
 
 void ChromeBrowserMainExtraPartsViewsLinux::PreCreateThreads() {

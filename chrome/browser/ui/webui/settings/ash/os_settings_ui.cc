@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/audio_config_service.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/public/cpp/connectivity_services.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -51,6 +52,11 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+#include "chrome/grit/settings_shared_resources.h"
+#include "chrome/grit/settings_shared_resources_map.h"
+#endif
 
 namespace {
 
@@ -98,6 +104,12 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
       IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
+
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+  html_source->AddResourcePaths(
+      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+#endif
+
   html_source->DisableTrustedTypesCSP();
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
@@ -285,6 +297,23 @@ void OSSettingsUI::BindInterface(
   auth::BindToPinFactorEditor(std::move(receiver),
                               quick_unlock::QuickUnlockFactory::GetDelegate(),
                               *pin_backend);
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver) {
+  CHECK(ash::features::IsDriveFsBulkPinningEnabled());
+  // The PageHandlerFactory is reused across same-origin navigations, so ensure
+  // any existing factories are reset.
+  google_drive_page_handler_factory_.reset();
+  google_drive_page_handler_factory_ =
+      std::make_unique<GoogleDrivePageHandlerFactory>(
+          Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+        receiver) {
+  ash::GetPasspointService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

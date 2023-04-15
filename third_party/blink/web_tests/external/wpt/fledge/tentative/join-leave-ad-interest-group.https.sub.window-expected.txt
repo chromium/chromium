@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 83 tests; 0 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 85 tests; 0 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":null} promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{}} promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name"}} promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
@@ -80,6 +80,8 @@ FAIL Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces"
 FAIL Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/","metadata":null}]}} promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/","metadata":null,"someOtherField":"foo"}]}} promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","extra":false,"fields":{"do":"not"},"matter":"at","all":[3,4,5]}} promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Join and leave interest group: Largest possible interest group dictionary promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Join and leave interest group: Oversized interest group dictionary promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Join same interest group overwrites old matching group. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Leaving interest group actually leaves interest group. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
 FAIL Leave an interest group that was never joined. promise_test: Unhandled rejection with value: object "TypeError: navigator.leaveAdInterestGroup is not a function"

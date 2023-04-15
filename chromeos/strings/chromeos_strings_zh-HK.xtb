@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">其他實用資源如下：</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
+<translation id="1923388006036088459">強調色</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">助理</translation>
 <translation id="1962550982027027473">需要預設 APN</translation>
@@ -140,6 +141,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2085089206770112532">顯示屏校暗亮度</translation>
+<translation id="209751264101900360">黎明到黃昏 - 雲朵動態</translation>
 <translation id="2102231663024125441">文字編輯</translation>
 <translation id="2105810540595158374">裝置類型係遊戲控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -331,6 +333,7 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3969602104473960991">已更新 Chrome OS 密碼</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3974175076798940554">Chromebook Plus 獨家資產現已推出</translation>
 <translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="3993704782688964914">您的「<ph name="DEVICE_NAME" />」已是最新版本</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
@@ -370,6 +373,7 @@
 <translation id="4275663329226226506">媒體</translation>
 <translation id="4289540628985791613">概覽</translation>
 <translation id="4289849978083912975">投影片</translation>
+<translation id="4293621540182258188">黎明到黃昏 - 地球動態</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4311195029067684288">完整</translation>
@@ -513,6 +517,7 @@
 <translation id="5423849171846380976">已啟用</translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
+<translation id="5456936324019847994">無法連線至任何已啟用的自訂 APN。請聯絡流動網絡供應商以瞭解詳情。</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>
@@ -544,6 +549,7 @@
 <translation id="576835345334454681">顯示屏校光亮度</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
+<translation id="5809090008577139505">極光</translation>
 <translation id="5826644637650799838">關於此桌布</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">不明</translation>
@@ -562,6 +568,7 @@
 <translation id="5907649332524363701">按鍵顏色</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
+<translation id="5918201491776799918">選取 Chromebook Plus 獨家藝術圖片</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5939518447894949180">重設</translation>
@@ -818,6 +825,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">揀「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
+<translation id="8153923300383192510">Chromebook Plus 獨家內容</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8183974620058026102">附加</translation>
 <translation id="8206859287963243715">蜂窩</translation>
@@ -840,6 +848,7 @@
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>
 <translation id="8372477600026034341">其他主機</translation>
+<translation id="8373046809163484087">使用配合桌布的顏色組合</translation>
 <translation id="8380114448424469341">將視窗固定喺畫面<ph name="DIRECTION" />半部分</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電率</translation>
@@ -859,6 +868,7 @@
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
 <translation id="8508640263392900755">APN 詳情</translation>
+<translation id="8522687886059337719">您現可使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>

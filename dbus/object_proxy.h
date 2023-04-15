@@ -260,17 +260,14 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // CallMethod().
   void StartAsyncMethodCall(int timeout_ms,
                             DBusMessage* request_message,
-                            ReplyCallbackHolder callback_holder,
-                            base::TimeTicks start_time);
+                            ReplyCallbackHolder callback_holder);
 
   // Called when the pending call is complete.
   void OnPendingCallIsComplete(ReplyCallbackHolder callback_holder,
-                               base::TimeTicks start_time,
                                DBusPendingCall* pending_call);
 
   // Runs the ResponseOrErrorCallback with the given response object.
-  void RunResponseOrErrorCallback(ReplyCallbackHolder callback_holderk,
-                                  base::TimeTicks start_time,
+  void RunResponseOrErrorCallback(ReplyCallbackHolder callback_holder,
                                   Response* response,
                                   ErrorResponse* error_response);
 
@@ -289,9 +286,7 @@ class CHROME_DBUS_EXPORT ObjectProxy
                                   DBusMessage* raw_message);
 
   // Runs the method. Helper function for HandleMessage().
-  void RunMethod(base::TimeTicks start_time,
-                 std::vector<SignalCallback> signal_callbacks,
-                 Signal* signal);
+  void RunMethod(std::vector<SignalCallback> signal_callbacks, Signal* signal);
 
   // Redirects the function call to HandleMessage().
   static DBusHandlerResult HandleMessageThunk(DBusConnection* connection,

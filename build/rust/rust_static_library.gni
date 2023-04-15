@@ -153,16 +153,6 @@ template("rust_static_library") {
   exclude_forwards = TESTONLY_AND_VISIBILITY + [ "configs" ]
   _target_name = target_name
 
-  # For Gtest unittests, we must avoid dropping the object files even when
-  # there's no edges into them, as the tests register themselves through
-  # static initializers. For C++ this is done by not putting them in a library
-  # at all, but Rust must be compiled into an rlib.
-  #
-  # On AIX there's no flag to avoid pruning unit tests in this library from
-  # the linking step.
-  _whole_archive = defined(invoker.is_gtest_unittests) &&
-                   invoker.is_gtest_unittests && current_os != "aix"
-
   rust_target(_target_name) {
     forward_variables_from(invoker, "*", exclude_forwards)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
@@ -171,16 +161,6 @@ template("rust_static_library") {
       library_configs = invoker.configs
     }
     target_type = "rust_library"
-
-    if (_whole_archive && !is_win) {
-      all_dependent_configs = [ ":${_target_name}_whole_archive" ]
-    }
-  }
-
-  if (_whole_archive && !is_win) {
-    config("${_target_name}_whole_archive") {
-      ldflags = [ "-LinkWrapper,add-whole-archive=${_target_name}" ]
-    }
   }
 }
 

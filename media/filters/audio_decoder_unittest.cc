@@ -579,15 +579,9 @@ constexpr TestParams kFFmpegTestParams[] = {
     {AudioCodec::kOpus,
      "sfx-opus.ogg",
      {{
-#if defined(OPUS_FIXED_POINT)
          {0, 13500, "-2.70,-1.41,-0.78,-1.27,-2.56,-3.73,"},
          {13500, 20000, "5.48,5.93,6.05,5.83,5.54,5.46,"},
          {33500, 20000, "-3.44,-3.34,-3.57,-4.11,-4.74,-5.13,"},
-#else
-         {0, 13500, "-2.70,-1.41,-0.78,-1.27,-2.56,-3.73,"},
-         {13500, 20000, "5.48,5.93,6.04,5.83,5.54,5.45,"},
-         {33500, 20000, "-3.45,-3.35,-3.57,-4.12,-4.74,-5.14,"},
-#endif
      }},
      -312,
      48000,
@@ -682,6 +676,12 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   }
 }
 
+TEST_P(AudioDecoderTest, DecodeMismatchedSubsamples) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  DecodeBuffer(CreateMismatchedBufferForTest());
+  EXPECT_TRUE(!last_decode_status().is_ok());
+}
+
 TEST_P(AudioDecoderTest, Decode) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
@@ -695,7 +695,7 @@ TEST_P(AudioDecoderTest, Reset) {
 
 TEST_P(AudioDecoderTest, NoTimestamp) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   buffer->set_timestamp(kNoTimestamp);
   DecodeBuffer(std::move(buffer));
   EXPECT_THAT(last_decode_status(), IsDecodeErrorStatus());

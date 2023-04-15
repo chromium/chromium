@@ -107,8 +107,16 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
+    public void create_FullSize_WidthSetCompactDevice() {
+        mPCCTTestRule.configCompactDevice();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 500);
+        assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
     public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 100);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 800);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
     }
@@ -117,6 +125,8 @@ public class PartialCustomTabDisplayManagerTest {
     public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
         PartialCustomTabDisplayManager displayManager =
                 createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        assertEquals(
+                "Breakpoint value is incorrect", 840, displayManager.getBreakPointDpForTesting());
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
     }
@@ -127,6 +137,17 @@ public class PartialCustomTabDisplayManagerTest {
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void create_BottomSheet_HeightWidthSet_Compact() {
+        mPCCTTestRule.configCompactDevice();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(
+                350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        assertEquals(
+                "Breakpoint value is incorrect", 600, displayManager.getBreakPointDpForTesting());
+        assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
     }
 
@@ -187,6 +208,30 @@ public class PartialCustomTabDisplayManagerTest {
                 .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
                         eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+    }
+
+    @Test
+    public void transitionFromBottomSheetToSideSheetWhileSoftkeyboardIsOn() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        displayManager.onShowSoftInput(() -> {});
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue(displayManager.getSizeStrategyForTesting().isMaximized());
+
+        // Rotate while the soft keyboard is on.
+        mPCCTTestRule.configLandscapeMode();
+        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+
+        // The destroyed bottom sheet should have its height state back to 'initial'.
+        assertFalse(displayManager.getSizeStrategyForTesting().isMaximized());
     }
 
     @Test

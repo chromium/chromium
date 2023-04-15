@@ -11,9 +11,7 @@
 #import <memory>
 
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
-#import "components/reading_list/core/reading_list_model.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -24,11 +22,12 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -40,7 +39,6 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -50,8 +48,6 @@
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
@@ -64,6 +60,7 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -138,12 +135,13 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
+    PagePlaceholderBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
 
     SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), [[TestSessionService alloc] init]);
+        browser_.get(), [[TestSessionService alloc] init], false);
     SessionRestorationBrowserAgent::FromBrowser(browser_.get())
         ->SetSessionID([[NSUUID UUID] UUIDString]);
 
@@ -260,6 +258,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
     web_navigation_browser_agent_ =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
+    page_placeholder_browser_agent_ =
+        PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
 
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
@@ -280,13 +280,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.layoutGuideCenter =
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
-    dependencies.readingModel = ReadingListModelFactory::GetForBrowserState(
-        browser_.get()->GetBrowserState());
     dependencies.secondaryToolbarContainerCoordinator =
         [[ToolbarContainerCoordinator alloc]
             initWithBrowser:browser_.get()
                        type:ToolbarContainerType::kSecondary];
     dependencies.safeAreaProvider = safe_area_provider_;
+    dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -384,10 +383,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
   WebNavigationBrowserAgent* web_navigation_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
+  PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
-  [bvc_ webStateSelected:ActiveWebState()];
+  [bvc_ webStateSelected];
   EXPECT_EQ(ActiveWebState()->GetView().superview, container_.view);
   EXPECT_TRUE(ActiveWebState()->IsVisible());
 }

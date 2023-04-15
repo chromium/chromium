@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
@@ -23,28 +24,25 @@
 #include "ui/views/view_observer.h"
 #include "url/gurl.h"
 
-ProfilePickerTestBase::ProfilePickerTestBase() = default;
-
-ProfilePickerTestBase::~ProfilePickerTestBase() = default;
-
-ProfilePickerView* ProfilePickerTestBase::view() {
+ProfilePickerView* WithProfilePickerTestHelpers::view() {
   return static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting());
 }
 
-views::Widget* ProfilePickerTestBase::widget() {
+views::Widget* WithProfilePickerTestHelpers::widget() {
   return view() ? view()->GetWidget() : nullptr;
 }
 
-views::WebView* ProfilePickerTestBase::web_view() {
+views::WebView* WithProfilePickerTestHelpers::web_view() {
   return ProfilePicker::GetWebViewForTesting();
 }
 
-void ProfilePickerTestBase::WaitForPickerWidgetCreated() {
+void WithProfilePickerTestHelpers::WaitForPickerWidgetCreated() {
   profiles::testing::WaitForPickerWidgetCreated();
 }
 
-void ProfilePickerTestBase::WaitForLoadStop(const GURL& url,
-                                            content::WebContents* target) {
+void WithProfilePickerTestHelpers::WaitForLoadStop(
+    const GURL& url,
+    content::WebContents* target) {
   if (!target) {
     profiles::testing::WaitForPickerLoadStop(url);
     return;
@@ -54,29 +52,27 @@ void ProfilePickerTestBase::WaitForLoadStop(const GURL& url,
   EXPECT_EQ(target->GetLastCommittedURL(), url);
 }
 
-void ProfilePickerTestBase::WaitForPickerClosed() {
+void WithProfilePickerTestHelpers::WaitForPickerClosed() {
   profiles::testing::WaitForPickerClosed();
   ASSERT_FALSE(ProfilePicker::IsOpen());
 }
 
-void ProfilePickerTestBase::WaitForPickerClosedAndReopenedImmediately() {
+void WithProfilePickerTestHelpers::WaitForPickerClosedAndReopenedImmediately() {
   ASSERT_TRUE(ProfilePicker::IsOpen());
   profiles::testing::WaitForPickerClosed();
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
-content::WebContents* ProfilePickerTestBase::web_contents() {
-  if (!web_view())
+content::WebContents* WithProfilePickerTestHelpers::web_contents() {
+  if (!web_view()) {
     return nullptr;
+  }
   return web_view()->GetWebContents();
 }
 
-GURL ProfilePickerTestBase::GetSigninChromeSyncDiceUrl() {
-  auto* profile_picker_view =
-      static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting());
-  GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
-  if (profile_picker_view->ShouldUseDarkColors()) {
-    url = net::AppendQueryParameter(url, "color_scheme", "dark");
-  }
-  return net::AppendQueryParameter(url, "flow", "promo");
+GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl() {
+  return signin::GetChromeSyncURLForDice({
+      .request_dark_scheme = view()->ShouldUseDarkColors(),
+      .for_promo_flow = true,
+  });
 }

@@ -17,15 +17,14 @@ const char* RendererTypeTestSuffix(RendererType type) {
       return "SkiaGL";
     case RendererType::kSkiaVk:
       return "SkiaVulkan";
-    case RendererType::kSkiaDawn:
-      return "SkiaDawn";
+    case RendererType::kSkiaGraphite:
+      return "SkiaGraphite";
     case RendererType::kSoftware:
       return "Software";
   }
 }
 
 std::vector<RendererType> GetRendererTypes(bool include_software,
-                                           bool include_dawn,
                                            bool skia_only) {
   std::vector<RendererType> types;
   if (include_software && !skia_only)
@@ -36,9 +35,8 @@ std::vector<RendererType> GetRendererTypes(bool include_software,
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
   types.push_back(RendererType::kSkiaVk);
 #endif
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-  if (include_dawn)
-    types.push_back(RendererType::kSkiaDawn);
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
+  types.push_back(RendererType::kSkiaGraphite);
 #endif
   return types;
 }
@@ -50,23 +48,15 @@ void PrintTo(RendererType type, std::ostream* os) {
 }
 
 std::vector<RendererType> GetRendererTypes() {
-  return GetRendererTypes(true, true, false);
-}
-
-std::vector<RendererType> GetRendererTypesNoDawn() {
-  return GetRendererTypes(true, false, false);
+  return GetRendererTypes(true, false);
 }
 
 std::vector<RendererType> GetGpuRendererTypes() {
-  return GetRendererTypes(false, true, false);
-}
-
-std::vector<RendererType> GetGpuRendererTypesNoDawn() {
-  return GetRendererTypes(false, false, false);
+  return GetRendererTypes(false, false);
 }
 
 std::vector<RendererType> GetRendererTypesSkiaOnly() {
-  return GetRendererTypes(false, true, true);
+  return GetRendererTypes(false, true);
 }
 
 }  // namespace viz

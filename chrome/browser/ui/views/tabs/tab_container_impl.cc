@@ -528,7 +528,7 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
     // drag handle, to increase draggability.  This region starts 1 DIP above
     // the top of the separator.
     const int drag_handle_extension =
-        TabStyle::GetDragHandleExtension(height());
+        TabStyle::Get()->GetDragHandleExtension(height());
 
     // A hit on an inactive tab is in the content area unless it is in the thin
     // strip mentioned above.
@@ -705,7 +705,7 @@ void TabContainerImpl::SetTabSlotVisibility() {
     const bool is_collapsed =
         (current_group.has_value() &&
          controller_->IsGroupCollapsed(current_group.value()) &&
-         tab->bounds().width() <= TabStyle::GetTabOverlap());
+         tab->bounds().width() <= tab->tab_style()->GetTabOverlap());
     const bool should_be_visible = is_collapsed ? false : last_tab_visible;
 
     // If we change the visibility of a tab in a group, we must recalculate that
@@ -1118,7 +1118,7 @@ void TabContainerImpl::StartInsertTabAnimation(int model_index) {
   bounds.set_height(GetLayoutConstant(TAB_HEIGHT));
 
   // Adjust the starting bounds of the new tab.
-  const int tab_overlap = TabStyle::GetTabOverlap();
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   if (model_index > 0) {
     // If we have a tab to our left, start at its right edge.
     bounds.set_x(GetTabAtModelIndex(model_index - 1)->bounds().right() -
@@ -1190,7 +1190,7 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
 gfx::Rect TabContainerImpl::GetTargetBoundsForClosingTab(
     Tab* tab,
     int former_model_index) const {
-  const int tab_overlap = TabStyle::GetTabOverlap();
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
   // Compute the target bounds for animating this tab closed.  The tab's left
   // edge should stay joined to the right edge of the previous tab, if any.
@@ -1309,7 +1309,7 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
 
   override_available_width_for_tabs_ =
       tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
-      TabStyle::GetTabOverlap();
+      TabStyle::Get()->GetTabOverlap();
 }
 
 void TabContainerImpl::ResizeLayoutTabs() {
@@ -1535,7 +1535,7 @@ gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
       GetModelIndexOf(tab) ==
           controller_->GetFirstTabInGroup(tab->group().value());
 
-  const int overlap = TabStyle::GetTabOverlap();
+  const int overlap = tab->tab_style()->GetTabOverlap();
   if (!drop_before || !first_in_group || drop_in_group) {
     // Dropping between tabs, or between a group header and the group's first
     // tab.

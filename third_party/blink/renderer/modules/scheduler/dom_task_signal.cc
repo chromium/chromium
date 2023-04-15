@@ -128,7 +128,6 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   is_priority_changing_ = true;
   const AtomicString previous_priority = priority_;
   priority_ = priority;
-  priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
 
   for (AlgorithmHandle* handle : priority_change_algorithms_) {
     handle->GetAlgorithm()->Run();
@@ -144,10 +143,8 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
             *priority_composition_manager_.Get())) {
       // Dependents can be added while dispatching events, but none are removed
       // since having an active iterator will strongify weak references, making
-      // the following iteration safe.
-      //
-      // TODO(crbug.com/1323391): Should this ignore newly added signals or not?
-      // It probably doesn't matter much, but it should be specced and tested.
+      // the following iteration safe. Signaling priority change on newly added
+      // dependent signals has no effect since the new priority is already set.
       for (auto& abort_signal : source_signal_manager->GetDependentSignals()) {
         To<DOMTaskSignal>(abort_signal.Get())
             ->SignalPriorityChange(priority, exception_state);
@@ -198,10 +195,12 @@ void DOMTaskSignal::OnSignalSettled(
 
 bool DOMTaskSignal::HasPendingActivity() const {
   if (GetSignalType() != SignalType::kComposite) {
-    DCHECK_EQ(GetSignalType(), SignalType::kController);
+    DCHECK(GetSignalType() == SignalType::kController ||
+           GetSignalType() == SignalType::kInternal);
     return false;
   }
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
+  CHECK(priority_composition_manager_);
   // True if priority changes for this signal can occur and be observed.
   bool has_pending_priority_activity =
       !priority_composition_manager_->IsSettled() &&

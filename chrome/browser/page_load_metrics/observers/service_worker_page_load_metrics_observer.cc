@@ -468,12 +468,40 @@ void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
         100 * number_of_fallback / metrics.number_of_subresources_loaded;
   }
 
-  ukm::builders::ServiceWorker_OnLoad(GetDelegate().GetPageUkmSourceId())
-      .SetMainAndSubResourceLoadLocation(static_cast<int64_t>(status))
+  ukm::builders::ServiceWorker_OnLoad builder(
+      GetDelegate().GetPageUkmSourceId());
+  builder.SetMainAndSubResourceLoadLocation(static_cast<int64_t>(status))
       .SetTotalSubResourceLoad(ukm::GetExponentialBucketMinForCounts1000(
           metrics.number_of_subresources_loaded))
       .SetTotalSubResourceFallback(
           ukm::GetExponentialBucketMinForCounts1000(number_of_fallback))
-      .SetSubResourceFallbackRatio(fallback_ratio)
-      .Record(ukm::UkmRecorder::Get());
+      .SetSubResourceFallbackRatio(fallback_ratio);
+  if (metrics.service_worker_subresource_load_metrics) {
+    const auto& sw_metrics = *metrics.service_worker_subresource_load_metrics;
+    builder.SetImageHandled(sw_metrics.image_handled)
+        .SetImageFallback(sw_metrics.image_fallback)
+        .SetCSSStyleSheetHandled(sw_metrics.css_handled)
+        .SetCSSStyleSheetFallback(sw_metrics.css_fallback)
+        .SetScriptHandled(sw_metrics.script_handled)
+        .SetScriptFallback(sw_metrics.script_fallback)
+        .SetFontHandled(sw_metrics.font_handled)
+        .SetFontFallback(sw_metrics.font_fallback)
+        .SetSVGDocumentHandled(sw_metrics.svg_handled)
+        .SetSVGDocumentFallback(sw_metrics.svg_fallback)
+        .SetXSLStyleSheetHandled(sw_metrics.xsl_handled)
+        .SetXSLStyleSheetFallback(sw_metrics.xsl_fallback)
+        .SetLinkPrefetchHandled(sw_metrics.link_prefetch_handled)
+        .SetLinkPrefetchFallback(sw_metrics.link_prefetch_fallback)
+        .SetTextTrackHandled(sw_metrics.text_track_handled)
+        .SetTextTrackFallback(sw_metrics.text_track_fallback)
+        .SetAudioHandled(sw_metrics.audio_handled)
+        .SetAudioFallback(sw_metrics.audio_fallback)
+        .SetVideoHandled(sw_metrics.video_handled)
+        .SetVideoFallback(sw_metrics.video_fallback)
+        .SetManifestHandled(sw_metrics.manifest_handled)
+        .SetManifestFallback(sw_metrics.manifest_fallback)
+        .SetSpeculationRulesHandled(sw_metrics.speculation_rules_handled)
+        .SetSpeculationRulesFallback(sw_metrics.speculation_rules_fallback);
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 }

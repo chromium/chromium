@@ -518,8 +518,6 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_premultiply_alpha.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_premultiply_alpha.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_private_token_type.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_private_token_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_private_token_version.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_private_token_version.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.cc",

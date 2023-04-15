@@ -25,7 +25,7 @@ found in the LICENSE file.
     </style>
     <style name="ToolbarMenuButton" parent="ToolbarButton">
         <item name="android:layout_gravity">top</item>
-        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingEnd">@dimen/button_end_padding</item>
     </style>
     <style name="BottomToolbarButton" parent="ToolbarButton">
         <item name="android:layout_height">48dp</item>

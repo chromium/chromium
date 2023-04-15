@@ -201,8 +201,12 @@ mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
 }
 #endif
 
-void PrintingContext::ApplyPrintSettings(const PrintSettings& settings) {
+void PrintingContext::SetPrintSettings(const PrintSettings& settings) {
   *settings_ = settings;
+}
+
+void PrintingContext::ApplyPrintSettings(const PrintSettings& settings) {
+  SetPrintSettings(settings);
 
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   if (skip_system_calls()) {

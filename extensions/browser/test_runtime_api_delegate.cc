@@ -36,7 +36,7 @@ void TestRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
 bool TestRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   // TODO(rockot): This probably isn't right. Maybe this delegate should just
   // support manual PlatformInfo override for tests if necessary.
-  info->os = api::runtime::PLATFORM_OS_CROS;
+  info->os = api::runtime::PlatformOs::kCros;
   return true;
 }
 

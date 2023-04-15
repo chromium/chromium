@@ -569,9 +569,16 @@ void SetProfileCategory(
   }
 }
 
+std::string GetStrippedValue(const char* value) {
+  std::u16string stripped_value;
+  base::RemoveChars(base::UTF8ToUTF16(value), base::kWhitespaceUTF16,
+                    &stripped_value);
+  return base::UTF16ToUTF8(stripped_value);
+}
+
 IBAN GetIBAN() {
   IBAN iban(base::GenerateUuid());
-  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
@@ -844,6 +851,12 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
             u"3 digit security code on the back of your card",
             /*challenge_input_length=*/3U,
             /*cvc_position=*/CvcPosition::kBackOfCard));
+        break;
+      case CardUnmaskChallengeOptionType::kEmailOtp:
+        challenge_options.emplace_back(
+            CardUnmaskChallengeOption::ChallengeOptionId("345"), type,
+            /*challenge_info=*/u"a******b@google.com",
+            /*challenge_input_length=*/6U);
         break;
       default:
         NOTREACHED();

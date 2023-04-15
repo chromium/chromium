@@ -211,9 +211,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the number of AccessibilityEvents dropped when the OnDemand
-    accessibility services feature is enabled, and the ComputeAXMode feature is
-    enabled, and the number of events dropped is 100%. Tracks for when the
-    AXMode is set to {AXMode}. Recorded a the end of a session.
+    accessibility services feature is enabled, and the AccessibilityAXModes
+    feature is enabled, and the number of events dropped is 100%. Tracks for
+    when the AXMode is set to {AXMode}. Recorded at the end of a session.
+    Updated in M114 to add FormControls variant.
   </summary>
   <token key="AXMode">
     <variant name="Basic"
@@ -221,6 +222,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Complete"
         summary="kAXModeComplete - Includes NativeAPIs, WebContents,
                  InlineTextBoxes, ScreenReader, and HTML"/>
+    <variant name="FormControls"
+        summary="kAXModeFormControls - Includes only NativeAPIs, WebContents,
+                 HTML, and ExperimentalFormControls"/>
   </token>
 </histogram>
 
@@ -242,9 +246,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the percentage of AccessibilityEvents dropped when the OnDemand
-    accessibility services feature is enabled, and the ComputeAXMode feature is
-    enabled. Tracks for when the AXMode is set to {AXMode}. Recorded at the end
-    of a session.
+    accessibility services feature is enabled, and the AccessibilityAXModes
+    feature is enabled. Tracks for when the AXMode is set to {AXMode}. Recorded
+    at the end of a session. Updated in M114 to add FormControls variant.
   </summary>
   <token key="AXMode">
     <variant name="Basic"
@@ -252,6 +256,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Complete"
         summary="kAXModeComplete - Includes NativeAPIs, WebContents,
                  InlineTextBoxes, ScreenReader, and HTML"/>
+    <variant name="FormControls"
+        summary="kAXModeFormControls - Includes only NativeAPIs, WebContents,
+                 HTML, and ExperimentalFormControls"/>
   </token>
 </histogram>
 
@@ -1590,7 +1597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.AXTree.Destroy" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>agarwaltushar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

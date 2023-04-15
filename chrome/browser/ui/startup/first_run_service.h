@@ -37,6 +37,8 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 // It is not available on the other profiles.
 class FirstRunService : public KeyedService {
  public:
+  static constexpr char kSyntheticTrialName[] = "ForYouFreSynthetic";
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class EntryPoint {
@@ -107,6 +109,7 @@ class FirstRunService : public KeyedService {
  private:
   friend class FirstRunServiceFactory;
   FRIEND_TEST_ALL_PREFIXES(FirstRunFieldTrialCreatorTest, SetUpFromClientSide);
+  FRIEND_TEST_ALL_PREFIXES(FirstRunCohortSetupTest, JoinFirstRunCohort);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Internal interface for `SetUpClientSideFieldTrialIfNeeded()`, exposed to
@@ -178,7 +181,7 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<FirstRunServiceFactory>;
-  friend class FirstRunServiceBrowserTest;
+  friend class FirstRunServiceBrowserTestBase;
 
   FirstRunServiceFactory();
   ~FirstRunServiceFactory() override;

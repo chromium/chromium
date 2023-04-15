@@ -58,9 +58,6 @@ class Profile;
 
 namespace ash::personalization_app {
 
-using SetDailyRefreshCallback =
-    base::OnceCallback<void(mojom::SetDailyRefreshResponsePtr)>;
-
 // Implemented in //chrome because this relies on chrome |wallpaper_handlers|
 // code.
 class PersonalizationAppWallpaperProviderImpl
@@ -164,16 +161,18 @@ class PersonalizationAppWallpaperProviderImpl
       bool preview_mode,
       SelectGooglePhotosPhotoCallback callback) override;
 
-  void SelectGooglePhotosAlbum(const std::string& album_id,
-                               SetDailyRefreshCallback callback) override;
+  void SelectGooglePhotosAlbum(
+      const std::string& album_id,
+      SelectGooglePhotosAlbumCallback callback) override;
 
   void GetGooglePhotosDailyRefreshAlbumId(
       GetGooglePhotosDailyRefreshAlbumIdCallback callback) override;
 
   void SetCurrentWallpaperLayout(ash::WallpaperLayout layout) override;
 
-  void SetDailyRefreshCollectionId(const std::string& collection_id,
-                                   SetDailyRefreshCallback callback) override;
+  void SetDailyRefreshCollectionId(
+      const std::string& collection_id,
+      SetDailyRefreshCollectionIdCallback callback) override;
 
   void GetDailyRefreshCollectionId(
       GetDailyRefreshCollectionIdCallback callback) override;
@@ -325,7 +324,7 @@ class PersonalizationAppWallpaperProviderImpl
 
   SelectGooglePhotosPhotoCallback pending_select_google_photos_photo_callback_;
 
-  SetDailyRefreshCallback pending_set_daily_refresh_callback_;
+  base::OnceCallback<void(bool success)> pending_set_daily_refresh_callback_;
 
   UpdateDailyRefreshWallpaperCallback
       pending_update_daily_refresh_wallpaper_callback_;

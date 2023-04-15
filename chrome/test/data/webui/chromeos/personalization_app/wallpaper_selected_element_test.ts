@@ -333,7 +333,8 @@ suite('WallpaperSelectedTest', function() {
     // Set a Google Photos photo as current wallpaper.
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: [],
-      description: undefined,
+      descriptionContent: '',
+      descriptionTitle: '',
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kOnceGooglePhotos,
@@ -365,7 +366,8 @@ suite('WallpaperSelectedTest', function() {
   test('shows attribution for device default wallpaper', async () => {
     const currentSelected: CurrentWallpaper = {
       attribution: ['testing attribution'],
-      description: undefined,
+      descriptionContent: '',
+      descriptionTitle: '',
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -389,7 +391,8 @@ suite('WallpaperSelectedTest', function() {
         loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         const currentSelected: CurrentWallpaper = {
           attribution: ['testing attribution'],
-          description: undefined,
+          descriptionContent: '',
+          descriptionTitle: '',
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -421,7 +424,8 @@ suite('WallpaperSelectedTest', function() {
         loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           attribution: ['testing attribution'],
-          description: undefined,
+          descriptionContent: '',
+          descriptionTitle: '',
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -457,7 +461,8 @@ suite('WallpaperSelectedTest', function() {
         loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           attribution: ['testing attribution'],
-          description: undefined,
+          descriptionContent: '',
+          descriptionTitle: '',
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -491,7 +496,8 @@ suite('WallpaperSelectedTest', function() {
     loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: ['testing attribution'],
-      description: undefined,
+      descriptionContent: '',
+      descriptionTitle: '',
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -528,7 +534,8 @@ suite('WallpaperSelectedTest', function() {
         loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           attribution: ['testing attribution'],
-          description: undefined,
+          descriptionContent: '',
+          descriptionTitle: '',
           key: 'key',
           layout: WallpaperLayout.kStretch,
           type: WallpaperType.kDefault,
@@ -557,7 +564,8 @@ suite('WallpaperSelectedTest', function() {
     loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: ['testing'],
-      description: undefined,
+      descriptionContent: '',
+      descriptionTitle: '',
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,
@@ -580,10 +588,8 @@ suite('WallpaperSelectedTest', function() {
 
     personalizationStore.data.wallpaper.currentSelected = {
       ...personalizationStore.data.wallpaper.currentSelected,
-      description: {
-        content: 'content',
-        title: 'title',
-      },
+      descriptionContent: 'content',
+      descriptionTitle: 'title',
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
@@ -598,10 +604,8 @@ suite('WallpaperSelectedTest', function() {
     loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: ['testing'],
-      description: {
-        content: 'content text',
-        title: 'title text',
-      },
+      descriptionContent: 'content text',
+      descriptionTitle: 'title text',
       key: 'key',
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,

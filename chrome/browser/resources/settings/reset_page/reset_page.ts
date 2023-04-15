@@ -98,11 +98,11 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   }
 
   // <if expr="_google_chrome and is_win">
-  private onChromeCleanupTap_() {
+  private onChromeCleanupClick_() {
     Router.getInstance().navigateTo(routes.CHROME_CLEANUP);
   }
 
-  private onIncompatibleApplicationsTap_() {
+  private onIncompatibleApplicationsClick_() {
     Router.getInstance().navigateTo(routes.INCOMPATIBLE_APPLICATIONS);
   }
   // </if>

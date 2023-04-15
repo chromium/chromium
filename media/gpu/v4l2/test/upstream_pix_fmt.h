@@ -23,4 +23,9 @@
 #define V4L2_PIX_FMT_MM21 v4l2_fourcc('M', 'M', '2', '1')
 #endif
 
+#ifndef V4L2_PIX_FMT_MT2T
+// MTK 10-bit block mode, two non-contiguous planes.
+#define V4L2_PIX_FMT_MT2T v4l2_fourcc('M', 'T', '2', 'T')
+#endif
+
 #endif  // MEDIA_GPU_V4L2_TEST_UPSTREAM_PIX_FMT_H_

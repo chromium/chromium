@@ -70,8 +70,7 @@ class SimpleDownloadManagerCoordinatorFactory
   // BrowserContextKeyedService:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
-    auto* service_instance = new download::SimpleDownloadManagerCoordinator(
-        {}, !context->IsOffTheRecord());
+    auto* service_instance = new download::SimpleDownloadManagerCoordinator({});
     service_instance->SetSimpleDownloadManager(context->GetDownloadManager(),
                                                true);
     return service_instance;

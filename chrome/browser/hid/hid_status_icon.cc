@@ -58,7 +58,7 @@ void HidStatusIcon::ExecuteCommand(int command_id, int event_flags) {
     auto* hid_connection_tracker = HidConnectionTrackerFactory::GetForProfile(
         profiles_[profile_idx], /*create=*/false);
     DCHECK(hid_connection_tracker);
-    hid_connection_tracker->ShowHidContentSettingsExceptions();
+    hid_connection_tracker->ShowContentSettingsExceptions();
   }
 }
 
@@ -68,7 +68,7 @@ size_t HidStatusIcon::GetTotalConnectionCount() {
     auto* hid_connection_tracker =
         HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
     DCHECK(hid_connection_tracker);
-    total_connection_count += hid_connection_tracker->connection_count();
+    total_connection_count += hid_connection_tracker->total_connection_count();
   }
   return total_connection_count;
 }

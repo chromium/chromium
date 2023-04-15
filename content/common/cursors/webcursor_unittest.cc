@@ -110,18 +110,6 @@ TEST(WebCursorTest, SetCursor) {
   cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 0.001f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
-  // SetCursor should return false when the scale factor is too large.
-  cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 1000.0f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the unscaled bitmap width is too large.
-  cursor = ui::Cursor::NewCustom(CreateTestBitmap(1025, 5), kHotspot, 10.0f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
-  // SetCursor should return false when the unscaled bitmap height is too large.
-  cursor = ui::Cursor::NewCustom(CreateTestBitmap(5, 1025), kHotspot, 10.0f);
-  EXPECT_FALSE(webcursor.SetCursor(cursor));
-
   // SetCursor should return false when the 1x scaled image width is too large.
   cursor = ui::Cursor::NewCustom(CreateTestBitmap(151, 3), kHotspot, 1.0f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));

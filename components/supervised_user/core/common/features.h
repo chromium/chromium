@@ -54,6 +54,9 @@ bool IsProtoApiForClassifyUrlEnabled();
 // status synchronously - http://b/264382308.
 bool IsSynchronousSignInCheckingEnabled();
 
+// Returns whether the new local extension approval experience is enabled.
+bool IsLocalExtensionApprovalsV2Enabled();
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_FEATURES_H_

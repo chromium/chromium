@@ -78,7 +78,7 @@ class SafeBrowsingQueryManagerTest
     : public testing::TestWithParam<network::mojom::RequestDestination> {
  protected:
   SafeBrowsingQueryManagerTest()
-      : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
+      : task_environment_(web::WebTaskEnvironment::REAL_IO_THREAD),
         browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),

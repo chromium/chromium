@@ -275,6 +275,10 @@ const char kReportDeviceAudioStatusCheckingRateMs[] =
 const char kReportDeviceSignalStrengthEventDrivenTelemetry[] =
     "cros.telemetry_reporting.report_signal_strength_event_driven_telemetry";
 
+// Determines whether the network events are reported.
+const char kDeviceReportNetworkEvents[] =
+    "cros.reporting.report_network_events";
+
 // This policy should not appear in the protobuf ever but is used internally to
 // signal that we are running in a "safe-mode" for policy recovery.
 const char kPolicyMissingMitigationMode[] =

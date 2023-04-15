@@ -16,7 +16,6 @@
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -181,8 +180,8 @@ gfx::Image ResizeImageToFdoMaxSize(const gfx::Image& image) {
   const SkBitmap* image_bitmap = image.ToSkBitmap();
   double scale = std::min(static_cast<double>(kMaxImageWidth) / width,
                           static_cast<double>(kMaxImageHeight) / height);
-  width = base::clamp<int>(scale * width, 1, kMaxImageWidth);
-  height = base::clamp<int>(scale * height, 1, kMaxImageHeight);
+  width = std::clamp<int>(scale * width, 1, kMaxImageWidth);
+  height = std::clamp<int>(scale * height, 1, kMaxImageHeight);
   return gfx::Image(
       gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
           *image_bitmap, skia::ImageOperations::RESIZE_LANCZOS3, width,

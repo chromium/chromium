@@ -14,8 +14,11 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -317,6 +320,10 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion {
+  // If a suggestion was selected, reset the password bottom sheet dismiss count
+  // to 0.
+  [self resetPasswordBottomSheetDismissCount];
+
   if (!_suggestionState)
     return;
 
@@ -363,6 +370,20 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 - (autofill::PopupType)suggestionType {
   return _provider ? _provider.suggestionType
                    : autofill::PopupType::kUnspecified;
+}
+
+#pragma mark - Private
+
+// Resets the password bottom sheet dismiss count to 0.
+- (void)resetPasswordBottomSheetDismissCount {
+  ChromeBrowserState* browserState =
+      _webState
+          ? ChromeBrowserState::FromBrowserState(_webState->GetBrowserState())
+          : nullptr;
+  if (browserState) {
+    browserState->GetPrefs()->SetInteger(
+        prefs::kIosPasswordBottomSheetDismissCount, 0);
+  }
 }
 
 @end

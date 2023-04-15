@@ -89,6 +89,7 @@ build_webui("build") {
     "autofill_page/password_check.ts",
     "autofill_page/password_edit_dialog.ts",
     "autofill_page/password_list_item.ts",
+    "autofill_page/password_preview_item.ts",
     "autofill_page/password_move_multiple_passwords_to_account_dialog.ts",
     "autofill_page/password_move_to_account_dialog.ts",
     "autofill_page/password_remove_confirmation_dialog.ts",
@@ -265,16 +266,17 @@ build_webui("build") {
   if (is_chromeos) {
     web_component_files += [ "controls/password_prompt_dialog.ts" ]
   }
+  if (is_chrome_branded) {
+    web_component_files += [ "get_most_chrome_page/get_most_chrome_page.ts" ]
+  }
 
   # -----------------web_component_files end ----------------------------------
 
   # -----------------non_web_component_files start ----------------------------
 
   non_web_component_files = [
-    "a11y_page/captions_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
     "appearance_page/appearance_browser_proxy.ts",
-    "appearance_page/fonts_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
     "autofill_page/merge_passwords_store_copies_mixin.ts",
@@ -293,25 +295,20 @@ build_webui("build") {
     "controls/settings_idle_load.ts",
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.ts",
-    "extension_control_browser_proxy.ts",
     "focus_config.ts",
     "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
     "i18n_setup.ts",
     "lazy_load.ts",
-    "lifetime_browser_proxy.ts",
     "metrics_browser_proxy.ts",
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "page_visibility.ts",
-    "people_page/sync_browser_proxy.ts",
-    "people_page/profile_info_browser_proxy.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
-    "privacy_page/privacy_page_browser_proxy.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "privacy_page/security_keys_browser_proxy.ts",
     "privacy_sandbox/icons.html.ts",
@@ -405,6 +402,7 @@ build_webui("build") {
   }
 
   ts_deps = [
+    "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
@@ -426,6 +424,11 @@ build_webui("build") {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
   }
+
+  ts_path_mappings =
+      [ "/shared/settings/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",
+            target_gen_dir) ]
 
   if (is_chromeos_ash) {
     # TODO(crbug.com/1013466): Browser Settings should not depend on ash/webui/
@@ -449,6 +452,10 @@ build_webui("build") {
     ]
     optimize_webui_excludes =
         [ "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js" ]
+    optimize_webui_external_paths =
+        [ "/shared/settings|" + rebase_path(
+              "$root_gen_dir/chrome/browser/resources/settings_shared/tsc",
+              root_build_dir) ]
   }
 
   enable_source_maps = enable_webui_inline_sourcemaps

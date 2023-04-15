@@ -988,14 +988,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   // Verify that |same_dir| and |diff_dir| have the same origin according to
   // |window.origin| (even though they have different |same_dir_site| and
   // |diff_dir_site|).
-  std::string same_dir_origin;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      same_dir, "domAutomationController.send(window.origin)",
-      &same_dir_origin));
-  std::string diff_dir_origin;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      diff_dir, "domAutomationController.send(window.origin)",
-      &diff_dir_origin));
+  std::string same_dir_origin =
+      content::EvalJs(same_dir, "window.origin").ExtractString();
+  std::string diff_dir_origin =
+      content::EvalJs(diff_dir, "window.origin").ExtractString();
   EXPECT_EQ(diff_dir_origin, same_dir_origin);
 
   // Verify that (1) all same-site iframes stay in the process, (2) isolated
@@ -1021,13 +1017,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
 
   // Verify that |same_dir| and |diff_dir| can script each other.
   // (they should - they have the same origin).
-  std::string inner_text_from_other_frame;
   const std::string r_script =
       R"( var w = window.open('', 'SameOrigin-SamePath');
-          domAutomationController.send(w.document.body.innerText); )";
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      diff_dir, r_script, &inner_text_from_other_frame));
-  EXPECT_EQ("Simple test page.", inner_text_from_other_frame);
+          w.document.body.innerText; )";
+  EXPECT_EQ("Simple test page.", content::EvalJs(diff_dir, r_script));
 }
 
 // Check that if a hosted app has an iframe, and that iframe navigates to URLs

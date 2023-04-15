@@ -957,11 +957,11 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
   // Initialize GL context, so Vulkan and GL interop can work properly.
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-    gpu_driver_bug_workarounds(), gpu_feature_info());
+      gpu_driver_bug_workarounds(), gpu_feature_info());
   if (!shared_context_state->InitializeGL(gpu_preferences_,
                                           feature_info.get())) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize GL for "
-        " SharedContextState";
+                  " SharedContextState";
     *result = ContextResult::kFatalFailure;
     return nullptr;
   }
@@ -976,14 +976,15 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
                                     &remaining_gl_error_reports);
   }
 
-  if (!shared_context_state->InitializeGrContext(
+  if (!shared_context_state->InitializeSkia(
           gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
           &activity_flags_, watchdog_)) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize"
-                  "GrContext for SharedContextState";
+    LOG(ERROR) << "ContextResult::kFatalFailure: Failed to initialize Skia for "
+                  "SharedContextState";
     *result = ContextResult::kFatalFailure;
     return nullptr;
   }
+
   shared_context_state_ = std::move(shared_context_state);
 
   *result = ContextResult::kSuccess;

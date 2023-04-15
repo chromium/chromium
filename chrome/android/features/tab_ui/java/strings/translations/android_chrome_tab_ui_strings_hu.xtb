@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
-<translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
 <translation id="1403228085774130835">A bezárt lapokat a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja</translation>
 <translation id="1455506303394048917">Az ezeken az inkognitó lapokon végzett tevékenységei törlődnek erről az eszközről</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Lap kivétele a csoportból}other{Lapok kivétele a csoportból}}</translation>
 <translation id="2277224997687551299">Csoportnév szerkesztése</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap eltávolítása a csoportból.}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap eltávolítása a csoportból.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Felvétel a könyvjelzők közé}other{Felvétel a könyvjelzők közé}}</translation>
-<translation id="2479148705183875116">Beállítások</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása.}}</translation>
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
-<translation id="257674075312929031">Csoport</translation>
 <translation id="2613747923081026172">Csoport létrehozása</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="266935134738038806">Webhely felkeresése</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">A lapokat húzással csoportosíthatja</translation>
 <translation id="5846292395804797011">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó csoport bezárása: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5972844218283131174">Összes kijelölésének megszüntetése</translation>
-<translation id="6040143037577758943">Bezárás</translation>
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Több lapot kiválasztó mód elrejtése</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Lap megosztása}other{Lapok megosztása}}</translation>
 <translation id="7129458170538955174">Az üzlettel kapcsolatos információs panel félmagasságban van megnyitva</translation>
-<translation id="7151209024774799310">Lapok eltávolítása</translation>
 <translation id="7204204600596740190">Több lapot kiválasztó mód</translation>
 <translation id="7326879924029668159">Visszaküldési irányelvek és egyebek megjelenítése</translation>
 <translation id="7352298686197644113">Láthatja, hogy a megnyitott lapokon lévő termékek közül melyiknek alacsonyabb az ára</translation>

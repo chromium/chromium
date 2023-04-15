@@ -207,10 +207,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   }
 }
 
-// TODO(johnidel): Remove when redirect chains consistently register sources or
-// triggers. Currently, responses not handled via attributionsrc="url" use
-// their own independent data host, so we do not enforce consistency on
-// these redirect chains.
+// TODO(crbug.com/1395047): Remove when redirect chains consistently register
+// sources or triggers. Currently, responses not handled via
+// attributionsrc="url" use their own independent data host, so we do not
+// enforce consistency on these redirect chains.
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        SourceTriggerRegistered_ImgSrc) {
   GURL page_url =
@@ -249,87 +249,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     trigger_loop.Run();
   }
   trigger_data_host->WaitForTriggerData(/*num_trigger_data=*/1);
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcAnchor_SourceRegistered) {
-  SourceObserver source_observer(web_contents());
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  std::unique_ptr<MockDataHost> data_host;
-  blink::AttributionSrcToken expected_token;
-  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            expected_token = attribution_src_token;
-          });
-
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_source_headers.html");
-  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
-  createAndClickAttributionSrcAnchor({url: 'page_with_conversion_redirect.html',
-                                      attributionsrc: $1});)",
-                                               register_url)));
-
-  // Wait for the impression to be seen by the observer.
-  blink::Impression last_impression = source_observer.Wait();
-
-  // Verify we received the correct token for this source.
-  EXPECT_EQ(last_impression.attribution_src_token, expected_token);
-  EXPECT_EQ(last_impression.nav_type,
-            blink::mojom::AttributionNavigationType::kAnchor);
-
-  // Verify the attributionsrc data was registered with the browser process.
-  EXPECT_TRUE(data_host);
-
-  // TODO(johnidel): Verify that the data host receives the correct callback.
-  // Direct use of MockDataHost flakes rarely. See
-  // AttributionSrcNavigationSourceAndTrigger_ReportSent in
-  // AttributionsBrowserTest.
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcWindowOpen_SourceRegistered) {
-  SourceObserver source_observer(web_contents());
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  std::unique_ptr<MockDataHost> data_host;
-  blink::AttributionSrcToken expected_token;
-  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            expected_token = attribution_src_token;
-          });
-
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_source_headers.html");
-  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
-  window.open("page_with_conversion_redirect.html", "_top",
-  "attributionsrc="+$1);)",
-                                               register_url)));
-
-  blink::Impression last_impression = source_observer.Wait();
-
-  // Verify we received the correct token for this source.
-  EXPECT_EQ(last_impression.attribution_src_token, expected_token);
-  EXPECT_EQ(last_impression.nav_type,
-            blink::mojom::AttributionNavigationType::kWindowOpen);
-
-  // Verify the attributionsrc data was registered with the browser process.
-  EXPECT_TRUE(data_host);
-
-  // TODO(johnidel): Verify that the data host receives the correct callback.
-  // Direct use of MockDataHost flakes rarely. See
-  // AttributionSrcNavigationSourceAndTrigger_ReportSent in
-  // AttributionsBrowserTest.
 }
 
 // See crbug.com/1426892, where attributionsrc window.open features are
@@ -371,40 +290,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Only the last feature's value should be used.
   EXPECT_FALSE(register_response1->has_received_request());
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AnchorClickEmptyAttributionSrc_ImpressionReceived) {
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost).Times(0);
-
-  SourceObserver source_observer(web_contents());
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-  createAndClickAttributionSrcAnchor({url: 'page_with_conversion_redirect.html',
-                                      attributionsrc: ''});)"));
-
-  // Wait for the impression to be seen by the observer.
-  source_observer.Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       WindowOpenAttributionSrc_ImpressionReceived) {
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost).Times(0);
-
-  SourceObserver source_observer(web_contents());
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-  window.open("page_with_conversion_redirect.html", "_top",
-  "attributionsrc=");)"));
-
-  // Wait for the impression to be seen by the observer.
-  source_observer.Wait();
 }
 
 // See crbug.com/1322450
@@ -507,32 +392,35 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     AttributionSrcBrowserTest,
-    AttributionSrcWindowOpenNoUserGesture_SourceNotRegistered) {
+    AttributionSrcWindowOpenNoUserGesture_NoBackgroundRequestNoImpression) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/source");
+  ASSERT_TRUE(https_server->Start());
+
   SourceObserver source_observer(web_contents());
   GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  std::unique_ptr<MockDataHost> data_host;
-  blink::AttributionSrcToken expected_token;
-  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            expected_token = attribution_src_token;
-          });
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost).Times(0);
 
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_source_headers.html");
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace(R"(
-  window.open("page_with_conversion_redirect.html", "_top",
-  "attributionsrc="+$1);)",
-                               register_url),
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    window.open("page_with_conversion_redirect.html", "_top",
+      "attributionsrc=/source");
+  )",
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
+  EXPECT_FALSE(register_response->has_received_request());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -749,40 +637,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                               "Attribution-Reporting-Support"));
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       ImgSrcWithAttributionSrc_SetsEligibleHeader) {
-  // Create a separate server as we cannot register a `ControllableHttpResponse`
-  // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
-
-  auto register_response1 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source1");
-  ASSERT_TRUE(https_server->Start());
-
-  GURL page_url =
-      https_server->GetURL("b.test", "/page_with_impression_creator.html");
-  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  GURL register_url = https_server->GetURL("d.test", "/register_source1");
-  ASSERT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
-
-  register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
-  ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
-}
-
 // Regression test for crbug.com/1345955.
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        UntrustworthyUrl_DoesNotSetEligibleHeader) {
@@ -927,64 +781,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcImg_TriggerRegisteredAllParams) {
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  std::unique_ptr<MockDataHost> data_host;
-  base::RunLoop loop;
-  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              RegistrationType) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            loop.Quit();
-          });
-
-  GURL register_url = https_server()->GetURL(
-      "c.test", "/register_trigger_headers_all_params.html");
-
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host) {
-    loop.Run();
-  }
-  data_host->WaitForTriggerData(/*num_trigger_data=*/1);
-
-  EXPECT_THAT(
-      data_host->trigger_data(),
-      ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          FilterPair(/*positive=*/
-                     {{{"w", {}}, {"x", {"y", "z"}}}},
-                     /*negative=*/{{{"a", {"b"}}}}),
-          /*debug_key=*/Optional(789),
-          ElementsAre(attribution_reporting::EventTriggerData(
-                          /*data=*/1,
-                          /*priority=*/5, /*dedup_key=*/1024,
-                          FilterPair(/*positive=*/
-                                     {{{"a", {"b"}}}},
-                                     /*negative=*/
-                                     {{{"c", {}}}})),
-                      attribution_reporting::EventTriggerData(
-                          /*data=*/2, /*priority=*/10,
-                          /*dedup_key=*/absl::nullopt,
-                          FilterPair(/*positive=*/{}, /*negative=*/
-                                     {{{"d", {"e", "f"}}, {"g", {}}}}))),
-          std::vector<attribution_reporting::AggregatableDedupKey>{
-              attribution_reporting::AggregatableDedupKey(
-                  /*dedup_key=*/123, FilterPair())},
-          /*debug_reporting=*/true,
-          std::vector<attribution_reporting::AggregatableTriggerData>{
-              *attribution_reporting::AggregatableTriggerData::Create(
-                  /*key_piece=*/absl::MakeUint128(/*high=*/0, /*low=*/1),
-                  /*source_keys=*/{"key"}, FilterPair())},
-          /*aggregatable_values=*/
-          *attribution_reporting::AggregatableValues::Create({{"key", 123}}),
-          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud))));
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcImg_InvalidTriggerJsonIgnored) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1016,6 +812,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
 }
 
+// TODO(crbug.com/1395047): Remove this once redirect chains can register a mix
+// of sources and triggers.
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcImgTriggerThenSource_SourceIgnored) {
   GURL page_url =

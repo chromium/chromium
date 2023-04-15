@@ -5,6 +5,7 @@
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
@@ -66,7 +67,9 @@ class InstallableAmbientBadgeMessageControllerTest
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   MockInstallableAmbientBadgeClient client_mock_;
   InstallableAmbientBadgeMessageController message_controller_;
-  messages::MessageWrapper* message_wrapper_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION messages::MessageWrapper* message_wrapper_ = nullptr;
   SkBitmap test_icon;
 };
 

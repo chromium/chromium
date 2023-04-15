@@ -68,7 +68,7 @@ TEST_F('CrSettingsSecureDnsTest', 'All', function() {
 var SettingsUIInteractiveTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_ui_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/settings_ui_test.js';
   }
 };
 

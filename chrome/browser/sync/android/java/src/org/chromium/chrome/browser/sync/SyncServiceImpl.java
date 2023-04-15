@@ -161,8 +161,8 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void setSyncRequested(boolean requested) {
-        SyncServiceImplJni.get().setSyncRequested(mSyncServiceAndroidBridge, requested);
+    public void setSyncRequested() {
+        SyncServiceImplJni.get().setSyncRequested(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -384,7 +384,7 @@ public class SyncServiceImpl extends SyncService {
 
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
         boolean isSyncRequested(long nativeSyncServiceAndroidBridge);
-        void setSyncRequested(long nativeSyncServiceAndroidBridge, boolean requested);
+        void setSyncRequested(long nativeSyncServiceAndroidBridge);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);

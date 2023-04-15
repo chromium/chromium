@@ -20,7 +20,7 @@ namespace blink {
 struct CSSToggleGroupScopeIteratorTraits {
   static absl::optional<ToggleScope> Lookup(Element* element,
                                             const AtomicString& name) {
-    // TODO(dbaron): What if style is null?  See
+    // TODO(https://crbug.com/1250716): What if style is null?  See
     // https://github.com/tabatkins/css-toggle/issues/24 .
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {

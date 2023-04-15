@@ -350,6 +350,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     else
       element->RemoveAnchorScrollData();
   }
+
+  SetIsBackgroundAttachmentFixedObject(
+      !BackgroundTransfersToView() &&
+      StyleRef().HasFixedAttachmentBackgroundImage());
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
@@ -386,7 +390,7 @@ PaintLayerScrollableArea* LayoutBoxModelObject::GetScrollableArea() const {
 }
 
 void LayoutBoxModelObject::AddOutlineRectsForNormalChildren(
-    Vector<PhysicalRect>& rects,
+    OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
@@ -397,14 +401,14 @@ void LayoutBoxModelObject::AddOutlineRectsForNormalChildren(
     if (child->IsOutOfFlowPositioned())
       continue;
 
-    AddOutlineRectsForDescendant(*child, rects, additional_offset,
+    AddOutlineRectsForDescendant(*child, collector, additional_offset,
                                  include_block_overflows);
   }
 }
 
 void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     const LayoutObject& descendant,
-    Vector<PhysicalRect>& rects,
+    OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
@@ -413,18 +417,18 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
   }
 
   if (descendant.HasLayer()) {
-    Vector<PhysicalRect> layer_outline_rects;
-    descendant.AddOutlineRects(layer_outline_rects, nullptr, PhysicalOffset(),
+    OutlineRectCollector* descendant_collector =
+        collector.ForDescendantCollector();
+    descendant.AddOutlineRects(*descendant_collector, nullptr, PhysicalOffset(),
                                include_block_overflows);
-    descendant.LocalToAncestorRects(layer_outline_rects, this, PhysicalOffset(),
-                                    additional_offset);
-    rects.AppendVector(layer_outline_rects);
+    collector.Combine(descendant_collector, descendant, this,
+                      additional_offset);
     return;
   }
 
   if (descendant.IsBox()) {
     descendant.AddOutlineRects(
-        rects, nullptr,
+        collector, nullptr,
         additional_offset + To<LayoutBox>(descendant).PhysicalLocation(),
         include_block_overflows);
     return;
@@ -438,12 +442,12 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     // So the LayoutInline needs to add rects for children and continuations
     // only.
     To<LayoutInline>(descendant)
-        .AddOutlineRectsForNormalChildren(rects, additional_offset,
+        .AddOutlineRectsForNormalChildren(collector, additional_offset,
                                           include_block_overflows);
     return;
   }
 
-  descendant.AddOutlineRects(rects, nullptr, additional_offset,
+  descendant.AddOutlineRects(collector, nullptr, additional_offset,
                              include_block_overflows);
 }
 
@@ -739,26 +743,26 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   LayoutUnit constraining_width = constraints->constraining_rect.Width();
   LayoutUnit constraining_height = constraints->constraining_rect.Height();
   LayoutUnit horizontal_offsets =
-      MinimumValueForLength(StyleRef().Right(), constraining_width) +
-      MinimumValueForLength(StyleRef().Left(), constraining_width);
+      MinimumValueForLength(StyleRef().UsedRight(), constraining_width) +
+      MinimumValueForLength(StyleRef().UsedLeft(), constraining_width);
   bool skip_right = false;
   bool skip_left = false;
-  if (!StyleRef().Left().IsAuto() && !StyleRef().Right().IsAuto()) {
+  if (!StyleRef().UsedLeft().IsAuto() && !StyleRef().UsedRight().IsAuto()) {
     if (horizontal_offsets + sticky_box_rect.Width() > constraining_width) {
       skip_right = StyleRef().IsLeftToRightDirection();
       skip_left = !skip_right;
     }
   }
 
-  if (!StyleRef().Left().IsAuto() && !skip_left) {
+  if (!StyleRef().UsedLeft().IsAuto() && !skip_left) {
     constraints->left_offset =
-        MinimumValueForLength(StyleRef().Left(), constraining_width);
+        MinimumValueForLength(StyleRef().UsedLeft(), constraining_width);
     constraints->is_anchored_left = true;
   }
 
-  if (!StyleRef().Right().IsAuto() && !skip_right) {
+  if (!StyleRef().UsedRight().IsAuto() && !skip_right) {
     constraints->right_offset =
-        MinimumValueForLength(StyleRef().Right(), constraining_width);
+        MinimumValueForLength(StyleRef().UsedRight(), constraining_width);
     constraints->is_anchored_right = true;
   }
 
@@ -767,22 +771,22 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   // mode when related sections are fixed in spec.
   // See http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
   LayoutUnit vertical_offsets =
-      MinimumValueForLength(StyleRef().Top(), constraining_height) +
-      MinimumValueForLength(StyleRef().Bottom(), constraining_height);
-  if (!StyleRef().Top().IsAuto() && !StyleRef().Bottom().IsAuto() &&
+      MinimumValueForLength(StyleRef().UsedTop(), constraining_height) +
+      MinimumValueForLength(StyleRef().UsedBottom(), constraining_height);
+  if (!StyleRef().UsedTop().IsAuto() && !StyleRef().UsedBottom().IsAuto() &&
       vertical_offsets + sticky_box_rect.Height() > constraining_height) {
     skip_bottom = true;
   }
 
-  if (!StyleRef().Top().IsAuto()) {
+  if (!StyleRef().UsedTop().IsAuto()) {
     constraints->top_offset =
-        MinimumValueForLength(StyleRef().Top(), constraining_height);
+        MinimumValueForLength(StyleRef().UsedTop(), constraining_height);
     constraints->is_anchored_top = true;
   }
 
-  if (!StyleRef().Bottom().IsAuto() && !skip_bottom) {
+  if (!StyleRef().UsedBottom().IsAuto() && !skip_bottom) {
     constraints->bottom_offset =
-        MinimumValueForLength(StyleRef().Bottom(), constraining_height);
+        MinimumValueForLength(StyleRef().UsedBottom(), constraining_height);
     constraints->is_anchored_bottom = true;
   }
 

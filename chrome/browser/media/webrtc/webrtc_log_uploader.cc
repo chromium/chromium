@@ -492,10 +492,8 @@ void WebRtcLogUploader::UploadCompressedLog(
             "diagnostics to help improve Hangouts.' in Hangouts settings."
             "This feature is enabled by default."
           chrome_policy {
-            subProto1 {
-              WebRtcTextLogCollectionAllowed {
-                WebRtcTextLogCollectionAllowed: false
-              }
+            WebRtcTextLogCollectionAllowed {
+              WebRtcTextLogCollectionAllowed: false
             }
           }
         })");

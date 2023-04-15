@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/ring_progress_bar.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -28,8 +29,8 @@ RingProgressBar::RingProgressBar() = default;
 RingProgressBar::~RingProgressBar() = default;
 
 void RingProgressBar::SetValue(double initial, double target) {
-  initial_ = base::clamp(initial, 0., 1.);
-  target_ = base::clamp(target, 0., 1.);
+  initial_ = std::clamp(initial, 0., 1.);
+  target_ = std::clamp(target, 0., 1.);
   animation_ = std::make_unique<gfx::LinearAnimation>(this);
   animation_->SetDuration(kAnimationDuration);
   animation_->Start();

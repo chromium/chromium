@@ -17,7 +17,7 @@ buildflag_header("buildflags") {
   flags = [
     "ENABLE_GL_BACKEND_TESTS=$enable_gl_backend_tests",
     "ENABLE_VULKAN_BACKEND_TESTS=$enable_vulkan_backend_tests",
-    "ENABLE_DAWN_BACKEND_TESTS=$enable_dawn_backend_tests",
+    "ENABLE_SKIA_GRAPHITE_TESTS=$enable_skia_graphite_tests",
     "IS_ANDROID_EMULATOR=$is_android_emulator",
   ]
 }

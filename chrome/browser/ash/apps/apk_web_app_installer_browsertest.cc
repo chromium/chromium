@@ -258,7 +258,9 @@ class ApkWebAppInstallerBrowserTest
     uninstalled_web_app_ids_.push_back(web_app_id);
   }
 
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override {
+  void OnWebAppUninstalled(
+      const web_app::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override {
     if (app_uninstalled_callback_) {
       app_uninstalled_callback_.Run(app_id);
     }

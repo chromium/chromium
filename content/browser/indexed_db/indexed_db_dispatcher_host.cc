@@ -253,30 +253,23 @@ IndexedDBDispatcherHost::file_system_access_context() {
 }
 
 void IndexedDBDispatcherHost::GetDatabaseInfo(
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-        pending_callbacks) {
+    GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().bucket.has_value()) {
-    auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
-        IDBTaskRunner());
-    IndexedDBDatabaseError error = IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError, u"Internal error.");
-    callbacks->OnError(error);
+    std::move(callback).Run(
+        {}, blink::mojom::IDBError::New(
+                blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
   const auto& bucket = *receivers_.current_context().bucket;
-  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
-
   storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      std::move(callbacks), bucket_locator, indexed_db_path);
+      bucket_locator, indexed_db_path, std::move(callback));
 }
 
 void IndexedDBDispatcherHost::Open(

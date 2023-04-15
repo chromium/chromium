@@ -110,7 +110,7 @@ appropriate bug(s) with the label for easy searching.
 **Security_Impact**, **OS**, **Pri**, **M**, **Component**, and an
 **owner** set.
 
-### When to use Security_Impact-None {#TOC-Security_Impact-None}
+### When to use Security_Impact-None {#TOC-Security-Impact-None}
 
 **Security_Impact-None** says that the bug can't affect any users running the
 default configuration of Chrome. It's most commonly used for cases where

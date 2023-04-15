@@ -147,7 +147,7 @@ class MODULES_EXPORT RTCDataChannel final
     // webrtc::DataChannelObserver implementation on the main thread.
     void OnStateChangeImpl(webrtc::DataChannelInterface::DataState state);
     void OnBufferedAmountChangeImpl(unsigned sent_data_size);
-    void OnMessageImpl(std::unique_ptr<webrtc::DataBuffer> buffer);
+    void OnMessageImpl(webrtc::DataBuffer buffer);
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
     WeakPersistent<RTCDataChannel> blink_channel_;
@@ -156,7 +156,7 @@ class MODULES_EXPORT RTCDataChannel final
 
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
   void OnBufferedAmountChange(unsigned previous_amount);
-  void OnMessage(std::unique_ptr<webrtc::DataBuffer> buffer);
+  void OnMessage(webrtc::DataBuffer buffer);
 
   void Dispose();
 

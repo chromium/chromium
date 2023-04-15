@@ -34,6 +34,17 @@
 #endif
 
 namespace message_center {
+namespace {
+
+bool IsNotificationsGroupingEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // MessageCenterImpl
@@ -42,12 +53,9 @@ MessageCenterImpl::MessageCenterImpl(
     std::unique_ptr<LockScreenController> lock_screen_controller)
     : lock_screen_controller_(std::move(lock_screen_controller)),
       popup_timers_controller_(std::make_unique<PopupTimersController>(this)),
+      notifications_grouping_enabled_(IsNotificationsGroupingEnabled()),
       stats_collector_(this) {
   notification_list_ = std::make_unique<NotificationList>(this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  notifications_grouping_enabled_ =
-      ash::features::IsNotificationsRefreshEnabled();
-#endif
 }
 
 MessageCenterImpl::~MessageCenterImpl() = default;

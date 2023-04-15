@@ -28,6 +28,7 @@ PASS XRAnchorSet interface: existence and properties of interface prototype obje
 PASS XRAnchorSet interface: existence and properties of interface prototype object's @@unscopables property
 PASS XRAnchorSet interface: setlike<XRAnchor>
 PASS XRHitTestResult interface: operation createAnchor()
+FAIL XRSession interface: attribute persistentAnchors assert_true: The prototype object must have a property "persistentAnchors" expected true got false
 FAIL XRSession interface: operation restorePersistentAnchor(DOMString) assert_own_property: interface prototype object missing non-static operation expected property "restorePersistentAnchor" missing
 FAIL XRSession interface: operation deletePersistentAnchor(DOMString) assert_own_property: interface prototype object missing non-static operation expected property "deletePersistentAnchor" missing
 PASS XRFrame interface: operation createAnchor(XRRigidTransform, XRSpace)

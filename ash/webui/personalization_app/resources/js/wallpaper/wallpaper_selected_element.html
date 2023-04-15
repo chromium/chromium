@@ -159,12 +159,8 @@
     </template>
     <template is="dom-if" if="[[shouldShowDescriptionDialog_]]" restamp>
       <cr-dialog id="descriptionDialog" on-close="closeDescriptionDialog_" show-on-attach>
-        <template is="dom-if" if="[[image_.description.title]]">
-          <h3 slot="title">[[image_.description.title]]</h3>
-        </template>
-        <template is="dom-if" if="[[image_.description.content]]">
-          <p slot="body" id="descriptionDialogBody">[[image_.description.content]]</p>
-        </template>
+        <h3 slot="title">[[image_.descriptionTitle]]</h3>
+        <p slot="body" id="descriptionDialogBody">[[image_.descriptionContent]]</p>
         <div slot="button-container">
           <cr-button class="primary action-button" id="dialogCloseButton"
               on-click="closeDescriptionDialog_">

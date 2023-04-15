@@ -12,7 +12,6 @@
 #include "net/base/hash_value.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
-#include "net/cert/crl_set.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -40,34 +39,6 @@ TEST(CertVerifierMojomTraitsTest, RequestParams) {
 }
 
 namespace {
-bool CRLSetsEqual(scoped_refptr<const net::CRLSet> crl_set1,
-                  scoped_refptr<const net::CRLSet> crl_set2) {
-  if (crl_set1 == nullptr || crl_set2 == nullptr)
-    return crl_set1 == nullptr && crl_set2 == nullptr;
-
-  const net::CRLSet::CRLList& crl_list1 = crl_set1->CrlsForTesting();
-  const net::CRLSet::CRLList& crl_list2 = crl_set2->CrlsForTesting();
-  if (crl_list1.size() != crl_list2.size())
-    return false;
-
-  for (const auto& pair : crl_list1) {
-    if (crl_list2.count(pair.first) == 0)
-      return false;
-
-    std::vector<std::string> revoked_serial_nums1 = pair.second;
-    std::vector<std::string> revoked_serial_nums2 = crl_list2.at(pair.first);
-    if (revoked_serial_nums1.size() != revoked_serial_nums2.size())
-      return false;
-
-    std::sort(revoked_serial_nums1.begin(), revoked_serial_nums1.end());
-    std::sort(revoked_serial_nums2.begin(), revoked_serial_nums2.end());
-    if (revoked_serial_nums1 != revoked_serial_nums2)
-      return false;
-  }
-
-  return true;
-}
-
 bool CertificateListsEqual(const net::CertificateList& cert_list1,
                            const net::CertificateList& cert_list2) {
   if (cert_list1.size() != cert_list2.size())
@@ -92,9 +63,6 @@ bool ConfigsEqual(const net::CertVerifier::Config& config1,
                config2.require_rev_checking_local_anchors,
                config2.enable_sha1_local_anchors,
                config2.disable_symantec_enforcement))
-    return false;
-
-  if (!CRLSetsEqual(config1.crl_set, config2.crl_set))
     return false;
 
   if (!CertificateListsEqual(config1.additional_trust_anchors,
@@ -133,16 +101,9 @@ TEST(CertVerifierMojomTraitsTest, ConfigTrue) {
 }
 
 TEST(CertVerifierMojomTraitsTest, ConfigCRLAndAdditionalCerts) {
-  std::string crl_set;
-
-  base::ReadFileToString(
-      net::GetTestCertsDirectory().AppendASCII("crlset_by_leaf_spki.raw"),
-      &crl_set);
-
   const base::FilePath certs_dir = net::GetTestCertsDirectory();
 
   net::CertVerifier::Config config;
-  ASSERT_TRUE(net::CRLSet::ParseAndStoreUnparsedData(crl_set, &config.crl_set));
   config.additional_trust_anchors.push_back(
       net::ImportCertFromFile(certs_dir, "root_ca_cert.pem"));
   config.additional_trust_anchors.push_back(

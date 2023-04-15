@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,8 +6,6 @@
 """Wrapper for using the V8 shell in js2gtest.gni's js2gtest template
 to maintain the argument lists and to generate inlinable tests.
 """
-
-from __future__ import print_function
 
 import json
 import argparse
@@ -46,10 +44,6 @@ def main ():
                       action="store",
                       help=("Path to deps.js for dependency resolution, " +
                             "optional."))
-  parser.add_argument('--external',
-                      action='store',
-                      help="Load V8's initial snapshot from " +
-                      "external files (y/n)")
   args = parser.parse_args()
 
   cmd = [args.v8_shell]
@@ -65,15 +59,13 @@ def main ():
     print(cmd)
   if not args.impotent:
     try:
-      p = subprocess.Popen(
-          cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
-      out, err = p.communicate()
+      p = subprocess.run(cmd, capture_output=True)
       if p.returncode != 0:
-        sys.stderr.write((out + err).decode('utf-8'))
+        sys.stderr.write((p.stdout + p.stderr).decode('utf-8'))
         return 1
-      if not HasSameContent(args.cxxoutfile, out):
+      if not HasSameContent(args.cxxoutfile, p.stdout):
         with open(args.cxxoutfile, 'wb') as f:
-          f.write(out)
+          f.write(p.stdout)
       shutil.copyfile(args.inputfile, args.jsoutfile)
     except Exception as ex:
       if os.path.exists(args.cxxoutfile):

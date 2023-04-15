@@ -133,10 +133,10 @@ void FontBuilder::SetSize(const FontDescription::Size& size) {
   SetSize(font_description_, size);
 }
 
-void FontBuilder::SetSizeAdjust(float aspect_value) {
+void FontBuilder::SetSizeAdjust(const FontSizeAdjust& size_adjust) {
   Set(PropertySetFlag::kSizeAdjust);
 
-  font_description_.SetSizeAdjust(aspect_value);
+  font_description_.SetSizeAdjust(size_adjust);
 }
 
 void FontBuilder::SetLocale(scoped_refptr<const LayoutLocale> locale) {
@@ -376,9 +376,9 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
     return;
   }
 
-  const float size_adjust = font_description.SizeAdjust();
+  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
   float aspect_value = font_data->GetFontMetrics().XHeight() / computed_size;
-  float adjusted_size = (size_adjust / aspect_value) * computed_size;
+  float adjusted_size = (size_adjust.Value() / aspect_value) * computed_size;
   font_description.SetAdjustedSize(adjusted_size);
 }
 

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{fa 1 dia}other{fa # dies}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Fa 1 minut}other{Fa # minuts}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}other{# m}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Fa 1 dia}other{Fa # dies}}</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1243314992276662751">Penja</translation>
 <translation id="1266864766717917324">No s'ha pogut compartir <ph name="CONTENT_TYPE" />.</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">D'esquerra a dreta</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1398853756734560583">Maximitza</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Fa 1 minut}other{Fa # minuts}}</translation>
 <translation id="1450753235335490080">No es pot compartir <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Fa 1 mes}other{Fa # mesos}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut i }other{# minuts i }}</translation>
 <translation id="1643823602425662293">Notificació</translation>
 <translation id="169515659049020177">Maj</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Imatge</translation>
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
 <translation id="4588090240171750605">Desplaçament a la dreta</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Fa 1 any}other{Fa # anys}}</translation>
 <translation id="4724120544754982507">Centre de notificacions, <ph name="UNREAD_NOTIFICATION_COUNT" /> notificacions no llegides</translation>
 <translation id="4729257764711776855">el número</translation>
 <translation id="4746179598275229723">L'extensió s'ha deixat de fixar</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8394908167088220973">Fitxer multimèdia: reprodueix/posa en pausa</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 a}other{# a}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Fitxer <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">i <ph name="NUMBER" /> més</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">S'està enviant...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Fa 1 hora}other{Fa # hores}}</translation>
 <translation id="8996630695507351249">Assegura't que el dispositiu <ph name="TARGET_DEVICE_NAME" /> estigui connectat a Internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>
 <translation id="9059834730836941392">Replega la notificació</translation>
 <translation id="9170848237812810038">&amp;Desfés</translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="944069440740578670">Notificacions no llegides</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Fa 1 segon}other{Fa # segons}}</translation>
 </translationbundle>

@@ -4507,14 +4507,14 @@ class CaptureModePrivacyIndicatorsTest : public CaptureModeCameraTest {
   bool IsCameraIndicatorIconVisible() const {
     auto* indicator_view = GetPrimaryDisplayPrivacyIndicatorsView();
     return indicator_view && indicator_view->GetVisible() &&
-           indicator_view->IsCameraUsed() &&
+           PrivacyIndicatorsController::Get()->IsCameraUsed() &&
            indicator_view->camera_icon_->GetVisible();
   }
 
   bool IsMicrophoneIndicatorIconVisible() const {
     auto* indicator_view = GetPrimaryDisplayPrivacyIndicatorsView();
     return indicator_view && indicator_view->GetVisible() &&
-           indicator_view->IsMicrophoneUsed() &&
+           PrivacyIndicatorsController::Get()->IsMicrophoneUsed() &&
            indicator_view->microphone_icon_->GetVisible();
   }
 

@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -50,19 +51,6 @@ void SelectTab(NSString* title) {
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitStaticText),
                                           nil)] performAction:grey_tap()];
-}
-
-// net::EmbeddedTestServer handler that responds with the request's query as the
-// title and body.
-std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
-  http_response->set_content_type("text/html");
-  http_response->set_content("<html><head><title>" + request.GetURL().query() +
-                             "</title></head><body>" +
-                             request.GetURL().query() + "</body></html>");
-  return std::move(http_response);
 }
 
 // Expects that the total number of samples in histogram `histogram` grew by
@@ -117,16 +105,13 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
 // Sets up the EmbeddedTestServer as needed for tests.
 - (void)setUpTestServer {
-  self.testServer->RegisterDefaultHandler(base::BindRepeating(
-      net::test_server::HandlePrefixedRequest, "/querytitle",
-      base::BindRepeating(&HandleQueryTitle)));
+  RegisterQueryTitleHandler(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 
 // Returns the URL for a test page with the given `title`.
 - (GURL)makeURLForTitle:(NSString*)title {
-  return self.testServer->GetURL("/querytitle?" +
-                                 base::SysNSStringToUTF8(title));
+  return GetQueryTitleURL(self.testServer, title);
 }
 
 // Tests entering the tab switcher when one normal tab is open.

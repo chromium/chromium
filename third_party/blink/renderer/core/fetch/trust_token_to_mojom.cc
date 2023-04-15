@@ -8,7 +8,6 @@
 
 namespace blink {
 
-using TokenType = V8PrivateTokenType::Enum;
 using VersionType = V8PrivateTokenVersion::Enum;
 using OperationType = V8OperationType::Enum;
 using RefreshPolicy = V8RefreshPolicy::Enum;
@@ -17,17 +16,6 @@ bool ConvertTrustTokenToMojom(const PrivateToken& in,
                               ExceptionState* exception_state,
                               network::mojom::blink::TrustTokenParams* out) {
   DCHECK(in.hasOperation());  // field is required in IDL
-
-  // Check token type.
-  if (!in.hasType()) {
-    exception_state->ThrowTypeError(
-        "privateToken: token type is not specified.");
-    return false;
-  }
-  if (in.type().AsEnum() != TokenType::kPrivateStateToken) {
-    exception_state->ThrowTypeError("privateToken: unknown token type.");
-    return false;
-  }
 
   // get token version
   if (in.hasVersion()) {

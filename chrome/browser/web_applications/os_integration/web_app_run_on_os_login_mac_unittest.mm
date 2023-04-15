@@ -17,8 +17,8 @@
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -79,7 +79,8 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     WebAppTest::SetUp();
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
 
-    override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
+    override_registration_ =
+        OsIntegrationTestOverrideImpl::OverrideForTesting();
     destination_dir_ =
         override_registration_->test_override->chrome_apps_folder();
 
@@ -142,7 +143,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   std::unique_ptr<WebAppAutoLoginUtilMock> auto_login_util_mock_;
   std::unique_ptr<ShortcutInfo> info_;
   base::FilePath shim_path_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };
 

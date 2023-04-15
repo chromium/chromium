@@ -11,12 +11,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace network {
-namespace mojom {
-class NetworkService;
-}  // namespace mojom
-}  // namespace network
-
 namespace component_updater {
 
 class ComponentUpdateService;
@@ -28,20 +22,8 @@ class CRLSetPolicy : public ComponentInstallerPolicy {
   CRLSetPolicy& operator=(const CRLSetPolicy&) = delete;
   ~CRLSetPolicy() override;
 
-  // Queues a task to reconfigure the network service returned by
-  // content::GetNetworkService() (or configured by
-  // SetNetworkServiceForTesting) after the Network Service instance has
-  // changed (i.e. as signaled by
-  // content::ContentBrowserClient::OnNetworkServiceCreated).
-  static void ReconfigureAfterNetworkRestart();
-
  private:
   friend class CRLSetComponentInstallerTest;
-
-  // Configures the CRLSet component to send updates to |network_service|
-  // instead of the network service provided by |content::GetNetworkService()|.
-  static void SetNetworkServiceForTesting(
-      network::mojom::NetworkService* network_service);
 
   // ComponentInstallerPolicy implementation.
   bool VerifyInstallation(const base::Value::Dict& manifest,

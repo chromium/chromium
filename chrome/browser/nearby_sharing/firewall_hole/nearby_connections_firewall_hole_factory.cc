@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole.h"
-#include "chromeos/ash/components/network/firewall_hole.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 NearbyConnectionsFirewallHoleFactory::NearbyConnectionsFirewallHoleFactory() =
@@ -23,8 +23,8 @@ NearbyConnectionsFirewallHoleFactory::~NearbyConnectionsFirewallHoleFactory() =
 void NearbyConnectionsFirewallHoleFactory::OpenFirewallHole(
     const ash::nearby::TcpServerSocketPort& port,
     OpenFirewallHoleCallback callback) {
-  ash::FirewallHole::Open(
-      ash::FirewallHole::PortType::TCP, port.port(),
+  chromeos::FirewallHole::Open(
+      chromeos::FirewallHole::PortType::kTcp, port.port(),
       /*interface=*/std::string(),
       base::BindOnce(
           &NearbyConnectionsFirewallHoleFactory::OnFirewallHoleOpened,
@@ -34,7 +34,7 @@ void NearbyConnectionsFirewallHoleFactory::OpenFirewallHole(
 void NearbyConnectionsFirewallHoleFactory::OnFirewallHoleOpened(
     const ash::nearby::TcpServerSocketPort& port,
     OpenFirewallHoleCallback callback,
-    std::unique_ptr<ash::FirewallHole> firewall_hole) {
+    std::unique_ptr<chromeos::FirewallHole> firewall_hole) {
   if (!firewall_hole) {
     LOG(ERROR) << "NearbyConnectionsFirewallHoleFactory::" << __func__
                << ": Failed to open TCP firewall hole on port " << port.port();

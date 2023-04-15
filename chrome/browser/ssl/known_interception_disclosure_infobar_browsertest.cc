@@ -22,7 +22,7 @@
 #include "net/cert/crl_set.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
-#include "services/network/public/mojom/network_service.mojom.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -79,11 +79,8 @@ class KnownInterceptionDisclosureInfobarTest : public InProcessBrowserTest {
                                  "crlset_known_interception_by_root.raw"),
                              &crl_set_bytes);
     }
-    network::mojom::NetworkService* network_service =
-        content::GetNetworkService();
-    DCHECK(network_service);
     base::RunLoop run_loop;
-    network_service->UpdateCRLSet(
+    content::GetCertVerifierServiceFactory()->UpdateCRLSet(
         base::as_bytes(base::make_span(crl_set_bytes)), run_loop.QuitClosure());
     run_loop.Run();
   }

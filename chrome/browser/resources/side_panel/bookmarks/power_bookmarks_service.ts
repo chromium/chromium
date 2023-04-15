@@ -203,6 +203,15 @@ export class PowerBookmarksService {
           // Oldest first
           toReturn = a.dateAdded! - b.dateAdded!;
         } else if (activeSortIndex === 2) {
+          // Last opened (or, in the case of folders, last modified)
+          toReturn = (b.dateLastUsed          ? b.dateLastUsed :
+                          b.dateGroupModified ? b.dateGroupModified :
+                                                b.dateAdded)!
+              -
+              (a.dateLastUsed          ? a.dateLastUsed :
+                   a.dateGroupModified ? a.dateGroupModified :
+                                         a.dateAdded)!;
+        } else if (activeSortIndex === 3) {
           // Alphabetical
           toReturn = a.title!.localeCompare(b.title);
         } else {

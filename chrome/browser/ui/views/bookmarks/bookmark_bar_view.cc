@@ -198,6 +198,7 @@ class BookmarkButtonBase : public views::LabelButton {
     views::InstallPillHighlightPathGenerator(this);
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     SetHideInkDropWhenShowingContextMenu(false);
 
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
@@ -229,8 +230,6 @@ class BookmarkButtonBase : public views::LabelButton {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    if (GetAccessibleName().empty())
-      node_data->SetNameExplicitlyEmpty();
     views::LabelButton::GetAccessibleNodeData(node_data);
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
@@ -296,6 +295,19 @@ class BookmarkButton : public BookmarkButtonBase {
           max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText());
     }
     return tooltip_text_;
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    BookmarkButtonBase::GetAccessibleNodeData(node_data);
+    const std::u16string name = GetAccessibleName();
+    node_data->SetNameChecked(
+        name.empty()
+            ? l10n_util::GetStringFUTF16(
+                  IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME,
+                  url_formatter::FormatUrl(
+                      url_.get(), url_formatter::kFormatUrlOmitDefaults,
+                      base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr))
+            : name);
   }
 
   void SetText(const std::u16string& text) override {
@@ -1339,7 +1351,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
   if (node->is_url()) {
     const gfx::Image& image = bookmark_model_->GetFavicon(node);
     icon = image.IsEmpty()
-               ? ui::ImageModel::FromImage(favicon::GetDefaultFavicon())
+               ? favicon::GetDefaultFaviconModel(kColorBookmarkBarBackground)
                : ui::ImageModel::FromImage(image);
   } else {
     icon = chrome::GetBookmarkFolderIcon(
@@ -1682,8 +1694,11 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     // Themify chrome:// favicons and the default one. This is similar to
     // code in the tabstrip.
     bool themify_icon = node->url().SchemeIs(content::kChromeUIScheme);
-    gfx::ImageSkia favicon = bookmark_model_->GetFavicon(node).AsImageSkia();
-    if (favicon.isNull()) {
+
+    // TODO(crbug.com/1099602): BookmarkModel::GetFavicon should be updated to
+    // support ImageModel.
+    auto favicon = ui::ImageModel::FromImage(bookmark_model_->GetFavicon(node));
+    if (favicon.IsEmpty()) {
       if (ui::TouchUiController::Get()->touch_ui() && cp) {
         // This favicon currently does not match the default favicon icon used
         // elsewhere in the codebase.
@@ -1694,9 +1709,10 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
         // the alpha channel matters.
         const gfx::ImageSkia mask =
             gfx::CreateVectorIcon(kDefaultTouchFaviconMaskIcon, SK_ColorWHITE);
-        favicon = gfx::ImageSkiaOperations::CreateMaskedImage(icon, mask);
+        favicon = ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateMaskedImage(icon, mask));
       } else {
-        favicon = favicon::GetDefaultFavicon().AsImageSkia();
+        favicon = favicon::GetDefaultFaviconModel(kColorBookmarkBarBackground);
       }
       themify_icon = true;
     }
@@ -1704,13 +1720,13 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     if (themify_icon && cp) {
       SkColor favicon_color = cp->GetColor(kColorBookmarkFavicon);
       if (favicon_color != SK_ColorTRANSPARENT) {
-        favicon =
-            gfx::ImageSkiaOperations::CreateColorMask(favicon, favicon_color);
+        favicon = ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateColorMask(favicon.Rasterize(cp),
+                                                      favicon_color));
       }
     }
 
-    button->SetImageModel(views::Button::STATE_NORMAL,
-                          ui::ImageModel::FromImageSkia(favicon));
+    button->SetImageModel(views::Button::STATE_NORMAL, std::move(favicon));
   }
 
   button->SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));

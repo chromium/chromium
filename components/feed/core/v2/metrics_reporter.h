@@ -89,7 +89,10 @@ class MetricsReporter {
   void StreamScrollStart();
 
   // Called when the Feed surface is opened and closed.
-  void SurfaceOpened(const StreamType& stream_type, SurfaceId surface_id);
+  void SurfaceOpened(const StreamType& stream_type,
+                     SurfaceId surface_id,
+                     SingleWebFeedEntryPoint single_web_feed_entry_point =
+                         SingleWebFeedEntryPoint::kOther);
   void SurfaceClosed(SurfaceId surface_id);
 
   // Network metrics.

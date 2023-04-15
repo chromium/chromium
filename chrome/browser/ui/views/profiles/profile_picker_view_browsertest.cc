@@ -32,6 +32,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -50,12 +51,13 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
@@ -754,9 +756,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
 
   // Close the flow with the [X] button.
+  ProfileDeletionObserver observer;
   base::FilePath canceled_path = profile_to_cancel->GetPath();
   widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   WaitForPickerClosed();
+  observer.Wait();
 
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -802,8 +806,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::FilePath profile_to_cancel_path = profile_to_cancel->GetPath();
 
   // Close the flow with the [X] button.
+  ProfileDeletionObserver observer;
   widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   WaitForPickerClosed();
+  observer.Wait();
 
   // The profile entry is deleted.
   ProfileAttributesEntry* entry =
@@ -837,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CancelWhileSigningInWithNoOtherWindow) {
+                       PRE_CancelWhileSigningInWithNoOtherWindow) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_to_cancel = StartDiceSignIn();
   base::FilePath profile_to_cancel_path = profile_to_cancel->GetPath();
@@ -851,15 +857,28 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   WaitForPickerClosed();
 
-  // The profile entry is deleted.
+  // The profile entry is not yet deleted when Chrome is shutting down, but it
+  // will be deleted at next startup since it is an ephemeral profile.
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_to_cancel_path);
-  EXPECT_EQ(entry, nullptr);
+  EXPECT_NE(entry, nullptr);
+  EXPECT_TRUE(entry->IsEphemeral());
+  ASSERT_EQ(2u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
 
   // Still no browser window is open.
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CancelWhileSigningInWithNoOtherWindow) {
+  // There is only one profile left.
+  ASSERT_EQ(1u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
 }
 
 // Tests dice-specific logic for keeping track of the new profile color.
@@ -1804,12 +1823,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the cancel button.
+  ProfileDeletionObserver observer;
   ProfilePickerHandler* handler = profile_picker_handler();
   base::Value::List args;
   handler->HandleCancelProfileSwitch(args);
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
+  observer.Wait();
 
   // Only one browser should be displayed.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
@@ -2129,14 +2150,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
   EXPECT_FALSE(new_browser->signin_view_controller()->ShowsModalDialog());
 }
 
-// TODO(crbug.com/1367031): Test is flaky on Linux and macOS
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_CancelLocalProfileCreation DISABLED_CancelLocalProfileCreation
-#else
-#define MAYBE_CancelLocalProfileCreation CancelLocalProfileCreation
-#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
-                       MAYBE_CancelLocalProfileCreation) {
+                       CancelLocalProfileCreation) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(1u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
@@ -2177,8 +2192,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
 
   // Simulate clicking the "Delete profile" button on the profile customization
   // dialog.
+  ProfileDeletionObserver observer;
   DeleteLocalProfile(dialog_web_contents);
-  ui_test_utils::WaitForBrowserToClose(new_browser);
+  observer.Wait();
 
   ASSERT_EQ(1u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()

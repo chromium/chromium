@@ -362,13 +362,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // Needed to compensate for LayoutInline Legacy code offsets.
   void AddSelfOutlineRects(const PhysicalOffset& additional_offset,
                            NGOutlineType include_block_overflows,
-                           Vector<PhysicalRect>* outline_rects,
+                           OutlineRectCollector& collector,
                            LayoutObject::OutlineInfo* info) const;
   // Same as |AddSelfOutlineRects|, except when |this.IsInlineBox()|, in which
   // case the coordinate system is relative to the inline formatting context.
   void AddOutlineRects(const PhysicalOffset& additional_offset,
                        NGOutlineType include_block_overflows,
-                       Vector<PhysicalRect>* outline_rects) const;
+                       OutlineRectCollector& collector) const;
 
   PositionWithAffinity PositionForPoint(PhysicalOffset) const;
 
@@ -658,11 +658,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   void AddOutlineRects(const PhysicalOffset& additional_offset,
                        NGOutlineType include_block_overflows,
                        bool inline_container_relative,
-                       Vector<PhysicalRect>* outline_rects) const;
+                       OutlineRectCollector& collector) const;
   void AddOutlineRectsForInlineBox(PhysicalOffset additional_offset,
                                    NGOutlineType include_block_overflows,
                                    bool inline_container_relative,
-                                   Vector<PhysicalRect>* outline_rects) const;
+                                   OutlineRectCollector& collector) const;
 
   PositionWithAffinity PositionForPointByClosestChild(
       PhysicalOffset point_in_contents) const;

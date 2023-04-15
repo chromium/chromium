@@ -36,6 +36,12 @@
   color: var(--cros-color-prominent);
 }
 
+:host-context(body.jelly-enabled) .navigation-item.selected {
+  /* TODO(276493287): Remove cros-highlight-color fallback after jelly colors
+                      launches. */
+  background-color: var(--cros-sys-highlight_shape);
+}
+
 iron-icon {
   --iron-icon-fill-color: var(--cros-icon-color-primary);
   --iron-icon-height: 20px;

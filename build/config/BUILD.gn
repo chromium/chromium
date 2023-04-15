@@ -328,6 +328,7 @@ config("executable_config") {
 
   if (is_win) {
     configs += _windows_linker_configs
+    configs += [ "//build/config/win:exe_flags" ]
   } else if (is_mac) {
     configs += [ "//build/config/mac:mac_dynamic_flags" ]
   } else if (is_ios) {

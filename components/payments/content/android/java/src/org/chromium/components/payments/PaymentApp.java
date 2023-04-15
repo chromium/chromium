@@ -43,15 +43,6 @@ public abstract class PaymentApp extends EditableOption {
      */
     public interface InstrumentDetailsCallback {
         /**
-         * Called by the payment app to let Chrome know that the payment app's UI is now hidden, but
-         * the payment details have not been returned yet. This is a good time to show a "loading"
-         * progress indicator UI.
-         *
-         * TODO(smcgruer): Remove once Clank-internal code no longer overrides this.
-         */
-        default void onInstrumentDetailsLoadingWithoutUI() {}
-
-        /**
          * Called after retrieving payment details.
          *
          * @param methodName         Method name. For example, "visa".

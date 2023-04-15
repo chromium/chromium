@@ -46,9 +46,11 @@ namespace {
 // The maximum number of buttons (excluding the overflow menu button) that can
 // appear in the SavedTabGroupBar.
 constexpr int kMaxVisibleButtons = 4;
-
 // The amount of padding between elements listed in the overflow menu.
 const int kOverflowMenuButtonPadding = 8;
+// The padding at the top and bottom of the bar used to center all displayed
+// buttons.
+constexpr int kButtonPadding = 2;
 
 SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
   DCHECK(browser);
@@ -132,8 +134,9 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   std::unique_ptr<views::LayoutManager> layout_manager =
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2,
-                            0, 0),
+          gfx::Insets::TLBR(kButtonPadding,
+                            GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2,
+                            kButtonPadding, 0),
           GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
   SetLayoutManager(std::move(layout_manager));
 
@@ -146,11 +149,10 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   overflow_button_ = AddChildView(
       std::make_unique<SavedTabGroupOverflowButton>(base::BindRepeating(
           &SavedTabGroupBar::MaybeShowOverflowMenu, base::Unretained(this))));
-
-  AddAllButtons();
-
-  ReorderChildView(overflow_button_, children().size());
   HideOverflowButton();
+
+  LoadAllButtonsFromModel();
+  ReorderChildView(overflow_button_, children().size());
 }
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
@@ -409,7 +411,8 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
   const int button_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
   int current_x = 0;
-  // iterate through the list of buttons in the child views
+  // Calculate the amount of space that the SavedTabGroupBar can utilize
+  // restricted by `max_x`.
   for (auto* button : children()) {
     gfx::Size preferred_size = button->GetPreferredSize();
     int next_x =
@@ -497,7 +500,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
   SchedulePaint();
 }
 
-void SavedTabGroupBar::AddAllButtons() {
+void SavedTabGroupBar::LoadAllButtonsFromModel() {
   const std::vector<SavedTabGroup>& saved_tab_groups =
       saved_tab_group_model_->saved_tab_groups();
 

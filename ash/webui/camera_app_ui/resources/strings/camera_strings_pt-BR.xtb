@@ -27,7 +27,6 @@
 <translation id="199526504800285197">A gravação foi interrompida</translation>
 <translation id="1995951722691075581">A gravação foi interrompida porque há pouco espaço de armazenamento no dispositivo. Libere espaço para gravar mais vídeos.</translation>
 <translation id="2036868001356139588">Duração do timer</translation>
-<translation id="2050339315714019657">Retrato</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ativa</translation>
 <translation id="2128052519899549250">Gravar vídeo em timelapse</translation>
 <translation id="2134029355740465625">Configurações de vídeo</translation>
@@ -123,6 +122,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="6888362557094394345">Movendo para baixo</translation>
 <translation id="695140971690006676">Redefinir tudo</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965830616442491568">Retrato</translation>
 <translation id="698156982839284926">3 segundos</translation>
 <translation id="7134221860976209830">Timer de 10 segundos</translation>
 <translation id="7191890674911603392">Tipo de registro</translation>

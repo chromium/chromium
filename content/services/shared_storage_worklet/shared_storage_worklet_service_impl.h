@@ -34,8 +34,6 @@ class SharedStorageWorkletServiceImpl
       mojo::PendingAssociatedRemote<
           blink::mojom::SharedStorageWorkletServiceClient> client,
       bool private_aggregation_permissions_policy_allowed,
-      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-          private_aggregation_host,
       const absl::optional<std::u16string>& embedder_context) override;
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
@@ -45,9 +43,13 @@ class SharedStorageWorkletServiceImpl
       const std::string& name,
       const std::vector<GURL>& urls,
       const std::vector<uint8_t>& serialized_data,
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host,
       RunURLSelectionOperationCallback callback) override;
   void RunOperation(const std::string& name,
                     const std::vector<uint8_t>& serialized_data,
+                    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+                        private_aggregation_host,
                     RunOperationCallback callback) override;
 
  private:
@@ -76,10 +78,6 @@ class SharedStorageWorkletServiceImpl
   // Whether the "private-aggregation" permissions policy is enabled in the
   // worklet.
   bool private_aggregation_permissions_policy_allowed_ = false;
-
-  // No need to be associated as message ordering (relative to shared storage
-  // operations) is unimportant.
-  mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
 
   std::unique_ptr<SharedStorageWorkletGlobalScope> global_scope_;
 

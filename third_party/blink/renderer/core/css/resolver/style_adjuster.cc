@@ -138,49 +138,6 @@ void AdjustStyleForSvgElement(const SVGElement& element,
   builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);
 }
 
-// Adjust style for anchor() and anchor-size() queries.
-void AdjustAnchorQueryStyles(ComputedStyleBuilder& builder) {
-  if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-    return;
-  }
-
-  // anchor() and anchor-size() can only be used on absolutely positioned
-  // elements.
-  EPosition position = builder.GetPosition();
-  if (position != EPosition::kAbsolute && position != EPosition::kFixed) {
-    if (builder.Left().HasAnchorQueries()) {
-      builder.SetLeft(Length::Auto());
-    }
-    if (builder.Right().HasAnchorQueries()) {
-      builder.SetRight(Length::Auto());
-    }
-    if (builder.Top().HasAnchorQueries()) {
-      builder.SetTop(Length::Auto());
-    }
-    if (builder.Bottom().HasAnchorQueries()) {
-      builder.SetBottom(Length::Auto());
-    }
-    if (builder.Width().HasAnchorQueries()) {
-      builder.SetWidth(Length::Auto());
-    }
-    if (builder.MinWidth().HasAnchorQueries()) {
-      builder.SetMinWidth(Length::Auto());
-    }
-    if (builder.MaxWidth().HasAnchorQueries()) {
-      builder.SetMaxWidth(Length::Auto());
-    }
-    if (builder.Height().HasAnchorQueries()) {
-      builder.SetHeight(Length::Auto());
-    }
-    if (builder.MinHeight().HasAnchorQueries()) {
-      builder.SetMinHeight(Length::Auto());
-    }
-    if (builder.MaxHeight().HasAnchorQueries()) {
-      builder.SetMaxHeight(Length::Auto());
-    }
-  }
-}
-
 bool ElementForcesStackingContext(Element* element) {
   if (!element) {
     return false;
@@ -196,8 +153,12 @@ bool ElementForcesStackingContext(Element* element) {
 
 }  // namespace
 
+// https://drafts.csswg.org/css-display/#transformations
 static EDisplay EquivalentBlockDisplay(EDisplay display) {
   switch (display) {
+    case EDisplay::kFlowRootListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      [[fallthrough]];
     case EDisplay::kBlock:
     case EDisplay::kTable:
     case EDisplay::kWebkitBox:
@@ -220,6 +181,12 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kBlockMath;
     case EDisplay::kInlineLayoutCustom:
       return EDisplay::kLayoutCustom;
+    case EDisplay::kInlineListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      return EDisplay::kListItem;
+    case EDisplay::kInlineFlowRootListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      return EDisplay::kFlowRootListItem;
 
     case EDisplay::kContents:
     case EDisplay::kInline:
@@ -1103,8 +1070,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.SetTextOverflow(text_control->ValueForTextOverflow());
     }
   }
-
-  AdjustAnchorQueryStyles(builder);
 
   if (element && element->HasCustomStyleCallbacks()) {
     element->AdjustStyle(base::PassKey<StyleAdjuster>(), builder);

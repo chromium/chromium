@@ -475,7 +475,7 @@ BookmarkBridge::GetBookmarkGuidByIdForTesting(
   const BookmarkNode* node = GetNodeByID(id, type);
   DCHECK(node) << "Bookmark with id " << id << " doesn't exist.";
   return base::android::ConvertUTF8ToJavaString(
-      env, node->guid().AsLowercaseString());
+      env, node->uuid().AsLowercaseString());
 }
 
 jint BookmarkBridge::GetChildCount(JNIEnv* env,

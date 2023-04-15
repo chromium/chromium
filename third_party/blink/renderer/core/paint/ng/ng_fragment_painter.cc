@@ -18,12 +18,13 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
                                      const ComputedStyle& style_to_use) {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   DCHECK(NGOutlineUtils::HasPaintedOutline(style_to_use, fragment.GetNode()));
-  Vector<PhysicalRect> outline_rects;
+  VectorOutlineRectCollector collector;
   LayoutObject::OutlineInfo info;
   fragment.AddSelfOutlineRects(
       paint_offset, style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow(),
-      &outline_rects, &info);
+      collector, &info);
 
+  VectorOf<PhysicalRect> outline_rects = collector.TakeRects();
   if (outline_rects.empty())
     return;
 

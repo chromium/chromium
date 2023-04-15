@@ -737,6 +737,9 @@ ChromePermissionMessageRule::GetAllRules() {
        {}},
 
       // Telemetry System Extension permission messages.
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_ATTACHED_DEVICE_INFO,
+       {APIPermissionID::kChromeOSAttachedDeviceInfo},
+       {}},
       {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS,
        {APIPermissionID::kChromeOSDiagnostics},
        {}},

@@ -16,6 +16,9 @@
 
 namespace feature_engagement {
 
+// Max number of days for storing client side event data, ~10 years.
+constexpr uint32_t kMaxStoragePeriod = 365 * 10;
+
 // A ComparatorType describes the relationship between two numbers.
 enum ComparatorType {
   ANY = 0,  // Will always yield true.
@@ -68,7 +71,8 @@ struct EventConfig {
   // Search for this event within this window.
   uint32_t window;
 
-  // Store client side data related to events for this minimum this long.
+  // Store client side data related to events for this minimum this long,
+  // see the `kMaxStoragePeriod` constant for the max supported value.
   uint32_t storage;
 };
 

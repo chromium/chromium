@@ -544,28 +544,13 @@ class PKIMetadataComponentInstallerDisabledTest
 // component updater and KP component updater features are disabled.
 TEST_F(PKIMetadataComponentInstallerDisabledTest,
        MaybeDoNotRegisterIfFeatureDisabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-  // Chrome Root Store is unconditionally used on this build config, so PKI
-  // metadata component will always be registered even if the other feature
-  // flags are disabled.
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // If Chrome Root Store is supported on this build config, PKI metadata
+  // component will always be registered even if the other feature flags are
+  // disabled.
   EXPECT_CALL(mock_component_update_, RegisterComponent)
       .Times(1)
       .WillOnce(testing::Return(true));
-#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    // If ChromeRootStoreUsed feature is enabled by default, PKI metadata
-    // component will always be registered. It is not safe to change the
-    // kChromeRootStoreUsed flag in unit_tests since multiple tests run in
-    // the same process, and GetChromeCertVerifierServiceParams will
-    // globally enforce a single configuration for the lifetime of the
-    // process. Therefore test that the component is registered if CRS is
-    // enabled.
-    EXPECT_CALL(mock_component_update_, RegisterComponent)
-        .Times(1)
-        .WillOnce(testing::Return(true));
-  } else {
-    EXPECT_CALL(mock_component_update_, RegisterComponent).Times(0);
-  }
 #else
   EXPECT_CALL(mock_component_update_, RegisterComponent).Times(0);
 #endif

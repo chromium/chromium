@@ -162,12 +162,8 @@ class ExtensionManagementTest : public extensions::ExtensionBrowserTest {
     if (!ext_host)
       return false;
 
-    std::string version_from_bg;
-    bool exec = content::ExecuteScriptAndExtractString(
-        ext_host->host_contents(), "version()", &version_from_bg);
-    EXPECT_TRUE(exec);
-    if (!exec)
-      return false;
+    std::string version_from_bg =
+        content::EvalJs(ext_host->host_contents(), "version()").ExtractString();
 
     if (version_from_bg != expected_version ||
         extension->VersionString() != expected_version)

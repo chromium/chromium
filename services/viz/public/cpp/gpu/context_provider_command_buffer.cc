@@ -44,7 +44,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
-#include "gpu/skia_bindings/grcontext_for_webgpu_interface.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -384,19 +383,22 @@ gpu::ContextSupport* ContextProviderCommandBuffer::ContextSupport() {
 class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  if (!support_grcontext_ || !ContextSupport()->HasGrContextSupport())
+  if (!support_grcontext_ || !ContextSupport()->HasGrContextSupport()) {
     return nullptr;
+  }
   CheckValidSequenceOrLockAcquired();
 
-  if (gr_context_)
+  if (gr_context_) {
     return gr_context_->get();
-#if BUILDFLAG(SKIA_USE_DAWN)
-  else if (webgpu_gr_context_)
-    return webgpu_gr_context_->get();
-#endif
+  }
 
-  if (attributes_.enable_oop_rasterization)
+  if (attributes_.enable_oop_rasterization) {
     return nullptr;
+  }
+
+  if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
+    return nullptr;
+  }
 
   // TODO(vmiura): crbug.com/793508 Disable access to GrContext if
   // enable_gles2_interface is disabled, after removing any dependencies on
@@ -407,23 +409,12 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   gpu::DetermineGrCacheLimitsFromAvailableMemory(
       &max_resource_cache_bytes, &max_glyph_cache_texture_bytes);
 
-  if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
-#if BUILDFLAG(SKIA_USE_DAWN)
-    webgpu_gr_context_ =
-        std::make_unique<skia_bindings::GrContextForWebGPUInterface>(
-            webgpu_interface_.get(), ContextSupport(), ContextCapabilities(),
-            max_resource_cache_bytes, max_glyph_cache_texture_bytes);
-    cache_controller_->SetGrContext(webgpu_gr_context_->get());
-    return webgpu_gr_context_->get();
-#else
-    return nullptr;
-#endif
-  }
   gpu::gles2::GLES2Interface* gl_interface;
-  if (trace_impl_)
+  if (trace_impl_) {
     gl_interface = trace_impl_.get();
-  else
+  } else {
     gl_interface = gles2_impl_.get();
+  }
 
   gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
       gl_interface, ContextSupport(), ContextCapabilities(),
@@ -432,8 +423,9 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
 
   // If GlContext is already lost, also abandon the new GrContext.
   if (gr_context_->get() &&
-      gles2_impl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
+      gles2_impl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
     gr_context_->get()->abandonContext();
+  }
 
   return gr_context_->get();
 }

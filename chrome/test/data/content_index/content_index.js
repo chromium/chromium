@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 function WrapFunction(fn) {
-  fn().then(result => sendResultToTest(`ok - ${result}`))
-      .catch(sendErrorToTest);
+  return fn().then(result => `ok - ${result}`)
+      .catch(formatError);
 }
 
 async function RegisterServiceWorker() {

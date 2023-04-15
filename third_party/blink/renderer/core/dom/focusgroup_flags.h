@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSGROUP_FLAGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSGROUP_FLAGS_H_
 
+#include "base/types/cxx23_to_underlying.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -13,7 +14,7 @@ class Element;
 
 namespace focusgroup {
 
-enum FocusgroupFlags : uint8_t {
+enum FocusgroupFlags : uint16_t {
   kNone = 0,
   kExtend = 1 << 0,
   kHorizontal = 1 << 1,
@@ -23,18 +24,26 @@ enum FocusgroupFlags : uint8_t {
   kWrapVertically = 1 << 5,
   kRowFlow = 1 << 6,
   kColFlow = 1 << 7,
+  kForCSSToggleCheckbox = 1 << 8,
+  kForCSSToggleListboxItem = 1 << 9,
+  kForCSSToggleRadioItem = 1 << 10,
+  kForCSSToggleTab = 1 << 11,
+  kForCSSToggleTreeItem = 1 << 12,
+
+  // union of the above kForCSSToggle*
+  kCSSToggleRestrictions = (1 << 13) - (1 << 8),
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(static_cast<uint8_t>(a) &
-                                      static_cast<uint8_t>(b));
+  return static_cast<FocusgroupFlags>(base::to_underlying(a) &
+                                      base::to_underlying(b));
 }
 
 inline constexpr FocusgroupFlags operator|(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(static_cast<uint8_t>(a) |
-                                      static_cast<uint8_t>(b));
+  return static_cast<FocusgroupFlags>(base::to_underlying(a) |
+                                      base::to_underlying(b));
 }
 
 inline FocusgroupFlags& operator|=(FocusgroupFlags& a, FocusgroupFlags b) {
@@ -46,7 +55,7 @@ inline FocusgroupFlags& operator&=(FocusgroupFlags& a, FocusgroupFlags b) {
 }
 
 inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
-  return static_cast<FocusgroupFlags>(~static_cast<uint8_t>(flags));
+  return static_cast<FocusgroupFlags>(~base::to_underlying(flags));
 }
 
 FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element);

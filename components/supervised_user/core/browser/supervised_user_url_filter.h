@@ -12,13 +12,11 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
-#include "components/supervised_user/core/common/supervised_user_denylist.h"
 
 class GURL;
 
@@ -32,8 +30,6 @@ class KidsChromeManagementClient;
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
 
 namespace supervised_user {
-
-class SupervisedUserDenylist;
 
 // This class manages the filtering behavior for URLs, i.e. it tells callers
 // if a URL should be allowed or blocked. It uses information
@@ -204,11 +200,6 @@ class SupervisedUserURLFilter {
 
   FilteringBehavior GetDefaultFilteringBehavior() const;
 
-  // Sets the static denylist of blocked hosts.
-  void SetDenylist(const supervised_user::SupervisedUserDenylist* denylist);
-  // Returns whether the static denylist is set up.
-  bool HasDenylist() const;
-
   // Set the list of matched patterns to the passed in list, for testing.
   void SetFromPatternsForTesting(const std::vector<std::string>& patterns);
 
@@ -228,8 +219,8 @@ class SupervisedUserURLFilter {
   // Returns whether the asynchronous checker is set up.
   bool HasAsyncURLChecker() const;
 
-  // Removes all filter entries, clears the denylist and async checker if
-  // present, and resets the default behavior to "allow".
+  // Removes all filter entries, clears the async checker if present, and resets
+  // the default behavior to "allow".
   void Clear();
 
   void AddObserver(Observer* observer);
@@ -262,7 +253,6 @@ class SupervisedUserURLFilter {
 
   FilteringBehavior GetFilteringBehaviorForURL(
       const GURL& url,
-      bool manual_only,
       supervised_user::FilteringBehaviorReason* reason);
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url);
 
@@ -284,9 +274,6 @@ class SupervisedUserURLFilter {
   std::map<std::string, bool> host_map_;
 
   std::unique_ptr<Delegate> service_delegate_;
-
-  // Not owned.
-  raw_ptr<const supervised_user::SupervisedUserDenylist> denylist_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 

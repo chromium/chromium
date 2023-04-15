@@ -43,14 +43,14 @@ class SettingsDisconnectDriveConfirmationDialogElement extends PolymerElement {
   /**
    * When the cancel button is pressed, cancel the dialog.
    */
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 
   /**
    * When the disconnect button is pressed, close the dialog.
    */
-  private onDisconnectTap_() {
+  private onDisconnectClick_() {
     this.$.dialog.close();
   }
 

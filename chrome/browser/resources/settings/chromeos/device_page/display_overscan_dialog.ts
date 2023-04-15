@@ -100,11 +100,11 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     getDisplayApi().overscanCalibrationStart(newValue);
   }
 
-  private onResetTap_() {
+  private onResetClick_() {
     getDisplayApi().overscanCalibrationReset(this.displayId);
   }
 
-  private onSaveTap_() {
+  private onSaveClick_() {
     getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();

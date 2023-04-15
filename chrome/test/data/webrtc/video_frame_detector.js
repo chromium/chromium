@@ -19,18 +19,18 @@ var gNumFrames = 0;
 function enableVideoFrameCallbacks(videoElementId) {
   const video = document.getElementById(videoElementId);
   if (!video)
-    throw failTest('Could not find video element with id ' + videoElementId);
+    throw new Error('Could not find video element with id ' + videoElementId);
   const callback = (now, metadata) => {
     ++gNumFrames;
     video.requestVideoFrameCallback(callback);
   };
   video.requestVideoFrameCallback(callback);
-  returnToTest('ok-started');
+  return logAndReturn('ok-started');
 }
 
 /**
  * Returns the number of frame callback invocations so far.
  */
 function getNumVideoFrameCallbacks() {
-  returnToTest(`${gNumFrames}`);
+  return logAndReturn(`${gNumFrames}`);
 }

@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
       {supportedMethods: 'https://kylepay.test/webpay'},
     ]);
   )");
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Confirm that "Add card" button is not shown since "basic-card" is not
   // requested.

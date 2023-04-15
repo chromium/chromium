@@ -445,7 +445,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * A handler for selecting a site (by clicking on the origin).
    */
-  private onOriginTap_(e: DomRepeatEvent<OriginInfo>) {
+  private onOriginClick_(e: DomRepeatEvent<OriginInfo>) {
     if (this.siteGroup.origins[e.model.index].isPartitioned) {
       return;
     }
@@ -458,7 +458,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * A handler for clicking on a site-entry heading. This will either show a
    * list of origins or directly navigates to Site Details if there is only one.
    */
-  private onSiteEntryTap_() {
+  private onSiteEntryClick_() {
     // Individual origins don't expand - just go straight to Site Details.
     if (!this.grouped_(this.siteGroup)) {
       this.navigateToSiteDetails_(this.siteGroup.origins[0].origin);

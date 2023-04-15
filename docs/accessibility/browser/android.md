@@ -526,8 +526,6 @@ tools/mb/mb.py run -s --no-default-dimensions \
     -f "*WebContentsAccessibilityTreeTest*testExample"
 ```
 
-Piece of cake!
-
 ## Common Android accessibility "gotchas"
 
 - "name" vs. "text"
@@ -777,18 +775,18 @@ the Dispatcher simply drops/ignores the request. Preliminary data shows that thi
 has created a noticeable improvement for accessibility services that do not require
 the entire suite to function.
 
-### ComputeAXMode
+### AccessibilityAXModes
 
-Loosely related to the OnDemand feature above, the "ComputeAXMode" feature is also
+Loosely related to the OnDemand feature above, the "AccessibilityAXModes" feature is also
 a recent addition to improve overall performance. This feature uses the same
 mechanism as OnDemand to query the currently enabled services and the information
-they are interested in. ComputeAXMode then takes this information and uses a different
+they are interested in. AccessibilityAXModes then takes this information and uses a different
 [AXMode](https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_mode.h)
 based on the situation. This effectively does the same thing as
 OnDemand, but further left/up-the-chain, giving a more significant performance
-improvement. This feature is still rolling out, and it currently only has two
-AXModes (full or basic). As it rolls out and we gather more data we will potentially
-add more AXModes in the future.
+improvement. This feature is still rolling out, and it currently only has three
+AXModes (basic, form controls only, and complete). As it rolls out and we gather more data
+we will potentially add more AXModes in the future.
 
 ### AutoDisableAccessibility
 

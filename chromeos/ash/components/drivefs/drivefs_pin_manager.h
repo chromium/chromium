@@ -26,6 +26,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,33 +44,9 @@ enum HumanReadableSize : int64_t;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
-// The PinManager first undergoes a setup phase, where it audits the current
-// disk space, pins all available files (disk space willing) then moves to
-// monitoring. This enum represents the various stages the setup goes through.
-enum class Stage {
-  // Initial stage.
-  kStopped,
-
-  // Paused because of unfavorable network conditions.
-  kPaused,
-
-  // In-progress stages.
-  kGettingFreeSpace,
-  kListingFiles,
-  kSyncing,
-
-  // Final success stage.
-  kSuccess,
-
-  // Final error stages.
-  kCannotGetFreeSpace,
-  kCannotListFiles,
-  kNotEnoughSpace,
-  kCannotEnableDocsOffline,
-};
-
+using pin_manager_types::mojom::Stage;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
-std::ostream& operator<<(std::ostream& out, Stage stage);
+std::string ToString(Stage stage);
 
 // When the manager is setting up, this struct maintains all the information
 // gathered.
@@ -426,11 +403,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ElapsedTimer progress_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Stable IDs of directories that got their items listed. The mapped Path is
-  // the path of the parent directory when the given directory designated by Id
+  // Stable IDs of items that got listed during the kListingFiles stage. The
+  // mapped ID is the stable ID of the parent directory in which the given item
   // was first encountered.
-  std::unordered_map<Id, Path> visited_dirs_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  using ListedItems = std::unordered_map<Id, Id>;
+  ListedItems listed_items_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
   std::unordered_set<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -470,6 +447,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotifyProgress);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSearchResult);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, HandleQueryItem);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, DropQuery);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

@@ -141,6 +141,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
       const std::vector<std::string>& errors)>;
 
@@ -190,6 +191,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                           auction_worklet::mojom::PrioritySignalsDoublePtr>
                update_priority_signals_overrides,
            PrivateAggregationRequests pa_requests,
+           PrivateAggregationRequests non_kanon_pa_requests,
            base::TimeDelta bidding_latency,
            const std::vector<std::string>& errors) {
           ADD_FAILURE() << "OnGenerateBidComplete should not be invoked.";
@@ -228,6 +230,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
       const std::vector<std::string>& errors) override {
     // OnBiddingSignalsReceived() must be called first.
@@ -238,7 +241,8 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
              has_data_version, debug_loss_report_url, debug_win_report_url,
              set_priority, has_set_priority,
              std::move(update_priority_signals_overrides),
-             std::move(pa_requests), bidding_latency, errors);
+             std::move(pa_requests), std::move(non_kanon_pa_requests),
+             bidding_latency, errors);
   }
 
  private:
@@ -368,13 +372,15 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, absl::optional<double>>&
           expected_update_priority_signals_overrides =
               base::flat_map<std::string, absl::optional<double>>(),
-      PrivateAggregationRequests expected_pa_requests = {}) {
+      PrivateAggregationRequests expected_pa_requests = {},
+      PrivateAggregationRequests expected_non_kanon_pa_requests = {}) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(raw_return_value), std::move(expected_bid),
         expected_data_version, expected_errors, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_set_priority,
         expected_update_priority_signals_overrides,
-        std::move(expected_pa_requests));
+        std::move(expected_pa_requests),
+        std::move(expected_non_kanon_pa_requests));
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -391,7 +397,8 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, absl::optional<double>>&
           expected_update_priority_signals_overrides =
               base::flat_map<std::string, absl::optional<double>>(),
-      PrivateAggregationRequests expected_pa_requests = {}) {
+      PrivateAggregationRequests expected_pa_requests = {},
+      PrivateAggregationRequests expected_non_kanon_pa_requests = {}) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
@@ -399,7 +406,8 @@ class BidderWorkletTest : public testing::Test {
         std::move(expected_bid), expected_data_version, expected_errors,
         expected_debug_loss_report_url, expected_debug_win_report_url,
         expected_set_priority, expected_update_priority_signals_overrides,
-        std::move(expected_pa_requests));
+        std::move(expected_pa_requests),
+        std::move(expected_non_kanon_pa_requests));
   }
 
   // Loads and runs a generateBid() script, expecting the provided result.
@@ -418,7 +426,8 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, absl::optional<double>>&
           expected_update_priority_signals_overrides =
               base::flat_map<std::string, absl::optional<double>>(),
-      PrivateAggregationRequests expected_pa_requests = {}) {
+      PrivateAggregationRequests expected_pa_requests = {},
+      PrivateAggregationRequests expected_non_kanon_pa_requests = {}) {
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
     EXPECT_EQ(expected_bid.is_null(), bid_.is_null());
@@ -441,6 +450,7 @@ class BidderWorkletTest : public testing::Test {
     EXPECT_EQ(expected_debug_loss_report_url, bid_debug_loss_report_url_);
     EXPECT_EQ(expected_debug_win_report_url, bid_debug_win_report_url_);
     EXPECT_EQ(expected_pa_requests, pa_requests_);
+    EXPECT_EQ(expected_non_kanon_pa_requests, non_kanon_pa_requests_);
     EXPECT_EQ(expected_errors, bid_errors_);
     EXPECT_EQ(expected_set_priority, set_priority_);
     EXPECT_EQ(expected_update_priority_signals_overrides,
@@ -705,6 +715,7 @@ class BidderWorkletTest : public testing::Test {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
       const std::vector<std::string>& errors) {
     absl::optional<uint32_t> maybe_data_version;
@@ -729,6 +740,7 @@ class BidderWorkletTest : public testing::Test {
     }
 
     pa_requests_ = std::move(pa_requests);
+    non_kanon_pa_requests_ = std::move(non_kanon_pa_requests);
     bid_errors_ = errors;
     load_script_run_loop_->Quit();
   }
@@ -851,6 +863,7 @@ class BidderWorkletTest : public testing::Test {
   base::flat_map<std::string, absl::optional<double>>
       update_priority_signals_overrides_;
   PrivateAggregationRequests pa_requests_;
+  PrivateAggregationRequests non_kanon_pa_requests_;
   std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -2312,6 +2325,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                       auction_worklet::mojom::PrioritySignalsDoublePtr>
                       update_priority_signals_overrides,
                   PrivateAggregationRequests pa_requests,
+                  PrivateAggregationRequests non_kanon_pa_requests,
                   base::TimeDelta bidding_latency,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(bid_value, bid->bid);
@@ -2422,6 +2436,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                PrivateAggregationRequests non_kanon_pa_requests,
                 base::TimeDelta bidding_latency,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
@@ -2540,6 +2555,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                PrivateAggregationRequests non_kanon_pa_requests,
                 base::TimeDelta bidding_latency,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
@@ -2664,6 +2680,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                PrivateAggregationRequests non_kanon_pa_requests,
                 base::TimeDelta bidding_latency,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
@@ -2767,6 +2784,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
                                auction_worklet::mojom::PrioritySignalsDoublePtr>
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
+                PrivateAggregationRequests non_kanon_pa_requests,
                 base::TimeDelta bidding_latency,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
@@ -6743,7 +6761,71 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         /*expected_debug_loss_report_url=*/absl::nullopt,
         /*expected_debug_win_report_url=*/absl::nullopt,
         /*expected_set_priority=*/absl::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
         /*expected_pa_requests=*/{});
+  }
+
+  // Requests where reject reason is specified and k-anonymity enforcement is
+  // active.
+  kanon_mode_ = mojom::KAnonymityBidMode::kEnforce;
+  {
+    PrivateAggregationRequests expected_non_kanon_pa_requests;
+    expected_non_kanon_pa_requests.push_back(
+        mojom::PrivateAggregationRequest::New(
+            mojom::AggregatableReportContribution::NewForEventContribution(
+                mojom::AggregatableReportForEventContribution::New(
+                    /*bucket=*/mojom::ForEventSignalBucket::NewSignalBucket(
+                        mojom::SignalBucket::New(
+                            /*baseValue=*/mojom::BaseValue::kWinningBid,
+                            /*scale=*/1.0,
+                            /*offset=*/nullptr)),
+                    /*value=*/
+                    mojom::ForEventSignalValue::NewSignalValue(
+                        mojom::SignalValue::New(
+                            /*baseValue=*/mojom::BaseValue::kBidRejectReason,
+                            /*scale=*/1.0,
+                            /*offset=*/0)),
+                    /*event_type=*/"reserved.loss")),
+            blink::mojom::AggregationServiceMode::kDefault,
+            blink::mojom::DebugModeDetails::New()));
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            if (interestGroup.ads.length > 0) {
+              privateAggregation.sendHistogramReport(
+                  {bucket: 18446744073709551616n, value: 1});
+              privateAggregation.reportContributionForEvent(
+                  "reserved.win", {bucket: 18446744073709551616n, value: 2});
+              privateAggregation.reportContributionForEvent("reserved.loss", {
+                bucket: {baseValue: "highest-scoring-other-bid", offset: 0n},
+                value: 1,
+              });
+              privateAggregation.reportContributionForEvent("reserved.loss", {
+                bucket: {baseValue: "winning-bid"},
+                value: {baseValue: "bid-reject-reason"},
+              });
+            }
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, blink::kUnspecifiedAdCurrency,
+            /*ad_cost=*/absl::nullopt,
+            blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/absl::nullopt,
+            /*modeling_signals=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/ generateBid() bid render URL "
+         "'https://response.test/' isn't one of the registered creative URLs."},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{},
+        /*expected_non_kanon_pa_requests=*/
+        std::move(expected_non_kanon_pa_requests));
   }
 }
 

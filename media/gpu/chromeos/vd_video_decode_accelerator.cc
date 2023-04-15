@@ -258,7 +258,7 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     // its use.
     vd_ = create_vd_cb_.Run(
         gpu::GpuDriverBugWorkarounds(), client_task_runner_,
-        std::move(frame_pool), std::make_unique<VideoFrameConverter>(),
+        std::move(frame_pool), /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
         /*oop_video_decoder=*/{});

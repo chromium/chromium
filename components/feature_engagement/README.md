@@ -181,7 +181,7 @@ constant.
 To enable UMA tracking, you need to make the following changes to the metrics
 configuration:
 
-1.  Add feature to the histogram variant `IPHFeatures` in:
+1.  Add feature to the histogram variant `IPHFeature` in:
     `//tools/metrics/histograms/metadata/feature_engagement/histograms.xml`.
     *   The variant name must match the `base::Feature` `name` member of your
         feature.
@@ -637,7 +637,7 @@ all described below:
         *   `0` Nothing should be stored.
         *   `1` |current_day| should be stored.
         *   `2+` |current_day| plus |N-1| more days should be stored.
-    *   The value should not exceed 10 years (3650 days).
+    *   The value should not exceed 10 years (3650 days, see `kMaxStoragePeriod`).
     *   Value client side data type: uint32_t
     *   Whenever a particular event is used by multiple features, the maximum
         value of all `storage` is used as the storage window.

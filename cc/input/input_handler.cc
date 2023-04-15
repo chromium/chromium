@@ -127,7 +127,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   bool unification_enabled =
       base::FeatureList::IsEnabled(features::kScrollUnification);
 
-  if (target_element_id && !scroll_state->is_main_thread_hit_tested()) {
+  if (target_element_id && !scroll_state->main_thread_hit_tested_reasons()) {
     TRACE_EVENT_INSTANT0("cc", "Latched scroll node provided",
                          TRACE_EVENT_SCOPE_THREAD);
     // If the caller passed in an element_id we can skip all the hit-testing
@@ -154,7 +154,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       // scroll in the given direction. This mode is only used when scroll
       // unification is enabled and the targeted scroller comes back from a
       // main thread hit test.
-      DCHECK(scroll_state->data()->is_main_thread_hit_tested);
+      DCHECK(scroll_state->main_thread_hit_tested_reasons());
       DCHECK(unification_enabled);
       starting_node = scroll_tree.FindNodeFromElementId(target_element_id);
 
@@ -177,7 +177,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
                           compositor_delegate_->DeviceScaleFactor());
 
       if (unification_enabled) {
-        if (scroll_state->data()->is_main_thread_hit_tested) {
+        if (scroll_state->main_thread_hit_tested_reasons()) {
           // The client should have discarded the scroll when the hit test came
           // back with an invalid element id. If we somehow get here, we should
           // drop the scroll as continuing could cause us to infinitely bounce
@@ -199,7 +199,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
                                TRACE_EVENT_SCOPE_THREAD);
           scroll_status.thread =
               InputHandler::ScrollThread::SCROLL_ON_IMPL_THREAD;
-          scroll_status.needs_main_thread_hit_test = true;
+          DCHECK(scroll_hit_test.main_thread_hit_test_reasons);
+          scroll_status.main_thread_hit_test_reasons =
+              scroll_hit_test.main_thread_hit_test_reasons;
           return scroll_status;
         }
 
@@ -325,7 +327,7 @@ InputHandler::ScrollStatus InputHandler::RootScrollBegin(
 
   // Since we provided an ElementId, there should never be a need to perform a
   // hit test.
-  DCHECK(!scroll_status.needs_main_thread_hit_test);
+  DCHECK(!scroll_status.main_thread_hit_test_reasons);
 
   return scroll_status;
 }
@@ -518,9 +520,13 @@ void InputHandler::ScrollEnd(bool should_snap) {
       .browser_controls_manager()
       ->ScrollEnd();
 
+  // Only indicate that the scroll gesture ended if scrolling actually occurred
+  // so that we don't fire a "scrollend" event.
+  if (did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_) {
+    scroll_gesture_did_end_ = true;
+  }
   ClearCurrentlyScrollingNode();
   deferred_scroll_end_ = false;
-  scroll_gesture_did_end_ = true;
   SetNeedsCommit();
 }
 
@@ -1367,23 +1373,19 @@ ScrollNode* InputHandler::FindScrollNodeForCompositedScrolling(
   const auto& non_fast_scrollable_nodes =
       NonFastScrollableNodes(device_viewport_point);
 
+  // If we hit a scrollbar layer, get the ScrollNode from its associated
+  // scrolling layer, rather than directly from the scrollbar layer. The latter
+  // would return the parent scroller's ScrollNode.
+  if (layer_impl && layer_impl->IsScrollbarLayer()) {
+    layer_impl = ActiveTree().LayerByElementId(
+        ToScrollbarLayer(layer_impl)->scroll_element_id());
+  }
+
   // Walk up the hierarchy and look for a scrollable layer.
   ScrollTree& scroll_tree = GetScrollTree();
   ScrollNode* impl_scroll_node = nullptr;
   if (layer_impl) {
-    // If this is a scrollbar layer, we can't directly use the associated
-    // scroll_node (because the scroll_node associated with this layer will be
-    // the owning scroller's parent). Instead, we first retrieve the scrollable
-    // layer corresponding to the scrollbars owner and then use its
-    // scroll_tree_index instead.
-    int scroll_tree_index = layer_impl->scroll_tree_index();
-    if (layer_impl->IsScrollbarLayer()) {
-      LayerImpl* owner_scroll_layer = ActiveTree().LayerByElementId(
-          ToScrollbarLayer(layer_impl)->scroll_element_id());
-      scroll_tree_index = owner_scroll_layer->scroll_tree_index();
-    }
-
-    ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index);
+    ScrollNode* scroll_node = scroll_tree.Node(layer_impl->scroll_tree_index());
     for (; scroll_tree.parent(scroll_node);
          scroll_node = scroll_tree.parent(scroll_node)) {
       // The content layer can also block attempts to scroll outside the main
@@ -1463,6 +1465,8 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     // this, we have to get a hit test from the main thread.
     if (!IsInitialScrollHitTestReliable(layer_impl, scroller_layer)) {
       TRACE_EVENT_INSTANT0("cc", "Failed Hit Test", TRACE_EVENT_SCOPE_THREAD);
+      result.main_thread_hit_test_reasons =
+          MainThreadScrollingReason::kFailedHitTest;
       return result;
     }
 
@@ -1472,8 +1476,18 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     // failure.
     if (ActiveTree().PointHitsNonFastScrollableRegion(device_viewport_point,
                                                       *layer_impl)) {
+      result.main_thread_hit_test_reasons =
+          MainThreadScrollingReason::kNonFastScrollableRegion;
       return result;
     }
+  }
+
+  // If we hit a scrollbar layer, get the ScrollNode from its associated
+  // scrolling layer, rather than directly from the scrollbar layer. The latter
+  // would return the parent scroller's ScrollNode.
+  if (scroller_layer && scroller_layer->IsScrollbarLayer()) {
+    scroller_layer = ActiveTree().LayerByElementId(
+        ToScrollbarLayer(scroller_layer)->scroll_element_id());
   }
 
   // It's theoretically possible to hit no layers or only non-scrolling layers.
@@ -1486,15 +1500,6 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
       result.scroll_node = GetNodeToScroll(InnerViewportScrollNode());
 
     return result;
-  }
-
-  // If we hit a scrollbar layer, get the ScrollNode from its associated
-  // scrolling layer, rather than directly from the scrollbar layer. The latter
-  // would return the parent scroller's ScrollNode.
-  if (scroller_layer->IsScrollbarLayer()) {
-    scroller_layer = ActiveTree().LayerByElementId(
-        ToScrollbarLayer(scroller_layer)->scroll_element_id());
-    DCHECK(scroller_layer);
   }
 
   ScrollNode* scroll_node =

@@ -12,13 +12,13 @@
         label="$i18n{hardwareAccelerationLabel}">
       <template is="dom-if" if="[[shouldShowRestart_(
           prefs.hardware_acceleration_mode.enabled.value)]]">
-        <cr-button on-click="onRestartTap_" slot="more-actions">
+        <cr-button on-click="onRestartClick_" slot="more-actions">
           $i18n{restart}
         </cr-button>
       </template>
     </settings-toggle-button>
 
-    <div id="proxy" class="cr-row" on-click="onProxyTap_"
+    <div id="proxy" class="cr-row" on-click="onProxyClick_"
         actionable$="[[isProxyDefault_]]">
       <div class="flex cr-row-text" hidden$="[[!isProxyDefault_]]">
         $i18n{proxySettingsLabel}

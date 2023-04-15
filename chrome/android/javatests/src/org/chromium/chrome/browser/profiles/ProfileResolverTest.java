@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.Matchers.isEmptyString;
 
 import androidx.test.filters.SmallTest;
@@ -262,12 +264,12 @@ public class ProfileResolverTest {
 
         // Put nulls into variables first to get correct overloaded methods.
         Profile profile = null;
-        Assert.assertThat("Tokenizing a null profile should not work", tokenizeOnUiThread(profile),
+        assertThat("Tokenizing a null profile should not work", tokenizeOnUiThread(profile),
                 isEmptyString());
 
         ProfileKey profileKey = null;
-        Assert.assertThat("Tokenizing a null profile key should not work",
-                tokenizeOnUiThread(profileKey), isEmptyString());
+        assertThat("Tokenizing a null profile key should not work", tokenizeOnUiThread(profileKey),
+                isEmptyString());
     }
 
     @Test

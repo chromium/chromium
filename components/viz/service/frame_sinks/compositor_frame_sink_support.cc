@@ -459,6 +459,11 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
   }
 }
 
+void CompositorFrameSinkSupport::BindLayerContext(
+    mojom::PendingLayerContext& context) {
+  layer_context_impl_ = std::make_unique<LayerContextImpl>(context);
+}
+
 void CompositorFrameSinkSupport::SetThreadIds(
     bool from_untrusted_client,
     base::flat_set<base::PlatformThreadId> unverified_thread_ids) {

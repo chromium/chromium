@@ -15,7 +15,7 @@ namespace content {
 namespace {
 void ShutdownWebUIRenderer(WebUIController& controller) {
   auto* webui_impl = static_cast<WebUIImpl*>(controller.web_ui());
-  webui_impl->frame_host()->GetProcess()->ShutdownForBadMessage(
+  webui_impl->GetRenderFrameHost()->GetProcess()->ShutdownForBadMessage(
       RenderProcessHost::CrashReportMode::GENERATE_CRASH_DUMP);
 }
 }  // namespace

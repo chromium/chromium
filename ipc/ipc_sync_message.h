@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -86,14 +85,14 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageReplyDeserializer {
 struct IPC_MESSAGE_SUPPORT_EXPORT PendingSyncMsg {
   PendingSyncMsg(int id,
                  std::unique_ptr<MessageReplyDeserializer> d,
-                 base::WaitableEvent* e);
+                 std::unique_ptr<base::WaitableEvent> e);
   PendingSyncMsg(PendingSyncMsg&& that);
   ~PendingSyncMsg();
 
   int id;
   bool send_result = false;
   std::unique_ptr<MessageReplyDeserializer> deserializer;
-  raw_ptr<base::WaitableEvent> done_event;
+  std::unique_ptr<base::WaitableEvent> done_event;
 };
 
 }  // namespace IPC

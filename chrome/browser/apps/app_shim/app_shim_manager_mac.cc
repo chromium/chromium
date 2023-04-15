@@ -308,6 +308,14 @@ struct AppShimManager::AppState {
 
   // The profile state for the profiles currently running this app.
   std::map<Profile*, std::unique_ptr<ProfileState>> profiles;
+
+  // When an app is terminated, we only want to save the last active profiles
+  // once. This field is set to true when a clean shutdown has already saved
+  // last active profiles, to prevent the code that exists to handle unclean
+  // shutdowns from overwriting the last active profiles. In case of a clean
+  // shutdown some browser windows/profiles might have already closed by the
+  // time OnShimProcessDisconnected runs.
+  bool did_save_last_active_profiles_on_terminate = false;
 };
 
 AppShimManager::ProfileState::ProfileState(
@@ -464,6 +472,15 @@ AppShimHost* AppShimManager::GetHostForRemoteCocoaBrowser(Browser* browser) {
   return profile_state->GetHost();
 }
 
+bool AppShimManager::BrowserUsesRemoteCocoa(Browser* browser) {
+  const std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
+  if (web_app::AppShimCreationAndLaunchDisabledForTest()) {
+    return false;
+  }
+  return delegate_->AppUsesRemoteCocoa(browser->profile(), app_id);
+}
+
 void AppShimManager::OnShimLaunchRequested(
     AppShimHost* host,
     bool recreate_shims,
@@ -612,6 +629,7 @@ void AppShimManager::LoadAndLaunchApp(
   base::OnceClosure callback =
       base::BindOnce(&AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady,
                      weak_factory_.GetWeakPtr(), profile_paths_to_launch,
+                     /*first_profile_is_from_bootstrap=*/!profile_path.empty(),
                      params, std::move(launch_callback));
   {
     // This will update |callback| to be a chain of callbacks that load the
@@ -699,6 +717,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
 
 void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     const std::vector<base::FilePath>& profile_paths_to_launch,
+    bool first_profile_is_from_bootstrap,
     const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback launch_callback) {
   // Launch all of the profiles in |profile_paths_to_launch|. Record the most
@@ -744,10 +763,10 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     if (params.HasFilesOrURLs())
       break;
 
-    // If this was the first profile in |profile_paths_to_launch|, then this
-    // was the profile specified in the bootstrap, so stop here.
-    if (iter == 0)
+    // If this was the profile specified in the bootstrap, stop here.
+    if (first_profile_is_from_bootstrap && iter == 0) {
       break;
+    }
   }
 
   // If we launched any profile, report success.
@@ -1017,7 +1036,9 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   // For multi-profile apps, just delete the AppState, which will take down
   // |host| and all profiles' state.
   if (app_state->IsMultiProfile()) {
-    app_state->SaveLastActiveProfiles();
+    if (!app_state->did_save_last_active_profiles_on_terminate) {
+      app_state->SaveLastActiveProfiles();
+    }
     DCHECK_EQ(host, app_state->multi_profile_host.get());
     apps_.erase(found_app);
     if (apps_.empty())
@@ -1125,6 +1146,19 @@ void AppShimManager::OnShimOpenAppWithOverrideUrl(AppShimHost* host,
   LoadAndLaunchApp(
       app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
       params, base::DoNothing());
+}
+
+void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
+  auto found_app = apps_.find(host->GetAppId());
+  DCHECK(found_app != apps_.end());
+  AppState* app_state = found_app->second.get();
+  DCHECK(app_state);
+
+  if (app_state->IsMultiProfile()) {
+    DCHECK(!app_state->did_save_last_active_profiles_on_terminate);
+    app_state->SaveLastActiveProfiles();
+    app_state->did_save_last_active_profiles_on_terminate = true;
+  }
 }
 
 void AppShimManager::OnProfileAdded(Profile* profile) {

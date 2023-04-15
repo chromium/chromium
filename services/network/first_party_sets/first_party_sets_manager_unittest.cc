@@ -180,28 +180,29 @@ class AsyncPopulatedFirstPartySetsManagerTest
     // /*content=*/ R"(
     //   [
     //     {
-    //       "owner": "https://example.test",
-    //       "members": ["https://member1.test", "https://member3.test"]
+    //       "primary": "https://example.test",
+    //       "associatedSites": ["https://associatedSite1.test",
+    //       "https://associatedSite3.test"]
     //     },
     //     {
-    //       "owner": "https://foo.test",
-    //       "members": ["https://member2.test"]
+    //       "primary": "https://foo.test",
+    //       "associatedSites": ["https://associatedSite2.test"]
     //     }
     //   ]
     //   )";
 
     SetCompleteSets(
         {
-            {net::SchemefulSite(GURL("https://member1.test")),
+            {net::SchemefulSite(GURL("https://associatedSite1.test")),
              net::FirstPartySetEntry(example_test, net::SiteType::kAssociated,
                                      0)},
-            {net::SchemefulSite(GURL("https://member3.test")),
+            {net::SchemefulSite(GURL("https://associatedSite3.test")),
              net::FirstPartySetEntry(example_test, net::SiteType::kAssociated,
                                      0)},
             {example_test,
              net::FirstPartySetEntry(example_test, net::SiteType::kPrimary,
                                      absl::nullopt)},
-            {net::SchemefulSite(GURL("https://member2.test")),
+            {net::SchemefulSite(GURL("https://associatedSite2.test")),
              net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)},
             {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
                                           absl::nullopt)},
@@ -218,18 +219,19 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   {
     // Force deallocation to provoke a UAF if the impl just copies the pointer.
-    net::SchemefulSite member(GURL("https://member1.test"));
+    net::SchemefulSite associatedSite(GURL("https://associatedSite1.test"));
 
-    EXPECT_FALSE(manager().ComputeMetadata(member, &member, {member},
-                                           net::FirstPartySetsContextConfig(),
-                                           future.GetCallback()));
+    EXPECT_FALSE(manager().ComputeMetadata(
+        associatedSite, &associatedSite, {associatedSite},
+        net::FirstPartySetsContextConfig(), future.GetCallback()));
   }
 
   Populate();
 
   {
-    net::SchemefulSite owner(GURL("https://example.test"));
-    net::FirstPartySetEntry entry(owner, net::SiteType::kAssociated, 0);
+    net::FirstPartySetEntry entry(
+        net::SchemefulSite(GURL("https://example.test")),
+        net::SiteType::kAssociated, 0);
 
     EXPECT_EQ(future.Get(),
               net::FirstPartySetMetadata(
@@ -240,29 +242,30 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
 }
 
 TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindEntries) {
-  net::SchemefulSite member1(GURL("https://member1.test"));
-  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite associatedSite1(GURL("https://associatedSite1.test"));
+  net::SchemefulSite associatedSite2(GURL("https://associatedSite2.test"));
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite example_cctld(GURL("https://example.cctld"));
 
   base::test::TestFuture<FirstPartySetsManager::EntriesResult> future;
-  EXPECT_FALSE(manager().FindEntries({member1, member2, example_cctld},
-                                     net::FirstPartySetsContextConfig(),
-                                     future.GetCallback()));
+  EXPECT_FALSE(manager().FindEntries(
+      {associatedSite1, associatedSite2, example_cctld},
+      net::FirstPartySetsContextConfig(), future.GetCallback()));
 
   Populate();
 
   EXPECT_THAT(
       future.Get(),
       UnorderedElementsAre(
-          Pair(member1,
+          Pair(associatedSite1,
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)),
           Pair(example_cctld,
                net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                        absl::nullopt)),
-          Pair(member2, net::FirstPartySetEntry(
-                            net::SchemefulSite(GURL("https://foo.test")),
-                            net::SiteType::kAssociated, 0))));
+          Pair(associatedSite2,
+               net::FirstPartySetEntry(
+                   net::SchemefulSite(GURL("https://foo.test")),
+                   net::SiteType::kAssociated, 0))));
 }
 
 }  // namespace network

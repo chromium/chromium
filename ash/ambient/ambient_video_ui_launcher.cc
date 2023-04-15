@@ -4,10 +4,12 @@
 
 #include "ash/ambient/ambient_video_ui_launcher.h"
 
+#include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ui/ambient_video_utils.h"
 #include "ash/ambient/ui/ambient_video_view.h"
 #include "ash/public/cpp/personalization_app/time_of_day_paths.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -68,6 +70,10 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&VerifyVideoExistsOnDisc, current_video_));
+  weather_refresher_ = Shell::Get()
+                           ->ambient_controller()
+                           ->ambient_weather_controller()
+                           ->CreateScopedRefresher();
   std::move(on_done).Run(/*success=*/true);
 }
 
@@ -78,6 +84,7 @@ std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
 }
 
 void AmbientVideoUiLauncher::Finalize() {
+  weather_refresher_.reset();
   is_active_ = false;
 }
 

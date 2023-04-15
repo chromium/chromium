@@ -459,8 +459,7 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     return Difference::kPseudoElementStyle;
   }
   if (old_style.Display() != new_style.Display() &&
-      (new_style.Display() == EDisplay::kListItem ||
-       old_style.Display() == EDisplay::kListItem)) {
+      (new_style.IsDisplayListItem() || old_style.IsDisplayListItem())) {
     return Difference::kPseudoElementStyle;
   }
   return Difference::kNonInherited;
@@ -842,7 +841,7 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
           other.BorderRightStyle() == EBorderStyle::kHidden))) {
       return true;
     }
-  } else if (Display() == EDisplay::kListItem) {
+  } else if (IsDisplayListItem()) {
     if (ComputedStyleBase::
             DiffNeedsFullLayoutAndPaintInvalidationDisplayListItem(*this,
                                                                    other)) {

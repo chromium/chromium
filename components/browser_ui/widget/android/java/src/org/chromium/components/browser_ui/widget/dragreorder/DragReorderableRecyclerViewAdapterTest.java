@@ -5,54 +5,64 @@
 package org.chromium.components.browser_ui.widget.dragreorder;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragBinder;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
-/**
- * Tests to ensure/validate SimpleRecyclerViewAdapter behavior.
- */
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/** Tests to ensure/validate {@link DragReorderableRecyclerViewAdapter} behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityTestCase {
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
-    static final PropertyKey[] ALL_KEYS = {TITLE};
+    static final WritableIntPropertyKey TYPE = new WritableIntPropertyKey();
+    static final PropertyKey[] ALL_KEYS = {TITLE, TYPE};
 
-    private static final Integer NORMAL = 1;
-    private static final Integer DRAGGABLE = 2;
-    private static final Integer PASSIVELY_DRAGGABLE = 3;
+    @IntDef({Type.NORMAL, Type.DRAGGABLE, Type.PASSIVELY_DRAGGABLE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Type {
+        int NORMAL = 0;
+        int DRAGGABLE = 1;
+        int PASSIVELY_DRAGGABLE = 2;
+    }
 
     private ModelList mModelList;
     private DragReorderableRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            createAdapter();
-            mLinearLayoutManager = new LinearLayoutManager(getActivity());
             mRecyclerView = new RecyclerView(getActivity());
             RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
                     RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
@@ -66,97 +76,109 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
         });
     }
 
-    DragReorderableRecyclerViewAdapter createAdapter() {
-        mModelList = new ModelList();
-        mAdapter = new DragReorderableRecyclerViewAdapter(
-                getActivity(), mModelList, this::isLongPressDragEnabled);
+    @Override
+    public void tearDownTest() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mModelList.clear(); });
+    }
 
-        View view = new View(getActivity());
-        mAdapter.registerType(NORMAL, (parent) -> { return createListItemView(); }, this::bindView);
-        mAdapter.registerDraggableType(DRAGGABLE,
-                (parent) -> { return createListItemView(); }, this::bindView, (vh, it) -> {});
-        mAdapter.registerPassivelyDraggableType(
-                PASSIVELY_DRAGGABLE, (parent) -> { return createListItemView(); }, this::bindView);
+    private DragReorderableRecyclerViewAdapter createAdapter() {
+        mModelList = new ModelList();
+        mAdapter = new DragReorderableRecyclerViewAdapter(getActivity(), mModelList);
+
+        ViewBuilder<View> viewBuilder = (parent) -> createListItemView();
+        ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
+                (PropertyModel model, View view, PropertyKey key) -> {
+            if (key == TITLE) {
+                TextView tv = (TextView) view;
+                tv.setText(model.get(TITLE));
+            }
+        };
+        DragBinder dragBinder = (vh, it) -> {};
+        DraggabilityProvider draggabilityProvider = new DraggabilityProvider() {
+            @Override
+            public boolean isActivelyDraggable(PropertyModel propertyModel) {
+                return propertyModel.get(TYPE) == Type.DRAGGABLE;
+            }
+
+            @Override
+            public boolean isPassivelyDraggable(PropertyModel propertyModel) {
+                return propertyModel.get(TYPE) == Type.DRAGGABLE
+                        || propertyModel.get(TYPE) == Type.PASSIVELY_DRAGGABLE;
+            }
+        };
+
+        mAdapter.registerType(Type.NORMAL, viewBuilder, viewBinder);
+        mAdapter.registerDraggableType(
+                Type.DRAGGABLE, viewBuilder, viewBinder, dragBinder, draggabilityProvider);
+        mAdapter.registerDraggableType(Type.PASSIVELY_DRAGGABLE, viewBuilder, viewBinder,
+                dragBinder, draggabilityProvider);
         mAdapter.enableDrag();
+        mAdapter.setLongPressDragDelegate(this::isLongPressDragEnabled);
 
         return mAdapter;
     }
 
-    View createListItemView() {
+    private View createListItemView() {
         TextView tv = new TextView(getActivity());
         tv.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return tv;
     }
 
-    boolean isLongPressDragEnabled() {
+    private boolean isLongPressDragEnabled() {
         return false;
     }
 
-    @Override
-    public void tearDownTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mModelList.clear(); });
+    private PropertyModel createPropertyModel(String title, @Type int type) {
+        return new PropertyModel.Builder(ALL_KEYS).with(TITLE, title).with(TYPE, type).build();
     }
 
-    PropertyModel createPropertyModel(String title) {
-        return new PropertyModel.Builder(ALL_KEYS).with(TITLE, title).build();
-    }
-
-    void bindView(PropertyModel model, View view, PropertyKey key) {
-        if (key == TITLE) {
-            TextView tv = (TextView) view;
-            tv.setText(model.get(TITLE));
-        }
+    private ListItem buildListItem(String title, @Type int type) {
+        return new ModelListAdapter.ListItem(type, createPropertyModel(title, type));
     }
 
     @Test
     @SmallTest
     public void testDrag_cannotDragOverNormal() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModelList.add(new ModelListAdapter.ListItem(NORMAL, createPropertyModel("normal_1")));
-            mModelList.add(
-                    new ModelListAdapter.ListItem(DRAGGABLE, createPropertyModel("draggable_1")));
+            mModelList.add(buildListItem("normal_1", Type.NORMAL));
+            mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mAdapter.simulateDragForTests(1, 0); });
 
         // The order should remain since you can't drag over a normal view.
-        Assert.assertThat(mModelList.get(0).type, is(NORMAL));
-        Assert.assertThat(mModelList.get(1).type, is(DRAGGABLE));
+        assertThat(mModelList.get(0).type, is(Type.NORMAL));
+        assertThat(mModelList.get(1).type, is(Type.DRAGGABLE));
     }
 
     @Test
     @SmallTest
     public void testDrag_normalOverNormal() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModelList.add(
-                    new ModelListAdapter.ListItem(DRAGGABLE, createPropertyModel("draggable_1")));
-            mModelList.add(
-                    new ModelListAdapter.ListItem(DRAGGABLE, createPropertyModel("draggable_2")));
+            mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
+            mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mAdapter.simulateDragForTests(1, 0); });
 
         // The order should remain since you can't drag over a normal view.
-        Assert.assertThat(mModelList.get(0).model.get(TITLE), is("draggable_2"));
-        Assert.assertThat(mModelList.get(1).model.get(TITLE), is("draggable_1"));
+        assertThat(mModelList.get(0).model.get(TITLE), is("draggable_2"));
+        assertThat(mModelList.get(1).model.get(TITLE), is("draggable_1"));
     }
 
     @Test
     @SmallTest
     public void testDrag_normalThroughPassivelyDraggable() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModelList.add(
-                    new ModelListAdapter.ListItem(DRAGGABLE, createPropertyModel("draggable_1")));
-            mModelList.add(new ModelListAdapter.ListItem(
-                    PASSIVELY_DRAGGABLE, createPropertyModel("passively_draggable_1")));
-            mModelList.add(
-                    new ModelListAdapter.ListItem(DRAGGABLE, createPropertyModel("draggable_2")));
+            mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
+            mModelList.add(buildListItem("passively_draggable_1", Type.PASSIVELY_DRAGGABLE));
+            mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mAdapter.simulateDragForTests(0, 1); });
 
-        Assert.assertThat(mModelList.get(0).model.get(TITLE), is("passively_draggable_1"));
-        Assert.assertThat(mModelList.get(1).model.get(TITLE), is("draggable_1"));
+        assertThat(mModelList.get(0).model.get(TITLE), is("passively_draggable_1"));
+        assertThat(mModelList.get(1).model.get(TITLE), is("draggable_1"));
     }
 }

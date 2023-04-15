@@ -44,6 +44,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "maxPool2d";
     case MLOperator::OperatorKind::kPad:
       return "pad";
+    case MLOperator::OperatorKind::kPRelu:
+      return "prelu";
     case MLOperator::OperatorKind::kRelu:
       return "relu";
     case MLOperator::OperatorKind::kReshape:

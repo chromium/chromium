@@ -49,7 +49,7 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
                                       const AtomicString& name);
 
   // Implement https://tabatkins.github.io/css-toggle/#fire-a-toggle-activation
-  static void FireToggleActivation(Element& activated_element,
+  static bool FireToggleActivation(Element& activated_element,
                                    const ToggleTrigger& activation);
 
   void ChangeToggle(const ToggleTrigger& action,

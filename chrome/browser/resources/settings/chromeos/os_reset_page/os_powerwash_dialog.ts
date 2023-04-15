@@ -15,13 +15,13 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared.css.js';
 import './os_powerwash_dialog_esim_item.js';
 
+import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_settings_routes.js';
 import {Router} from '../router.js';
@@ -99,17 +99,17 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onRestartTap_() {
+  private onRestartClick_() {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().factoryReset(
         this.requestTpmFirmwareUpdate);
   }
 
-  private onContinueTap_() {
+  private onContinueClick_() {
     this.hasContinueBeenTapped_ = true;
   }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.recent_tabs.ui.ForeignSessionItemProperties;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.TabItemProperties;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,10 +29,21 @@ import java.util.List;
 public class RestoreTabsMediator {
     private RestoreTabsControllerFactory.ControllerListener mListener;
     private PropertyModel mModel;
+    private ForeignSessionHelper mForeignSessionHelper;
+    private TabCreatorManager mTabCreatorManager;
 
-    public void initialize(
-            PropertyModel model, RestoreTabsControllerFactory.ControllerListener listener) {
+    public void initialize(PropertyModel model,
+            RestoreTabsControllerFactory.ControllerListener listener, Profile profile,
+            TabCreatorManager tabCreatorManager) {
+        initialize(model, listener, new ForeignSessionHelper(profile), tabCreatorManager);
+    }
+
+    protected void initialize(PropertyModel model,
+            RestoreTabsControllerFactory.ControllerListener listener,
+            ForeignSessionHelper foreignSessionHelper, TabCreatorManager tabCreatorManager) {
         mListener = listener;
+        mForeignSessionHelper = foreignSessionHelper;
+        mTabCreatorManager = tabCreatorManager;
         mModel = model;
         mModel.set(RestoreTabsProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
         mModel.set(RestoreTabsProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
@@ -38,6 +51,8 @@ public class RestoreTabsMediator {
     }
 
     public void destroy() {
+        mForeignSessionHelper.destroy();
+        mForeignSessionHelper = null;
         mModel.set(RestoreTabsProperties.VISIBLE, false);
     }
 
@@ -51,7 +66,7 @@ public class RestoreTabsMediator {
 
             @Override
             public void onAllTabsChosen() {
-                mModel.set(RestoreTabsProperties.VISIBLE, false);
+                restoreChosenTabs();
             };
 
             @Override
@@ -61,8 +76,8 @@ public class RestoreTabsMediator {
         };
     }
 
-    public void showOptions(List<ForeignSession> sessions) {
-        setDeviceListItems(sessions);
+    public void showOptions() {
+        setDeviceListItems(mForeignSessionHelper.getMobileAndTabletForeignSessions());
         setTabListItems();
         setCurrentScreen(mModel.get(RestoreTabsProperties.CURRENT_SCREEN));
         mModel.set(RestoreTabsProperties.VISIBLE, true);
@@ -126,6 +141,9 @@ public class RestoreTabsMediator {
                     item.model.get(ForeignSessionItemProperties.SESSION_PROFILE));
             item.model.set(ForeignSessionItemProperties.IS_SELECTED, isSelected);
         }
+
+        // After selecting a device, rebuild all the tab list items for the new selection.
+        setTabListItems();
     }
 
     /**
@@ -229,8 +247,29 @@ public class RestoreTabsMediator {
 
             @Override
             public void onSelectedTabsChosen() {
-                mModel.set(RestoreTabsProperties.VISIBLE, false);
+                restoreChosenTabs();
             };
         };
+    }
+
+    private void restoreChosenTabs() {
+        if (!mModel.get(RestoreTabsProperties.VISIBLE)) {
+            return; // Dismiss only if not dismissed yet.
+        }
+
+        List<ForeignSessionTab> tabs = new ArrayList<>();
+        ModelList selectedTabs = mModel.get(RestoreTabsProperties.REVIEW_TABS_MODEL_LIST);
+        for (ListItem item : selectedTabs) {
+            if (item.model.get(TabItemProperties.IS_SELECTED)) {
+                tabs.add(item.model.get(TabItemProperties.FOREIGN_SESSION_TAB));
+            }
+        }
+
+        // TODO(crbug.com/1426921): Consider adding a safeguard for not allowing restoration
+        // below 1, and adding a spinner if restoring the tabs becomes a batched process.
+        assert selectedTabs.size() > 0;
+        mForeignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
+                tabs, mModel.get(RestoreTabsProperties.SELECTED_DEVICE), mTabCreatorManager);
+        dismiss();
     }
 }

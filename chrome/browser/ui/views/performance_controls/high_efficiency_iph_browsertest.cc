@@ -33,9 +33,7 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
 
   void SetUp() override {
     iph_features_.InitAndEnableFeaturesWithParameters(
-        {{feature_engagement::kIPHHighEfficiencyModeFeature, {}},
-         {performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "false"}}}});
+        {{feature_engagement::kIPHHighEfficiencyModeFeature, {}}});
 
     InProcessBrowserTest::SetUp();
   }
@@ -61,9 +59,7 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
         views::test::AnyWidgetTestPasskey{},
         user_education::HelpBubbleView::kViewClassName);
 
-    int tab_count_threshold =
-        performance_manager::features::kHighEfficiencyModePromoTabCountThreshold
-            .Get();
+    int tab_count_threshold = 10;  // The threshold count is a constant.
     for (int i = 0; i < tab_count_threshold; i++)
       chrome::AddTabAt(browser(), GURL(), i, true);
 

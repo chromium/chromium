@@ -17,7 +17,14 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state) {
   if (!script_state.ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "A browsing context is required.");
+                                      "context is not valid");
+    return false;
+  }
+
+  ExecutionContext* execution_context = ExecutionContext::From(&script_state);
+  if (execution_context->IsContextDestroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "context has been destroyed");
     return false;
   }
 

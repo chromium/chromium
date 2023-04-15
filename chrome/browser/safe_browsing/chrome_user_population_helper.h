@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -14,6 +15,17 @@ namespace safe_browsing {
 // A convenience function that creates a ChromeUserPopulation proto for the
 // given |profile|.
 ChromeUserPopulation GetUserPopulationForProfile(Profile* profile);
+
+// A convenience function that creates a ChromeUserPopulation proto for the
+// given |profile|. This is used by real-time URL lookups and download pings to
+// sometimes add telemetry about running experiments.
+ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
+    Profile* profile);
+
+// Get the status of each experiment in `experiments` and put it in the
+// `finch_active_groups` field of `population`.
+void GetExperimentStatus(const std::vector<const base::Feature*>& experiments,
+                         ChromeUserPopulation* population);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

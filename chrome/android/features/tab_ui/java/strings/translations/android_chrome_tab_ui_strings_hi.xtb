@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
-<translation id="1181037720776840403">हटाएं</translation>
 <translation id="125153950246128346">कोई दूसरा टैब देखने के लिए टैप करें</translation>
 <translation id="1403228085774130835">आपके बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में देखे गए' टैब पर जाकर देखे जा सकते हैं</translation>
 <translation id="1455506303394048917">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से मिटा दिया जाएगा</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टैब को ग्रुप से अलग करें}one{टैब को ग्रुप से अलग करें}other{टैब को ग्रुप से अलग करें}}</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से हटाएं.}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{बुकमार्क टैब}one{बुकमार्क टैब}other{बुकमार्क टैब}}</translation>
-<translation id="2479148705183875116">सेटिंग पर जाएं</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="2569352796411618312">सुझाव: आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल ही में इस्तेमाल नहीं हुआ है. क्या आप उन्हें बंद करना चाहते हैं?</translation>
-<translation id="257674075312929031">ग्रुप</translation>
 <translation id="2613747923081026172">समूह बनाएं</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइट पर जाएं</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">टैब को समूह में जोड़ने के लिए उन्हें खींचें और छोड़ें</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> टैब वाला <ph name="TITLE_OF_GROUP" /> ग्रुप बंद करें</translation>
 <translation id="5972844218283131174">सभी टैब से चुने हुए का निशान हटाएं</translation>
-<translation id="6040143037577758943">बंद करें</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">एक साथ कई टैब चुनने का मोड छिपाएं</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टैब को शेयर करें}one{टैब को शेयर करें}other{टैब को शेयर करें}}</translation>
 <translation id="7129458170538955174">इस स्टोर के बारे में जानकारी आधी स्क्रीन पर खुली हुई है</translation>
-<translation id="7151209024774799310">ग्रुप से टैब हटाएं</translation>
 <translation id="7204204600596740190">एक साथ कई टैब चुनने का मोड</translation>
 <translation id="7326879924029668159">सामान लौटाने की नीति वगैरह देखें</translation>
 <translation id="7352298686197644113">देखें कि आपके खोले गए टैब में मौजूद किस आइटम की कीमत कम हुई है</translation>

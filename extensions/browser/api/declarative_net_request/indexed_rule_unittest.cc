@@ -45,7 +45,7 @@ dnr_api::Rule CreateGenericParsedRule() {
   rule.priority = kMinValidPriority;
   rule.id = kMinValidID;
   rule.condition.url_filter = "filter";
-  rule.action.type = dnr_api::RULE_ACTION_TYPE_BLOCK;
+  rule.action.type = dnr_api::RuleActionType::kBlock;
   return rule;
 }
 
@@ -83,21 +83,21 @@ TEST_F(IndexedRuleTest, PriorityParsing) {
     // Only valid if |expected_result| is SUCCESS.
     const uint32_t expected_priority;
   } cases[] = {
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT, kMinValidPriority - 1,
+      {dnr_api::RuleActionType::kRedirect, kMinValidPriority - 1,
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT, kMinValidPriority,
+      {dnr_api::RuleActionType::kRedirect, kMinValidPriority,
        ParseResult::SUCCESS, kMinValidPriority},
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT, absl::nullopt, ParseResult::SUCCESS,
+      {dnr_api::RuleActionType::kRedirect, absl::nullopt, ParseResult::SUCCESS,
        kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT, kMinValidPriority + 1,
+      {dnr_api::RuleActionType::kRedirect, kMinValidPriority + 1,
        ParseResult::SUCCESS, kMinValidPriority + 1},
-      {dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME, kMinValidPriority - 1,
+      {dnr_api::RuleActionType::kUpgradeScheme, kMinValidPriority - 1,
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME, kMinValidPriority,
+      {dnr_api::RuleActionType::kUpgradeScheme, kMinValidPriority,
        ParseResult::SUCCESS, kMinValidPriority},
-      {dnr_api::RULE_ACTION_TYPE_BLOCK, kMinValidPriority - 1,
+      {dnr_api::RuleActionType::kBlock, kMinValidPriority - 1,
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_BLOCK, kMinValidPriority, ParseResult::SUCCESS,
+      {dnr_api::RuleActionType::kBlock, kMinValidPriority, ParseResult::SUCCESS,
        kMinValidPriority},
   };
 
@@ -107,7 +107,7 @@ TEST_F(IndexedRuleTest, PriorityParsing) {
     rule.priority = std::move(cases[i].priority);
     rule.action.type = cases[i].action_type;
 
-    if (cases[i].action_type == dnr_api::RULE_ACTION_TYPE_REDIRECT) {
+    if (cases[i].action_type == dnr_api::RuleActionType::kRedirect) {
       rule.action.redirect = MakeRedirectUrl("http://google.com");
     }
 
@@ -130,14 +130,14 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
     absl::optional<bool> is_url_filter_case_sensitive;
     const uint8_t expected_options;
   } cases[] = {
-      {dnr_api::DOMAIN_TYPE_NONE, dnr_api::RULE_ACTION_TYPE_BLOCK,
+      {dnr_api::DomainType::kNone, dnr_api::RuleActionType::kBlock,
        absl::nullopt,
        flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
-      {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW, true,
+      {dnr_api::DomainType::kFirstParty, dnr_api::RuleActionType::kAllow, true,
        flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
-      {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW, false,
+      {dnr_api::DomainType::kFirstParty, dnr_api::RuleActionType::kAllow, false,
        flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
            flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
@@ -172,36 +172,36 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
   } cases[] = {
       {absl::nullopt, absl::nullopt, ParseResult::SUCCESS,
        flat_rule::ElementType_ANY & ~flat_rule::ElementType_MAIN_FRAME},
-      {absl::nullopt, ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT}),
+      {absl::nullopt, ResourceTypeVec({dnr_api::ResourceType::kScript}),
        ParseResult::SUCCESS,
        flat_rule::ElementType_ANY & ~flat_rule::ElementType_SCRIPT},
       {ResourceTypeVec(
-           {dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_IMAGE}),
+           {dnr_api::ResourceType::kScript, dnr_api::ResourceType::kImage}),
        absl::nullopt, ParseResult::SUCCESS,
        flat_rule::ElementType_SCRIPT | flat_rule::ElementType_IMAGE},
       {ResourceTypeVec(
-           {dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_IMAGE}),
-       ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT}),
+           {dnr_api::ResourceType::kScript, dnr_api::ResourceType::kImage}),
+       ResourceTypeVec({dnr_api::ResourceType::kScript}),
        ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED,
        flat_rule::ElementType_NONE},
       {absl::nullopt,
        ResourceTypeVec(
-           {dnr_api::RESOURCE_TYPE_MAIN_FRAME, dnr_api::RESOURCE_TYPE_SUB_FRAME,
-            dnr_api::RESOURCE_TYPE_STYLESHEET, dnr_api::RESOURCE_TYPE_SCRIPT,
-            dnr_api::RESOURCE_TYPE_IMAGE, dnr_api::RESOURCE_TYPE_FONT,
-            dnr_api::RESOURCE_TYPE_OBJECT,
-            dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST, dnr_api::RESOURCE_TYPE_PING,
-            dnr_api::RESOURCE_TYPE_CSP_REPORT, dnr_api::RESOURCE_TYPE_MEDIA,
-            dnr_api::RESOURCE_TYPE_WEBSOCKET,
-            dnr_api::RESOURCE_TYPE_WEBTRANSPORT,
-            dnr_api::RESOURCE_TYPE_WEBBUNDLE, dnr_api::RESOURCE_TYPE_OTHER}),
+           {dnr_api::ResourceType::kMainFrame, dnr_api::ResourceType::kSubFrame,
+            dnr_api::ResourceType::kStylesheet, dnr_api::ResourceType::kScript,
+            dnr_api::ResourceType::kImage, dnr_api::ResourceType::kFont,
+            dnr_api::ResourceType::kObject,
+            dnr_api::ResourceType::kXmlhttprequest,
+            dnr_api::ResourceType::kPing, dnr_api::ResourceType::kCspReport,
+            dnr_api::ResourceType::kMedia, dnr_api::ResourceType::kWebsocket,
+            dnr_api::ResourceType::kWebtransport,
+            dnr_api::ResourceType::kWebbundle, dnr_api::ResourceType::kOther}),
        ParseResult::ERROR_NO_APPLICABLE_RESOURCE_TYPES,
        flat_rule::ElementType_NONE},
       {{{}},
        {{}},
        ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST,
        flat_rule::ElementType_NONE},
-      {ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT}), ResourceTypeVec(),
+      {ResourceTypeVec({dnr_api::ResourceType::kScript}), ResourceTypeVec(),
        ParseResult::SUCCESS, flat_rule::ElementType_SCRIPT},
   };
 
@@ -483,7 +483,7 @@ TEST_F(IndexedRuleTest, RedirectUrlParsing) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
     dnr_api::Rule rule = CreateGenericParsedRule();
     rule.action.redirect = MakeRedirectUrl(cases[i].redirect_url);
-    rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
+    rule.action.type = dnr_api::RuleActionType::kRedirect;
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
@@ -620,7 +620,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
     dnr_api::Rule rule = CreateGenericParsedRule();
-    rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
+    rule.action.type = dnr_api::RuleActionType::kRedirect;
 
     absl::optional<base::Value> redirect_val =
         base::JSONReader::Read(cases[i].redirect_dictionary_json);
@@ -727,7 +727,7 @@ TEST_F(IndexedRuleTest, RegexSubstitutionParsing) {
     }
 
     rule.priority = kMinValidPriority;
-    rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
+    rule.action.type = dnr_api::RuleActionType::kRedirect;
     rule.action.redirect.emplace();
     rule.action.redirect->regex_substitution = test_case.regex_substitution;
 
@@ -752,7 +752,7 @@ TEST_F(IndexedRuleTest, MultipleRedirectKeys) {
   rule.priority = kMinValidPriority;
   rule.condition.url_filter.reset();
   rule.condition.regex_filter = "\\.*";
-  rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
+  rule.action.type = dnr_api::RuleActionType::kRedirect;
   rule.action.redirect.emplace();
 
   dnr_api::Redirect& redirect = *rule.action.redirect;
@@ -783,19 +783,19 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
     const uint16_t expected_element_types;
   } cases[] = {
       {{}, {}, ParseResult::ERROR_INVALID_ALLOW_ALL_REQUESTS_RESOURCE_TYPE, 0},
-      {{dnr_api::RESOURCE_TYPE_SUB_FRAME},
-       {dnr_api::RESOURCE_TYPE_SCRIPT},
+      {{dnr_api::ResourceType::kSubFrame},
+       {dnr_api::ResourceType::kScript},
        ParseResult::SUCCESS,
        flat_rule::ElementType_SUBDOCUMENT},
-      {{dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_MAIN_FRAME},
+      {{dnr_api::ResourceType::kScript, dnr_api::ResourceType::kMainFrame},
        {},
        ParseResult::ERROR_INVALID_ALLOW_ALL_REQUESTS_RESOURCE_TYPE,
        0},
-      {{dnr_api::RESOURCE_TYPE_MAIN_FRAME, dnr_api::RESOURCE_TYPE_SUB_FRAME},
+      {{dnr_api::ResourceType::kMainFrame, dnr_api::ResourceType::kSubFrame},
        {},
        ParseResult::SUCCESS,
        flat_rule::ElementType_MAIN_FRAME | flat_rule::ElementType_SUBDOCUMENT},
-      {{dnr_api::RESOURCE_TYPE_MAIN_FRAME},
+      {{dnr_api::ResourceType::kMainFrame},
        {},
        ParseResult::SUCCESS,
        flat_rule::ElementType_MAIN_FRAME},
@@ -812,7 +812,7 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
     }
 
     rule.condition.excluded_resource_types = cases[i].excluded_resource_types;
-    rule.action.type = dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS;
+    rule.action.type = dnr_api::RuleActionType::kAllowAllRequests;
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
@@ -849,7 +849,7 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
       // but empty.
       {RawHeaderInfoList(),
        RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_REMOVE, "set-cookie", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kRemove, "set-cookie", absl::nullopt}}),
        ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST},
 
       {absl::nullopt, RawHeaderInfoList(),
@@ -859,59 +859,59 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
       // name.
       {absl::nullopt,
        RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_REMOVE, "", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kRemove, "", absl::nullopt}}),
        ParseResult::ERROR_INVALID_HEADER_NAME},
 
       {absl::nullopt,
        RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_REMOVE, "<<invalid>>", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kRemove, "<<invalid>>", absl::nullopt}}),
        ParseResult::ERROR_INVALID_HEADER_NAME},
 
       // Raise an error if a header list contains an invalid header value.
       {absl::nullopt,
-       RawHeaderInfoList({{dnr_api::HEADER_OPERATION_APPEND, "set-cookie",
+       RawHeaderInfoList({{dnr_api::HeaderOperation::kAppend, "set-cookie",
                            "invalid\nvalue"}}),
        ParseResult::ERROR_INVALID_HEADER_VALUE},
 
       // Raise an error if a header value is specified for a remove rule.
       {RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_REMOVE, "cookie", "remove"}}),
+           {{dnr_api::HeaderOperation::kRemove, "cookie", "remove"}}),
        absl::nullopt, ParseResult::ERROR_HEADER_VALUE_PRESENT},
 
       // Raise an error if no header value is specified for an append or set
       // rule.
       {RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_SET, "cookie", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kSet, "cookie", absl::nullopt}}),
        absl::nullopt, ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED},
 
       {absl::nullopt,
        RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_APPEND, "set-cookie", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kAppend, "set-cookie", absl::nullopt}}),
        ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED},
 
       // Raise an error if a rule specifies an invalid request header to be
       // appended.
       {RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_APPEND, "invalid-header", "value"}}),
+           {{dnr_api::HeaderOperation::kAppend, "invalid-header", "value"}}),
        absl::nullopt, ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER},
 
       {RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_REMOVE, "cookie", absl::nullopt},
-            {dnr_api::HEADER_OPERATION_SET, "referer", ""},
-            {dnr_api::HEADER_OPERATION_APPEND, "accept-language", "en-US"}}),
+           {{dnr_api::HeaderOperation::kRemove, "cookie", absl::nullopt},
+            {dnr_api::HeaderOperation::kSet, "referer", ""},
+            {dnr_api::HeaderOperation::kAppend, "accept-language", "en-US"}}),
        absl::nullopt, ParseResult::SUCCESS},
 
       {RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_REMOVE, "referer", absl::nullopt}}),
+           {{dnr_api::HeaderOperation::kRemove, "referer", absl::nullopt}}),
        RawHeaderInfoList(
-           {{dnr_api::HEADER_OPERATION_APPEND, "set-cookie", "abcd"}}),
+           {{dnr_api::HeaderOperation::kAppend, "set-cookie", "abcd"}}),
        ParseResult::SUCCESS},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
     dnr_api::Rule rule = CreateGenericParsedRule();
-    rule.action.type = dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS;
+    rule.action.type = dnr_api::RuleActionType::kModifyHeaders;
 
     ModifyHeaderInfoList expected_request_headers;
     if (cases[i].request_headers) {
@@ -944,7 +944,7 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     if (result != ParseResult::SUCCESS)
       continue;
 
-    EXPECT_EQ(dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS,
+    EXPECT_EQ(dnr_api::RuleActionType::kModifyHeaders,
               indexed_rule.action_type);
 
     EXPECT_TRUE(base::ranges::equal(expected_request_headers,
@@ -968,21 +968,21 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
   } cases[] = {
       {absl::nullopt, absl::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_ANY},
-      {absl::nullopt, RequestMethodVec({dnr_api::REQUEST_METHOD_PUT}),
+      {absl::nullopt, RequestMethodVec({dnr_api::RequestMethod::kPut}),
        ParseResult::SUCCESS,
        flat_rule::RequestMethod_ANY & ~flat_rule::RequestMethod_PUT},
       {RequestMethodVec(
-           {dnr_api::REQUEST_METHOD_DELETE, dnr_api::REQUEST_METHOD_GET}),
+           {dnr_api::RequestMethod::kDelete, dnr_api::RequestMethod::kGet}),
        absl::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_DELETE | flat_rule::RequestMethod_GET},
-      {RequestMethodVec({dnr_api::REQUEST_METHOD_HEAD,
-                         dnr_api::REQUEST_METHOD_OPTIONS,
-                         dnr_api::REQUEST_METHOD_PATCH}),
+      {RequestMethodVec({dnr_api::RequestMethod::kHead,
+                         dnr_api::RequestMethod::kOptions,
+                         dnr_api::RequestMethod::kPatch}),
        absl::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_HEAD | flat_rule::RequestMethod_OPTIONS |
            flat_rule::RequestMethod_PATCH},
-      {RequestMethodVec({dnr_api::REQUEST_METHOD_POST}),
-       RequestMethodVec({dnr_api::REQUEST_METHOD_POST}),
+      {RequestMethodVec({dnr_api::RequestMethod::kPost}),
+       RequestMethodVec({dnr_api::RequestMethod::kPost}),
        ParseResult::ERROR_REQUEST_METHOD_DUPLICATED,
        flat_rule::RequestMethod_NONE},
       {{{}},

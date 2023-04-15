@@ -60,30 +60,17 @@ const ULONG64* GetSupportedMitigations() {
 }
 
 // Returns true if this is 32-bit Chrome running on ARM64 with emulation.
-// Needed because ACG does not work with emulated code.
+// Needed because ACG does not work with emulated code. This is not needed for
+// x64 Chrome running on ARM64 with emulation.
 // See
-// https://docs.microsoft.com/en-us/windows/uwp/porting/apps-on-arm-troubleshooting-x86.
+// https://learn.microsoft.com/en-us/windows/arm/apps-on-arm-troubleshooting-x86
 // See https://crbug.com/977723.
-// TODO(wfh): Move this code into base. See https://crbug.com/978257.
 bool IsRunning32bitEmulatedOnArm64() {
 #if defined(ARCH_CPU_X86)
-  using IsWow64Process2Function = decltype(&IsWow64Process2);
-
-  IsWow64Process2Function is_wow64_process2 =
-      reinterpret_cast<IsWow64Process2Function>(::GetProcAddress(
-          ::GetModuleHandleA("kernel32.dll"), "IsWow64Process2"));
-  if (!is_wow64_process2)
-    return false;
-  USHORT process_machine;
-  USHORT native_machine;
-  bool retval = is_wow64_process2(::GetCurrentProcess(), &process_machine,
-                                  &native_machine);
-  if (!retval)
-    return false;
-  if (native_machine == IMAGE_FILE_MACHINE_ARM64)
-    return true;
-#endif  // defined(ARCH_CPU_X86)
+  return base::win::OSInfo::IsRunningEmulatedOnArm64();
+#else
   return false;
+#endif  // defined(ARCH_CPU_X86)
 }
 
 bool SetProcessMitigationPolicyInternal(PROCESS_MITIGATION_POLICY policy,

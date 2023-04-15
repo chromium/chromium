@@ -41,10 +41,15 @@ class SubAppsServiceImpl
       std::vector<blink::mojom::SubAppsServiceAddParametersPtr> sub_apps_to_add,
       AddCallback result_callback) override;
   void List(ListCallback result_callback) override;
-  void Remove(const UnhashedAppId& unhashed_app_id_path,
+  void Remove(const std::vector<std::string>& unhashed_app_id_paths,
               RemoveCallback result_callback) override;
 
  private:
+  void RemoveSubApp(
+      const UnhashedAppId& unhashed_app_id,
+      base::OnceCallback<void(blink::mojom::SubAppsServiceRemoveResultPtr)>
+          remove_barrier_callback,
+      const AppId* calling_app_id);
   SubAppsServiceImpl(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);

@@ -5,6 +5,7 @@
 // The <code>chrome.printerProvider</code> API exposes events used by print
 // manager to query printers controlled by extensions, to query their
 // capabilities and to submit print jobs to these printers.
+[modernised_enums]
 namespace printerProvider {
   // Error codes returned in response to $(ref:onPrintRequested) event.
   enum PrintError {
@@ -106,4 +107,3 @@ namespace printerProvider {
                                  PrintCallback resultCallback);
   };
 };
-

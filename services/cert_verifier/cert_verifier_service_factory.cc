@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,6 +20,7 @@
 #include "net/base/features.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
+#include "net/cert/crl_set.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service.h"
@@ -41,11 +43,10 @@ namespace cert_verifier {
 namespace {
 
 internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
-    mojom::CertVerifierServiceParams* impl_params,
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
-    const net::ChromeRootStoreData* root_store_data,
+    const net::CertVerifyProcFactory::ImplParams& impl_params,
     scoped_refptr<CertNetFetcherURLLoader>* out_cert_net_fetcher) {
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher;
 
@@ -57,8 +58,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
-      CreateCertVerifier(impl_params, creation_params.get(), cert_net_fetcher,
-                         root_store_data);
+      CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params);
 
   // As an optimization, if the CertNetFetcher isn't used by the CertVerifier,
   // shut it down immediately.
@@ -97,20 +97,26 @@ std::string GetHash(std::shared_ptr<const net::ParsedCertificate> cert) {
 }
 #endif
 
+// Attempts to parse |crl_set|, returning nullptr on error or the parsed
+// CRLSet.
+scoped_refptr<net::CRLSet> ParseCRLSet(mojo_base::BigBuffer crl_set) {
+  scoped_refptr<net::CRLSet> result;
+  // The BigBuffer comes from a trusted process, so we don't need to copy the
+  // data out before parsing.
+  if (!net::CRLSet::Parse(
+          base::StringPiece(reinterpret_cast<const char*>(crl_set.data()),
+                            crl_set.size()),
+          &result)) {
+    return nullptr;
+  }
+  return result;
+}
+
 }  // namespace
 
 CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
-    mojom::CertVerifierServiceParamsPtr params,
     mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver)
-    : service_params_(std::move(params)), receiver_(this, std::move(receiver)) {
-  if (!service_params_) {
-    service_params_ = mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-    service_params_->use_chrome_root_store =
-        base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
-#endif
-  }
-}
+    : receiver_(this, std::move(receiver)) {}
 
 CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
@@ -118,23 +124,13 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params) {
-  net::ChromeRootStoreData* root_store_data = nullptr;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  root_store_data = base::OptionalToPtr(root_store_data_);
-#endif
-
-  internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
-      service_params_.get(), std::move(receiver), std::move(client),
-      std::move(creation_params), root_store_data,
-      /*out_cert_net_fetcher=*/nullptr);
+  internal::CertVerifierServiceImpl* service_impl =
+      GetNewCertVerifierImpl(std::move(receiver), std::move(client),
+                             std::move(creation_params), proc_params_,
+                             /*out_cert_net_fetcher=*/nullptr);
 
   verifier_services_.insert(service_impl);
   service_impl->SetCertVerifierServiceFactory(weak_factory_.GetWeakPtr());
-}
-
-void CertVerifierServiceFactoryImpl::GetServiceParamsForTesting(
-    GetServiceParamsForTestingCallback callback) {
-  std::move(callback).Run(service_params_.Clone());
 }
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
@@ -142,9 +138,37 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
-  GetNewCertVerifierImpl(service_params_.get(), std::move(receiver),
-                         std::move(client), std::move(creation_params),
-                         /*root_store_data=*/nullptr, cert_net_fetcher_ptr);
+  GetNewCertVerifierImpl(std::move(receiver), std::move(client),
+                         std::move(creation_params), proc_params_,
+                         cert_net_fetcher_ptr);
+}
+
+void CertVerifierServiceFactoryImpl::UpdateCRLSet(
+    mojo_base::BigBuffer crl_set,
+    mojom::CertVerifierServiceFactory::UpdateCRLSetCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ParseCRLSet, std::move(crl_set)),
+      base::BindOnce(&CertVerifierServiceFactoryImpl::OnCRLSetParsed,
+                     weak_factory_.GetWeakPtr())
+          .Then(std::move(callback)));
+}
+
+void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
+    scoped_refptr<net::CRLSet> parsed_crl_set) {
+  if (!parsed_crl_set) {
+    return;
+  }
+
+  if (proc_params_.crl_set->sequence() >= parsed_crl_set->sequence()) {
+    // Don't allow downgrades, and don't refresh CRLSets that are identical
+    // (the sequence is globally unique for all CRLSets).
+    return;
+  }
+
+  proc_params_.crl_set = std::move(parsed_crl_set);
+
+  UpdateVerifierServices();
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -187,21 +211,19 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     return;
   }
 
-  for (internal::CertVerifierServiceImpl* service : verifier_services_) {
-    service->UpdateChromeRootStoreData(&root_store_data.value());
-  }
-
   // Update the stored Chrome Root Store so that new CertVerifierService
   // instances will start with the updated store.
-  root_store_data_ = std::move(root_store_data);
+  proc_params_.root_store_data = std::move(root_store_data);
+
+  UpdateVerifierServices();
 }
 
 void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     GetChromeRootStoreInfoCallback callback) {
   mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
-  if (root_store_data_) {
-    info_ptr->version = root_store_data_->version();
-    for (auto cert : root_store_data_->anchors()) {
+  if (proc_params_.root_store_data) {
+    info_ptr->version = proc_params_.root_store_data->version();
+    for (auto cert : proc_params_.root_store_data->anchors()) {
       info_ptr->root_cert_info.push_back(
           mojom::ChromeRootCertInfo::New(GetName(cert), GetHash(cert)));
     }
@@ -216,9 +238,27 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
 }
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+void CertVerifierServiceFactoryImpl::SetUseChromeRootStore(
+    bool use_crs,
+    SetUseChromeRootStoreCallback callback) {
+  if (use_crs != proc_params_.use_chrome_root_store) {
+    proc_params_.use_chrome_root_store = use_crs;
+    UpdateVerifierServices();
+  }
+  std::move(callback).Run();
+}
+#endif
+
 void CertVerifierServiceFactoryImpl::RemoveService(
     internal::CertVerifierServiceImpl* service_impl) {
   verifier_services_.erase(service_impl);
+}
+
+void CertVerifierServiceFactoryImpl::UpdateVerifierServices() {
+  for (internal::CertVerifierServiceImpl* service : verifier_services_) {
+    service->UpdateVerifierData(proc_params_);
+  }
 }
 
 }  // namespace cert_verifier

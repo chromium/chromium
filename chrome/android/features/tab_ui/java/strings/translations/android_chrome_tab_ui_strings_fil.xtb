@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
-<translation id="1181037720776840403">Alisin</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
 <translation id="1403228085774130835">Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome</translation>
 <translation id="1455506303394048917">Maki-clear ang iyong aktibidad sa mga tab na Incognito na ito sa device na ito</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{I-ungroup ang tab}one{I-ungroup ang mga tab}other{I-ungroup ang mga tab}}</translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Alisin ang <ph name="TABS_COUNT_ONE" /> piniling tab sa grupo.}one{Alisin ang <ph name="TABS_COUNT_MANY" /> piniling tab sa grupo.}other{Alisin ang <ph name="TABS_COUNT_MANY" /> na piniling tab sa grupo.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{I-bookmark ang tab}one{I-bookmark ang mga tab}other{I-bookmark ang mga tab}}</translation>
-<translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2569352796411618312">Suhestyon: <ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
-<translation id="257674075312929031">Pangkat</translation>
 <translation id="2613747923081026172">Gumawa ng pangkat</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Bisitahin ang site</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">I-drag ang mga tab para pagpangkatin ang mga ito</translation>
 <translation id="5846292395804797011">Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="NUMBER_OF_TABS" /> (na) tab</translation>
 <translation id="5972844218283131174">I-deselect lahat</translation>
-<translation id="6040143037577758943">Isara</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{I-share ang tab}one{I-share ang mga tab}other{I-share ang mga tab}}</translation>
 <translation id="7129458170538955174">Binuksan ang impormasyon tungkol sa store na to nang kalahati ang taas</translation>
-<translation id="7151209024774799310">Mag-alis ng mga tab sa grupo</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
 <translation id="7326879924029668159">Tingnan ang patakaran sa pagbabalik at higit pa</translation>
 <translation id="7352298686197644113">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas mababang presyo</translation>

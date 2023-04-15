@@ -217,20 +217,12 @@ class InlinedVector {
       absl::allocator_is_nothrow<allocator_type>::value ||
       std::is_nothrow_move_constructible<value_type>::value)
       : storage_(other.storage_.GetAllocator()) {
-    // Fast path: if the value type can be trivally move constructed and
-    // destroyed, and we know the allocator doesn't do anything fancy, then it's
-    // safe for us to simply adopt the contents of the storage for `other` and
-    // remove its own reference to them. It's as if we had individually
+    // Fast path: if the value type can be trivially relocated (i.e. moved from
+    // and destroyed), and we know the allocator doesn't do anything fancy, then
+    // it's safe for us to simply adopt the contents of the storage for `other`
+    // and remove its own reference to them. It's as if we had individually
     // move-constructed each value and then destroyed the original.
-    //
-    // TODO(b/274984172): a move construction followed by destroying the source
-    // is a "relocation" in the language of P1144R4. So actually the minimum
-    // condition we need here (in addition to the allocator) is "trivially
-    // relocatable". Relaxing this would allow using memcpy with types like
-    // std::unique_ptr that opt in to declaring themselves trivially relocatable
-    // despite not being trivially move-constructible and/oror destructible.
-    if (absl::is_trivially_move_constructible<value_type>::value &&
-        absl::is_trivially_destructible<value_type>::value &&
+    if (absl::is_trivially_relocatable<value_type>::value &&
         std::is_same<A, std::allocator<value_type>>::value) {
       storage_.MemcpyFrom(other.storage_);
       other.storage_.SetInlinedSize(0);
@@ -271,20 +263,12 @@ class InlinedVector {
       const allocator_type&
           allocator) noexcept(absl::allocator_is_nothrow<allocator_type>::value)
       : storage_(allocator) {
-    // Fast path: if the value type can be trivally move constructed and
-    // destroyed and we know the allocator doesn't do anything fancy, then it's
-    // safe for us to simply adopt the contents of the storage for `other` and
-    // remove its own reference to them. It's as if we had individually
+    // Fast path: if the value type can be trivially relocated (i.e. moved from
+    // and destroyed), and we know the allocator doesn't do anything fancy, then
+    // it's safe for us to simply adopt the contents of the storage for `other`
+    // and remove its own reference to them. It's as if we had individually
     // move-constructed each value and then destroyed the original.
-    //
-    // TODO(b/274984172): a move construction followed by destroying the source
-    // is a "relocation" in the language of P1144R4. So actually the minimum
-    // condition we need here (in addition to the allocator) is "trivially
-    // relocatable". Relaxing this would allow using memcpy with types like
-    // std::unique_ptr that opt in to declaring themselves trivially relocatable
-    // despite not being trivially move-constructible and/oror destructible.
-    if (absl::is_trivially_move_constructible<value_type>::value &&
-        absl::is_trivially_destructible<value_type>::value &&
+    if (absl::is_trivially_relocatable<value_type>::value &&
         std::is_same<A, std::allocator<value_type>>::value) {
       storage_.MemcpyFrom(other.storage_);
       other.storage_.SetInlinedSize(0);

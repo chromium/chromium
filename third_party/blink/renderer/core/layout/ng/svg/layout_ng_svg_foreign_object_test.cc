@@ -470,4 +470,22 @@ TEST_F(LayoutNGSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
   EXPECT_EQ(gfx::Vector2dF(0.5, 0.5), foreign_transform->Matrix().To2dScale());
 }
 
+TEST_F(LayoutNGSVGForeignObjectTest, DisplayLocked) {
+  GetDocument().body()->setInnerHTML(R"HTML(<style>
+foreignObject {
+  content-visibility: auto;
+}
+</style>
+<div style="height:300vh"></div>
+<svg>
+<foreignObject id="foreign">
+<body xmlns="http://www.w3.org/1999/xhtml"></body>
+</foreignObject>
+</svg>)HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  GetLayoutBoxByElementId("foreign")->SetChildNeedsLayout();
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no DCHECK failures.
+}
+
 }  // namespace blink

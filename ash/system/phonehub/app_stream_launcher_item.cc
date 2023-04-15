@@ -72,7 +72,7 @@ AppStreamLauncherItem::AppStreamLauncherItem(
 
   const bool enabled = app_metadata.app_streamability_status ==
                        phonehub::proto::AppStreamabilityStatus::STREAMABLE;
-  gfx::Image image = app_metadata.icon;
+  gfx::Image image = app_metadata.color_icon;
   if (!enabled) {
     // Fade the image in order to make it look like grayed out.
     // TODO(b/261916553): Make grayed out icons "gray" in

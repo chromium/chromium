@@ -50,7 +50,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   AXObject* GetParent(AXObject* node) const override;
   void SerializeNode(AXObject* node, ui::AXNodeData* out_data) const override;
   bool IsIgnored(AXObject* node) const override;
-  bool IsValid(AXObject* node) const override;
   bool IsEqual(AXObject* node1, AXObject* node2) const override;
   AXObject* GetNull() const override;
   std::string GetDebugString(AXObject* node) const override;
@@ -65,8 +64,6 @@ class MODULES_EXPORT BlinkAXTreeSource
     image_data_node_id_ = id;
     max_image_data_size_ = max_size;
   }
-
-  void set_exclude_offscreen(bool exclude) { exclude_offscreen_ = exclude; }
 
   // Ignore code that limits based on the protocol (like https, file, etc.)
   // to enable tests to run.
@@ -109,11 +106,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   // Whether we should highlight annotation results visually on the page
   // for debugging.
   bool image_annotation_debugging_ = false;
-
-  // If true, excludes nodes and their entire subtrees if they're entirely
-  // offscreen. This is only meant to be used when snapshotting the
-  // accessibility tree.
-  bool exclude_offscreen_ = false;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 

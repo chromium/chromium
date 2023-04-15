@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_WEBUI_MOJO_FACADE_H_
 #define IOS_WEB_WEBUI_MOJO_FACADE_H_
 
-#include <objc/objc.h>
-
 #include <map>
 #include <memory>
 #include <string>
@@ -125,7 +123,7 @@ class MojoFacade {
   mojo::ScopedMessagePipeHandle TakePipeFromId(int id);
 
   // Runs JavaScript on WebUI page.
-  WebState* web_state_ = nil;
+  WebState* web_state_ = nullptr;
 
   // The next available integer ID to assign a Mojo pipe for use in JS.
   int next_pipe_id_ = 1;
@@ -136,6 +134,7 @@ class MojoFacade {
 
   // Id of the last created watch.
   int last_watch_id_ = 0;
+
   // Currently active watches created through this facade.
   std::map<int, std::unique_ptr<mojo::SimpleWatcher>> watchers_;
 };

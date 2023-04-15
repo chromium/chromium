@@ -85,12 +85,17 @@ base::Value::Dict SyncHandler::GetSyncInfo() const {
 
   syncer::SyncService* sync_service = GetSyncService();
   PrefService* pref_service = profile_->GetPrefs();
+  syncer::UserSelectableTypeSet types =
+      sync_service->GetUserSettings()->GetSelectedTypes();
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   dict.Set("isEligibleForAccountStorage",
            (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
             (IsOptedInForAccountStorage(pref_service, sync_service) ||
              ShouldShowAccountStorageOptIn(pref_service, sync_service))));
+  dict.Set("isSyncingPasswords",
+           (sync_service->IsSyncFeatureEnabled() &&
+            types.Has(syncer::UserSelectableType::kPasswords)));
   return dict;
 }
 

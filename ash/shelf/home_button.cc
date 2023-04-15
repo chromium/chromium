@@ -11,11 +11,13 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_control_button.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
@@ -130,6 +132,8 @@ HomeButton::HomeButton(Shelf* shelf)
   if (features::IsHomeButtonQuickAppAccessEnabled()) {
     shell_observation_.Observe(Shell::Get());
     app_list_model_observation_.Observe(AppListModelProvider::Get());
+    quick_app_model_observation_.Observe(
+        AppListModelProvider::Get()->quick_app_access_model());
   }
 }
 
@@ -207,15 +211,10 @@ void HomeButton::ButtonPressed(views::Button* sender,
       GetDisplayId(), AppListShowSource::kShelfButton, event.time_stamp());
 
   // If the home button is pressed, fade out the nudge label if it is showing.
-  if (expandable_container_) {
+  if (expandable_container_ && !quick_app_button_) {
     // The label shouldn't be removed if the text-in-shelf feature is enabled.
     if (features::IsHomeButtonWithTextEnabled())
       return;
-
-    if (quick_app_button_) {
-      // TODO(b/266734005): Implement fade out animation for quick app button.
-      return;
-    }
 
     if (!expandable_container_->GetVisible()) {
       // If the nudge label is not visible and will not be animating, directly
@@ -494,29 +493,24 @@ void HomeButton::CreateQuickAppButton() {
 
   const int control_size = ShelfControlButton::CalculatePreferredSize().width();
 
-  SkBitmap square_icon_bitmap;
-  square_icon_bitmap.allocN32Pixels(control_size, control_size);
+  const gfx::Size preferred_size = gfx::Size(control_size, control_size);
 
-  SkCanvas canvas(square_icon_bitmap);
-  SkPaint paint_outline;
-  paint_outline.setColor(SK_ColorRED);
-  canvas.drawCircle(control_size / 2, control_size / 2, control_size / 2,
-                    paint_outline);
-
-  gfx::ImageSkia test_icon_image =
-      gfx::ImageSkia::CreateFrom1xBitmap(square_icon_bitmap);
-
-  // TODO(b/266734005): Animate in quick app once icon is loaded.
   quick_app_button_->SetPaintToLayer();
-  quick_app_button_->SetImage(views::Button::STATE_NORMAL, test_icon_image);
-  quick_app_button_->SetSize(gfx::Size(control_size, control_size));
+  quick_app_button_->layer()->SetFillsBoundsOpaquely(false);
+  quick_app_button_->SetImage(
+      views::Button::STATE_NORMAL,
+      AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
+          preferred_size));
+  quick_app_button_->SetSize(preferred_size);
+
+  shelf_->shelf_layout_manager()->LayoutShelf(false);
 }
 
 void HomeButton::QuickAppButtonPressed() {
-  // TODO(b/266734005): Reset and hide the quick app once pressed.
   ash::Shell::Get()->app_list_controller()->ActivateItem(
-      quick_app_id_, /*event_flags=*/0,
-      ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess);
+      AppListModelProvider::Get()->quick_app_access_model()->quick_app_id(),
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess);
+  AppListModelProvider::Get()->quick_app_access_model()->SetQuickAppActivated();
 }
 
 void HomeButton::AnimateNudgeRipple(views::AnimationBuilder& builder) {
@@ -760,6 +754,12 @@ void HomeButton::RemoveNudgeLabel() {
   nudge_label_ = nullptr;
 }
 
+void HomeButton::RemoveQuickAppButton() {
+  RemoveChildViewT(expandable_container_);
+  expandable_container_ = nullptr;
+  quick_app_button_ = nullptr;
+}
+
 bool HomeButton::DoesIntersectRect(const views::View* target,
                                    const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
@@ -794,25 +794,36 @@ void HomeButton::OnShellDestroying() {
 
 void HomeButton::OnActiveAppListModelsChanged(AppListModel* model,
                                               SearchModel* search_model) {
+  QuickAppAccessModel* quick_model =
+      AppListModelProvider::Get()->quick_app_access_model();
   quick_app_model_observation_.Reset();
-  quick_app_model_observation_.Observe(
-      AppListModelProvider::Get()->quick_app_access_model());
+  quick_app_model_observation_.Observe(quick_model);
 
-  OnQuickAppChanged();
+  OnQuickAppShouldShowChanged(quick_model->quick_app_should_show_state());
 }
 
-void HomeButton::OnQuickAppChanged() {
-  quick_app_id_ =
-      AppListModelProvider::Get()->quick_app_access_model()->quick_app_id();
-  if (quick_app_id_.empty()) {
-    // TODO(b/266734005): Hide the quick app button if already shown.
+void HomeButton::OnQuickAppShouldShowChanged(bool show_quick_app) {
+  if (!show_quick_app && quick_app_button_) {
+    // TODO(b/266734005): Animate the hiding of the quick app button.
+    RemoveQuickAppButton();
+  } else if (show_quick_app && !quick_app_button_) {
+    if (nudge_label_) {
+      RemoveNudgeLabel();
+    }
+    CreateQuickAppButton();
+  }
+}
+
+void HomeButton::OnQuickAppIconChanged() {
+  if (!quick_app_button_) {
     return;
   }
 
-  // Only create the quick app button if no nudge label exists already.
-  if (!quick_app_button_ && !nudge_label_) {
-    CreateQuickAppButton();
-  }
+  const int control_size = ShelfControlButton::CalculatePreferredSize().width();
+  quick_app_button_->SetImage(
+      views::Button::STATE_NORMAL,
+      AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
+          gfx::Size(control_size, control_size)));
 }
 
 }  // namespace ash

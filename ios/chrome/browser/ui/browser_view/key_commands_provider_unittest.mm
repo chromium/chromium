@@ -19,14 +19,14 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
@@ -719,23 +719,6 @@ TEST_F(KeyCommandsProviderTest, AddToReadingList_DoesntAddWhenNTP) {
   InsertNewWebState(0);
 
   [provider_ keyCommand_addToReadingList];
-}
-
-// Verifies that the correct URL is added to Reading List.
-TEST_F(KeyCommandsProviderTest, AddToReadingList_AddURL) {
-  id handler = OCMStrictProtocolMock(@protocol(BrowserCommands));
-  provider_.dispatcher = handler;
-  GURL url = GURL("https://e.test");
-  id addCommand = [OCMArg checkWithBlock:^BOOL(ReadingListAddCommand* command) {
-    return command.URLs.count == 1 && command.URLs.firstObject.URL == url;
-  }];
-  OCMExpect([provider_.dispatcher addToReadingList:addCommand]);
-  web::FakeWebState* web_state = InsertNewWebState(0);
-  web_state->SetCurrentURL(url);
-
-  [provider_ keyCommand_addToReadingList];
-
-  [handler verify];
 }
 
 // Verifies that showing the tab at a given index is a no-op when there are no

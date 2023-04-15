@@ -68,7 +68,6 @@ class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileManagerAsh;
 class FileSystemProviderServiceAsh;
-class FirewallHoleServiceAsh;
 class ForceInstalledTrackerAsh;
 class FullscreenControllerAsh;
 class GeolocationServiceAsh;
@@ -218,8 +217,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindFileSystemProviderService(
       mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
       override;
-  void BindFirewallHoleService(
-      mojo::PendingReceiver<mojom::FirewallHoleService> receiver) override;
   void BindForceInstalledTracker(
       mojo::PendingReceiver<mojom::ForceInstalledTracker> receiver) override;
   void BindFullscreenController(
@@ -356,6 +353,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
   void REMOVED_29(
       mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
+  void REMOVED_105(mojo::PendingReceiver<mojom::FirewallHoleServiceDeprecated>
+                       receiver) override;
 
   AutomationAsh* automation_ash() { return automation_ash_.get(); }
 
@@ -541,7 +540,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
-  std::unique_ptr<FirewallHoleServiceAsh> firewall_hole_service_ash_;
   std::unique_ptr<ForceInstalledTrackerAsh> force_installed_tracker_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;

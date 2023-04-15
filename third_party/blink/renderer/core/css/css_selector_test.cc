@@ -248,7 +248,7 @@ TEST(CSSSelector, ImplicitPseudoDescendant) {
                   /* is_implicit */ false),
       CSSSelector("scope", /* is_implicit */ true)};
   selector[0].SetRelation(CSSSelector::kDescendant);
-  selector[1].SetLastInTagHistory(true);
+  selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("div", selector[0].SelectorText());
 }
 
@@ -259,7 +259,7 @@ TEST(CSSSelector, ImplicitPseudoChild) {
                   /* is_implicit */ false),
       CSSSelector("scope", /* is_implicit */ true)};
   selector[0].SetRelation(CSSSelector::kChild);
-  selector[1].SetLastInTagHistory(true);
+  selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("> div", selector[0].SelectorText());
 }
 
@@ -270,7 +270,7 @@ TEST(CSSSelector, NonImplicitPseudoChild) {
                   /* is_implicit */ false),
       CSSSelector("scope", /* is_implicit */ false)};
   selector[0].SetRelation(CSSSelector::kChild);
-  selector[1].SetLastInTagHistory(true);
+  selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ(":scope > div", selector[0].SelectorText());
 }
 
@@ -279,7 +279,7 @@ TEST(CSSSelector, PseudoTrueBefore) {
                              CSSSelector("hover", /* is_implicit */ false)};
   selector[0].SetTrue();
   selector[0].SetRelation(CSSSelector::kSubSelector);
-  selector[1].SetLastInTagHistory(true);
+  selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ(":hover", selector[0].SelectorText());
 }
 
@@ -288,7 +288,7 @@ TEST(CSSSelector, PseudoTrueAfter) {
                              CSSSelector()};
   selector[0].SetRelation(CSSSelector::kSubSelector);
   selector[1].SetTrue();
-  selector[1].SetLastInTagHistory(true);
+  selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ(":hover", selector[0].SelectorText());
 }
 
@@ -300,7 +300,7 @@ TEST(CSSSelector, PseudoTrueChild) {
       CSSSelector()};
   selector[0].SetRelation(CSSSelector::kChild);
   selector[1].SetTrue();
-  selector[1].SetLastInTagHistory(true);
+  selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("> div", selector[0].SelectorText());
 }
 

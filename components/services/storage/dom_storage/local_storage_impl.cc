@@ -751,10 +751,17 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
   std::vector<blink::StorageKey> storage_keys_to_delete;
   for (const auto& info : usage) {
     const blink::StorageKey& storage_key = info->storage_key;
-    if (storage_key.IsFirstPartyContext()) {
-      const url::Origin& origin = storage_key.origin();
-      if (base::Contains(origins_to_purge_on_shutdown_, origin)) {
+    const url::Origin& key_origin = storage_key.origin();
+    // Delete the storage if its origin matches one of the origins to purge, or
+    // if it is third-party and the top-level site is same-site with one of
+    // those origins.
+    for (const auto& origin_to_purge : origins_to_purge_on_shutdown_) {
+      if (key_origin == origin_to_purge ||
+          (storage_key.IsThirdPartyContext() &&
+           net::SchemefulSite(origin_to_purge) ==
+               storage_key.top_level_site())) {
         storage_keys_to_delete.push_back(storage_key);
+        break;
       }
     }
   }

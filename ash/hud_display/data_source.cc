@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/hud_display/memory_status.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
 
@@ -96,7 +95,7 @@ DataSource::Snapshot DataSource::GetSnapshotAndReset() {
     // Makes sure that the given value is between 0 and 1 and converts to
     // float.
     auto to_0_1 = [](const double& value) -> float {
-      return base::clamp(static_cast<float>(value), 0.0f, 1.0f);
+      return std::clamp(static_cast<float>(value), 0.0f, 1.0f);
     };
 
     snapshot.cpu_idle_part = cpu_stats_delta.idle / cpu_ticks_total;

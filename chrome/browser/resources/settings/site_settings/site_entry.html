@@ -45,7 +45,7 @@
     <div id="collapseParent" focus-row-container>
       <div class$="list-item [[getClassForIndex_(listIndex)]]">
         <div id="toggleButton" class="start row-aligned two-line text-elide"
-            on-click="onSiteEntryTap_" actionable aria-expanded="false">
+            on-click="onSiteEntryClick_" actionable aria-expanded="false">
           <site-favicon url="[[getSiteGroupIcon_(siteGroup)]]"></site-favicon>
           <div class="middle text-elide" id="displayName">
             <div class="site-representation">
@@ -125,7 +125,7 @@
               <template is="dom-repeat" items="[[siteGroup.origins]]">
                 <div class="list-item hr">
                   <div class="start row-aligned list-item origin-link"
-                       on-click="onOriginTap_"
+                       on-click="onOriginClick_"
                        actionable$="[[!item.isPartitioned]]">
                     <site-favicon url="[[item.origin]]"></site-favicon>
                     <div class="site-representation middle text-elide">

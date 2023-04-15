@@ -52,7 +52,9 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -1240,9 +1242,19 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
 // The test cases below need a different SetUp.
 class PasswordControllerTestSimple : public PlatformTest {
  public:
-  PasswordControllerTestSimple() {}
+  PasswordControllerTestSimple()
+      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT),
+        web_client_(std::make_unique<web::FakeWebClient>()),
+        browser_state_(std::make_unique<web::FakeBrowserState>()) {
+    web_state_.SetBrowserState(browser_state_.get());
+  }
 
-  ~PasswordControllerTestSimple() override { store_->ShutdownOnUIThread(); }
+  ~PasswordControllerTestSimple() override {
+    // Ensure the password manager callbacks complete before destruction.
+    task_environment_.RunUntilIdle();
+
+    store_->ShutdownOnUIThread();
+  }
 
   void SetUp() override {
     // Tests depend on some of these prefs being registered.
@@ -1254,7 +1266,21 @@ class PasswordControllerTestSimple : public PlatformTest {
         new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
+    web::test::OverrideJavaScriptFeatures(
+        browser_state_.get(),
+        {autofill::FormUtilJavaScriptFeature::GetInstance(),
+         password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
+
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
+
+    web::ContentWorld content_world =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = web_frames_manager.get();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
 
     passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
                                                    store_.get(), &weak_client_);
@@ -1267,20 +1293,13 @@ class PasswordControllerTestSimple : public PlatformTest {
 
     ON_CALL(*store_, GetLogins)
         .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-
-    web::ContentWorld content_world =
-        password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-            ->GetSupportedContentWorld();
-
-    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web_frames_manager_ = web_frames_manager.get();
-    web_state_.SetWebFramesManager(content_world,
-                                   std::move(web_frames_manager));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
+  web::ScopedTestingWebClient web_client_;
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<web::FakeBrowserState> browser_state_;
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   MockPasswordManagerClient* weak_client_;
@@ -1295,6 +1314,7 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
       passwordController_.sharedPasswordController;
 
   auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  web_frame->set_browser_state(browser_state_.get());
   web::WebFrame* main_web_frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 

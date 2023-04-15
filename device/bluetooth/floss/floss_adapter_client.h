@@ -17,6 +17,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_sdp_types.h"
 
 namespace dbus {
 class ErrorResponse;
@@ -132,6 +133,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
     // Notification sent when a remote device becomes disconnected.
     virtual void AdapterDeviceDisconnected(const FlossDeviceId& device) {}
+
+    // Notification sent when requested SDP search has completed.
+    virtual void SdpSearchComplete(const FlossDeviceId device,
+                                   const device::BluetoothUUID uuid,
+                                   const std::vector<BtSdpRecord> records) {}
+
+    // Notification sent when an SDP record has finished being created and
+    // assigned a handle.
+    virtual void SdpRecordCreated(const BtSdpRecord record,
+                                  const int32_t handle) {}
   };
 
   // Error: No such adapter.
@@ -151,6 +162,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Manage observers.
   void AddObserver(Observer* observer);
+  bool HasObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   // Get the address of this adapter.
@@ -256,6 +268,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Returns connected devices.
   virtual void GetConnectedDevices();
 
+  // Initiate an SDP search on device for uuid. Search results provided through
+  // |OnSdpSearchComplete|.
+  virtual void SdpSearch(ResponseCallback<bool> callback,
+                         const FlossDeviceId& device,
+                         device::BluetoothUUID uuid);
+
+  // Create a new SDP record in this device's SDP server. Record handle is
+  // returned via |SdpRecordCreated|.
+  virtual void CreateSdpRecord(ResponseCallback<bool> callback,
+                               const BtSdpRecord& record);
+
+  // Remove an SDP record by its record handle.
+  virtual void RemoveSdpRecord(ResponseCallback<bool> callback,
+                               const int32_t& handle);
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -301,6 +328,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Handle callback |OnBondStateChanged| on exported object path.
   void OnBondStateChanged(dbus::MethodCall* method_call,
+                          dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnSdpSearchComplete| on exported object path.
+  void OnSdpSearchComplete(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnSdpRecordCreated| on exported object path.
+  void OnSdpRecordCreated(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnDeviceConnected| on exported object path.

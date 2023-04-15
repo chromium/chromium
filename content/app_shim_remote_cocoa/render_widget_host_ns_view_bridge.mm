@@ -4,6 +4,9 @@
 
 #import "content/app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h"
 
+#include <Foundation/Foundation.h>
+
+#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -262,9 +265,12 @@ void RenderWidgetHostNSViewBridge::ShowDictionaryOverlayForSelection() {
 void RenderWidgetHostNSViewBridge::ShowDictionaryOverlay(
     ui::mojom::AttributedStringPtr attributed_string,
     const gfx::Point& baseline_point) {
-  NSAttributedString* string = attributed_string.To<NSAttributedString*>();
-  if ([string length] == 0)
+  CFAttributedStringRef cf_string =
+      attributed_string.To<CFAttributedStringRef>();
+  NSAttributedString* string = base::mac::CFToNSCast(cf_string);
+  if ([string length] == 0) {
     return;
+  }
   NSPoint flipped_baseline_point = {
       static_cast<CGFloat>(baseline_point.x()),
       [cocoa_view_ frame].size.height - baseline_point.y(),

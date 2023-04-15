@@ -27,7 +27,7 @@
     color: var(--cros-text-color-primary);
     display: inline-block;
     font: var(--personalization-app-label-font);
-    margin: 14px 0;
+    margin: 12px 0;
   }
 
   iron-icon[icon='personalization:managed'] {
@@ -35,7 +35,7 @@
   }
 
   #wallpaperButton {
-    --cr-icon-button-size: 48px;
+    --cr-icon-button-size: 44px;
     /* Make the arrow align with the thumbnail image */
     margin-inline-end: -18px;
   }
@@ -75,12 +75,12 @@
   }
 
   :host-context(body.jelly-enabled) #container {
-      grid-template-rows: auto auto 20px 1fr 24px;
+      grid-template-rows: auto auto 16px auto 20px;
   }
 
   :host-context(body.jelly-enabled) #imageContainer,
   :host-context(body.jelly-enabled) #imagePlaceholder {
-    aspect-ratio: 460/274;
+    aspect-ratio: 340/220;
     max-width: 460px;
     min-width: 278px;
   }

@@ -234,9 +234,7 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
     video_tracks_ = attachment->CreateVideoTrackList(tracer);
     DCHECK(video_tracks_);
   } else {
-    DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
-               GetExecutionContext()) &&
-           GetExecutionContext()->IsDedicatedWorkerGlobalScope());
+    DCHECK(GetExecutionContext()->IsDedicatedWorkerGlobalScope());
     DCHECK(!IsMainThread());
 
     // TODO(https://crbug.com/878133): Enable construction of media tracks that

@@ -11,11 +11,12 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,13 +31,26 @@
 namespace thumbnail {
 namespace {
 
+constexpr double kJpegImageRatio = 0.85;
 constexpr int kDimension = 16;
 constexpr int kKiB = 1024;
+
+SkPaint SetupPaint() {
+  SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE};
+  SkScalar pos[] = {0, SK_Scalar1 / 2, SK_Scalar1};
+  SkPaint paint;
+  paint.setShader(SkGradientShader::MakeSweep(256, 256, colors, pos, 3));
+  return paint;
+}
 
 }  // anonymous namespace
 
 class JpegThumbnailHelperTest : public ::testing::Test {
  protected:
+  JpegThumbnailHelperTest()
+      : task_environment_(
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     interface_ = std::make_unique<thumbnail::JpegThumbnailHelper>(
@@ -47,12 +61,11 @@ class JpegThumbnailHelperTest : public ::testing::Test {
   void TearDown() override {}
 
   thumbnail::JpegThumbnailHelper& GetInterface() { return *interface_; }
-  SkPaint SetupPaint();
   base::FilePath GetFile(int tab_id) {
     return interface_->GetJpegFilePath(tab_id);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   std::unique_ptr<thumbnail::JpegThumbnailHelper> interface_;
@@ -79,7 +92,8 @@ TEST_F(JpegThumbnailHelperTest, CompressThumbnail) {
         EXPECT_GT(bitmap->height(), 0);
       }).Then(loop1.QuitClosure());
 
-  GetInterface().Compress(0, image, std::move(once));
+  GetInterface().Compress(kJpegImageRatio, image, std::move(once));
+  task_environment_.RunUntilIdle();
   loop1.Run();
 }
 
@@ -100,6 +114,7 @@ TEST_F(JpegThumbnailHelperTest, WriteThumbnail) {
   // Write the image
   base::RunLoop loop1;
   GetInterface().Write(tab_id, data, loop1.QuitClosure());
+  task_environment_.RunUntilIdle();
   loop1.Run();
 
   base::FilePath file_path = GetFile(tab_id);
@@ -146,6 +161,7 @@ TEST_F(JpegThumbnailHelperTest, ReadThumbnail) {
       }).Then(loop1.QuitClosure());
 
   GetInterface().Read(tab_id, std::move(once));
+  task_environment_.RunUntilIdle();
   loop1.Run();
 }
 
@@ -176,14 +192,6 @@ TEST_F(JpegThumbnailHelperTest, DeleteThumbnail) {
   // Check deletion occurred
   base::FilePath post_delete_file_path = GetFile(tab_id);
   EXPECT_FALSE(base::PathExists(post_delete_file_path));
-}
-
-SkPaint JpegThumbnailHelperTest::SetupPaint() {
-  SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE};
-  SkScalar pos[] = {0, SK_Scalar1 / 2, SK_Scalar1};
-  SkPaint paint;
-  paint.setShader(SkGradientShader::MakeSweep(256, 256, colors, pos, 3));
-  return paint;
 }
 
 }  // namespace thumbnail

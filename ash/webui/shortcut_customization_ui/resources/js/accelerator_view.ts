@@ -6,7 +6,7 @@ import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -252,11 +252,20 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.statusMessage = '';
     this.hasError = false;
 
+    let result: {result: AcceleratorResultData};
+    assert(this.viewState !== ViewState.VIEW);
+
     if (this.viewState === ViewState.ADD) {
-      const result = await this.shortcutProvider.addAccelerator(
+      result = await this.shortcutProvider.addAccelerator(
           this.source, this.action, getAccelerator(pendingAccelInfo));
-      this.handleAcceleratorResultData(result.result);
     }
+
+    if (this.viewState === ViewState.EDIT) {
+      result = await this.shortcutProvider.replaceAccelerator(
+          this.source, this.action, getAccelerator(this.acceleratorInfo),
+          getAccelerator(pendingAccelInfo));
+    }
+    this.handleAcceleratorResultData(result!.result);
   }
 
   private handleAcceleratorResultData(result: AcceleratorResultData): void {
@@ -405,41 +414,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
   private showEditView(): boolean {
     return this.viewState !== ViewState.VIEW;
-  }
-
-  private requestUpdateAccelerator(newAcceleratorInfo: StandardAcceleratorInfo):
-      void {
-    if (this.viewState === ViewState.EDIT) {
-      this.shortcutProvider
-          .replaceAccelerator(
-              this.source, this.action, (getAccelerator(this.acceleratorInfo)),
-              (getAccelerator(newAcceleratorInfo)))
-          .then((result: AcceleratorConfigResult) => {
-            // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.kSuccess) {
-              this.lookupManager.replaceAccelerator(
-                  this.source, this.action,
-                  this.acceleratorInfo.layoutProperties.standardAccelerator
-                      .accelerator,
-                  newAcceleratorInfo);
-              this.fireUpdateEvent();
-            }
-          });
-    }
-
-    if (this.viewState === ViewState.ADD) {
-      this.shortcutProvider
-          .addAccelerator(
-              this.source, this.action, getAccelerator(newAcceleratorInfo))
-          .then(({result}) => {
-            // TODO(jimmyxgong): Handle other error cases.
-            if (result.result === AcceleratorConfigResult.kSuccess) {
-              this.lookupManager.addAccelerator(
-                  this.source, this.action, newAcceleratorInfo);
-              this.fireUpdateEvent();
-            }
-          });
-    }
   }
 
   private fireUpdateEvent(): void {

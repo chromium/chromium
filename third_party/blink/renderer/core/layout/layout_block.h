@@ -142,9 +142,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
 
-  LayoutUnit MinLineHeightForReplacedObject(bool is_first_line,
-                                            LayoutUnit replaced_height) const;
-
   const char* GetName() const override;
 
  protected:
@@ -183,12 +180,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);
 
-  // Return true if this is the anonymous child wrapper of an NG fieldset
-  // container. Such a wrapper holds all the fieldset contents. Only the
-  // rendered legend is laid out on the outside, although the layout object
-  // itself for the legend is still a child of this object.
-  bool IsAnonymousNGFieldsetContentWrapper() const;
-
   LayoutUnit TextIndentOffset() const;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
@@ -203,93 +194,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
-
-  // Accessors for logical width/height and margins in the containing block's
-  // block-flow direction.
-  LayoutUnit LogicalWidthForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return LogicalWidthForChildSize(child.Size());
-  }
-  LayoutUnit LogicalWidthForChildSize(LayoutSize child_size) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child_size.Width() : child_size.Height();
-  }
-  LayoutUnit LogicalHeightForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child.Size().Height()
-                                     : child.Size().Width();
-  }
-  LayoutSize LogicalSizeForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child.Size()
-                                     : child.Size().TransposedSize();
-  }
-  LayoutUnit LogicalTopForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child.Location().Y()
-                                     : child.Location().X();
-  }
-  DISABLE_CFI_PERF LayoutUnit
-  MarginBeforeForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginBefore(Style());
-  }
-  DISABLE_CFI_PERF LayoutUnit
-  MarginAfterForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginAfter(Style());
-  }
-  DISABLE_CFI_PERF LayoutUnit
-  MarginStartForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginStart(Style());
-  }
-  LayoutUnit MarginEndForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginEnd(Style());
-  }
-  void SetMarginStartForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginStart(value, Style());
-  }
-  void SetMarginEndForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginEnd(value, Style());
-  }
-  void SetMarginBeforeForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginBefore(value, Style());
-  }
-  void SetMarginAfterForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginAfter(value, Style());
-  }
-
-  LayoutUnit AvailableLogicalWidthForContent() const {
-    NOT_DESTROYED();
-    return (LogicalRightOffsetForContent() - LogicalLeftOffsetForContent())
-        .ClampNegativeToZero();
-  }
-  DISABLE_CFI_PERF LayoutUnit LogicalLeftOffsetForContent() const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? ContentLeft() : ContentTop();
-  }
-  LayoutUnit LogicalRightOffsetForContent() const {
-    NOT_DESTROYED();
-    return LogicalLeftOffsetForContent() + AvailableLogicalWidth();
-  }
-  LayoutUnit StartOffsetForContent() const {
-    NOT_DESTROYED();
-    return StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForContent()
-               : LogicalWidth() - LogicalRightOffsetForContent();
-  }
-  LayoutUnit EndOffsetForContent() const {
-    NOT_DESTROYED();
-    return !StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForContent()
-               : LogicalWidth() - LogicalRightOffsetForContent();
-  }
 
 #if DCHECK_IS_ON()
   void CheckPositionedObjectsNeedLayout();
@@ -341,9 +245,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   void UpdateLayout() override;
 
- protected:
-  LayoutUnit MarginIntrinsicLogicalWidthForChild(const LayoutBox& child) const;
-
  public:
   void Paint(const PaintInfo&) const override;
   virtual void PaintObject(const PaintInfo&,
@@ -359,13 +260,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       LineDirectionMode line_direction) const;
 
  protected:
-  virtual void AdjustInlineDirectionLineBounds(
-      unsigned /* expansion_opportunity_count */,
-      LayoutUnit& /* logical_left */,
-      LayoutUnit& /* logical_width */) const {
-    NOT_DESTROYED();
-  }
-
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   void ComputeChildPreferredLogicalWidths(
       LayoutObject& child,
@@ -396,7 +290,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddVisualOverflowFromChildren();
   virtual void AddVisualOverflowFromBlockChildren();
 
-  void AddOutlineRects(Vector<PhysicalRect>&,
+  void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
@@ -416,11 +310,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     NOT_DESTROYED();
     return phase == HitTestPhase::kSelfBlockBackground;
   }
-
-  // Returns baseline offset of this block if is empty editable or having
-  // CSS property "--internal-empty-line-height"fabricated", otherwise
-  // returns |LayoutUnit(-1)|.
-  LayoutUnit EmptyLineBaseline(LineDirectionMode line_direction) const;
 
  private:
   LayoutObjectChildList* VirtualChildren() final {
@@ -460,10 +349,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void RemoveFromGlobalMaps();
 
  protected:
-  // Adjust from painting offsets to the local coords of this layoutObject
-  void OffsetForContents(LayoutPoint&) const;
-  void OffsetForContents(PhysicalOffset&) const;
-
   PositionWithAffinity PositionForPointIfOutsideAtomicInlineLevel(
       const PhysicalOffset&) const;
 

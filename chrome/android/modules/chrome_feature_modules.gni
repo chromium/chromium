@@ -38,27 +38,25 @@ if (enable_arcore) {
 #   paks: (Optional) PAKs going into module.
 # Each new module needs to add a desc to one of the lists below.
 
-# Modules shipped in Monochrome (Android N+).
-monochrome_module_descs = [
+chrome_module_descs = [
+  cablev2_authenticator_module_desc,
   test_dummy_module_desc,
   stack_unwinder_module_desc,
 ]
 if (enable_vr) {
-  monochrome_module_descs += [ vr_module_desc ]
+  chrome_module_descs += [ vr_module_desc ]
 }
 if (dfmify_dev_ui) {
-  monochrome_module_descs += [ dev_ui_module_desc ]
+  chrome_module_descs += [ dev_ui_module_desc ]
 }
 if (false) {  # AR DFM is currently disabled
-  monochrome_module_descs += [ ar_module_desc ]
+  chrome_module_descs += [ ar_module_desc ]
 }
-monochrome_module_descs += [ cablev2_authenticator_module_desc ]
 
-# Modules shipped in Trichrome (Android Q+).
-trichrome_module_descs = monochrome_module_descs
-
-# Add this after we assign trichrome_module_descs, since WebLayer should only be
-# part of Monochrome.
+monochrome_module_descs = chrome_module_descs
 if (webview_includes_weblayer) {
   monochrome_module_descs += [ weblayer_module_desc ]
 }
+
+# TODO: Remove once unused downstream.
+trichrome_module_descs = chrome_module_descs

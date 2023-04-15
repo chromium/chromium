@@ -441,6 +441,9 @@ bool CreateInterestGroupIndices(sql::Database& db) {
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
 bool CreateV13Schema(sql::Database& db) {
+  // IMPORTANT: If you add or remove fields, you need to update
+  // `ClearExcessiveStorage()` to consider the size of added/removed fields for
+  // storage usage calculations.
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -2282,6 +2285,85 @@ bool ClearExpiredInterestGroups(sql::Database& db,
   return transaction.Commit();
 }
 
+// Removes interest groups so that per-owner limit is respected. Note that we're
+// intentionally not trying to keep this in sync with
+// `blink::InterestGroup::EstimateSize()`. There's not a compelling reason to
+// keep those exactly aligned and keeping them in sync would require a
+// significant amount of extra work.
+bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // We go through groups for each owner, starting with the ones that expire
+  // later, accumulating the stored size. If the accumulated size is too much,
+  // we start marking groups for deletion. This means that the interest groups
+  // expiring soonest will be deleted if we need to free up space.
+  // clang-format off
+  sql::Statement excessive_storage_groups(db.GetCachedStatement(
+      SQL_FROM_HERE,
+        "SELECT owner, name, "
+          "(LENGTH(interest_groups.owner)+"
+              "LENGTH(interest_groups.joining_origin)+"
+              "LENGTH(interest_groups.name)+"
+              "LENGTH(interest_groups.priority_vector)+"
+              "LENGTH(interest_groups.priority_signals_overrides)+"
+              "LENGTH(interest_groups.seller_capabilities)+"
+              "LENGTH(interest_groups.joining_url)+"
+              "LENGTH(interest_groups.bidding_url)+"
+              "LENGTH(interest_groups.bidding_wasm_helper_url)+"
+              "LENGTH(interest_groups.update_url)+"
+              "LENGTH(interest_groups.trusted_bidding_signals_url)+"
+              "LENGTH(interest_groups.trusted_bidding_signals_keys)+"
+              "LENGTH(interest_groups.user_bidding_signals)+"
+              "LENGTH(interest_groups.ads)+"
+              "LENGTH(interest_groups.ad_components)+"
+              "LENGTH(interest_groups.ad_sizes)+"
+              "LENGTH(interest_groups.size_groups)+"
+              "36) "  // other fields are fixed at 36 bytes
+            "AS cum_size "
+        "FROM interest_groups "
+        "ORDER BY owner, expiration DESC"
+      ));
+  // clang-format on
+  if (!excessive_storage_groups.is_valid()) {
+    return false;
+  }
+
+  excessive_storage_groups.Reset(true);
+  std::vector<blink::InterestGroupKey> groups_to_remove;
+  absl::optional<url::Origin> previous;
+  size_t cum_size;
+  while (excessive_storage_groups.Step()) {
+    url::Origin group_owner =
+        DeserializeOrigin(excessive_storage_groups.ColumnString(0));
+    std::string group_name = excessive_storage_groups.ColumnString(1);
+    size_t group_size = excessive_storage_groups.ColumnInt64(2);
+
+    if (!previous || *previous != group_owner) {
+      previous = group_owner;
+      cum_size = group_size;
+      continue;
+    }
+    cum_size += group_size;
+    if (cum_size > max_owner_storage_size) {
+      groups_to_remove.emplace_back(std::move(group_owner),
+                                    std::move(group_name));
+    }
+  }
+  if (!excessive_storage_groups.Succeeded()) {
+    DLOG(ERROR) << "ClearExcessiveStorage could not get expired groups.";
+    // Keep going so we can clear any groups that we did get.
+  }
+  for (const auto& interest_group : groups_to_remove) {
+    if (!DoRemoveInterestGroup(db, interest_group)) {
+      return false;
+    }
+  }
+  return transaction.Commit();
+}
+
 bool ClearExpiredKAnon(sql::Database& db, base::Time cutoff) {
   sql::Statement expired_kanon(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -2300,29 +2382,41 @@ bool ClearExpiredKAnon(sql::Database& db, base::Time cutoff) {
 bool DoPerformDatabaseMaintenance(sql::Database& db,
                                   base::Time now,
                                   size_t max_owners,
+                                  size_t max_owner_storage_size,
                                   size_t max_owner_interest_groups) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Storage.InterestGroup.DBMaintenanceTime");
   sql::Transaction transaction(&db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
-  if (!ClearExcessInterestGroups(db, max_owners, max_owner_interest_groups))
+  }
+  if (!ClearExcessInterestGroups(db, max_owners, max_owner_interest_groups)) {
     return false;
-  if (!ClearExpiredInterestGroups(db, now))
+  }
+  if (!ClearExpiredInterestGroups(db, now)) {
     return false;
-  if (!DeleteOldJoins(db, now - InterestGroupStorage::kHistoryLength))
+  }
+  if (!ClearExcessiveStorage(db, max_owner_storage_size)) {
     return false;
-  if (!DeleteOldBids(db, now - InterestGroupStorage::kHistoryLength))
+  }
+  if (!DeleteOldJoins(db, now - InterestGroupStorage::kHistoryLength)) {
     return false;
-  if (!DeleteOldWins(db, now - InterestGroupStorage::kHistoryLength))
+  }
+  if (!DeleteOldBids(db, now - InterestGroupStorage::kHistoryLength)) {
     return false;
-  if (!ClearExpiredKAnon(db, now - InterestGroupStorage::kHistoryLength))
+  }
+  if (!DeleteOldWins(db, now - InterestGroupStorage::kHistoryLength)) {
     return false;
+  }
+  if (!ClearExpiredKAnon(db, now - InterestGroupStorage::kHistoryLength)) {
+    return false;
+  }
   return transaction.Commit();
 }
 
 base::FilePath DBPath(const base::FilePath& base) {
-  if (base.empty())
+  if (base.empty()) {
     return base;
+  }
   return base.Append(kDatabasePath);
 }
 
@@ -2339,6 +2433,8 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
       max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
       max_owner_interest_groups_(
           blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get()),
+      max_owner_storage_size_(
+          blink::features::kInterestGroupStorageMaxStoragePerOwner.Get()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
       db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
@@ -2790,6 +2886,7 @@ void InterestGroupStorage::PerformDBMaintenance() {
   if (EnsureDBInitialized()) {
     DoPerformDatabaseMaintenance(
         *db_, last_maintenance_time_, /*max_owners=*/max_owners_,
+        /*max_owner_storage_size=*/max_owner_storage_size_,
         /*max_owner_interest_groups=*/max_owner_interest_groups_);
   }
 }

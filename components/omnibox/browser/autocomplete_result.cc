@@ -25,6 +25,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/config.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
@@ -331,8 +332,9 @@ void AutocompleteResult::SortAndCull(
     // `stripped_destination_url` to detect result changes. If
     // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
     // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
-    if (DiscourageTopMatchFromBeingSearchEntity(&matches_))
+    if (UndedupTopSearchEntityMatch(&matches_)) {
       matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
+    }
   }
 
   const bool is_zero_suggest = input.IsZeroSuggest();
@@ -363,12 +365,8 @@ void AutocompleteResult::SortAndCull(
                   [&](const auto& match) { return match.relevance == 0; });
   }
 
-  // If `kGroupingFrameworkForZPS` is enabled and the current input & platform
-  // are supported, delegate to the framework.
-  //
-  // - Include both Desktop ZPS and prefixed suggestions.
-  // - Include Android ZPS only (no prefixed suggestions),
-  // - IOS is currently not included.
+  // If `kGroupingFrameworkForZPS` or `kGroupingFrameworkForNonZPS` are enabled
+  // and the current input & platform are supported, delegate to the framework.
   if (use_grouping_for_zps) {
     PSections sections;
     if constexpr (is_android) {
@@ -388,14 +386,27 @@ void AutocompleteResult::SortAndCull(
             std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_desktop) {
-      sections.push_back(
-          std::make_unique<DesktopZpsSection>(suggestion_groups_map_));
-
-      if (page_classification == OmniboxEventProto::NTP_REALBOX &&
-          base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
-        // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
-        sections.push_back(std::make_unique<DesktopSecondaryZpsSection>(
-            suggestion_groups_map_));
+      if (omnibox::IsNTPPage(page_classification)) {
+        sections.push_back(
+            std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
+        // Allow secondary zero-prefix suggestions in the NTP realbox or the
+        // WebUI omnibox, if any.
+        if ((page_classification == OmniboxEventProto::NTP_REALBOX ||
+             base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
+            base::FeatureList::IsEnabled(
+                omnibox::kRealboxSecondaryZeroSuggest)) {
+          size_t max_previous_search_related =
+              OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
+                  .Get();
+          sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
+              max_previous_search_related, suggestion_groups_map_));
+        }
+      } else if (omnibox::IsSearchResultsPage(page_classification)) {
+        sections.push_back(
+            std::make_unique<DesktopSRPZpsSection>(suggestion_groups_map_));
+      } else {
+        sections.push_back(
+            std::make_unique<DesktopWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_ios) {
       if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -470,25 +481,6 @@ void AutocompleteResult::SortAndCull(
                                       matches_.end());
       }
       GroupAndDemoteMatchesInGroups();
-
-    } else if (base::FeatureList::IsEnabled(
-                   omnibox::kKeepSecondaryZeroSuggest)) {
-      // Zero-prefix suggestions are grouped then trimmed.
-      GroupAndDemoteMatchesInGroups();
-      size_t num_primary_suggestions = 0;
-      base::EraseIf(matches_, [&](const auto& match) {
-        if (!match.suggestion_group_id.has_value() ||
-            GetSideTypeForSuggestionGroup(match.suggestion_group_id.value()) ==
-                omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {
-          // Trim the primary suggestions to the given limit.
-          return ++num_primary_suggestions > num_matches;
-        } else {
-          // Keep the secondary suggestions for the NTP realbox.
-          // TODO(ender): Add appropriate page classification for Android.
-          return page_classification != OmniboxEventProto::NTP_REALBOX;
-        }
-      });
-
     } else {
       // Zero-prefix suggestions are grouped then trimmed.
       GroupAndDemoteMatchesInGroups();
@@ -525,6 +517,34 @@ void AutocompleteResult::SortAndCull(
         << debug_info;
   }
 #endif
+
+  if constexpr (is_android) {
+    TrimOmniboxActions();
+  }
+}
+
+void AutocompleteResult::TrimOmniboxActions() {
+  // Platform rules:
+  // Android:
+  // - First two positions allow all types of OmniboxActionId
+  // - Third slot permits only PEDALs and HISTORY_CLUSTERS.
+  // - Slots 4 and beyond permit only HISTORY_CLUSTERS.
+  // - In every case, ACTION_IN_SUGGEST is preferred over HISTORY_CLUSTERS
+  // - In every case, HISTORY_CLUSTERS is preferred over PEDALs.
+  std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
+                                           OmniboxActionId::HISTORY_CLUSTERS,
+                                           OmniboxActionId::PEDAL};
+  std::vector<OmniboxActionId> include_at_most_pedals{
+      OmniboxActionId::HISTORY_CLUSTERS, OmniboxActionId::PEDAL};
+  std::vector<OmniboxActionId> include_at_most_history_clusters{
+      OmniboxActionId::HISTORY_CLUSTERS};
+
+  for (size_t index = 0u; index < matches_.size(); ++index) {
+    matches_[index].FilterOmniboxActions(
+        index < 2   ? include_all
+        : index < 3 ? include_at_most_pedals
+                    : include_at_most_history_clusters);
+  }
 }
 
 void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
@@ -794,8 +814,7 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
 }
 
 // static
-bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
-    ACMatches* matches) {
+bool AutocompleteResult::UndedupTopSearchEntityMatch(ACMatches* matches) {
   if (matches->empty())
     return false;
 
@@ -849,10 +868,10 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
   }
 
   if (non_entity_it != top_match->duplicate_matches.end()) {
-    // Copy the non-entity match, then erase it from the list of duplicates.
+    // Move out the non-entity match, then erase it from the list of duplicates.
     // We do this first, because the insertion operation invalidates all
     // iterators, including |top_match|.
-    AutocompleteMatch non_entity_match_copy = *non_entity_it;
+    AutocompleteMatch non_entity_match_copy{std::move(*non_entity_it)};
     top_match->duplicate_matches.erase(non_entity_it);
 
     // When we spawn our non-entity match copy, we still want to preserve any
@@ -862,9 +881,22 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
       non_entity_match_copy.entity_id = top_match->entity_id;
     }
 
-    // Promote the non-entity match to the top, then immediately return, since
-    // all our iterators are invalid after the insertion.
-    matches->insert(matches->begin(), std::move(non_entity_match_copy));
+    // Unless the entity match has Actions in Suggest, promote the non-entity
+    // match to the top. Otherwise keep the entity match at the top followed by
+    // the non-entity match.
+    bool top_match_has_actions =
+        !!top_match->GetActionWhere([](const auto& action) {
+          return action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST;
+        });
+
+    if (top_match_has_actions &&
+        OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.Get()) {
+      matches->insert(std::next(matches->begin()),
+                      std::move(non_entity_match_copy));
+    } else {
+      matches->insert(matches->begin(), std::move(non_entity_match_copy));
+    }
+    // Immediately return as all our iterators are invalid after the insertion.
     return true;
   }
 

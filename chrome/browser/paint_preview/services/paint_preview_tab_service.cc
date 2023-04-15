@@ -308,7 +308,6 @@ void PaintPreviewTabService::CaptureTabInternal(
                        base::BindOnce(&PaintPreviewTabService::OnAXTreeWritten,
                                       weak_ptr_factory_.GetWeakPtr(), task)),
         ui::kAXModeWebContentsOnly,
-        /* exclude_offscreen= */ false,
         /* max_nodes= */ 5000,
         /* timeout= */ {});
   }

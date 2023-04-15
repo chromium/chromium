@@ -28,7 +28,7 @@ ScriptPromise CropTarget::fromElement(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!element || !element->IsSupportedByRegionCapture()) {
+  if (!element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Invalid state.");
     return ScriptPromise();

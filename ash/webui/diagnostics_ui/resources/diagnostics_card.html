@@ -1,4 +1,12 @@
 <style include="diagnostics-shared">
+  :host {
+    --diagnostics-card-icon-bg-color: var(--cros-highlight-color)
+  }
+
+  :host-context(body.jelly-enabled) ::slotted([slot=icon]) {
+    --diagnostics-card-icon-bg-color: var(--cros-sys-highlight_shape);
+  }
+
   ::slotted([slot=chip]) {
     background-color: var(--diagnostics-chip-bg-color);
     border-radius: 16px;
@@ -8,7 +16,7 @@
     --iron-icon-fill-color: var(--cros-color-prominent);
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
-    background-color: var(--cros-highlight-color);
+    background-color: var(--diagnostics-card-icon-bg-color);
     border-radius: 50%;
     margin: 0 20px;
     padding: 8px;

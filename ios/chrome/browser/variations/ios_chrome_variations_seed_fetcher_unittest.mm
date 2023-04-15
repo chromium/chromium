@@ -13,6 +13,7 @@
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_url_constants.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/variations/constants.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher+testing.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "net/http/http_status_code.h"
@@ -38,7 +39,7 @@ const char kSeedFetchResultHistogram[] =
 const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 
 // Fake server url.
-const NSString* testServer = @"https://test.finch.server";
+const NSString* test_server = @"https://test.finch.server";
 
 // Type definition of a block that retrieves the value of an HTTP header from a
 // custom NSDictionary instead of actual NSURLHTTPRequest header.
@@ -48,47 +49,16 @@ typedef void (^MockValueForHTTPHeaderField)(NSInvocation*);
 // valueForHTTPHeaderField:].
 MockValueForHTTPHeaderField GetMockMethodWithHeader(
     NSDictionary<NSString*, NSString*>* headers) {
-  void (^outputBlock)(NSInvocation*) = ^(NSInvocation* invocation) {
+  void (^output_block)(NSInvocation*) = ^(NSInvocation* invocation) {
     __weak NSString* arg;
     [invocation getArgument:&arg atIndex:2];
     __weak NSString* value = headers[arg];
     [invocation setReturnValue:&value];
   };
-  return outputBlock;
+  return output_block;
 }
 
 }  // namespace
-
-// A test implementation of IOSChromeVariationsSeedFetcher to be used by
-// test cases. This avoids writing to global variable for the downloaded seed.
-// TODO(crbug.com/1379016): Refactor code so that `fetchingEnabled` could be
-// overridden in a test init method of `IOSChromeVariationsSeedFetcher`.
-@interface TestVariationsSeedFetcher : IOSChromeVariationsSeedFetcher
-
-// Exposure of parent class property.
-@property(nonatomic, assign) BOOL fetchingEnabled;
-
-// Initializer with designated arguments that substitutes for command line args.
-- (instancetype)initWithCommandLineArgsForTesting:
-    (NSArray<NSString*>*)arguments;
-
-@end
-
-@implementation TestVariationsSeedFetcher
-
-- (instancetype)initWithCommandLineArgsForTesting:
-    (NSArray<NSString*>*)arguments {
-  self = [super init];
-  if (self) {
-    self.fetchingEnabled = NO;
-    // This overrides `self.fetchingEnabled` if variations server URL is set in
-    // the argument.
-    [self applySwitchesFromArguments:arguments];
-  }
-  return self;
-}
-
-@end
 
 #pragma mark - Tests
 
@@ -102,57 +72,6 @@ class IOSChromeVariationsSeedFetcherTest : public PlatformTest {
   }
 };
 
-// Tests that the variations url is correct under different inputs in the
-// command line.
-TEST_F(IOSChromeVariationsSeedFetcherTest, TestVariationsUrl) {
-  NSString* testChannel = @"fake_channel";
-  NSString* testServerArgument =
-      [NSString stringWithFormat:@"--%@=%@",
-                                 base::SysUTF8ToNSString(kVariationsServerURL),
-                                 testServer];
-  NSString* testChannelArgument = [NSString
-      stringWithFormat:@"--%@=%@",
-                       base::SysUTF8ToNSString(kFakeVariationsChannel),
-                       testChannel];
-  // No arguments; use default value.
-  TestVariationsSeedFetcher* fetcherWithDefaultArgs =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
-  NSString* expectedUrlPrefix =
-      [NSString stringWithFormat:@"%@?osname=ios&milestone=",
-                                 base::SysUTF8ToNSString(kDefaultServerUrl)];
-  EXPECT_TRUE([fetcherWithDefaultArgs.variationsUrl.absoluteString
-      hasPrefix:expectedUrlPrefix]);
-  // Valid server url and channel arguments.
-  NSString* expectedUrl = [NSString
-      stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@", testServer,
-                       base::SysUTF8ToNSString(
-                           version_info::GetMajorVersionNumber()),
-                       testChannel];
-  TestVariationsSeedFetcher* fetcherWithValidArgs =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[
-        testServerArgument, testChannelArgument
-      ]];
-  EXPECT_NSEQ(fetcherWithValidArgs.variationsUrl.absoluteString, expectedUrl);
-  // Valid server url argument; no channel argument.
-  expectedUrlPrefix = [NSString stringWithFormat:@"%@?osname=ios", testServer];
-  fetcherWithValidArgs = [[TestVariationsSeedFetcher alloc]
-      initWithCommandLineArgsForTesting:@[ testServerArgument ]];
-  EXPECT_TRUE([fetcherWithValidArgs.variationsUrl.absoluteString
-      hasPrefix:expectedUrlPrefix]);
-  EXPECT_FALSE([fetcherWithValidArgs.variationsUrl.absoluteString
-      containsString:testChannel]);
-  // Valid channel argument; no server url argument.
-  expectedUrl =
-      [NSString stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@",
-                                 base::SysUTF8ToNSString(kDefaultServerUrl),
-                                 base::SysUTF8ToNSString(
-                                     version_info::GetMajorVersionNumber()),
-                                 testChannel];
-  fetcherWithValidArgs = [[TestVariationsSeedFetcher alloc]
-      initWithCommandLineArgsForTesting:@[ testChannelArgument ]];
-  EXPECT_NSEQ(fetcherWithValidArgs.variationsUrl.absoluteString, expectedUrl);
-}
-
 // Tests that the request to the finch server would not be made when seed
 // fetching is not enabled.
 TEST_F(IOSChromeVariationsSeedFetcherTest,
@@ -160,18 +79,18 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   // Attach mock delegate.
   id delegate =
       OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
-  OCMExpect([delegate didFetchSeedSuccess:NO]);
+  OCMExpect([delegate variationsSeedFetcherDidCompleteFetchWithSuccess:NO]);
   // Start fetching seed from fetcher. Seed fetching is disabled by default in
   // tests.
-  base::HistogramTester histogramTester;
-  TestVariationsSeedFetcher* fetcher =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
+  base::HistogramTester histogram_tester;
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
   fetcher.delegate = delegate;
   [fetcher startSeedFetch];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
   EXPECT_OCMOCK_VERIFY(delegate);
-  histogramTester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
-  histogramTester.ExpectTotalCount(kSeedFetchResultHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSeedFetchResultHistogram, 0);
 }
 
 // Tests that the request to the finch server would be made when seed fetching
@@ -179,151 +98,287 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
 TEST_F(IOSChromeVariationsSeedFetcherTest,
        testThatRequestIsMadeWhenFetchSeedEnabled) {
   // Instantiate mocks.
-  BOOL (^requestMatcher)(NSMutableURLRequest* request) =
+  BOOL (^request_matcher)(NSMutableURLRequest* request) =
       ^BOOL(NSMutableURLRequest* request) {
         // The NSString method `hasPrefix` does not take parameter of type
         // 'const NSString *__strong`.
-        NSString* prefix = [NSString stringWithFormat:@"%@", testServer];
+        NSString* prefix = [NSString stringWithFormat:@"%@", test_server];
         return [request.URL.absoluteString hasPrefix:prefix] &&
                [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"];
       };
-  id mockURLSession = OCMClassMock([NSURLSession class]);
-  OCMStub([mockURLSession sharedSession]).andReturn(mockURLSession);
-  OCMExpect([mockURLSession
-      dataTaskWithRequest:[OCMArg checkWithBlock:requestMatcher]
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+  OCMExpect([mock_url_session
+      dataTaskWithRequest:[OCMArg checkWithBlock:request_matcher]
         completionHandler:[OCMArg any]]);
   // Start fetching seed from fetcher. Pass a fake value for
   // `kVariationsServerURL` to enable testing.
   NSString* argument =
       [NSString stringWithFormat:@"--%@=%@",
                                  base::SysUTF8ToNSString(kVariationsServerURL),
-                                 testServer];
-  TestVariationsSeedFetcher* fetcher = [[TestVariationsSeedFetcher alloc]
-      initWithCommandLineArgsForTesting:@[ argument ]];
+                                 test_server];
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[ argument ]];
   [fetcher startSeedFetch];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
-  EXPECT_OCMOCK_VERIFY(mockURLSession);
+  EXPECT_OCMOCK_VERIFY(mock_url_session);
 }
 
-// Tests that the seed would not be created when there is a request with the
-// HTTP response, and that the delegate would be notified so.
-TEST_F(IOSChromeVariationsSeedFetcherTest, testHTTPResponseError) {
-  // Instantiate mocks and expectation.
-  id timeoutError = OCMClassMock([NSError class]);
-  OCMStub([timeoutError code]).andReturn(NSURLErrorTimedOut);
-  id responseOk = OCMClassMock([NSHTTPURLResponse class]);
-  OCMStub([responseOk statusCode]).andReturn(net::HTTP_OK);
-  id responseError = OCMClassMock([NSHTTPURLResponse class]);
-  OCMStub([responseError statusCode]).andReturn(net::HTTP_NOT_FOUND);
+// Tests that the default variations url is correct.
+TEST_F(IOSChromeVariationsSeedFetcherTest, TestDefaultVariationsURL) {
+  // Instantiate mocks and expectations.
+  BOOL (^request_matcher)(NSMutableURLRequest* request) =
+      ^BOOL(NSMutableURLRequest* request) {
+        NSString* expected_url_prefix = [NSString
+            stringWithFormat:@"%@?osname=ios&milestone=",
+                             base::SysUTF8ToNSString(kDefaultServerUrl)];
+        return [request.URL.absoluteString hasPrefix:expected_url_prefix];
+      };
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+  OCMExpect([mock_url_session
+      dataTaskWithRequest:[OCMArg checkWithBlock:request_matcher]
+        completionHandler:[OCMArg any]]);
+  // Fetch and check.
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  [fetcher doActualFetch];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  EXPECT_OCMOCK_VERIFY(mock_url_session);
+}
+
+// Tests that the variations url is correct with a fake channel.
+TEST_F(IOSChromeVariationsSeedFetcherTest, TestVariationsURLWithFakeChannel) {
+  NSString* test_channel = @"fake_channel";
+  // Instantiate mocks.
+  BOOL (^request_matcher)(NSMutableURLRequest* request) =
+      ^BOOL(NSMutableURLRequest* request) {
+        NSString* expected_url = [NSString
+            stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@",
+                             base::SysUTF8ToNSString(kDefaultServerUrl),
+                             base::SysUTF8ToNSString(
+                                 version_info::GetMajorVersionNumber()),
+                             test_channel];
+        return [request.URL.absoluteString isEqualToString:expected_url];
+      };
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+  OCMExpect([mock_url_session
+      dataTaskWithRequest:[OCMArg checkWithBlock:request_matcher]
+        completionHandler:[OCMArg any]]);
+
+  // Pass a fake value for `kFakeVariationsChannel` to make sure it's
+  // represented in the URL.
+  NSString* test_channel_argument = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsChannel),
+                       test_channel];
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ test_channel_argument ]];
+  [fetcher doActualFetch];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  EXPECT_OCMOCK_VERIFY(mock_url_session);
+}
+
+// Tests that the variations url is correct with a fake channel and fake
+// server.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLWithFakeChannelAndFakeServer) {
+  NSString* test_channel = @"fake_channel";
+  // Instantiate mocks.
+  BOOL (^request_matcher)(NSMutableURLRequest* request) = ^BOOL(
+      NSMutableURLRequest* request) {
+    NSString* expected_url = [NSString
+        stringWithFormat:@"%@?osname=ios&milestone=%@&channel=%@", test_server,
+                         base::SysUTF8ToNSString(
+                             version_info::GetMajorVersionNumber()),
+                         test_channel];
+    return [request.URL.absoluteString isEqualToString:expected_url];
+  };
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+  OCMExpect([mock_url_session
+      dataTaskWithRequest:[OCMArg checkWithBlock:request_matcher]
+        completionHandler:[OCMArg any]]);
+
+  // Pass a fake value for `kFakeVariationsChannel` to make sure it's
+  // represented in the URL.
+  NSString* test_channel_argument = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsChannel),
+                       test_channel];
+  // Pass a fake value for `kVariationsServerURL` to enable testing.
+  NSString* test_server_argument =
+      [NSString stringWithFormat:@"--%@=%@",
+                                 base::SysUTF8ToNSString(kVariationsServerURL),
+                                 test_server];
+
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ test_channel_argument, test_server_argument ]];
+  [fetcher doActualFetch];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  EXPECT_OCMOCK_VERIFY(mock_url_session);
+}
+
+// Tests that the see won't be created when an HTTP timeout error occurs, and
+// that the delegate would be notified so.
+TEST_F(IOSChromeVariationsSeedFetcherTest, testHTTPTimeoutError) {
+  base::HistogramTester histogram_tester;
+  // Instantiate the mocks
+  id timeout_error = OCMClassMock([NSError class]);
+  OCMStub([timeout_error code]).andReturn(NSURLErrorTimedOut);
+  id response_ok = OCMClassMock([NSHTTPURLResponse class]);
+  OCMStub([response_ok statusCode]).andReturn(net::HTTP_OK);
   id delegate =
       OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
-  OCMExpect([delegate didFetchSeedSuccess:NO]);
-  OCMExpect([delegate didFetchSeedSuccess:NO]);
-  // Test if onSeedRequestCompletedWithData:response:error correctly handles
-  // NSError and unexpected response code.
-  TestVariationsSeedFetcher* fetcher =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
+  OCMExpect([delegate variationsSeedFetcherDidCompleteFetchWithSuccess:NO]);
+  // Invalidate the NSURLSession so the original request completion handler
+  // would not be executed.
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+  // Start the test.
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
   fetcher.delegate = delegate;
-  fetcher.startTimeOfOngoingSeedRequest = base::Time::Now();
-  // Test timeout error.
-  base::HistogramTester histogramTesterTimeoutError;
-  [fetcher onSeedRequestCompletedWithData:nil
-                                 response:responseOk
-                                    error:timeoutError];
+  [fetcher doActualFetch];
+  [fetcher seedRequestDidCompleteWithData:nil
+                                 response:response_ok
+                                    error:timeout_error];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
   EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
-  EXPECT_TRUE(fetcher.startTimeOfOngoingSeedRequest.is_null());
-  histogramTesterTimeoutError.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
-  histogramTesterTimeoutError.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
+  histogram_tester.ExpectUniqueSample(
       kSeedFetchResultHistogram, IOSSeedFetchException::kHTTPSRequestTimeout,
       1);
-  // Test response code error.
-  base::HistogramTester histogramTesterNotFound;
-  fetcher.startTimeOfOngoingSeedRequest = base::Time::Now();
-  [fetcher onSeedRequestCompletedWithData:nil response:responseError error:nil];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
-  EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
-  EXPECT_TRUE(fetcher.startTimeOfOngoingSeedRequest.is_null());
-  EXPECT_OCMOCK_VERIFY(delegate);
-  histogramTesterNotFound.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
-  histogramTesterNotFound.ExpectUniqueSample(kSeedFetchResultHistogram,
-                                             net::HTTP_NOT_FOUND, 1);
 }
 
-// Tests that the seed creation would be attempted when there is a request with
-// the HTTP response, and that the delegate would be notified if it fails.
+// Tests that the see won't be created when the response code is unexpected, and
+// that the delegate would be notified so.
+TEST_F(IOSChromeVariationsSeedFetcherTest, testHTTPResponseCodeError) {
+  base::HistogramTester histogram_tester;
+  // Instantiate mocks.
+  id response_error = OCMClassMock([NSHTTPURLResponse class]);
+  OCMStub([response_error statusCode]).andReturn(net::HTTP_NOT_FOUND);
+  id delegate =
+      OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
+  OCMExpect([delegate variationsSeedFetcherDidCompleteFetchWithSuccess:NO]);
+  // Invalidate the NSURLSession so the original request completion handler
+  // would not be executed.
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
+  // Start the test.
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  fetcher.delegate = delegate;
+  [fetcher doActualFetch];
+  [fetcher seedRequestDidCompleteWithData:nil
+                                 response:response_error
+                                    error:nil];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
+  EXPECT_OCMOCK_VERIFY(delegate);
+  histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
+  histogram_tester.ExpectUniqueSample(kSeedFetchResultHistogram,
+                                      net::HTTP_NOT_FOUND, 1);
+}
+
+// Tests that the seed creation would be attempted when there is a request
+// with the HTTP response, and that the delegate would be notified if it
+// fails.
 TEST_F(IOSChromeVariationsSeedFetcherTest,
        testValidHTTPResponseWithFailingSeedCreation) {
+  base::HistogramTester histogram_tester;
   // Setup.
   id delegate =
       OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
-  TestVariationsSeedFetcher* rawfetcher =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
-  rawfetcher.delegate = delegate;
-  rawfetcher.startTimeOfOngoingSeedRequest = base::Time::NowFromSystemTime();
+  OCMExpect([delegate variationsSeedFetcherDidCompleteFetchWithSuccess:NO]);
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  fetcher.delegate = delegate;
   id response = OCMClassMock([NSHTTPURLResponse class]);
   OCMStub([response statusCode]).andReturn(net::HTTP_OK);
+  // Invalidate the NSURLSession so the original request completion handler
+  // would not be executed.
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
   // Execute test.
-  id fetcherWithSeed = OCMPartialMock(rawfetcher);
-  OCMStub([fetcherWithSeed seedResponseForHTTPResponse:response data:nil])
-      .andDo(nil);
-  OCMExpect([delegate didFetchSeedSuccess:NO]);
-  base::HistogramTester histogramTester;
-  [fetcherWithSeed onSeedRequestCompletedWithData:nil
-                                         response:response
-                                            error:nil];
+  [fetcher doActualFetch];
+  [fetcher seedRequestDidCompleteWithData:nil response:response error:nil];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
-  EXPECT_TRUE([fetcherWithSeed startTimeOfOngoingSeedRequest].is_null());
   EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
   EXPECT_OCMOCK_VERIFY(delegate);
-  histogramTester.ExpectTotalCount(kSeedFetchTimeHistogram, 1);
-  histogramTester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 1);
+  histogram_tester.ExpectUniqueSample(
       kSeedFetchResultHistogram, IOSSeedFetchException::kInvalidIMHeader, 1);
 }
 
 // Tests that the seed would not be created when the instance manipulation
-// header format is wrong.
-TEST_F(IOSChromeVariationsSeedFetcherTest, testInvalidInstanceManipulation) {
-  NSString* signature = [NSDate now].description;
-  NSString* country = @"US";
-  NSDictionary<NSString*, NSString*>* headersWithoutIM = @{
-    @"X-Seed-Signature" : signature,
-    @"X-Country" : country,
+// header does not exist.
+TEST_F(IOSChromeVariationsSeedFetcherTest, testNoIMHeader) {
+  // Set up.
+  NSDictionary<NSString*, NSString*>* header = @{
+    @"X-Seed-Signature" : [NSDate now].description,
+    @"X-Country" : @"US",
   };
-  TestVariationsSeedFetcher* fetcher =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
-  // No IM.
-  id responseNoIM = OCMClassMock([NSHTTPURLResponse class]);
-  OCMStub([responseNoIM valueForHTTPHeaderField:[OCMArg any]])
-      .andDo(GetMockMethodWithHeader(headersWithoutIM));
+  id response = OCMClassMock([NSHTTPURLResponse class]);
+  OCMStub([response valueForHTTPHeaderField:[OCMArg any]])
+      .andDo(GetMockMethodWithHeader(header));
+  // Execute test.
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
   std::unique_ptr<variations::SeedResponse> seed =
-      [fetcher seedResponseForHTTPResponse:responseNoIM data:nil];
-  EXPECT_EQ(seed, nullptr);
-  // Incorrect IM.
-  NSMutableDictionary<NSString*, NSString*>* headerWithBadIM =
-      [NSMutableDictionary dictionaryWithDictionary:headersWithoutIM];
-  headerWithBadIM[@"IM"] = @"not_gzip";
-  id responseBadIM = OCMClassMock([NSHTTPURLResponse class]);
-  OCMStub([responseBadIM valueForHTTPHeaderField:[OCMArg any]])
-      .andDo(GetMockMethodWithHeader(headerWithBadIM));
-  seed = [fetcher seedResponseForHTTPResponse:responseBadIM data:nil];
-  EXPECT_EQ(seed, nullptr);
-  // More IM than expected.
-  NSMutableDictionary<NSString*, NSString*>* headerWithTwoIMs =
-      [NSMutableDictionary dictionaryWithDictionary:headersWithoutIM];
-  headerWithTwoIMs[@"IM"] = @"gzip,somethingelse";
-  id responseTwoIMs = OCMClassMock([NSHTTPURLResponse class]);
-  OCMStub([responseTwoIMs valueForHTTPHeaderField:[OCMArg any]])
-      .andDo(GetMockMethodWithHeader(headerWithTwoIMs));
-  seed = [fetcher seedResponseForHTTPResponse:responseTwoIMs data:nil];
+      [fetcher seedResponseForHTTPResponse:response data:nil];
   EXPECT_EQ(seed, nullptr);
 }
 
-// Tests that the seed would be created with property values extracted from the
-// HTTP response with expected header format, and that the delegate would be
-// notified of the successful seed creation.
+// Tests that the seed would not be created when the instance manipulation
+// header is not "gzip".
+TEST_F(IOSChromeVariationsSeedFetcherTest, testBadIMHeader) {
+  // Set up.
+  NSDictionary<NSString*, NSString*>* header = @{
+    @"X-Seed-Signature" : [NSDate now].description,
+    @"X-Country" : @"US",
+    @"IM" : @"not_gzip"
+  };
+  id response = OCMClassMock([NSHTTPURLResponse class]);
+  OCMStub([response valueForHTTPHeaderField:[OCMArg any]])
+      .andDo(GetMockMethodWithHeader(header));
+  // Execute test.
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  std::unique_ptr<variations::SeedResponse> seed =
+      [fetcher seedResponseForHTTPResponse:response data:nil];
+  EXPECT_EQ(seed, nullptr);
+}
+
+// Tests that the seed would not be created when the instance manipulation
+// header has more than one value.
+TEST_F(IOSChromeVariationsSeedFetcherTest, tesMoreThanOneIMHeaders) {
+  // Set up.
+  NSDictionary<NSString*, NSString*>* header = @{
+    @"X-Seed-Signature" : [NSDate now].description,
+    @"X-Country" : @"US",
+    @"IM" : @"gzip,somethingelse"
+  };
+  id response = OCMClassMock([NSHTTPURLResponse class]);
+  OCMStub([response valueForHTTPHeaderField:[OCMArg any]])
+      .andDo(GetMockMethodWithHeader(header));
+  // Execute test.
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  std::unique_ptr<variations::SeedResponse> seed =
+      [fetcher seedResponseForHTTPResponse:response data:nil];
+  EXPECT_EQ(seed, nullptr);
+}
+
+// Tests that the seed would be created with property values extracted from
+// the HTTP response with expected header format, and that the delegate would
+// be notified of the successful seed creation.
 TEST_F(IOSChromeVariationsSeedFetcherTest,
        testValidHTTPResponseWithSuccessfulSeedCreation) {
+  base::HistogramTester histogram_tester;
   NSString* signature = [NSDate now].description;
   NSString* country = @"US";
   NSDictionary<NSString*, NSString*>* headers = @{
@@ -338,26 +393,27 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   // Setup.
   id delegate =
       OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
-  TestVariationsSeedFetcher* fetcherWithSeed =
-      [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
-  fetcherWithSeed.delegate = delegate;
-  fetcherWithSeed.startTimeOfOngoingSeedRequest =
-      base::Time::NowFromSystemTime();
+  OCMExpect([delegate variationsSeedFetcherDidCompleteFetchWithSuccess:YES]);
+  IOSChromeVariationsSeedFetcher* fetcher_with_seed =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  fetcher_with_seed.delegate = delegate;
+  // Invalidate the NSURLSession so the original request completion handler
+  // would not be executed.
+  id mock_url_session = OCMClassMock([NSURLSession class]);
+  OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);
   // Execute test.
-  base::HistogramTester histogramTester;
-  OCMExpect([delegate didFetchSeedSuccess:YES]);
-  [fetcherWithSeed onSeedRequestCompletedWithData:nil
-                                         response:response
-                                            error:nil];
+  [fetcher_with_seed doActualFetch];
+  [fetcher_with_seed seedRequestDidCompleteWithData:nil
+                                           response:response
+                                              error:nil];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
-  EXPECT_TRUE([fetcherWithSeed startTimeOfOngoingSeedRequest].is_null());
   auto seed = [IOSChromeVariationsSeedStore popSeed];
   ASSERT_NE(seed, nullptr);
   EXPECT_EQ(seed->signature, base::SysNSStringToUTF8(signature));
   EXPECT_EQ(seed->country, base::SysNSStringToUTF8(country));
   EXPECT_EQ(seed->data, "");
   EXPECT_OCMOCK_VERIFY(delegate);
-  histogramTester.ExpectTotalCount(kSeedFetchTimeHistogram, 1);
-  histogramTester.ExpectUniqueSample(kSeedFetchResultHistogram, net::HTTP_OK,
-                                     1);
+  histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 1);
+  histogram_tester.ExpectUniqueSample(kSeedFetchResultHistogram, net::HTTP_OK,
+                                      1);
 }

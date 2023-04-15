@@ -242,27 +242,27 @@ export class SettingsTextToSpeechPageElement extends
     return this.i18n('selectToSpeakDescriptionWithoutKeyboard');
   }
 
-  private onManageTtsSettingsTap_(): void {
+  private onManageTtsSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
   }
 
-  private onChromeVoxSettingsTap_(): void {
+  private onChromeVoxSettingsClick_(): void {
     this.textToSpeechBrowserProxy_.showChromeVoxSettings();
   }
 
-  private onChromeVoxNewSettingsTap_(): void {
+  private onChromeVoxNewSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_CHROMEVOX);
   }
 
-  private onChromeVoxTutorialTap_(): void {
+  private onChromeVoxTutorialClick_(): void {
     this.textToSpeechBrowserProxy_.showChromeVoxTutorial();
   }
 
-  private onSelectToSpeakSettingsTap_(): void {
+  private onSelectToSpeakSettingsClick_(): void {
     this.textToSpeechBrowserProxy_.showSelectToSpeakSettings();
   }
 
-  private onSelectToSpeakTap_(): void {
+  private onSelectToSpeakClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
   }
 }

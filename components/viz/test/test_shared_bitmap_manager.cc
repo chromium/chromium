@@ -24,7 +24,7 @@ TestSharedBitmapManager::~TestSharedBitmapManager() {
 
 std::unique_ptr<SharedBitmap> TestSharedBitmapManager::GetSharedBitmapFromId(
     const gfx::Size&,
-    ResourceFormat,
+    SharedImageFormat,
     const SharedBitmapId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

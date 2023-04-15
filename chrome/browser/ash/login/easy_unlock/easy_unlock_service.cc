@@ -161,10 +161,6 @@ bool EasyUnlockService::IsEnabled() const {
   return false;
 }
 
-bool EasyUnlockService::IsChromeOSLoginEnabled() const {
-  return false;
-}
-
 SmartLockState EasyUnlockService::GetInitialSmartLockState() const {
   if (IsAllowed() && IsEnabled() && proximity_auth_system_ != nullptr)
     return SmartLockState::kConnectingToPhone;

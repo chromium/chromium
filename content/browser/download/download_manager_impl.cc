@@ -1190,11 +1190,6 @@ void DownloadManagerImpl::OnDownloadManagerInitialized() {
   in_progress_manager_->OnAllInprogressDownloadsLoaded();
   for (auto& observer : observers_)
     observer.OnManagerInitialized();
-  size_t size = 0;
-  for (const auto& it : downloads_by_guid_)
-    size += it.second->GetApproximateMemoryUsage();
-  if (!IsOffTheRecord() && size > 0)
-    download::RecordDownloadManagerMemoryUsage(size);
 }
 
 bool DownloadManagerImpl::IsManagerInitialized() {
@@ -1269,16 +1264,6 @@ void DownloadManagerImpl::GetUninitializedActiveDownloadsIfAny(
 }
 
 void DownloadManagerImpl::OpenDownload(download::DownloadItemImpl* download) {
-  int num_unopened = 0;
-  for (const auto& it : downloads_by_guid_) {
-    download::DownloadItemImpl* item = it.second;
-    if (item != nullptr &&
-        (item->GetState() == download::DownloadItem::COMPLETE) &&
-        !item->GetOpened())
-      ++num_unopened;
-  }
-  download::RecordOpensOutstanding(num_unopened);
-
   if (delegate_)
     delegate_->OpenDownload(download);
 }

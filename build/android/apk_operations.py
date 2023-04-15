@@ -982,7 +982,7 @@ def _RunCompileDex(devices, package_name, compilation_filter):
 
 
 def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
-                process_specifier, thread_specifier, extra_args):
+                process_specifier, thread_specifier, events, extra_args):
   simpleperf.PrepareDevice(device)
   device_simpleperf_path = simpleperf.InstallSimpleperf(device, package_name)
   with tempfile.NamedTemporaryFile() as fh:
@@ -990,7 +990,7 @@ def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
 
     with simpleperf.RunSimpleperf(device, device_simpleperf_path, package_name,
                                   process_specifier, thread_specifier,
-                                  extra_args, host_simpleperf_out_path):
+                                  events, extra_args, host_simpleperf_out_path):
       sys.stdout.write('Profiler is running; press Enter to stop...\n')
       sys.stdin.read(1)
       sys.stdout.write('Post-processing data...\n')
@@ -1832,13 +1832,18 @@ class _ProfileCommand(_Command):
               'use --profile-thread=main).'))
     group.add_argument('--profile-output', default='profile.pb',
                        help='Output file for profiling data')
+    group.add_argument('--profile-events', default='cpu-cycles',
+                      help=('A comma separated list of perf events to capture '
+                      '(e.g. \'cpu-cycles,branch-misses\'). Run '
+                      '`simpleperf list` on your device to see available '
+                      'events.'))
 
   def Run(self):
     extra_args = shlex.split(self.args.args or '')
     _RunProfile(self.devices[0], self.args.package_name,
                 self.args.output_directory, self.args.profile_output,
                 self.args.profile_process, self.args.profile_thread,
-                extra_args)
+                self.args.profile_events, extra_args)
 
 
 class _RunCommand(_InstallCommand, _LaunchCommand, _LogcatCommand):

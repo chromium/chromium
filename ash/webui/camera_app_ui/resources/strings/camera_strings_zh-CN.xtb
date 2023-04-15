@@ -27,7 +27,6 @@
 <translation id="199526504800285197">录制已停止</translation>
 <translation id="1995951722691075581">录制已停止，因为设备存储空间不足。若要录制更多视频，您需先释放设备上的空间。</translation>
 <translation id="2036868001356139588">定时器时长</translation>
-<translation id="2050339315714019657">纵向</translation>
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
 <translation id="2128052519899549250">录制延时摄影视频</translation>
 <translation id="2134029355740465625">视频设置</translation>
@@ -123,6 +122,7 @@
 <translation id="6888362557094394345">正在向下移动</translation>
 <translation id="695140971690006676">全部重置</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6965830616442491568">人像</translation>
 <translation id="698156982839284926">3 秒</translation>
 <translation id="7134221860976209830">10 秒定时器</translation>
 <translation id="7191890674911603392">录制类型</translation>

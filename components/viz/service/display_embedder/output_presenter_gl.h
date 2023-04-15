@@ -68,7 +68,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
   scoped_refptr<gl::Presenter> presenter_;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
 
-  ResourceFormat image_format_ = RGBA_8888;
+  SharedImageFormat image_format_ = SinglePlaneFormat::kRGBA_8888;
 
   // Shared Image factories
   const raw_ptr<gpu::SharedImageFactory> shared_image_factory_;

@@ -2,18 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-declare_args() {
-  # Enable experimental SkiaRenderer Dawn backend.
-  skia_use_dawn = is_win && !is_official_build
-  skia_use_gl = true
+import("//build/config/features.gni")
+import("//printing/buildflags/buildflags.gni")
 
-  # Enable gtests using SkiaRenderer Dawn.
+declare_args() {
+  # Enable experimental Skia Graphite backend.
+  enable_skia_graphite = false
+
+  # Enable gtests using SkiaRenderer on Skia Graphite.
   # TODO(rivr): Remove this and enable the tests by default once a software
   # path for D3D12 is available.
-  enable_skia_dawn_gtests = false
+  enable_skia_graphite_gtests = false
 }
+
+# Skia only needs to support GPU rasterization if we use the full Chromium
+# rendering stack i.e. |use_blink| is true.
+# TODO(crbug.com/1431198): Split out into separate enable_skia_ganesh flag.
+skia_support_gpu = use_blink
+
+# Skia Ganesh GL backend is always enabled on all platforms - applies only when
+# GPU rasterization is enabled.
+skia_use_gl = true
+
+# Dawn is used with Skia Graphite by default.
+skia_use_dawn = enable_skia_graphite
+
+# Metal is only used with Skia Graphite on Mac and iOS blink developer builds.
+skia_use_metal =
+    enable_skia_graphite && is_apple && use_blink && !is_official_build
+
+skia_support_pdf = !is_ios && enable_printing
 
 # Skottie is not used on Android. To keep apk size small the skottie library is
 # excluded from the binary. At the time this comment was written, it adds ~200KB
 # to the APK.
 skia_support_skottie = !is_android
+
+# Skia needs XMP support for gainmap HDR image decoding in blink.
+skia_support_xmp = use_blink

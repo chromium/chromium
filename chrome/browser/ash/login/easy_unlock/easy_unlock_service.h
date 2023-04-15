@@ -81,11 +81,6 @@ class EasyUnlockService : public KeyedService,
   // override for testing.
   virtual bool IsEnabled() const;
 
-  // Returns true if ChromeOS login is enabled by the user.
-  // TODO(b/227674947): Delete this method and deprecate related pref now that
-  // sign in with Smart Lock is deprecated.
-  virtual bool IsChromeOSLoginEnabled() const;
-
   // To be called when EasyUnlockService is "warming up", for example, on screen
   // lock, after suspend, when the login screen is starting up, etc. During a
   // period like this, not all sub-systems are fully initialized, particularly

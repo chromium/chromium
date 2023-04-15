@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/functional/callback.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
 #include "chrome/browser/browser_process.h"
@@ -13,10 +12,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -30,9 +27,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/proxy_server.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "url/url_constants.h"
 
 namespace {
 
@@ -208,18 +203,21 @@ class NetworkSettingsServiceAshExtensionTest
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_dict));
     auto proxy_config =
         crosapi::ProxyConfigToCrosapiProxy(&proxy_config_dict,
-                                           /*wpad_url=*/GURL(""));
+                                           /*dhcp_wpad_url=*/GURL(""));
     proxy_config->extension = crosapi::mojom::ExtensionControllingProxy::New();
     proxy_config->extension->name = kExtensionName;
     proxy_config->extension->id = kExtensionId;
     proxy_config->extension->can_be_disabled = can_be_disabled;
     network_service_ash_->SetExtensionProxy(std::move(proxy_config));
 
-    base::Value expected_pref(base::Value::Type::DICT);
-    expected_pref.SetStringKey(kPrefExtensionNameKey, kExtensionName);
-    expected_pref.SetStringKey(kPrefExtensionIdKey, kExtensionId);
-    expected_pref.SetBoolKey(kPrefExtensionCanDisabled, can_be_disabled);
-    WaitForLacrosProxyControllingExtensionPref(std::move(expected_pref));
+    base::Value::Dict expected_pref =
+        base::Value::Dict()
+            .Set(kPrefExtensionNameKey, kExtensionName)
+            .Set(kPrefExtensionIdKey, kExtensionId)
+            .Set(kPrefExtensionCanDisabled, can_be_disabled);
+
+    WaitForLacrosProxyControllingExtensionPref(
+        base::Value(std::move(expected_pref)));
   }
 
   void WaitForLacrosProxyControllingExtensionPref(
@@ -270,8 +268,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   result = observer_->WaitForProxyConfig();
   ASSERT_FALSE(result.is_null());
   EXPECT_TRUE(result->extension.is_null());
-  EXPECT_EQ(*(extension_proxy_pref->GetValue()),
-            base::Value(base::Value::Type::DICT));
+  EXPECT_EQ(*(extension_proxy_pref->GetValue()), base::Value::Dict());
   // proxy_mode=system is the default value (see
   // PrefProxyConfigTrackerImpl::RegisterProfilePrefs).
   EXPECT_EQ(*(proxy_pref->GetValue()), ProxyConfigDictionary::CreateSystem());
@@ -330,8 +327,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   ProxyConfigDictionary proxy_config_dict(
       ProxyConfigDictionary::CreatePacScript(kPacUrl,
                                              /*pac_mandatory=*/true));
-  auto proxy_config = crosapi::ProxyConfigToCrosapiProxy(&proxy_config_dict,
-                                                         /*wpad_url=*/GURL(""));
+  auto proxy_config = crosapi::ProxyConfigToCrosapiProxy(
+      &proxy_config_dict, /*dhcp_wpad_url=*/GURL(""));
   proxy_config->extension = crosapi::mojom::ExtensionControllingProxy::New();
   proxy_config->extension->name = kExtensionName;
   proxy_config->extension->id = kExtensionId;

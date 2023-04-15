@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackReturnsToPaymentSheet) {
           "paymentRequestWithOptions({requestShipping: true}, $1)",
           payment_method),
       /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsPayButtonEnabled());
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackAbortsRequestIfSkipSheet) {
                                        content::JsReplace(
                                            "launchWithoutWaitForResponse($1)",
                                            payment_method)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsViewVisible(DialogViewID::BACK_BUTTON));
   EXPECT_TRUE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));

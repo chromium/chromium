@@ -186,9 +186,13 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    @Config(qualifiers = "w600dp-h820dp")
     public void
     testRecalculateOmniboxAlignment_phoneToTabletSwitch() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        Configuration newConfig = new Configuration();
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
+        mImpl.onConfigurationChanged(newConfig);
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
         assertFalse(mImpl.isTablet());
@@ -197,13 +201,26 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 alignment);
 
-        Configuration newConfig = new Configuration();
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         mImpl.onConfigurationChanged(newConfig);
         assertTrue(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
         assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
                 newAlignment);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS})
+    @Config(qualifiers = "w400dp-h610dp")
+    public void testAdaptToNarrowWindows_widePhoneScreen() {
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        assertFalse(mImpl.isTablet());
+
+        Configuration newConfig = new Configuration();
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
+        mImpl.onConfigurationChanged(newConfig);
+        assertFalse(mImpl.isTablet());
     }
 
     @Test

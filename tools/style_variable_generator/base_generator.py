@@ -94,6 +94,9 @@ class BaseGenerator:
         for name, value in data.get('opacities', {}).items():
             self.model.Add(VariableType.OPACITY, name, value, context)
 
+        for name, value in data.get('legacy_mappings', {}).items():
+            self.model.Add(VariableType.LEGACY_MAPPING, name, value, context)
+
         typography = data.get('typography')
         if typography:
             for name, value in typography['font_families'].items():

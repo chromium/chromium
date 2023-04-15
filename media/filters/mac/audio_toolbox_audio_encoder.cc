@@ -375,8 +375,7 @@ void AudioToolboxAudioEncoder::DoEncode(AudioBus* input_bus) {
       return;
     }
 
-    std::unique_ptr<uint8_t[]> packet_buffer(
-        new uint8_t[temp_output_buf_.size()]);
+    auto packet_buffer = std::make_unique<uint8_t[]>(temp_output_buf_.size());
     std::memcpy(packet_buffer.get(), temp_output_buf_.data(),
                 temp_output_buf_.size());
 

@@ -26,7 +26,7 @@ void ProtobufHttpRequest::SetTimeoutDuration(base::TimeDelta timeout_duration) {
 }
 
 void ProtobufHttpRequest::OnAuthFailed(const ProtobufHttpStatus& status) {
-  std::move(response_callback_).Run(status);
+  RunResponseCallback(status);
 }
 
 void ProtobufHttpRequest::StartRequestInternal(
@@ -50,21 +50,21 @@ void ProtobufHttpRequest::OnResponse(
   ProtobufHttpStatus url_loader_status = GetUrlLoaderStatus();
   // Move variables out of |this| as the callback can potentially delete |this|.
   auto invalidator = std::move(invalidator_);
-  auto response_callback = std::move(response_callback_);
   if (url_loader_status.ok()) {
-    std::move(response_callback).Run(ParseResponse(std::move(response_body)));
+    RunResponseCallback(ParseResponse(std::move(response_body)));
   } else {
     // Parse the status from the response.
     protobufhttpclient::Status api_status;
     if (response_body && api_status.ParseFromString(*response_body) &&
         api_status.code() > 0) {
-      std::move(response_callback).Run(ProtobufHttpStatus(api_status));
+      RunResponseCallback(ProtobufHttpStatus(api_status));
     } else {
       // Fallback to just return the status from URL loader.
-      std::move(response_callback).Run(url_loader_status);
+      RunResponseCallback(url_loader_status);
     }
   }
-  DCHECK(!response_callback);
+  // NOTE: Don't access member variables here, since |this| might have been
+  // deleted by the callback.
   std::move(invalidator).Run();
 }
 
@@ -79,6 +79,13 @@ ProtobufHttpStatus ProtobufHttpRequest::ParseResponse(
     return ProtobufHttpStatus(net::ERR_INVALID_RESPONSE);
   }
   return ProtobufHttpStatus::OK();
+}
+
+void ProtobufHttpRequest::RunResponseCallback(
+    const ProtobufHttpStatus& status) {
+  // Drop unowned reference before invoking callback which destroys it.
+  response_message_ = nullptr;
+  std::move(response_callback_).Run(status);
 }
 
 }  // namespace remoting

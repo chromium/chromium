@@ -1,0 +1,11 @@
+{
+  "name" : "Lacros Extension Preferences API Test Extension",
+  "version" : "0.1",
+  "manifest_version": 2,
+  "description" : "Test extension to verify the behaviour of new extension controlled prefs against Ash-Lacros version skew",
+  "permissions": [ "accessibilityFeatures.read", "accessibilityFeatures.modify"],
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": true
+  }
+}

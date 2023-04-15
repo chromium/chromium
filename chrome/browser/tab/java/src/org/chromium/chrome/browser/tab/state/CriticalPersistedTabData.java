@@ -347,6 +347,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_TAB_GROUP_UI;
             case LaunchTypeAtCreation.FROM_TAB_SWITCHER_UI:
                 return TabLaunchType.FROM_TAB_SWITCHER_UI;
+            case LaunchTypeAtCreation.FROM_RESTORE_TABS_UI:
+                return TabLaunchType.FROM_RESTORE_TABS_UI;
             case LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
                 return TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
             case LaunchTypeAtCreation.FROM_APP_WIDGET:
@@ -405,6 +407,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return LaunchTypeAtCreation.FROM_TAB_GROUP_UI;
             case TabLaunchType.FROM_TAB_SWITCHER_UI:
                 return LaunchTypeAtCreation.FROM_TAB_SWITCHER_UI;
+            case TabLaunchType.FROM_RESTORE_TABS_UI:
+                return LaunchTypeAtCreation.FROM_RESTORE_TABS_UI;
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
                 return LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
             case TabLaunchType.FROM_APP_WIDGET:

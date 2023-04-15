@@ -11,149 +11,133 @@ namespace blink {
 
 namespace {
 
-struct CompositingReasonStringMap {
+#define V(name) #name,
+constexpr const char* kShortNames[] = {FOR_EACH_COMPOSITING_REASON(V)};
+#undef V
+
+struct ReasonAndDescription {
   CompositingReasons reason;
-  const char* short_name;
   const char* description;
 };
-
-constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
-    {CompositingReason::k3DTransform, "transform3D", "Has a 3d transform"},
-    {CompositingReason::k3DScale, "scale3D", "Has a 3d scale"},
-    {CompositingReason::k3DRotate, "rotate3D", "Has a 3d rotate"},
-    {CompositingReason::k3DTranslate, "translate3D", "Has a 3d translate"},
-    {CompositingReason::kTrivial3DTransform, "trivialTransform3D",
-     "Has a trivial 3d transform"},
-    {CompositingReason::kVideo, "video", "Is an accelerated video"},
-    {CompositingReason::kCanvas, "canvas",
+constexpr ReasonAndDescription kReasonDescriptionMap[] = {
+    {CompositingReason::k3DTransform, "Has a 3d transform."},
+    {CompositingReason::k3DScale, "Has a 3d scale."},
+    {CompositingReason::k3DRotate, "Has a 3d rotate."},
+    {CompositingReason::k3DTranslate, "Has a 3d translate."},
+    {CompositingReason::kTrivial3DTransform, "Has a trivial 3d transform."},
+    {CompositingReason::kIFrame, "Is an accelerated iFrame."},
+    {CompositingReason::kActiveTransformAnimation,
+     "Has an active accelerated transform animation or transition."},
+    {CompositingReason::kActiveScaleAnimation,
+     "Has an active accelerated scale animation or transition."},
+    {CompositingReason::kActiveRotateAnimation,
+     "Has an active accelerated rotate animation or transition."},
+    {CompositingReason::kActiveTranslateAnimation,
+     "Has an active accelerated translate animation or transition."},
+    {CompositingReason::kActiveOpacityAnimation,
+     "Has an active accelerated opacity animation or transition."},
+    {CompositingReason::kActiveFilterAnimation,
+     "Has an active accelerated filter animation or transition."},
+    {CompositingReason::kActiveBackdropFilterAnimation,
+     "Has an active accelerated backdrop filter animation or transition."},
+    {CompositingReason::kAffectedByOuterViewportBoundsDelta,
+     "Is fixed position affected by outer viewport bounds delta."},
+    {CompositingReason::kFixedPosition,
+     "Is fixed position in a scrollable view."},
+    {CompositingReason::kUndoOverscroll,
+     "Is fixed position that should undo overscroll of the viewport."},
+    {CompositingReason::kStickyPosition, "Is sticky position."},
+    {CompositingReason::kAnchorScroll,
+     "Is an element with anchor-scroll css property."},
+    {CompositingReason::kBackdropFilter, "Has a backdrop filter."},
+    {CompositingReason::kBackdropFilterMask, "Is a mask for backdrop filter."},
+    {CompositingReason::kRootScroller, "Is the document.rootScroller."},
+    {CompositingReason::kViewport, "Is for the visual viewport."},
+    {CompositingReason::kWillChangeTransform,
+     "Has a will-change: transform compositing hint."},
+    {CompositingReason::kWillChangeScale,
+     "Has a will-change: scale compositing hint."},
+    {CompositingReason::kWillChangeRotate,
+     "Has a will-change: rotate compositing hint."},
+    {CompositingReason::kWillChangeTranslate,
+     "Has a will-change: translate compositing hint."},
+    {CompositingReason::kWillChangeOpacity,
+     "Has a will-change: opacity compositing hint."},
+    {CompositingReason::kWillChangeFilter,
+     "Has a will-change: filter compositing hint."},
+    {CompositingReason::kWillChangeBackdropFilter,
+     "Has a will-change: backdrop-filter compositing hint."},
+    {CompositingReason::kWillChangeOther,
+     "Has a will-change compositing hint other than transform, opacity, filter"
+     " and backdrop-filter."},
+    {CompositingReason::kBackfaceInvisibility3DAncestor,
+     "Ancestor in same 3D rendering context has a hidden backface."},
+    {CompositingReason::kTransform3DSceneLeaf,
+     "Leaf of a 3D scene, for flattening its descendants into that scene."},
+    {CompositingReason::kPerspectiveWith3DDescendants,
+     "Has a perspective transform that needs to be known by compositor because "
+     "of 3d descendants."},
+    {CompositingReason::kPreserve3DWith3DDescendants,
+     "Has a preserves-3d property that needs to be known by compositor because "
+     "of 3d descendants."},
+    {CompositingReason::kViewTransitionElement,
+     "This element is shared during view transition."},
+    {CompositingReason::kViewTransitionPseudoElement,
+     "This element is a part of a pseudo element tree representing the view "
+     "transition."},
+    {CompositingReason::kOverflowScrolling,
+     "Is a scrollable overflow element using accelerated scrolling."},
+    {CompositingReason::kOverlap, "Overlaps other composited content."},
+    {CompositingReason::kBackfaceVisibilityHidden,
+     "Has backface-visibility: hidden."},
+    {CompositingReason::kCaret, "Is a caret in an editor."},
+    {CompositingReason::kVideo, "Is an accelerated video."},
+    {CompositingReason::kCanvas,
      "Is an accelerated canvas, or is a display list backed canvas that was "
      "promoted to a layer based on a performance heuristic."},
-    {CompositingReason::kPlugin, "plugin", "Is an accelerated plugin"},
-    {CompositingReason::kIFrame, "iFrame", "Is an accelerated iFrame"},
-    {CompositingReason::kBackfaceVisibilityHidden, "backfaceVisibilityHidden",
-     "Has backface-visibility: hidden"},
-    {CompositingReason::kActiveTransformAnimation, "activeTransformAnimation",
-     "Has an active accelerated transform animation or transition"},
-    {CompositingReason::kActiveScaleAnimation, "activeScaleAnimation",
-     "Has an active accelerated scale animation or transition"},
-    {CompositingReason::kActiveRotateAnimation, "activeRotateAnimation",
-     "Has an active accelerated rotate animation or transition"},
-    {CompositingReason::kActiveTranslateAnimation, "activeTranslateAnimation",
-     "Has an active accelerated translate animation or transition"},
-    {CompositingReason::kActiveOpacityAnimation, "activeOpacityAnimation",
-     "Has an active accelerated opacity animation or transition"},
-    {CompositingReason::kActiveFilterAnimation, "activeFilterAnimation",
-     "Has an active accelerated filter animation or transition"},
-    {CompositingReason::kActiveBackdropFilterAnimation,
-     "activeBackdropFilterAnimation",
-     "Has an active accelerated backdrop filter animation or transition"},
-    {CompositingReason::kFixedPosition, "fixedPosition", "Is fixed position"},
-    {CompositingReason::kStickyPosition, "stickyPosition",
-     "Is sticky position"},
-    {CompositingReason::kOverflowScrolling, "overflowScrolling",
-     "Is a scrollable overflow element"},
-    {CompositingReason::kWillChangeTransform, "willChangeTransform",
-     "Has a will-change: transform compositing hint"},
-    {CompositingReason::kWillChangeScale, "willChangeScale",
-     "Has a will-change: scale compositing hint"},
-    {CompositingReason::kWillChangeRotate, "willChangeRotate",
-     "Has a will-change: rotate compositing hint"},
-    {CompositingReason::kWillChangeTranslate, "willChangeTranslate",
-     "Has a will-change: translate compositing hint"},
-    {CompositingReason::kWillChangeOpacity, "willChangeOpacity",
-     "Has a will-change: opacity compositing hint"},
-    {CompositingReason::kWillChangeFilter, "willChangeFilter",
-     "Has a will-change: filter compositing hint"},
-    {CompositingReason::kWillChangeBackdropFilter, "willChangeBackdropFilter",
-     "Has a will-change: backdrop-filter compositing hint"},
-    {CompositingReason::kWillChangeOther, "willChangeOther",
-     "Has a will-change compositing hint other than transform and opacity"},
-    {CompositingReason::kBackdropFilter, "backdropFilter",
-     "Has a backdrop filter"},
-    {CompositingReason::kBackdropFilterMask, "backdropFilterMask",
-     "Is a mask for backdrop filter"},
-    {CompositingReason::kRootScroller, "rootScroller",
-     "Is the document.rootScroller"},
-    {CompositingReason::kOverlap, "overlap",
-     "Overlaps other composited content"},
-    {CompositingReason::kOpacityWithCompositedDescendants,
-     "opacityWithCompositedDescendants",
-     "Has opacity that needs to be applied by compositor because of composited "
-     "descendants"},
-    {CompositingReason::kMaskWithCompositedDescendants,
-     "maskWithCompositedDescendants",
-     "Has a mask that needs to be known by compositor because of composited "
-     "descendants"},
-    {CompositingReason::kFilterWithCompositedDescendants,
-     "filterWithCompositedDescendants",
-     "Has a filter effect that needs to be known by compositor because of "
-     "composited descendants"},
-    {CompositingReason::kBlendingWithCompositedDescendants,
-     "blendingWithCompositedDescendants",
-     "Has a blending effect that needs to be known by compositor because of "
-     "composited descendants"},
-    {CompositingReason::kPerspectiveWith3DDescendants,
-     "perspectiveWith3DDescendants",
-     "Has a perspective transform that needs to be known by compositor because "
-     "of 3d descendants"},
-    {CompositingReason::kPreserve3DWith3DDescendants,
-     "preserve3DWith3DDescendants",
-     "Has a preserves-3d property that needs to be known by compositor because "
-     "of 3d descendants"},
-    {CompositingReason::kRoot, "root", "Is the root layer"},
-    {CompositingReason::kLayerForHorizontalScrollbar,
-     "layerForHorizontalScrollbar",
-     "Secondary layer, the horizontal scrollbar layer"},
-    {CompositingReason::kLayerForVerticalScrollbar, "layerForVerticalScrollbar",
-     "Secondary layer, the vertical scrollbar layer"},
-    {CompositingReason::kUndoOverscroll, "UndoOverscroll",
-     "The layer is fixed to viewport and doesn't move with overscroll"},
-    {CompositingReason::kLayerForOther, "layerForOther",
-     "Layer for link highlight, frame overlay, etc."},
-    {CompositingReason::kBackfaceInvisibility3DAncestor,
-     "BackfaceInvisibility3DAncestor",
-     "Ancestor in same 3D rendering context has a hidden backface"},
-    {CompositingReason::kTransform3DSceneLeaf, "Transform3DSceneLeaf",
-     "Leaf of a 3D scene, for flattening its descendants into that scene"},
-    {CompositingReason::kViewTransitionElement, "ViewTransitionElement",
-     "This element is shared during view transition"},
-    {CompositingReason::kViewTransitionPseudoElement,
-     "ViewTransitionContentElement",
-     "This element is a part of a pseudo element tree representing the shared "
-     "element transition"},
+    {CompositingReason::kPlugin, "Is an accelerated plugin."},
+    {CompositingReason::kScrollbar, "Is an accelerated scrollbar."},
+    {CompositingReason::kLinkHighlight, "Is a tap highlight on a link."},
+    {CompositingReason::kDevToolsOverlay, "Is DevTools overlay."},
+    {CompositingReason::kViewTransitionContent,
+     "The layer containing the contents of a view transition element."},
 };
 
 }  // anonymous namespace
 
 std::vector<const char*> CompositingReason::ShortNames(
     CompositingReasons reasons) {
-#define V(name)                                                             \
-  static_assert(                                                            \
-      CompositingReason::k##name ==                                         \
-          kCompositingReasonsStringMap[CompositingReason::kE##name].reason, \
-      "kCompositingReasonsStringMap needs update for "                      \
-      "CompositingReason::k" #name);                                        \
-  FOR_EACH_COMPOSITING_REASON(V)
-#undef V
-
   std::vector<const char*> result;
-  if (reasons == kNone)
+  if (reasons == kNone) {
     return result;
-  for (auto& map : kCompositingReasonsStringMap) {
-    if (reasons & map.reason)
-      result.push_back(map.short_name);
+  }
+  for (size_t i = 0; i < std::size(kShortNames); i++) {
+    if (reasons & (UINT64_C(1) << i)) {
+      result.push_back(kShortNames[i]);
+    }
   }
   return result;
 }
 
 std::vector<const char*> CompositingReason::Descriptions(
     CompositingReasons reasons) {
+#define V(name)                                                      \
+  static_assert(                                                     \
+      CompositingReason::k##name ==                                  \
+          kReasonDescriptionMap[CompositingReason::kE##name].reason, \
+      "kReasonDescriptionMap needs update for CompositingReason::k" #name);
+
+  FOR_EACH_COMPOSITING_REASON(V)
+#undef V
+
   std::vector<const char*> result;
-  if (reasons == kNone)
+  if (reasons == kNone) {
     return result;
-  for (auto& map : kCompositingReasonsStringMap) {
-    if (reasons & map.reason)
+  }
+  for (auto& map : kReasonDescriptionMap) {
+    if (reasons & map.reason) {
       result.push_back(map.description);
+    }
   }
   return result;
 }

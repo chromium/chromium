@@ -12,6 +12,7 @@
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
@@ -75,8 +76,12 @@ class VulkanGLInterop {
     raw_ptr<AwVulkanContextProvider> vk_context_provider;
   };
 
-  RenderThreadManager* const render_thread_manager_;
-  AwVulkanContextProvider* const vulkan_context_provider_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION RenderThreadManager* const render_thread_manager_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION AwVulkanContextProvider* const vulkan_context_provider_;
 
   // GL context used to draw via GL in Vk interop path.
   scoped_refptr<GLNonOwnedCompatibilityContext> gl_context_;

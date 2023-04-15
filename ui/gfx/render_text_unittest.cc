@@ -37,6 +37,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -7600,7 +7601,18 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
       FontRenderParams::SUBPIXEL_RENDERING_RGB;
   DrawVisualText();
 #endif
+
+#if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(GetRendererFont().getEdging(), SkFont::Edging::kSubpixelAntiAlias);
+#else
+  if (features::IsChromeRefresh2023() &&
+      !base::FeatureList::IsEnabled(features::kCr2023MacFontSmoothing)) {
+    EXPECT_EQ(GetRendererFont().getEdging(), SkFont::Edging::kAntiAlias);
+  } else {
+    EXPECT_EQ(GetRendererFont().getEdging(),
+              SkFont::Edging::kSubpixelAntiAlias);
+  }
+#endif
 
   render_text->set_subpixel_rendering_suppressed(true);
   DrawVisualText();

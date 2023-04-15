@@ -6,8 +6,10 @@
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_METRICS_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 
 namespace ash::privacy_hub_metrics {
+using Sensor = SensorDisabledNotificationDelegate::Sensor;
 
 // These values are persisted to logs and should not be renumbered or re-used.
 // Keep in sync with PrivacyHubNavigationOrigin in
@@ -44,17 +46,9 @@ static constexpr char kPrivacyHubOpenedHistogram[] =
 static constexpr char kPrivacyHubLearnMorePageOpenedHistogram[] =
     "ChromeOS.PrivacyHub.LearnMorePage.Opened";
 
-// Report microphone mute events from system and notifications.
-ASH_EXPORT void LogMicrophoneEnabledFromSettings(bool enabled);
-ASH_EXPORT void LogMicrophoneEnabledFromNotification(bool enabled);
-
-// Report camera mute events from system and notifications.
-ASH_EXPORT void LogCameraEnabledFromSettings(bool enabled);
-ASH_EXPORT void LogCameraEnabledFromNotification(bool enabled);
-
-// Report geolocation events from system and notifications.
-ASH_EXPORT void LogGeolocationEnabledFromSettings(bool enabled);
-ASH_EXPORT void LogGeolocationEnabledFromNotification(bool enabled);
+// Report sensor events from system and notifications.
+ASH_EXPORT void LogSensorEnabledFromSettings(Sensor sensor, bool enabled);
+ASH_EXPORT void LogSensorEnabledFromNotification(Sensor sensor, bool enabled);
 
 // Report that Privacy Hub has been opened from a notification.
 ASH_EXPORT void LogPrivacyHubOpenedFromNotification();

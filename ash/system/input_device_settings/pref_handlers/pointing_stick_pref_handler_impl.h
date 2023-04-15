@@ -26,11 +26,24 @@ class ASH_EXPORT PointingStickPrefHandlerImpl
   void InitializePointingStickSettings(
       PrefService* pref_service,
       mojom::PointingStick* pointing_stick) override;
+
+  void InitializeLoginScreenPointingStickSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      mojom::PointingStick* pointing_stick) override;
+
   void UpdatePointingStickSettings(
       PrefService* pref_service,
       const mojom::PointingStick& pointing_stick) override;
-};
 
+  void UpdateLoginScreenPointingStickSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::PointingStick& pointing_stick) override;
+
+  void InitializeWithDefaultPointingStickSettings(
+      mojom::PointingStick* pointing_stick) override;
+};
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_PREF_HANDLERS_POINTING_STICK_PREF_HANDLER_IMPL_H_

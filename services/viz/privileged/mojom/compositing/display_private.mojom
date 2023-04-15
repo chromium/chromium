@@ -99,6 +99,11 @@ interface DisplayPrivate {
   // not just observe begin frames requested by other observers. This only a
   // single observer at a time; calling this will replace any existing observer.
   SetStandaloneBeginFrameObserver(pending_remote<BeginFrameObserver> observer);
+
+  // Sets the maximum vsync interval supported by the display for use with
+  // variable refresh rates. An absent value indicates that VRR is not enabled
+  // on the display.
+  SetMaxVrrInterval(mojo_base.mojom.TimeDelta? max_vrr_interval);
 };
 
 // DisplayClient allows privileged clients to receive events from the Display.

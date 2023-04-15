@@ -54,6 +54,7 @@ class PersonalizationAppAmbientProviderImpl
           observer) override;
   void SetAmbientModeEnabled(bool enabled) override;
   void SetAnimationTheme(ash::AmbientTheme animation_theme) override;
+  void SetScreenSaverDuration(int minutes) override;
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override;
@@ -63,6 +64,9 @@ class PersonalizationAppAmbientProviderImpl
   void SetPageViewed() override;
   void FetchSettingsAndAlbums() override;
   void StartScreenSaverPreview() override;
+  void ShouldShowTimeOfDayBanner(
+      ShouldShowTimeOfDayBannerCallback callback) override;
+  void HandleTimeOfDayBannerDismissed() override;
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();

@@ -510,9 +510,7 @@ let kRTCAudioPlayoutStats = new RTCStats(null, {
 });
 addRTCStatsToAllowlist(Presence.OPTIONAL, 'media-playout', kRTCAudioPlayoutStats);
 
-// Public interface to tests. These are expected to be called with
-// ExecuteJavascript invocations from the browser tests and will return answers
-// through the DOM automation controller.
+// Public interface to tests.
 
 /**
  * Verifies that the promise-based |RTCPeerConnection.getStats| returns stats,
@@ -524,23 +522,24 @@ addRTCStatsToAllowlist(Presence.OPTIONAL, 'media-playout', kRTCAudioPlayoutStats
  * this call to getStats.
  */
 function verifyStatsGeneratedPromise() {
-  peerConnection_().getStats()
+  return peerConnection_().getStats()
     .then(function(report) {
       if (report == null || report.size == 0)
-        throw new failTest('report is null or empty.');
+        throw new Error('report is null or empty.');
       let statsTypes = new Set();
       let ids = new Set();
       for (let stats of report.values()) {
         verifyStatsIsAllowlisted_(stats);
         statsTypes.add(stats.type);
         if (ids.has(stats.id))
-          throw failTest('stats.id is not a unique identifier.');
+          throw new Error('stats.id is not a unique identifier.');
         ids.add(stats.id);
       }
-      returnToTest('ok-' + JSON.stringify(Array.from(statsTypes.values())));
+      return logAndReturn('ok-' + JSON.stringify(
+          Array.from(statsTypes.values())));
     },
     function(e) {
-      throw failTest('Promise was rejected: ' + e);
+      throw new Error('Promise was rejected: ' + e);
     });
 }
 
@@ -552,18 +551,18 @@ function verifyStatsGeneratedPromise() {
  * the test.
  */
 function getStatsReportDictionary() {
-  peerConnection_().getStats()
+  return peerConnection_().getStats()
     .then(function(report) {
       if (report == null || report.size == 0)
-        throw new failTest('report is null or empty.');
+        throw new Error('report is null or empty.');
       let reportDictionary = {};
       for (let stats of report.values()) {
         reportDictionary[stats.id] = stats;
       }
-      returnToTest('ok-' + JSON.stringify(reportDictionary));
+      return logAndReturn('ok-' + JSON.stringify(reportDictionary));
     },
     function(e) {
-      throw failTest('Promise was rejected: ' + e);
+      throw new Error('Promise was rejected: ' + e);
     });
 }
 
@@ -577,7 +576,7 @@ function getStatsReportDictionary() {
  */
 function measureGetStatsPerformance() {
   let t0 = performance.now();
-  peerConnection_().getStats()
+  return peerConnection_().getStats()
     .then(function(report) {
       let t1 = performance.now();
       for (let stats of report.values()) {
@@ -592,13 +591,13 @@ function measureGetStatsPerformance() {
           }
         }
         if (!mandatoryTypeExists) {
-          returnToTest('Missing mandatory type: ' + mandatoryType);
+          return logAndReturn('Missing mandatory type: ' + mandatoryType);
         }
       }
-      returnToTest('ok-' + (t1 - t0));
+      return logAndReturn('ok-' + (t1 - t0));
     },
     function(e) {
-      throw failTest('Promise was rejected: ' + e);
+      throw new Error('Promise was rejected: ' + e);
     });
 }
 
@@ -607,7 +606,7 @@ function measureGetStatsPerformance() {
  * allowlist as a JSON-stringified array of strings to the test.
  */
 function getMandatoryStatsTypes() {
-  returnToTest(JSON.stringify(Array.from(mandatoryStatsTypes())));
+  return logAndReturn(JSON.stringify(Array.from(mandatoryStatsTypes())));
 }
 
 // Internals.
@@ -624,7 +623,7 @@ function mandatoryStatsTypes() {
 
 /**
  * Checks if |stats| correctly maps to a a allowlisted RTCStats-derived
- * dictionary, throwing |failTest| if it doesn't. See |gStatsAllowlist|.
+ * dictionary, throwing an error if it doesn't. See |gStatsAllowlist|.
  *
  * The "RTCStats.type" must map to a known dictionary description. Every member
  * is optional, but if present it must be present in the allowlisted dictionary
@@ -633,19 +632,19 @@ function mandatoryStatsTypes() {
  */
 function verifyStatsIsAllowlisted_(stats) {
   if (stats == null)
-    throw failTest('stats is null or undefined: ' + stats);
+    throw new Error('stats is null or undefined: ' + stats);
   if (typeof(stats.id) !== 'string')
-    throw failTest('stats.id is not a string:' + stats.id);
+    throw new Error('stats.id is not a string:' + stats.id);
   if (typeof(stats.timestamp) !== 'number' || !isFinite(stats.timestamp) ||
       stats.timestamp <= 0) {
-    throw failTest('stats.timestamp is not a positive finite number: ' +
+    throw new Error('stats.timestamp is not a positive finite number: ' +
         stats.timestamp);
   }
   if (typeof(stats.type) !== 'string')
-    throw failTest('stats.type is not a string: ' + stats.type);
+    throw new Error('stats.type is not a string: ' + stats.type);
   let allowlistedStats = gStatsAllowlist.get(stats.type);
   if (allowlistedStats == null)
-    throw failTest('stats.type is not a allowlisted type: ' + stats.type);
+    throw new Error('stats.type is not a allowlisted type: ' + stats.type);
   allowlistedStats = allowlistedStats.stats();
   for (let propertyName in stats) {
     if (propertyName === 'id' || propertyName === 'timestamp' ||
@@ -653,7 +652,7 @@ function verifyStatsIsAllowlisted_(stats) {
       continue;
     }
     if (!allowlistedStats.hasOwnProperty(propertyName)) {
-      throw failTest(
+      throw new Error(
           stats.type + '.' + propertyName + ' is not a allowlisted ' +
           'member: ' + stats[propertyName]);
     }
@@ -661,13 +660,13 @@ function verifyStatsIsAllowlisted_(stats) {
       continue;
     if (!allowlistedStats[propertyName].startsWith('sequence_')) {
       if (typeof(stats[propertyName]) !== allowlistedStats[propertyName]) {
-        throw failTest('stats.' + propertyName + ' should have a different ' +
+        throw new Error('stats.' + propertyName + ' should have a different ' +
             'type according to the allowlist: ' + stats[propertyName] + ' vs ' +
             allowlistedStats[propertyName]);
       }
     } else {
       if (!Array.isArray(stats[propertyName])) {
-        throw failTest('stats.' + propertyName + ' should have a different ' +
+        throw new Error('stats.' + propertyName + ' should have a different ' +
             'type according to the allowlist (should be an array): ' +
             JSON.stringify(stats[propertyName]) + ' vs ' +
             allowlistedStats[propertyName]);
@@ -675,7 +674,8 @@ function verifyStatsIsAllowlisted_(stats) {
       let elementType = allowlistedStats[propertyName].substring(9);
       for (let element in stats[propertyName]) {
         if (typeof(element) !== elementType) {
-          throw failTest('stats.' + propertyName + ' should have a different ' +
+          throw new Error('stats.' + propertyName +
+              ' should have a different ' +
               'type according to the allowlist (an element of the array has ' +
               'the incorrect type): ' + JSON.stringify(stats[propertyName]) +
               ' vs ' + allowlistedStats[propertyName]);

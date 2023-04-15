@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
 
+#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
@@ -109,6 +110,7 @@ Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
           }
           break;
         case FocusgroupType::kLinear:
+          // TODO(https://crbug.com/1250716): Check CSS toggle restrictions?
           if (!(ancestor_flags & FocusgroupFlags::kGrid))
             return ancestor;
           break;
@@ -178,13 +180,48 @@ bool FocusgroupControllerUtils::IsFocusgroupItem(const Element* element) {
     return false;
 
   // All children of a focusgroup are considered focusgroup items if they are
-  // focusable.
+  // focusable, except for some special cases for CSS toggles.
   Element* parent = FlatTreeTraversal::ParentElement(*element);
   if (!parent)
     return false;
 
   FocusgroupFlags parent_flags = parent->GetFocusgroupFlags();
-  return parent_flags != FocusgroupFlags::kNone;
+  if (parent_flags == FocusgroupFlags::kNone) {
+    return false;
+  }
+
+  FocusgroupFlags toggle_restrictions =
+      parent_flags & FocusgroupFlags::kCSSToggleRestrictions;
+  if (toggle_restrictions) {
+    CSSToggleInference* toggle_inference =
+        element->GetDocument().GetCSSToggleInference();
+    DCHECK(toggle_inference)
+        << "toggle restrictions should only exist because of toggle inference";
+    CSSToggleRole element_role = toggle_inference->RoleForElement(element);
+    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleCheckbox) {
+      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleCheckbox);
+      return element_role == CSSToggleRole::kCheckbox;
+    }
+    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleListboxItem) {
+      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleListboxItem);
+      return element_role == CSSToggleRole::kListboxItem;
+    }
+    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleRadioItem) {
+      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleRadioItem);
+      return element_role == CSSToggleRole::kRadioItem;
+    }
+    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleTab) {
+      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleTab);
+      return element_role == CSSToggleRole::kTab;
+    }
+    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleTreeItem) {
+      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleTreeItem);
+      return element_role == CSSToggleRole::kTreeItem;
+    }
+    NOTREACHED();
+  }
+
+  return true;
 }
 
 // This function is called whenever the |element| passed by parameter has fallen

@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_TEST_DESKTOP_WINDOW_TREE_HOST_WIN_TEST_API_H_
 #define UI_VIEWS_TEST_DESKTOP_WINDOW_TREE_HOST_WIN_TEST_API_H_
 
+#include <windows.h>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
@@ -35,6 +37,10 @@ class DesktopWindowTreeHostWinTestApi {
   gfx::NativeViewAccessible GetNativeViewAccessible();
 
   HWNDMessageHandler* GetHwndMessageHandler();
+
+  LRESULT SimulatePenEventForTesting(UINT message,
+                                     UINT32 pointer_id,
+                                     POINTER_PEN_INFO pointer_pen_info);
 
   void SetMockCursorPositionForTesting(const gfx::Point& position);
 

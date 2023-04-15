@@ -202,9 +202,8 @@ void OutputSurfaceProviderWebView::InitializeContext() {
         std::move(feature_info));
   }
 
-  shared_context_state_->InitializeGrContext(
-      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds,
-      nullptr /* gr_shader_cache */);
+  shared_context_state_->InitializeSkia(
+      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds);
 }
 
 std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>

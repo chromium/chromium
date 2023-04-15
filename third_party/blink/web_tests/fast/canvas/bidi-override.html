@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<style>
+canvas {
+  unicode-bidi: bidi-override;
+  direction: rtl;
+  border: 1px solid;
+}
+</style>
+<canvas id="canvas" width="500" height="300"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.font = '48px serif';
+ctx.fillText('foo bar', 250, 50);
+</script>

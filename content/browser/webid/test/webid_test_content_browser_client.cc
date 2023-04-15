@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 
+#include "content/browser/webid/mdocs/mdoc_provider.h"
+
 namespace content {
 
 WebIdTestContentBrowserClient::WebIdTestContentBrowserClient() = default;
@@ -18,6 +20,17 @@ WebIdTestContentBrowserClient::CreateIdentityRequestDialogController() {
 void WebIdTestContentBrowserClient::SetIdentityRequestDialogController(
     std::unique_ptr<IdentityRequestDialogController> controller) {
   test_dialog_controller_ = std::move(controller);
+}
+
+std::unique_ptr<MDocProvider>
+WebIdTestContentBrowserClient::CreateMDocProvider() {
+  DCHECK(test_mdoc_provider_);
+  return std::move(test_mdoc_provider_);
+}
+
+void WebIdTestContentBrowserClient::SetMDocProvider(
+    std::unique_ptr<MDocProvider> provider) {
+  test_mdoc_provider_ = std::move(provider);
 }
 
 }  // namespace content

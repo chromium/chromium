@@ -50,7 +50,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -382,7 +381,7 @@ public class AutofillProfilesFragmentTest {
         TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
         Assert.assertEquals(View.VISIBLE, footerMessage.getVisibility());
         String expectedMessage =
-                context.getString(R.string.autofill_edit_account_address_source_notice)
+                context.getString(R.string.autofill_address_already_saved_in_account_source_notice)
                         .replace("$1", email);
         Assert.assertEquals(expectedMessage, footerMessage.getText());
 
@@ -562,7 +561,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testLocalProfiles_AddressesSynced() throws Exception {
-        setUpMockSyncService(true, Collections.singleton(ModelType.AUTOFILL_PROFILE));
+        setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.

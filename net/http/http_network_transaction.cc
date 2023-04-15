@@ -124,6 +124,15 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
   // this network transaction was prematurely cancelled.
   GenerateNetworkErrorLoggingReport(ERR_ABORTED);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+  if (quic_protocol_error_retry_delay_) {
+    base::UmaHistogramTimes(
+        IsGoogleHostWithAlpnH3(url_.host())
+            ? "Net.QuicProtocolErrorRetryDelayH3SupportedGoogleHost.Failure"
+            : "Net.QuicProtocolErrorRetryDelay.Failure",
+        *quic_protocol_error_retry_delay_);
+  }
+
   if (stream_.get()) {
     // TODO(mbelshe): The stream_ should be able to compute whether or not the
     //                stream should be kept alive.  No reason to compute here
@@ -164,8 +173,8 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
   request_->extra_headers.GetHeader(HttpRequestHeaders::kUserAgent,
                                     &request_user_agent_);
   request_reporting_upload_depth_ = request_->reporting_upload_depth;
-  start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+  start_timeticks_ = base::TimeTicks::Now();
 
   if (request_->load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES) {
     server_ssl_config_.disable_cert_verification_network_fetches = true;
@@ -1175,7 +1184,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
         response_.headers->response_code());
     // This will close the socket - it would be weird to try and reuse it, even
     // if the server doesn't actually close it.
-    ResetConnectionAndRequestForResend();
+    ResetConnectionAndRequestForResend(RetryReason::kHttpRequestTimeout);
     return OK;
   }
 
@@ -1227,7 +1236,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     enable_alternative_services_ = false;
     net_log_.AddEvent(
         NetLogEventType::HTTP_TRANSACTION_RESTART_MISDIRECTED_REQUEST);
-    ResetConnectionAndRequestForResend();
+    ResetConnectionAndRequestForResend(RetryReason::kHttpMisdirectedRequest);
     return OK;
   }
 
@@ -1341,6 +1350,15 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
 #if BUILDFLAG(ENABLE_REPORTING)
     GenerateNetworkErrorLoggingReport(result);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+    if (result == OK && quic_protocol_error_retry_delay_) {
+      base::UmaHistogramTimes(
+          IsGoogleHostWithAlpnH3(url_.host())
+              ? "Net.QuicProtocolErrorRetryDelayH3SupportedGoogleHost.Success"
+              : "Net.QuicProtocolErrorRetryDelay.Success",
+          *quic_protocol_error_retry_delay_);
+      quic_protocol_error_retry_delay_.reset();
+    }
   }
 
   // Clear these to avoid leaving around old state.
@@ -1522,7 +1540,7 @@ int HttpNetworkTransaction::HandleHttp11Required(int error) {
 
   // HttpServerProperties should have been updated, so when the request is sent
   // again, it will automatically use HTTP/1.1.
-  ResetConnectionAndRequestForResend();
+  ResetConnectionAndRequestForResend(RetryReason::kHttp11Required);
   return OK;
 }
 
@@ -1569,12 +1587,51 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
         retry_attempts_++;
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
-        ResetConnectionAndRequestForResend();
+        ResetConnectionAndRequestForResend(
+            RetryReason::kSslClientAuthSignatureFailed);
         return OK;
       }
     }
   }
   return error;
+}
+
+// static
+absl::optional<HttpNetworkTransaction::RetryReason>
+HttpNetworkTransaction::GetRetryReasonForIOError(int error) {
+  switch (error) {
+    case ERR_CONNECTION_RESET:
+      return RetryReason::kConnectionReset;
+    case ERR_CONNECTION_CLOSED:
+      return RetryReason::kConnectionClosed;
+    case ERR_CONNECTION_ABORTED:
+      return RetryReason::kConnectionAborted;
+    case ERR_SOCKET_NOT_CONNECTED:
+      return RetryReason::kSocketNotConnected;
+    case ERR_EMPTY_RESPONSE:
+      return RetryReason::kEmptyResponse;
+    case ERR_EARLY_DATA_REJECTED:
+      return RetryReason::kEarlyDataRejected;
+    case ERR_WRONG_VERSION_ON_EARLY_DATA:
+      return RetryReason::kWrongVersionOnEarlyData;
+    case ERR_HTTP2_PING_FAILED:
+      return RetryReason::kHttp2PingFailed;
+    case ERR_HTTP2_SERVER_REFUSED_STREAM:
+      return RetryReason::kHttp2ServerRefusedStream;
+    case ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE:
+      return RetryReason::kHttp2PushedStreamNotAvailable;
+    case ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER:
+      return RetryReason::kHttp2ClaimedPushedStreamResetByServer;
+    case ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH:
+      return RetryReason::kHttp2PushedResponseDoesNotMatch;
+    case ERR_QUIC_HANDSHAKE_FAILED:
+      return RetryReason::kQuicHandshakeFailed;
+    case ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED:
+      return RetryReason::kQuicGoawayRequestCanBeRetried;
+    case ERR_QUIC_PROTOCOL_ERROR:
+      return RetryReason::kQuicProtocolError;
+  }
+  return absl::nullopt;
 }
 
 // This method determines whether it is safe to resend the request after an
@@ -1591,14 +1648,19 @@ int HttpNetworkTransaction::HandleIOError(int error) {
   GenerateNetworkErrorLoggingReportIfError(error);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-  switch (error) {
+  absl::optional<HttpNetworkTransaction::RetryReason> retry_reason =
+      GetRetryReasonForIOError(error);
+  if (!retry_reason) {
+    return error;
+  }
+  switch (*retry_reason) {
     // If we try to reuse a connection that the server is in the process of
     // closing, we may end up successfully writing out our request (or a
     // portion of our request) only to find a connection error when we try to
     // read from (or finish writing to) the socket.
-    case ERR_CONNECTION_RESET:
-    case ERR_CONNECTION_CLOSED:
-    case ERR_CONNECTION_ABORTED:
+    case RetryReason::kConnectionReset:
+    case RetryReason::kConnectionClosed:
+    case RetryReason::kConnectionAborted:
     // There can be a race between the socket pool checking checking whether a
     // socket is still connected, receiving the FIN, and sending/reading data
     // on a reused socket.  If we receive the FIN between the connectedness
@@ -1606,62 +1668,75 @@ int HttpNetworkTransaction::HandleIOError(int error) {
     // is disconnected when we get a ERR_SOCKET_NOT_CONNECTED.  This will most
     // likely happen when trying to retrieve its IP address.
     // See http://crbug.com/105824 for more details.
-    case ERR_SOCKET_NOT_CONNECTED:
+    case RetryReason::kSocketNotConnected:
     // If a socket is closed on its initial request, HttpStreamParser returns
     // ERR_EMPTY_RESPONSE. This may still be close/reuse race if the socket was
     // preconnected but failed to be used before the server timed it out.
-    case ERR_EMPTY_RESPONSE:
+    case RetryReason::kEmptyResponse:
       if (ShouldResendRequest()) {
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
-        ResetConnectionAndRequestForResend();
+        ResetConnectionAndRequestForResend(*retry_reason);
         error = OK;
       }
       break;
-    case ERR_EARLY_DATA_REJECTED:
-    case ERR_WRONG_VERSION_ON_EARLY_DATA:
+    case RetryReason::kEarlyDataRejected:
+    case RetryReason::kWrongVersionOnEarlyData:
       net_log_.AddEventWithNetErrorCode(
           NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
       // Disable early data on the SSLConfig on a reset.
       can_send_early_data_ = false;
-      ResetConnectionAndRequestForResend();
+      ResetConnectionAndRequestForResend(*retry_reason);
       error = OK;
       break;
-    case ERR_HTTP2_PING_FAILED:
-    case ERR_HTTP2_SERVER_REFUSED_STREAM:
-    case ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE:
-    case ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER:
-    case ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH:
-    case ERR_QUIC_HANDSHAKE_FAILED:
-    case ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED:
+    case RetryReason::kHttp2PingFailed:
+    case RetryReason::kHttp2ServerRefusedStream:
+    case RetryReason::kHttp2PushedStreamNotAvailable:
+    case RetryReason::kHttp2ClaimedPushedStreamResetByServer:
+    case RetryReason::kHttp2PushedResponseDoesNotMatch:
+    case RetryReason::kQuicHandshakeFailed:
+    case RetryReason::kQuicGoawayRequestCanBeRetried:
       if (HasExceededMaxRetries())
         break;
       net_log_.AddEventWithNetErrorCode(
           NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
       retry_attempts_++;
-      ResetConnectionAndRequestForResend();
+      ResetConnectionAndRequestForResend(*retry_reason);
       error = OK;
       break;
-    case ERR_QUIC_PROTOCOL_ERROR:
-      if (GetResponseHeaders() != nullptr ||
-          !stream_->GetAlternativeService(&retried_alternative_service_)) {
+    case RetryReason::kQuicProtocolError:
+      if (GetResponseHeaders() != nullptr) {
         // If the response headers have already been received and passed up
-        // then the request can not be retried. Also, if there was no
-        // alternative service used for this request, then there is no
-        // alternative service to be disabled.
+        // then the request can not be retried.
+        RecordQuicProtocolErrorMetrics(
+            QuicProtocolErrorRetryStatus::kNoRetryHeaderReceived);
         break;
       }
-      if (HasExceededMaxRetries())
+      if (!stream_->GetAlternativeService(&retried_alternative_service_)) {
+        // If there was no alternative service used for this request, then there
+        // is no alternative service to be disabled.  Note: We expect this
+        // doesn't happen. But records the UMA just in case.
+        RecordQuicProtocolErrorMetrics(
+            QuicProtocolErrorRetryStatus::kNoRetryNoAlternativeService);
         break;
+      }
+      if (HasExceededMaxRetries()) {
+        RecordQuicProtocolErrorMetrics(
+            QuicProtocolErrorRetryStatus::kNoRetryExceededMaxRetries);
+        break;
+      }
+
       if (session_->http_server_properties()->IsAlternativeServiceBroken(
               retried_alternative_service_, network_anonymization_key_)) {
         // If the alternative service was marked as broken while the request
         // was in flight, retry the request which will not use the broken
         // alternative service.
+        RecordQuicProtocolErrorMetrics(
+            QuicProtocolErrorRetryStatus::kRetryAltServiceBroken);
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
         retry_attempts_++;
-        ResetConnectionAndRequestForResend();
+        ResetConnectionAndRequestForResend(*retry_reason);
         error = OK;
       } else if (session_->context()
                      .quic_context->params()
@@ -1669,13 +1744,23 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         // Disable alternative services for this request and retry it. If the
         // retry succeeds, then the alternative service will be marked as
         // broken then.
+        RecordQuicProtocolErrorMetrics(
+            QuicProtocolErrorRetryStatus::kRetryAltServiceNotBroken);
         enable_alternative_services_ = false;
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
         retry_attempts_++;
-        ResetConnectionAndRequestForResend();
+        ResetConnectionAndRequestForResend(*retry_reason);
         error = OK;
       }
+      break;
+
+    // The following reasons are not covered here.
+    case RetryReason::kHttpRequestTimeout:
+    case RetryReason::kHttpMisdirectedRequest:
+    case RetryReason::kHttp11Required:
+    case RetryReason::kSslClientAuthSignatureFailed:
+      NOTREACHED();
       break;
   }
   return error;
@@ -1707,8 +1792,8 @@ void HttpNetworkTransaction::ResetStateForAuthRestart() {
   net_error_details_.quic_connection_error = quic::QUIC_NO_ERROR;
 #if BUILDFLAG(ENABLE_REPORTING)
   network_error_logging_report_generated_ = false;
-  start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+  start_timeticks_ = base::TimeTicks::Now();
 }
 
 void HttpNetworkTransaction::CacheNetErrorDetailsAndResetStream() {
@@ -1740,7 +1825,18 @@ bool HttpNetworkTransaction::CheckMaxRestarts() {
   return num_restarts_ < kMaxRestarts;
 }
 
-void HttpNetworkTransaction::ResetConnectionAndRequestForResend() {
+void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
+    RetryReason retry_reason) {
+  base::UmaHistogramEnumeration(
+      IsGoogleHostWithAlpnH3(url_.host())
+          ? "Net.NetworkTransactionH3SupportedGoogleHost.RetryReason"
+          : "Net.NetworkTransaction.RetryReason",
+      retry_reason);
+  if (retry_reason == RetryReason::kQuicProtocolError) {
+    quic_protocol_error_retry_delay_ =
+        base::TimeTicks::Now() - start_timeticks_;
+  }
+
   if (stream_.get()) {
     stream_->Close(true);
     CacheNetErrorDetailsAndResetStream();
@@ -1755,8 +1851,8 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend() {
 #if BUILDFLAG(ENABLE_REPORTING)
   // Reset for new request.
   network_error_logging_report_generated_ = false;
-  start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+  start_timeticks_ = base::TimeTicks::Now();
 
   ResetStateForRestart();
 }
@@ -1886,6 +1982,45 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
   }
 
   return result;
+}
+
+void HttpNetworkTransaction::RecordQuicProtocolErrorMetrics(
+    QuicProtocolErrorRetryStatus retry_status) {
+  std::string histogram = "Net.QuicProtocolError";
+  if (IsGoogleHostWithAlpnH3(url_.host())) {
+    histogram += "H3SupportedGoogleHost";
+  }
+  base::UmaHistogramEnumeration(histogram + ".RetryStatus", retry_status);
+
+  if (!stream_) {
+    return;
+  }
+  absl::optional<quic::QuicErrorCode> connection_error =
+      stream_->GetQuicErrorCode();
+  absl::optional<quic::QuicRstStreamErrorCode> stream_error =
+      stream_->GetQuicRstStreamErrorCode();
+  if (!connection_error || !stream_error) {
+    return;
+  }
+  switch (retry_status) {
+    case QuicProtocolErrorRetryStatus::kNoRetryExceededMaxRetries:
+      histogram += ".NoRetryExceededMaxRetries";
+      break;
+    case QuicProtocolErrorRetryStatus::kNoRetryHeaderReceived:
+      histogram += ".NoRetryHeaderReceived";
+      break;
+    case QuicProtocolErrorRetryStatus::kNoRetryNoAlternativeService:
+      histogram += ".NoRetryNoAlternativeService";
+      break;
+    case QuicProtocolErrorRetryStatus::kRetryAltServiceBroken:
+      histogram += ".RetryAltServiceBroken";
+      break;
+    case QuicProtocolErrorRetryStatus::kRetryAltServiceNotBroken:
+      histogram += ".RetryAltServiceNotBroken";
+      break;
+  }
+  base::UmaHistogramSparse(histogram + ".QuicErrorCode", *connection_error);
+  base::UmaHistogramSparse(histogram + ".QuicStreamErrorCode", *stream_error);
 }
 
 }  // namespace net

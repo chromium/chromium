@@ -20,6 +20,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
@@ -106,7 +109,9 @@ PaintPropertyTreeBuilderFragmentContext::
       &ScrollPaintPropertyNode::Root();
 }
 
-PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext() = default;
+PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
+    : composited_scrolling_preference(
+          static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
 
 PaintPropertyTreeBuilderContext::~PaintPropertyTreeBuilderContext() {
   fragments.clear();
@@ -2295,11 +2300,15 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
   DCHECK(IsA<LayoutBox>(object_));
   auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
   DCHECK(scrollable_area);
-  if (!full_context_.scroll_unification_enabled) {
-    return full_context_.global_main_thread_scrolling_reasons;
+  MainThreadScrollingReasons reasons =
+      full_context_.global_main_thread_scrolling_reasons;
+  if (full_context_.scroll_unification_enabled) {
+    reasons |= scrollable_area->GetNonCompositedMainThreadScrollingReasons();
   }
-  return full_context_.global_main_thread_scrolling_reasons |
-         scrollable_area->GetNonCompositedMainThreadScrollingReasons();
+  if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
+    reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
+  }
+  return reasons;
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
@@ -2330,8 +2339,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         object_.GetFrameView()->RemoveUserScrollableArea(scrollable_area);
       }
 
-      state.prefers_composited_scrolling =
-          full_context_.prefers_composited_scrolling;
+      state.composited_scrolling_preference =
+          static_cast<CompositedScrollingPreference>(
+              full_context_.composited_scrolling_preference);
       state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons();
 
       state.compositor_element_id = scrollable_area->GetScrollElementId();
@@ -3149,11 +3159,17 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   context_.was_main_thread_scrolling = false;
   if (const auto* box = DynamicTo<LayoutBox>(object_)) {
     if (auto* scrollable_area = box->GetScrollableArea()) {
-      context_.prefers_composited_scrolling =
+      bool force_prefer_compositing =
           CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
               object_, context_.direct_compositing_reasons);
-      scrollable_area->UpdateNeedsCompositedScrolling(
-          context_.prefers_composited_scrolling);
+      if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+        context_.composited_scrolling_preference = static_cast<unsigned>(
+            force_prefer_compositing ? CompositedScrollingPreference::kPreferred
+            : scrollable_area->PrefersNonCompositedScrolling()
+                ? CompositedScrollingPreference::kNotPreferred
+                : CompositedScrollingPreference::kDefault);
+      }
+      scrollable_area->UpdateNeedsCompositedScrolling(force_prefer_compositing);
       context_.was_main_thread_scrolling =
           scrollable_area->ShouldScrollOnMainThread();
       context_.direct_compositing_reasons =

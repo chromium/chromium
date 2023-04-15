@@ -86,12 +86,19 @@ const PerformanceScriptVector& PerformanceLongAnimationFrameTiming::scripts()
   return scripts_;
 }
 
+DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::blockingDuration()
+    const {
+  return info_->TotalBlockingDuration().InMilliseconds();
+}
+
 void PerformanceLongAnimationFrameTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddNumber("renderStart", renderStart());
   builder.AddNumber("styleAndLayoutStart", styleAndLayoutStart());
   builder.AddNumber("desiredRenderStart", desiredRenderStart());
+  builder.AddNumber("firstUIEventTimestamp", firstUIEventTimestamp());
+  builder.AddNumber("blockingDuration", blockingDuration());
   ScriptState* script_state = builder.GetScriptState();
   builder.Add("scripts", FreezeV8Object(ToV8(scripts_, script_state),
                                         script_state->GetIsolate()));

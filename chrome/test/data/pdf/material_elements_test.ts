@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Bookmark} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';
-
-// TODO(crbug.com/1305967): Remove this interface when test_util.js is
-// migrated to TypeScript.
-interface TestBookmarksElement extends HTMLElement {
-  bookmarks: Bookmark[];
-}
 
 /**
  * Standalone unit tests of the PDF Polymer elements.
@@ -82,7 +77,7 @@ const tests = [
    */
   function testBookmarkStructure() {
     document.body.innerHTML = '';
-    const bookmarkContent = createBookmarksForTest() as TestBookmarksElement;
+    const bookmarkContent = createBookmarksForTest();
     bookmarkContent.bookmarks = [{
       title: 'Test 1',
       page: 1,

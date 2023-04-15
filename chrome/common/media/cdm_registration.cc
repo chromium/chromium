@@ -248,6 +248,10 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
           switches::kLacrosEnablePlatformHevc)) {
     capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
   }
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
+  }
 #else
   capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

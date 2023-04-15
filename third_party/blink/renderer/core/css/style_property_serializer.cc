@@ -837,12 +837,15 @@ namespace {
 
 CSSValue* TimelineValueItem(wtf_size_t index,
                             const CSSValueList& name_list,
-                            const CSSValueList& axis_list) {
+                            const CSSValueList& axis_list,
+                            const CSSValueList& attachment_list) {
   DCHECK_LT(index, name_list.length());
   DCHECK_LT(index, axis_list.length());
+  DCHECK_LT(index, attachment_list.length());
 
   const CSSValue& name = name_list.Item(index);
   const CSSValue& axis = axis_list.Item(index);
+  const CSSValue& attachment = attachment_list.Item(index);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
@@ -855,6 +858,11 @@ CSSValue* TimelineValueItem(wtf_size_t index,
         To<CSSIdentifierValue>(axis).GetValueID() == CSSValueID::kBlock)) {
     list->Append(axis);
   }
+  if (!(IsA<CSSIdentifierValue>(attachment) &&
+        To<CSSIdentifierValue>(attachment).GetValueID() ==
+            CSSValueID::kLocal)) {
+    list->Append(attachment);
+  }
 
   return list;
 }
@@ -863,12 +871,14 @@ CSSValue* TimelineValueItem(wtf_size_t index,
 
 String StylePropertySerializer::TimelineValue(
     const StylePropertyShorthand& shorthand) const {
-  CHECK_EQ(shorthand.length(), 2u);
+  CHECK_EQ(shorthand.length(), 3u);
 
   const CSSValueList& name_list = To<CSSValueList>(
       *property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
   const CSSValueList& axis_list = To<CSSValueList>(
       *property_set_.GetPropertyCSSValue(*shorthand.properties()[1]));
+  const CSSValueList& attachment_list = To<CSSValueList>(
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[2]));
 
   // The scroll/view-timeline shorthand can not expand to longhands of two
   // different lengths, so we can also not contract two different-longhands
@@ -876,31 +886,38 @@ String StylePropertySerializer::TimelineValue(
   if (name_list.length() != axis_list.length()) {
     return "";
   }
+  if (name_list.length() != attachment_list.length()) {
+    return "";
+  }
 
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < name_list.length(); ++i) {
-    list->Append(*TimelineValueItem(i, name_list, axis_list));
+    list->Append(*TimelineValueItem(i, name_list, axis_list, attachment_list));
   }
 
   return list->CssText();
 }
 
 String StylePropertySerializer::ScrollTimelineValue() const {
-  CHECK_EQ(scrollTimelineShorthand().length(), 2u);
+  CHECK_EQ(scrollTimelineShorthand().length(), 3u);
   CHECK_EQ(scrollTimelineShorthand().properties()[0],
            &GetCSSPropertyScrollTimelineName());
   CHECK_EQ(scrollTimelineShorthand().properties()[1],
            &GetCSSPropertyScrollTimelineAxis());
+  CHECK_EQ(scrollTimelineShorthand().properties()[2],
+           &GetCSSPropertyScrollTimelineAttachment());
   return TimelineValue(scrollTimelineShorthand());
 }
 
 String StylePropertySerializer::ViewTimelineValue() const {
-  CHECK_EQ(viewTimelineShorthand().length(), 2u);
+  CHECK_EQ(viewTimelineShorthand().length(), 3u);
   CHECK_EQ(viewTimelineShorthand().properties()[0],
            &GetCSSPropertyViewTimelineName());
   CHECK_EQ(viewTimelineShorthand().properties()[1],
            &GetCSSPropertyViewTimelineAxis());
+  CHECK_EQ(viewTimelineShorthand().properties()[2],
+           &GetCSSPropertyViewTimelineAttachment());
   return TimelineValue(viewTimelineShorthand());
 }
 

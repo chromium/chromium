@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
@@ -25,18 +27,39 @@ struct WeatherInfo;
 // caches the current weather info.
 class ASH_EXPORT AmbientWeatherController {
  public:
+  // Causes AmbientWeatherController to periodically refresh the weather info
+  // in the model for as long as this object is alive. The latest weather is
+  // also fetched immediately upon construction if there are currently no
+  // active `ScopedRefresher`s.
+  class ScopedRefresher {
+   public:
+    ScopedRefresher(const ScopedRefresher&) = delete;
+    ScopedRefresher& operator=(const ScopedRefresher&) = delete;
+    ~ScopedRefresher();
+
+   private:
+    friend class AmbientWeatherController;
+
+    explicit ScopedRefresher(AmbientWeatherController* controller);
+
+    const base::raw_ptr<AmbientWeatherController> controller_;
+  };
+
   AmbientWeatherController();
   AmbientWeatherController(const AmbientWeatherController&) = delete;
   AmbientWeatherController& operator=(const AmbientWeatherController&) = delete;
   ~AmbientWeatherController();
 
-  // Triggers a fetch of weather information and a download of the appropriate
-  // weather condition icon.
-  void FetchWeather();
+  // Always returns non-null.
+  std::unique_ptr<ScopedRefresher> CreateScopedRefresher();
 
   AmbientWeatherModel* weather_model() { return weather_model_.get(); }
 
  private:
+  // Triggers a fetch of weather information and a download of the appropriate
+  // weather condition icon.
+  void FetchWeather();
+
   void StartDownloadingWeatherConditionIcon(
       const absl::optional<WeatherInfo>& weather_info);
 
@@ -46,7 +69,13 @@ class ASH_EXPORT AmbientWeatherController {
                                         bool show_celsius,
                                         const gfx::ImageSkia& icon);
 
+  void OnScopedRefresherDestroyed();
+
   std::unique_ptr<AmbientWeatherModel> weather_model_;
+
+  int num_active_scoped_refreshers_ = 0;
+
+  base::RepeatingTimer weather_refresh_timer_;
 
   base::WeakPtrFactory<AmbientWeatherController> weak_factory_{this};
 };

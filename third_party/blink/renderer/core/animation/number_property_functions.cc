@@ -46,7 +46,7 @@ absl::optional<double> NumberPropertyFunctions::GetNumber(
     case CSSPropertyID::kFontSizeAdjust:
       if (!style.HasFontSizeAdjust())
         return absl::optional<double>();
-      return style.FontSizeAdjust();
+      return style.FontSizeAdjust().Value();
     case CSSPropertyID::kColumnCount:
       if (style.HasAutoColumnCount())
         return absl::optional<double>();

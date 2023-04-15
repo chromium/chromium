@@ -77,7 +77,7 @@ class SettingsSavedDevicesListItemElement extends
     return device.imageUrl;
   }
 
-  private onMenuButtonTap_(event: Event): void {
+  private onMenuButtonClick_(event: Event): void {
     const button = event.target as HTMLElement;
     this.$.dotsMenu.showAt(button);
     event.stopPropagation();

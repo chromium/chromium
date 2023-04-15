@@ -71,8 +71,9 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   message_->SetDescription(GetDescription());
   message_->SetDescriptionMaxLines(kDescriptionMaxLines);
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
-  message_->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS));
+  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+      is_migration_to_account ? IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS
+                              : IDR_ANDROID_AUTOFILL_ADDRESS));
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
@@ -155,7 +156,7 @@ std::u16string SaveUpdateAddressProfileMessageController::GetTitle() {
     CHECK(UserSignedIn()) << "Received is_migration_to_account=true option "
                              "when user is not logged in";
     return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE);
+        IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE);
   }
 
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
@@ -191,11 +192,12 @@ std::u16string SaveUpdateAddressProfileMessageController::GetSourceNotice() {
       << "The user's address profile is going to be saved in their Google "
          "Account, but user is not signed in";
 
-  return l10n_util::GetStringFUTF16(
-      is_migration_to_account_
-          ? IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE
-          : IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
-      base::UTF8ToUTF16(primary_account_info.email));
+  return is_migration_to_account_
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE)
+             : l10n_util::GetStringFUTF16(
+                   IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
+                   base::UTF8ToUTF16(primary_account_info.email));
 }
 
 std::u16string

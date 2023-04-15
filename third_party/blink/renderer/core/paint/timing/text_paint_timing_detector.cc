@@ -86,10 +86,6 @@ void TextPaintTimingDetector::OnPaintFinished() {
   if (!added_entry_in_latest_frame_)
     return;
 
-  // TODO(npm): while simplifying the logic on PaintTimingDetector, stop calling
-  // this on OnPaintFinished() as this it should be sufficient to call this
-  // solely on ReportPresentationTime(), at least for the text case.
-  frame_view_->GetPaintTimingDetector().UpdateLargestContentfulPaintCandidate();
   // |WrapCrossThreadWeakPersistent| guarantees that when |this| is killed,
   // the callback function will not be invoked.
   RegisterNotifyPresentationTime(

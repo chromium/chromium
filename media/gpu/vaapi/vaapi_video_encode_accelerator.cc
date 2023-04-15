@@ -41,6 +41,7 @@
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/vaapi/av1_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -199,7 +200,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
 
   const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
   if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP8 &&
-      codec != VideoCodec::kVP9) {
+      codec != VideoCodec::kVP9 && codec != VideoCodec::kAV1) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported profile: " << GetProfileName(config.output_profile);
     return false;
@@ -292,6 +293,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
         break;
       case VideoCodec::kVP8:
       case VideoCodec::kVP9:
+      case VideoCodec::kAV1:
         mode = VaapiWrapper::kEncodeConstantQuantizationParameter;
         break;
       default:
@@ -351,6 +353,12 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
     case VideoCodec::kVP9:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP9VaapiVideoEncoderDelegate>(
+            vaapi_wrapper_, error_cb);
+      }
+      break;
+    case VideoCodec::kAV1:
+      if (!IsConfiguredForTesting()) {
+        encoder_ = std::make_unique<AV1VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
       }
       break;
@@ -826,6 +834,10 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
       break;
     case VideoCodec::kVP9:
       picture = new VaapiVP9Picture(std::move(reconstructed_surface));
+      break;
+    case VideoCodec::kAV1:
+      picture = new VaapiAV1Picture(/*display_va_surface=*/nullptr,
+                                    std::move(reconstructed_surface));
       break;
     default:
       return nullptr;

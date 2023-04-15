@@ -295,8 +295,17 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)textViewDidChangeInCell:(PasswordNoteCell*)cell {
   self.noteText = cell.textView.text;
   int noteLength = cell.textView.text.length;
-  [cell setValid:(noteLength <= kMaxNoteCharAmount)];
+  BOOL noteValid = noteLength <= kMaxNoteCharAmount;
+  [cell setValid:noteValid];
   [self updateSaveButtonState];
+
+  // Notify that the character limit has been reached via VoiceOver.
+  if (!noteValid) {
+    UIAccessibilityPostNotification(
+        UIAccessibilityAnnouncementNotification,
+        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_TOO_LONG_NOTE",
+                          @"Notes can save up to 1000 characters."));
+  }
 
   // Update note footer based on note's length.
   self.isNoteFooterShown = noteLength >= kMinNoteCharAmountForWarning;

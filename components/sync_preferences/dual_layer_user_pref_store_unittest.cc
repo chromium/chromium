@@ -4,6 +4,9 @@
 
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 
+#include <map>
+#include <set>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -115,8 +118,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  private:
   TestSyncablePrefsDatabase syncable_prefs_database_;
 };
-
-}  // namespace
 
 class DualLayerUserPrefStoreTestBase : public testing::Test {
  public:
@@ -789,6 +790,1085 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
                              "priority-value"));
 }
 
-// TODO(crbug.com/1416479): Add tests for pref-merging logic.
+class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
+ public:
+  MergeTestPrefModelAssociatorClient()
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
+  // PrefModelAssociatorClient implementation.
+  bool IsMergeableListPreference(const std::string& pref_name) const override {
+    return mergeable_list_prefs_.count(pref_name);
+  }
+
+  bool IsMergeableDictionaryPreference(
+      const std::string& pref_name) const override {
+    return mergeable_dict_prefs_.count(pref_name);
+  }
+
+  base::Value MaybeMergePreferenceValues(
+      const std::string& pref_name,
+      const base::Value& local_value,
+      const base::Value& server_value) const override {
+    if (auto it = custom_merge_values_.find(pref_name);
+        it != custom_merge_values_.end()) {
+      return it->second.Clone();
+    }
+    return base::Value();
+  }
+
+  const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const override {
+    return syncable_prefs_database_;
+  }
+
+  void MarkAsMergeableDictPref(const std::string& pref_name) {
+    mergeable_dict_prefs_.insert(pref_name);
+  }
+
+  void MarkAsMergeableListPref(const std::string& pref_name) {
+    mergeable_list_prefs_.insert(pref_name);
+  }
+
+  void SetCustomMergeValue(const std::string& pref_name, base::Value value) {
+    custom_merge_values_[pref_name] = std::move(value);
+  }
+
+ private:
+  TestSyncablePrefsDatabase syncable_prefs_database_;
+
+  std::set<std::string> mergeable_dict_prefs_;
+  std::set<std::string> mergeable_list_prefs_;
+  std::map<std::string, base::Value> custom_merge_values_;
+};
+
+class DualLayerUserPrefStoreMergeTest : public testing::Test {
+ public:
+  DualLayerUserPrefStoreMergeTest() {
+    local_store_ = base::MakeRefCounted<TestingPrefStore>();
+    dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
+        local_store_, &pref_model_associator_client_);
+
+    local_store_->NotifyInitializationCompleted();
+
+    dual_layer_store_->AddObserver(&observer_);
+
+    dual_layer_store_->EnableType(syncer::PREFERENCES);
+    dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    dual_layer_store_->EnableType(syncer::OS_PREFERENCES);
+    dual_layer_store_->EnableType(syncer::OS_PRIORITY_PREFERENCES);
+#endif
+  }
+
+  ~DualLayerUserPrefStoreMergeTest() override {
+    dual_layer_store_->RemoveObserver(&observer_);
+  }
+
+  DualLayerUserPrefStore* store() { return dual_layer_store_.get(); }
+
+ protected:
+  scoped_refptr<TestingPrefStore> local_store_;
+  scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
+  MergeTestPrefModelAssociatorClient pref_model_associator_client_;
+  testing::StrictMock<MockPrefStoreObserver> observer_;
+};
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUseAccountValueForNonMergeablePrefs) {
+  // String prefs.
+  base::Value account_value("account_value");
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1,
+                                                   account_value.Clone(), 0);
+  base::Value local_value("local_value");
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_value.Clone(),
+                                                 0);
+
+  // Different values are set in both stores; the one from the account should
+  // take precedence.
+  // Uses GetValue().
+  {
+    const base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPref1, &result));
+    EXPECT_EQ(*result, account_value);
+  }
+  // Uses GetMutableValue().
+  {
+    base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPref1, &result));
+    EXPECT_EQ(*result, account_value);
+  }
+  // Uses GetValues().
+  {
+    ASSERT_TRUE(store()->GetValues().contains(kPref1));
+    EXPECT_EQ(*store()->GetValues().Find(kPref1), account_value);
+  }
+
+  // List prefs.
+
+  base::Value account_list(base::Value::List().Append("account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref2, account_list.Clone(),
+                                                   0);
+  base::Value local_list(base::Value::List().Append("local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref2, local_list.Clone(), 0);
+
+  // Different values are set in both stores; the one from the account should
+  // take precedence.
+  // Uses GetValue().
+  {
+    const base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPref2, &result));
+    EXPECT_EQ(*result, account_list);
+  }
+  // Uses GetMutableValue().
+  {
+    base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPref2, &result));
+    EXPECT_EQ(*result, account_list);
+  }
+  // Uses GetValues().
+  {
+    ASSERT_TRUE(store()->GetValues().contains(kPref2));
+    EXPECT_EQ(*store()->GetValues().Find(kPref2), account_list);
+  }
+
+  // Dictionary prefs.
+
+  base::Value account_dict(base::Value::Dict()
+                               .Set("account_key", "account_value")
+                               .Set("common_key", "account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref3, account_dict.Clone(),
+                                                   0);
+  base::Value local_dict(base::Value::Dict()
+                             .Set("local_key", "local_value")
+                             .Set("common_key", "local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref3, local_dict.Clone(), 0);
+
+  // Different values are set in both stores; the one from the account should
+  // take precedence.
+  // Uses GetValue().
+  {
+    const base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPref3, &result));
+    EXPECT_EQ(*result, account_dict);
+  }
+  // Uses GetMutableValue().
+  {
+    base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPref3, &result));
+    EXPECT_EQ(*result, account_dict);
+  }
+  // Uses GetValues().
+  {
+    ASSERT_TRUE(store()->GetValues().contains(kPref3));
+    EXPECT_EQ(*store()->GetValues().Find(kPref3), account_dict);
+  }
+  // The local and the account stores are left untouched.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_value));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, account_value));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref2, local_list));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref2, account_list));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref3, local_dict));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref3, account_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeMergeableListPref) {
+  base::Value account_list(
+      base::Value::List().Append("account_value").Append("common_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_list.Clone(),
+                                                   0);
+  base::Value local_list(
+      base::Value::List().Append("local_value").Append("common_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_list.Clone(), 0);
+
+  pref_model_associator_client_.MarkAsMergeableListPref(kPref1);
+  // Different values are set in both stores; a merged view should be returned.
+  // The two lists should be de-duped, with account values coming first.
+  base::Value merged_list(base::Value::List()
+                              .Append("account_value")
+                              .Append("common_value")
+                              .Append("local_value"));
+
+  // Uses GetValue().
+  {
+    const base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPref1, &result));
+    EXPECT_EQ(*result, merged_list);
+  }
+  // Uses GetMutableValue().
+  {
+    base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPref1, &result));
+    EXPECT_EQ(*result, merged_list);
+  }
+  // Uses GetValues().
+  {
+    ASSERT_TRUE(store()->GetValues().contains(kPref1));
+    EXPECT_EQ(*store()->GetValues().Find(kPref1), merged_list);
+  }
+
+  // The local and the account stores are left untouched.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_list));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, account_list));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeMergeableDictPref) {
+  base::Value account_dict(base::Value::Dict()
+                               .Set("account_key", "account_value")
+                               .Set("common_key", "account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+  base::Value local_dict(base::Value::Dict()
+                             .Set("local_key", "local_value")
+                             .Set("common_key", "local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  // Different values are set in both stores; a merged view should be returned.
+  // In case of conflict, the value in account store takes precedence.
+  base::Value merged_dict(base::Value::Dict()
+                              .Set("account_key", "account_value")
+                              .Set("local_key", "local_value")
+                              .Set("common_key", "account_value"));
+  // Uses GetValue().
+  {
+    const base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPref1, &result));
+    EXPECT_EQ(*result, merged_dict);
+  }
+  // Uses GetMutableValue().
+  {
+    base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPref1, &result));
+    EXPECT_EQ(*result, merged_dict);
+  }
+  // Uses GetValues().
+  {
+    ASSERT_TRUE(store()->GetValues().contains(kPref1));
+    EXPECT_EQ(*store()->GetValues().Find(kPref1), merged_dict);
+  }
+
+  // The local and the account stores are left untouched.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_dict));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, account_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeSpecialCasedMergeablePref) {
+  base::Value account_value("account_value");
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1,
+                                                   account_value.Clone(), 0);
+  base::Value local_value("local_value");
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_value.Clone(),
+                                                 0);
+
+  base::Value merged_value("custom_merge_value");
+  pref_model_associator_client_.SetCustomMergeValue(kPref1,
+                                                    merged_value.Clone());
+  // Different values are set in both stores; the merge should use the custom
+  // logic.
+  // Uses GetValue().
+  {
+    const base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPref1, &result));
+    EXPECT_EQ(*result, merged_value);
+  }
+  // Uses GetMutableValue().
+  {
+    base::Value* result = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPref1, &result));
+    EXPECT_EQ(*result, merged_value);
+  }
+  // Uses GetValues().
+  {
+    ASSERT_TRUE(store()->GetValues().contains(kPref1));
+    EXPECT_EQ(*store()->GetValues().Find(kPref1), merged_value);
+  }
+
+  // The local and the account stores are left untouched.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_value));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, account_value));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldApplyUpdatesToBothStoresForNonMergeablePrefOnSetValue) {
+  // Set three prefs; one only in the account store, one only in the local store
+  // and one in both stores.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, base::Value("account_value1"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref2, base::Value("local_value2"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref3, base::Value("account_value3"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref3, base::Value("local_value3"), 0);
+
+  // Set an existing account pref. This should not raise a notification, but
+  // only writes to the local store.
+  store()->SetValue(kPref1, base::Value("account_value1"), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, base::Value("account_value1")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             base::Value("account_value1")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             base::Value("account_value1")));
+
+  // Set an existing local pref. This should write to the account store, but not
+  // raise a notification.
+  store()->SetValue(kPref2, base::Value("local_value2"), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref2, base::Value("local_value2")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref2,
+                             base::Value("local_value2")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref2,
+                             base::Value("local_value2")));
+
+  // Update the common pref. This writes to both stores and raises notification
+  // because the effective value changed.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref3));
+  store()->SetValue(kPref3, base::Value("new_value3"), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, base::Value("new_value3")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref3,
+                             base::Value("new_value3")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref3,
+                             base::Value("new_value3")));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldApplyUpdatesToBothStoresForNonMergeablePrefOnSetValueSilently) {
+  // Set three prefs; one only in the account store, one only in the local store
+  // and one in both stores.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, base::Value("account_value1"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref2, base::Value("local_value2"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref3, base::Value("account_value3"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref3, base::Value("local_value3"), 0);
+
+  // Set an existing account pref. This should write to the local store.
+  store()->SetValueSilently(kPref1, base::Value("account_value1"), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, base::Value("account_value1")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             base::Value("account_value1")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             base::Value("account_value1")));
+
+  // Set an existing local pref. This should write to the account store.
+  store()->SetValueSilently(kPref2, base::Value("local_value2"), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref2, base::Value("local_value2")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref2,
+                             base::Value("local_value2")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref2,
+                             base::Value("local_value2")));
+
+  // Update the common pref. This writes to both stores.
+  store()->SetValueSilently(kPref3, base::Value("new_value3"), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, base::Value("new_value3")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref3,
+                             base::Value("new_value3")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref3,
+                             base::Value("new_value3")));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldApplyUpdatesToBothStoresForNonMergeablePrefOnReportValueChanged) {
+  // Set three prefs; one only in the account store, one only in the local store
+  // and one in both stores.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, base::Value("account_value1"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref2, base::Value("local_value2"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref3, base::Value("account_value3"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref3, base::Value("local_value3"), 0);
+
+  // Set an existing account pref. This writes to both stores and raises
+  // notification.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->ReportValueChanged(kPref1, 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, base::Value("account_value1")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             base::Value("account_value1")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             base::Value("account_value1")));
+
+  // Set an existing local pref. This writes to both stores and raises
+  // notification.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref2));
+  store()->ReportValueChanged(kPref2, 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref2, base::Value("local_value2")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref2,
+                             base::Value("local_value2")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref2,
+                             base::Value("local_value2")));
+
+  // Update the common pref. This writes to both stores and raises notification.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref3));
+  store()->ReportValueChanged(kPref3, 0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, base::Value("account_value3")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref3,
+                             base::Value("account_value3")));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref3,
+                             base::Value("account_value3")));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingSetValue) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "account_value")
+                      .Set("common_key", "account_value")),
+      0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  // Update account value.
+  store()->GetAccountPrefStore()->SetValue(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "new_account_value")
+                      .Set("common_key", "account_value")),
+      0);
+
+  // Updated account value should reflect in the merged view.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     // Updated value.
+                                     .Set("account_key", "new_account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  // Add new key to local value.
+  store()->GetLocalPrefStore()->SetValue(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      // New entry.
+                      .Set("new_local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  // Updated local value should reflect in the merged view.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "new_account_value")
+                                     .Set("local_key", "local_value")
+                                     // New entry.
+                                     .Set("new_local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingSetValueSilently) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "account_value")
+                      .Set("common_key", "account_value")),
+      0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  // Update account value.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      // Updated value.
+                      .Set("account_key", "new_account_value")
+                      .Set("common_key", "account_value")),
+      0);
+
+  // Updated account value should reflect in the merged view.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     // Updated value.
+                                     .Set("account_key", "new_account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  // Add new key to local value.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("new_local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  // Updated local value should reflect in the merged view.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "new_account_value")
+                                     .Set("local_key", "local_value")
+                                     // New entry.
+                                     .Set("new_local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUpdateMergedPrefOnWriteToUnderlyingStoresUsingMutableValue) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "account_value")
+                      .Set("common_key", "account_value")),
+      0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  base::Value* account_value = nullptr;
+  store()->GetAccountPrefStore()->GetMutableValue(kPref1, &account_value);
+  ASSERT_TRUE(account_value && account_value->is_dict());
+
+  // Update account value.
+  *account_value = base::Value(base::Value::Dict()
+                                   // Updated value.
+                                   .Set("account_key", "new_account_value")
+                                   .Set("common_key", "account_value"));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->GetAccountPrefStore()->ReportValueChanged(kPref1, 0);
+
+  // Updated account value should reflect in the merged view.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     // Updated value.
+                                     .Set("account_key", "new_account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  base::Value* local_value = nullptr;
+  store()->GetLocalPrefStore()->GetMutableValue(kPref1, &local_value);
+  ASSERT_TRUE(local_value && local_value->is_dict());
+  // Add new key to local value.
+  local_value->GetDict().Set("new_local_key", "local_value");
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->GetLocalPrefStore()->ReportValueChanged(kPref1, 0);
+
+  // Updated local value should reflect in the merged view.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "new_account_value")
+                                     .Set("local_key", "local_value")
+                                     // New entry.
+                                     .Set("new_local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUpdateMergedPrefOnRemoveFromUnderlyingStores) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "account_value")
+                      .Set("common_key", "account_value")),
+      0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  // Remove pref from the account store.
+  store()->GetAccountPrefStore()->RemoveValuesByPrefixSilently(kPref1);
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("local_key", "local_value")
+                                     // Value now being by the local store.
+                                     .Set("common_key", "local_value"))));
+
+  // Remove pref from the local store.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->GetLocalPrefStore()->RemoveValue(kPref1, 0);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest, ShouldClearMergedPrefOnRemove) {
+  // Ensures that pref no longer exists in the merged pref store upon remove.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "account_value")
+                      .Set("common_key", "account_value")),
+      0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kPref1,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->RemoveValue(kPref1, 0);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref2);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref2,
+      base::Value(base::Value::Dict()
+                      .Set("account_key", "account_value")
+                      .Set("common_key", "account_value")),
+      0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref2,
+      base::Value(base::Value::Dict()
+                      .Set("local_key", "local_value")
+                      .Set("common_key", "local_value")),
+      0);
+
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kPref2,
+                     base::Value(base::Value::Dict()
+                                     .Set("account_key", "account_value")
+                                     .Set("local_key", "local_value")
+                                     .Set("common_key", "account_value"))));
+
+  store()->RemoveValuesByPrefixSilently(kPref2);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref2));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUnmergeMergeableDictPrefButNotAddUnchangedValueToAccountStore) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value local_dict(base::Value::Dict().Set("local_key", "local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  // `kPref1` only exists in the local store.
+  ASSERT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref1));
+
+  // Effective value same as local value since pref is not in account store.
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, local_dict));
+
+  // Set the effective/merged value again.
+  // Note: Expecting no notification.
+  store()->SetValue(kPref1, local_dict.Clone(), 0);
+
+  // Value in the local store remains unchanged.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_dict));
+  // An empty dict pref is added to the account store.
+  // Note: This is an implementation detail. Ideally, not adding the pref to the
+  // account store might be a better approach.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             base::Value(base::Value::Type::DICT)));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUnmergeMergeableDictPrefButNotAddUnchangedValueToLocalStore) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value account_dict(
+      base::Value::Dict().Set("account_key", "account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+  // `kPref1` only exists in the account store.
+  ASSERT_TRUE(ValueInStoreIsAbsent(*store()->GetLocalPrefStore(), kPref1));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, account_dict));
+
+  // Set the effective/merged value again.
+  // Note: Expecting no notification.
+  store()->SetValue(kPref1, account_dict.Clone(), 0);
+
+  // An empty dict pref is added to the local store.
+  // Note: This is an implementation detail. Ideally, not adding the pref to the
+  // local store might be a better approach.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             base::Value(base::Value::Type::DICT)));
+  // Value in the account store remains unchanged.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, account_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUnmergeAndApplyUpdatesForMergeableDictPrefOnSetValue) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value local_dict(base::Value::Dict()
+                             .Set("local_key1", "local_value1")
+                             .Set("local_key2", "local_value2")
+                             .Set("local_key3", "local_value3")
+                             .Set("common_key1", "local_value4")
+                             .Set("common_key2", "common_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  base::Value account_dict(base::Value::Dict()
+                               .Set("account_key1", "account_value1")
+                               .Set("account_key2", "account_value2")
+                               .Set("account_key3", "account_value3")
+                               .Set("common_key1", "account_value4")
+                               .Set("common_key2", "common_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+
+  base::Value merged_dict(base::Value::Dict()
+                              .Set("account_key1", "account_value1")
+                              .Set("account_key2", "account_value2")
+                              .Set("account_key3", "account_value3")
+                              .Set("common_key1", "account_value4")
+                              .Set("common_key2", "common_value")
+                              .Set("local_key1", "local_value1")
+                              .Set("local_key2", "local_value2")
+                              .Set("local_key3", "local_value3"));
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, merged_dict));
+
+  base::Value updated_dict(base::Value::Dict()
+                               // New key, should get added to both
+                               // stores.
+                               .Set("new_key", "new_value")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("account_key1", "new_value1")
+                               // No change, should only be in account
+                               // store.
+                               .Set("account_key2", "account_value2")
+                               // No change, should only be in local
+                               // store.
+                               .Set("local_key1", "local_value1")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("local_key2", "new_value2")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("common_key1", "local_value4")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("common_key2", "new_common_value"));
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->SetValue(kPref1, updated_dict.Clone(), 0);
+
+  // Note: "local_key3" has been deleted.
+  base::Value updated_local_dict(base::Value::Dict()
+                                     .Set("new_key", "new_value")
+                                     .Set("account_key1", "new_value1")
+                                     .Set("local_key1", "local_value1")
+                                     .Set("local_key2", "new_value2")
+                                     .Set("common_key1", "local_value4")
+                                     .Set("common_key2", "new_common_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             updated_local_dict));
+
+  // Note: "account_key3" has been deleted.
+  base::Value updated_account_dict(base::Value::Dict()
+                                       .Set("new_key", "new_value")
+                                       .Set("account_key1", "new_value1")
+                                       .Set("account_key2", "account_value2")
+                                       .Set("local_key2", "new_value2")
+                                       .Set("common_key1", "local_value4")
+                                       .Set("common_key2", "new_common_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             updated_account_dict));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, updated_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUnmergeAndApplyUpdatesForMergeableDictPrefOnSetValueSilently) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value local_dict(base::Value::Dict()
+                             .Set("local_key1", "local_value1")
+                             .Set("local_key2", "local_value2")
+                             .Set("local_key3", "local_value3")
+                             .Set("common_key1", "local_value4")
+                             .Set("common_key2", "common_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  base::Value account_dict(base::Value::Dict()
+                               .Set("account_key1", "account_value1")
+                               .Set("account_key2", "account_value2")
+                               .Set("account_key3", "account_value3")
+                               .Set("common_key1", "account_value4")
+                               .Set("common_key2", "common_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+
+  base::Value merged_dict(base::Value::Dict()
+                              .Set("account_key1", "account_value1")
+                              .Set("account_key2", "account_value2")
+                              .Set("account_key3", "account_value3")
+                              .Set("common_key1", "account_value4")
+                              .Set("common_key2", "common_value")
+                              .Set("local_key1", "local_value1")
+                              .Set("local_key2", "local_value2")
+                              .Set("local_key3", "local_value3"));
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, merged_dict));
+
+  base::Value updated_dict(base::Value::Dict()
+                               // New key, should get added to both
+                               // stores.
+                               .Set("new_key", "new_value")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("account_key1", "new_value1")
+                               // No change, should only be in account
+                               // store.
+                               .Set("account_key2", "account_value2")
+                               // No change, should only be in local
+                               // store.
+                               .Set("local_key1", "local_value1")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("local_key2", "new_value2")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("common_key1", "local_value4")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("common_key2", "new_common_value"));
+  store()->SetValueSilently(kPref1, updated_dict.Clone(), 0);
+
+  // Note: "local_key3" has been deleted.
+  base::Value updated_local_dict(base::Value::Dict()
+                                     .Set("new_key", "new_value")
+                                     .Set("account_key1", "new_value1")
+                                     .Set("local_key1", "local_value1")
+                                     .Set("local_key2", "new_value2")
+                                     .Set("common_key1", "local_value4")
+                                     .Set("common_key2", "new_common_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             updated_local_dict));
+
+  // Note: "account_key3" has been deleted.
+  base::Value updated_account_dict(base::Value::Dict()
+                                       .Set("new_key", "new_value")
+                                       .Set("account_key1", "new_value1")
+                                       .Set("account_key2", "account_value2")
+                                       .Set("local_key2", "new_value2")
+                                       .Set("common_key1", "local_value4")
+                                       .Set("common_key2", "new_common_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             updated_account_dict));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, updated_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldUnmergeAndApplyUpdatesForMergeableDictPrefOnReportPrefChanged) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value local_dict(base::Value::Dict()
+                             .Set("local_key1", "local_value1")
+                             .Set("local_key2", "local_value2")
+                             .Set("local_key3", "local_value3")
+                             .Set("common_key1", "local_value4")
+                             .Set("common_key2", "common_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  base::Value account_dict(base::Value::Dict()
+                               .Set("account_key1", "account_value1")
+                               .Set("account_key2", "account_value2")
+                               .Set("account_key3", "account_value3")
+                               .Set("common_key1", "account_value4")
+                               .Set("common_key2", "common_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+
+  base::Value merged_dict(base::Value::Dict()
+                              .Set("account_key1", "account_value1")
+                              .Set("account_key2", "account_value2")
+                              .Set("account_key3", "account_value3")
+                              .Set("common_key1", "account_value4")
+                              .Set("common_key2", "common_value")
+                              .Set("local_key1", "local_value1")
+                              .Set("local_key2", "local_value2")
+                              .Set("local_key3", "local_value3"));
+  base::Value* merged_value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kPref1, &merged_value));
+  ASSERT_EQ(*merged_value, merged_dict);
+
+  base::Value updated_dict(base::Value::Dict()
+                               // New key, should get added to both
+                               // stores.
+                               .Set("new_key", "new_value")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("account_key1", "new_value1")
+                               // No change, should only be in account
+                               // store.
+                               .Set("account_key2", "account_value2")
+                               // No change, should only be in local
+                               // store.
+                               .Set("local_key1", "local_value1")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("local_key2", "new_value2")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("common_key1", "local_value4")
+                               // Updated value, should get added to both
+                               // stores.
+                               .Set("common_key2", "new_common_value"));
+  *merged_value = updated_dict.Clone();
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->ReportValueChanged(kPref1, 0);
+
+  // Note: "local_key3" has been deleted.
+  base::Value updated_local_dict(base::Value::Dict()
+                                     .Set("new_key", "new_value")
+                                     .Set("account_key1", "new_value1")
+                                     .Set("local_key1", "local_value1")
+                                     .Set("local_key2", "new_value2")
+                                     .Set("common_key1", "local_value4")
+                                     .Set("common_key2", "new_common_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1,
+                             updated_local_dict));
+
+  // Note: "account_key3" has been deleted.
+  base::Value updated_account_dict(base::Value::Dict()
+                                       .Set("new_key", "new_value")
+                                       .Set("account_key1", "new_value1")
+                                       .Set("account_key2", "account_value2")
+                                       .Set("local_key2", "new_value2")
+                                       .Set("common_key1", "local_value4")
+                                       .Set("common_key2", "new_common_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1,
+                             updated_account_dict));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, updated_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldApplyUpdateOnMergeableListPrefAsNonMergeablePref) {
+  pref_model_associator_client_.MarkAsMergeableListPref(kPref1);
+
+  base::Value local_list(
+      base::Value::List().Append("local_value").Append("common_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_list.Clone(), 0);
+
+  base::Value account_list(
+      base::Value::List().Append("account_value").Append("common_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_list.Clone(),
+                                                   0);
+
+  base::Value merged_list(base::Value::List()
+                              .Append("account_value")
+                              .Append("common_value")
+                              .Append("local_value"));
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, merged_list));
+
+  base::Value updated_list(base::Value::List()
+                               .Append("local_value")
+                               .Append("account_value")
+                               .Append("common_value"));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  // Writes to both stores.
+  store()->SetValue(kPref1, updated_list.Clone(), 0);
+
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, updated_list));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, updated_list));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, updated_list));
+}
+
+TEST_F(DualLayerUserPrefStoreMergeTest,
+       ShouldNotUnmergeIfIncorrectlyMarkedAsMergeableDict) {
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value local_dict_value(
+      base::Value::Dict().Set("local_key", "local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1,
+                                                 local_dict_value.Clone(), 0);
+
+  base::Value account_dict_value(
+      base::Value::Dict().Set("account_key", "account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, account_dict_value.Clone(), 0);
+
+  base::Value new_value("new_value");
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+  store()->SetValue(kPref1, new_value.Clone(), 0);
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPref1, new_value));
+  // `kPref1` is considered as incorrectly marked as mergeable and is treated as
+  // a scalar value and overwritten to both stores.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, new_value));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, new_value));
+}
+
+}  // namespace
 }  // namespace sync_preferences

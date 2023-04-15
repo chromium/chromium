@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/metal_context_provider.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -118,6 +117,10 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "components/viz/common/gpu/dawn_context_provider.h"
+#endif
+
+#if BUILDFLAG(SKIA_USE_METAL)
+#include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -361,14 +364,24 @@ GpuServiceImpl::GpuServiceImpl(
   }
 #endif
 
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  if (gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn) {
     dawn_context_provider_ = DawnContextProvider::Create();
     if (!dawn_context_provider_) {
-      DLOG(ERROR) << "Failed to create Dawn context provider.";
+      DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
     }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+  } else if (gpu_preferences_.gr_context_type ==
+             gpu::GrContextType::kGraphiteMetal) {
+#if BUILDFLAG(SKIA_USE_METAL)
+    metal_context_provider_ = MetalContextProvider::Create();
+    if (!metal_context_provider_) {
+      DLOG(ERROR) << "Failed to create Metal context provider for Graphite.";
+    }
+#endif  // BUILDFLAG(SKIA_USE_METAL)
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 
 #if BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
   image_decode_accelerator_worker_ =
@@ -585,7 +598,7 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_memory_buffer_factory_.get(), gpu_feature_info_,
       std::move(activity_flags), std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
-      metal_context_provider_.get(), dawn_context_provider());
+      metal_context_provider(), dawn_context_provider());
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());
@@ -810,6 +823,9 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     CHECK(vea_thread_->StartWithOptions(std::move(thread_options)));
   }
   runner = vea_thread_->task_runner();
+#elif BUILDFLAG(IS_WIN)
+  // Windows hardware encoder requires a COM STA thread.
+  runner = base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()});
 #else
   // MayBlock() because MF VEA can take long time running GetSupportedProfiles()
   if (base::FeatureList::IsEnabled(

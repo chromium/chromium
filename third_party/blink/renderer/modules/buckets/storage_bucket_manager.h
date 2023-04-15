@@ -50,19 +50,21 @@ class MODULES_EXPORT StorageBucketManager final
 
   // These are not exposed to the web applications and only used by DevTools.
   void GetBucketForDevtools(ScriptState* script_state,
-                            const WTF::String& name,
+                            const String& name,
                             base::OnceCallback<void(StorageBucket*)> callback);
 
+ private:
   void DidGetBucketForDevtools(
       ScriptState* script_state,
+      const String& name,
       base::OnceCallback<void(StorageBucket*)> callback,
       mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
       mojom::blink::BucketError);
 
- private:
   mojom::blink::BucketManagerHost* GetBucketManager(ScriptState* script_state);
 
   void DidOpen(ScriptPromiseResolver* resolver,
+               const String& name,
                mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
                mojom::blink::BucketError error);
   void DidGetKeys(ScriptPromiseResolver* resolver,

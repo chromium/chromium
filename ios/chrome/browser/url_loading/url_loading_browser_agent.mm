@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -196,7 +196,7 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     return;
   }
 
-  PrerenderService* prerenderService =
+  PrerenderService* prerender_service =
       PrerenderServiceFactory::GetForBrowserState(browser_state);
 
   // Some URLs are not allowed while in incognito.  If we are in incognito and
@@ -205,8 +205,8 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // to open in, so this also redirects to a new tab.
   if (!current_web_state || (browser_state->IsOffTheRecord() &&
                              !IsURLAllowedInIncognito(web_params.url))) {
-    if (prerenderService) {
-      prerenderService->CancelPrerender();
+    if (prerender_service) {
+      prerender_service->CancelPrerender();
     }
     notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type);
 
@@ -226,8 +226,8 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
 
   // Ask the prerender service to load this URL if it can, and return if it does
   // so.
-  if (prerenderService &&
-      prerenderService->MaybeLoadPrerenderedURL(
+  if (prerender_service &&
+      prerender_service->MaybeLoadPrerenderedURL(
           web_params.url, web_params.transition_type, browser_)) {
     notifier_->TabDidPrerenderUrl(web_params.url, web_params.transition_type);
     return;
@@ -308,10 +308,10 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(browser_);
 
   if (params.in_incognito) {
-    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+    IncognitoReauthSceneAgent* reauth_agent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(browser_)
                            ->GetSceneState()];
-    DCHECK(!reauthAgent.authenticationRequired);
+    DCHECK(!reauth_agent.authenticationRequired);
   }
 
   ChromeBrowserState* browser_state = browser_->GetBrowserState();

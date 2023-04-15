@@ -134,14 +134,12 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
   CHECK(!get_icons_callback_);
   get_icons_callback_ = std::move(callback);
 
+  IconDownloaderOptions options = {.skip_page_favicons = skip_page_favicons};
   icon_downloader_ = std::make_unique<WebAppIconDownloader>(
       web_contents, std::move(icon_urls),
       base::BindOnce(&WebAppDataRetriever::OnIconsDownloaded,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  if (skip_page_favicons) {
-    icon_downloader_->SkipPageFavicons();
-  }
+                     weak_ptr_factory_.GetWeakPtr()),
+      options);
 
   icon_downloader_->Start();
 }

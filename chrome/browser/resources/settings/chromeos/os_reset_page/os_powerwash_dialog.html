@@ -79,17 +79,17 @@
     </div>
   </template>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelTap_"
+    <cr-button class="cancel-button" on-click="onCancelClick_"
         id="cancel">$i18n{cancel}</cr-button>
     <template is="dom-if" if="[[!shouldShowESimWarning_]]" restamp>
       <cr-button class="action-button" id="powerwash"
-          on-click="onRestartTap_">
+          on-click="onRestartClick_">
         $i18n{powerwashDialogButton}
       </cr-button>
     </template>
     <template is="dom-if" if="[[shouldShowESimWarning_]]" restamp>
       <cr-button class="action-button" id="continue"
-          on-click="onContinueTap_"
+          on-click="onContinueClick_"
           disabled="[[!isESimCheckboxChecked_]]">
         $i18n{powerwashContinue}
       </cr-button>

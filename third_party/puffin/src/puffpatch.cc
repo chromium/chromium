@@ -115,11 +115,11 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
       dst_stream->Close();
       return Status::P_READ_ERROR;
     }
-    src_stream->Close();
     std::copy(buffer.data(), buffer.data() + write_size,
               puffed_src.data() + bytes_wrote);
     bytes_wrote += write_size;
   }
+  src_stream->Close();
   // Read the patch
   Buffer zucchini_patch;
   TEST_AND_RETURN_VALUE(BrotliDecode(patch_start, patch_size, &zucchini_patch),

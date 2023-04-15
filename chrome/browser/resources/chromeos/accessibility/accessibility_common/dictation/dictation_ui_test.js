@@ -212,25 +212,27 @@ AX_TEST_F(
       });
     });
 
-AX_TEST_F('DictationUIE2ETest', 'HintsTimeoutWithChromeVox', async function() {
-  // Turn on ChromeVox
-  await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
-  // Wait for the callbacks to Dictation.
-  await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
+AX_TEST_F(
+    'DictationUIE2ETest', 'HintsTimeoutWithChromeVox', async function() {
+      // Turn on ChromeVox
+      await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
+      // Wait for the callbacks to Dictation.
+      await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
 
-  this.mockSetTimeoutMethod();
-  this.toggleDictationOn();
+      this.mockSetTimeoutMethod();
+      this.toggleDictationOn();
 
-  // A callback should have been set to show hints later.
-  const callback = this.getCallbackWithDelay(
-      UIController.HintsTimeouts.LONGER_HINT_TIMEOUT_MS_);
-  assertNotNullNorUndefined(callback);
+      // A callback should have been set to show hints later.
+      const callback = this.getCallbackWithDelay(
+          UIController.HintsTimeouts.LONGER_HINT_TIMEOUT_MS_);
+      assertNotNullNorUndefined(callback);
 
-  // Triggering the timeout should cause the hints to be shown.
-  callback();
-  await this.waitForUIProperties({
-    visible: true,
-    icon: this.iconType.STANDBY,
-    hints: [this.hintType.TRY_SAYING, this.hintType.TYPE, this.hintType.HELP],
-  });
-});
+      // Triggering the timeout should cause the hints to be shown.
+      callback();
+      await this.waitForUIProperties({
+        visible: true,
+        icon: this.iconType.STANDBY,
+        hints:
+            [this.hintType.TRY_SAYING, this.hintType.TYPE, this.hintType.HELP],
+      });
+    });

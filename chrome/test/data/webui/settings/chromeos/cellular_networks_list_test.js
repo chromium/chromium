@@ -18,7 +18,7 @@ import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
+import {TestMultideviceBrowserProxy} from './multidevice_page/test_multidevice_browser_proxy.js';
 
 suite('CellularNetworksList', function() {
   let cellularNetworkList;

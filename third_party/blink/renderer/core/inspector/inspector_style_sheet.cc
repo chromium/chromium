@@ -151,7 +151,7 @@ void GetClassNamesFromRule(CSSStyleRule* rule, HashSet<String>& unique_names) {
     while (simple_selector) {
       if (simple_selector->Match() == CSSSelector::kClass)
         unique_names.insert(simple_selector->Value());
-      simple_selector = simple_selector->TagHistory();
+      simple_selector = simple_selector->NextSimpleSelector();
     }
   }
 }

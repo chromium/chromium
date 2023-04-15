@@ -2200,21 +2200,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
                       new_contents->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // Verify that the |new_contents| has |window.opener| set.
-  std::string location_of_opener;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      new_contents,
-      "window.domAutomationController.send(window.opener.location.href)",
-      &location_of_opener));
   EXPECT_EQ(old_contents->GetPrimaryMainFrame()->GetLastCommittedURL().spec(),
-            location_of_opener);
+            EvalJs(new_contents, "window.opener.location.href"));
 
   // Verify that |new_contents| can find |old_contents| using window.open/name.
-  std::string location_of_other_window;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      new_contents,
-      "var w = window.open('', 'old-contents');\n"
-      "window.domAutomationController.send(w.location.href);",
-      &location_of_other_window));
+  std::string location_of_other_window =
+      EvalJs(new_contents,
+             "var w = window.open('', 'old-contents');\n"
+             "w.location.href;")
+          .ExtractString();
   EXPECT_EQ(old_contents->GetPrimaryMainFrame()->GetLastCommittedURL().spec(),
             location_of_other_window);
 }
@@ -2331,11 +2325,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     ASSERT_TRUE(new_contents);
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
 
-    std::string actual_origin_str;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        new_contents, "window.domAutomationController.send(origin);",
-        &actual_origin_str));
-    EXPECT_EQ(test_case.expected_origin_str, actual_origin_str);
+    EXPECT_EQ(test_case.expected_origin_str, EvalJs(new_contents, "origin;"));
     const bool is_opaque_origin =
         new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque();
     EXPECT_EQ(test_case.expected_origin_str == "null", is_opaque_origin);

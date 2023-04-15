@@ -29,6 +29,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -940,7 +941,9 @@ PrivacySandboxService::GetSampleFirstPartySets() const {
             {net::SchemefulSite(GURL("https://chromium.org")),
              net::SchemefulSite(GURL("https://chromium.org"))},
             {net::SchemefulSite(GURL("https://googlesource.com")),
-             net::SchemefulSite(GURL("https://chromium.org"))}};
+             net::SchemefulSite(GURL("https://chromium.org"))},
+            {net::SchemefulSite(GURL("https://muenchen.de")),
+             net::SchemefulSite(GURL("https://xn--mnchen-3ya.de"))}};
   }
 
   return {};
@@ -991,9 +994,7 @@ PrivacySandboxService::GetFirstPartySetOwnerForDisplay(
     return absl::nullopt;
   }
 
-  // TODO(crbug.com/1332513): Apply formatting that correctly displays unicode
-  // domains.
-  return base::UTF8ToUTF16(site_owner->GetURL().host());
+  return url_formatter::IDNToUnicode(site_owner->GetURL().host());
 }
 
 bool PrivacySandboxService::IsPartOfManagedFirstPartySet(

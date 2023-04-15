@@ -74,15 +74,16 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void showSyncConsentActivity(int signinAccessPoint) {
-        SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                mActivityContext, signinAccessPoint);
+        SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                mActivityContext, signinAccessPoint, null);
     }
 
     @Override
     public void showSignInInterstitial(int signinAccessPoint,
             BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
         SigninBottomSheetCoordinator signinCoordinator =
-                new SigninBottomSheetCoordinator(mWindowAndroid, mBottomSheetController, mProfile);
+                new SigninBottomSheetCoordinator(mWindowAndroid, mBottomSheetController, mProfile,
+                        () -> { showSyncConsentActivity(signinAccessPoint); });
         signinCoordinator.show();
     }
 }

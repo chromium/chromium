@@ -15,7 +15,9 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-forward.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -162,6 +164,13 @@ class BLINK_COMMON_EXPORT Manifest {
     absl::optional<std::string> description;
   };
 
+  struct BLINK_COMMON_EXPORT UrlPattern {
+    UrlPattern();
+    ~UrlPattern();
+
+    std::vector<liburlpattern::Part> pathname;
+  };
+
   // Parameters for the home tab customisation to the tab strip.
   struct BLINK_COMMON_EXPORT HomeTabParams {
     HomeTabParams();
@@ -170,6 +179,7 @@ class BLINK_COMMON_EXPORT Manifest {
     bool operator==(const HomeTabParams& other) const;
 
     std::vector<ImageResource> icons;
+    std::vector<UrlPattern> scope_patterns;
   };
 
   // Parameters for the new tab button customisation to the tab strip.
@@ -198,6 +208,9 @@ class BLINK_COMMON_EXPORT Manifest {
     NewTabButton new_tab_button;
   };
 };
+
+BLINK_COMMON_EXPORT bool operator==(const Manifest::UrlPattern& left,
+                                    const Manifest::UrlPattern& right);
 
 }  // namespace blink
 

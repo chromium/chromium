@@ -40,6 +40,9 @@ public class ApplicationTestUtils {
         CriteriaHelper.pollUiThread(() -> {
             return sMonitor.getLifecycleStageOf(activity) == stage;
         }, failureReason, ACTIVITY_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        // De-flake by flushing the tasks that are already queued on the Looper's Handler.
+        // TODO(https://crbug.com/1424788): Remove this and properly fix flaky tests.
+        TestThreadUtils.flushNonDelayedLooperTasks();
     }
 
     /** Finishes the given activity and waits for its onDestroy() to be called. */

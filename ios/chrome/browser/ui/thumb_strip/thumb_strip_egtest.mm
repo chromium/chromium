@@ -6,6 +6,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -26,23 +27,6 @@ using chrome_test_util::NTPCollectionView;
 using chrome_test_util::PrimaryToolbar;
 using chrome_test_util::WebStateScrollViewMatcher;
 
-namespace {
-
-// net::EmbeddedTestServer handler that responds with the request's query as the
-// title and body.
-std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
-  http_response->set_content_type("text/html");
-  http_response->set_content("<html><head><title>" + request.GetURL().query() +
-                             "</title></head><body>" +
-                             request.GetURL().query() + "</body></html>");
-  return std::move(http_response);
-}
-
-}  // namespace
-
 // Thumb Strip tests for Chrome.
 @interface ThumbStripTestCase : ChromeTestCase
 @end
@@ -58,9 +42,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
 // Sets up the EmbeddedTestServer as needed for tests.
 - (void)setUpTestServer {
-  self.testServer->RegisterDefaultHandler(base::BindRepeating(
-      net::test_server::HandlePrefixedRequest, "/querytitle",
-      base::BindRepeating(&HandleQueryTitle)));
+  RegisterQueryTitleHandler(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 
@@ -75,7 +57,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
   [self setUpTestServer];
 
-  const GURL URL = self.testServer->GetURL("/querytitle?Hello");
+  const GURL URL = GetQueryTitleURL(self.testServer, @"Hello");
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
@@ -102,7 +84,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
   [self setUpTestServer];
 
-  const GURL URL = self.testServer->GetURL("/querytitle?Hello");
+  const GURL URL = GetQueryTitleURL(self.testServer, @"Hello");
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
@@ -127,7 +109,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
   [self setUpTestServer];
 
-  const GURL URL = self.testServer->GetURL("/querytitle?Hello");
+  const GURL URL = GetQueryTitleURL(self.testServer, @"Hello");
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
@@ -196,14 +178,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
   [self setUpTestServer];
 
-  const GURL URL1 = self.testServer->GetURL("/querytitle?Page1");
+  const GURL URL1 = GetQueryTitleURL(self.testServer, @"Page1");
   [ChromeEarlGrey loadURL:URL1];
   [ChromeEarlGrey waitForWebStateContainingText:"Page1"];
 
   // Open and load second tab.
   [ChromeEarlGrey openNewTab];
 
-  const GURL URL2 = self.testServer->GetURL("/querytitle?Page2");
+  const GURL URL2 = GetQueryTitleURL(self.testServer, @"Page2");
 
   [ChromeEarlGrey loadURL:URL2];
   [ChromeEarlGrey waitForWebStateContainingText:"Page2"];

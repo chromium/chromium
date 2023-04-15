@@ -275,21 +275,22 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   FlattenedSets flattened_additions =
       SetListToFlattenedSets(normalized_additions);
 
-  // All of the custom sets are automatically inserted into site_to_owner.
+  // All of the custom sets are automatically inserted into site_to_entry.
   UpdateCustomizations(replacement_sets, site_to_entry);
   UpdateCustomizations(normalized_additions, site_to_entry);
 
-  // Maps old owner to new entry.
-  base::flat_map<SchemefulSite, FirstPartySetEntry> addition_intersected_owners;
+  // Maps old primary site to new entry.
+  base::flat_map<SchemefulSite, FirstPartySetEntry>
+      addition_intersected_primaries;
   for (const auto& [new_member, new_entry] : flattened_additions) {
     if (const auto entry = FindEntry(new_member, /*config=*/nullptr);
         entry.has_value()) {
       // Found an overlap with the existing list of sets.
-      addition_intersected_owners.emplace(entry->primary(), new_entry);
+      addition_intersected_primaries.emplace(entry->primary(), new_entry);
     }
   }
 
-  // Maps an existing owner to the members it lost due to replacement.
+  // Maps an existing primary site to the members it lost due to replacement.
   base::flat_map<SchemefulSite, base::flat_set<SchemefulSite>>
       potential_singletons;
   for (const auto& [member, set_entry] : flattened_replacements) {
@@ -297,30 +298,30 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
       continue;
     if (const auto existing_entry = FindEntry(member, /*config=*/nullptr);
         existing_entry.has_value() && existing_entry->primary() != member &&
-        !addition_intersected_owners.contains(existing_entry->primary()) &&
+        !addition_intersected_primaries.contains(existing_entry->primary()) &&
         !flattened_additions.contains(existing_entry->primary()) &&
         !flattened_replacements.contains(existing_entry->primary())) {
       potential_singletons[existing_entry->primary()].insert(member);
     }
   }
 
-  // Find the existing owners that have left their existing sets, and whose
-  // existing members should be removed from their set (excluding any custom
-  // sets that those members are involved in).
-  base::flat_set<SchemefulSite> replaced_existing_owners;
-  for (const auto& [site, unused_owner] : flattened_replacements) {
+  // Find the existing primary sites that have left their existing sets, and
+  // whose existing members should be removed from their set (excluding any
+  // custom sets that those members are involved in).
+  base::flat_set<SchemefulSite> replaced_existing_primaries;
+  for (const auto& [site, unused_primary] : flattened_replacements) {
     if (const auto entry = FindEntry(site, /*config=*/nullptr);
         entry.has_value() && entry->primary() == site) {
-      // Site was an owner in the existing sets.
-      bool inserted = replaced_existing_owners.emplace(site).second;
+      // Site was an primary in the existing sets.
+      bool inserted = replaced_existing_primaries.emplace(site).second;
       CHECK(inserted);
     }
   }
 
-  if (!addition_intersected_owners.empty() || !potential_singletons.empty() ||
-      !replaced_existing_owners.empty()) {
+  if (!addition_intersected_primaries.empty() ||
+      !potential_singletons.empty() || !replaced_existing_primaries.empty()) {
     // Find out which potential singletons are actually singletons; delete
-    // members whose owners left; and reparent the sets that intersected with
+    // members whose primaries left; and reparent the sets that intersected with
     // an addition set.
     // Note: use a null config here, to avoid taking unrelated policy sets into
     // account.
@@ -329,8 +330,8 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
         [&](const SchemefulSite& member, const FirstPartySetEntry& set_entry) {
           // Reparent all sites in any intersecting addition sets.
           if (const auto entry =
-                  addition_intersected_owners.find(set_entry.primary());
-              entry != addition_intersected_owners.end() &&
+                  addition_intersected_primaries.find(set_entry.primary());
+              entry != addition_intersected_primaries.end() &&
               !flattened_replacements.contains(member)) {
             site_to_entry.emplace_back(
                 member, FirstPartySetEntry(entry->second.primary(),
@@ -345,24 +346,24 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
           if (const auto entry = potential_singletons.find(set_entry.primary());
               entry != potential_singletons.end() &&
               !entry->second.contains(member)) {
-            // This owner lost members, but it still has at least one
+            // This primary lost members, but it still has at least one
             // (`member`), so it's not a singleton.
             potential_singletons.erase(entry);
           }
-          // Remove members from sets whose owner left.
-          if (replaced_existing_owners.contains(set_entry.primary()) &&
+          // Remove members from sets whose primary left.
+          if (replaced_existing_primaries.contains(set_entry.primary()) &&
               !flattened_replacements.contains(member) &&
-              !addition_intersected_owners.contains(set_entry.primary())) {
+              !addition_intersected_primaries.contains(set_entry.primary())) {
             site_to_entry.emplace_back(member, FirstPartySetEntryOverride());
           }
 
           return true;
         });
 
-    // Any owner remaining in `potential_singleton` is a real singleton, so
+    // Any primary remaining in `potential_singleton` is a real singleton, so
     // delete it:
-    for (const auto& [owner, members] : potential_singletons) {
-      site_to_entry.emplace_back(owner, FirstPartySetEntryOverride());
+    for (const auto& [primary, members] : potential_singletons) {
+      site_to_entry.emplace_back(primary, FirstPartySetEntryOverride());
     }
   }
 

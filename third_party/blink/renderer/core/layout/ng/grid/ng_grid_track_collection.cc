@@ -465,6 +465,11 @@ bool NGGridLayoutTrackCollection::operator==(
     const NGGridLayoutTrackCollection& other) const {
   return gutter_size_ == other.gutter_size_ &&
          track_direction_ == other.track_direction_ &&
+         accumulated_gutter_size_delta_ ==
+             other.accumulated_gutter_size_delta_ &&
+         accumulated_start_extra_margin_ ==
+             other.accumulated_start_extra_margin_ &&
+         accumulated_end_extra_margin_ == other.accumulated_end_extra_margin_ &&
          baselines_.has_value() == other.baselines_.has_value() &&
          (!baselines_ || (baselines_->major == other.baselines_->major &&
                           baselines_->minor == other.baselines_->minor)) &&
@@ -534,15 +539,36 @@ wtf_size_t NGGridLayoutTrackCollection::GetSetTrackCount(
   return sets_geometry_[set_index + 1].track_count;
 }
 
+LayoutUnit NGGridLayoutTrackCollection::StartExtraMargin(
+    wtf_size_t set_index) const {
+  return set_index ? accumulated_gutter_size_delta_ / 2
+                   : accumulated_start_extra_margin_;
+}
+
+LayoutUnit NGGridLayoutTrackCollection::EndExtraMargin(
+    wtf_size_t set_index) const {
+  return (set_index < sets_geometry_.size() - 1)
+             ? accumulated_gutter_size_delta_ / 2
+             : accumulated_end_extra_margin_;
+}
+
 LayoutUnit NGGridLayoutTrackCollection::MajorBaseline(
     wtf_size_t set_index) const {
-  DCHECK(baselines_ && set_index < baselines_->major.size());
+  if (!baselines_) {
+    return LayoutUnit::Min();
+  }
+
+  DCHECK_LT(set_index, baselines_->major.size());
   return baselines_->major[set_index];
 }
 
 LayoutUnit NGGridLayoutTrackCollection::MinorBaseline(
     wtf_size_t set_index) const {
-  DCHECK(baselines_ && set_index < baselines_->minor.size());
+  if (!baselines_) {
+    return LayoutUnit::Min();
+  }
+
+  DCHECK_LT(set_index, baselines_->minor.size());
   return baselines_->minor[set_index];
 }
 
@@ -653,6 +679,19 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
                              subgrid_border_scrollbar_padding.inline_end
                        : subgrid_margin.block_end +
                              subgrid_border_scrollbar_padding.block_end;
+
+    // Accumulate the extra margin from the spanned sets in the parent track
+    // collection and this subgrid's margins and gutter size delta.
+    subgrid_track_collection.accumulated_gutter_size_delta_ =
+        subgrid_gutter_size_delta + accumulated_gutter_size_delta_;
+
+    subgrid_track_collection.accumulated_start_extra_margin_ =
+        subgrid_margin_start + subgrid_border_scrollbar_padding_start +
+        StartExtraMargin(begin_set_index);
+
+    subgrid_track_collection.accumulated_end_extra_margin_ =
+        subgrid_margin_border_scrollbar_padding_end +
+        EndExtraMargin(end_set_index);
 
     auto& subgrid_sets_geometry = subgrid_track_collection.sets_geometry_;
 

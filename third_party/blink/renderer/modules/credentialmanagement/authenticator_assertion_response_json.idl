@@ -1,0 +1,12 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
+
+dictionary AuthenticatorAssertionResponseJSON {
+    Base64URLString clientDataJSON;
+    Base64URLString authenticatorData;
+    Base64URLString signature;
+    Base64URLString? userHandle;
+};

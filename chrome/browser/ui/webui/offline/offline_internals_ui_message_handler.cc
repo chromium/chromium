@@ -28,7 +28,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/network_change_notifier.h"
 

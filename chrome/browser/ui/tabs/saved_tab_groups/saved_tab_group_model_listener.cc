@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -72,8 +73,8 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
       local_tab_group_listeners_.contains(new_local_group_id.value())) {
     LocalTabGroupListener& listener =
         local_tab_group_listeners_.at(new_local_group_id.value());
-    const Browser* const browser =
-        GetBrowserWithTabGroupId(new_local_group_id.value());
+    const Browser* const browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
+        new_local_group_id.value());
     CHECK(browser);
     listener.AddWebContents(contents, browser->tab_strip_model(), index);
   }
@@ -115,16 +116,6 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
   }
 }
 
-Browser* SavedTabGroupModelListener::GetBrowserWithTabGroupId(
-    tab_groups::TabGroupId group_id) const {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model()->group_model()->ContainsTabGroup(group_id)) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
     std::vector<std::pair<content::WebContents*, base::GUID>> mapping) {
@@ -133,17 +124,30 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
 
   // `mapping` should have one entry per tab in the local group. This may not
   // equal the saved group's size, if the saved group contains invalid URLs.
-  const size_t local_group_size = GetBrowserWithTabGroupId(local_group_id)
-                                      ->tab_strip_model()
-                                      ->group_model()
-                                      ->GetTabGroup(local_group_id)
-                                      ->tab_count();
+  const size_t local_group_size =
+      SavedTabGroupUtils::GetTabGroupWithId(local_group_id)->tab_count();
   CHECK_EQ(local_group_size, mapping.size());
 
   auto [iterator, success] = local_tab_group_listeners_.try_emplace(
       local_group_id, local_group_id, saved_tab_group.saved_guid(), model_,
       mapping);
   CHECK(success);
+}
+
+void SavedTabGroupModelListener::PauseTrackingLocalTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  if (!local_tab_group_listeners_.contains(group_id)) {
+    return;
+  }
+  local_tab_group_listeners_.at(group_id).PauseTracking();
+}
+
+void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  if (!local_tab_group_listeners_.contains(group_id)) {
+    return;
+  }
+  local_tab_group_listeners_.at(group_id).ResumeTracking();
 }
 
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
@@ -156,7 +160,12 @@ void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
     return;
   }
 
+  if (observed_browsers_.contains(browser)) {
+    return;
+  }
+
   browser->tab_strip_model()->AddObserver(this);
+  observed_browsers_.insert(browser);
 }
 
 void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
@@ -165,4 +174,6 @@ void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
   }
 
   browser->tab_strip_model()->RemoveObserver(this);
+  CHECK(observed_browsers_.contains(browser));
+  observed_browsers_.erase(browser);
 }

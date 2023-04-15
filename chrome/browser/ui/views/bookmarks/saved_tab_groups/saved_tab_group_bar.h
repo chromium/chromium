@@ -104,11 +104,13 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void SavedTabGroupUpdated(const base::GUID& guid);
 
   // Adds the button to the child views for a new tab group at a specific index.
-  // Also adds a button ptr to the tab_group_buttons_ list.
+  // This function then verifies if the added button and overflow button should
+  // be visible/hidden. Also adds a button ptr to the tab_group_buttons_ list.
   void AddTabGroupButton(const SavedTabGroup& group, int index);
 
-  // Adds all buttons currently stored in `saved_tab_group_model_`.
-  void AddAllButtons();
+  // Adds all buttons currently stored in `saved_tab_group_model_` using
+  // SavedTabGroupBar::AddTabGroupButton.
+  void LoadAllButtonsFromModel();
 
   // Removes the button from the child views at a specific index. Also removes
   // the button ptr from the tab_group_buttons_ list.

@@ -170,7 +170,7 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
   if (v == CSSValueID::kInline) {
     return EDisplay::kInline;
   }
-  if (v == CSSValueID::kBlock) {
+  if (v == CSSValueID::kBlock || v == CSSValueID::kFlow) {
     return EDisplay::kBlock;
   }
   if (v == CSSValueID::kFlowRoot) {
@@ -480,6 +480,35 @@ inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
   }
   NOTREACHED();
   return CSSValueID::kNone;
+}
+
+template <>
+inline TimelineAttachment CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kLocal:
+      return TimelineAttachment::kLocal;
+    case CSSValueID::kDefer:
+      return TimelineAttachment::kDefer;
+    case CSSValueID::kAncestor:
+      return TimelineAttachment::kAncestor;
+    default:
+      NOTREACHED();
+      return TimelineAttachment::kAncestor;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(TimelineAttachment v) {
+  switch (v) {
+    case TimelineAttachment::kLocal:
+      return CSSValueID::kLocal;
+    case TimelineAttachment::kDefer:
+      return CSSValueID::kDefer;
+    case TimelineAttachment::kAncestor:
+      return CSSValueID::kAncestor;
+  }
+  NOTREACHED();
+  return CSSValueID::kLocal;
 }
 
 }  // namespace blink

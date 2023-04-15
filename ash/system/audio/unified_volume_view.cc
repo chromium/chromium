@@ -153,7 +153,7 @@ UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller,
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kRadioSliderViewPadding,
-      kRadioSliderViewSpacing));
+      kSliderChildrenViewSpacing));
   slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
   slider()->SetPreferredSize(kRadioSliderPreferredSize);
   slider_icon()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));

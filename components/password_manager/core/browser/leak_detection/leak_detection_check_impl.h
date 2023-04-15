@@ -51,7 +51,8 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
       const signin::IdentityManager* identity_manager);
 
   // LeakDetectionCheck:
-  void Start(const GURL& url,
+  void Start(LeakDetectionInitiator initiator,
+             const GURL& url,
              std::u16string username,
              std::u16string password) override;
 

@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
+#include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
@@ -63,8 +64,14 @@ bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
       *output = absl::nullopt;
       return true;
     }
-    if (!*output)
-      output->emplace();
+    if (!*output) {
+      if constexpr (std::is_constructible_v<typename InputUserType::value_type,
+                                            ::mojo::DefaultConstruct::Tag>) {
+        output->emplace(mojo::internal::DefaultConstructTag());
+      } else {
+        output->emplace();
+      }
+    }
     return Deserialize<MojomType>(std::forward<DataType>(input),
                                   &output->value(),
                                   std::forward<Args>(args)...);

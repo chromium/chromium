@@ -64,19 +64,7 @@
   BOOL isSignedIn = [self isSignedIn];
 
   // Tailored promos take priority over general promo.
-  BOOL isMadeForIOSPromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
-  BOOL isAllTabsPromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
-      isSignedIn;
-  BOOL isStaySafePromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
-
-  BOOL isTailoredPromoEligibleUser =
-      !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
-      (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
-       isStaySafePromoEligible);
-  if (isTailoredPromoEligibleUser) {
+  if (IsTailoredPromoEligibleUser(isSignedIn)) {
     switch (MostRecentInterestDefaultPromoType(!isSignedIn)) {
       case DefaultPromoTypeGeneral:
         NOTREACHED();
@@ -94,16 +82,7 @@
     return;
   }
 
-  BOOL isGeneralPromoEligibleUser =
-      !HasUserInteractedWithFullscreenPromoBefore() &&
-      (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-       isSignedIn);
-  if (isGeneralPromoEligibleUser ||
-      ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
-    [defaultPromoHandler showDefaultBrowserFullscreenPromo];
-    return;
-  }
-  [self stop];
+  [defaultPromoHandler showDefaultBrowserFullscreenPromo];
 }
 
 - (void)stop {

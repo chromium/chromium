@@ -18,7 +18,6 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -152,7 +151,6 @@ SupervisedUserURLFilter::SupervisedUserURLFilter(
     std::unique_ptr<Delegate> service_delegate)
     : default_behavior_(ALLOW),
       service_delegate_(std::move(service_delegate)),
-      denylist_(nullptr),
       blocking_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
@@ -279,7 +277,7 @@ std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) {
   supervised_user::FilteringBehaviorReason reason;
-  return GetFilteringBehaviorForURL(url, false, &reason);
+  return GetFilteringBehaviorForURL(url, &reason);
 }
 
 bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
@@ -296,14 +294,13 @@ bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url,
     FilteringBehavior* behavior) {
   supervised_user::FilteringBehaviorReason reason;
-  *behavior = GetFilteringBehaviorForURL(url, true, &reason);
+  *behavior = GetFilteringBehaviorForURL(url, &reason);
   return reason == supervised_user::FilteringBehaviorReason::MANUAL;
 }
 
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     const GURL& url,
-    bool manual_only,
     supervised_user::FilteringBehaviorReason* reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -323,13 +320,6 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
       GetManualFilteringBehaviorForURL(effective_url);
   if (manual_result != INVALID) {
     return manual_result;
-  }
-
-  // Check the static denylist, unless the default is to block anyway.
-  if (!manual_only && default_behavior_ != BLOCK && denylist_ &&
-      denylist_->HasURL(effective_url)) {
-    *reason = supervised_user::FilteringBehaviorReason::DENYLIST;
-    return BLOCK;
   }
 
   // Fall back to the default behavior.
@@ -384,7 +374,7 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     bool skip_manual_parent_filter) {
   supervised_user::FilteringBehaviorReason reason =
       supervised_user::FilteringBehaviorReason::DEFAULT;
-  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, false, &reason);
+  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, &reason);
 
   if (behavior == ALLOW &&
       reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
@@ -418,7 +408,7 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
     FilteringBehaviorCallback callback) {
   supervised_user::FilteringBehaviorReason reason =
       supervised_user::FilteringBehaviorReason::DEFAULT;
-  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, false, &reason);
+  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, &reason);
 
   // If the reason is not default, then it is manually allowed or blocked.
   if (reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
@@ -456,15 +446,6 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
   return default_behavior_;
 }
 
-void SupervisedUserURLFilter::SetDenylist(
-    const supervised_user::SupervisedUserDenylist* denylist) {
-  denylist_ = denylist;
-}
-
-bool SupervisedUserURLFilter::HasDenylist() const {
-  return !!denylist_;
-}
-
 void SupervisedUserURLFilter::SetManualHosts(
     std::map<std::string, bool> host_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -500,7 +481,6 @@ void SupervisedUserURLFilter::Clear() {
   default_behavior_ = ALLOW;
   url_map_.clear();
   host_map_.clear();
-  denylist_ = nullptr;
   async_url_checker_.reset();
 }
 
@@ -525,7 +505,7 @@ SupervisedUserURLFilter::GetWebFilterType() const {
     return WebFilterType::kCertainSites;
   }
 
-  bool safe_sites_enabled = HasAsyncURLChecker() || HasDenylist();
+  bool safe_sites_enabled = HasAsyncURLChecker();
   return safe_sites_enabled ? WebFilterType::kTryToBlockMatureSites
                             : WebFilterType::kAllowAllSites;
 }

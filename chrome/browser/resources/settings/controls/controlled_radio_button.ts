@@ -69,7 +69,7 @@ export class ControlledRadioButtonElement extends
     return this.name === prefToString(this.pref);
   }
 
-  private onIndicatorTap_(e: Event) {
+  private onIndicatorClick_(e: Event) {
     // Disallow <controlled-radio-button on-click="..."> when disabled.
     e.preventDefault();
     e.stopPropagation();

@@ -34,7 +34,7 @@ suite('ColorChangeListenerTest', () => {
     assertEquals(getSearchParam('chrome://theme/colors.css', 'version'), null);
 
     // refreshColorCss() should append search params to the chrome://theme href.
-    assertTrue(refreshColorCss());
+    assertTrue(await refreshColorCss());
 
     let version = getSearchParam('chrome://theme/colors.css', 'version');
     assertNotEquals(version, null);
@@ -44,7 +44,9 @@ suite('ColorChangeListenerTest', () => {
     // Wait 1 millisecond before refresh. Otherwise the timestamp-based
     // version might not yet be updated.
     await new Promise(resolve => setTimeout(resolve, 1));
-    assertTrue(refreshColorCss());
+    assertTrue(await refreshColorCss());
+    // refreshColorCss() should append search params to the colors CSS href.
+    assertTrue(await refreshColorCss());
 
     version = getSearchParam('chrome://theme/colors.css', 'version');
     assertTrue(!!version);
@@ -59,13 +61,13 @@ suite('ColorChangeListenerTest', () => {
     assertEquals(
         getSearchParam('chrome://resources/colors.css', 'version'), null);
 
-    assertFalse(refreshColorCss());
+    assertFalse(await refreshColorCss());
 
     assertEquals(
         getSearchParam('chrome://resources/colors.css', 'version'), null);
   });
 
-  test('HandlesRelativeURLs', () => {
+  test('HandlesRelativeURLs', async () => {
     // Handles the case where the link element exists but the attribute is
     // malformed.
     document.body.innerHTML = getTrustedHTML`
@@ -73,21 +75,21 @@ suite('ColorChangeListenerTest', () => {
     `;
     assertEquals(getSearchParam('//theme/colors.css', 'version'), null);
 
-    assertTrue(refreshColorCss());
+    assertTrue(await refreshColorCss());
 
     assertTrue(!!getSearchParam('//theme/colors.css', 'version'));
   });
 
-  test('HandlesCasesWhereColorsStylesheetIsNotSetCorrectly', () => {
+  test('HandlesCasesWhereColorsStylesheetIsNotSetCorrectly', async () => {
     // Handles the case where the link element exists but the attribute is
     // malformed.
     document.body.innerHTML =
         getTrustedHTML`<link rel="stylesheet" bad_href="chrome://theme/colors.css?sets=ui"/>`;
-    assertFalse(refreshColorCss());
+    assertFalse(await refreshColorCss());
 
     // Handles the case where the link element does not exist.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    assertFalse(refreshColorCss());
+    assertFalse(await refreshColorCss());
   });
 
   test('RegistersColorChangeListener', async () => {
@@ -97,7 +99,7 @@ suite('ColorChangeListenerTest', () => {
     });
 
     // Emulate a color change event from the mojo pipe.
-    colorProviderChangeHandler();
+    await colorProviderChangeHandler();
 
     assertEquals(listenerCalledTimes, 1);
   });
@@ -110,12 +112,12 @@ suite('ColorChangeListenerTest', () => {
     addColorChangeListener(listener);
 
     // Emulate a color change event from the mojo pipe.
-    colorProviderChangeHandler();
+    await colorProviderChangeHandler();
 
     removeColorChangeListener(listener);
 
     // Emulate a color change event from the mojo pipe.
-    colorProviderChangeHandler();
+    await colorProviderChangeHandler();
 
     assertEquals(listenerCalledTimes, 1);
   });

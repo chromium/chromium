@@ -52,14 +52,18 @@ class AuthenticatedConnection : public Connection {
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
 
   // Parses a raw response and converts it to a WifiCredentialsResponse
-  void OnWifiCredentialsResponse(
-      RequestWifiCredentialsCallback,
+  void OnRequestWifiCredentialsResponse(
+      RequestWifiCredentialsCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
   // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
   void OnRequestAccountTransferAssertionResponse(
       RequestAccountTransferAssertionCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
+
+  void ParseWifiCredentialsResponse(
+      RequestWifiCredentialsCallback callback,
+      ::ash::quick_start::mojom::GetWifiCredentialsResponsePtr response);
 
   void GenerateFidoAssertionInfo(
       RequestAccountTransferAssertionCallback callback,

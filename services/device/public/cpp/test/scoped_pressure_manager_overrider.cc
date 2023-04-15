@@ -25,9 +25,10 @@ bool FakePressureManager::is_bound() const {
 
 void FakePressureManager::AddClient(
     mojo::PendingRemote<mojom::PressureClient> client,
+    mojom::PressureSource source,
     AddClientCallback callback) {
   if (is_supported_) {
-    clients_.Add(std::move(client));
+    clients_[source].Add(std::move(client));
     std::move(callback).Run(mojom::PressureStatus::kOk);
   } else {
     std::move(callback).Run(mojom::PressureStatus::kNotSupported);
@@ -35,8 +36,9 @@ void FakePressureManager::AddClient(
 }
 
 void FakePressureManager::UpdateClients(const mojom::PressureUpdate& update) {
-  for (auto& client : clients_)
+  for (auto& client : clients_[update.source]) {
     client->OnPressureUpdated(update.Clone());
+  }
 }
 
 void FakePressureManager::set_is_supported(bool is_supported) {
@@ -64,7 +66,7 @@ void ScopedPressureManagerOverrider::set_is_supported(bool is_supported) {
 
 void ScopedPressureManagerOverrider::set_fake_pressure_manager(
     std::unique_ptr<FakePressureManager> pressure_manager) {
-  DCHECK(!pressure_manager_->is_bound());
+  CHECK(!pressure_manager_->is_bound());
   pressure_manager_ = std::move(pressure_manager);
   DeviceService::OverridePressureManagerBinderForTesting(base::BindRepeating(
       &FakePressureManager::Bind, base::Unretained(pressure_manager_.get())));

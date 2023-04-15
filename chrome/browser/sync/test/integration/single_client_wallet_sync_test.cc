@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableSync) {
   EXPECT_EQ(0U, GetServerAddressesMetadata(0).size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
   ASSERT_EQ(1U, GetServerAddressesMetadata(0).size());
 
   // Stop sync, the data & metadata should be gone.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
   WaitForNumberOfCards(0, pdm);
 
   EXPECT_EQ(0uL, pdm->GetServerProfiles().size());
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
   EXPECT_EQ(0U, GetServerAddressesMetadata(0).size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfCards(1, pdm);
 
@@ -1393,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   // Simulate the user opting in to full Sync, and set first-time setup to
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
 
@@ -1462,7 +1462,7 @@ IN_PROC_BROWSER_TEST_F(
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
 
   // Now start actually configuring Sync.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
       GetSyncService(0)->GetSetupInProgressHandle();
 
@@ -1504,11 +1504,11 @@ IN_PROC_BROWSER_TEST_F(
 // Sync-standalone-transport properly migrates server credit cards between the
 // profile (i.e. persisted) and account (i.e. ephemeral) storage.
 // Sync can either be turned off temporarily via
-// SyncUserSettings::SetSyncRequested(false), or permanently via
+// SyncUserSettings::ClearSyncRequested(), or permanently via
 // SyncService::StopAndClear. For full coverage, we test all transitions, and
 // each time verify that the card is in the correct storage:
 // 1. Start out in Sync-the-feature mode -> profile storage.
-// 2. SetSyncRequested(false) -> account storage.
+// 2. ClearSyncRequested() -> account storage.
 // 3. Enable Sync-the-feature again -> profile storage.
 // 4. StopAndClear() -> account storage.
 // 5. Enable Sync-the-feature again -> profile storage.
@@ -1549,7 +1549,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 
   // STEP 2. Turn off Sync-the-feature temporarily (e.g. the Sync feature toggle
   // on Android), i.e. leave the Sync data around.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
 
   // Wait for Sync to get reconfigured into transport mode.
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -1575,7 +1575,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
   // STEP 3. Turn Sync-the-feature on again.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
 
   // Wait for Sync to get reconfigured into full feature mode again.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -1621,7 +1621,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
   // STEP 5. Turn Sync-the-feature on again.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
 

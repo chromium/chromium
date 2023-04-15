@@ -710,17 +710,21 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
 
   input_coded_size_ = input_coded_size;
 
-  output_handle_holder_ = output_pool_->MaybeAllocateBuffer(output_buffer_size);
-  if (!output_handle_holder_) {
-    InitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
-    return;
+  constexpr int kOutputBufferNumber = 2;
+  output_buffer_handles_.clear();
+  for (int id = 0; id < kOutputBufferNumber; id++) {
+    auto handle = output_pool_->MaybeAllocateBuffer(output_buffer_size);
+    if (!handle) {
+      InitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
+      return;
+    }
+
+    const base::UnsafeSharedMemoryRegion& region = handle->GetRegion();
+    accelerator_->UseOutputBitstreamBuffer(
+        BitstreamBuffer(id, region.Duplicate(), region.GetSize()));
+    output_buffer_handles_.push_back(std::move(handle));
   }
 
-  const base::UnsafeSharedMemoryRegion& region =
-      output_handle_holder_->GetRegion();
-  // There is always one output buffer.
-  accelerator_->UseOutputBitstreamBuffer(
-      BitstreamBuffer(0, region.Duplicate(), region.GetSize()));
   InitCompleted(EncoderStatus::Codes::kOk);
 }
 
@@ -746,10 +750,18 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   if (metadata.encoded_size)
     result.encoded_size = metadata.encoded_size;
 
-  DCHECK_EQ(buffer_id, 0);
-  // There is always one output buffer.
+  if (buffer_id < 0 ||
+      buffer_id >= static_cast<int>(output_buffer_handles_.size())) {
+    DLOG(ERROR) << "Buffer id is out of bounds: " << buffer_id;
+    NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+  }
+  if (!output_buffer_handles_[buffer_id]) {
+    DLOG(ERROR) << "Invalid output buffer.";
+    NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+  }
+
   const base::WritableSharedMemoryMapping& mapping =
-      output_handle_holder_->GetMapping();
+      output_buffer_handles_[buffer_id]->GetMapping();
   DCHECK_LE(result.size, mapping.size());
 
   if (result.size > 0) {
@@ -780,7 +792,6 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
       }
 
       if (!status.is_ok()) {
-        LOG(ERROR) << status.message();
         NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
         return;
       }
@@ -814,7 +825,6 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
         }
 
         if (!status.is_ok()) {
-          LOG(ERROR) << status.message();
           NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
           return;
         }
@@ -843,7 +853,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 
   // Give the buffer back to |accelerator_|
   const base::UnsafeSharedMemoryRegion& region =
-      output_handle_holder_->GetRegion();
+      output_buffer_handles_[buffer_id]->GetRegion();
   accelerator_->UseOutputBitstreamBuffer(
       BitstreamBuffer(buffer_id, region.Duplicate(), region.GetSize()));
 

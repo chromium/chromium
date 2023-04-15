@@ -178,6 +178,7 @@ const char* const kKnownSettings[] = {
     kVariationsRestrictParameter,
     kVirtualMachinesAllowed,
     kDeviceReportXDREvents,
+    kDeviceReportNetworkEvents,
 };
 
 constexpr char InvalidCombinationsOfAllowedUsersPoliciesHistogram[] =
@@ -823,6 +824,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetInteger(
           kDeviceActivityHeartbeatCollectionRateMs,
           reporting_policy.device_activity_heartbeat_collection_rate_ms());
+    }
+    if (reporting_policy.has_report_network_events()) {
+      new_values_cache->SetBoolean(kDeviceReportNetworkEvents,
+                                   reporting_policy.report_network_events());
     }
   }
 }

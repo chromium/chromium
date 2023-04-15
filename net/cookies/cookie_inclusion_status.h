@@ -5,7 +5,10 @@
 #ifndef NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 #define NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 
+#include <stdint.h>
+
 #include <bitset>
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <vector>

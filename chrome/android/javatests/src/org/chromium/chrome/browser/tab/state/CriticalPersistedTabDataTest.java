@@ -688,10 +688,11 @@ public class CriticalPersistedTabDataTest {
         Assert.assertEquals(17, LaunchTypeAtCreation.FROM_RECENT_TABS);
         Assert.assertEquals(18, LaunchTypeAtCreation.FROM_READING_LIST);
         Assert.assertEquals(19, LaunchTypeAtCreation.FROM_TAB_SWITCHER_UI);
+        Assert.assertEquals(20, LaunchTypeAtCreation.FROM_RESTORE_TABS_UI);
         Assert.assertEquals(
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                22, LaunchTypeAtCreation.names.length);
+                23, LaunchTypeAtCreation.names.length);
     }
 
     @SmallTest

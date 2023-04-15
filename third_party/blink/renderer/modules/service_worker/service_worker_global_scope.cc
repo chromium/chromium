@@ -1619,7 +1619,8 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
     mojom::blink::FetchHandlerExistence fetch_hander_existence,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
         reporting_observer_receiver,
-    mojom::blink::AncestorFrameType ancestor_frame_type) {
+    mojom::blink::AncestorFrameType ancestor_frame_type,
+    const blink::BlinkStorageKey& storage_key) {
   DCHECK(IsContextThread());
   DCHECK(!global_scope_initialized_);
 
@@ -1655,6 +1656,8 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
   global_scope_initialized_ = true;
   if (!pause_evaluation_)
     ReadyToRunWorkerScript();
+
+  storage_key_ = storage_key;
 }
 
 void ServiceWorkerGlobalScope::PauseEvaluation() {

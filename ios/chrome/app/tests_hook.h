@@ -57,6 +57,10 @@ bool DisableUpdateService();
 // Return true if it should be disabled.
 bool DisableMainThreadFreezeDetection();
 
+// Returns true if any app launch promos should delay themselves so EGTests
+// can start before checking if the promo appears.
+bool DelayAppLaunchPromos();
+
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();

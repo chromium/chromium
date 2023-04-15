@@ -52,6 +52,10 @@ extern "C" {
 #  define kiss_fft_scalar opus_int32
 #  define kiss_twiddle_scalar opus_int16
 
+/* Some 32-bit CPUs would load/store a kiss_twiddle_cpx with a single memory
+ * access, and could benefit from additional alignment.
+ */
+#define KISS_TWIDDLE_CPX_ALIGNMENT (sizeof(opus_int32))
 
 #else
 # ifndef kiss_fft_scalar
@@ -62,6 +66,13 @@ extern "C" {
 # endif
 #endif
 
+#if defined(__GNUC__) && defined(KISS_TWIDDLE_CPX_ALIGNMENT)
+#define KISS_TWIDDLE_CPX_ALIGNED \
+  __attribute__((aligned(KISS_TWIDDLE_CPX_ALIGNMENT)))
+#else
+#define KISS_TWIDDLE_CPX_ALIGNED
+#endif
+
 typedef struct {
     kiss_fft_scalar r;
     kiss_fft_scalar i;
@@ -70,7 +81,7 @@ typedef struct {
 typedef struct {
    kiss_twiddle_scalar r;
    kiss_twiddle_scalar i;
-}kiss_twiddle_cpx;
+} KISS_TWIDDLE_CPX_ALIGNED kiss_twiddle_cpx;
 
 #define MAXFACTORS 8
 /* e.g. an fft of length 128 has 4 factors

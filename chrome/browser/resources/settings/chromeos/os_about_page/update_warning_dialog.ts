@@ -63,11 +63,11 @@ class SettingsUpdateWarningDialogElement extends
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onContinueTap_() {
+  private onContinueClick_() {
     if (!this.updateInfo || !this.updateInfo.version || !this.updateInfo.size) {
       console.warn('ERROR: requestUpdateOverCellular arguments are undefined');
       return;

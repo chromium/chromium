@@ -1,0 +1,32 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package web.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "ios/web/public/session/proto/common.proto";
+
+// Represents the metadata about a single page.
+//
+// All the fields are required.
+message PageMetadataStorage {
+  string page_title = 1;
+  string page_url = 2;
+}
+
+// Represents the metadata about a single WebState.
+//
+// Contains all the information required to create an unserialized WebState.
+// except for the unique identifier which is saved in a side-channel (i.e.
+// can be derived from the file name).
+//
+// All the fields are required.
+message WebStateMetadataStorage {
+  Timestamp creation_time = 1;
+  Timestamp last_active_time = 2;
+  PageMetadataStorage active_page = 3;
+  int32 navigation_item_count = 4;
+}

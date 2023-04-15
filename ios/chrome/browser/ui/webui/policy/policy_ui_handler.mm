@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/policy_conversions_client_ios.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -152,7 +153,7 @@ void PolicyUIHandler::RegisterMessages() {
 
 void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
   NSString* jsonString = base::SysUTF8ToNSString(GetPoliciesAsJson());
-  [UIPasteboard generalPasteboard].string = jsonString;
+  StoreTextInPasteboard(jsonString);
 }
 
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {

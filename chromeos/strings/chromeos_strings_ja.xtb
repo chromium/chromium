@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">関連リソース:</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
+<translation id="1923388006036088459">アクセント カラー</translation>
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1962550982027027473">デフォルトの APN は必須です</translation>
@@ -140,6 +141,7 @@
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
+<translation id="209751264101900360">夜明けから夜更けまで - 雲の流れ</translation>
 <translation id="2102231663024125441">テキスト編集</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
@@ -331,6 +333,7 @@
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3969602104473960991">Chrome OS のパスワードが更新されました</translation>
 <translation id="397105322502079400">計算しています...</translation>
+<translation id="3974175076798940554">Chromebook Plus 専用のアセットが利用可能に</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
 <translation id="3993704782688964914">お使いの「<ph name="DEVICE_NAME" />」は最新の状態です</translation>
 <translation id="4003384961948020559">失敗 - 出力がいっぱいです</translation>
@@ -370,6 +373,7 @@
 <translation id="4275663329226226506">メディア</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4289849978083912975">スライドショー</translation>
+<translation id="4293621540182258188">夜明けから夜更けまで - 地球の動き</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
 <translation id="4311195029067684288">100%</translation>
@@ -544,6 +548,7 @@
 <translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
+<translation id="5809090008577139505">オーロラ</translation>
 <translation id="5826644637650799838">アートについて</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
@@ -562,6 +567,7 @@
 <translation id="5907649332524363701">キーの色</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">オン</translation>
+<translation id="5918201491776799918">Chromebook Plus 限定のアートワークを選択する</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="5939518447894949180">リセット</translation>
@@ -818,6 +824,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> を選択</translation>
 <translation id="8151185429379586178">デベロッパー ツール</translation>
+<translation id="8153923300383192510">Chromebook Plus 限定</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">添付</translation>
 <translation id="8206859287963243715">携帯電話</translation>
@@ -840,6 +847,7 @@
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
 <translation id="8372477600026034341">その他のホスト</translation>
+<translation id="8373046809163484087">壁紙に合ったカラーセットを使用できます</translation>
 <translation id="8380114448424469341">ウィンドウを画面の <ph name="DIRECTION" /> の半分に固定</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
@@ -859,6 +867,7 @@
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
 <translation id="8508640263392900755">APN の詳細</translation>
+<translation id="8522687886059337719">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />と<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />スクリーン セーバー<ph name="END_LINK_SCREENSAVER_SUBPAGE" />にアクセスできるようになりました</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>

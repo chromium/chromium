@@ -45,7 +45,6 @@ source_set("tests") {
     "cert_verifier_service_unittest.cc",
     "integration_tests/network_context_unittest.cc",
     "integration_tests/network_service_unittest.cc",
-    "integration_tests/ssl_config_service_mojo_unittest.cc",
   ]
 
   if (trial_comparison_cert_verifier_supported) {

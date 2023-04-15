@@ -14,14 +14,14 @@ const kIcon = [
 ];
 
 function RegisterServiceWorker() {
-  navigator.serviceWorker.register('sw.js').then(() => {
-    sendResultToTest('ok - service worker registered');
-  }).catch(sendErrorToTest);
+  return navigator.serviceWorker.register('sw.js').then(() => {
+    return 'ok - service worker registered';
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch request for a single to-be-downloaded file.
 function StartSingleFileDownload() {
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
     const options = {
       icons: kIcon,
       title: 'Single-file Background Fetch'
@@ -30,13 +30,13 @@ function StartSingleFileDownload() {
     return swRegistration.backgroundFetch.fetch(
         kBackgroundFetchId, kBackgroundFetchResource, options);
   }).then(bgFetchRegistration => {
-    sendResultToTest('ok');
-  }).catch(sendErrorToTest);
+    return 'ok';
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch with multiple files.
 function StartFetchWithMultipleFiles() {
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
     const options = {
       icons: kIcon,
       title: 'multi-file Background Fetch',
@@ -49,14 +49,14 @@ function StartFetchWithMultipleFiles() {
     return swRegistration.backgroundFetch.fetch(
         kBackgroundFetchId, requests, options);
   }).then(bgFetchRegistration => {
-    sendResultToTest('ok');
-  }).catch(sendErrorToTest);
+    return 'ok';
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch request for a single to-be-downloaded file, with
 // downloadTotal greater than the actual size.
 function StartSingleFileDownloadWithBiggerThanActualDownloadTotal() {
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
     const options = {
       icons: kIcon,
       title: 'Single-file Background Fetch with downloadTotal too high',
@@ -66,14 +66,14 @@ function StartSingleFileDownloadWithBiggerThanActualDownloadTotal() {
     return swRegistration.backgroundFetch.fetch(
         kBackgroundFetchId, kBackgroundFetchResource, options);
   }).then(bgFetchRegistration => {
-    sendResultToTest('ok');
-  }).catch(sendErrorToTest);
+    return 'ok';
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch request for a single to-be-downloaded file, with
 // downloadTotal smaller than the actual size.
 function StartSingleFileDownloadWithSmallerThanActualDownloadTotal() {
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
     const options = {
       icons: kIcon,
       title: 'Single-file Background Fetch with downloadTotal too low',
@@ -83,14 +83,14 @@ function StartSingleFileDownloadWithSmallerThanActualDownloadTotal() {
     return swRegistration.backgroundFetch.fetch(
         kBackgroundFetchId, kBackgroundFetchResource, options);
   }).then(bgFetchRegistration => {
-    sendResultToTest('ok');
-  }).catch(sendErrorToTest);
+    return 'ok';
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch request for a single to-be-downloaded file, with
 // downloadTotal equal to the actual size (in bytes).
 function StartSingleFileDownloadWithCorrectDownloadTotal() {
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
     const options = {
       icons: kIcon,
       title: 'Single-file Background Fetch with accurate downloadTotal',
@@ -100,12 +100,13 @@ function StartSingleFileDownloadWithCorrectDownloadTotal() {
     return swRegistration.backgroundFetch.fetch(
         kBackgroundFetchId, kBackgroundFetchResource, options);
   }).then(bgFetchRegistration => {
-    sendResultToTest('ok');
-  }).catch(sendErrorToTest);
+    return 'ok';
+  }).catch(formatError);
 }
 
-// Listens for a postMessage from sw.js and sends the result to the test.
-navigator.serviceWorker.addEventListener('message', event => {
+// Returns the event's payload, if the payload is recognized. Otherwise returns
+// an error string.
+function filterMessage(event) {
   const expectedResponses = [
     'backgroundfetchsuccess',
     'backgroundfetchfail',
@@ -114,10 +115,9 @@ navigator.serviceWorker.addEventListener('message', event => {
     'ok',
   ];
   if (expectedResponses.includes(event.data))
-    sendResultToTest(event.data);
-  else
-    sendErrorToTest(Error('Unexpected message received: ' + event.data));
-});
+    return event.data;
+  return Error('Unexpected message received: ' + event.data).toString();
+}
 
 // Starts a Backgound Fetch that should succeed.
 function RunFetchTillCompletion() {
@@ -125,10 +125,15 @@ function RunFetchTillCompletion() {
     '/background_fetch/types_of_cheese.txt?idx=1',
     '/background_fetch/types_of_cheese.txt?idx=2',
   ];
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
+    const onMessagePromise = new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', resolve);
+    });
     return swRegistration.backgroundFetch.fetch(
-        kBackgroundFetchId, resources);
-  }).catch(sendErrorToTest);
+        kBackgroundFetchId, resources)
+        .then(() => onMessagePromise)
+        .then(filterMessage);
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch that should fail due to a missing resource.
@@ -137,10 +142,15 @@ function RunFetchTillCompletionWithMissingResource() {
     '/background_fetch/types_of_cheese.txt',
     '/background_fetch/missing_cat.txt',
   ];
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
+    const onMessagePromise = new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', resolve);
+    });
     return swRegistration.backgroundFetch.fetch(
-        kBackgroundFetchId, resources);
-  }).catch(sendErrorToTest);
+        kBackgroundFetchId, resources)
+        .then(() => onMessagePromise)
+        .then(filterMessage);
+  }).catch(formatError);
 }
 
 // Starts a Background Fetch that should fail due to a missing resource.
@@ -149,24 +159,35 @@ function RunFetchAnExpectAnException() {
     '/background_fetch/types_of_cheese.txt',
     '/background_fetch/missing_cat.txt',
   ];
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
     return swRegistration.backgroundFetch.fetch(kBackgroundFetchId, resources);
-  }).then(sendErrorToTest)
-    .catch(e => sendResultToTest(e.message));
+  }).then(formatError)
+    .catch(e => e.message);
 }
 
 // Starts a Background Fetch with an upload that should succeed.
 function RunFetchTillCompletionWithUpload() {
   const request = new Request('/background_fetch/upload',
                               {method: 'POST', body: 'upload!'});
-  navigator.serviceWorker.ready.then(swRegistration => {
+  return navigator.serviceWorker.ready.then(swRegistration => {
+    const onMessagePromise = new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', resolve);
+    });
     return swRegistration.backgroundFetch.fetch(
-        kBackgroundFetchId, request);
-  }).catch(sendErrorToTest);
+        kBackgroundFetchId, request)
+        .then(() => onMessagePromise)
+        .then(filterMessage);
+  }).catch(formatError);
 }
 
 function StartFetchFromServiceWorker() {
-  navigator.serviceWorker.ready.then(reg => reg.active.postMessage('fetch'));
+  const onMessagePromise = new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', resolve);
+  });
+  return navigator.serviceWorker.ready
+    .then(reg => reg.active.postMessage('fetch'))
+    .then(() => onMessagePromise)
+    .then(filterMessage);
 }
 
 function StartFetchFromServiceWorkerNoWait() {
@@ -176,12 +197,18 @@ function StartFetchFromServiceWorkerNoWait() {
 
 function StartFetchFromIframe() {
   const iframe = document.createElement('iframe');
-  iframe.src = '/background_fetch/background_fetch_iframe.html';
-  document.body.appendChild(iframe);
+  return new Promise(resolve => {
+    window.addEventListener('message', resolve);
+    iframe.src = '/background_fetch/background_fetch_iframe.html';
+    document.body.appendChild(iframe);
+  }).then(filterMessage);
 }
 
 function StartFetchFromIframeNoWait() {
   const iframe = document.createElement('iframe');
-  iframe.src = '/background_fetch/background_fetch_iframe_nowait.html';
-  document.body.appendChild(iframe);
+  return new Promise(resolve => {
+    window.addEventListener('message', resolve);
+    iframe.src = '/background_fetch/background_fetch_iframe_nowait.html';
+    document.body.appendChild(iframe);
+  }).then(filterMessage);
 }

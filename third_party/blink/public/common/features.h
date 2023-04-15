@@ -89,6 +89,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPrivateAggregationApiMaxBudgetPerScope;
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPrivateAggregationApiFledgeExtensionsLocalTestingOverride);
+
 enum class SharedStorageWorkletImplementationType {
   // The worklet thread is created via base::SequenceBound, and JS bindings are
   // added with native v8 and/or Gin library.
@@ -423,6 +426,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInterestGroupStorage);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxOwners;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kInterestGroupStorageMaxStoragePerOwner;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxGroupsPerOwner;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxOpsBeforeMaintenance;
@@ -576,10 +581,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // compositor. Otherwise, FCP may be reported if first BeginMainFrame results in
 // a commit failure (see crbug.com/1257607).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFCPOnlyOnSuccessfulCommit);
-
-// If enabled, the `CropTarget.fromElement()` method will allow for the use
-// of additional element tag tyeps, instead of just <div> and <iframe>.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureExperimentalSubtypes);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRegisterJSSourceLocationBlockingBFCache);
@@ -929,9 +930,6 @@ BLINK_COMMON_EXPORT bool IsNewBaseUrlInheritanceBehaviorEnabled();
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSSVTrailerWriteNewVersion);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSSVTrailerWriteExposureAssertion);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSSVTrailerEnforceExposureAssertion);
-
-// Kill switch for AbortSignal algorithm handle-based removal.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAbortSignalHandleBasedRemoval);
 
 // Forces the attribute powerPreference to be set to "high-performance" for
 // WebGL contexts.

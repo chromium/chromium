@@ -55,6 +55,9 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   bool IsActive() const;
   // Sets if the focus ring should be shown despite the active state.
   void SetShowFocusRing(bool show);
+  // Sets if the themed rounded rect background should be shown.
+  // TODO(zxdan): Move this to be determined by textfield controller.
+  void SetShowBackground(bool show);
   // Restores to previous text when the changes are discarded.
   void RestoreText();
 
@@ -85,6 +88,8 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   Delegate* delegate_ = nullptr;
   // Indicates if the textfield should show focus ring.
   bool show_focus_ring_ = false;
+  // Indicates if the textfield should show background.
+  bool show_background_ = false;
 
   // custom color IDs for text, selected text, selection background, and
   // textfield background.

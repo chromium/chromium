@@ -2004,7 +2004,7 @@ TEST_F(CorsURLLoaderTest, DevToolsObserverOnCorsErrorCallback) {
   EXPECT_TRUE(devtools_observer.cors_error_params());
   const network::MockDevToolsObserver::OnCorsErrorParams& params =
       *devtools_observer.cors_error_params();
-  EXPECT_EQ(mojom::CorsError::kDisallowedByMode, params.status.cors_error);
+  EXPECT_EQ(mojom::CorsError::kDisallowedByMode, params.status->cors_error);
   EXPECT_EQ(initiator_origin, params.initiator_origin);
   EXPECT_EQ(url, params.url);
 }

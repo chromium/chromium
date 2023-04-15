@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/id_type.h"
 
 namespace captions {
 
@@ -53,6 +54,8 @@ using OnCaptionBubbleClosedCallback =
 //
 class CaptionBubbleModel {
  public:
+  using Id = base::IdTypeU64<CaptionBubbleModel>;
+
   CaptionBubbleModel(CaptionBubbleContext* context,
                      OnCaptionBubbleClosedCallback callback);
   ~CaptionBubbleModel();
@@ -89,9 +92,16 @@ class CaptionBubbleModel {
   std::string GetFullText() const { return final_text_ + partial_text_; }
   CaptionBubbleContext* GetContext() { return context_; }
 
+  Id unique_id() const { return unique_id_; }
+
  private:
+  // Generates the next unique id.
+  static Id GetNextId();
+
   // Alert the observer that a change has occurred to the model text.
   void OnTextChanged();
+
+  const Id unique_id_;
 
   std::string final_text_;
   std::string partial_text_;

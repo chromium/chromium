@@ -5,6 +5,7 @@
 #include "net/base/address_tracker_linux.h"
 
 #include <linux/if.h>
+#include <linux/rtnetlink.h>
 #include <sched.h>
 
 #include <memory>
@@ -18,12 +19,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/spin_wait.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
+#include "net/base/address_map_cache_linux.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -35,6 +38,10 @@
 #ifndef IFA_F_HOMEADDRESS
 #define IFA_F_HOMEADDRESS 0x10
 #endif
+
+bool operator==(const struct ifaddrmsg& lhs, const struct ifaddrmsg& rhs) {
+  return memcmp(&lhs, &rhs, sizeof(struct ifaddrmsg)) == 0;
+}
 
 namespace net::internal {
 namespace {
@@ -68,10 +75,17 @@ class AddressTrackerLinuxTest : public testing::Test {
   AddressTrackerLinuxTest() = default;
 
   void InitializeAddressTracker(bool tracking) {
+    tracking_ = tracking;
     if (tracking) {
       tracker_ = std::make_unique<AddressTrackerLinux>(
           base::DoNothing(), base::DoNothing(), base::DoNothing(),
           ignored_interfaces_);
+#if BUILDFLAG(IS_LINUX)
+      const auto& [address_map, online_links] =
+          tracker_->GetInitialDataAndStartRecordingDiffs();
+      address_map_cache_ =
+          std::make_unique<AddressMapCacheLinux>(address_map, online_links);
+#endif  // BUILDFLAG(IS_LINUX)
     } else {
       tracker_ = std::make_unique<AddressTrackerLinux>();
     }
@@ -84,8 +98,9 @@ class AddressTrackerLinuxTest : public testing::Test {
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
-    tracker_->HandleMessage(&writable_buf[0], buf.size(),
-                           &address_changed, &link_changed, &tunnel_changed);
+    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
+                            &link_changed, &tunnel_changed);
+    UpdateCache();
     EXPECT_FALSE(link_changed);
     return address_changed;
   }
@@ -95,8 +110,9 @@ class AddressTrackerLinuxTest : public testing::Test {
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
-    tracker_->HandleMessage(&writable_buf[0], buf.size(),
-                           &address_changed, &link_changed, &tunnel_changed);
+    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
+                            &link_changed, &tunnel_changed);
+    UpdateCache();
     EXPECT_FALSE(address_changed);
     return link_changed;
   }
@@ -106,8 +122,11 @@ class AddressTrackerLinuxTest : public testing::Test {
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
-    tracker_->HandleMessage(&writable_buf[0], buf.size(),
-                           &address_changed, &link_changed, &tunnel_changed);
+    AddressMapOwnerLinux::AddressMapDiff address_map_diff_;
+    AddressMapOwnerLinux::OnlineLinksDiff online_links_diff_;
+    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
+                            &link_changed, &tunnel_changed);
+    UpdateCache();
     EXPECT_FALSE(address_changed);
     return tunnel_changed;
   }
@@ -131,6 +150,28 @@ class AddressTrackerLinuxTest : public testing::Test {
   std::unordered_set<std::string> ignored_interfaces_;
   std::unique_ptr<AddressTrackerLinux> tracker_;
   AddressTrackerLinux::GetInterfaceNameFunction original_get_interface_name_;
+
+ private:
+  // Checks that applying the generated diff to `address_map_cache_` results in
+  // the same AddressMap and set of online links that `tracker_` maintains.
+  void UpdateCache() {
+    if (!tracking_) {
+      return;
+    }
+#if BUILDFLAG(IS_LINUX)
+    address_map_cache_->ApplyDiffs(tracker_->address_map_diff_for_testing(),
+                                   tracker_->online_links_diff_for_testing());
+    EXPECT_EQ(address_map_cache_->GetAddressMap(), tracker_->GetAddressMap());
+    EXPECT_EQ(address_map_cache_->GetOnlineLinks(), tracker_->GetOnlineLinks());
+    tracker_->address_map_diff_for_testing().clear();
+    tracker_->online_links_diff_for_testing().clear();
+#endif  // BUILDFLAG(IS_LINUX)
+  }
+
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<AddressMapCacheLinux> address_map_cache_;
+#endif
+  bool tracking_;
 };
 
 namespace {

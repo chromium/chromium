@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stddef.h>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/android/tab_android.h"
@@ -254,6 +255,43 @@ jboolean ForeignSessionHelper::GetForeignSessions(
   return true;
 }
 
+jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& result) {
+  OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
+  if (!open_tabs) {
+    return false;
+  }
+
+  std::vector<const SyncedSession*> sessions;
+  if (!open_tabs->GetAllForeignSessions(&sessions)) {
+    return false;
+  }
+
+  ScopedJavaLocalRef<jobject> last_pushed_session;
+  size_t skipped_tabs_on_restore = 0;
+
+  // Note: we don't own the SyncedSessions themselves.
+  for (const SyncedSession* session : sessions) {
+    if (session->GetDeviceFormFactor() ==
+            syncer::DeviceInfo::FormFactor::kPhone ||
+        session->GetDeviceFormFactor() ==
+            syncer::DeviceInfo::FormFactor::kTablet) {
+      last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
+          env, result, ConvertUTF8ToJavaString(env, session->GetSessionTag()),
+          ConvertUTF8ToJavaString(env, session->GetSessionName()),
+          session->GetModifiedTime().ToJavaTime()));
+
+      // Push the full session, with tabs ordered by visual position.
+      JNI_ForeignSessionHelper_CopySessionToJava(env, *session,
+                                                 last_pushed_session);
+    } else {
+      skipped_tabs_on_restore++;
+    }
+  }
+  return (skipped_tabs_on_restore != sessions.size());
+}
+
 jboolean ForeignSessionHelper::OpenForeignSessionTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_tab,
@@ -314,4 +352,107 @@ void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(
   }
 
   service->SetInvalidationsForSessionsEnabled(enabled);
+}
+
+jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_tab,
+    const JavaParamRef<jintArray>& j_session_tab_ids,
+    const JavaParamRef<jstring>& session_tag) {
+  std::vector<int> session_tab_ids;
+  base::android::JavaIntArrayToIntVector(env, j_session_tab_ids,
+                                         &session_tab_ids);
+  int tabs_android_count = env->GetArrayLength(j_session_tab_ids);
+
+  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
+  if (!tab_android) {
+    return 0;
+  }
+
+  // Open the first tab in the list with a renderer and web contents.
+  if (!ForeignSessionHelper::RestoreTabWithRenderer(session_tag, j_tab,
+                                                    session_tab_ids[0])) {
+    return 0;
+  }
+  content::WebContents* web_contents = tab_android->web_contents();
+  if (!web_contents) {
+    return 0;
+  }
+  int num_tabs_restored = 1;
+
+  // Using the web contents of the first tab, load the rest of the tabs
+  // with no renderer and as background tabs.
+  for (int i = 1; i < tabs_android_count; i++) {
+    if (ForeignSessionHelper::RestoreTabNoRenderer(
+            session_tag, session_tab_ids[i], web_contents)) {
+      num_tabs_restored++;
+    }
+  }
+  return num_tabs_restored;
+}
+
+bool ForeignSessionHelper::RestoreTabWithRenderer(
+    const JavaParamRef<jstring>& session_tag,
+    const JavaParamRef<jobject>& j_tab,
+    int session_tab_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
+  if (!open_tabs) {
+    return false;
+  }
+
+  const sessions::SessionTab* foreground_session_tab;
+
+  if (!open_tabs->GetForeignTab(ConvertJavaStringToUTF8(env, session_tag),
+                                SessionID::FromSerializedValue(session_tab_id),
+                                &foreground_session_tab)) {
+    return false;
+  }
+
+  if (foreground_session_tab->navigations.empty()) {
+    return false;
+  }
+
+  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
+  if (!tab_android) {
+    return false;
+  }
+  content::WebContents* web_contents = tab_android->web_contents();
+  if (!web_contents) {
+    return false;
+  }
+
+  SessionRestore::RestoreForeignSessionTab(web_contents,
+                                           *foreground_session_tab,
+                                           WindowOpenDisposition::CURRENT_TAB);
+  return true;
+}
+
+bool ForeignSessionHelper::RestoreTabNoRenderer(
+    const JavaParamRef<jstring>& session_tag,
+    int session_tab_id,
+    content::WebContents* web_contents) {
+  OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
+  if (!open_tabs) {
+    return false;
+  }
+
+  const sessions::SessionTab* background_session_tab;
+
+  if (!open_tabs->GetForeignTab(
+          ConvertJavaStringToUTF8(base::android::AttachCurrentThread(),
+                                  session_tag),
+          SessionID::FromSerializedValue(session_tab_id),
+          &background_session_tab)) {
+    return false;
+  }
+
+  if (background_session_tab->navigations.empty()) {
+    return false;
+  }
+
+  SessionRestore::RestoreForeignSessionTab(
+      web_contents, *background_session_tab,
+      WindowOpenDisposition::NEW_BACKGROUND_TAB, true);
+  return true;
 }

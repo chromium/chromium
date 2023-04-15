@@ -6,12 +6,14 @@
   #checkupStatus {
     align-items: center;
     display: flex;
-    height: 72px;
+    min-height: 72px;
   }
 
   #illustartion {
     align-items: center;
     background-color: var(--google-grey-50);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
     display: flex;
     height: 120px;
     justify-content: center;
@@ -65,6 +67,12 @@
   cr-link-row[show-red-icon] {
     --cr-link-row-start-icon-color: var(--google-red-600);
   }
+
+  #checkupResult,
+  #weakRow {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+  }
 </style>
 <h2 class="page-title">$i18n{checkupTitle}</h2>
 <div id="checkupContent" class="card">
@@ -88,7 +96,7 @@
     <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">
       <cr-icon-button id="refreshButton" class="icon-refresh"
           disabled="[[isCheckRunning_]]" hidden="[[showRetryButton_(status_)]]"
-          on-click="onPasswordCheckButtonClick_"
+          on-click="onPasswordCheckButtonClick_" title="$i18n{reload}"
           aria-label="$i18n{runCheckupAriaDescription}">
       </cr-icon-button>
       <cr-button id="retryButton" hidden="[[!showRetryButton_(status_)]]"

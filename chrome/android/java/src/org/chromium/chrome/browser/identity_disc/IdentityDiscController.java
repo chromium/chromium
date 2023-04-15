@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -73,6 +74,9 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private ButtonDataImpl mButtonData;
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     private boolean mNativeIsInitialized;
+
+    private boolean mIsTabNtp;
+    private boolean mIsStartSurface;
 
     /**
      *
@@ -124,8 +128,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     @Override
     public ButtonData get(Tab tab) {
-        boolean isNtp = tab != null && tab.getNativePage() instanceof NewTabPage;
-        if (!isNtp) {
+        mIsTabNtp = tab != null && tab.getNativePage() instanceof NewTabPage;
+        if (!mIsTabNtp) {
             mButtonData.setCanShow(false);
             return mButtonData;
         }
@@ -136,14 +140,15 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     public ButtonData getForStartSurface(
             @StartSurfaceState int overviewModeState, @LayoutType int layoutType) {
-        if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
-            if (layoutType != LayoutType.START_SURFACE) {
-                mButtonData.setCanShow(false);
-                return mButtonData;
-            }
-        } else if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
+        if ((ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
+                    && layoutType != LayoutType.START_SURFACE)
+                || (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
+                        && overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE)) {
+            mIsStartSurface = false;
             mButtonData.setCanShow(false);
             return mButtonData;
+        } else {
+            mIsStartSurface = true;
         }
 
         calculateButtonData();
@@ -182,8 +187,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
 
         String contentDescription = getContentDescription(email);
+        // We don't want to tint the user's profile picture. Tinting should only be supported for
+        // the signed-out avatar.
+        boolean supportTinting = email == null;
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
-                /*onLongClickListener=*/null, contentDescription, buttonSpec.getSupportsTinting(),
+                /*onLongClickListener=*/null, contentDescription, supportTinting,
                 buttonSpec.getIPHCommandBuilder(), AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId());
     }
@@ -298,8 +306,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     /**
      * Records IdentityDisc usage with feature engagement tracker. This signal can be used to decide
      * whether to show in-product help.
+     * We also record the clicking actions on the profile icon in histograms.
      */
     private void recordIdentityDiscUsed() {
+        BrowserUiUtils.recordIdentityDiscClicked(mIsStartSurface, mIsTabNtp);
+
         assert mProfileSupplier != null && mProfileSupplier.get() != null;
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.IDENTITY_DISC_USED);

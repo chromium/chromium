@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement, FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -171,11 +171,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
    * Verify that the restore defaults button will restore the remapping keys.
    */
   test('keyboard remap subpage restore defaults', async () => {
-    // Click the restore defaults button.
-    const restoreButton = page.shadowRoot!.querySelector<CrButtonElement>(
-        '#restoreDefaultsButton');
-    assert(restoreButton);
-    restoreButton.click();
+    page.restoreDefaults();
     await flushTasks();
 
     // The keyboard has "Command" as metaKey, so ctrl key should be restored to
@@ -215,7 +211,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assert(page.get('keyboard'));
     await flushTasks();
 
-    restoreButton.click();
+    page.restoreDefaults();
     await flushTasks();
     // The keyboard has "Launcher" as metaKey, meta key should be restored to
     // default metaKey mappings.
@@ -257,10 +253,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
   test('Update keyboard settings', async () => {
     assertTrue(page.get('isInitialized'));
     // Set the modifier remappings to default stage.
-    const restoreButton = page.shadowRoot!.querySelector<CrButtonElement>(
-        '#restoreDefaultsButton');
-    assert(restoreButton);
-    restoreButton.click();
+    page.restoreDefaults();
     checkPrefsSetToDefault();
 
     // Change several key remappings in the page.

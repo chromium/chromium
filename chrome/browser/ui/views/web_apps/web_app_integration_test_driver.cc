@@ -76,12 +76,12 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -491,12 +491,13 @@ bool AreAppBrowsersOpen(const Profile* profile, const AppId& app_id) {
 class UninstallCompleteWaiter final : public BrowserListObserver,
                                       public WebAppInstallManagerObserver {
  public:
-  explicit UninstallCompleteWaiter(Profile* profile, const AppId& app_id)
+  explicit UninstallCompleteWaiter(
+      Profile* profile,
+      const AppId& app_id,
+      apps::Readiness readiness = apps::Readiness::kUninstalledByUser)
       : profile_(profile),
         app_id_(app_id),
-        app_unregistration_waiter_(profile,
-                                   app_id,
-                                   apps::Readiness::kUninstalledByUser) {
+        app_unregistration_waiter_(profile, app_id, readiness) {
     BrowserList::AddObserver(this);
     WebAppProvider* provider = WebAppProvider::GetForTest(profile);
     observation_.Observe(&provider->install_manager());
@@ -519,7 +520,9 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   void OnBrowserRemoved(Browser* browser) override { MaybeFinishWaiting(); }
 
   // WebAppInstallManagerObserver
-  void OnWebAppUninstalled(const AppId& app_id) override {
+  void OnWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override {
     if (app_id != app_id_) {
       return;
     }
@@ -804,7 +807,7 @@ void WebAppIntegrationTestDriver::SetUp() {
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   override_registration_ =
-      OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+      OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
 
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.
@@ -1279,11 +1282,12 @@ void WebAppIntegrationTestDriver::RemoveSubApp(Site parentapp, Site subapp) {
   const base::Value& remove_result =
       content::EvalJs(
           web_contents,
-          content::JsReplace("navigator.subApps.remove($1)", sub_url))
+          content::JsReplace("navigator.subApps.remove([$1])", sub_url))
           .value;
 
-  // remove() returns void.
-  EXPECT_TRUE(remove_result.is_none());
+  base::Value::Dict expected_output;
+  expected_output.Set(sub_url, "success");
+  EXPECT_EQ(expected_output, remove_result);
 
   AfterStateChangeAction();
 }
@@ -2246,7 +2250,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
   DCHECK(policy_app);
   base::RunLoop run_loop;
 
-  UninstallCompleteWaiter uninstall_waiter(profile(), policy_app->id);
+  UninstallCompleteWaiter uninstall_waiter(
+      profile(), policy_app->id, apps::Readiness::kUninstalledByNonUser);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
@@ -2325,6 +2330,24 @@ void WebAppIntegrationTestDriver::CorruptAppShim(Site site) {
                                 .AppendASCII("MacOS")
                                 .AppendASCII("app_mode_loader");
   EXPECT_TRUE(base::DeleteFile(bin_path));
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::QuitAppShim(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  base::FilePath app_path = GetShortcutPath(
+      override_registration_->test_override->chrome_apps_folder(), app_name,
+      app_id);
+
+  if (AppBrowserController::IsForWebApp(app_browser_, app_id)) {
+    app_browser_ = nullptr;
+  }
+
+  WaitForShimToQuitForTesting(app_path, app_id, /*terminate=*/true);
   AfterStateChangeAction();
 }
 #endif
@@ -3666,7 +3689,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
                                                          const AppId& id) {
   base::RunLoop run_loop;
   AppReadinessWaiter app_registration_waiter(
-      profile, id, apps::Readiness::kUninstalledByUser);
+      profile, id, apps::Readiness::kUninstalledByNonUser);
   WebAppInstallManagerObserverAdapter observer(profile);
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
@@ -3725,7 +3748,8 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   active_app_id_ = app_id;
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
-  ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
+  ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(
+      app_id, base::Time::Now()));
   ASSERT_FALSE(
       provider()->manifest_update_manager().IsUpdateCommandPending(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param,

@@ -1088,20 +1088,36 @@ const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
 
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
-const base::FeatureParam<bool> kMlRelevanceScoringIncreaseNumCandidates(
-    &omnibox::kMlRelevanceScoring,
-    "MlRelevanceScoringIncreaseNumCandidates",
+
+// If true, enables scoring signal annotators for logging Omnibox scoring
+// signals to OmniboxEventProto.
+const base::FeatureParam<bool> kEnableScoringSignalsAnnotators(
+    &omnibox::kLogUrlScoringSignals,
+    "enable_scoring_signals_annotators",
+    false);
+
+// If true, runs the ML scoring model but does not assign new relevance scores
+// to the URL suggestions and does not rerank them.
+const base::FeatureParam<bool> kMlUrlScoringCounterfactual(
+    &omnibox::kMlUrlScoring,
+    "MlUrlScoringCounterfactual",
+    false);
+
+// If true, increases the number of candidates the URL autocomplete providers
+// pass to the controller beyond `provider_max_matches`.
+const base::FeatureParam<bool> kMlUrlScoringIncreaseNumCandidates(
+    &omnibox::kMlUrlScoring,
+    "MlUrlScoringIncreaseNumCandidates",
     false);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
-  enable_scoring_signals_annotators = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kLogUrlScoringSignals, "enable_scoring_signals_annotators",
-      /*default_value=*/false);
-  ml_relevance_scoring =
-      base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring);
-  increase_num_candidates = kMlRelevanceScoringIncreaseNumCandidates.Get();
+  enable_scoring_signals_annotators = kEnableScoringSignalsAnnotators.Get();
+  ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
+  ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
+  ml_url_scoring_increase_num_candidates =
+      kMlUrlScoringIncreaseNumCandidates.Get();
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
 }
 
@@ -1123,26 +1139,36 @@ const MLConfig& GetMLConfig() {
 bool IsLogUrlScoringSignalsEnabled() {
   return GetMLConfig().log_url_scoring_signals;
 }
-
 bool AreScoringSignalsAnnotatorsEnabled() {
   return GetMLConfig().enable_scoring_signals_annotators;
 }
-
-bool IsMlRelevanceScoringEnabled() {
-  return GetMLConfig().ml_relevance_scoring && IsUrlScoringModelEnabled();
+bool IsMlUrlScoringEnabled() {
+  return IsUrlScoringModelEnabled() && GetMLConfig().ml_url_scoring;
 }
-
-bool IsMlRelevanceScoringIncreaseNumCandidatesEnabled() {
-  return GetMLConfig().increase_num_candidates;
+bool IsMlUrlScoringCounterfactual() {
+  return IsMlUrlScoringEnabled() && GetMLConfig().ml_url_scoring_counterfactual;
 }
-
+bool IsMlUrlScoringIncreaseNumCandidatesEnabled() {
+  return IsMlUrlScoringEnabled() &&
+         GetMLConfig().ml_url_scoring_increase_num_candidates;
+}
 bool IsUrlScoringModelEnabled() {
   return GetMLConfig().url_scoring_model;
 }
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
+// Two-column realbox ->
+
+const base::FeatureParam<int> kRealboxMaxPreviousSearchRelatedSuggestions(
+    &omnibox::kRealboxSecondaryZeroSuggest,
+    "RealboxMaxPreviousSearchRelatedSuggestions",
+    3);
+
+// <- Two-column realbox
+// ---------------------------------------------------------
 // Inspire Me ->
+
 const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
     &omnibox::kInspireMe,
     "AdditionalRelatedQueries",
@@ -1152,7 +1178,17 @@ const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
     &omnibox::kInspireMe,
     "AdditionalTrendingQueries",
     0);
+
 // <- Inspire Me
+// ---------------------------------------------------------
+// Actions In Suggest ->
+// When set to true, permits Entity suggestion with associated Actions to be
+// promoted over the Escape Hatch.
+const base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
+    &omnibox::kActionsInSuggest,
+    "PromoteEntitySuggestion",
+    false);
+// <- Actions In Suggest
 // ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial

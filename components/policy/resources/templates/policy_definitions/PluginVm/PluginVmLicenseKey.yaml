@@ -9,8 +9,8 @@ example_value: LICENSE_KEY
 features:
   dynamic_refresh: true
 owners:
-- okalitova@chromium.org
-- aoldemeier@chromium.org
+- timloh@google.com
+- parallels-cros@google.com
 schema:
   sensitiveValue: true
   type: string

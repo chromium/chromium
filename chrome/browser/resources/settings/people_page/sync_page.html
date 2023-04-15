@@ -109,9 +109,9 @@
               value="{{existingPassphrase_}}"
               placeholder="$i18n{passphrasePlaceholder}"
               error-message="$i18n{incorrectPassphraseError}"
-              on-keypress="onSubmitExistingPassphraseTap_">
+              on-keypress="onSubmitExistingPassphraseClick_">
             <cr-button id="submitExistingPassphrase" slot="suffix"
-                on-click="onSubmitExistingPassphraseTap_"
+                on-click="onSubmitExistingPassphraseClick_"
                 class="action-button" disabled="[[!existingPassphrase_]]">
               $i18n{submitPassphraseButton}
             </cr-button>

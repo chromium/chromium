@@ -33,11 +33,12 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::CreateAndStart(
     WebAppRegistrar& registrar,
     WebAppInstallManager& install_manager,
     WebAppTranslationManager& translation_manager,
-    PrefService& profile_prefs) {
+    PrefService& profile_prefs,
+    webapps::WebappUninstallSource uninstall_source) {
   return base::WrapUnique(new WebAppUninstallJob(
       app_id, app_origin, std::move(callback), os_integration_manager,
       sync_bridge, icon_manager, registrar, install_manager,
-      translation_manager, profile_prefs));
+      translation_manager, profile_prefs, uninstall_source));
 }
 
 WebAppUninstallJob::WebAppUninstallJob(
@@ -50,12 +51,14 @@ WebAppUninstallJob::WebAppUninstallJob(
     WebAppRegistrar& registrar,
     WebAppInstallManager& install_manager,
     WebAppTranslationManager& translation_manager,
-    PrefService& profile_prefs)
+    PrefService& profile_prefs,
+    webapps::WebappUninstallSource uninstall_source)
     : app_id_(app_id),
       callback_(std::move(callback)),
       registrar_(&registrar),
       sync_bridge_(&sync_bridge),
-      install_manager_(&install_manager) {
+      install_manager_(&install_manager),
+      uninstall_source_(uninstall_source) {
   Start(app_origin, os_integration_manager, icon_manager, translation_manager,
         profile_prefs);
 }
@@ -143,7 +146,7 @@ void WebAppUninstallJob::MaybeFinishUninstall() {
     ScopedRegistryUpdate update(sync_bridge_);
     update->DeleteApp(app_id_);
   }
-  install_manager_->NotifyWebAppUninstalled(app_id_);
+  install_manager_->NotifyWebAppUninstalled(app_id_, uninstall_source_);
   std::move(callback_).Run(errors_ ? webapps::UninstallResultCode::kError
                                    : webapps::UninstallResultCode::kSuccess);
 }

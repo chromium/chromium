@@ -51,7 +51,7 @@ GPUExternalTexture* ExternalTextureCache::Import(
       auto cache = from_html_video_element_.find(video);
       if (cache != from_html_video_element_.end()) {
         external_texture = cache->value;
-        if (external_texture->ContinueCheckingCurrentVideoFrame()) {
+        if (!external_texture->NeedsToUpdate()) {
           break;
         }
       }
@@ -101,7 +101,7 @@ void ExternalTextureCache::Destroy() {
   // GPUExternalTexture in expire list should be in from_html_video_element_ and
   // from_video_frame_. It has been destroyed when clean up the cache. Clear
   // list here is enough.
-  expire_list_.clear();
+  expire_set_.clear();
 }
 
 void ExternalTextureCache::Add(HTMLVideoElement* video,
@@ -125,7 +125,7 @@ void ExternalTextureCache::Remove(VideoFrame* frame) {
 void ExternalTextureCache::Trace(Visitor* visitor) const {
   visitor->Trace(from_html_video_element_);
   visitor->Trace(from_video_frame_);
-  visitor->Trace(expire_list_);
+  visitor->Trace(expire_set_);
   visitor->Trace(device_);
 }
 
@@ -136,7 +136,7 @@ GPUDevice* ExternalTextureCache::device() const {
 void ExternalTextureCache::ExpireAtEndOfTask(
     GPUExternalTexture* external_texture) {
   CHECK(external_texture);
-  expire_list_.push_back(external_texture);
+  expire_set_.insert(external_texture);
 
   if (expire_task_scheduled_) {
     return;
@@ -158,7 +158,7 @@ void ExternalTextureCache::ExpireTask() {
 
   expire_task_scheduled_ = false;
 
-  auto external_textures = std::move(expire_list_);
+  auto external_textures = std::move(expire_set_);
   for (auto& external_texture : external_textures) {
     external_texture->Expire();
   }
@@ -384,19 +384,29 @@ bool GPUExternalTexture::ContinueCheckingCurrentVideoFrame() {
     return false;
   }
 
-  WebMediaPlayer* media_player = video_->GetWebMediaPlayer();
-
-  // HTMLVideoElement transition from having a WMP to not having one.
-  if (!media_player) {
+  if (!IsCurrentFrameFromHTMLVideoElementValid()) {
     OnSourceInvalidated();
     return false;
   }
 
-  // VideoFrame unique id is unique in the same process. Compare the unique id
-  // with current video frame from compositor to detect a new presented
-  // video frame and expire the GPUExternalTexture.
-  if (media_video_frame_unique_id_ != media_player->CurrentFrameId()) {
-    OnSourceInvalidated();
+  return true;
+}
+
+bool GPUExternalTexture::NeedsToUpdate() {
+  CHECK(media_video_frame_unique_id_.has_value());
+  CHECK(video_);
+
+  if (IsCurrentFrameFromHTMLVideoElementValid()) {
+    return false;
+  }
+
+  // Schedule source invalid task to remove GPUExternalTexture
+  // from cache.
+  OnSourceInvalidated();
+
+  // If GPUExternalTexture is used in current task scope, don't do
+  // reimport until current task scope finished.
+  if (active()) {
     return false;
   }
 
@@ -410,6 +420,27 @@ void GPUExternalTexture::Trace(Visitor* visitor) const {
   DawnObject<WGPUExternalTexture>::Trace(visitor);
 }
 
+bool GPUExternalTexture::IsCurrentFrameFromHTMLVideoElementValid() {
+  CHECK(video_);
+  CHECK(media_video_frame_unique_id_.has_value());
+
+  WebMediaPlayer* media_player = video_->GetWebMediaPlayer();
+
+  // HTMLVideoElement transition from having a WMP to not having one.
+  if (!media_player) {
+    return false;
+  }
+
+  // VideoFrame unique id is unique in the same process. Compare the unique id
+  // with current video frame from compositor to detect a new presented
+  // video frame and expire the GPUExternalTexture.
+  if (media_video_frame_unique_id_ != media_player->CurrentFrameId()) {
+    return false;
+  }
+
+  return true;
+}
+
 void GPUExternalTexture::OnSourceInvalidated() {
   CHECK(task_runner_);
   CHECK(task_runner_->BelongsToCurrentThread());
@@ -421,9 +452,12 @@ void GPUExternalTexture::OnSourceInvalidated() {
   // that imported the ExternalTexture. In that case defer the invalidation
   // until the end of the task to preserve the semantic of ExternalTexture.
   if (status_ == Status::Active && video_) {
-    task_runner_->PostTask(FROM_HERE,
-                           WTF::BindOnce(&GPUExternalTexture::RemoveFromCache,
-                                         WrapWeakPersistent(this)));
+    if (!remove_from_cache_task_scheduled_) {
+      task_runner_->PostTask(FROM_HERE,
+                             WTF::BindOnce(&GPUExternalTexture::RemoveFromCache,
+                                           WrapWeakPersistent(this)));
+    }
+    remove_from_cache_task_scheduled_ = true;
   } else {
     RemoveFromCache();
   }

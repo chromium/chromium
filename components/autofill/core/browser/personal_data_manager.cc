@@ -800,12 +800,23 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
 
 bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
   // The CONTACT_INFO data type is only running for eligible users. See
-  // ContactInfoModelTypeController.
+  // ContactInfoModelTypeController. Some additional countries are excluded
+  // based on their GeoIP.
   return sync_service_ &&
          sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO) &&
          base::FeatureList::IsEnabled(
              features::kAutofillAccountProfilesUnionView) &&
-         base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage);
+         base::FeatureList::IsEnabled(
+             features::kAutofillAccountProfileStorage) &&
+         (features::kAutofillAccountProfileStorageFromUnsupportedIPs.Get() ||
+          IsCountryEligibleForAccountStorage(variations_country_code_));
+}
+
+bool PersonalDataManager::IsCountryEligibleForAccountStorage(
+    base::StringPiece country_code) const {
+  constexpr char const* kUnsupportedCountries[] = {"CU", "IR", "KP", "SD",
+                                                   "SY"};
+  return !base::Contains(kUnsupportedCountries, country_code);
 }
 
 std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
@@ -1848,6 +1859,15 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
 bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) const {
   return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&
          sync_service_->GetPreferredDataTypes().Has(model_type);
+}
+
+bool PersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsMandatoryReauth)) {
+    return false;
+  }
+
+  return prefs::IsAutofillPaymentMethodsMandatoryReauthEnabled(pref_service_);
 }
 
 AutofillProfileMigrationStrikeDatabase*

@@ -5,7 +5,7 @@
   <div route-path="default">
     <div id="crostini" class="settings-box two-line first"
         actionable$="[[prefs.crostini.enabled.value]]"
-        on-click="onSubpageTap_">
+        on-click="onSubpageClick_">
       <div class="start">
         $i18n{crostiniPageLabel}
         <div class="secondary" id="secondaryText">
@@ -38,7 +38,7 @@
         <div class="separator"></div>
         <cr-button id="enable"
             disabled$="[[disableCrostiniInstall_]]"
-            on-click="onEnableTap_"
+            on-click="onEnableClick_"
             aria-describedby="secondaryText"
             deep-link-focus-id$="[[Setting.kSetUpCrostini]]">
           $i18n{crostiniEnable}
@@ -49,7 +49,7 @@
     <template is="dom-if" if="[[showBruschetta_]]">
       <div id="bruschetta" class="settings-box two-line"
           actionable$="[[prefs.bruschetta.installed.value]]"
-          on-click="onBruschettaSubpageTap_">
+          on-click="onBruschettaSubpageClick_">
         <div class="start">
           $i18n{bruschettaPageLabel}
           <div class="secondary" id="secondaryText">
@@ -68,7 +68,7 @@
         <template is="dom-if" if="[[!prefs.bruschetta.installed.value]]">
           <div class="separator"></div>
           <cr-button id="enable"
-              on-click="onBruschettaEnableTap_"
+              on-click="onBruschettaEnableClick_"
               aria-describedby="secondaryText">
             $i18n{bruschettaEnable}
           </cr-button>

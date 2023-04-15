@@ -37,24 +37,6 @@ namespace ash {
 
 namespace {
 
-constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
-  switch (type) {
-    case WallpaperType::kDaily:
-    case WallpaperType::kCustomized:
-    case WallpaperType::kOnline:
-    case WallpaperType::kOnceGooglePhotos:
-    case WallpaperType::kDailyGooglePhotos:
-      return true;
-    case WallpaperType::kDefault:
-    case WallpaperType::kPolicy:
-    case WallpaperType::kThirdParty:
-    case WallpaperType::kDevice:
-    case WallpaperType::kOneShot:
-    case WallpaperType::kCount:
-      return false;
-  }
-}
-
 // Populates online wallpaper related info in |info|.
 void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
                                  const base::Value::Dict& info_dict) {
@@ -611,6 +593,25 @@ const char WallpaperPrefManager::kNewWallpaperVariantListNodeName[] =
 const char WallpaperPrefManager::kOnlineWallpaperTypeNodeName[] =
     "online_image_type";
 const char WallpaperPrefManager::kOnlineWallpaperUrlNodeName[] = "url";
+
+// static
+bool WallpaperPrefManager::IsWallpaperTypeSyncable(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kDaily:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kOnline:
+    case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kDailyGooglePhotos:
+      return true;
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      return false;
+  }
+}
 
 // static
 std::unique_ptr<WallpaperPrefManager> WallpaperPrefManager::Create(

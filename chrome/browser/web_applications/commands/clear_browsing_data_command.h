@@ -10,13 +10,13 @@
 
 namespace web_app {
 
-class FullSystemLock;
+class AllAppsLock;
 
 // Clears the browsing data for web app, given the inclusive time range.
 void ClearWebAppBrowsingData(const base::Time& begin_time,
                              const base::Time& end_time,
                              base::OnceClosure done,
-                             FullSystemLock& lock);
+                             AllAppsLock& lock);
 
 }  // namespace web_app
 

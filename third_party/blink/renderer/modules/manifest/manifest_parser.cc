@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/liburlpattern/parse.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -2099,14 +2101,17 @@ mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(
   JSONValue* home_tab_value = tab_strip_object->Get("home_tab");
   if (home_tab_value && home_tab_value->GetType() == JSONValue::kTypeObject) {
     JSONObject* home_tab_object = tab_strip_object->GetJSONObject("home_tab");
-    JSONValue* home_tab_icons = home_tab_object->Get("icons");
-
     auto home_tab_params = mojom::blink::HomeTabParams::New();
+
+    JSONValue* home_tab_icons = home_tab_object->Get("icons");
     String string_value;
     if (home_tab_icons && !(home_tab_icons->AsString(&string_value) &&
                             string_value.LowerASCII() == "auto")) {
       home_tab_params->icons = ParseIcons(home_tab_object);
     }
+
+    home_tab_params->scope_patterns = ParseScopePatterns(home_tab_object);
+
     result->home_tab =
         mojom::blink::HomeTabUnion::NewParams(std::move(home_tab_params));
   } else {
@@ -2152,6 +2157,59 @@ ManifestParser::ParseTabStripMemberVisibility(const JSONValue* json_value) {
   }
 
   return mojom::blink::TabStripMemberVisibility::kAuto;
+}
+
+Vector<blink::Manifest::UrlPattern> ManifestParser::ParseScopePatterns(
+    const JSONObject* object) {
+  Vector<blink::Manifest::UrlPattern> result;
+
+  if (!object->Get("scope_patterns")) {
+    return result;
+  }
+
+  JSONArray* scope_patterns_list = object->GetArray("scope_patterns");
+  if (!scope_patterns_list) {
+    return result;
+  }
+
+  for (wtf_size_t i = 0; i < scope_patterns_list->size(); ++i) {
+    blink::Manifest::UrlPattern url_pattern;
+
+    JSONObject* pattern_object = JSONObject::Cast(scope_patterns_list->at(i));
+    if (!pattern_object) {
+      continue;
+    }
+
+    absl::optional<String> pathname = ParseStringForMember(
+        pattern_object, "scope_patterns", "pathname", false, Trim(true));
+    if (pathname.has_value()) {
+      StringUTF8Adaptor utf8(pathname.value());
+      auto parse_result = liburlpattern::Parse(
+          absl::string_view(utf8.data(), utf8.size()),
+          [](absl::string_view input) { return std::string(input); });
+
+      if (parse_result.ok()) {
+        std::vector<liburlpattern::Part> part_list;
+        bool is_valid_pattern = true;
+        for (auto& part : parse_result.value().PartList()) {
+          // We don't allow custom regex for security reasons as this will be
+          // used in the browser process.
+          if (part.type == liburlpattern::PartType::kRegex) {
+            is_valid_pattern = false;
+            break;
+          }
+
+          part_list.push_back(std::move(part));
+        }
+        if (is_valid_pattern) {
+          url_pattern.pathname = std::move(part_list);
+          result.push_back(std::move(url_pattern));
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

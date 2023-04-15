@@ -40,11 +40,12 @@
   border-radius: 2px;
   color: #101010;
   font-size: 14px;
-  height: 32px;
+  height: 36px;
   line-height: 32px;
   position: relative;
   text-align: center;
-  width: 48px;
+  width: 52px;
+  box-sizing: border-box;
 }
 
 .time-cell:hover {

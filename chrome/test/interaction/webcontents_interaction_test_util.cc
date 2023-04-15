@@ -4,6 +4,7 @@
 
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 
+#include <initializer_list>
 #include <set>
 #include <sstream>
 #include <string>
@@ -17,6 +18,7 @@
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -206,12 +208,29 @@ std::string CreateDeepQuery(
 
 }  // namespace
 
+WebContentsInteractionTestUtil::DeepQuery::DeepQuery() = default;
+WebContentsInteractionTestUtil::DeepQuery::DeepQuery(
+    std::initializer_list<std::string> segments)
+    : segments_(segments) {}
+WebContentsInteractionTestUtil::DeepQuery::DeepQuery(
+    const WebContentsInteractionTestUtil::DeepQuery& other) = default;
+WebContentsInteractionTestUtil::DeepQuery&
+WebContentsInteractionTestUtil::DeepQuery::operator=(
+    const WebContentsInteractionTestUtil::DeepQuery& other) = default;
+WebContentsInteractionTestUtil::DeepQuery&
+WebContentsInteractionTestUtil::DeepQuery::operator=(
+    std::initializer_list<std::string> segments) {
+  segments_ = segments;
+  return *this;
+}
+WebContentsInteractionTestUtil::DeepQuery::~DeepQuery() = default;
+
 WebContentsInteractionTestUtil::StateChange::StateChange() = default;
 WebContentsInteractionTestUtil::StateChange::StateChange(
-    WebContentsInteractionTestUtil::StateChange&& other) = default;
+    const WebContentsInteractionTestUtil::StateChange& other) = default;
 WebContentsInteractionTestUtil::StateChange&
 WebContentsInteractionTestUtil::StateChange::operator=(
-    WebContentsInteractionTestUtil::StateChange&& other) = default;
+    const WebContentsInteractionTestUtil::StateChange& other) = default;
 WebContentsInteractionTestUtil::StateChange::~StateChange() = default;
 
 class WebContentsInteractionTestUtil::NewTabWatcher
@@ -981,4 +1000,16 @@ void WebContentsInteractionTestUtil::StartWatchingWebContents(
     Observe(web_contents);
   }
   MaybeCreateElement();
+}
+
+void PrintTo(const WebContentsInteractionTestUtil::DeepQuery& deep_query,
+             std::ostream* os) {
+  *os << "{ \"" << base::JoinString(deep_query.segments_, "\", \"") << "\" }";
+}
+
+extern std::ostream& operator<<(
+    std::ostream& os,
+    const WebContentsInteractionTestUtil::DeepQuery& deep_query) {
+  PrintTo(deep_query, &os);
+  return os;
 }

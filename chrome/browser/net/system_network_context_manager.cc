@@ -488,6 +488,20 @@ SystemNetworkContextManager::SystemNetworkContextManager(
           &SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts,
           base::Unretained(this)));
 
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  pref_change_registrar_.Add(
+      prefs::kChromeRootStoreEnabled,
+      base::BindRepeating(
+          &SystemNetworkContextManager::UpdateChromeRootStoreEnabled,
+          base::Unretained(this)));
+  // Call the update function immediately to set the initial value, if any.
+  // TODO(https://crbug.com/1085233): If CertVerifierServiceFactory is moved to
+  // a separate process, will need to handle restarts so that the current value
+  // can be re-initialized into the cert verifier service process when it is
+  // re-created.
+  UpdateChromeRootStoreEnabled();
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Add(
@@ -693,9 +707,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   if (content::IsOutOfProcessNetworkService()) {
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
-
-  // Asynchronously reapply the most recently received CRLSet (if any).
-  component_updater::CRLSetPolicy::ReconfigureAfterNetworkRestart();
 
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();
@@ -935,6 +946,19 @@ bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
 }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+bool SystemNetworkContextManager::IsUsingChromeRootStore() {
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  const PrefService::Preference* chrome_root_store_enabled_pref =
+      local_state_->FindPreference(prefs::kChromeRootStoreEnabled);
+  if (chrome_root_store_enabled_pref->IsManaged()) {
+    return chrome_root_store_enabled_pref->GetValue()->GetBool();
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+
 network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateNetworkContextParams() {
   // TODO(mmenke): Set up parameters here (in memory cookie store, etc).
@@ -957,6 +981,13 @@ void SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts() {
   content::GetNetworkService()->SetExplicitlyAllowedPorts(
       ConvertExplicitlyAllowedNetworkPortsPref(local_state_));
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+void SystemNetworkContextManager::UpdateChromeRootStoreEnabled() {
+  content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
+      IsUsingChromeRootStore(), base::DoNothing());
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

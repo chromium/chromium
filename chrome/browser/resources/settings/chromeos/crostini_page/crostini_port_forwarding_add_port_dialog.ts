@@ -172,12 +172,12 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     this.portState_ = this.computePortState_();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
     this.resetInputs_();
   }
 
-  private onAddTap_() {
+  private onAddClick_() {
     this.portState_ = this.computePortState_();
     if (this.portState_ !== PortState.VALID) {
       return;

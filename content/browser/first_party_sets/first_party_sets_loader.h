@@ -19,10 +19,10 @@
 namespace content {
 
 // FirstPartySetsLoader loads information about First-Party Sets (specified
-// here: https://github.com/privacycg/first-party-sets) into a members-to-owners
-// map asynchronously and returns it with a callback. It requires input sources
-// from the component updater via `SetComponentSets`, and the command line via
-// `SetManuallySpecifiedSet`.
+// here: https://github.com/privacycg/first-party-sets) into a
+// members-to-primaries map asynchronously and returns it with a callback. It
+// requires input sources from the component updater via `SetComponentSets`, and
+// the command line via `SetManuallySpecifiedSet`.
 class CONTENT_EXPORT FirstPartySetsLoader {
  public:
   using LoadCompleteOnceCallback =

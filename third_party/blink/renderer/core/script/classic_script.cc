@@ -190,6 +190,11 @@ v8::Local<v8::Data> ClassicScript::CreateHostDefinedOptions(
 }
 
 v8::ScriptOrigin ClassicScript::CreateScriptOrigin(v8::Isolate* isolate) const {
+  // Only send the source mapping URL string to v8 if it is not empty.
+  v8::Local<v8::Value> source_map_url_or_null;
+  if (!SourceMapUrl().empty()) {
+    source_map_url_or_null = V8String(isolate, SourceMapUrl());
+  }
   // NOTE: For compatibility with WebCore, ClassicScript's line starts at
   // 1, whereas v8 starts at 0.
   // NOTE(kouhei): Probably this comment is no longer relevant and Blink lines
@@ -200,7 +205,7 @@ v8::ScriptOrigin ClassicScript::CreateScriptOrigin(v8::Isolate* isolate) const {
       StartPosition().line_.ZeroBasedInt(),
       StartPosition().column_.ZeroBasedInt(),
       GetSanitizeScriptErrors() == SanitizeScriptErrors::kDoNotSanitize, -1,
-      V8String(isolate, SourceMapUrl()),
+      source_map_url_or_null,
       GetSanitizeScriptErrors() == SanitizeScriptErrors::kSanitize,
       false,  // is_wasm
       false,  // is_module

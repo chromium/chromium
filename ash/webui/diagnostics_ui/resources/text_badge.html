@@ -1,4 +1,31 @@
 <style include="diagnostics-shared">
+  :host-context(body.jelly-enabled) .error {
+    background-color: var(--cros-sys-error_container);
+    color: var(--cros-sys-on_error_container);
+  }
+
+  :host-context(body.jelly-enabled) .queued,
+  :host-context(body.jelly-enabled) .skipped,
+  :host-context(body.jelly-enabled) .stopped  {
+    background-color: var(--cros-sys-disabled_container);
+    color: var(--cros-sys-disabled);
+  }
+
+  :host-context(body.jelly-enabled) .running {
+    background-color: var(--cros-sys-progress_container);
+    color: var(--cros-sys-on_progress_container);
+  }
+
+  :host-context(body.jelly-enabled) .success {
+    background-color: var(--cros-sys-positive_container);
+    color: var(--cros-sys-on_positive_container);
+  }
+
+  :host-context(body.jelly-enabled) .warning {
+    background-color: var(--cros-sys-warning_container);
+    color: var(--cros-sys-on_warning_container);
+  }
+
   .error {
     background-color: var(--google-red-50);
     color: var(--cros-text-color-alert);
@@ -40,6 +67,33 @@
   }
 
   @media (prefers-color-scheme: dark) {
+    :host-context(body.jelly-enabled) .error {
+      background-color: var(--cros-sys-error_container);
+      color: var(--cros-sys-on_error_container);
+    }
+
+    :host-context(body.jelly-enabled) .queued,
+    :host-context(body.jelly-enabled) .skipped,
+    :host-context(body.jelly-enabled) .stopped  {
+      background-color: var(--cros-sys-disabled_container);
+      color: var(--cros-sys-disabled);
+    }
+
+    :host-context(body.jelly-enabled) .running {
+      background-color: var(--cros-sys-progress_container);
+      color: var(--cros-sys-on_progress_container);
+    }
+
+    :host-context(body.jelly-enabled) .success {
+      background-color: var(--cros-sys-positive_container);
+      color: var(--cros-sys-on_positive_container);
+    }
+
+    :host-context(body.jelly-enabled) .warning {
+      background-color: var(--cros-sys-warning_container);
+      color: var(--cros-sys-on_warning_container);
+    }
+
     .error {
       background-color:
           rgba(var(--google-red-300-rgb), var(--cros-second-tone-opacity));

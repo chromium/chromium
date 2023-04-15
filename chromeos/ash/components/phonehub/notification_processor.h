@@ -16,8 +16,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 using ::google::protobuf::RepeatedPtrField;
 
@@ -59,16 +58,23 @@ class NotificationProcessor {
 
   // Used to track which image type is being processed.
   enum class NotificationImageField {
-    kIcon = 0,
-    kSharedImage = 1,
-    kContactImage = 2,
+    kColorIcon = 0,
+    kMonochromeIcon = 1,
+    kSharedImage = 2,
+    kContactImage = 3,
   };
 
   // Each notification proto will be associated with one of these structs.
-  // |icon| will always be populated, but |shared_image| and |contact_image| may
-  // be empty.
+  // |color_icon| will always be populated, but |monochrome_icon|,
+  // |shared_image|, and |contact_image| may be empty.
   struct NotificationImages {
-    gfx::Image icon;
+    NotificationImages();
+    ~NotificationImages();
+    NotificationImages(const NotificationImages& other);
+    NotificationImages& operator=(const NotificationImages& other);
+
+    gfx::Image color_icon;
+    gfx::Image monochrome_icon_mask;
     gfx::Image shared_image;
     gfx::Image contact_image;
   };
@@ -130,7 +136,6 @@ class NotificationProcessor {
   base::WeakPtrFactory<NotificationProcessor> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_PROCESSOR_H_

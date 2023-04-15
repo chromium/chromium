@@ -168,7 +168,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     protected void addRoute(
             MediaRoute route, String origin, int tabId, int nativeRequestId, boolean wasLaunched) {
         super.addRoute(route, origin, tabId, nativeRequestId, wasLaunched);
-        CastMediaSource source = CastMediaSource.from(route.sourceId);
+        CastMediaSource source = CastMediaSource.from(route.getSourceId());
         final String clientId = source.getClientId();
 
         if (clientId == null || mClientIdToRecords.containsKey(clientId)) return;

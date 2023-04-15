@@ -211,6 +211,12 @@ class PLATFORM_EXPORT FetchParameters {
     render_blocking_behavior_ = render_blocking_behavior;
   }
 
+  void SetDiscoveryTime(base::TimeTicks discovery_time) {
+    discovery_time_ = discovery_time;
+  }
+
+  base::TimeTicks DiscoveryTime() { return discovery_time_; }
+
  private:
   ResourceRequest resource_request_;
   // |decoder_options_|'s ContentType is set to |kPlainTextContent| in
@@ -227,6 +233,7 @@ class PLATFORM_EXPORT FetchParameters {
   bool is_from_origin_dirty_style_sheet_ = false;
   RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
+  base::TimeTicks discovery_time_;
 };
 
 }  // namespace blink

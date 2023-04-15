@@ -12,6 +12,9 @@ namespace content {
 // IDP IdpSigninStatus API modes.
 enum class FedCmIdpSigninStatusMode { DISABLED, METRICS_ONLY, ENABLED };
 
+// Whether the AuthZ is enabled or not.
+bool IsFedCmAuthzEnabled();
+
 // Whether FedCM auto re-authentication is enabled.
 bool IsFedCmAutoReauthnEnabled();
 

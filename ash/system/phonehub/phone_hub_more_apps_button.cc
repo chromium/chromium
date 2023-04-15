@@ -62,6 +62,8 @@ PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
   InitLayout();
   app_stream_launcher_data_model_->AddObserver(this);
 }
@@ -168,8 +170,8 @@ void PhoneHubMoreAppsButton::LoadAppList() {
   if (!app_list->empty()) {
     auto app_count = std::min(app_list->size(), size_t{3});
     for (size_t i = 0; i < app_count; i++) {
-      AddChildView(
-          std::make_unique<AppIcon>(app_list->at(i).icon, AppIcon::kSizeSmall));
+      AddChildView(std::make_unique<AppIcon>(app_list->at(i).color_icon,
+                                             AppIcon::kSizeSmall));
     }
   }
 

@@ -9,13 +9,6 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace {
-// Make scrollbar parts compatible with the existing Windows scrollbar to
-// reuse scrollbar-related web tests.
-constexpr int kScrollbarTrackThicknessForWebTests = 15;
-constexpr int kScrollbarThumbThicknessForWebTests = 7;
-}  // namespace
-
 namespace blink {
 
 ScrollbarThemeFluent& ScrollbarThemeFluent::GetInstance() {
@@ -25,21 +18,18 @@ ScrollbarThemeFluent& ScrollbarThemeFluent::GetInstance() {
 
 ScrollbarThemeFluent::ScrollbarThemeFluent() {
   WebThemeEngine* theme_engine = WebThemeEngineHelper::GetNativeThemeEngine();
+  scrollbar_thumb_thickness_ =
+      theme_engine->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
+          .width();
+  scrollbar_track_thickness_ =
+      theme_engine->GetSize(WebThemeEngine::kPartScrollbarVerticalTrack)
+          .width();
+  // Web tests expect buttons to be squares with the length of the track.
   scrollbar_button_length_ =
       WebTestSupport::IsRunningWebTest()
-          ? kScrollbarTrackThicknessForWebTests
+          ? scrollbar_track_thickness_
           : theme_engine->GetSize(WebThemeEngine::kPartScrollbarUpArrow)
                 .height();
-  scrollbar_thumb_thickness_ =
-      WebTestSupport::IsRunningWebTest()
-          ? kScrollbarThumbThicknessForWebTests
-          : theme_engine->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
-                .width();
-  scrollbar_track_thickness_ =
-      WebTestSupport::IsRunningWebTest()
-          ? kScrollbarTrackThicknessForWebTests
-          : theme_engine->GetSize(WebThemeEngine::kPartScrollbarVerticalTrack)
-                .width();
 }
 
 int ScrollbarThemeFluent::ScrollbarThickness(float scale_from_dip,

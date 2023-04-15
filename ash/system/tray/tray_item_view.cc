@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_item_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_constants.h"
@@ -79,6 +80,14 @@ TrayItemView::TrayItemView(Shelf* shelf)
 
 TrayItemView::~TrayItemView() = default;
 
+void TrayItemView::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TrayItemView::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void TrayItemView::CreateLabel() {
   label_ = new IconizedLabel;
   AddChildView(label_);
@@ -136,8 +145,10 @@ void TrayItemView::SetVisible(bool visible) {
     return;
   }
   target_visible_ = visible;
+  for (auto& observer : observers_) {
+    observer.OnTrayItemVisibilityAboutToChange(target_visible_);
+  }
   views::View::SetVisible(visible);
-
   if (!GetWidget() ||
       ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
@@ -162,6 +173,15 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
 
   // Immediately progress to the end of the animation if animation is disabled.
   if (!IsAnimationEnabled()) {
+    // Tray items need to stay visible during the notification center tray's
+    // hide animation, so don't do anything here.
+    // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
+    // once the hide animation is over to ensure that all tray items are given a
+    // chance to properly update their visibilities. Only applicable when the
+    // QS revamp is enabled.
+    if (features::IsQsRevampEnabled() && !target_visible_) {
+      return;
+    }
     animation_->SetSlideDuration(base::TimeDelta());
     target_visible_ ? animation_->Show() : animation_->Hide();
     return;
@@ -182,6 +202,17 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
     animation_->Hide();
     AnimationProgressed(animation_.get());
   }
+}
+
+void TrayItemView::ImmediatelyUpdateVisibility() {
+  // Reset the animation to the end state according to `target_visible_` so that
+  // future visibility changes can animate properly.
+  if (animation_) {
+    animation_->Reset(target_visible_ ? 1.0 : 0.0);
+  }
+  layer()->SetTransform(gfx::Transform());
+  layer()->SetOpacity(target_visible_ ? 1.0 : 0.0);
+  views::View::SetVisible(target_visible_);
 }
 
 gfx::Size TrayItemView::CalculatePreferredSize() const {

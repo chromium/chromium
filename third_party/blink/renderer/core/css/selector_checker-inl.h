@@ -12,8 +12,8 @@
 namespace blink {
 
 bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
-  for (; selector != nullptr; selector = selector->TagHistory()) {
-    if (!selector->IsLastInTagHistory() &&
+  for (; selector != nullptr; selector = selector->NextSimpleSelector()) {
+    if (!selector->IsLastInComplexSelector() &&
         selector->Relation() != CSSSelector::kSubSelector &&
         selector->Relation() != CSSSelector::kDescendant) {
       // We don't support anything that requires us to recurse.
@@ -100,15 +100,15 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
       if (selector->Relation() == CSSSelector::kDescendant) {
         // We matched the entire compound, but there are more.
         // Move to the next one.
-        DCHECK(!selector->IsLastInTagHistory());
-        rewind_on_failure = selector->TagHistory();
+        DCHECK(!selector->IsLastInComplexSelector());
+        rewind_on_failure = selector->NextSimpleSelector();
 
         element = element->parentElement();
         if (element == nullptr) {
           return false;
         }
       }
-      selector = selector->TagHistory();
+      selector = selector->NextSimpleSelector();
     } else if (rewind_on_failure) {
       // We failed to match this compound, but we are looking for descendants,
       // so rewind to start of the compound and try the parent element.

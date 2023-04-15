@@ -149,8 +149,7 @@ void EncoderBase<Traits>::encode(InputType* input,
     // Remove exceptions relating to cloning closed input.
     exception_state.ClearException();
 
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Cannot encode closed input.");
+    exception_state.ThrowTypeError("Cannot encode closed input.");
     return;
   }
 
@@ -343,8 +342,8 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
     if (status.is_ok()) {
       req->resolver.Release()->Resolve();
     } else {
-      self->HandleError(
-          self->logger_->MakeException("Flushing error.", std::move(status)));
+      self->HandleError(self->logger_->MakeEncodingError("Flushing error.",
+                                                         std::move(status)));
       req->resolver.Release()->Reject();
     }
     req->EndTracing();

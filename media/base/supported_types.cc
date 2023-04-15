@@ -224,6 +224,11 @@ bool IsHevcProfileSupported(const VideoType& type) {
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
 #else
   return true;

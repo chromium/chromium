@@ -98,9 +98,6 @@ const char kForceProtectedVideoOutputBuffers[] =
 
 const char kDisableAudioInput[] = "disable-audio-input";
 
-// Present video content as overlays.
-const char kUseOverlaysForVideo[] = "use-overlays-for-video";
-
 // Minimum size for buffer size used for output video frames in
 // FuchsiaVideoDecoder. May be set to avoid re-allocating video buffers when an
 // application upgrades video resolution mid-stream.
@@ -565,7 +562,7 @@ BASE_FEATURE(kOpenscreenCastStreamingSession,
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
              "EnableRtcpReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Approach original pre-REC MSE object URL autorevoking behavior, though await
 // actual attempt to use the object URL for attachment to perform revocation.
@@ -754,6 +751,11 @@ BASE_FEATURE(kVaapiVP8Encoder,
 // Enable VA-API hardware encode acceleration for VP9.
 BASE_FEATURE(kVaapiVP9Encoder,
              "VaapiVP9Encoder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable VA-API hardware encode acceleration for AV1.
+BASE_FEATURE(kVaapiAV1Encoder,
+             "VaapiAV1Encoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable global VA-API lock. Disable this to use lock-free VA-API function
@@ -1260,6 +1262,9 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMediaService,
              "UseSequencedTaskRunnerForMediaService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// SequencedTaskRunner isn't supported on Windows since the accelerator requires
+// a COM STA TaskRunner.
+#if !BUILDFLAG(IS_WIN)
 // Use SequencedTaskRunner for MojoVideoEncodeAcceleratorProvider.
 BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
              "UseSequencedTaskRunnerForMojoVEAProvider",
@@ -1269,11 +1274,12 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Use TaskRunner for each MojoVideoEncodeAcceleratorService. Replaces
 // per-accelerator encoding task runner.
 BASE_FEATURE(kUseTaskRunnerForMojoVEAService,
-             "kUseTaskRunnerForMojoVEAService",
+             "UseTaskRunnerForMojoVEAService",
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

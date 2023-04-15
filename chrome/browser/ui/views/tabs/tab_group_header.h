@@ -20,6 +20,7 @@ class SavedTabGroupKeyedService;
 class TabSlotController;
 class TabGroupStyle;
 struct TabSizeInfo;
+class TabStyle;
 
 namespace views {
 class ImageView;
@@ -102,7 +103,8 @@ class TabGroupHeader : public TabSlotView,
   // Used to verify if this tab group is saved.
   const raw_ptr<SavedTabGroupKeyedService> saved_tab_group_service_;
 
-  const raw_ref<const TabGroupStyle> style_;
+  const raw_ref<const TabGroupStyle> group_style_;
+  const raw_ptr<const TabStyle> tab_style_;
 
   // Saved collapsed state for usage with activation of element tracker system.
   bool is_collapsed_;

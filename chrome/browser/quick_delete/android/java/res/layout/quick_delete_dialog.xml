@@ -54,4 +54,11 @@ found in the LICENSE file.
         app:chromeDrawableTint="@macro/default_icon_color"
         android:text="@string/clear_cache_title"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/search_history_disambiguation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 </LinearLayout>

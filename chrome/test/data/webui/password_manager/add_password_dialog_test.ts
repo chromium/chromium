@@ -234,6 +234,7 @@ suite('AddPasswordDialogTest', function() {
     passwordManager.data.isAccountStorageDefault = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const dialog = document.createElement('add-password-dialog');
@@ -251,6 +252,7 @@ suite('AddPasswordDialogTest', function() {
     passwordManager.data.isAccountStorageDefault = false;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const dialog = document.createElement('add-password-dialog');
@@ -267,6 +269,7 @@ suite('AddPasswordDialogTest', function() {
     passwordManager.data.isOptedInAccountStorage = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const dialog = document.createElement('add-password-dialog');
@@ -301,6 +304,7 @@ suite('AddPasswordDialogTest', function() {
     passwordManager.data.isOptedInAccountStorage = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const dialog = document.createElement('add-password-dialog');

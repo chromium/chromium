@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace policy {

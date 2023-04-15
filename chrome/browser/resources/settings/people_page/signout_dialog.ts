@@ -20,12 +20,12 @@ import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {getTemplate} from './signout_dialog.html.js';
-import {SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export interface SettingsSignoutDialogElement {
   $: {

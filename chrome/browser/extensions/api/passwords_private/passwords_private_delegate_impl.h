@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_porter.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,12 +40,17 @@ namespace content {
 class WebContents;
 }
 
+namespace web_app {
+class WebAppInstallManager;
+}
+
 namespace extensions {
 
 // Concrete PasswordsPrivateDelegate implementation.
 class PasswordsPrivateDelegateImpl
     : public PasswordsPrivateDelegate,
-      public password_manager::SavedPasswordsPresenter::Observer {
+      public password_manager::SavedPasswordsPresenter::Observer,
+      public web_app::WebAppInstallManagerObserver {
  public:
   explicit PasswordsPrivateDelegateImpl(Profile* profile);
 
@@ -145,6 +151,10 @@ class PasswordsPrivateDelegateImpl
 
   // password_manager::SavedPasswordsPresenter::Observer implementation.
   void OnSavedPasswordsChanged() override;
+
+  // web_app::WebAppInstallManagerObserver implementation.
+  void OnWebAppInstalledWithOsHooks(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   // Called after the lists are fetched. Once both lists have been set, the
   // class is considered initialized and any queued functions (which could
@@ -260,6 +270,10 @@ class PasswordsPrivateDelegateImpl
 
   // Device authenticator used to authenticate users in settings.
   scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
 };

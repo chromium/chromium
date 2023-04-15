@@ -26,6 +26,8 @@ class FakeIPenDeviceStatics final
   ~FakeIPenDeviceStatics() final;
 
   static FakeIPenDeviceStatics* GetInstance();
+  static Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>
+  FakeIPenDeviceStaticsComPtr();
 
   // ABI::Windows::Devices::Input::IPenDeviceStatics:
   IFACEMETHODIMP GetFromPointerId(

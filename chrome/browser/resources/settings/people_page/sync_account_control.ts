@@ -13,7 +13,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './profile_info_browser_proxy.js';
+import '/shared/settings/people_page/profile_info_browser_proxy.js';
 import '../icons.html.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
@@ -22,13 +22,13 @@ import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';
-import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export const MAX_SIGNIN_PROMO_IMPRESSION: number = 10;
 
@@ -349,7 +349,7 @@ export class SettingsSyncAccountControlElement extends
     return this.syncStatus.signedIn || this.storedAccounts_.length > 0;
   }
 
-  private onErrorButtonTap_() {
+  private onErrorButtonClick_() {
     const router = Router.getInstance();
     const routes = router.getRoutes();
     switch (this.syncStatus.statusAction) {
@@ -371,7 +371,7 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  private onSigninTap_() {
+  private onSigninClick_() {
     // <if expr="not chromeos_ash">
     this.syncBrowserProxy_.startSignIn();
     // </if>
@@ -387,13 +387,13 @@ export class SettingsSyncAccountControlElement extends
   }
 
   // <if expr="not chromeos_ash">
-  private onSignoutTap_() {
+  private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
   // </if>
 
-  private onSyncButtonTap_() {
+  private onSyncButtonClick_() {
     assert(this.shownAccount_);
     assert(this.storedAccounts_.length > 0);
     const isDefaultPromoAccount =
@@ -403,13 +403,13 @@ export class SettingsSyncAccountControlElement extends
         this.shownAccount_!.email, isDefaultPromoAccount);
   }
 
-  private onTurnOffButtonTap_() {
+  private onTurnOffButtonClick_() {
     /* This will route to people_page's disconnect dialog. */
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SIGN_OUT);
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     assert(actionMenu);
     const anchor =
@@ -427,7 +427,7 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  private onAccountTap_(e: DomRepeatEvent<StoredAccount>) {
+  private onAccountClick_(e: DomRepeatEvent<StoredAccount>) {
     this.shownAccount_ = e.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }

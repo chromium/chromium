@@ -11,6 +11,10 @@
 
 namespace content {
 
+bool IsFedCmAuthzEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAuthz);
+}
+
 bool IsFedCmAutoReauthnEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAutoReauthn);
 }

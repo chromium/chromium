@@ -39,12 +39,15 @@ source_set("tab_grid") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -67,7 +70,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
-    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
     "//ios/chrome/browser/ui/recent_tabs",
@@ -118,7 +120,10 @@ source_set("tab_grid_ui_constants") {
     "tab_grid_constants.mm",
   ]
 
-  deps = [ "resources:grid_background_color" ]
+  deps = [
+    "resources:grid_background_color",
+    "//base",
+  ]
 }
 
 source_set("tab_grid_paging") {
@@ -224,6 +229,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -238,7 +245,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs:tabs_internal",
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/popup_menu",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/url:constants",
@@ -287,6 +293,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

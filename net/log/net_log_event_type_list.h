@@ -4306,18 +4306,27 @@ EVENT_TYPE(TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL)
 // Oblivious HTTP
 // ------------------------------------------------------------------------
 
-// OBLIVIOUS_HTTP_REQUEST_START is emitted when an oblivious HTTP request is
-// started.
-EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST_START)
+// OBLIVIOUS_HTTP_REQUEST measures the time between when Oblivoius HTTP
+// has begun and when Oblivious HTTP has ended (either success or failure).
+// The following parameters are attached:
+//   {
+//     "net_error": <The net error code integer, can be a failure or a success>,
+//     "outer_response_error_code": <The HTTP error code of the outer relay HTTP
+//     response, set iff the result fails because the outer HTTP response status
+//     code is not HTTP_OK>,
+//     "inner_response_code": <The HTTP code of the inner gateway HTTP response,
+//     parsed out from the binary HTTP structure>
+//   }
+EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST)
 
-// OBLIVIOUS_HTTP_REQUEST_END is emitted when an oblivious HTTP request ends.
-// The net error "status" code for the request is attached.
-EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST_END)
-
-// OBLIVIOUS_HTTP_REQUEST_DATA logs either just the headers of the request or
+// OBLIVIOUS_HTTP_REQUEST_DATA logs either just the byte count of the request or
 // the entire request (depending on capture settings), before encryption.
 EVENT_TYPE(OBLIVIOUS_HTTP_REQUEST_DATA)
 
-// OBLIVIOUS_HTTP_RESPONSE_DATA logs either just the headers of the response or
-//  the entire response (depending on capture settings), after decryption.
+// OBLIVIOUS_HTTP_RESPONSE_DATA logs either just the byte count of the response
+// or the entire response (depending on capture settings), after decryption.
 EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_DATA)
+
+// OBLIVIOUS_HTTP_RESPONSE_HEADERS logs headers of the response, after
+// decryption.
+EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_HEADERS)

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -40,6 +41,8 @@ constexpr const char kExtensionContactedHost[] = "example.com";
 }  // namespace
 using CookiesGetAllInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo;
+using DeclarativeNetRequestInfo =
+    ExtensionTelemetryReportRequest_SignalInfo_DeclarativeNetRequestInfo;
 using GetAllArgsInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo_GetAllArgsInfo;
 using CookiesGetInfo =
@@ -50,6 +53,8 @@ using RemoteHostContactedInfo =
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo;
 using RemoteHostInfo =
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo_RemoteHostInfo;
+using TestRule = extensions::declarative_net_request::TestRule;
+using TestHeaderInfo = extensions::declarative_net_request::TestHeaderInfo;
 
 class ExtensionTelemetryServiceBrowserTest
     : public extensions::ExtensionApiTest {
@@ -59,7 +64,8 @@ class ExtensionTelemetryServiceBrowserTest
         {kExtensionTelemetry, kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
          kExtensionTelemetryCookiesGetAllSignal,
-         kExtensionTelemetryCookiesGetSignal},
+         kExtensionTelemetryCookiesGetSignal,
+         kExtensionTelemetryDeclarativeNetRequestSignal},
         {});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
     test_extension_dir_ =
@@ -86,8 +92,9 @@ class ExtensionTelemetryServiceBrowserTest
       ExtensionTelemetryService* telemetry_service,
       const extensions::ExtensionId& extension_id) {
     auto iter = telemetry_service->extension_store_.find(extension_id);
-    if (iter == telemetry_service->extension_store_.end())
+    if (iter == telemetry_service->extension_store_.end()) {
       return nullptr;
+    }
     return iter->second.get();
   }
 
@@ -357,6 +364,121 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(get_args_info.name(), "test_basic_cookie");
     EXPECT_EQ(get_args_info.store_id(), "0");
     EXPECT_EQ(get_args_info.url(), "https://extensions.cookies.com/");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       DetectsAndReportsDeclarativeNetRequestSignal) {
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  constexpr char kManifest[] = R"(
+    {
+      "name": "Simple DeclarativeNetRequest Extension",
+      "version": "0.1",
+      "manifest_version": 3,
+      "background": { "service_worker": "background.js" },
+      "permissions": ["declarativeNetRequest"],
+      "host_permissions": ["<all_urls>"]
+    })";
+  constexpr char kBackground[] = R"(
+    const modifyHeadersRule = {
+      id: 1,
+      priority: 1,
+      condition: {urlFilter: 'dynamic', resourceTypes: ['main_frame']},
+      action: {
+        type: 'modifyHeaders',
+        requestHeaders: [{header: 'header1', operation: 'set', value: 'value1'}]
+      },
+    };
+    const redirectRule = {
+      id: 2,
+      priority: 1,
+      condition: {'urlFilter': 'filter' },
+      action: {type: 'redirect', redirect: {'url' : 'http://google.com' }},
+    };
+    chrome.test.runTests([
+      async function updateDynamicRules() {
+        await chrome.declarativeNetRequest.updateDynamicRules(
+          {addRules: [modifyHeadersRule]}, () => {
+            chrome.test.assertNoLastError();
+            chrome.test.succeed();
+          });
+        },
+        async function updateSessionRules() {
+          await chrome.declarativeNetRequest.updateSessionRules(
+            {addRules: [redirectRule]}, () => {
+              chrome.test.assertNoLastError();
+              chrome.test.succeed();
+            });
+          },
+    ]);)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  // Retrieve extension telemetry service instance.
+  auto* telemetry_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(profile());
+  ASSERT_NE(telemetry_service, nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  {
+    // Verify the contents of telemetry report generated.
+    std::unique_ptr<TelemetryReport> telemetry_report_pb =
+        GetTelemetryReport(telemetry_service);
+    ASSERT_NE(telemetry_report_pb, nullptr);
+    // Retrieve the report corresponding to the test extension.
+    int report_index = -1;
+    for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+      if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+        report_index = i;
+      }
+    }
+    ASSERT_NE(report_index, -1);
+
+    const auto& extension_report = telemetry_report_pb->reports(report_index);
+    // Verify signal proto from the reports.
+    const ExtensionTelemetryReportRequest_SignalInfo& signal =
+        extension_report.signals()[0];
+    const DeclarativeNetRequestInfo& dnr_info =
+        signal.declarative_net_request_info();
+    EXPECT_EQ(dnr_info.rules_size(), 2);
+    EXPECT_EQ(dnr_info.max_exceeded_rules_count(), static_cast<uint32_t>(0));
+
+    // Verify Redirect rule.
+    TestRule expected_redirect_rule =
+        extensions::declarative_net_request::CreateGenericRule();
+    expected_redirect_rule.id = 2;
+    expected_redirect_rule.priority = 1;
+    expected_redirect_rule.action->type = "redirect";
+    expected_redirect_rule.action->redirect.emplace();
+    expected_redirect_rule.action->redirect->url = "http://google.com";
+    expected_redirect_rule.condition->url_filter = "filter";
+
+    EXPECT_EQ(dnr_info.rules(0),
+              expected_redirect_rule.ToValue().DebugString());
+
+    // Verify ModifyHeader rule.
+    TestRule expected_mh_rule =
+        extensions::declarative_net_request::CreateGenericRule();
+    expected_mh_rule.id = 1;
+    expected_mh_rule.priority = 1;
+    expected_mh_rule.action->type = "modifyHeaders";
+    expected_mh_rule.action->request_headers.emplace();
+    expected_mh_rule.action->request_headers = std::vector<TestHeaderInfo>(
+        {TestHeaderInfo("header1", "set", "value1")});
+    expected_mh_rule.condition->url_filter = "dynamic";
+    expected_mh_rule.condition->resource_types =
+        std::vector<std::string>({"main_frame"});
+
+    EXPECT_EQ(dnr_info.rules(1), expected_mh_rule.ToValue().DebugString());
   }
 }
 

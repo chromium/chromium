@@ -4,8 +4,11 @@
 
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 
+#include <algorithm>
+
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,17 +18,15 @@
 
 namespace thumbnail {
 namespace {
-void CompressTask(
-    double jpeg_aspect_ratio,
-    const SkBitmap& bitmap,
-    base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
+
+SkBitmap ResizeBitmap(double jpeg_aspect_ratio, const SkBitmap& bitmap) {
   // We want to show thumbnails in a specific aspect ratio. Therefore, the
   // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
   // it would be vertically center-aligned and the top would be hidden in
   // portrait mode, or it would be shown in the wrong aspect ratio in
   // landscape mode.
   constexpr int kScale = 2;
-  double aspect_ratio = base::clamp(jpeg_aspect_ratio, 0.5, 2.0);
+  double aspect_ratio = std::clamp(jpeg_aspect_ratio, 0.5, 2.0);
 
   int width = std::min(bitmap.width() / kScale,
                        (int)(bitmap.height() * aspect_ratio / kScale));
@@ -36,14 +37,21 @@ void CompressTask(
   int end_x = begin_x + width;
   SkIRect dest_subset = {begin_x, 0, end_x, height};
 
-  SkBitmap result_bitmap = skia::ImageOperations::Resize(
+  SkBitmap output = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / kScale,
       bitmap.height() / kScale, dest_subset);
+  output.setImmutable();
+  return output;
+}
 
+void CompressTask(
+    double jpeg_aspect_ratio,
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
   constexpr int kCompressionQuality = 97;
   std::vector<uint8_t> data;
-  const bool result =
-      gfx::JPEGCodec::Encode(result_bitmap, kCompressionQuality, &data);
+  const bool result = gfx::JPEGCodec::Encode(
+      ResizeBitmap(jpeg_aspect_ratio, bitmap), kCompressionQuality, &data);
   DCHECK(result);
 
   std::move(post_processing_task).Run(std::move(data));

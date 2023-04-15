@@ -193,9 +193,6 @@ RenderProcessImpl::RenderProcessImpl()
   v8::V8::SetFlagsFromString(kImportAssertionsFlag,
                              sizeof(kImportAssertionsFlag));
 
-  constexpr char kAtomicsFlag[] = "--harmony-atomics";
-  v8::V8::SetFlagsFromString(kAtomicsFlag, sizeof(kAtomicsFlag));
-
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 

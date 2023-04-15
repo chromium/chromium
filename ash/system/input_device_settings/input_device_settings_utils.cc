@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/mojom/modifier_key.mojom.h"
 
 namespace ash {
 namespace {

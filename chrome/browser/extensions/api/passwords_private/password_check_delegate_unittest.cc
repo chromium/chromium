@@ -79,11 +79,14 @@ constexpr char kTestEmail[] = "user@gmail.com";
 
 constexpr char16_t kUsername1[] = u"alice";
 constexpr char16_t kUsername2[] = u"bob";
+constexpr char16_t kUsername3[] = u"eve";
 
 constexpr char16_t kPassword1[] = u"fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char16_t kPassword2[] = u"pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
 constexpr char16_t kWeakPassword1[] = u"123456";
 constexpr char16_t kWeakPassword2[] = u"111111";
+
+constexpr char kGoogleAccounts[] = "https://accounts.google.com";
 
 using api::passwords_private::CompromisedInfo;
 using api::passwords_private::PasswordCheckStatus;
@@ -188,6 +191,21 @@ PasswordForm MakeSavedPassword(
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
+  form.in_store = store;
+  return form;
+}
+
+PasswordForm MakeSavedFederatedCredential(
+    base::StringPiece signon_realm,
+    base::StringPiece16 username,
+    base::StringPiece provider = kGoogleAccounts,
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
+  PasswordForm form;
+  form.signon_realm = std::string(signon_realm);
+  form.url = GURL(signon_realm);
+  form.username_value = std::u16string(username);
+  form.federation_origin = url::Origin::Create(GURL(provider));
+  CHECK(!form.federation_origin.opaque());
   form.in_store = store;
   return form;
 }
@@ -706,8 +724,7 @@ TEST_F(PasswordCheckDelegateTest,
 TEST_F(PasswordCheckDelegateTest,
        RecordChangePasswordFlowStartedForAppWithoutWebRealm) {
   // Create an insecure credential.
-  PasswordForm form =
-      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", kExampleCom);
+  PasswordForm form = MakeSavedAndroidPassword(kExampleApp, kUsername1, "", "");
   AddIssueToForm(&form, InsecureType::kLeaked);
   store().AddLogin(form);
   RunUntilIdle();
@@ -876,6 +893,20 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusRunning) {
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING, status.state);
   EXPECT_EQ(0, *status.already_processed);
   EXPECT_EQ(1, *status.remaining_in_queue);
+}
+
+// Verifies that the total password count is reported accurately.
+// Regression test for crbug.com/1432734.
+TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusCount) {
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername2, kPassword2));
+  store().AddLogin(MakeSavedFederatedCredential(kExampleCom, kUsername3));
+  RunUntilIdle();
+
+  delegate().StartPasswordCheck();
+  PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
+  EXPECT_EQ(*status.total_number_of_passwords, 2);
 }
 
 // Verifies that the case where the check is canceled is reported correctly.
@@ -1103,7 +1134,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl) {
 
 TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
   PasswordForm form1 =
-      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", kExampleCom);
+      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", "");
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
 

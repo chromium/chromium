@@ -1832,16 +1832,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
             GetAllInstallabilityErrors(browser()));
 }
 
-IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
                        GetAllInstallabilityErrorsWithPlayAppManifest) {
   auto errors = std::vector<content::InstallabilityError>(
       {GetInstallabilityError(START_URL_NOT_VALID),
        GetInstallabilityError(MANIFEST_MISSING_NAME_OR_SHORT_NAME),
        GetInstallabilityError(MANIFEST_DISPLAY_NOT_SUPPORTED),
        GetInstallabilityError(MANIFEST_MISSING_SUITABLE_ICON)});
-  if (IsCheckOfflineCapableFeatureEnabled()) {
-    errors.push_back(GetInstallabilityError(NO_URL_FOR_SERVICE_WORKER));
-  }
   errors.push_back(GetInstallabilityError(NO_ACCEPTABLE_ICON));
   EXPECT_EQ(errors, NavigateAndGetAllInstallabilityErrors(
                         browser(), GetURLOfPageWithServiceWorkerAndManifest(

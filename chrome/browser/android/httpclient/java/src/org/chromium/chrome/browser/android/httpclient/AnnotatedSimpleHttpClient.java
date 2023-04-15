@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.android.httpclient;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.android.httpclient.SimpleHttpClient.HttpResponse;
 import org.chromium.net.NetError;
 import org.chromium.net.NetworkTrafficAnnotationTag;
@@ -32,10 +34,12 @@ public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
         // Also mask network stack error codes as HTTP status code (better than
         // swallowing it and third_party code does not know about chrome's
         // network stack errors enum).
-        SimpleHttpClient.get().send(
-                gurl, requestType, body, headers, mAnnotation, (HttpResponse response) -> {
-                    callback.accept(getStatusCode(response), response.mBody, response.mHeaders);
-                });
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+            SimpleHttpClient.get().send(
+                    gurl, requestType, body, headers, mAnnotation, (HttpResponse response) -> {
+                        callback.accept(getStatusCode(response), response.mBody, response.mHeaders);
+                    });
+        });
     }
 
     private static int getStatusCode(HttpResponse response) {

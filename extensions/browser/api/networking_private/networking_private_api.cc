@@ -457,13 +457,13 @@ void NetworkingPrivateGetEnabledNetworkTypesFunction::Result(
     const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
       enabled_networks_list.Append(
-          private_api::ToString(private_api::NETWORK_TYPE_ETHERNET));
+          private_api::ToString(private_api::NetworkType::kEthernet));
     } else if (type == ::onc::network_type::kWiFi) {
       enabled_networks_list.Append(
-          private_api::ToString(private_api::NETWORK_TYPE_WIFI));
+          private_api::ToString(private_api::NetworkType::kWiFi));
     } else if (type == ::onc::network_type::kCellular) {
       enabled_networks_list.Append(
-          private_api::ToString(private_api::NETWORK_TYPE_CELLULAR));
+          private_api::ToString(private_api::NetworkType::kCellular));
     } else {
       LOG(ERROR) << "networkingPrivate: Unexpected type: " << type;
     }

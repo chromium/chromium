@@ -3,11 +3,19 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_impl.h"
+
 #include "base/check.h"
+#include "base/logging.h"
+#include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash::nearby::presence {
 
-NearbyPresenceServiceImpl::NearbyPresenceServiceImpl() = default;
+NearbyPresenceServiceImpl::NearbyPresenceServiceImpl(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  CHECK(pref_service_);
+}
+
 NearbyPresenceServiceImpl::~NearbyPresenceServiceImpl() = default;
 
 std::unique_ptr<NearbyPresenceService::ScanSession>

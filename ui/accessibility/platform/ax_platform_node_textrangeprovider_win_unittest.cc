@@ -6189,7 +6189,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ExpectPositionsEqual(original_end, GetEnd(text_range));
 
   EXPECT_EQ(*start_after_move, *normalized_start);
-  EXPECT_EQ(*end_after_move, *normalized_end);
+  // There are now two characters only instead of three, so positions should be
+  // the same minus in the text offset.
+  EXPECT_EQ(end_after_move->anchor_id(), normalized_end->anchor_id());
+  EXPECT_EQ(end_after_move->text_offset(), normalized_end->text_offset() + 1);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
@@ -6258,7 +6261,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ExpectPositionsEqual(original_end, GetEnd(text_range));
 
   EXPECT_EQ(*start_after_move, *normalized_start);
-  EXPECT_EQ(*end_after_move, *normalized_end);
+  // There are now two characters only instead of three, so positions should be
+  // the same minus in the text offset.
+  EXPECT_EQ(end_after_move->anchor_id(), normalized_end->anchor_id());
+  EXPECT_EQ(end_after_move->text_offset(), normalized_end->text_offset() + 1);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,

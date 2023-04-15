@@ -58,7 +58,7 @@
   <template is="dom-repeat" items="[[displays]]">
     <div id="_[[item.id]]" class="display elevate"
         draggable="[[dragEnabled]]" on-focus="onFocus_"
-        on-click="onSelectDisplayTap_"
+        on-click="onSelectDisplayClick_"
         style$="[[getDivStyle_(item.id, item.bounds, visualScale)]]"
         selected$="[[isSelected_(item, selectedDisplay)]]"
         tabindex="0">

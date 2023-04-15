@@ -252,7 +252,7 @@ export class SettingsSpellCheckPageElement extends
   /**
    * Opens the Custom Dictionary page.
    */
-  private onEditDictionaryTap_() {
+  private onEditDictionaryClick_() {
     Router.getInstance().navigateTo(routes.EDIT_DICTIONARY);
   }
 

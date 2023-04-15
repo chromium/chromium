@@ -662,6 +662,8 @@ class ErrorScreenTester extends ScreenElementApi {
   constructor() {
     super('error-message');
     this.offlineLink = new PolymerElementApi(this, '#error-offline-login-link');
+    this.errorTitle = new PolymerElementApi(this, '#error-title');
+    this.errorSubtitle = new PolymerElementApi(this, '#error-subtitle');
   }
 
   /**
@@ -669,7 +671,42 @@ class ErrorScreenTester extends ScreenElementApi {
    * @return {boolean}
    */
   isReadyForTesting() {
-    return this.isVisible() && this.offlineLink.isVisible();
+    return this.isVisible();
+  }
+
+  /**
+   *
+   * Returns if offline link is visible.
+   * @return {boolean}
+   */
+  isOfflineLinkVisible() {
+    return this.offlineLink.isVisible();
+  }
+
+  /**
+   * Returns error screen message title.
+   * @return {string}
+   */
+  getErrorTitle() {
+    // If screen is not visible always return empty title.
+    if (!this.isVisible()) {
+      return '';
+    }
+
+    return this.errorTitle.element().innerText.trim();
+  }
+
+  /**
+   * Returns error screen subtitle. Includes all visible error messages.
+   * @return {string}
+   */
+  getErrorReasons() {
+    // If screen is not visible always return empty reasons.
+    if (!this.isVisible()) {
+      return '';
+    }
+
+    return this.errorSubtitle.element().innerText.trim();
   }
 
   /**

@@ -23,7 +23,7 @@ import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
-import org.chromium.webengine.shell.InstrumentationActivity;
+import org.chromium.webengine.test.instrumentation_test_apk.InstrumentationActivity;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -21,6 +21,7 @@ MultiDeviceSetupScreenHandler::~MultiDeviceSetupScreenHandler() = default;
 void MultiDeviceSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   multidevice_setup::AddLocalizedValuesToBuilder(builder);
+  builder->Add("arcOverlayClose", IDS_ARC_OOBE_TERMS_POPUP_HELP_CLOSE_BUTTON);
 }
 
 void MultiDeviceSetupScreenHandler::Show() {

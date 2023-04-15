@@ -27,7 +27,12 @@ SyntheticTapGesture::~SyntheticTapGesture() {}
 
 SyntheticGesture::Result SyntheticTapGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp, SyntheticGestureTarget* target) {
-  DCHECK(dispatching_controller_);
+  CHECK(dispatching_controller_);
+  // Keep this on the stack so we can check if the forwarded event caused the
+  // deletion of the controller (which owns `this`).
+  base::WeakPtr<SyntheticGestureController> weak_controller =
+      dispatching_controller_;
+
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
     if (gesture_source_type_ ==
@@ -48,7 +53,7 @@ SyntheticGesture::Result SyntheticTapGesture::ForwardInputEvents(
       gesture_source_type_ == content::mojom::GestureSourceType::kMouseInput) {
     ForwardTouchOrMouseInputEvents(timestamp, target);
 
-    if (!dispatching_controller_) {
+    if (!weak_controller) {
       // ForwardTouchOrMouseInputEvents may cause the controller (and therefore
       // `this`) to be synchronously deleted (e.g. tapping tab-close). Return
       // immediately in this case.
@@ -76,19 +81,23 @@ bool SyntheticTapGesture::AllowHighFrequencyDispatch() const {
 // CAUTION: Dispatching press/release events can cause `this` to be deleted.
 void SyntheticTapGesture::ForwardTouchOrMouseInputEvents(
     const base::TimeTicks& timestamp, SyntheticGestureTarget* target) {
+  // Keep this on the stack so we can check if the forwarded event caused the
+  // deletion of the controller (which owns `this`).
+  base::WeakPtr<SyntheticGestureController> weak_controller =
+      dispatching_controller_;
   switch (state_) {
     case PRESS:
       synthetic_pointer_driver_->Press(params_.position.x(),
                                        params_.position.y());
       synthetic_pointer_driver_->DispatchEvent(target, timestamp);
-      if (!dispatching_controller_) {
+      if (!weak_controller) {
         return;
       }
       // Release immediately if duration is 0.
       if (params_.duration_ms == 0) {
         synthetic_pointer_driver_->Release();
         synthetic_pointer_driver_->DispatchEvent(target, timestamp);
-        if (!dispatching_controller_) {
+        if (!weak_controller) {
           return;
         }
         state_ = DONE;
@@ -102,7 +111,7 @@ void SyntheticTapGesture::ForwardTouchOrMouseInputEvents(
         synthetic_pointer_driver_->Release();
         synthetic_pointer_driver_->DispatchEvent(target,
                                                  start_time_ + GetDuration());
-        if (!dispatching_controller_) {
+        if (!weak_controller) {
           return;
         }
         state_ = DONE;

@@ -49,7 +49,6 @@
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -72,10 +71,6 @@ using password_manager::PasswordForm;
 using ui::TimeFormat;
 
 using State = password_manager::BulkLeakCheckService::State;
-
-std::string GetChangePasswordUrl(const GURL& url) {
-  return password_manager::CreateChangePasswordUrl(url).spec();
-}
 
 }  // namespace
 
@@ -390,9 +385,8 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
 
   State state = bulk_leak_check_service_adapter_.GetBulkLeakCheckState();
 
-  result.total_number_of_passwords = base::ranges::count_if(
-      saved_passwords_presenter_->GetSavedCredentials(),
-      [](const auto& credential) { return !credential.blocked_by_user; });
+  result.total_number_of_passwords =
+      saved_passwords_presenter_->GetSavedPasswords().size();
 
   // Handle the currently running case first, only then consider errors.
   if (state == State::kRunning) {
@@ -537,15 +531,9 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   api_credential.urls = CreateUrlCollectionFromCredential(entry);
   api_credential.stored_in = StoreSetFromCredential(entry);
   api_credential.compromised_info = CreateCompromiseInfo(entry);
-  if (api_credential.is_android_credential) {
-    // |change_password_url| need special handling for Android. Here we use
-    // affiliation information instead of the origin.
-    if (!entry.GetDisplayName().empty()) {
-      api_credential.change_password_url =
-          GetChangePasswordUrl(GURL(entry.GetAffiliatedWebRealm()));
-    }
-  } else {
-    api_credential.change_password_url = GetChangePasswordUrl(entry.GetURL());
+  absl::optional<GURL> change_password_url = entry.GetChangePasswordURL();
+  if (change_password_url.has_value()) {
+    api_credential.change_password_url = change_password_url->spec();
   }
   CredentialUIEntry copy(std::move(entry));
   // Weak and reused flags should be cleaned before obtaining id. Otherwise

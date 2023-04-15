@@ -4,11 +4,11 @@
 
 #include "chrome/browser/vr/elements/ui_element.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
@@ -762,7 +762,7 @@ bool UiElement::GetRayDistance(const gfx::Point3F& ray_origin,
 void UiElement::OnFloatAnimated(const float& value,
                                 int target_property_id,
                                 gfx::KeyframeModel* keyframe_model) {
-  opacity_ = base::clamp(value, 0.0f, 1.0f);
+  opacity_ = std::clamp(value, 0.0f, 1.0f);
 }
 
 void UiElement::OnTransformAnimated(const gfx::TransformOperations& operations,

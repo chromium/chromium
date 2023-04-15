@@ -30,7 +30,8 @@ kGoodBucketNameTests.forEach(test_data => {
 
   promise_test(async testCase => {
     await prepareForBucketTest(testCase);
-    await navigator.storageBuckets.open(bucket_name);
+    const bucket = await navigator.storageBuckets.open(bucket_name);
+    assert_equals(bucket.name, bucket_name);
 
     const buckets = await navigator.storageBuckets.keys();
     assert_array_equals(buckets, [bucket_name]);

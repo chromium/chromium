@@ -90,8 +90,8 @@ Path SVGRectElement::AsPath() const {
   SVGLengthContext length_context(this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  gfx::Vector2dF size =
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  gfx::Vector2dF size = length_context.ResolveLengthPair(
+      style.UsedWidth(), style.UsedHeight(), style);
   if (size.x() < 0 || size.y() < 0 || size.IsZero())
     return path;
 

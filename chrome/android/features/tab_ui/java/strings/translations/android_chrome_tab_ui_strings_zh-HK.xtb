@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
-<translation id="1181037720776840403">移除</translation>
 <translation id="125153950246128346">輕按即可查看另一個分頁</translation>
 <translation id="1403228085774130835">在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉的分頁</translation>
 <translation id="1455506303394048917">系統將會從此裝置清除您在這些無痕式分頁中的活動</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">在 <ph name="SOURCE_WEBSITE" /> 上現售 <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{將分頁移出群組}other{將分頁移出群組}}</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{由群組度移除 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁。}other{由群組度移除 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁。}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{將分頁加入書籤}other{將分頁加入書籤}}</translation>
-<translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組。}}</translation>
 <translation id="2569352796411618312">我有建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近冇用過，係咪要閂咗佢？</translation>
-<translation id="257674075312929031">群組</translation>
 <translation id="2613747923081026172">建立群組</translation>
 <translation id="2662028055331606429">評分：<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">瀏覽網站</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">拖曳分頁來分組</translation>
 <translation id="5846292395804797011">閂有 <ph name="NUMBER_OF_TABS" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
-<translation id="6040143037577758943">關閉</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">隱藏多重選取模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
 <translation id="7129458170538955174">關於呢間商店嘅資料宜家顯示喺畫面下半部</translation>
-<translation id="7151209024774799310">從群組中移除分頁</translation>
 <translation id="7204204600596740190">多重選取模式</translation>
 <translation id="7326879924029668159">查看退貨政策等資料</translation>
 <translation id="7352298686197644113">查看已開啟分頁中有哪項產品降價</translation>

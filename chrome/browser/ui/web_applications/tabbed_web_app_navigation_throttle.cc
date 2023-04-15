@@ -90,8 +90,8 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
   bool navigating_from_home_tab = tab_helper->is_pinned_home_tab();
-  bool navigation_url_is_home_url = IsPinnedHomeTabUrl(
-      provider->registrar_unsafe(), app_id, navigation_handle()->GetURL());
+  bool navigation_url_is_home_url =
+      app_controller->IsUrlInHomeTabScope(navigation_handle()->GetURL());
 
   // Navigations from the home tab to another URL should open in a new tab.
   if (navigating_from_home_tab && !navigation_url_is_home_url) {

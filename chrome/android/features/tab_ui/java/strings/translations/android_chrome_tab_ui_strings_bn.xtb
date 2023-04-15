@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1075622780330595106">সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
-<translation id="1181037720776840403">সরান</translation>
 <translation id="125153950246128346">অন্য ট্যাব দেখতে ট্যাপ করুন</translation>
 <translation id="1403228085774130835">Chrome-এর প্রধান মেনুর অধীনে 'সাম্প্রতিক' ট্যাবের মধ্যে আপনার বন্ধ করে দেওয়া ট্যাবগুলি দেখতে পারবেন</translation>
 <translation id="1455506303394048917">এইসব ছদ্মবেশী ট্যাবে আপনার করা অ্যাক্টিভিটি এই ডিভাইস থেকে মুছে ফেলা হবে</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">এখন <ph name="SOURCE_WEBSITE" />-এ <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ট্যাব আনগ্রুপ করুন}one{ট্যাব আনগ্রুপ করুন}other{ট্যাব আনগ্রুপ করুন}}</translation>
 <translation id="2277224997687551299">গ্রুপের নাম এডিট করুন</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{গ্রুপ থেকে বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব সরিয়ে দিন।}one{গ্রুপ থেকে বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব সরিয়ে দিন।}other{গ্রুপ থেকে বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব সরিয়ে দিন।}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ট্যাব বুকমার্ক করুন}one{ট্যাব বুকমার্ক করুন}other{ট্যাব বুকমার্ক করুন}}</translation>
-<translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="2569352796411618312">সাজেশন: সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
-<translation id="257674075312929031">গ্রুপ</translation>
 <translation id="2613747923081026172">গ্রুপ তৈরি করুন</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং</translation>
 <translation id="266935134738038806">সাইট দেখুন</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">ট্যাবগুলি গ্রুপ করতে ড্র্যাগ করুন</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> গ্রুপ বন্ধ করে দিন যেটিতে <ph name="NUMBER_OF_TABS" />টি ট্যাব আছে</translation>
 <translation id="5972844218283131174">সবগুলি অনির্বাচন করুন</translation>
-<translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6054741997831917303">এই আইটেমের দাম সম্প্রতি <ph name="PREVIOUS_PRICE" /> থেকে কমে <ph name="NEW_PRICE" /> হয়েছে</translation>
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ট্যাব শেয়ার করুন}one{ট্যাব শেয়ার করুন}other{ট্যাব শেয়ার করুন}}</translation>
 <translation id="7129458170538955174">অর্ধেক খোলা স্টোরের বিষয়ে তথ্য</translation>
-<translation id="7151209024774799310">গ্রুপ থেকে ট্যাব সরান</translation>
 <translation id="7204204600596740190">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড</translation>
 <translation id="7326879924029668159">ফেরত দেওয়ার নীতি এবং আরও অনেক কিছু দেখুন</translation>
 <translation id="7352298686197644113">কোন আইটেমের দাম কম তা খোলা থাকা ট্যাবগুলিতে দেখুন</translation>

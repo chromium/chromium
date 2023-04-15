@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(
+    is_chromeos,
+    "Non-ChromeOS builds cannot depend on //chromeos/components/firewall_hole")
+
+config("firewall_hole_config") {
+  defines = [ "IS_CHROMEOS_FIREWALL_HOLE_IMPL" ]
+}
+
+component("firewall_hole") {
+  configs += [ ":firewall_hole_config" ]
+  sources = [
+    "firewall_hole.cc",
+    "firewall_hole.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus/permission_broker",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "firewall_hole_unittest.cc" ]
+
+  deps = [
+    ":firewall_hole",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/permission_broker",
+    "//testing/gtest",
+  ]
+}

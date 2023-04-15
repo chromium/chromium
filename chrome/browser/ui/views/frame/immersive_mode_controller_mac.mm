@@ -367,8 +367,9 @@ void ImmersiveModeTabbedControllerMac::OnViewBoundsChanged(
   ImmersiveModeControllerMac::OnViewBoundsChanged(observed_view);
 }
 
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac() {
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) {
+std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
+    const BrowserView* browser_view) {
+  if (browser_view->UsesImmersiveFullscreenTabbedMode()) {
     return std::make_unique<ImmersiveModeTabbedControllerMac>();
   }
   return std::make_unique<ImmersiveModeControllerMac>();

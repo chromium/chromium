@@ -74,10 +74,9 @@ class ShoppingServiceTest : public ShoppingServiceTestBase {
 
 // Test that product info is processed correctly.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
-  // Ensure a feature that uses product info is enabled. This doesn't
-  // necessarily need to be the shopping list.
+  // Ensure a feature that uses product info is enabled.
   test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+      {kCommerceProductInfoApiEnabled, kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -114,11 +113,30 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
   run_loop.Run();
 }
 
+// Test that the product info api fails gracefully (callback run with nullopt)
+// if it is disabled.
+TEST_F(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
+  // Ensure a feature that uses product info is disabled.
+  test_features_.InitAndDisableFeature(kCommerceProductInfoApiEnabled);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                const absl::optional<ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               ASSERT_FALSE(info.has_value());
+                               run_loop->Quit();
+                             },
+                             &run_loop));
+  run_loop.Run();
+}
+
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
   test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+      {kCommerceProductInfoApiEnabled, kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -160,7 +178,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
 // Test that no object is provided for a negative optimization guide response.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
@@ -183,7 +202,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
 // Test that the product info cache only keeps track of live tabs.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   std::string url = "http://example.com/foo";
@@ -232,7 +252,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
@@ -285,7 +306,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycleWithFallback) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
@@ -379,6 +401,24 @@ TEST_F(ShoppingServiceTest, TestMerchantInfoResponse) {
             run_loop->Quit();
           },
           &run_loop));
+  run_loop.Run();
+}
+
+// Test that the merchant info fails gracefully when the api is disabled.
+TEST_F(ShoppingServiceTest, TestMerchantInfoResponse_ApiDisabled) {
+  // Ensure a feature that uses merchant info is disabled.
+  test_features_.InitAndDisableFeature(kCommerceMerchantViewer);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetMerchantInfoForUrl(
+      GURL(kMerchantUrl), base::BindOnce(
+                              [](base::RunLoop* run_loop, const GURL& url,
+                                 absl::optional<MerchantInfo> info) {
+                                ASSERT_EQ(kMerchantUrl, url.spec());
+                                ASSERT_FALSE(info.has_value());
+                                run_loop->Quit();
+                              },
+                              &run_loop));
   run_loop.Run();
 }
 
@@ -568,6 +608,25 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
                                      kEligibleLocale));
 
   checker.SetIsSubjectToParentalControls(true);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
+}
+
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
+
+  checker.SetSyncingBookmarks(false);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                       kEligibleLocale));

@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#include "url/gurl.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
+#import "url/gurl.h"
 
 namespace password_manager {
 struct CredentialUIEntry;
@@ -20,6 +21,16 @@ typedef NS_ENUM(NSInteger, CredentialType) {
   CredentialTypeRegular = kItemTypeEnumZero,
   CredentialTypeBlocked,
   CredentialTypeFederation,
+};
+
+// Enum which represents the entry point from which the password details are
+// accessed.
+enum class DetailsContext {
+  kGeneral,  // When accessed from any context other than Password Checkup.
+  kCompromisedIssues,  // When accessed from the compromised issues page.
+  kDismissedWarnings,  // When accessed from the dismissed warnings page.
+  kReusedIssues,       // When accessed from the reused issues page.
+  kWeakIssues,         // When accessed from the weak issues page.
 };
 
 // Object which is used by `PasswordDetailsViewController` to show
@@ -55,10 +66,13 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 @property(nonatomic, assign, getter=isCompromised) BOOL compromised;
 
 // URL which allows to change the password of compromised credential.
-@property(nonatomic, readonly) GURL changePasswordURL;
+@property(nonatomic, readonly) absl::optional<GURL> changePasswordURL;
 
 // `shouldOfferToMoveToAccount` tells whether or not to show a move option.
 @property(nonatomic, assign) BOOL shouldOfferToMoveToAccount;
+
+// The DetailsContext for the password details.
+@property(nonatomic, assign) DetailsContext context;
 
 - (instancetype)initWithCredential:
     (const password_manager::CredentialUIEntry&)credential

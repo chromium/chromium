@@ -29,6 +29,7 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
 
     ~TestApi();
 
+    int GetMenuWidth() const;
     gfx::Rect GetAnchorRect() const;
     LabelButton* GetFirstButton();
     Widget* GetWidget();

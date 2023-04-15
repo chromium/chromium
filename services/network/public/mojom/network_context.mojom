@@ -546,6 +546,11 @@ struct NetworkContextParams {
   // Is true, Trust Token operations should be blocked.
   bool block_trust_tokens;
 
+  // Whether "Compression dictionary transport" feature should be enabled.
+  // This feature is under construction. TODO(crbug.com/1413922): Update this
+  // comment when we finish the implementation.
+  bool shared_dictionary_enabled = false;
+
   // Parameters for constructing the FirstPartySetsAccessDelegate.
   // |first_party_sets_access_delegate_params| is the initial configuration to
   // use. If nullptr, uses the default configuration. Updated configurations

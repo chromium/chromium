@@ -140,7 +140,7 @@ FidoTunnelDevice::FidoTunnelDevice(
 }
 
 FidoTunnelDevice::FidoTunnelDevice(
-    CableRequestType request_type,
+    FidoRequestType request_type,
     network::mojom::NetworkContext* network_context,
     std::unique_ptr<Pairing> pairing,
     base::OnceClosure pairing_is_invalid)

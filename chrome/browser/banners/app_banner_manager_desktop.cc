@@ -206,7 +206,8 @@ void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(
 }
 
 void AppBannerManagerDesktop::OnWebAppUninstalled(
-    const web_app::AppId& app_id) {
+    const web_app::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   if (uninstalling_app_id_ == app_id)
     RecheckInstallabilityForLoadedPage(validated_url(), true);
 }

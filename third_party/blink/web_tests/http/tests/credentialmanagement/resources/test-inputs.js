@@ -57,10 +57,6 @@ export const ATTESTATION_OBJECT =
 export const AUTHENTICATOR_DATA =
     new TextEncoder("utf-8").encode("authenticatorData");
 export const SIGNATURE = new TextEncoder("utf-8").encode("signature");
-export const CABLE_REGISTRATION = {
-    versions: [1],
-    rpPublicKey: new TextEncoder("utf-8").encode("SixteenByteRpKey"),
-};
 
 export const CABLE_AUTHENTICATION = {
     version: 1,

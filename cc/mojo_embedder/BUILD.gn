@@ -9,6 +9,8 @@ cc_component("mojo_embedder") {
   sources = [
     "async_layer_tree_frame_sink.cc",
     "async_layer_tree_frame_sink.h",
+    "viz_layer_context.cc",
+    "viz_layer_context.h",
   ]
 
   defines = [ "CC_MOJO_EMBEDDER_IMPLEMENTATION" ]

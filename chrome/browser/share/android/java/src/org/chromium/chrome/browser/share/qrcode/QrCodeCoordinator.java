@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.text.TextUtils;
 
 import org.chromium.ui.base.WindowAndroid;
 
@@ -23,6 +24,7 @@ public class QrCodeCoordinator {
      * @param windowAndroid the WindowAndroid to access system permissions.
      */
     public QrCodeCoordinator(Activity activity, String url, WindowAndroid windowAndroid) {
+        assert !TextUtils.isEmpty(url) : "URL for QR code is empty.";
         mDialog = QrCodeDialog.newInstance(url, windowAndroid);
 
         mFragmentManager = activity.getFragmentManager();

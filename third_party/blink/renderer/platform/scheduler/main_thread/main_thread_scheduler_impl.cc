@@ -355,18 +355,19 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
 }
 
 // static
-WebThreadScheduler* WebThreadScheduler::MainThreadScheduler() {
+WebThreadScheduler& WebThreadScheduler::MainThreadScheduler() {
   auto* main_thread = Thread::MainThread();
   // Enforce that this is not called before the main thread is initialized.
-  DCHECK(main_thread);
-  DCHECK(main_thread->Scheduler());
-  DCHECK(main_thread->Scheduler()->ToMainThreadScheduler());
-
-  // This can return nullptr if the main thread scheduler is not a
-  // MainThreadSchedulerImpl, which can happen in tests.
-  return main_thread->Scheduler()
-      ->ToMainThreadScheduler()
-      ->ToWebMainThreadScheduler();
+  CHECK(main_thread && main_thread->Scheduler() &&
+        main_thread->Scheduler()->ToMainThreadScheduler());
+  auto* scheduler = main_thread->Scheduler()
+                        ->ToMainThreadScheduler()
+                        ->ToWebMainThreadScheduler();
+  // `scheduler` can be null if it isn't a MainThreadSchedulerImpl, which can
+  // happen in tests. Tests should use a real main thread scheduler if a
+  // `WebThreadScheduler` is needed.
+  CHECK(scheduler);
+  return *scheduler;
 }
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
@@ -532,9 +533,6 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           YesNoStateToString) {}
 
 MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
-  prioritize_compositing_after_input =
-      base::FeatureList::IsEnabled(kPrioritizeCompositingAfterInput);
-
   mbi_override_task_runner_handle =
       base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
 
@@ -2621,8 +2619,7 @@ void MainThreadSchedulerImpl::
     main_thread_only().should_prioritize_compositor_task_queue_after_delay =
         false;
     main_thread_only().prioritize_compositing_after_input = false;
-  } else if (scheduling_settings().prioritize_compositing_after_input &&
-             queue &&
+  } else if (queue &&
              queue->queue_type() == MainThreadTaskQueue::QueueType::kInput &&
              main_thread_only().did_handle_discrete_input_event) {
     // Assume this input will result in a frame, which we want to show ASAP.

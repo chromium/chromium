@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/browser/content_verifier.h"
 #include "extensions/browser/extension_system.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
@@ -80,7 +81,6 @@ class TestExtensionSystem : public ExtensionSystem {
   StateStore* dynamic_user_scripts_store() override;
   scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   value_store::TestingValueStore* value_store();
-  InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
   const base::OneShotEvent& ready() const override;
@@ -111,6 +111,10 @@ class TestExtensionSystem : public ExtensionSystem {
   // code).
   void RecreateAppSorting();
 
+  void set_content_verifier(ContentVerifier* verifier) {
+    content_verifier_ = verifier;
+  }
+
  protected:
   raw_ptr<Profile> profile_;
 
@@ -120,7 +124,6 @@ class TestExtensionSystem : public ExtensionSystem {
   std::unique_ptr<StateStore> state_store_;
   std::unique_ptr<ManagementPolicy> management_policy_;
   std::unique_ptr<ExtensionService> extension_service_;
-  scoped_refptr<InfoMap> info_map_;
   std::unique_ptr<QuotaService> quota_service_;
   std::unique_ptr<AppSorting> app_sorting_;
   std::unique_ptr<UserScriptManager> user_script_manager_;
@@ -128,6 +131,8 @@ class TestExtensionSystem : public ExtensionSystem {
 
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
+
+  scoped_refptr<ContentVerifier> content_verifier_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

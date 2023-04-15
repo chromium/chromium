@@ -204,8 +204,9 @@ const std::string& StructTraits<
 
 const std::string& StructTraits<
     ash::personalization_app::mojom::WallpaperCollectionDataView,
-    backdrop::Collection>::description(const backdrop::Collection& collection) {
-  return collection.description();
+    backdrop::Collection>::description_content(const backdrop::Collection&
+                                                   collection) {
+  return collection.description_content();
 }
 
 std::vector<GURL> StructTraits<
@@ -232,38 +233,6 @@ bool StructTraits<ash::personalization_app::mojom::WallpaperCollectionDataView,
                                                     collection) {
   return !(collection.has_collection_id() && collection.has_collection_name() &&
            collection.preview_size() > 0);
-}
-
-const std::string& StructTraits<
-    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
-    backdrop::Image::Description>::title(const backdrop::Image::Description&
-                                             description) {
-  return description.title();
-}
-
-const std::string& StructTraits<
-    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
-    backdrop::Image::Description>::content(const backdrop::Image::Description&
-                                               description) {
-  return description.content();
-}
-
-// Default to false as we don't ever need to convert back to
-// `Backdrop::Image::Description`
-bool StructTraits<
-    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
-    backdrop::Image::Description>::
-    Read(ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView
-             data,
-         backdrop::Image::Description* out) {
-  return false;
-}
-
-bool StructTraits<
-    ash::personalization_app::mojom::CurrentWallpaperDescriptionDataView,
-    backdrop::Image::Description>::IsNull(const backdrop::Image::Description&
-                                              description) {
-  return !description.has_content() && !description.has_title();
 }
 
 GURL StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,

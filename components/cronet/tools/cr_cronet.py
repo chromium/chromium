@@ -10,6 +10,7 @@ cr_cronet.py - cr - like helper tool for cronet developers
 import argparse
 import os
 import pipes
+import re
 import subprocess
 import sys
 
@@ -30,7 +31,7 @@ def run_shell(command, extra_options=''):
 
 
 def gn(out_dir, gn_args, gn_extra=None):
-  cmd = ['gn', 'gen', out_dir, "--args=%s" % gn_args]
+  cmd = ['gn', 'gen', out_dir, '--args=%s' % gn_args]
   if gn_extra:
     cmd += gn_extra
   return run(cmd)
@@ -104,48 +105,91 @@ def get_ninja_jobs_options():
   return []
 
 
-def get_default_gn_args(target_os, is_release):
-  gn_args = 'target_os="' + target_os + ('" enable_websockets=false '
-      'disable_file_support=true '
-      'disable_brotli_filter=false '
-      'is_component_build=false '
-      'use_crash_key_stubs=true '
-      'use_partition_alloc=false '
-      'include_transport_security_state_preload_list=false ') + use_goma()
-  if (is_release):
-    gn_args += 'is_debug=false is_official_build=true '
-  return gn_args
+def map_config_to_android_builder(is_release, target_cpu):
+  target_cpu_to_base_builder = {
+      'x86': 'android-cronet-x86',
+      'arm': 'android-cronet-arm',
+      'arm64': 'android-cronet-arm64',
+  }
+  if target_cpu not in target_cpu_to_base_builder:
+    raise ValueError('Unsupported target CPU')
+
+  builder_name = target_cpu_to_base_builder[target_cpu]
+  if is_release:
+    builder_name += '-rel'
+  else:
+    builder_name += '-dbg'
+  return builder_name
 
 
-def get_mobile_gn_args(target_os, is_release):
-  return get_default_gn_args(target_os, is_release) + \
-      'use_platform_icu_alternatives=true '
+def get_ios_gn_args(is_release, target_cpu):
+  print(is_release, target_cpu)
+  gn_args = [
+      'target_os = "ios"',
+      'enable_websockets = false',
+      'disable_file_support = true',
+      'disable_brotli_filter = false',
+      'is_component_build = false',
+      'use_crash_key_stubs = true',
+      'use_partition_alloc = false',
+      'include_transport_security_state_preload_list = false',
+      use_goma(),
+      'use_platform_icu_alternatives = true',
+      'is_cronet_build = true',
+      'enable_remoting = false',
+      'ios_app_bundle_id_prefix = "org.chromium"',
+      'ios_deployment_target = "10.0"',
+      'enable_dsyms = true',
+      'ios_stack_profiler_enabled = false',
+      f'target_cpu = "{target_cpu}"',
+  ]
+  if is_release:
+    gn_args += [
+        'is_debug = false',
+        'is_official_build = true',
+    ],
+  return ' '.join(gn_args)
 
 
-def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
-  print(is_release, bundle_id_prefix, target_cpu)
-  return get_mobile_gn_args('ios', is_release) + \
-      ('is_cronet_build=true  '
-      'enable_remoting=false '
-      'ios_app_bundle_id_prefix="%s" '
-      'ios_deployment_target="10.0" '
-      'enable_dsyms=true '
-      'ios_stack_profiler_enabled=false '
-      'target_cpu="%s" ') % (bundle_id_prefix, target_cpu)
+def ios_gn_gen(is_release, target_cpu, out_dir):
+  gn_extra = ['--ide=xcode', '--filters=//components/cronet/*']
+  return gn(out_dir, get_ios_gn_args(is_release, target_cpu), gn_extra)
 
 
-def get_android_gn_args(is_release):
-  return (get_mobile_gn_args('android', is_release) +
-          # Keep in sync with //tools/mb/mb_config.pyl cronet_android config.
-          'is_cronet_build=true ' + 'default_min_sdk_version = 19 ' +
-          'use_errorprone_java_compiler=true ' + 'enable_reporting=true ' +
-          'use_hashed_jni_names=true ')
+def filter_gn_args(gn_args):
+  gn_arg_matcher = re.compile("^.*=.*$")
+  # `mb_py lookup` prints out a bunch of metadata lines which we don't
+  # care about, we only want the GN args.
+  assert len(gn_args) > 4
+  actual_gn_args = gn_args[1:-3]
+  for line in gn_args:
+    if line in actual_gn_args:
+      assert gn_arg_matcher.match(line), \
+             f'Not dropping {line}, which does not look like a GN arg'
+    else:
+      assert not gn_arg_matcher.match(line), \
+             f'Dropping {line}, which looks like a GN arg'
+
+  return list(filter(lambda string: "remoteexec" not in string, actual_gn_args))
 
 
-def get_mac_gn_args(is_release):
-  return get_default_gn_args('mac', is_release) + \
-      'disable_histogram_support=true ' + \
-      'enable_dsyms=true '
+def android_gn_gen(is_release, target_cpu, out_dir):
+  group_name = 'chromium.android'
+  mb_script = 'tools/mb/mb.py'
+  builder_name = map_config_to_android_builder(is_release, target_cpu)
+  # Ideally we would call `mb_py gen` directly, but we need to filter out the
+  # use_remoteexec arg, as that cannot be used in a local environment.
+  gn_args = subprocess.check_output([
+      'python', mb_script, 'lookup', '-m', group_name, '-b', builder_name
+  ]).decode('utf-8').strip()
+  gn_args = filter_gn_args(gn_args.split("\n"))
+  return gn(out_dir, ' '.join(gn_args))
+
+
+def gn_gen(is_release, target_cpu, out_dir, is_ios):
+  if is_ios:
+    return ios_gn_gen(is_release, target_cpu, out_dir)
+  return android_gn_gen(is_release, target_cpu, out_dir)
 
 
 def main():
@@ -180,52 +224,42 @@ def main():
                       help='configure bundle id prefix')
 
   options, extra_options = parser.parse_known_args()
-  print(options)
-  print(extra_options)
+  print("Options:", options)
+  print("Extra options:", extra_options)
 
   if is_ios:
     test_target = 'cronet_test'
     unit_target = 'cronet_unittests_ios'
-    gn_extra = ['--ide=xcode', '--filters=//components/cronet/*']
     if options.iphoneos:
-      gn_args = get_ios_gn_args(options.release, options.bundle_id_prefix,
-                                'arm64')
       out_dir_suffix = '-iphoneos'
+      target_cpu = 'arm64'
     else:
-      gn_args = get_ios_gn_args(options.release, options.bundle_id_prefix,
-                                'x64')
       out_dir_suffix = '-iphonesimulator'
-      if options.asan:
-        gn_args += 'is_asan=true '
-        out_dir_suffix += '-asan'
-  else:
+      target_cpu = 'x64'
+  else:  # is_android
     test_target = 'cronet_test_instrumentation_apk'
     unit_target = 'cronet_unittests_android'
-    gn_args = get_android_gn_args(
-        options.release) + " treat_warnings_as_errors=false "
-    gn_extra = []
-    out_dir_suffix = ''
     if options.x86:
-      gn_args += 'target_cpu="x86" '
+      target_cpu = 'x86'
       out_dir_suffix = '-x86'
     else:
-      gn_args += 'arm_use_neon=false '
+      target_cpu = 'arm64'
+      out_dir_suffix = '-arm64'
     if options.asan:
       # ASAN on Android requires one-time setup described here:
       # https://www.chromium.org/developers/testing/addresssanitizer
-      gn_args += 'is_asan=true is_clang=true is_debug=false '
       out_dir_suffix += '-asan'
-
-  if options.release:
-    out_dir = 'out/Release' + out_dir_suffix
-  else:
-    out_dir = 'out/Debug' + out_dir_suffix
 
   if options.out_dir:
     out_dir = options.out_dir
+  else:
+    if options.release:
+      out_dir = 'out/Release' + out_dir_suffix
+    else:
+      out_dir = 'out/Debug' + out_dir_suffix
 
   if (options.command=='gn'):
-    return gn(out_dir, gn_args, gn_extra)
+    return gn_gen(options.release, target_cpu, out_dir, is_ios)
   if (options.command=='sync'):
     return run(['git', 'pull', '--rebase']) or run(['gclient', 'sync'])
   if (options.command=='build'):

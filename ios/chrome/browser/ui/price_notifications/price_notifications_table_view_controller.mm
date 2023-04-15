@@ -187,8 +187,9 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   if (trackableItem && !currentlyTracking) {
     [self addItem:trackableItem
-        toBeginning:YES
-          ofSection:SectionIdentifierTrackableItemsOnCurrentSite];
+             toBeginning:YES
+               ofSection:SectionIdentifierTrackableItemsOnCurrentSite
+        withRowAnimation:UITableViewRowAnimationAutomatic];
   }
 
   if (!self.viewIfLoaded.window) {
@@ -206,32 +207,38 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   _shouldHideLoadingState = YES;
   [self initializeTableViewModelIfNeeded];
   [self removeLoadingState];
-  BOOL shouldReloadSection = NO;
   TableViewModel* model = self.tableViewModel;
-
   if (!_hasTrackedItems) {
     [model setHeader:
                [self createHeaderForSectionIndex:SectionIdentifierTrackedItems
                                          isEmpty:NO]
         forSectionWithIdentifier:SectionIdentifierTrackedItems];
-    [model setHeader:[self createHeaderForSectionIndex:
-                               SectionIdentifierTableViewHeader
-                                               isEmpty:NO]
-        forSectionWithIdentifier:SectionIdentifierTableViewHeader];
-    shouldReloadSection = YES;
-  }
-  _hasTrackedItems = YES;
-  [self addItem:trackedItem
-      toBeginning:beginning
-        ofSection:SectionIdentifierTrackedItems];
 
-  if (!self.viewIfLoaded.window || !shouldReloadSection) {
+    trackedItem.type = ItemTypeListItem;
+    trackedItem.delegate = self;
+    if (beginning) {
+      [self.tableViewModel insertItem:trackedItem
+              inSectionWithIdentifier:SectionIdentifierTrackedItems
+                              atIndex:0];
+    } else {
+      [self.tableViewModel addItem:trackedItem
+           toSectionWithIdentifier:SectionIdentifierTrackedItems];
+    }
+
+    if (self.viewIfLoaded.window) {
+      [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
+                                               {SectionIdentifierTrackedItems}]
+                    withRowAnimation:UITableViewRowAnimationFade];
+    }
+    _hasTrackedItems = YES;
     return;
   }
-  [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
-                                           {SectionIdentifierTrackedItems,
-                                            SectionIdentifierTableViewHeader}]
-                withRowAnimation:UITableViewRowAnimationAutomatic];
+
+  _hasTrackedItems = YES;
+  [self addItem:trackedItem
+           toBeginning:beginning
+             ofSection:SectionIdentifierTrackedItems
+      withRowAnimation:UITableViewRowAnimationTop];
 }
 
 - (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
@@ -240,7 +247,6 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   SectionIdentifier trackedSection = SectionIdentifierTrackedItems;
   SectionIdentifier trackableSection =
       SectionIdentifierTrackableItemsOnCurrentSite;
-  std::vector<SectionIdentifier> sectionsToReload;
   BOOL addItemToTrackableSection =
       isViewingProductSite && ![model hasItemForItemType:ItemTypeListItem
                                        sectionIdentifier:trackableSection];
@@ -250,15 +256,15 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   [model removeItemWithType:ItemTypeListItem
       fromSectionWithIdentifier:trackedSection
                         atIndex:index.item];
+  BOOL reloadTrackedSection = ![model hasItemForItemType:ItemTypeListItem
+                                       sectionIdentifier:trackedSection];
 
-  if (![model hasItemForItemType:ItemTypeListItem
-               sectionIdentifier:trackedSection]) {
+  if (reloadTrackedSection) {
     _hasTrackedItems = NO;
     [model setHeader:
                [self createHeaderForSectionIndex:SectionIdentifierTrackedItems
                                          isEmpty:YES]
         forSectionWithIdentifier:trackedSection];
-    sectionsToReload.push_back(trackedSection);
   }
 
   if (addItemToTrackableSection) {
@@ -269,7 +275,6 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
     [model insertItem:trackedItem
         inSectionWithIdentifier:trackableSection
                         atIndex:0];
-    sectionsToReload.push_back(trackableSection);
   }
 
   NSString* messageText = l10n_util::GetNSString(
@@ -284,22 +289,30 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
     return;
   }
 
-  if (addItemToTrackableSection) {
-    NSIndexPath* trackableSectionIndex =
-        [model indexPathForItemType:ItemTypeListItem
-                  sectionIdentifier:trackableSection];
-    [self.tableView moveRowAtIndexPath:index toIndexPath:trackableSectionIndex];
-  }
+  [self.tableView
+      performBatchUpdates:^{
+        UITableViewRowAnimation animation = UITableViewRowAnimationMiddle;
+        if (addItemToTrackableSection) {
+          [self.tableView
+                reloadSections:[self createIndexSetForSectionIdentifiers:
+                                         {trackableSection}]
+              withRowAnimation:UITableViewRowAnimationFade];
+          animation = UITableViewRowAnimationFade;
+        }
 
-  if (sectionsToReload.size()) {
-    [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
-                                             sectionsToReload]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-    return;
-  }
+        if (reloadTrackedSection) {
+          [self.tableView
+                reloadSections:
+                    [self createIndexSetForSectionIdentifiers:{trackedSection}]
+              withRowAnimation:UITableViewRowAnimationFade];
+          return;
+        }
 
-  [self.tableView deleteRowsAtIndexPaths:@[ index ]
-                        withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.tableView deleteRowsAtIndexPaths:@[ index ]
+                              withRowAnimation:animation];
+      }
+               completion:^(BOOL completion){
+               }];
 }
 
 - (void)didStartPriceTrackingForItem:
@@ -322,9 +335,8 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   [self.tableView
         reloadSections:[self createIndexSetForSectionIdentifiers:
-                                 {SectionIdentifierTableViewHeader,
-                                  SectionIdentifierTrackableItemsOnCurrentSite}]
-      withRowAnimation:UITableViewRowAnimationAutomatic];
+                                 {SectionIdentifierTrackableItemsOnCurrentSite}]
+      withRowAnimation:UITableViewRowAnimationFade];
 
   [self addTrackedItem:trackableItem toBeginning:YES];
 }
@@ -357,8 +369,9 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 // Adds an item to `sectionID` and displays it to the UI.
 - (void)addItem:(PriceNotificationsTableViewItem*)item
-    toBeginning:(BOOL)toBeginning
-      ofSection:(SectionIdentifier)sectionID {
+         toBeginning:(BOOL)toBeginning
+           ofSection:(SectionIdentifier)sectionID
+    withRowAnimation:(UITableViewRowAnimation)animation {
   if (sectionID == SectionIdentifierTrackableItemsOnCurrentSite &&
       [self.tableViewModel
           hasItemForItemType:ItemTypeListItem
@@ -383,7 +396,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   [self.tableView
       insertRowsAtIndexPaths:@[ [self.tableViewModel indexPathForItem:item] ]
-            withRowAnimation:UITableViewRowAnimationAutomatic];
+            withRowAnimation:animation];
 }
 
 // Returns a TableViewHeaderFooterItem that displays the title for the section
@@ -456,14 +469,17 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   emptyTrackedItem.loading = YES;
   emptyTrackedItem.tracking = YES;
   [self addItem:emptyTrackableItem
-      toBeginning:YES
-        ofSection:SectionIdentifierTrackableItemsOnCurrentSite];
+           toBeginning:YES
+             ofSection:SectionIdentifierTrackableItemsOnCurrentSite
+      withRowAnimation:UITableViewRowAnimationAutomatic];
   [self addItem:emptyTrackedItem
-      toBeginning:YES
-        ofSection:SectionIdentifierTrackedItems];
+           toBeginning:YES
+             ofSection:SectionIdentifierTrackedItems
+      withRowAnimation:UITableViewRowAnimationAutomatic];
   [self addItem:emptyTrackedItem
-      toBeginning:YES
-        ofSection:SectionIdentifierTrackedItems];
+           toBeginning:YES
+             ofSection:SectionIdentifierTrackedItems
+      withRowAnimation:UITableViewRowAnimationAutomatic];
   _displayedLoadingState = YES;
 }
 

@@ -54,16 +54,10 @@ struct AllDownloadUIModelsInfo {
   bool has_unactioned = false;
   // From the button UI's perspective, whether the download is considered in
   // progress. Consider dangerous downloads as completed, because we don't want
-  // to encourage users to interact with them. However, consider downloads
-  // pending scanning as in progress, because we do want users to scan potential
-  // dangerous downloads.
+  // to encourage users to interact with them.
   int in_progress_count = 0;
   // Count of in-progress downloads (by the above definition) that are paused.
   int paused_count = 0;
-  // Whether there are no more in-progress downloads (by the above definition)
-  // that are not paused or pending deep scanning, i.e., whether all actively
-  // downloading items are done.
-  bool all_done = true;
 };
 
 AllDownloadUIModelsInfo GetAllModelsInfo(
@@ -82,15 +76,16 @@ AllDownloadUIModelsInfo GetAllModelsInfo(
       ++info.in_progress_count;
       if (model->IsPaused()) {
         ++info.paused_count;
-      } else if (!IsPendingDeepScanning(model.get())) {
-        // An in-progress download (by the above definition) is exactly one of
-        // actively downloading, paused, or pending deep scanning. If we got
-        // here, it is actively downloading and hence we are not all done.
-        info.all_done = false;
       }
     }
   }
   return info;
+}
+
+// Whether there are no more in-progress downloads (by the above definition)
+// that are not paused, i.e., whether all actively downloading items are done.
+bool IsAllDone(const AllDownloadUIModelsInfo& info) {
+  return info.in_progress_count == info.paused_count;
 }
 
 }  // namespace
@@ -139,7 +134,6 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
 }
 
 void DownloadDisplayController::OnUpdatedItem(bool is_done,
-                                              bool is_deep_scanning,
                                               bool may_show_details) {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
@@ -147,8 +141,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   std::vector<DownloadUIModelPtr> all_models =
       UpdateButtonStateFromAllModels(true);
   AllDownloadUIModelsInfo info = GetAllModelsInfo(all_models);
-  bool will_show_details =
-      may_show_details && ((is_done && info.all_done) || is_deep_scanning);
+  bool will_show_details = may_show_details && is_done && IsAllDone(info);
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
   }

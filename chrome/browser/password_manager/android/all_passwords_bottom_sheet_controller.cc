@@ -112,9 +112,8 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     DCHECK(client_);
     scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
         client_->GetDeviceAuthenticator();
-    if (password_manager_util::CanUseBiometricAuth(
-            authenticator.get(),
-            device_reauth::DeviceAuthRequester::kAllPasswordsList, client_)) {
+    if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
+                                                   client_)) {
       authenticator_ = std::move(authenticator);
       authenticator_->Authenticate(
           device_reauth::DeviceAuthRequester::kAllPasswordsList,

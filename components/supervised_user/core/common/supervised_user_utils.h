@@ -15,7 +15,7 @@ namespace supervised_user {
 enum class FilteringBehaviorReason {
   DEFAULT = 0,
   ASYNC_CHECKER = 1,
-  DENYLIST = 2,
+  // Deprecated, DENYLIST = 2,
   MANUAL = 3,
   ALLOWLIST = 4,
   NOT_SIGNED_IN = 5,

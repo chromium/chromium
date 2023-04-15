@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -30,7 +31,8 @@ template <typename Event>
 class EventWaiter {
  public:
   explicit EventWaiter(std::list<Event> expected_event_sequence,
-                       base::TimeDelta timeout = base::Seconds(0));
+                       base::TimeDelta timeout = base::Seconds(0),
+                       base::Location location = FROM_HERE);
 
   EventWaiter(const EventWaiter&) = delete;
   EventWaiter& operator=(const EventWaiter&) = delete;
@@ -40,20 +42,25 @@ class EventWaiter {
   // Either returns right away if all events were observed between this
   // object's construction and this call to Wait(), or use a RunLoop to wait
   // for them.
-  bool Wait();
+  [[nodiscard]] testing::AssertionResult Wait();
 
   // Observes an event (quits the RunLoop if we are done waiting).
   void OnEvent(Event event);
 
  private:
   std::list<Event> expected_events_;
+  base::TimeDelta timeout_;
+  base::Location location_;
   base::RunLoop run_loop_;
 };
 
 template <typename Event>
 EventWaiter<Event>::EventWaiter(std::list<Event> expected_event_sequence,
-                                base::TimeDelta timeout)
-    : expected_events_(std::move(expected_event_sequence)) {
+                                base::TimeDelta timeout,
+                                base::Location location)
+    : expected_events_(std::move(expected_event_sequence)),
+      timeout_(timeout),
+      location_(location) {
   if (!timeout.is_zero()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop_.QuitClosure(), timeout);
@@ -64,13 +71,20 @@ template <typename Event>
 EventWaiter<Event>::~EventWaiter() {}
 
 template <typename Event>
-bool EventWaiter<Event>::Wait() {
+testing::AssertionResult EventWaiter<Event>::Wait() {
   if (expected_events_.empty())
-    return true;
+    return testing::AssertionSuccess();
 
   DCHECK(!run_loop_.running());
   run_loop_.Run();
-  return expected_events_.empty();
+  if (expected_events_.empty()) {
+    return testing::AssertionSuccess();
+  }
+  return testing::AssertionFailure()
+         << expected_events_.size()
+         << " expected event(s) still pending after RunLoop timeout of "
+         << timeout_ << ", from EventWaiter created in "
+         << location_.ToString();
 }
 
 template <typename Event>
@@ -78,7 +92,8 @@ void EventWaiter<Event>::OnEvent(Event actual_event) {
   if (expected_events_.empty())
     return;
 
-  ASSERT_EQ(expected_events_.front(), actual_event);
+  ASSERT_EQ(expected_events_.front(), actual_event)
+      << " in EventWaiter created at " << location_.ToString();
   expected_events_.pop_front();
   // Only quit the loop if no other events are expected.
   if (expected_events_.empty() && run_loop_.running())

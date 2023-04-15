@@ -17,9 +17,6 @@ class Profile;
 
 namespace extensions {
 class PasswordsPrivateDelegate;
-namespace api::passwords_private {
-struct PasswordUiEntry;
-}  // namespace api::passwords_private
 }  // namespace extensions
 
 namespace syncer {
@@ -91,14 +88,7 @@ class PasswordCheckupPromo : public PromoCardInterface {
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;
 
-  void OnPasswordsReceived(
-      const std::vector<extensions::api::passwords_private::PasswordUiEntry>&
-          passwords);
-
-  bool has_saved_passwords_ = false;
-
-  // `weak_factory_` is used for all callback uses.
-  base::WeakPtrFactory<PasswordCheckupPromo> weak_factory_{this};
+  raw_ptr<extensions::PasswordsPrivateDelegate> delegate_ = nullptr;
 };
 
 // Promoting web version of Password Manager. Has a link to the website in the

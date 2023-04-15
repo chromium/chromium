@@ -9,6 +9,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -17,6 +19,9 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace base {
 class Clock;
@@ -48,6 +53,7 @@ struct SimpleGeoposition {
 class ASH_EXPORT GeolocationController
     : public system::TimezoneSettings::Observer,
       public chromeos::PowerManagerClient::Observer,
+      public SessionObserver,
       public SimpleGeolocationProvider::Delegate {
  public:
   class Observer : public base::CheckedObserver {
@@ -68,12 +74,9 @@ class ASH_EXPORT GeolocationController
   ~GeolocationController() override;
 
   static GeolocationController* Get();
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   const base::OneShotTimer& timer() const { return *timer_; }
-
-  base::Time last_successful_geo_request_time() const {
-    return last_successful_geo_request_time_;
-  }
 
   const std::u16string& current_timezone_id() const {
     return current_timezone_id_;
@@ -91,8 +94,12 @@ class ASH_EXPORT GeolocationController
   // SimpleGeolocationProvider::Delegate:
   bool IsPreciseGeolocationAllowed() const override;
 
-  // Returns sunset and sunrise time calculated from `geoposition_`. If the
-  // position is not set, returns the default sunset 6 PM and sunrise 6 AM.
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
+  // Returns sunset and sunrise time calculated from the most recently observed
+  // geoposition. If a geoposition has not been observed, defaults to sunset
+  // 6 PM and sunrise 6 AM.
   base::Time GetSunsetTime() const { return GetSunRiseSet(/*sunrise=*/false); }
   base::Time GetSunriseTime() const { return GetSunRiseSet(/*sunrise=*/true); }
 
@@ -145,7 +152,19 @@ class ASH_EXPORT GeolocationController
   // the chances of getting inaccurate values, especially around DST changes.
   base::Time GetSunRiseSet(bool sunrise) const;
 
+  // Called only when the active user changes in order to see if we need to use
+  // a previously cached geoposition value from the active user's prefs.
+  void LoadCachedGeopositionIfNeeded();
+
+  // Called whenever we receive a new geoposition update to cache it in all
+  // logged-in users' prefs so that it can be used later in the event of not
+  // being able to retrieve a valid geoposition.
+  void StoreCachedGeoposition() const;
+
   network::SharedURLLoaderFactory* const factory_;
+
+  // May be null if a user has not logged in yet.
+  base::raw_ptr<PrefService> active_user_pref_service_;
 
   // The IP-based geolocation provider.
   SimpleGeolocationProvider provider_;
@@ -158,15 +177,22 @@ class ASH_EXPORT GeolocationController
   // Optional Used in tests to override the time of "Now".
   base::Clock* clock_ = nullptr;  // Not owned.
 
-  // Last successful geoposition coordinates and its timestamp.
-  base::Time last_successful_geo_request_time_;
-
   // The ID of the current timezone in the format similar to "America/Chicago".
   std::u16string current_timezone_id_;
 
   base::ObserverList<Observer> observers_;
 
+  // True if the current `geoposition_` is from a previously cached value in the
+  // user prefs of any of the users in the current session. It is reset to false
+  // once we receive a newly-updated geoposition. This is used to treat the
+  // current geoposition as temporary until we receive a valid geoposition
+  // update, and also not to let a cached geoposition value to leak to another
+  // user for privacy reasons.
+  bool is_current_geoposition_from_cache_ = false;
+
   std::unique_ptr<SimpleGeoposition> geoposition_;
+
+  ScopedSessionObserver scoped_session_observer_;
 };
 
 }  // namespace ash

@@ -186,13 +186,24 @@ void AXMenuListOption::GetRelativeBounds(
   DCHECK(ax_menu_list->GetLayoutObject());
   WTF::Vector<gfx::Rect> options_bounds =
       To<AXMenuList>(ax_menu_list)->GetOptionsBounds();
-  if (options_bounds.size()) {
-    int index = To<HTMLOptionElement>(GetNode())->index();
-    DCHECK_GT(options_bounds.size(), (unsigned int)index);
+  // TODO(lusanpad): Update fix once we figure out what is causing
+  // https://crbug.com/1429881.
+  unsigned int index =
+      static_cast<unsigned int>(To<HTMLOptionElement>(GetNode())->index());
+  if (options_bounds.size() && index < options_bounds.size()) {
     out_bounds_in_container = gfx::RectF(options_bounds.at(index));
-  } else if (ax_menu_list->GetLayoutObject()) {
-    ax_menu_list->GetRelativeBounds(out_container, out_bounds_in_container,
-                                    out_container_transform, clips_children);
+  } else {
+#if defined(ADDRESS_SANITIZER)
+    if (options_bounds.size() && index >= options_bounds.size()) {
+      LOG(FATAL) << "Out of bounds option index=" << index
+                 << " should be less than " << options_bounds.size()
+                 << "\n* Object = " << ToString(true, true);
+    }
+#endif
+    if (ax_menu_list->GetLayoutObject()) {
+      ax_menu_list->GetRelativeBounds(out_container, out_bounds_in_container,
+                                      out_container_transform, clips_children);
+    }
   }
 }
 

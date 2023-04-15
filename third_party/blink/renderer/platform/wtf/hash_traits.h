@@ -118,7 +118,7 @@ struct GenericHashTraitsBase {
 
   // Defines the empty value which is used to fill unused slots in the hash
   // table. This function is preferred to IsEmptyValue() when the empty value
-  // can be represented with a value that can be safely and trivially
+  // can be represented with a value that can be safely and cheaply
   // compared/assigned to another value. By default, the default constructor
   // is used.
   static T EmptyValue() { return T(); }
@@ -142,8 +142,7 @@ struct GenericHashTraitsBase {
   // define either this function or both IsDeletedValue() and
   // ConstructDeletedValue(). This function is preferred to IsDeletedValue()
   // and ConstructDeletedValue() when the deleted value can be represented with
-  // a value that can be safely and trivially compared/assigned to another
-  // value.
+  // a value that can be safely and cheaply compared/assigned to another value.
   // This is for key types only.
   // NOTE: The destructor of the returned value *may not* be called, so the
   // value should not own any dynamically allocated resources.
@@ -447,8 +446,8 @@ struct HashTraitsDeletedValueHelper {
     return value == Traits::DeletedValue();
   }
   static void ConstructDeletedValue(typename Traits::TraitType& slot) {
-    static_assert(std::is_trivially_destructible_v<typename Traits::TraitType>);
-    slot = Traits::DeletedValue();
+    new (NotNullTag::kNotNull, &slot)
+        typename Traits::TraitType(Traits::DeletedValue());
   }
 };
 template <typename Traits>

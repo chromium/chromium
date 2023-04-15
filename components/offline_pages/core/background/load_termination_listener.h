@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_LOAD_TERMINATION_LISTENER_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_LOAD_TERMINATION_LISTENER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/offline_pages/core/background/offliner.h"
 
 namespace offline_pages {
@@ -28,7 +29,9 @@ class LoadTerminationListener {
 
  protected:
   // Raw pointer because this class is owned by Offliner.
-  Offliner* offliner_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION Offliner* offliner_ = nullptr;
 };
 
 }  // namespace offline_pages

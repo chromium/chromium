@@ -445,6 +445,11 @@ void ESimProfile::OnProfileNicknameSet(
 bool ESimProfile::ProfileExistsOnEuicc() {
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(euicc_->path());
+
+  if (features::IsSmdsDbusMigrationEnabled()) {
+    return base::Contains(euicc_properties->profiles().value(), path_);
+  }
+
   const std::vector<dbus::ObjectPath>& profile_paths =
       IsProfileInstalled()
           ? euicc_properties->installed_carrier_profiles().value()

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1400 tests; 1370 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1415 tests; 1385 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -91,6 +91,8 @@ PASS HTMLStyleElement includes LinkStyle: member names are unique
 PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
 PASS HTMLAnchorElement includes HTMLHyperlinkElementUtils: member names are unique
 PASS HTMLAreaElement includes HTMLHyperlinkElementUtils: member names are unique
+PASS HTMLInputElement includes PopoverInvokerElement: member names are unique
+PASS HTMLButtonElement includes PopoverInvokerElement: member names are unique
 PASS CanvasRenderingContext2D includes CanvasState: member names are unique
 PASS CanvasRenderingContext2D includes CanvasTransform: member names are unique
 PASS CanvasRenderingContext2D includes CanvasCompositing: member names are unique
@@ -894,6 +896,18 @@ PASS DragEvent interface: existence and properties of interface prototype object
 PASS DragEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS DragEvent interface: existence and properties of interface prototype object's @@unscopables property
 PASS DragEvent interface: attribute dataTransfer
+PASS ToggleEvent interface: existence and properties of interface object
+PASS ToggleEvent interface object length
+PASS ToggleEvent interface object name
+PASS ToggleEvent interface: existence and properties of interface prototype object
+PASS ToggleEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS ToggleEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS ToggleEvent interface: attribute oldState
+PASS ToggleEvent interface: attribute newState
+PASS ToggleEvent must be primary interface of new ToggleEvent("beforetoggle")
+PASS Stringification of new ToggleEvent("beforetoggle")
+PASS ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "oldState" with the proper type
+PASS ToggleEvent interface: new ToggleEvent("beforetoggle") must inherit property "newState" with the proper type
 PASS BarProp interface: existence and properties of interface object
 PASS BarProp interface object length
 PASS BarProp interface object name
@@ -1309,6 +1323,7 @@ PASS SVGElement interface: attribute onabort
 PASS SVGElement interface: attribute onauxclick
 PASS SVGElement interface: attribute onbeforeinput
 PASS SVGElement interface: attribute onbeforematch
+PASS SVGElement interface: attribute onbeforetoggle
 PASS SVGElement interface: attribute onblur
 PASS SVGElement interface: attribute oncancel
 PASS SVGElement interface: attribute oncanplay

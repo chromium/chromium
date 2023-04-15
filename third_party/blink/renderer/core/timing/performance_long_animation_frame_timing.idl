@@ -9,6 +9,7 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp renderStart;
     readonly attribute DOMHighResTimeStamp styleAndLayoutStart;
     readonly attribute DOMHighResTimeStamp firstUIEventTimestamp;
+    readonly attribute DOMHighResTimeStamp blockingDuration;
     [SameObject, SaveSameObject] readonly attribute FrozenArray<PerformanceScriptTiming> scripts;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();

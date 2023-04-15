@@ -7,11 +7,6 @@ const blankURL = (base = location.origin) => new URL('/wpt_internal/attribution-
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {
       t.add_cleanup(() => internals.resetAttributionReporting());
-      t.add_cleanup(() => resetAttributionReports(eventLevelReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(aggregatableReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(eventLevelDebugReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(aggregatableDebugReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(verboseDebugReportsUrl));
       return f(t);
     }, name);
 
@@ -27,20 +22,6 @@ const verboseDebugReportsUrl =
     '/.well-known/attribution-reporting/debug/verbose';
 
 const attributionDebugCookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
-
-/**
- * Method to clear the stash. Takes the URL as parameter. This could be for
- * event-level or aggregatable reports.
- */
-const resetAttributionReports = url => {
-  // The view of the stash is path-specific (https://web-platform-tests.org/tools/wptserve/docs/stash.html),
-  // therefore the origin doesn't need to be specified.
-  url = `${url}?clear_stash=true`;
-  const options = {
-    method: 'POST',
-  };
-  return fetch(url, options);
-};
 
 const pipeHeaderPattern = /[,)]/g;
 
@@ -84,7 +65,7 @@ const getFetchParams = (origin, cookie) => {
     });
     headers.push({
       name: allowHeadersHeader,
-      value: 'Attribution-Reporting-Eligible, Attribution-Reporting-Support',
+      value: `${eligibleHeader}, ${supportHeader}`,
     })
   } else {
     headers.push({
@@ -231,10 +212,6 @@ const registerAttributionSrc = async (t, {
       if (eligible !== null) {
         headers[eligibleHeader] = eligible;
       }
-      const support = searchParams.get('support');
-      if (support !== null) {
-        headers[supportHeader] = support;
-      }
       await fetch(url, {headers, credentials});
       return 'event';
     case 'xhr':
@@ -286,20 +263,18 @@ const pollAttributionReports = async (url, origin = location.origin, interval = 
  * the source is not done registering after 2 seconds, it times out and throws
  * an error.
  */
-const waitForSourceToBeRegistered = async (
-  sourceId,
-  attempt = 0
-) => {
-  if (attempt > 20) {
-    throw new Error(`Timeout polling source ${sourceId} registration`);
-  }
+const waitForSourceToBeRegistered = async (sourceId) => {
   const url = blankURL();
   url.searchParams.set("check-source-id", sourceId);
-  const { status } = await fetch(url);
-  if (status === 404) {
+
+  for (let i = 0; i < 20; i++) {
+    const {status} = await fetch(url);
+    if (status !== 404) {
+      return;
+    }
     await delay(100);
-    return waitForSourceToBeRegistered(sourceId, attempt + 1);
   }
+  throw new Error(`Timeout polling source ${sourceId} registration`);
 };
 
 const pollEventLevelReports = (origin, interval) =>

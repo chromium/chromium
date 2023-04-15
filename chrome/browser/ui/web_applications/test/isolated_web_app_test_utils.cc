@@ -33,8 +33,8 @@
 #include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkEncodedImageFormat.h"
-#include "third_party/skia/include/core/SkImageEncoder.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -61,8 +61,10 @@ constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
 
 std::string GetTestIconInString() {
   SkBitmap icon_bitmap = CreateSquareIcon(256, SK_ColorGREEN);
-  sk_sp<SkData> icon_skdata =
-      SkEncodeBitmap(icon_bitmap, SkEncodedImageFormat::kPNG, 100);
+  SkDynamicMemoryWStream stream;
+  bool success = SkPngEncoder::Encode(&stream, icon_bitmap.pixmap(), {});
+  CHECK(success);
+  sk_sp<SkData> icon_skdata = stream.detachAsData();
   return std::string(static_cast<const char*>(icon_skdata->data()),
                      icon_skdata->size());
 }

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
-<translation id="1181037720776840403">Өшіру</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1403228085774130835">Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз.</translation>
 <translation id="1455506303394048917">Инкогнито қойындыларындағы әрекеттеріңіз бұл құрылғыдан жойылады.</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтындағы қазіргі бағасы – <ph name="CURRENT_PRICE" />.</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Қойындыны топтан шығару}other{Қойындыларды топтан шығару}}</translation>
 <translation id="2277224997687551299">Топтың атауын өзгерту</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан өшіру.}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан өшіру.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Қойындыға бетбелгі қою}other{Қойындыларға бетбелгі қою}}</translation>
-<translation id="2479148705183875116">Параметрлерге өту</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>
 <translation id="2569352796411618312">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
-<translation id="257674075312929031">Топ</translation>
 <translation id="2613747923081026172">Топ құру</translation>
 <translation id="2662028055331606429">Бағасы: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтқа кіру</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Қойындыларды топтастыру үшін оларды сүйреңіз.</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> тобын жабу</translation>
 <translation id="5972844218283131174">Барлығын алып тастау</translation>
-<translation id="6040143037577758943">Жабу</translation>
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Бірнеше нұсқа таңдау режимін жасыру</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Қойындыны бөлісу}other{Қойындыларды бөлісу}}</translation>
 <translation id="7129458170538955174">Бұл дүкеннің жартылай ашылғандығы туралы ақпарат</translation>
-<translation id="7151209024774799310">Қойындыларды топтан өшіру</translation>
 <translation id="7204204600596740190">Бірнеше нұсқа таңдау режимі</translation>
 <translation id="7326879924029668159">Қайтару саясаты мен басқа да ақпаратты көріңіз.</translation>
 <translation id="7352298686197644113">Ашық тұрған қойындылардағы қай тауардың бағасы арзан екенін көріңіз.</translation>

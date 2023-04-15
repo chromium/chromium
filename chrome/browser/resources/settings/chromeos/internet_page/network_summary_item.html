@@ -29,7 +29,7 @@
       actionable$="[[isItemActionable_(activeNetworkState,
                         deviceState, networkStateList)]]"
       class="flex layout horizontal center link-wrapper"
-      on-click="onShowDetailsTap_">
+      on-click="onShowDetailsClick_">
     <div id="details" aria-hidden="true">
       <network-icon
           id="networkIcon"
@@ -63,7 +63,7 @@
           aria-labelledby="networkTitleText"
           aria-describedby="networkState networkIcon"
           aria-roledescription="$i18n{subpageArrowRoleDescription}"
-          on-click="onShowDetailsArrowTap_">
+          on-click="onShowDetailsArrowClick_">
       </cr-icon-button>
     </template>
   </div>

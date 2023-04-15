@@ -39,7 +39,8 @@ SyncAppsyncServiceFactory::SyncAppsyncServiceFactory()
 
 SyncAppsyncServiceFactory::~SyncAppsyncServiceFactory() = default;
 
-KeyedService* SyncAppsyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SyncAppsyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   syncer::SyncService* sync_service =
@@ -59,7 +60,19 @@ KeyedService* SyncAppsyncServiceFactory::BuildServiceInstanceFor(
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
-  return new SyncAppsyncService(sync_service, user_manager);
+  return std::make_unique<SyncAppsyncService>(sync_service, user_manager);
+}
+
+// SyncAppsyncService needs to be created by default as it is responsible for
+// populating the current profile's apps sync status to the daemon-store, as
+// well as monitoring for changes, and we need this information to exist / be
+// current.
+bool SyncAppsyncServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+bool SyncAppsyncServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace ash

@@ -16,8 +16,11 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/system_textfield.h"
+#include "ash/style/system_textfield_controller.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
@@ -138,9 +141,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   void OnBlur() override {
     UpdateBackgroundColor(/*is_active=*/false);
 
-    // Collapse whitespace when FolderNameView loses focus.
-    folder_header_view_->ContentsChanged(
-        this, base::CollapseWhitespace(GetText(), false));
+    folder_header_view_->ContentsChanged(this, GetText());
 
     // Ensure folder name is truncated when FolderNameView loses focus.
     SetText(folder_header_view_->GetElidedFolderName());
@@ -253,6 +254,105 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool has_mouse_already_entered_ = false;
 };
 
+class FolderHeaderView::FolderNameJellyView
+    : public ash::SystemTextfield,
+      public views::ViewTargeterDelegate {
+ public:
+  explicit FolderNameJellyView(bool tablet_mode)
+      : ash::SystemTextfield(ash::SystemTextfield::Type::kMedium),
+        tablet_mode_(tablet_mode) {
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+  }
+
+  FolderNameJellyView(const FolderNameJellyView&) = delete;
+  FolderNameJellyView& operator=(const FolderNameJellyView&) = delete;
+
+  ~FolderNameJellyView() override = default;
+
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(kMaxFolderHeaderWidth, kFolderHeaderHeight);
+  }
+
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return ui::mojom::CursorType::kIBeam;
+  }
+
+  void OnFocus() override {
+    starting_name_ = GetText();
+    SystemTextfield::OnFocus();
+    SetActive(true);
+  }
+
+  void OnBlur() override {
+    // Record metric each time a folder is renamed.
+    if (GetText() != starting_name_) {
+      if (tablet_mode_) {
+        UMA_HISTOGRAM_COUNTS_100("Apps.AppListFolderNameLength.TabletMode",
+                                 GetText().length());
+      } else {
+        UMA_HISTOGRAM_COUNTS_100("Apps.AppListFolderNameLength.ClamshellMode",
+                                 GetText().length());
+      }
+    }
+
+    SystemTextfield::OnBlur();
+  }
+
+  bool DoesMouseEventActuallyIntersect(const ui::MouseEvent& event) {
+    // Since hitbox for this view is extended for tap, we need to manually
+    // calculate this when checking for mouse events.
+    return GetLocalBounds().Contains(event.location());
+  }
+
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    DCHECK_EQ(target, this);
+    gfx::Rect textfield_bounds = target->GetLocalBounds();
+
+    // Ensure that the tap target for this view is always at least the view's
+    // minimum width.
+    int min_width =
+        std::max(kFolderHeaderMinTapWidth, textfield_bounds.width());
+    int horizontal_padding = -((min_width - textfield_bounds.width()) / 2);
+    textfield_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
+
+    return textfield_bounds.Intersects(rect);
+  }
+
+ private:
+  const bool tablet_mode_;
+
+  // Name of the folder when FolderNameView is focused, used to track folder
+  // rename metric.
+  std::u16string starting_name_;
+};
+
+class FolderHeaderView::FolderNameViewController
+    : public SystemTextfieldController {
+ public:
+  using ContentsChangedCallback =
+      base::RepeatingCallback<void(const std::u16string& new_contents)>;
+  FolderNameViewController(
+      SystemTextfield* textfield,
+      const ContentsChangedCallback& contents_changed_callback)
+      : SystemTextfieldController(textfield),
+        contents_changed_callback_(contents_changed_callback) {}
+
+  FolderNameViewController(const FolderNameViewController&) = delete;
+  FolderNameViewController& operator=(const FolderNameViewController&) = delete;
+
+  ~FolderNameViewController() override = default;
+
+  // SystemTextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override {
+    contents_changed_callback_.Run(new_contents);
+  }
+
+ private:
+  const ContentsChangedCallback contents_changed_callback_;
+};
+
 FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate,
                                    bool tablet_mode)
     : folder_item_(nullptr),
@@ -262,9 +362,19 @@ FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate,
       delegate_(delegate),
       folder_name_visible_(true),
       is_tablet_mode_(tablet_mode) {
-  folder_name_view_ = AddChildView(std::make_unique<FolderNameView>(this));
+  if (chromeos::features::IsJellyEnabled()) {
+    SystemTextfield* typed_folder_name_view =
+        AddChildView(std::make_unique<FolderNameJellyView>(tablet_mode));
+    folder_name_view_ = typed_folder_name_view;
+    folder_name_controller_ = std::make_unique<FolderNameViewController>(
+        typed_folder_name_view,
+        base::BindRepeating(&FolderHeaderView::UpdateFolderName,
+                            base::Unretained(this)));
+  } else {
+    folder_name_view_ = AddChildView(std::make_unique<FolderNameView>(this));
+    folder_name_view_->set_controller(this);
+  }
   folder_name_view_->SetPlaceholderText(folder_name_placeholder_text_);
-  folder_name_view_->set_controller(this);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -412,19 +522,26 @@ void FolderHeaderView::Layout() {
 
 void FolderHeaderView::ContentsChanged(views::Textfield* sender,
                                        const std::u16string& new_contents) {
+  UpdateFolderName(new_contents);
+}
+
+void FolderHeaderView::UpdateFolderName(
+    const std::u16string& textfield_contents) {
   // Temporarily remove from observer to ignore data change caused by us.
   if (!folder_item_)
     return;
 
   folder_item_->RemoveObserver(this);
+
+  std::u16string trimmed_name =
+      base::CollapseWhitespace(textfield_contents, false);
   // Enforce the maximum folder name length in UI by trimming `new_contents`
   // when it is longer than the max length.
-  if (new_contents.length() > kMaxFolderNameChars) {
-    std::u16string trimmed_new_contents = new_contents;
-    trimmed_new_contents.resize(kMaxFolderNameChars);
-    folder_name_view_->SetText(trimmed_new_contents);
+  if (trimmed_name.length() > kMaxFolderNameChars) {
+    trimmed_name.resize(kMaxFolderNameChars);
+    folder_name_view_->SetText(trimmed_name);
   } else {
-    delegate_->SetItemName(folder_item_, base::UTF16ToUTF8(new_contents));
+    delegate_->SetItemName(folder_item_, base::UTF16ToUTF8(trimmed_name));
   }
 
   folder_item_->AddObserver(this);

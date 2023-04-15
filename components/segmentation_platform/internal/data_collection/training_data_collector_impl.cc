@@ -246,6 +246,9 @@ void TrainingDataCollectorImpl::OnHistogramUpdatedReportForSegmentInfo(
     absl::optional<TrainingRequestId> request_id =
         training_cache_->GetRequestId(segment.value().segment_id());
     if (request_id.has_value()) {
+      RecordTrainingDataCollectionEvent(
+          segment.value().segment_id(),
+          stats::TrainingDataCollectionEvent::kHistogramTriggerHit);
       OnObservationTrigger(param, request_id.value(), segment.value());
     }
   }
@@ -412,15 +415,28 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
 
   // If no segment info list has been found.
   if (it == preferred_segment_info.end()) {
+    RecordTrainingDataCollectionEvent(
+        segment_id, stats::TrainingDataCollectionEvent::kNoSegmentInfo);
     return;
   }
 
   const proto::SegmentInfo& segment_info = it->second;
 
-  if (!CanReportTrainingData(segment_info, /*include_outputs*/ false))
+  if (!CanReportTrainingData(segment_info, /*include_outputs*/ false)) {
+    RecordTrainingDataCollectionEvent(
+        segment_id,
+        stats::TrainingDataCollectionEvent::kDisallowedForRecording);
     return;
+  }
 
   TrainingTimings training_request = ComputeDecisionTiming(segment_info);
+
+  auto is_periodic = (type != proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  RecordTrainingDataCollectionEvent(
+      segment_info.segment_id(),
+      is_periodic
+          ? stats::TrainingDataCollectionEvent::kContinousCollectionStart
+          : stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
 
   // Start training data collection and generate training data inputs.
   base::Time unused;
@@ -462,17 +478,41 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
                                std::move(training_data),
                                /*save_to_db=*/store_to_disk);
 
+  if (has_error) {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
+  } else {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kCollectAndStoreInputsSuccess);
+  }
+
   // Set up delayed output recordings based on time delay triggers defined
   // in model metadata.
   // TODO(haileywang): This is slightly inaccurate since the the delay timer is
   // only started after the input training tensors are cached.
   if (training_request.observation_delayed_task) {
+    if (training_request.observation_delayed_task.value().is_zero()) {
+      RecordTrainingDataCollectionEvent(
+          segment_info.segment_id(),
+          stats::TrainingDataCollectionEvent::kImmediateObservationPosted);
+    } else {
+      RecordTrainingDataCollectionEvent(
+          segment_info.segment_id(),
+          stats::TrainingDataCollectionEvent::kDelayedTaskPosted);
+    }
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
                        weak_ptr_factory_.GetWeakPtr(), absl::nullopt,
                        request_id, segment_info),
         *training_request.observation_delayed_task);
+  } else {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kWaitingForNonDelayedTrigger);
   }
 }
 
@@ -480,8 +520,16 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
     const absl::optional<ImmediaCollectionParam>& param,
     TrainingRequestId request_id,
     const proto::SegmentInfo& segment_info) {
-  if (!CanReportTrainingData(segment_info, /*include_outputs*/ true))
+  RecordTrainingDataCollectionEvent(
+      segment_info.segment_id(),
+      stats::TrainingDataCollectionEvent::kObservationTimeReached);
+
+  if (!CanReportTrainingData(segment_info, /*include_outputs*/ true)) {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kObservationDisallowed);
     return;
+  }
 
   // Retrieve input tensor from cache.
   training_cache_->GetInputsAndDelete(
@@ -494,8 +542,12 @@ void TrainingDataCollectorImpl::OnGetStoredTrainingData(
     const absl::optional<ImmediaCollectionParam>& param,
     const proto::SegmentInfo& segment_info,
     absl::optional<proto::TrainingData> input) {
-  if (!input.has_value())
+  if (!input.has_value()) {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kTrainingDataMissing);
     return;
+  }
 
   // Observation trigger always gets prediction time from cached partial
   // tensor.
@@ -585,12 +637,6 @@ TrainingDataCollectorImpl::ComputeDecisionTiming(
       training_request.observation_delayed_task = absl::nullopt;
     }
   }
-
-  RecordTrainingDataCollectionEvent(
-      info.segment_id(),
-      is_periodic
-          ? stats::TrainingDataCollectionEvent::kContinousCollectionStart
-          : stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
 
   return training_request;
 }

@@ -56,7 +56,7 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
     case Readiness.kTerminated:
       return true;
     case Readiness.kUninstalledByUser:
-    case Readiness.kUninstalledByMigration:
+    case Readiness.kUninstalledByNonUser:
     case Readiness.kRemoved:
     case Readiness.kUnknown:
       return false;
@@ -247,7 +247,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS);
   }
 
-  private onEnableAndroidAppsTap_(event: Event): void {
+  private onEnableAndroidAppsClick_(event: Event): void {
     this.setPrefValue('arc.enabled', true);
     event.stopPropagation();
   }
@@ -257,13 +257,13 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  private onAndroidAppsSubpageTap_() {
+  private onAndroidAppsSubpageClick_() {
     if (this.androidAppsInfo.playStoreEnabled) {
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS);
     }
   }
 
-  private onManageAndroidAppsTap_(event: MouseEvent): void {
+  private onManageAndroidAppsClick_(event: MouseEvent): void {
     // |event.detail| is the click count. Keyboard events will have 0 clicks.
     const isKeyboardAction = event.detail === 0;
     AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(

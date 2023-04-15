@@ -58,7 +58,9 @@ class WebAppInstallManagerObserverAdapter
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
-  void OnWebAppUninstalled(const AppId& app_id) override;
+  void OnWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
  protected:

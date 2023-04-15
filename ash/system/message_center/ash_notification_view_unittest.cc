@@ -189,10 +189,7 @@ class AshNotificationViewTestBase : public AshTestBase,
  public:
   template <typename... TaskEnvironmentTraits>
   explicit AshNotificationViewTestBase(TaskEnvironmentTraits&&... traits)
-      : AshTestBase(traits...) {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(features::kNotificationsRefresh);
-  }
+      : AshTestBase(traits...) {}
   AshNotificationViewTestBase(const AshNotificationViewTestBase&) = delete;
   AshNotificationViewTestBase& operator=(const AshNotificationViewTestBase&) =
       delete;
@@ -430,7 +427,6 @@ class AshNotificationViewTestBase : public AshTestBase,
 
  private:
   scoped_refptr<NotificationTestDelegate> delegate_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   // Used to create test notification. This represents the current available
   // number that we can use to create the next test notification. This id will

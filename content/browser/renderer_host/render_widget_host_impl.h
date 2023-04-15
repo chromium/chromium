@@ -1193,7 +1193,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Our delegate, which wants to know mainly about keyboard events.
   // It will remain non-null until DetachDelegate() is called.
-  raw_ptr<RenderWidgetHostDelegate> delegate_;
+  raw_ptr<RenderWidgetHostDelegate, DanglingUntriaged> delegate_;
 
   // The delegate of the owner of this object.
   // This member is non-null if and only if this RenderWidgetHost is associated
@@ -1358,6 +1358,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                              1] = {false};
   bool is_in_touchpad_gesture_fling_ = false;
 
+  // TODO(crbug.com/1432355): The gesture controller can cause synchronous
+  // destruction of the page (sending a click to the tab close button). Since
+  // that'll destroy the RenderWidgetHostImpl, having it own the controller is
+  // awkward.
   std::unique_ptr<SyntheticGestureController> synthetic_gesture_controller_;
 
   // Must be declared before `input_router_`. The latter is constructed by

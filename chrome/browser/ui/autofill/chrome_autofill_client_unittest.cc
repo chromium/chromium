@@ -19,13 +19,12 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::test::ScopedFeatureList;
 
 namespace autofill {
 namespace {
@@ -35,41 +34,21 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
  public:
   explicit TestChromeAutofillClient(content::WebContents* web_contents)
       : ChromeAutofillClient(web_contents) {}
-};
 
 #if BUILDFLAG(IS_ANDROID)
-class MockFastCheckoutClient : public FastCheckoutClientImpl {
- public:
-  explicit MockFastCheckoutClient(content::WebContents* web_contents)
-      : FastCheckoutClientImpl(web_contents) {}
-  ~MockFastCheckoutClient() override = default;
+  MockFastCheckoutClient* GetFastCheckoutClient() override {
+    return &fast_checkout_client_;
+  }
 
-  MOCK_METHOD(bool,
-              TryToStart,
-              (const GURL&,
-               const FormData&,
-               const FormFieldData&,
-               base::WeakPtr<AutofillManager>),
-              (override));
-  MOCK_METHOD(void, Stop, (bool reset), (override));
-  MOCK_METHOD(bool, IsRunning, (), (const override));
-  MOCK_METHOD(bool, IsShowing, (), (const override));
-};
+  MockFastCheckoutClient fast_checkout_client_;
 #endif
+};
 
 class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     PreparePersonalDataManager();
-#if BUILDFLAG(IS_ANDROID)
-    auto fast_checkout_client =
-        std::make_unique<MockFastCheckoutClient>(web_contents());
-    fast_checkout_client_ = fast_checkout_client.get();
-    const void* key =
-        content::WebContentsUserData<FastCheckoutClientImpl>::UserDataKey();
-    web_contents()->SetUserData(key, std::move(fast_checkout_client));
-#endif
     // Creates the AutofillDriver and AutofillManager.
     NavigateAndCommit(GURL("about:blank"));
   }
@@ -90,12 +69,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   TestBrowserAutofillManager* autofill_manager() {
     return test_autofill_manager_injector_[web_contents()];
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  MockFastCheckoutClient* fast_checkout_client() {
-    return fast_checkout_client_;
-  }
-#endif
 
  private:
   void PreparePersonalDataManager() {
@@ -123,10 +96,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
       test_autofill_driver_injector_;
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       test_autofill_manager_injector_;
-
-#if BUILDFLAG(IS_ANDROID)
-  raw_ptr<MockFastCheckoutClient> fast_checkout_client_;
-#endif
 };
 
 TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_BelowMaxFlowTime) {
@@ -184,16 +153,27 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeAutofillClientTest, IsFastCheckoutSupportedWithDisabledFeature) {
+class ChromeAutofillClientTestForFastCheckout
+    : public ChromeAutofillClientTest {
+ protected:
+  MockFastCheckoutClient* fast_checkout_client() {
+    return static_cast<MockFastCheckoutClient*>(
+        client()->GetFastCheckoutClient());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{::features::kFastCheckout};
+};
+
+TEST_F(ChromeAutofillClientTestForFastCheckout,
+       IsFastCheckoutSupportedWithDisabledFeature) {
   FormData form;
   FormFieldData field;
-  ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(::features::kFastCheckout);
   EXPECT_FALSE(
       client()->IsFastCheckoutSupported(form, field, *autofill_manager()));
 }
 
-TEST_F(ChromeAutofillClientTest,
+TEST_F(ChromeAutofillClientTestForFastCheckout,
        HideFastCheckout_IsShowing_CallsStopOnFastCheckoutClient) {
   ON_CALL(*fast_checkout_client(), IsShowing)
       .WillByDefault(testing::Return(true));
@@ -201,7 +181,7 @@ TEST_F(ChromeAutofillClientTest,
   client()->HideFastCheckout(/*allow_further_runs=*/true);
 }
 
-TEST_F(ChromeAutofillClientTest,
+TEST_F(ChromeAutofillClientTestForFastCheckout,
        HideFastCheckout_NotShowing_DoesNotCallStopOnFastCheckoutClient) {
   ON_CALL(*fast_checkout_client(), IsShowing)
       .WillByDefault(testing::Return(false));
@@ -209,13 +189,13 @@ TEST_F(ChromeAutofillClientTest,
   client()->HideFastCheckout(/*allow_further_runs=*/true);
 }
 
-TEST_F(ChromeAutofillClientTest, IsShowingFastCheckoutUI) {
+TEST_F(ChromeAutofillClientTestForFastCheckout, IsShowingFastCheckoutUI) {
   EXPECT_CALL(*fast_checkout_client(), IsShowing)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(client()->IsShowingFastCheckoutUI());
 }
 
-TEST_F(ChromeAutofillClientTest, TryToShowFastCheckout) {
+TEST_F(ChromeAutofillClientTestForFastCheckout, TryToShowFastCheckout) {
   EXPECT_CALL(*fast_checkout_client(), TryToStart)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(client()->TryToShowFastCheckout(

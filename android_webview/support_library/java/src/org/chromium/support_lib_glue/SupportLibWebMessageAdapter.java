@@ -48,6 +48,6 @@ public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface 
     @Override
     public String[] getSupportedFeatures() {
         // getData() and getPorts() are not covered by feature flags.
-        return new String[] {Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD};
+        return new String[] {Features.WEB_MESSAGE_ARRAY_BUFFER};
     }
 }

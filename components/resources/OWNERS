@@ -1,7 +1,6 @@
 per-file android_system_error_page_resources.grdp=file://components/android_system_error_page/OWNERS
 per-file autofill*=file://components/autofill/OWNERS
 per-file commerce*=file://components/commerce/OWNERS
-per-file content_suggestions*=file://components/ntp_snippets/OWNERS
 per-file crash_*=rsesek@chromium.org
 per-file crash_*=thestig@chromium.org
 per-file dom_distiller*=file://components/dom_distiller/OWNERS

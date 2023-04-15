@@ -34,7 +34,7 @@ class LacrosDataBackwardMigrationScreen : public BaseScreen {
   void OnProgress(int percent);
 
   // Called when migration is completed.
-  void OnMigrated(BrowserDataBackMigrator::Result result);
+  void OnMigrated(BrowserDataBackMigratorBase::Result result);
 
   base::WeakPtr<LacrosDataBackwardMigrationScreenView> view_;
   std::unique_ptr<BrowserDataBackMigrator> migrator_;

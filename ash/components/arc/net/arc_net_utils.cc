@@ -497,4 +497,21 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
   return networks;
 }
 
+base::Value::List TranslateSubjectNameMatchListToValue(
+    const std::vector<std::string>& string_list) {
+  base::Value::List result;
+  for (const auto& item : string_list) {
+    // Type and value is separated by ":" in vector, separate them by splitting
+    // at ":".
+    int idx = item.find(":");
+    std::string type = item.substr(0, idx);
+    std::string value = item.substr(idx + 1, item.size());
+    base::Value::Dict entry;
+    entry.Set(::onc::eap_subject_alternative_name_match::kType, type);
+    entry.Set(::onc::eap_subject_alternative_name_match::kValue, value);
+    result.Append(std::move(entry));
+  }
+  return result;
+}
+
 }  // namespace arc::net_utils

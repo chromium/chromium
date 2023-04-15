@@ -6554,6 +6554,9 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 0u);
+      EXPECT_EQ(
+          manifest->tab_strip->home_tab->get_params()->scope_patterns.size(),
+          0u);
       EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
       EXPECT_FALSE(
           manifest->tab_strip->new_tab_button->get_params()->url.has_value());
@@ -6666,6 +6669,86 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
           manifest->tab_strip->new_tab_button->get_params()->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
+  }
+}
+
+TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
+  ScopedWebAppTabStripForTest feature(true);
+
+  // Valid scope patterns are parsed.
+  {
+    auto& manifest = ParseManifest(R"({
+        "display_override": [ "tabbed" ],
+        "tab_strip": {
+          "home_tab": {"scope_patterns":
+            [{"pathname": "foo"}, {"pathname": "foo/bar/"}]}} })");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 2u);
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject patterns containing custom regex.
+  {
+    auto& manifest = ParseManifest(R"({
+        "display_override": [ "tabbed" ],
+        "tab_strip": {
+          "home_tab": {"scope_patterns":
+            [{"pathname": "([a-z]+)/"}, {"pathname": "/foo/([a-z]+)/"}]}} })");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Allow patterns with wildcards and named groups.
+  {
+    auto& manifest = ParseManifest(R"({
+        "display_override": [ "tabbed" ],
+        "tab_strip": {
+          "home_tab": {"scope_patterns":
+            [{"pathname": "*"}, {"pathname": ":foo"}, {"pathname": "/foo/*"},
+            {"pathname": "/foo/*/bar"}, {"pathname": "/foo/:bar"},
+            {"pathname": "/foo/:bar/*"}]}}
+        })");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 6u);
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Patterns list doesn't contain objects.
+  {
+    auto& manifest = ParseManifest(R"({
+        "display_override": [ "tabbed" ],
+        "tab_strip": {
+          "home_tab": {"scope_patterns": ["blah", 3]}} })");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Pattern list is empty.
+  {
+    auto& manifest = ParseManifest(R"({
+        "display_override": [ "tabbed" ],
+        "tab_strip": {
+          "home_tab": {"scope_patterns": []}} })");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
+
+    EXPECT_EQ(0u, GetErrorCount());
   }
 }
 

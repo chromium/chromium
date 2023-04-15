@@ -92,6 +92,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
+    _showsVerticalScrollIndicator = YES;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
   }
@@ -625,7 +626,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
   scrollView.alwaysBounceVertical = NO;
   scrollView.showsHorizontalScrollIndicator = NO;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  [scrollView setShowsVerticalScrollIndicator:YES];
+  [scrollView
+      setShowsVerticalScrollIndicator:self.showsVerticalScrollIndicator];
   return scrollView;
 }
 

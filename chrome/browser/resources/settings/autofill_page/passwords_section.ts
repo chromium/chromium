@@ -32,6 +32,7 @@ import './passwords_import_dialog.js';
 import './passwords_shared.css.js';
 import './avatar_icon.js';
 
+import {SyncBrowserProxyImpl, TrustedVaultBannerState} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -50,7 +51,6 @@ import {FocusConfig} from '../focus_config.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {SyncBrowserProxyImpl, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
@@ -386,9 +386,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private computeShowImportPasswords_(): boolean {
-    return !this.passwordManagerDisabledByPolicy_ &&
-        loadTimeData.valueExists('showImportPasswords') &&
-        loadTimeData.getBoolean('showImportPasswords');
+    return !this.passwordManagerDisabledByPolicy_;
   }
 
   private computePasswordManagerDisabledByPolicy_(): boolean {
@@ -519,7 +517,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Fires an event that should delete the password exception.
    */
-  private onRemoveExceptionButtonTap_(
+  private onRemoveExceptionButtonClick_(
       e: DomRepeatEvent<chrome.passwordsPrivate.ExceptionEntry>) {
     const exception = e.model.item;
     this.passwordManager_.removeException(exception.id);
@@ -528,7 +526,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Opens the export/import action menu.
    */
-  private onImportExportMenuTap_() {
+  private onImportExportMenuClick_() {
     const target = this.shadowRoot!.querySelector('#exportImportMenuButton') as
         HTMLElement;
     this.$.exportImportMenu.showAt(target);
@@ -537,7 +535,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Opens the passwords import dialog.
    */
-  private onImportTap_() {
+  private onImportClick_() {
     recordPasswordsImportInteraction(
         PasswordsImportDesktopInteractions.DIALOG_OPENED_FROM_THREE_DOT_MENU);
     this.showPasswordsImportDialog_ = true;
@@ -551,7 +549,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Opens the export passwords dialog.
    */
-  private onExportTap_() {
+  private onExportClick_() {
     this.showPasswordsExportDialog_ = true;
     this.$.exportImportMenu.close();
   }
@@ -560,7 +558,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showPasswordsExportDialog_ = false;
   }
 
-  private onAddPasswordTap_() {
+  private onAddPasswordClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AddCredentialFromSettings.UserAction2',
         AddCredentialFromSettingsUserInteractions.ADD_DIALOG_OPENED,

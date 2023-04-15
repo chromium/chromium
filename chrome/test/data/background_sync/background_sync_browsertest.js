@@ -3,23 +3,23 @@
 // found in the LICENSE file.
 
 function RegisterServiceWorker() {
-  navigator.serviceWorker.register('background_sync_service_worker.js')
+  return navigator.serviceWorker.register('background_sync_service_worker.js')
     .then(() => {
-      sendResultToTest('ok - service worker registered');
-    }).catch(sendErrorToTest);
+      return 'ok - service worker registered';
+    }).catch(formatError);
 }
 
 function hasTag(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then(swRegistration => swRegistration.sync.getTags())
     .then(tags => {
       if (tags.indexOf(tag) >= 0) {
-        sendResultToTest('ok - ' + tag + ' found');
+        return 'ok - ' + tag + ' found';
       } else {
-        sendResultToTest('error - ' + tag + ' not found');
+        return 'error - ' + tag + ' not found';
       }
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 window.addEventListener('beforeunload', event => {

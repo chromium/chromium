@@ -191,19 +191,21 @@ found in the LICENSE file.
       </oobe-text-button>
     </div>
     <div id="welcomeAnimationSlot">
-      <oobe-cr-lottie
-        id="welcomeAnimation"
-        hidden="[[isMeet_]]"
-        animation-url="animations/welcome_screen_animation.json"
-      >
-      </oobe-cr-lottie>
-      <img
-        src="/images/cfm/welcome.svg"
-        class="oobe-illustration"
-        id="remoraWelcomeImage"
-        hidden="[[!isMeet_]]"
-        aria-hidden="true"
-      >
+      <template is="dom-if" if="[[!isMeet_]]">
+        <oobe-cr-lottie
+          id="welcomeAnimation"
+          animation-url="animations/welcome_screen_animation.json"
+        >
+        </oobe-cr-lottie>
+      </template>
+      <template is="dom-if" if="[[isMeet_]]">
+        <img
+          src="/images/cfm/welcome.svg"
+          class="oobe-illustration"
+          id="remoraWelcomeImage"
+          aria-hidden="true"
+        >
+      </template>
     </div>
   </div>
 </div>

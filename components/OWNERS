@@ -28,7 +28,6 @@ per-file management_strings.grdp=file://docs/privacy/OWNERS
 per-file media_message_center_strings.grdp=file://components/media_message_center/OWNERS
 per-file new_or_sad_tab_strings.grdp=file://chrome/browser/ui/webui/ntp/OWNERS
 per-file new_or_sad_tab_strings.grdp=file://chrome/browser/resources/ntp4/OWNERS
-per-file ntp_snippets_strings.grdp=file://components/ntp_snippets/OWNERS
 per-file omnibox_pedal_ui_strings.grdp=file://components/omnibox/OWNERS
 per-file omnibox_strings.grdp=file://components/omnibox/OWNERS
 per-file page_info_strings.grdp=file://chrome/browser/ui/page_info/OWNERS

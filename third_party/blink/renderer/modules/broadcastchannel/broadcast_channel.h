@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -101,8 +102,10 @@ class MODULES_EXPORT BroadcastChannel final
   // BroadcastChannelClient receiver for messages sent from the browser to
   // this channel and BroadcastChannelClient remote for messages sent from
   // this channel to the browser.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::BroadcastChannelClient> receiver_{
       this};
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::BroadcastChannelClient> remote_client_;
 
   // Notifies the scheduler that a broadcast channel is active.
@@ -114,6 +117,7 @@ class MODULES_EXPORT BroadcastChannel final
   // ConnectToChannel messages (with ordering preserved) to the
   // RenderFrameHostImpl associated with this frame. When a BroadcastChannel is
   // instantiated from a worker execution context, this member is not used.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::BroadcastChannelProvider>
       associated_remote_;
 };

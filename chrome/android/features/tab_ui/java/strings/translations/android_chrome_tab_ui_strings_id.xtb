@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
-<translation id="1181037720776840403">Hapus</translation>
 <translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
 <translation id="1403228085774130835">Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome</translation>
 <translation id="1455506303394048917">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> di <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Pisahkan tab}other{Pisahkan tab}}</translation>
 <translation id="2277224997687551299">Edit nama grup</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Hapus <ph name="TABS_COUNT_ONE" /> tab yang dipilih dari grup.}other{Hapus <ph name="TABS_COUNT_MANY" /> tab yang dipilih dari grup.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tab}}</translation>
-<translation id="2479148705183875116">Buka Setelan</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
-<translation id="257674075312929031">Grup</translation>
 <translation id="2613747923081026172">Buat grup</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
 <translation id="5846292395804797011">Tutup grup <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>
-<translation id="6040143037577758943">Tutup</translation>
 <translation id="6054741997831917303">Harga item ini baru-baru ini turun dari <ph name="PREVIOUS_PRICE" /> ke <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Sembunyikan mode multi-pilihan</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bagikan tab}other{Bagikan tab}}</translation>
 <translation id="7129458170538955174">Informasi tentang toko ini terbuka setengah</translation>
-<translation id="7151209024774799310">Keluarkan tab dari grup</translation>
 <translation id="7204204600596740190">Mode multi-pilihan</translation>
 <translation id="7326879924029668159">Lihat kebijakan pengembalian dan lainnya</translation>
 <translation id="7352298686197644113">Lihat item mana di tab terbuka yang memiliki harga lebih rendah</translation>

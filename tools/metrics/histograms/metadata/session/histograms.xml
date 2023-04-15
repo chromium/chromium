@@ -69,39 +69,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.SessionData.CleanupTime" units="ms"
-    expires_after="M95">
-  <owner>dullweber@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Records the duration of a session-only cookies and site data deletion when
-    the deletion is finished. Only recorded for users with Clear on Exit
-    settings.
-  </summary>
-</histogram>
-
-<histogram name="Session.SessionData.StartupCleanupTime" units="ms"
-    expires_after="M95">
-  <owner>dullweber@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Records the duration of a session-only cookies and site data deletion for
-    deletions that are run at startup because a previous deletion at the end of
-    a session did not finish. Only recorded for users with Clear on Exit
-    settings.
-  </summary>
-</histogram>
-
-<histogram name="Session.SessionData.StatusFromLastSession"
-    enum="SessionDataStatus" expires_after="M95">
-  <owner>dullweber@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Records whether cookie deletion on previous session exit succeeded. Only
-    recorded on startup for users with Clear on Exit settings.
-  </summary>
-</histogram>
-
 <histogram name="Session.TimeSpentInFocusMode" units="s" expires_after="M80">
   <owner>yiningwang@google.com</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -782,7 +749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -812,6 +779,22 @@ chromium-metrics-reviews@google.com.
     be written to a file. It's recorded every time the file is written to
     storage, which happens on page loads, tab changes and app backgrounding. The
     time does not include the file writing.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.LoadingTimeOnMainThread" units="ms"
+    expires_after="2024-01-01">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The time spent on the main thread to restore a session as a continuous task.
+    It's recorded every time a session is loaded (which happens on application
+    startup or when the user re-open a recently closed windows on iPad). This
+    includes loading the data from disk as this happens on the main thread.
+
+    Large values for this histogram is indicative of jank for the user as the
+    main thread is blocked for the duration reported in the histogram in one
+    giant operation.
   </summary>
 </histogram>
 
@@ -858,6 +841,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WebStates.SavingTimeOnMainThread" units="ms"
+    expires_after="2024-01-01">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The time spend on the main thread to save a session as a continuous task.
+    It's recorded every time a session is saved (which is scheduled on page
+    loads, tab changes and app backgrounding, but repeating events may be
+    collapsed). This does not include the time spent writing the file on disk
+    (since it is done on a background sequence).
+
+    Large values for this histogram is indicative of jank for the user as the
+    main thread is blocked for the duration reported in the histogram in one
+    giant operation.
+  </summary>
+</histogram>
+
 <histogram name="Session.WebStates.SerializedCertPolicyCacheSize" units="KB"
     expires_after="2024-03-21">
   <owner>ajuma@chromium.org</owner>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedSize" units="KB"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

@@ -13,7 +13,7 @@ source_set("accessibility") {
     "//base:i18n",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ui/base",
   ]
 

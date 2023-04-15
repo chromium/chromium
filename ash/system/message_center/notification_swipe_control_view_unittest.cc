@@ -7,10 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -57,10 +55,6 @@ class MockMessageView : public message_center::MessageView {
               OnSettingsButtonPressed,
               (const ui::Event& event),
               (override));
-  MOCK_METHOD(void,
-              OnSnoozeButtonPressed,
-              (const ui::Event& event),
-              (override));
 
  private:
   std::unique_ptr<message_center::NotificationControlButtonsView> buttons_view_;
@@ -71,18 +65,12 @@ class MockMessageView : public message_center::MessageView {
 
 namespace ash {
 
-class NotificationSwipeControlViewTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
+class NotificationSwipeControlViewTest : public testing::Test {
  public:
   NotificationSwipeControlViewTest() = default;
   ~NotificationSwipeControlViewTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
-
     message_center::MessageCenter::Initialize(
         std::make_unique<message_center::FakeLockScreenController>());
 
@@ -100,8 +88,6 @@ class NotificationSwipeControlViewTest
     message_view_ = std::make_unique<MockMessageView>(notification);
   }
 
-  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
-
   void TearDown() override { message_center::MessageCenter::Shutdown(); }
 
  protected:
@@ -109,14 +95,9 @@ class NotificationSwipeControlViewTest
 
  private:
   std::unique_ptr<MockMessageView> message_view_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NotificationSwipeControlViewTest,
-                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
-
-TEST_P(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
+TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   auto swipe_control_view =
       std::make_unique<NotificationSwipeControlView>(message_view());
 
@@ -132,9 +113,8 @@ TEST_P(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   // First click will do nothing, expect that to work.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*show_settings=*/true, /*show_snooze=*/true);
-  if (features::IsNotificationsRefreshEnabled())
-    swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
+      /*show_settings=*/true);
+  swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
 
   views::test::ButtonTestApi(swipe_control_view->settings_button_)
       .NotifyClick(press);
@@ -143,54 +123,15 @@ TEST_P(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*show_settings=*/true, /*show_snooze=*/true);
-  if (features::IsNotificationsRefreshEnabled())
-    swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
+      /*show_settings=*/true);
+  swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
 
   views::test::ButtonTestApi(swipe_control_view->settings_button_)
       .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
 }
 
-TEST_P(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
-  // There's no snooze button in the new feature, return early.
-  if (features::IsNotificationsRefreshEnabled())
-    return;
-
-  auto swipe_control_view =
-      std::make_unique<NotificationSwipeControlView>(message_view());
-
-  EXPECT_CALL(*message_view(), OnSnoozeButtonPressed(testing::_))
-      .WillOnce(testing::DoDefault())
-      .WillOnce(
-          testing::InvokeWithoutArgs([&]() { swipe_control_view.reset(); }));
-
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_NONE);
-
-  // First click will do nothing, expect that to work.
-  swipe_control_view->ShowButtons(
-      NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*show_settings=*/true, /*show_snooze=*/true);
-  views::test::ButtonTestApi(swipe_control_view->snooze_button_)
-      .NotifyClick(press);
-  EXPECT_TRUE(swipe_control_view);
-
-  // Second click deletes |swipe_control_view| in the handler.
-  swipe_control_view->ShowButtons(
-      NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*show_settings=*/true, /*show_snooze=*/true);
-  views::test::ButtonTestApi(swipe_control_view->snooze_button_)
-      .NotifyClick(press);
-  EXPECT_FALSE(swipe_control_view);
-}
-
-TEST_P(NotificationSwipeControlViewTest, SettingsButtonVisibility) {
-  // We only test this case in the new feature.
-  if (!features::IsNotificationsRefreshEnabled())
-    return;
-
+TEST_F(NotificationSwipeControlViewTest, SettingsButtonVisibility) {
   auto swipe_control_view =
       std::make_unique<NotificationSwipeControlView>(message_view());
   int available_space =

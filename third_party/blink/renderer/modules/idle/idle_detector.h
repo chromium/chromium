@@ -71,7 +71,7 @@ class MODULES_EXPORT IdleDetector final
               bool is_overridden_by_devtools) override;
 
   void DispatchUserIdleEvent(TimerBase*);
-  void Abort(AbortSignal*);
+  void Abort();
   void OnMonitorDisconnected();
   void OnAddMonitor(ScriptPromiseResolver*,
                     mojom::blink::IdleManagerError,

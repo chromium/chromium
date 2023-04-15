@@ -105,7 +105,7 @@ class AddPrinterManuallyDialogElement extends PolymerElement {
   private getAddPrinterDialog_(): AddPrinterDialogElement {
     return castExists(this.shadowRoot!.querySelector('add-printer-dialog'));
   }
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.getAddPrinterDialog_().close();
   }
 
@@ -182,7 +182,7 @@ class AddPrinterManuallyDialogElement extends PolymerElement {
     }
   }
 
-  private onPrintServerTap_(): void {
+  private onPrintServerClick_(): void {
     this.getAddPrinterDialog_()!.close();
 
     const openAddPrintServerDialogEvent =

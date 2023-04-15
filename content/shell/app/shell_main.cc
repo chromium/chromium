@@ -15,6 +15,8 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/at_exit.h"                                 // nogncheck
+#include "base/command_line.h"                            // nogncheck
+#include "content/public/common/content_switches.h"       // nogncheck
 #include "content/shell/app/ios/shell_application_ios.h"
 #endif
 
@@ -48,8 +50,23 @@ int main(int argc, const char** argv) {
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;
 
-  // We will create the ContentMainRunner once the UIApplication is ready.
-  return RunShellApplication(argc, argv);
+  // Check if this is the browser process or a subprocess. Only the browser
+  // browser should run UIApplicationMain.
+  base::CommandLine::Init(argc, argv);
+  auto type = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kProcessType);
+
+  // The browser process has no --process-type argument.
+  if (type.empty()) {
+    // We will create the ContentMainRunner once the UIApplication is ready.
+    return RunShellApplication(argc, argv);
+  } else {
+    content::ShellMainDelegate delegate;
+    content::ContentMainParams params(&delegate);
+    params.argc = argc;
+    params.argv = argv;
+    return content::ContentMain(std::move(params));
+  }
 }
 
 #else

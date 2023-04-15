@@ -311,28 +311,13 @@ TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
   }
 }
 
-TEST_F(AppMenuModelTest, EnabledPerformanceItem) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      performance_manager::features::kHighEfficiencyModeAvailable);
+TEST_F(AppMenuModelTest, PerformanceItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
-}
-
-TEST_F(AppMenuModelTest, DisabledPerformanceItem) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          performance_manager::features::kHighEfficiencyModeAvailable,
-          performance_manager::features::kBatterySaverModeAvailable});
-  AppMenuModel model(this, browser());
-  model.Init();
-  ToolsMenuModel toolModel(&model, browser());
-  EXPECT_FALSE(toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).has_value());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -147,6 +147,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
+    expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    The redirect chain size of a served prefetch. This histogram is recorded
+    only for prefetches that are served for a navigation.
+  </summary>
+</histogram>
+
 <histogram
     name="PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.{SpeculationEagerness}"
     enum="Boolean" expires_after="2023-09-10">
@@ -164,6 +175,19 @@ chromium-metrics-reviews@google.com.
     {SpeculationEagerness}.
   </summary>
   <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
+</histogram>
+
+<histogram name="PrefetchProxy.AfterClick.WasFullRedirectChainServed"
+    enum="Boolean" expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Whether the full redirect chain of a prefetch is served (true), or just part
+    of the redirect was served (false). This histogram is only recorded when: 1)
+    the prefetch had at least one redirect (i.e. the redirect chain is at least
+    2), and 2) at least part of prefetch redirect chain is served.
+  </summary>
 </histogram>
 
 <histogram
@@ -455,6 +479,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
+    expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    The redirect chain size of a prefetch. This histogram is recorded once for
+    each prefetch.
+  </summary>
+</histogram>
+
 <histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
     enum="PrefetchStreamingURLLoaderStatus" expires_after="2023-09-24">
   <owner>curranmax@chromium.org</owner>
@@ -491,6 +526,30 @@ chromium-metrics-reviews@google.com.
     Records the HTTP response code encountered when connecting to the prefetch
     proxy CONNECT tunnel. Recorded every time Chrome gets CONNECT tunnel
     response headers.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Redirect.NetworkContextStateTransition"
+    enum="PrefetchRedirectNetworkContextTransition" expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    The network context transition required to handle a redirect while
+    prefetching. Prefetches require an isolated network context if user data
+    cannot be included in the prefetch. Otherwise the prefetch is made in the
+    default network context. This histogram is recorded for every redirect.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Redirect.Result" enum="PrefetchRedirectResult"
+    expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    The result of receiving a redirect while prefetching. This histogram is
+    recorded for every redirect.
   </summary>
 </histogram>
 

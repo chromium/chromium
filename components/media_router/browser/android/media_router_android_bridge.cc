@@ -175,6 +175,16 @@ void MediaRouterAndroidBridge::OnRouteCreated(
       ConvertJavaStringToUTF8(env, jsink_id), jroute_request_id, jis_local);
 }
 
+void MediaRouterAndroidBridge::OnRouteMediaSourceUpdated(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jstring>& jmedia_route_id,
+    const base::android::JavaRef<jstring>& jmedia_source_id) {
+  native_media_router_->OnRouteMediaSourceUpdated(
+      ConvertJavaStringToUTF8(env, jmedia_route_id),
+      ConvertJavaStringToUTF8(env, jmedia_source_id));
+}
+
 void MediaRouterAndroidBridge::OnCreateRouteRequestError(
     JNIEnv* env,
     const JavaRef<jobject>& obj,

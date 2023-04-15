@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -84,28 +85,6 @@ base::FilePath TestFile(Profile* profile, const std::string& relative_path) {
 
 using HoldingSpaceClientImplTest = HoldingSpaceBrowserTestBase;
 
-// Verifies that `HoldingSpaceClient::AddDiagnosticsLog()` works as intended.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddDiagnosticsLog) {
-  ASSERT_TRUE(HoldingSpaceController::Get());
-
-  auto* holding_space_client = HoldingSpaceController::Get()->client();
-  ASSERT_TRUE(holding_space_client);
-  auto* holding_space_model = HoldingSpaceController::Get()->model();
-  ASSERT_TRUE(holding_space_model);
-
-  // Create a diagnostics log item and verify that it is in the holding space.
-
-  ASSERT_EQ(0u, holding_space_model->items().size());
-  base::FilePath log_path = TestFile(GetProfile(), kTextFilePath);
-  holding_space_client->AddDiagnosticsLog(log_path);
-  ASSERT_EQ(1u, holding_space_model->items().size());
-  HoldingSpaceItem* diagnostics_log_item =
-      holding_space_model->items()[0].get();
-  EXPECT_EQ(diagnostics_log_item->type(),
-            HoldingSpaceItem::Type::kDiagnosticsLog);
-  EXPECT_EQ(diagnostics_log_item->file_path(), log_path);
-}
-
 // Verifies that `HoldingSpaceClient::AddItemOfType()` works as intended.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
   using Type = HoldingSpaceItem::Type;
@@ -129,6 +108,15 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
         TestFile(GetProfile(), kTextFilePath);
     const std::string& expected_id =
         client->AddItemOfType(expected_type, expected_file_path);
+
+    // Insertion into the model should only fail if the item is a Camera app
+    // item and Camera app integration is disabled.
+    if (expected_id.empty()) {
+      EXPECT_EQ(model->items().size(), expected_count);
+      EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(expected_type));
+      EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+      continue;
+    }
 
     // Verify the item was created as expected.
     ASSERT_EQ(model->items().size(), ++expected_count);

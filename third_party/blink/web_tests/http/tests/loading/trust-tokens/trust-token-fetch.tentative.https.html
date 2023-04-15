@@ -15,7 +15,6 @@
       });
       return fetch('https://trusttoken.test', {
         privateToken: {
-          type: "private-state-token",
           version: 1,
           operation: 'token-request'
         }
@@ -30,7 +29,6 @@
       });
       return fetch('https://trusttoken.test', {
         privateToken: {
-          type: "private-state-token",
           version: 1,
           operation: 'token-redemption'
         }
@@ -45,7 +43,6 @@
       });
       return fetch('https://destination.test', {
         privateToken: {
-          type: "private-state-token",
           version: 1,
           operation: 'send-redemption-record',
           issuers: ['https://issuer.test']

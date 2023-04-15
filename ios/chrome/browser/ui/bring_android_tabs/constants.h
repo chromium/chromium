@@ -15,4 +15,14 @@ extern NSString* const kBringAndroidTabsPromptConfirmationAlertAXId;
 // view controller.
 extern NSString* const kBringAndroidTabsPromptBottomMessageAXId;
 
+// Accessibility identifier for the "Bring Android Tabs" tab list
+// view controller.
+extern NSString* const kBringAndroidTabsPromptTabListAXId;
+
+// Size of the favicons in the "Bring Android Tabs" tab list.
+extern CGFloat const kBringAndroidTabsFaviconSize;
+
+// Height of the table rows in the "Bring Android Tabs" tab list.
+extern CGFloat const kTabListFromAndroidCellHeight;
+
 #endif  // IOS_CHROME_BROWSER_UI_BRING_ANDROID_TABS_CONSTANTS_H_

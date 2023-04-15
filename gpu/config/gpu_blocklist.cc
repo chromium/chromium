@@ -45,6 +45,7 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION);
   list->AddSupportedFeature("accelerated_webgpu",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGPU);
+  list->AddSupportedFeature("skia_graphite", GPU_FEATURE_TYPE_SKIA_GRAPHITE);
   return list;
 }
 

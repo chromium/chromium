@@ -15,6 +15,8 @@
 
 namespace performance_manager {
 
+class Node;
+
 // Converts a Mojo enum to a human-readable string.
 template <typename T>
 std::string MojoEnumToString(T value) {
@@ -34,6 +36,14 @@ base::Value MaybeNullStringToValue(base::StringPiece str);
 
 base::Value PriorityAndReasonToValue(
     const execution_context_priority::PriorityAndReason& priority_and_reason);
+
+// Returns `node`'s description as described by its primary data describer as
+// a formatted string.
+std::string DumpNodeDescription(const Node* node);
+
+// Returns the output of all registered data describers for `node` as a
+// formatted string.
+std::string DumpRegisteredDescribers(const Node* node);
 
 }  // namespace performance_manager
 

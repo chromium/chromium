@@ -21,6 +21,6 @@ found in the LICENSE file.
   </application>
 
   <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
-      android:targetPackage="org.chromium.webengine.shell"
-      android:label="JUnit4-based tests for org.chromium.webengine.shell" />
+      android:targetPackage="org.chromium.webengine.test.instrumentation_test_apk"
+      android:label="JUnit4-based tests for org.chromium.webengine.test.instrumentation_test_apk" />
 </manifest>

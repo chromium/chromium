@@ -18,7 +18,7 @@
 //  This class makes image button views with padding and theming as a
 //  convenience class for the ReadAnythingToolbarView.
 //
-class ReadAnythingButtonView : public views::View {
+class ReadAnythingButtonView : public views::ImageButton {
  public:
   METADATA_HEADER(ReadAnythingButtonView);
   ReadAnythingButtonView(const views::ImageButton::PressedCallback callback,
@@ -36,10 +36,6 @@ class ReadAnythingButtonView : public views::View {
 
   void Enable();
   void Disable();
-  views::Button::ButtonState GetStateForTesting();
-
- private:
-  raw_ptr<views::ImageButton> button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_BUTTON_VIEW_H_

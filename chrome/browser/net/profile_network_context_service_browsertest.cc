@@ -712,8 +712,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
   std::string command = content::JsReplace(R"(
   (async () => {
     try {
-      await fetch("/issue", {privateToken: {type: 'private-state-token',
-                                          version: 1,
+      await fetch("/issue", {privateToken: {version: 1,
                                           operation: 'token-request'}});
       return await document.hasPrivateToken($1, 'private-state-token');
     } catch {

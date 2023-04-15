@@ -8,10 +8,12 @@
 #include <unicode/ubidi.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -27,6 +29,12 @@ class PLATFORM_EXPORT BidiParagraph {
   STACK_ALLOCATED();
 
  public:
+  BidiParagraph() = default;
+  BidiParagraph(const String& text,
+                absl::optional<TextDirection> base_direction) {
+    SetParagraph(text, base_direction);
+  }
+
   // Splits the given paragraph to bidi runs and resolves the bidi embedding
   // level of each run.
   //
@@ -46,10 +54,26 @@ class PLATFORM_EXPORT BidiParagraph {
   TextDirection BaseDirection() const { return base_direction_; }
 
   // Compute the base direction for a given string using the heuristic
-  // rules defined in UAX#9.
-  // This is generally determined by the first strong character.
+  // rules defined in UAX#9. It determines the direction by the first strong
+  // character, or returns `nullopt` if no strong characters are found before
+  // the first segment break.
   // http://unicode.org/reports/tr9/#The_Paragraph_Level
-  static TextDirection BaseDirectionForString(const StringView&);
+  static absl::optional<TextDirection> BaseDirectionForString(
+      const StringView&,
+      bool (*stop_at)(UChar) = nullptr);
+
+  // Same as `BaseDirectionForString().value_or(kLtr)`, with an optimized code
+  // path for when the default (no strong characters) is LTR.
+  static TextDirection BaseDirectionForStringOrLtr(
+      const StringView& text,
+      bool (*stop_at)(UChar) = nullptr);
+
+  // Create a string that enforces directional override by wrapping the given
+  // string with a Unicode BiDi override character (LRO or ROL) and PDF.
+  // https://unicode.org/reports/tr9/#Explicit_Directional_Overrides
+  // https://unicode.org/reports/tr9/#Terminating_Explicit_Directional_Embeddings_and_Overrides
+  static String StringWithDirectionalOverride(const StringView& text,
+                                              TextDirection direction);
 
   struct Run {
     Run(unsigned start, unsigned end, UBiDiLevel level)
@@ -70,14 +94,19 @@ class PLATFORM_EXPORT BidiParagraph {
   };
   using Runs = Vector<Run, 32>;
 
-  // Get a list of |Run| in the logical order (before bidi reorder.)
-  // |text| must be the same one as |SetParagraph|.
-  // This is higher-level API for |GetLogicalRun|.
+  // Get a list of `Run` in the logical order (before bidi reorder.)
+  // `text` must be the same one as `SetParagraph`.
+  // This is higher-level API for `GetLogicalRun`.
   void GetLogicalRuns(const String& text, Runs* runs) const;
 
   // Returns the end offset of a logical run that starts from the |start|
   // offset.
   unsigned GetLogicalRun(unsigned start, UBiDiLevel*) const;
+
+  // Get a list of `Run` in the visual order (after bidi reorder.)
+  // `text` must be the same one as `SetParagraph`.
+  // This is higher-level API for `GetLogicalRuns` and `IndicesInVisualOrder`.
+  void GetVisualRuns(const String& text, Runs* runs) const;
 
   // Create a list of indices in the visual order.
   // A wrapper for ICU |ubidi_reorderVisual()|.
@@ -86,6 +115,11 @@ class PLATFORM_EXPORT BidiParagraph {
       Vector<int32_t, 32>* indices_in_visual_order_out);
 
  private:
+  template <typename TChar>
+  static absl::optional<TextDirection> BaseDirectionForString(
+      base::span<const TChar>,
+      bool (*stop_at)(UChar));
+
   struct UBiDiDeleter {
     void operator()(UBiDi* ubidi) const { ubidi_close(ubidi); }
   };
@@ -94,6 +128,18 @@ class PLATFORM_EXPORT BidiParagraph {
   UBidiPtr ubidi_;
   TextDirection base_direction_ = TextDirection::kLtr;
 };
+
+// static
+inline TextDirection BidiParagraph::BaseDirectionForStringOrLtr(
+    const StringView& text,
+    bool (*stop_at)(UChar)) {
+  if (text.empty() || text.Is8Bit()) {
+    // The result is LTR when 8 bits string and the distinction between LTR or
+    // neutral is not needed, because U+0000-00FF are LTR or neutral.
+    return TextDirection::kLtr;
+  }
+  return BaseDirectionForString(text, stop_at).value_or(TextDirection::kLtr);
+}
 
 }  // namespace blink
 

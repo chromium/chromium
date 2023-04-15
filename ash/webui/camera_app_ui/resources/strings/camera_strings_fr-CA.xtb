@@ -27,7 +27,6 @@
 <translation id="199526504800285197">L'enregistrement a été interrompu</translation>
 <translation id="1995951722691075581">Votre enregistrement s'est arrêté en raison d'un espace de stockage insuffisant sur l'appareil. Pour enregistrer plus de vidéos, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="2036868001356139588">Durée de la minuterie</translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176">Élément de menu <ph name="CAMERA" /> actif</translation>
 <translation id="2128052519899549250">Enregistrer une vidéo en mode Séquence accélérée</translation>
 <translation id="2134029355740465625">Paramètres vidéo</translation>
@@ -123,6 +122,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="6888362557094394345">Déplacement vers la partie inférieure</translation>
 <translation id="695140971690006676">Tout réinitialiser</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965830616442491568">Portrait</translation>
 <translation id="698156982839284926">3 secondes</translation>
 <translation id="7134221860976209830">Minuterie de 10 secondes</translation>
 <translation id="7191890674911603392">Type d'enregistrement</translation>

@@ -92,7 +92,6 @@ android_library("base_module_java") {
   sources = [
     "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
-    "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
   ]
   deps = [
     ":base_module_interfaces_java",
@@ -442,21 +441,6 @@ robolectric_binary("weblayer_junit_tests") {
   ]
 }
 
-if (current_toolchain == default_toolchain) {
-  generate_jni_registration("weblayer_jni_registration") {
-    targets = [ ":java" ]
-    manual_jni_registration = true
-    namespace = "weblayer"
-  }
-
-  generate_jni_registration("test_weblayer_jni_registration") {
-    testonly = true
-    targets = [ ":test_java" ]
-    manual_jni_registration = true
-    namespace = "weblayer_test"
-  }
-}
-
 generate_jni("test_jni") {
   testonly = true
   sources = [
@@ -497,7 +481,6 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/WebLayerExceptionFilter.java",
     "org/chromium/weblayer_private/WebLayerFactoryImpl.java",
     "org/chromium/weblayer_private/WebLayerImpl.java",
-    "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
     "org/chromium/weblayer_private/WebappsHelper.java",
     "org/chromium/weblayer_private/bluetooth/WebLayerBluetoothChooserAndroidDelegate.java",
     "org/chromium/weblayer_private/bluetooth/WebLayerBluetoothScanningPromptAndroidDelegate.java",

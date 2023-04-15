@@ -68,7 +68,7 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
 
     private Pair<WebContents, ContentView> createWebContents() {
         Profile profile = Profile.getLastUsedRegularProfile();
-        WebContents webContents = WebContentsFactory.createWebContents(profile, false);
+        WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
         ContentView contentView =
                 ContentView.createContentView(this, null /* eventOffsetHandler */, webContents);
         webContents.initialize(VersionConstants.PRODUCT_VERSION,

@@ -110,9 +110,14 @@ class BASE_EXPORT OSInfo {
   OSInfo(const OSInfo&) = delete;
   OSInfo& operator=(const OSInfo&) = delete;
 
-  // Separate from the rest of OSInfo so it can be used during early process
+  // Separate from the rest of OSInfo so they can be used during early process
   // initialization.
   static WindowsArchitecture GetArchitecture();
+  // This is necessary because GetArchitecture doesn't return correct OS
+  // architectures for x86/x64 binaries running on ARM64 - it says the OS is
+  // x86/x64. This function returns true if the process is an x86 or x64 process
+  // running emulated on ARM64.
+  static bool IsRunningEmulatedOnArm64();
 
   // Returns the OS Version as returned from a call to GetVersionEx().
   const Version& version() const { return version_; }

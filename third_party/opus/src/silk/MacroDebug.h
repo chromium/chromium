@@ -829,7 +829,7 @@ static OPUS_INLINE opus_int32 silk_SUB_RSHIFT32_(opus_int32 a, opus_int32 b, opu
 static OPUS_INLINE opus_int32 silk_RSHIFT_ROUND_(opus_int32 a, opus_int32 shift, char *file, int line){
     opus_int32 ret;
     ret = shift == 1 ? (a >> 1) + (a & 1) : ((a >> (shift - 1)) + 1) >> 1;
-    /* the marco definition can't handle a shift of zero */
+    /* the macro definition can't handle a shift of zero */
     if ( (shift <= 0) || (shift>31) || ((opus_int64)ret != ((opus_int64)a + ((opus_int64)1 << (shift - 1))) >> shift) )
     {
         fprintf (stderr, "silk_RSHIFT_ROUND(%d, %d) in %s: line %d\n", a, shift, file, line);
@@ -844,7 +844,7 @@ static OPUS_INLINE opus_int32 silk_RSHIFT_ROUND_(opus_int32 a, opus_int32 shift,
 #define silk_RSHIFT_ROUND64(a,b) silk_RSHIFT_ROUND64_((a), (b), __FILE__, __LINE__)
 static OPUS_INLINE opus_int64 silk_RSHIFT_ROUND64_(opus_int64 a, opus_int32 shift, char *file, int line){
     opus_int64 ret;
-    /* the marco definition can't handle a shift of zero */
+    /* the macro definition can't handle a shift of zero */
     if ( (shift <= 0) || (shift>=64) )
     {
         fprintf (stderr, "silk_RSHIFT_ROUND64(%lld, %d) in %s: line %d\n", (long long)a, shift, file, line);

@@ -196,6 +196,9 @@ class VariationsService
       std::unique_ptr<base::FeatureList> feature_list,
       PlatformFieldTrials* platform_field_trials);
 
+  // The seed type used.
+  SeedType GetSeedType() const;
+
   // Overrides cached UI strings on the resource bundle once it is initialized.
   void OverrideCachedUIStrings();
 

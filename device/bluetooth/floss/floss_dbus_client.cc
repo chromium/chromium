@@ -75,6 +75,9 @@ const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
 const char kGetBondedDevices[] = "GetBondedDevices";
 const char kGetConnectedDevices[] = "GetConnectedDevices";
+const char kSdpSearch[] = "SdpSearch";
+const char kCreateSdpRecord[] = "CreateSdpRecord";
+const char kRemoveSdpRecord[] = "RemoveSdpRecord";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
@@ -91,6 +94,8 @@ const char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
 const char kOnSspRequest[] = "OnSspRequest";
 
 const char kOnBondStateChanged[] = "OnBondStateChanged";
+const char kOnSdpSearchComplete[] = "OnSdpSearchComplete";
+const char kOnSdpRecordCreated[] = "OnSdpRecordCreated";
 const char kOnDeviceConnected[] = "OnDeviceConnected";
 const char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
 
@@ -120,15 +125,21 @@ namespace socket_manager {
 const char kRegisterCallback[] = "RegisterCallback";
 const char kListenUsingInsecureL2capChannel[] =
     "ListenUsingInsecureL2capChannel";
+const char kListenUsingInsecureL2capLeChannel[] =
+    "ListenUsingInsecureL2capLeChannel";
 const char kListenUsingInsecureRfcommWithServiceRecord[] =
     "ListenUsingInsecureRfcommWithServiceRecord";
 const char kListenUsingL2capChannel[] = "ListenUsingL2capChannel";
+const char kListenUsingL2capLeChannel[] = "ListenUsingL2capLeChannel";
+const char kListenUsingRfcomm[] = "ListenUsingRfcomm";
 const char kListenUsingRfcommWithServiceRecord[] =
     "ListenUsingRfcommWithServiceRecord";
 const char kCreateInsecureL2capChannel[] = "CreateInsecureL2capChannel";
+const char kCreateInsecureL2capLeChannel[] = "CreateInsecureL2capLeChannel";
 const char kCreateInsecureRfcommSocketToServiceRecord[] =
     "CreateInsecureRfcommSocketToServiceRecord";
 const char kCreateL2capChannel[] = "CreateL2capChannel";
+const char kCreateL2capLeChannel[] = "CreateL2capLeChannel";
 const char kCreateRfcommSocketToServiceRecord[] =
     "CreateRfcommSocketToServiceRecord";
 const char kAccept[] = "Accept";

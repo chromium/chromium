@@ -292,4 +292,22 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
   return differences_for_ui;
 }
 
+std::u16string GetProfileSummaryForMigrationPrompt(
+    const AutofillProfile& profile,
+    const std::string& app_locale) {
+  std::vector<ServerFieldType> fields = {
+      ServerFieldType::NAME_FULL_WITH_HONORIFIC_PREFIX,
+      ServerFieldType::ADDRESS_HOME_LINE1, ServerFieldType::EMAIL_ADDRESS,
+      ServerFieldType::PHONE_HOME_WHOLE_NUMBER};
+  std::vector<std::u16string> values;
+  values.reserve(fields.size());
+  for (ServerFieldType field : fields) {
+    std::u16string value = profile.GetInfo(field, app_locale);
+    if (!value.empty()) {
+      values.push_back(value);
+    }
+  }
+  return base::JoinString(values, u"\n");
+}
+
 }  // namespace autofill

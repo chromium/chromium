@@ -34,6 +34,18 @@ enum class PageLoadedSnapshotResult {
   kMaxValue = kSnapshotSucceeded,
 };
 
+// Generates an identifier for WebState's snapshot.
+NSString* GenerateSnapshotIdentifier(const web::WebState* web_state) {
+  DCHECK(web_state->GetUniqueIdentifier().is_valid());
+  DCHECK_GT(web_state->GetUniqueIdentifier().id(), 0);
+
+  static_assert(sizeof(SessionID::id_type) == sizeof(int32_t));
+  const uint32_t identifier =
+      static_cast<uint32_t>(web_state->GetUniqueIdentifier().id());
+
+  return [NSString stringWithFormat:@"%08u", identifier];
+}
+
 }  // namespace
 
 SnapshotTabHelper::~SnapshotTabHelper() {
@@ -89,22 +101,23 @@ void SnapshotTabHelper::IgnoreNextLoad() {
 }
 
 void SnapshotTabHelper::WillBeSavedGreyWhenBackgrounding() {
-  [snapshot_generator_.snapshotCache
-      willBeSavedGreyWhenBackgrounding:web_state_->GetStableIdentifier()];
+  [snapshot_generator_ willBeSavedGreyWhenBackgrounding];
 }
 
 void SnapshotTabHelper::SaveGreyInBackground() {
-  [snapshot_generator_.snapshotCache
-      saveGreyInBackgroundForSnapshotID:web_state_->GetStableIdentifier()];
+  [snapshot_generator_ saveGreyInBackground];
+}
+
+NSString* SnapshotTabHelper::GetSnapshotIdentifier() const {
+  return snapshot_generator_.snapshotIdentifier;
 }
 
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
-    : web_state_(web_state), weak_ptr_factory_(this) {
+    : web_state_(web_state) {
   DCHECK(web_state_);
-  DCHECK(web_state_->GetStableIdentifier().length > 0);
   snapshot_generator_ = [[SnapshotGenerator alloc]
-      initWithWebState:web_state_
-                 tabID:web_state_->GetStableIdentifier()];
+        initWithWebState:web_state_
+      snapshotIdentifier:GenerateSnapshotIdentifier(web_state_)];
   web_state_observation_.Observe(web_state_);
 }
 

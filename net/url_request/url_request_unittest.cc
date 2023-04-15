@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -65,7 +66,10 @@
 #include "net/base/upload_file_element_reader.h"
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_net_fetcher.h"
+#include "net/cert/cert_verifier.h"
+#include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
@@ -10422,10 +10426,14 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
   HTTPSCertNetFetchingTest() = default;
 
   void SetUp() override {
-    auto context_builder = CreateTestURLRequestContextBuilder();
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
-    context_builder->SetCertVerifier(
-        CertVerifier::CreateDefault(cert_net_fetcher_));
+    auto cert_verifier =
+        CertVerifier::CreateDefaultWithoutCaching(cert_net_fetcher_);
+    updatable_cert_verifier_ = cert_verifier.get();
+
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->SetCertVerifier(std::make_unique<CachingCertVerifier>(
+        std::make_unique<CoalescingCertVerifier>(std::move(cert_verifier))));
     context_ = context_builder->Build();
 
     net::URLRequestFilter::GetInstance()->AddHostnameInterceptor(
@@ -10487,9 +10495,15 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
     return config;
   }
 
+  void UpdateCertVerifier(scoped_refptr<CRLSet> crl_set) {
+    net::CertVerifyProcFactory::ImplParams params;
+    params.crl_set = std::move(crl_set);
+    updatable_cert_verifier_->UpdateVerifyProcData(cert_net_fetcher_, params);
+  }
+
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
-  std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<URLRequestContext> context_;
+  raw_ptr<CertVerifierWithUpdatableProc> updatable_cert_verifier_;
 };
 
 // The test EV policy OID used for generated certs.
@@ -11407,9 +11421,7 @@ TEST_F(HTTPSCRLSetTest, ExpiredCRLSet) {
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
       EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
 
-  CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
-  cert_verifier_config.crl_set = CRLSet::ExpiredCRLSetForTesting();
-  context_->cert_verifier()->SetConfig(cert_verifier_config);
+  UpdateCertVerifier(CRLSet::ExpiredCRLSetForTesting());
 
   CertStatus cert_status;
   DoConnection(cert_config, &cert_status);
@@ -11434,9 +11446,7 @@ TEST_F(HTTPSCRLSetTest, ExpiredCRLSetAndRevoked) {
       {{OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
-  CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
-  cert_verifier_config.crl_set = CRLSet::ExpiredCRLSetForTesting();
-  context_->cert_verifier()->SetConfig(cert_verifier_config);
+  UpdateCertVerifier(CRLSet::ExpiredCRLSetForTesting());
 
   CertStatus cert_status;
   DoConnection(cert_config, &cert_status);
@@ -11465,10 +11475,11 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevoked) {
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   SHA256HashValue root_cert_spki_hash;
   ASSERT_TRUE(GetTestRootCertSPKIHash(&root_cert_spki_hash));
-  cert_verifier_config.crl_set =
+  auto crl_set =
       CRLSet::ForTesting(false, &root_cert_spki_hash,
                          test_server.GetCertificate()->serial_number(), "", {});
-  context_->cert_verifier()->SetConfig(cert_verifier_config);
+  ASSERT_TRUE(crl_set);
+  UpdateCertVerifier(crl_set);
 
   TestDelegate d;
   d.set_allow_certificate_errors(true);
@@ -11506,11 +11517,9 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
   std::string common_name = test_server.GetCertificate()->subject().common_name;
 
   {
-    CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
-    cert_verifier_config.crl_set =
-        CRLSet::ForTesting(false, nullptr, "", common_name, {});
-    ASSERT_TRUE(cert_verifier_config.crl_set);
-    context_->cert_verifier()->SetConfig(cert_verifier_config);
+    auto crl_set = CRLSet::ForTesting(false, nullptr, "", common_name, {});
+    ASSERT_TRUE(crl_set);
+    UpdateCertVerifier(crl_set);
 
     TestDelegate d;
     d.set_allow_certificate_errors(true);
@@ -11536,10 +11545,10 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
   std::string spki_hash(spki_hash_value.data(),
                         spki_hash_value.data() + spki_hash_value.size());
   {
-    CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
-    cert_verifier_config.crl_set =
+    auto crl_set =
         CRLSet::ForTesting(false, nullptr, "", common_name, {spki_hash});
-    context_->cert_verifier()->SetConfig(cert_verifier_config);
+    ASSERT_TRUE(crl_set);
+    UpdateCertVerifier(crl_set);
 
     TestDelegate d;
     d.set_allow_certificate_errors(true);
@@ -11565,9 +11574,13 @@ using HTTPSLocalCRLSetTest = TestWithTaskEnvironment;
 // that when a CRLSet is provided that marks a given SPKI (the TestServer's
 // root SPKI) as known for interception, that it's adequately flagged.
 TEST_F(HTTPSLocalCRLSetTest, KnownInterceptionBlocked) {
+  auto cert_verifier = CertVerifier::CreateDefaultWithoutCaching(
+      /*cert_net_fetcher=*/nullptr);
+  CertVerifierWithUpdatableProc* updatable_cert_verifier_ = cert_verifier.get();
+
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetCertVerifier(
-      CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
+  context_builder->SetCertVerifier(std::make_unique<CachingCertVerifier>(
+      std::make_unique<CoalescingCertVerifier>(std::move(cert_verifier))));
   auto context = context_builder->Build();
 
   // Verify the connection succeeds without being flagged.
@@ -11594,16 +11607,15 @@ TEST_F(HTTPSLocalCRLSetTest, KnownInterceptionBlocked) {
   // Configure a CRL that will mark |root_ca_cert| as a blocked interception
   // root.
   std::string crl_set_bytes;
-  scoped_refptr<CRLSet> crl_set;
+  net::CertVerifyProcFactory::ImplParams params;
   ASSERT_TRUE(
       base::ReadFileToString(GetTestCertsDirectory().AppendASCII(
                                  "crlset_blocked_interception_by_root.raw"),
                              &crl_set_bytes));
-  ASSERT_TRUE(CRLSet::Parse(crl_set_bytes, &crl_set));
+  ASSERT_TRUE(CRLSet::Parse(crl_set_bytes, &params.crl_set));
 
-  CertVerifier::Config config_with_crlset;
-  config_with_crlset.crl_set = crl_set;
-  context->cert_verifier()->SetConfig(config_with_crlset);
+  updatable_cert_verifier_->UpdateVerifyProcData(
+      /*cert_net_fetcher=*/nullptr, params);
 
   // Verify the connection fails as being a known interception root.
   {

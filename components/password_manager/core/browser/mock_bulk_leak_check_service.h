@@ -15,6 +15,7 @@
 
 namespace password_manager {
 
+enum class LeakDetectionInitiator;
 // Mocked BulkLeakCheckService used by unit tests.
 class MockBulkLeakCheckService : public BulkLeakCheckServiceInterface {
  public:
@@ -22,7 +23,7 @@ class MockBulkLeakCheckService : public BulkLeakCheckServiceInterface {
   ~MockBulkLeakCheckService() override;
   MOCK_METHOD(void,
               CheckUsernamePasswordPairs,
-              (std::vector<LeakCheckCredential>),
+              (LeakDetectionInitiator, std::vector<LeakCheckCredential>),
               (override));
   MOCK_METHOD(void, Cancel, (), (override));
   MOCK_METHOD(size_t, GetPendingChecksCount, (), (const, override));

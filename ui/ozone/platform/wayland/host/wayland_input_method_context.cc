@@ -254,7 +254,7 @@ void WaylandInputMethodContext::SetSurroundingText(
     const gfx::Range& text_range,
     const gfx::Range& selection_range) {
   // TODO(crbug.com/1402906): Text range is not currently handled correctly.
-  surrounding_text_tracker_.Update(text, selection_range);
+  surrounding_text_tracker_.Update(text, 0u, selection_range);
 
   if (!text_input_)
     return;
@@ -463,7 +463,8 @@ void WaylandInputMethodContext::OnCommitString(base::StringPiece text) {
 
 void WaylandInputMethodContext::OnCursorPosition(int32_t index,
                                                  int32_t anchor) {
-  const auto& [surrounding_text, selection, unused_composition_text] =
+  const auto& [surrounding_text, utf16_offset, selection,
+               unused_composition_text] =
       surrounding_text_tracker_.predicted_state();
 
   if (surrounding_text.empty()) {
@@ -520,7 +521,7 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
 
 void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
                                                         uint32_t length) {
-  const auto& [surrounding_text, selection, unsused_composition] =
+  const auto& [surrounding_text, utf16_offset, selection, unsused_composition] =
       surrounding_text_tracker_.predicted_state();
   DCHECK(selection.IsValid());
 
@@ -608,7 +609,8 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
     int32_t index,
     uint32_t length,
     const std::vector<SpanStyle>& spans) {
-  const auto& [surrounding_text, selection, unused_composition_text] =
+  const auto& [surrounding_text, utf16_offset, selection,
+               unused_composition_text] =
       surrounding_text_tracker_.predicted_state();
 
   std::vector<size_t> selection_utf8_offsets = {selection.start(),

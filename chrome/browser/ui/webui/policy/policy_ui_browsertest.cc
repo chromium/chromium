@@ -351,10 +351,9 @@ void PolicyUITest::VerifyPolicies(
       "    policies.push(values);"
       "  }"
       "}"
-      "domAutomationController.send(JSON.stringify(policies));";
-  std::string json;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(web_contents(), javascript,
-                                                     &json));
+      "JSON.stringify(policies);";
+  std::string json =
+      content::EvalJs(web_contents(), javascript).ExtractString();
   absl::optional<base::Value> value_ptr = base::JSONReader::Read(json);
   ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
@@ -377,11 +376,9 @@ void PolicyUITest::VerifyPolicies(
 }
 
 void PolicyUITest::VerifyReportButton(bool visible) {
-  const std::string kJavaScript =
-      "domAutomationController.send(getReportButtonVisibility());";
-  std::string ret;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(web_contents(),
-                                                     kJavaScript, &ret));
+  const std::string kJavaScript = "getReportButtonVisibility();";
+  std::string ret =
+      content::EvalJs(web_contents(), kJavaScript).ExtractString();
   EXPECT_EQ(visible, ret != "none");
 }
 
@@ -628,8 +625,9 @@ bool PolicyUIStatusTest::ReadStatusFor(
         // Wait for the status box to appear in case page just loaded.
         const statusSection = document.getElementById('status-section');
         if (statusSection.hidden) {
-          window.requestIdleCallback(readStatus);
-          return;
+          return new Promise(resolve => {
+            window.requestIdleCallback(resolve);
+          }).then(readStatus);
         }
 
         const policies = getPolicyFieldsets();
@@ -644,16 +642,16 @@ bool PolicyUIStatusTest::ReadStatusFor(
           }
           statuses[legend.trim()] = entries;
         }
-        domAutomationController.send(JSON.stringify(statuses));
-      }
-      window.requestIdleCallback(readStatus);
+        return JSON.stringify(statuses);
+      };
+      return new Promise(resolve => {
+        window.requestIdleCallback(resolve);
+      }).then(readStatus);
     })();
   )JS";
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
-  std::string json;
-  if (!content::ExecuteScriptAndExtractString(contents, javascript, &json))
-    return false;
+  std::string json = content::EvalJs(contents, javascript).ExtractString();
   absl::optional<base::Value> statuses = base::JSONReader::Read(json);
   if (!statuses.has_value() || !statuses->is_dict())
     return false;
@@ -987,7 +985,7 @@ class PolicyPrecedenceUITest
   // Used to retrieve the contents of the policy precedence rows.
   const std::string kJavaScript =
       "var precedence_row = getPrecedenceRowValue();"
-      "domAutomationController.send(precedence_row.textContent);";
+      "precedence_row.textContent;";
 };
 
 // Verify that the precedence order displayed in the Policy Precedence table is
@@ -1018,9 +1016,8 @@ IN_PROC_BROWSER_TEST_P(PolicyPrecedenceUITest, PrecedenceOrder) {
   // Retrieve the contents of the policy precedence rows.
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
-  std::string precedence_row_value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents(), kJavaScript, &precedence_row_value));
+  std::string precedence_row_value =
+      content::EvalJs(web_contents(), kJavaScript).ExtractString();
 
   ValidatePrecedenceValue(precedence_row_value);
 }

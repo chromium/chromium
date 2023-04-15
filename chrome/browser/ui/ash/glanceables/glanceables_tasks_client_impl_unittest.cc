@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
@@ -33,8 +32,10 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/list_model.h"
+#include "ui/base/models/list_model_observer.h"
 
 namespace ash {
 namespace {
@@ -43,8 +44,17 @@ using ::base::test::RepeatingTestFuture;
 using ::base::test::TestFuture;
 using ::google_apis::ApiErrorCode;
 using ::google_apis::util::FormatTimeAsString;
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpMethod;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
+using ::testing::_;
+using ::testing::ByMove;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::HasSubstr;
+using ::testing::Not;
+using ::testing::Return;
 
 constexpr char kDefaultTaskListsResponseContent[] = R"(
     {
@@ -99,29 +109,46 @@ class GaiaUrlsOverrider {
   GaiaUrls test_gaia_urls_;
 };
 
-std::unique_ptr<net::test_server::HttpResponse> CreateSuccessfulResponse(
-    const std::string& content) {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_OK);
-  response->set_content(content);
-  response->set_content_type("application/json");
-  return response;
-}
+// Helper class to simplify mocking `net::EmbeddedTestServer` responses,
+// especially useful for subsequent responses when testing pagination logic.
+class TestRequestHandler {
+ public:
+  static std::unique_ptr<HttpResponse> CreateSuccessfulResponse(
+      const std::string& content) {
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(content);
+    response->set_content_type("application/json");
+    return response;
+  }
 
-std::unique_ptr<net::test_server::HttpResponse> CreateFailedResponse() {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-  return response;
-}
+  static std::unique_ptr<HttpResponse> CreateFailedResponse() {
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+    return response;
+  }
+
+  MOCK_METHOD(std::unique_ptr<HttpResponse>,
+              HandleRequest,
+              (const HttpRequest&));
+};
+
+// Observer for `ui::ListModel` changes.
+class TestListModelObserver : public ui::ListModelObserver {
+ public:
+  MOCK_METHOD(void, ListItemsAdded, (size_t start, size_t count), (override));
+  MOCK_METHOD(void, ListItemsRemoved, (size_t start, size_t count), (override));
+  MOCK_METHOD(void,
+              ListItemMoved,
+              (size_t index, size_t target_index),
+              (override));
+  MOCK_METHOD(void, ListItemsChanged, (size_t start, size_t count), (override));
+};
 
 }  // namespace
 
 class GlanceablesTasksClientImplTest : public testing::Test {
  public:
-  using GenerateResponseCallback =
-      base::RepeatingCallback<std::unique_ptr<HttpResponse>(
-          const HttpRequest& request)>;
-
   void SetUp() override {
     auto create_request_sender_callback = base::BindLambdaForTesting(
         [&](const std::vector<std::string>& scopes,
@@ -134,9 +161,9 @@ class GlanceablesTasksClientImplTest : public testing::Test {
     client_ = std::make_unique<GlanceablesTasksClientImpl>(
         create_request_sender_callback);
 
-    test_server_.RegisterRequestHandler(base::BindRepeating(
-        &GlanceablesTasksClientImplTest::HandleDataFileRequest,
-        base::Unretained(this)));
+    test_server_.RegisterRequestHandler(
+        base::BindRepeating(&TestRequestHandler::HandleRequest,
+                            base::Unretained(&request_handler_)));
     ASSERT_TRUE(test_server_.Start());
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kGoogleApisUrl, test_server_.base_url().spec());
@@ -145,20 +172,10 @@ class GlanceablesTasksClientImplTest : public testing::Test {
               test_server_.base_url().spec());
   }
 
-  void set_generate_response_callback(const GenerateResponseCallback& cb) {
-    generate_response_callback_ = cb;
-  }
-
   GlanceablesTasksClientImpl* client() { return client_.get(); }
-  int requests_count() { return requests_count_; }
+  TestRequestHandler& request_handler() { return request_handler_; }
 
  private:
-  std::unique_ptr<net::test_server::HttpResponse> HandleDataFileRequest(
-      const net::test_server::HttpRequest& request) {
-    ++requests_count_;
-    return std::move(generate_response_callback_).Run(request);
-  }
-
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedCommandLine command_line_;
@@ -169,16 +186,14 @@ class GlanceablesTasksClientImplTest : public testing::Test {
           /*network_service=*/nullptr,
           /*is_trusted=*/true);
   std::unique_ptr<GaiaUrlsOverrider> gaia_urls_overrider_;
-  GenerateResponseCallback generate_response_callback_;
-  int requests_count_ = 0;
+  testing::StrictMock<TestRequestHandler> request_handler_;
   std::unique_ptr<GlanceablesTasksClientImpl> client_;
 };
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
-  set_generate_response_callback(
-      base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(kDefaultTaskListsResponseContent);
-      }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTaskListsResponseContent))));
 
   TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
   client()->GetTaskLists(future.GetCallback());
@@ -199,30 +214,27 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
-  set_generate_response_callback(
-      base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(kDefaultTaskListsResponseContent);
-      }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTaskListsResponseContent))));
 
   RepeatingTestFuture<ui::ListModel<GlanceablesTaskList>*> future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_EQ(requests_count(), 1);
   const auto* const task_lists = future.Take();
 
   // Subsequent request doesn't trigger another network call and returns a
   // pointer to the same `ui::ListModel`.
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(requests_count(), 1);
   EXPECT_EQ(future.Take(), task_lists);
 }
 
 TEST_F(GlanceablesTasksClientImplTest,
        GetTaskListsReturnsEmptyVectorOnHttpError) {
-  set_generate_response_callback(base::BindLambdaForTesting(
-      [](const HttpRequest& request) { return CreateFailedResponse(); }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
   client()->GetTaskLists(future.GetCallback());
@@ -232,11 +244,52 @@ TEST_F(GlanceablesTasksClientImplTest,
   EXPECT_EQ(task_lists->item_count(), 0u);
 }
 
+TEST_F(GlanceablesTasksClientImplTest, GetTaskListsFetchesAllPages) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  Not(HasSubstr("pageToken")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-1"}],
+            "nextPageToken": "qwe"
+          }
+        )"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=qwe"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-2"}],
+            "nextPageToken": "asd"
+          }
+        )"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=asd"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#taskLists",
+            "items": [{"id": "task-list-from-page-3"}]
+          }
+        )"))));
+
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const task_lists = future.Get();
+  EXPECT_EQ(task_lists->item_count(), 3u);
+  EXPECT_EQ(task_lists->GetItemAt(0)->id, "task-list-from-page-1");
+  EXPECT_EQ(task_lists->GetItemAt(1)->id, "task-list-from-page-2");
+  EXPECT_EQ(task_lists->GetItemAt(2)->id, "task-list-from-page-3");
+}
+
 TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
-  set_generate_response_callback(
-      base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(kDefaultTasksResponseContent);
-      }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTasksResponseContent))));
 
   TestFuture<ui::ListModel<GlanceablesTask>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
@@ -262,29 +315,26 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
-  set_generate_response_callback(
-      base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(kDefaultTasksResponseContent);
-      }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTasksResponseContent))));
 
   RepeatingTestFuture<ui::ListModel<GlanceablesTask>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_EQ(requests_count(), 1);
   const auto* const root_tasks = future.Take();
 
   // Subsequent request doesn't trigger another network call and returns a
   // pointer to the same `ui::ListModel`.
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(requests_count(), 1);
   EXPECT_EQ(future.Take(), root_tasks);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
-  set_generate_response_callback(base::BindLambdaForTesting(
-      [](const HttpRequest& request) { return CreateFailedResponse(); }));
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   TestFuture<ui::ListModel<GlanceablesTask>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
@@ -296,9 +346,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
 
 TEST_F(GlanceablesTasksClientImplTest,
        GetTasksReturnsEmptyVectorOnConversionError) {
-  set_generate_response_callback(
-      base::BindLambdaForTesting([](const HttpRequest& request) {
-        return CreateSuccessfulResponse(R"(
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
           {
             "kind": "tasks#tasks",
             "items": [
@@ -315,8 +364,7 @@ TEST_F(GlanceablesTasksClientImplTest,
               }
             ]
           }
-        )");
-      }));
+        )"))));
 
   TestFuture<ui::ListModel<GlanceablesTask>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
@@ -324,6 +372,140 @@ TEST_F(GlanceablesTasksClientImplTest,
 
   const auto* const root_tasks = future.Get();
   EXPECT_EQ(root_tasks->item_count(), 0u);
+}
+
+TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  Not(HasSubstr("pageToken")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "child-task-from-page-1",
+                "parent": "parent-task-from-page-2"
+              }
+            ],
+            "nextPageToken": "qwe"
+          }
+        )"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=qwe"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "parent-task-from-page-2"}],
+            "nextPageToken": "asd"
+          }
+        )"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("pageToken=asd"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [{"id": "parent-task-from-page-3"}]
+          }
+        )"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const root_tasks = future.Get();
+  EXPECT_EQ(root_tasks->item_count(), 2u);
+  EXPECT_EQ(root_tasks->GetItemAt(0)->id, "parent-task-from-page-2");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->subtasks.at(0)->id,
+            "child-task-from-page-1");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->id, "parent-task-from-page-3");
+}
+
+TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "task-1",
+                "status": "needsAction"
+              },
+              {
+                "id": "task-2",
+                "status": "needsAction"
+              }
+            ]
+          }
+        )"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(
+          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(""))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> get_tasks_future;
+  client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
+  ASSERT_TRUE(get_tasks_future.Wait());
+
+  auto* const tasks = get_tasks_future.Get();
+  EXPECT_EQ(tasks->item_count(), 2u);
+
+  testing::StrictMock<TestListModelObserver> observer;
+  tasks->AddObserver(&observer);
+
+  EXPECT_CALL(observer, ListItemsRemoved(/*start=*/1, /*count=*/1));
+  TestFuture<bool> mark_as_completed_future;
+  client()->MarkAsCompleted("test-task-list-id", "task-2",
+                            mark_as_completed_future.GetCallback());
+  ASSERT_TRUE(mark_as_completed_future.Wait());
+
+  EXPECT_TRUE(mark_as_completed_future.Get());
+  EXPECT_EQ(tasks->item_count(), 1u);
+  EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
+}
+
+TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "task-1",
+                "status": "needsAction"
+              },
+              {
+                "id": "task-2",
+                "status": "needsAction"
+              }
+            ]
+          }
+        )"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> get_tasks_future;
+  client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
+  ASSERT_TRUE(get_tasks_future.Wait());
+
+  const auto* const tasks = get_tasks_future.Get();
+  EXPECT_EQ(tasks->item_count(), 2u);
+
+  TestFuture<bool> mark_as_completed_future;
+  client()->MarkAsCompleted("test-task-list-id", "task-2",
+                            mark_as_completed_future.GetCallback());
+  ASSERT_TRUE(mark_as_completed_future.Wait());
+
+  EXPECT_FALSE(mark_as_completed_future.Get());
+  EXPECT_EQ(tasks->item_count(), 2u);
 }
 
 }  // namespace ash

@@ -182,6 +182,10 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit GetSetOffset(wtf_size_t set_index) const;
   wtf_size_t GetSetTrackCount(wtf_size_t set_index) const;
 
+  // Returns the accumulated extra margin at the start/end of the specified set.
+  LayoutUnit StartExtraMargin(wtf_size_t set_index) const;
+  LayoutUnit EndExtraMargin(wtf_size_t set_index) const;
+
   bool HasBaselines() const { return baselines_.has_value(); }
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
   LayoutUnit MinorBaseline(wtf_size_t set_index) const;
@@ -259,6 +263,10 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   //  (start: 3, end: 5) -> indefinite as:
   //      start <= last_indefinite_index[end]
   Vector<wtf_size_t, 16> last_indefinite_index_;
+
+  LayoutUnit accumulated_gutter_size_delta_;
+  LayoutUnit accumulated_start_extra_margin_;
+  LayoutUnit accumulated_end_extra_margin_;
 };
 
 // |NGGridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or

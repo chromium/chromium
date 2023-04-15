@@ -50,10 +50,6 @@ void StartWithData(
     int pixels_per_side,
     LoadedCallback loaded_cb);
 
-// Loads user image from provided |data| bytes. If the image is animated, encode
-// with WebP encoder, otherwise encode with PNG encoder.
-void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb);
-
 // Loads user image from |file_path|. If the image is animated, encode with WebP
 // encoder, otherwise encode with PNG encoder.
 // TODO(b/251083485): Add support for external image from file.

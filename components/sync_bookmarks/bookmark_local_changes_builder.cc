@@ -61,7 +61,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
            data->client_tag_hash ==
                syncer::ClientTagHash::FromUnhashed(
                    syncer::BOOKMARKS,
-                   entity->bookmark_node()->guid().AsLowercaseString()));
+                   entity->bookmark_node()->uuid().AsLowercaseString()));
 
     if (!metadata.is_deleted()) {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();
@@ -80,7 +80,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
       DCHECK(node);
       DCHECK_EQ(syncer::ClientTagHash::FromUnhashed(
-                    syncer::BOOKMARKS, node->guid().AsLowercaseString()),
+                    syncer::BOOKMARKS, node->uuid().AsLowercaseString()),
                 syncer::ClientTagHash::FromHashed(metadata.client_tag_hash()));
 
       const bookmarks::BookmarkNode* parent = node->parent();

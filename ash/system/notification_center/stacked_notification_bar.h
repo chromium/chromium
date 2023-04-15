@@ -52,7 +52,6 @@ class StackedNotificationBar : public views::View,
   void SetExpanded();
 
   // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
 
   // message_center::MessageCenterObserver:
@@ -76,9 +75,6 @@ class StackedNotificationBar : public views::View,
   // Search for a icon view in the stacked notification bar based on a provided
   // notification id.
   const StackedNotificationBarIcon* GetIconFromId(const std::string& id) const;
-
-  // Set visibility based on number of stacked notifications or animation state.
-  void UpdateVisibility();
 
   // Add a stacked notification icon to the front or back of the row.
   void AddNotificationIcon(message_center::Notification* notification,

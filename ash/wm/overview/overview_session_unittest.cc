@@ -103,6 +103,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -482,6 +483,24 @@ TEST_P(OverviewSessionTest, BasicGesture) {
   GetEventGenerator()->GestureTapAt(
       GetTransformedTargetBounds(window2.get()).CenterPoint());
   EXPECT_EQ(window2.get(), window_util::GetFocusedWindow());
+}
+
+// Tests that calling `views::Widget::CloseNow` on a minimized window that is
+// currently being dragged does not cause a crash. Regression test for
+// b/268413746.
+TEST_P(OverviewSessionTest, CloseNowDraggedMinimizedWindow) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState::Get(window.get())->Minimize();
+
+  // Start dragging the window.
+  ToggleOverview();
+  GetEventGenerator()->set_current_screen_location(
+      GetTransformedTargetBounds(window.get()).CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+
+  // Call `views::Widget::CloseNow` on the window mid drag and verify no crash.
+  // This could happen in production when an exo window shuts down.
+  views::Widget::GetWidgetForNativeView(window.release())->CloseNow();
 }
 
 // Tests that the user action WindowSelector_ActiveWindowChanged is
@@ -2583,7 +2602,8 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // Helper function which returns the ratio of the item width and height minus
   // the header and window margin.
   auto item_ratio = [](OverviewItem* item) {
-    gfx::RectF boundsf = item->GetWindowTargetBoundsWithInsets();
+    gfx::RectF boundsf = item->target_bounds();
+    boundsf.Inset(gfx::InsetsF(kWindowMargin));
     return boundsf.width() / boundsf.height();
   };
 
@@ -2626,7 +2646,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // the header of window margin.
   EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
-  EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(normal_item), item_ratio(normal_item), 0.01f);
 
   // Verify all the shadows are within the bounds of their respective item
   // widgets when the overview windows are positioned with animations.
@@ -2639,7 +2659,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
 
   EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
-  EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(normal_item), item_ratio(normal_item), 0.01f);
 
   // Test that leaving overview mode cleans up properly.
   ToggleOverview();
@@ -3604,11 +3624,11 @@ class TabletModeOverviewSessionTest : public OverviewTestBase {
   }
 
   void DispatchLongPress(OverviewItem* item) {
-    ui::TouchEvent long_press(
-        ui::ET_GESTURE_LONG_PRESS,
-        gfx::ToRoundedPoint(item->target_bounds().CenterPoint()),
-        base::TimeTicks::Now(),
-        ui::PointerDetails(ui::EventPointerType::kTouch));
+    const gfx::Point point =
+        gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
+    ui::GestureEvent long_press(
+        point.x(), point.y(), 0, base::TimeTicks::Now(),
+        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
     GetEventGenerator()->Dispatch(&long_press);
   }
 
@@ -6295,7 +6315,8 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
                     SplitViewController::SnapPosition::kSecondary,
                     /*window_for_minimum_size=*/nullptr)));
 
-  split_view_controller()->SwapWindows();
+  split_view_controller()->SwapWindows(
+      SplitViewController::SwapWindowsSource::kDoubleTap);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kSecondarySnapped);
   EXPECT_EQ(split_view_controller()->default_snap_position(),

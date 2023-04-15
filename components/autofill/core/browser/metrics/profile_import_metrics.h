@@ -188,6 +188,17 @@ void LogUpdateProfileNumberOfAffectedFields(
     int number_of_affected_fields,
     AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
+// Logs the user's decision for migrating an existing `kLocalOrSyncable` profile
+// to `kAccount`.
+void LogProfileMigrationImportDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+// Logs that a specific type was edited in a migration prompt.
+void LogProfileMigrationEditedType(ServerFieldType edited_type);
+
+// Logs the number of edited fields for an accepted profile migration.
+void LogProfileMigrationNumberOfEditedFields(int number_of_edited_fields);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_IMPORT_METRICS_H_

@@ -25,37 +25,43 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   switch (security_level) {
     case security_state::NONE:
-      return features::IsChromeRefresh2023() ? omnibox::kHttpChromeRefreshIcon
-                                             : omnibox::kHttpIcon;
+      return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
+                                           : omnibox::kHttpIcon;
     case security_state::SECURE: {
       return use_updated_connection_security_indicators
                  ? vector_icons::kHttpsValidArrowIcon
-                 : (features::IsChromeRefresh2023()
+                 : (IsChromeRefreshIconsEnabled()
                         ? omnibox::kSecurePageInfoChromeRefreshIcon
                         : vector_icons::kHttpsValidIcon);
     }
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return features::IsChromeRefresh2023()
+      return IsChromeRefreshIconsEnabled()
                  ? vector_icons::kBusinessChromeRefreshIcon
                  : vector_icons::kBusinessIcon;
     case security_state::WARNING:
     case security_state::DANGEROUS:
-      return features::IsChromeRefresh2023()
+      return IsChromeRefreshIconsEnabled()
                  ? vector_icons::kNotSecureWarningChromeRefreshIcon
                  : vector_icons::kNotSecureWarningIcon;
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();
-      return features::IsChromeRefresh2023() ? omnibox::kHttpChromeRefreshIcon
-                                             : omnibox::kHttpIcon;
+      return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
+                                           : omnibox::kHttpIcon;
   }
   NOTREACHED();
-  return features::IsChromeRefresh2023() ? omnibox::kHttpChromeRefreshIcon
-                                         : omnibox::kHttpIcon;
+  return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
+                                       : omnibox::kHttpIcon;
 #else
   NOTREACHED();
   static const gfx::VectorIcon dummy = {};
   return dummy;
 #endif
+}
+
+bool IsChromeRefreshIconsEnabled() {
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
 }
 
 }  // namespace location_bar_model

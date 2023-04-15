@@ -66,6 +66,9 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // Sets whether the quick settings view should show any media item.
   void SetShowMediaView(bool show_media_view);
 
+  // Updates the order of media items in the quick settings media view.
+  void UpdateMediaItemOrder();
+
  private:
   raw_ptr<UnifiedSystemTrayController> tray_controller_ = nullptr;
 

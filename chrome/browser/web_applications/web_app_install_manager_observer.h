@@ -27,7 +27,9 @@ class WebAppInstallManagerObserver : public base::CheckedObserver {
   // Called after a web app is uninstalled. |app_id| is no longer registered in
   // the WebAppRegistrar, all OS hooks are uninstalled, and icons have been
   // deleted.
-  virtual void OnWebAppUninstalled(const AppId& app_id) {}
+  virtual void OnWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) {}
 
   // Called when any field of a web app's local manifest is updated.
   // Note that |old_name| will always be the same as the current name as we

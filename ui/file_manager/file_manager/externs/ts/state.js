@@ -242,7 +242,7 @@ export const SearchRecency = {
 /**
  * The options used by the file search operation.
  * @typedef {{
- *   location: SearchLocation,
+ *   location: !SearchLocation,
  *   recency: SearchRecency,
  *   type:  chrome.fileManagerPrivate.FileCategory,
  * }}

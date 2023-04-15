@@ -9,15 +9,13 @@
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "ui/gl/scoped_egl_image.h"
 
 namespace gpu {
 namespace gles2 {
 class TexturePassthrough;
 }
-
-class VulkanImage;
 
 class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
                                 public GLTextureImageRepresentationClient {
@@ -54,17 +52,6 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
 
  private:
   class SkiaAngleVulkanImageRepresentation;
-
-  struct TextureHolderVk {
-    TextureHolderVk();
-    TextureHolderVk(TextureHolderVk&& other);
-    TextureHolderVk& operator=(TextureHolderVk&& other);
-    ~TextureHolderVk();
-
-    std::unique_ptr<VulkanImage> vulkan_image;
-    GrBackendTexture backend_texture;
-    sk_sp<SkPromiseImageTexture> promise_texture;
-  };
 
   struct TextureHolderGL {
     TextureHolderGL();

@@ -86,8 +86,6 @@ source_set("common") {
     "vda_video_frame_pool.cc",
     "vda_video_frame_pool.h",
     "video_decoder_pipeline.h",
-    "video_frame_converter.cc",
-    "video_frame_converter.h",
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.

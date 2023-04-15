@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {FileType} from '../../common/js/file_type.js';
@@ -26,7 +26,7 @@ import {ListContainer} from './ui/list_container.js';
 export class FileSelection {
   /**
    * @param {!Array<number>} indexes
-   * @param {!Array<Entry>} entries
+   * @param {!Array<!Entry>} entries
    * @param {!VolumeManager} volumeManager
    */
   constructor(indexes, entries, volumeManager) {
@@ -86,6 +86,9 @@ export class FileSelection {
     this.hasReadOnlyEntry_ = false;
 
     entries.forEach(entry => {
+      if (!entry) {
+        return;
+      }
       if (entry.isFile) {
         this.fileCount += 1;
       } else {
@@ -220,10 +223,14 @@ export class FileSelectionHandler extends EventTarget {
    */
   onFileSelectionChanged() {
     const indexes = this.listContainer_.selectionModel.selectedIndexes;
-    const entries = indexes.map(index => {
-      return /** @type {!Entry} */ (
-          this.directoryModel_.getFileList().item(index));
-    });
+    const entries =
+        indexes
+            .map(
+                index =>
+                    /** @type {!Entry} */ (
+                        this.directoryModel_.getFileList().item(index)))
+            // Filter out undefined for invalid index b/277232289.
+            .filter(entry => !!entry);
     this.selection = new FileSelection(indexes, entries, this.volumeManager_);
 
     if (this.selectionUpdateTimer_) {

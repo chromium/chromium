@@ -9,6 +9,15 @@ import sys
 from style_variable_generator.css_generator import CSSStyleGenerator
 import re
 
+JSON5_EXCLUDES = [
+    # We can't check both the legacy typography set AND the new typography
+    # set since they both declare the same variables causing a duplicate key
+    # error to be thrown from the syle variable generator. As such we drop
+    # presubmit checking for the legacy set to focus on catching issues with the
+    # new token set.
+    "ui/chromeos/styles/cros_typography.json5"
+]
+
 
 def BuildGrepQuery(deleted_names):
     # Query is built as \--var-1|--var-2|... The first backslash is necessary to
@@ -28,6 +37,8 @@ def RunGit(command):
 def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
     def IsInputFile(file):
         file_path = file.LocalPath()
+        if file_path in JSON5_EXCLUDES:
+            return False
         # Normalise windows file paths to unix format.
         file_path = "/".join(os.path.split(file_path))
         return any([

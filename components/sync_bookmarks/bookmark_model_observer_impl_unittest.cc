@@ -186,7 +186,7 @@ TEST_F(BookmarkModelObserverImplTest,
   ASSERT_THAT(local_changes.size(), 1U);
   EXPECT_THAT(local_changes[0]->bookmark_node(), Eq(bookmark_node));
   EXPECT_THAT(local_changes[0]->metadata().server_id(),
-              Eq(bookmark_node->guid().AsLowercaseString()));
+              Eq(bookmark_node->uuid().AsLowercaseString()));
 }
 
 TEST_F(BookmarkModelObserverImplTest,
@@ -907,7 +907,7 @@ TEST_F(BookmarkModelObserverImplTest,
   const bookmarks::BookmarkNode* folder =
       bookmark_model()->AddFolder(bookmark_bar_node, 0, u"Title");
   const syncer::ClientTagHash folder_client_tag_hash =
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(folder->guid());
+      SyncedBookmarkTracker::GetClientTagHashFromUuid(folder->uuid());
   // Check that the bookmark was added by observer.
   const SyncedBookmarkTrackerEntity* folder_entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder);

@@ -45,7 +45,7 @@ class MockNotifierObserver : public AllDownloadEventNotifier::Observer {
 
 class AllDownloadEventNotifierTest : public testing::Test {
  public:
-  AllDownloadEventNotifierTest() : coordinator_(base::NullCallback(), false) {}
+  AllDownloadEventNotifierTest() : coordinator_(base::NullCallback()) {}
 
   AllDownloadEventNotifierTest(const AllDownloadEventNotifierTest&) = delete;
   AllDownloadEventNotifierTest& operator=(const AllDownloadEventNotifierTest&) =

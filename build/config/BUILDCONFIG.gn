@@ -514,12 +514,7 @@ foreach(_target_type,
           "executable",
           "loadable_module",
           "shared_library",
-
-          # TODO(crbug.com/1426886): When bindgen is not built in the Chromium
-          # build it will be safe to add rust_bin here. Right now it would make
-          # a conflict between the Chromium libc++ that this selects and the
-          # clang libraries that are shipped with the Rust toolchain.
-          # "rust_bin",
+          "rust_bin",
           "rust_dylib",
           "rust_cdylib",
         ]) {

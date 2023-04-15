@@ -268,8 +268,9 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
       gfx::ImageSkia drag_image(
           std::make_unique<BookmarkDragImageSource>(
               color_provider, drag_node->GetTitle(),
-              icon.IsEmpty() ? favicon::GetDefaultFavicon().AsImageSkia()
-                             : icon.Rasterize(&color_provider),
+              icon.IsEmpty()
+                  ? favicon::GetDefaultFaviconModel().Rasterize(&color_provider)
+                  : icon.Rasterize(&color_provider),
               count_),
           BookmarkDragImageSource::kBookmarkDragImageSize);
 

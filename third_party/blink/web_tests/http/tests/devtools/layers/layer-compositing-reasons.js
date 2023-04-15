@@ -20,7 +20,8 @@
     'transform3d', 'scale3d', 'rotate3d', 'translate3d', 'backface-visibility',
     'animation', 'animation-scale', 'animation-rotate', 'animation-translate',
     'transformWithCompositedDescendants', 'transformWithCompositedDescendants-individual',
-    'opacityWithCompositedDescendants', 'reflectionWithCompositedDescendants', 'perspective', 'preserve3d'
+    'opacityWithCompositedDescendants', 'reflectionWithCompositedDescendants', 'perspective', 'preserve3d',
+    'scrollOpaque', 'scrollForced'
   ];
 
   await LayersTestRunner.requestLayers();

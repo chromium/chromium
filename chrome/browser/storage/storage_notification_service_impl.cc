@@ -8,13 +8,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/storage_pressure_bubble.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/storage_pressure_bubble.h"
-#endif
 
 namespace {
 

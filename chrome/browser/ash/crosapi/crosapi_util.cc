@@ -147,12 +147,14 @@
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "media/base/media_switches.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/gfx/switches.h"
 
 using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
 
@@ -310,7 +312,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::FieldTrialService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileSystemProviderService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::FirewallHoleService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::FirewallHoleServiceDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ForceInstalledTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FullscreenController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::GeolocationService>(),
@@ -425,6 +427,8 @@ crosapi::mojom::BrowserInitParams::LacrosSelection GetLacrosSelection(
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kRootfs;
     case browser_util::LacrosSelection::kStateful:
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kStateful;
+    case browser_util::LacrosSelection::kDeployedLocally:
+      return crosapi::mojom::BrowserInitParams::LacrosSelection::kUnspecified;
   }
 }
 
@@ -528,7 +532,9 @@ void InjectBrowserInitParams(
   // lacros for runtime handling instead.
   std::vector<crosapi::mojom::BuildFlag> build_flags;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  build_flags.emplace_back(crosapi::mojom::BuildFlag::kEnablePlatformHevc);
+  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    build_flags.emplace_back(crosapi::mojom::BuildFlag::kEnablePlatformHevc);
+  }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   build_flags.emplace_back(
@@ -598,6 +604,10 @@ void InjectBrowserInitParams(
 
   params->standalone_browser_app_service_blocklist =
       extensions::BuildStandaloneBrowserAppServiceBlockListInitParam();
+
+  params->enable_cpu_mappable_native_gpu_memory_buffers =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableNativeGpuMemoryBuffers);
 }
 
 template <typename BrowserParams>

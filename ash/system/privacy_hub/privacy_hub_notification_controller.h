@@ -77,6 +77,12 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // with what `sensor` was in use by the user.
   static void OpenSupportUrl(Sensor sensor);
 
+  // Set the appropriate pref to the value of `enabled` and log the
+  // interaction from a notification.
+  static void SetAndLogSensorPreferenceFromNotification(
+      SensorDisabledNotificationDelegate::Sensor sensor,
+      const bool enabled);
+
  private:
   void AddSensor(SensorDisabledNotificationDelegate::Sensor sensor);
   void RemoveSensor(SensorDisabledNotificationDelegate::Sensor sensor);

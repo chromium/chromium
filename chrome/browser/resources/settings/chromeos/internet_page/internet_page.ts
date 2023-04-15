@@ -786,17 +786,17 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
   }
 
-  private onAddWiFiTap_(): void {
+  private onAddWiFiClick_(): void {
     this.showConfig_(true /* configAndConnect */, NetworkType.kWiFi);
   }
 
-  private onAddVpnTap_(): void {
+  private onAddVpnClick_(): void {
     if (!this.vpnIsProhibited_) {
       this.showConfig_(true /* configAndConnect */, NetworkType.kVPN);
     }
   }
 
-  private onAddThirdPartyVpnTap_(event: DomRepeatEvent<VpnProvider>): void {
+  private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
     recordSettingChange();

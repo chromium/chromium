@@ -39,6 +39,7 @@ class BulkLeakCheckService : public BulkLeakCheckDelegateInterface,
 
   // Starts the checks or appends |credentials| to the existing queue.
   void CheckUsernamePasswordPairs(
+      LeakDetectionInitiator initiator,
       std::vector<LeakCheckCredential> credentials) override;
 
   // Stops all the current checks immediately.

@@ -138,27 +138,22 @@ void FormField::ParseFormFields(
     ParseUsingAutocompleteAttributes(processed_fields, field_candidates);
   }
 
-  size_t fillable_fields = 0;
+  size_t fillable_distinct_field_types = 0;
   // Set to count distinct field types.
   ServerFieldTypeSet heuristic_types;
   for (const auto& [field_id, candidates] : field_candidates) {
     if (IsFillableFieldType(candidates.BestHeuristicType())) {
-      ++fillable_fields;
+      ++fillable_distinct_field_types;
       heuristic_types.insert(candidates.BestHeuristicType());
     }
   }
 
-  // TODO(crbug.com/1352826): Inline for launch.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMin3FieldTypesForLocalHeuristics)) {
-    // With the experiment enabled, we consider the number of distinct fillable
-    // field types, not the number of distinct fillable fields, to determine
-    // whether local heuristics should be applied. We hypothesize that this
-    // reduces false positives.
-    // "Fillable" refers to the field type, not whether a specific field is
-    // visible and editable by the user.
-    fillable_fields = heuristic_types.size();
-  }
+  // We consider the number of distinct fillable field types, not the number of
+  // distinct fillable fields, to determine whether local heuristics should be
+  // applied. This reduces false positives by counting similar fields only once.
+  // "Fillable" refers to the field type, not whether a specific field is
+  // visible and editable by the user.
+  fillable_distinct_field_types = heuristic_types.size();
 
   // Do not autofill a form if there aren't enough fields. Otherwise, it is
   // very easy to have false positives. See http://crbug.com/447332
@@ -166,7 +161,7 @@ void FormField::ParseFormFields(
   // the only recognized field on account registration sites. Also make an
   // exception for single-field Autofillable types, even when the form contains
   // less than kMinRequiredFieldsForHeuristics fields in its form signature.
-  if (fillable_fields < kMinRequiredFieldsForHeuristics) {
+  if (fillable_distinct_field_types < kMinRequiredFieldsForHeuristics) {
     if ((is_form_tag && email_count > 0) || fillable_single_fields > 0) {
       base::EraseIf(field_candidates, [&](const auto& candidate) {
         return !(candidate.second.BestHeuristicType() == EMAIL_ADDRESS ||

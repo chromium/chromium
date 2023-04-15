@@ -176,11 +176,11 @@ class ASH_EXPORT WallpaperControllerImpl
   // Does not show the image if:
   // 1)  |preview_mode| is false and the current wallpaper is still being
   //     previewed. See comments for |confirm_preview_wallpaper_callback_|.
-  // 2)  |always_on_top| is false but the current wallpaper is always-on-top.
+  // 2)  |is_override| is false but the current wallpaper is overridden.
   void ShowWallpaperImage(const gfx::ImageSkia& image,
                           WallpaperInfo info,
                           bool preview_mode,
-                          bool always_on_top);
+                          bool is_override);
 
   // Update the blurred state of the current wallpaper for lock screen. Applies
   // blur if |blur| is true and blur is allowed by the controller, otherwise any
@@ -297,8 +297,9 @@ class ASH_EXPORT WallpaperControllerImpl
                          user_manager::UserType user_type) override;
   void ShowSigninWallpaper() override;
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
-  void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
-  void RemoveAlwaysOnTopWallpaper() override;
+  void ShowOverrideWallpaper(const base::FilePath& image_path,
+                             bool always_on_top) override;
+  void RemoveOverrideWallpaper() override;
   void RemoveUserWallpaper(const AccountId& account_id,
                            base::OnceClosure on_removed) override;
   void RemovePolicyWallpaper(const AccountId& account_id) override;
@@ -652,9 +653,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnColorCalculationComplete(const WallpaperInfo& info,
                                   const WallpaperCalculatedColors& colors);
 
-  // The callback when decoding of the always-on-top wallpaper completes.
-  void OnAlwaysOnTopWallpaperDecoded(const WallpaperInfo& info,
-                                     const gfx::ImageSkia& image);
+  // The callback when decoding of the override wallpaper completes.
+  void OnOverrideWallpaperDecoded(const WallpaperInfo& info,
+                                  const gfx::ImageSkia& image);
 
   // Returns whether the current wallpaper is set by device policy.
   bool IsDevicePolicyWallpaper() const;
@@ -700,8 +701,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnAllOnlineWallpaperVariantsDownloaded(
       const OnlineWallpaperParams& params,
       SetWallpaperCallback callback);
-
-  constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
 
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
@@ -845,6 +844,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // If true, the current wallpaper should always stay on top.
   bool is_always_on_top_wallpaper_ = false;
 
+  // If true, the current wallpaper is overridden.
+  bool is_override_wallpaper_ = false;
+
   const std::unique_ptr<WallpaperImageDownloader> wallpaper_image_downloader_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
@@ -869,10 +871,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // change). Has the same lifetime with |confirm_preview_wallpaper_callback_|.
   base::RepeatingClosure reload_preview_wallpaper_callback_;
 
-  // Called when the always-on-top wallpaper needs to be reloaded (e.g. display
-  // size change). Non-empty if and only if |is_always_on_top_wallpaper_| is
-  // true.
-  base::RepeatingClosure reload_always_on_top_wallpaper_callback_;
+  // Called when the override wallpaper needs to be reloaded (e.g. display size
+  // change). Non-empty if and only if |is_override_wallpaper_| is true.
+  base::RepeatingClosure reload_override_wallpaper_callback_;
 
   // Transient storage for the wallpaper variant (out of the N total variants
   // that may exist for a given "unit") that was requested by the client. The

@@ -124,15 +124,12 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
     : ui_controller_(std::make_unique<MessageCenterUiController>(this)),
       message_popup_collection_(
           std::make_unique<AshMessagePopupCollection>(owner->shelf())),
-      owner_(owner) {
-  if (features::IsNotificationsRefreshEnabled()) {
-    grouping_controller_ = std::make_unique<NotificationGroupingController>(
-        /*unified_system_tray=*/owner,
-        /*notification_center_tray=*/owner->shelf()
-            ->status_area_widget()
-            ->notification_center_tray());
-  }
-
+      owner_(owner),
+      grouping_controller_(std::make_unique<NotificationGroupingController>(
+          /*unified_system_tray=*/owner,
+          /*notification_center_tray=*/owner->shelf()
+              ->status_area_widget()
+              ->notification_center_tray())) {
   ui_controller_->set_hide_on_last_notification(false);
 
   display::Screen* screen = display::Screen::GetScreen();
@@ -261,11 +258,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
             shelf, Shell::Get()->shell_delegate()->GetChannel()));
   }
 
-  // Do not show this indicator if video conference feature is enabled since
-  // privacy indicator is already shown there. We also do not show this here in
-  // the new Quick Settings UI.
+  // We do not show privacy indicators here in the new Quick Settings UI.
   if (features::IsPrivacyIndicatorsEnabled() &&
-      !features::IsVideoConferenceEnabled() && !features::IsQsRevampEnabled()) {
+      !features::IsQsRevampEnabled()) {
     privacy_indicators_view_ = AddTrayItemToContainer(
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf));
   }

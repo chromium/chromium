@@ -21,7 +21,7 @@ namespace media {
 class BlockingUrlProtocolTest : public testing::Test {
  public:
   BlockingUrlProtocolTest()
-      : url_protocol_(new BlockingUrlProtocol(
+      : url_protocol_(std::make_unique<BlockingUrlProtocol>(
             &data_source_,
             base::BindRepeating(&BlockingUrlProtocolTest::OnDataSourceError,
                                 base::Unretained(this)))) {

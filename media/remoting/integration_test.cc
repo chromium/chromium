@@ -41,7 +41,7 @@ TEST_F(MediaRemotingIntegrationTest, BasicPlayback) {
   ASSERT_TRUE(WaitUntilOnEnded());
 
   EXPECT_EQ("f0be120a90a811506777c99a2cdf7cc1", GetVideoHash());
-  EXPECT_EQ("-3.59,-2.06,-0.43,2.15,0.77,-0.95,", GetAudioHash());
+  EXPECT_EQ("-3.59,-2.06,-0.43,2.15,0.77,-0.95,", GetAudioHash().ToString());
 }
 
 TEST_F(MediaRemotingIntegrationTest, BasicPlayback_MediaSource) {

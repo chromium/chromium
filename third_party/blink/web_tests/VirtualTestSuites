@@ -142,7 +142,8 @@
               "scrollbars",
               "external/wpt/css/css-scroll-snap",
               "external/wpt/scroll-animations",
-              "external/wpt/css/css-overflow"],
+              "external/wpt/css/css-overflow",
+              "http/tests/devtools/layers"],
     "args": ["--enable-features=CompositeScrollAfterPaint"],
     "expires": "Sep 1, 2023"
   },
@@ -349,7 +350,7 @@
   },
   {
     "prefix": "compute-pressure",
-    "platforms": ["Linux", "Mac"],
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/compute-pressure"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ComputePressure"],
@@ -1768,17 +1769,6 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "abort-signal-remove",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/eyedropper",
-      "external/wpt/idle-detection",
-      "external/wpt/web-nfc"
-    ],
-    "args": ["--disable-features=AbortSignalHandleBasedRemoval"],
     "expires": "Jul 1, 2023"
   },
   {

@@ -11,11 +11,13 @@
 #include "base/run_loop.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/mock_fast_checkout_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -62,20 +64,20 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&CreateFakeResponse));
     ASSERT_TRUE(embedded_test_server()->Start());
-
-    auto mock_fast_checkout_client =
-        std::make_unique<MockFastCheckoutClient>(GetActiveWebContents());
-    mock_fast_checkout_client_ = mock_fast_checkout_client.get();
-    GetActiveWebContents()->SetUserData(
-        content::WebContentsUserData<FastCheckoutClientImpl>::UserDataKey(),
-        std::move(mock_fast_checkout_client));
+    mock_fast_checkout_client_ = static_cast<MockFastCheckoutClient*>(
+        autofill_client().GetFastCheckoutClient());
   }
 
  protected:
   MockFastCheckoutCapabilitiesFetcher* fetcher() { return fetcher_; }
 
   MockFastCheckoutClient* fast_checkout_client() {
-    return mock_fast_checkout_client_;
+    return static_cast<MockFastCheckoutClient*>(
+        autofill_client().GetFastCheckoutClient());
+  }
+
+  autofill::TestContentAutofillClient& autofill_client() {
+    return *autofill_client_injector_[GetActiveWebContents()];
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -92,6 +94,8 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
  private:
   raw_ptr<MockFastCheckoutCapabilitiesFetcher> fetcher_ = nullptr;
   raw_ptr<MockFastCheckoutClient> mock_fast_checkout_client_;
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      autofill_client_injector_;
 };
 
 IN_PROC_BROWSER_TEST_F(

@@ -58,6 +58,7 @@ source_set("browser_prefs") {
     "//components/metrics",
     "//components/metrics/demographics",
     "//components/network_time",
+    "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//components/optimization_guide/core",

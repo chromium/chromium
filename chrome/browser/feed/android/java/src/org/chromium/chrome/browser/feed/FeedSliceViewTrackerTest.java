@@ -97,8 +97,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();
         doReturn(mWindow).when(mActivity).getWindow();
         doReturn(mDecorView).when(mWindow).getDecorView();
-        mTracker = Mockito.spy(new FeedSliceViewTracker(
-                mParentView, mActivity, mContentManager, mLayoutHelper, mObserver));
+        mTracker = Mockito.spy(new FeedSliceViewTracker(mParentView, mActivity, mContentManager,
+                mLayoutHelper, /* watchForBarelyVisibleChange= */ true, mObserver));
     }
 
     @After
@@ -533,7 +533,7 @@ public class FeedSliceViewTrackerTest {
         mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
 
         mTracker.onPreDraw();
-        verify(mObserver, times(1)).reportViewFirstVisible(any());
+        verify(mObserver, times(1)).reportViewFirstBarelyVisible(any());
         shadowOf(Looper.getMainLooper()).idle();
         verify(mObserver, times(1)).reportViewFirstRendered(any());
     }

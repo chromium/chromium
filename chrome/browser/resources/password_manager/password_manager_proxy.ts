@@ -213,6 +213,13 @@ export interface PasswordManagerProxy {
   undoRemoveSavedPasswordOrException(): void;
 
   /**
+   * Triggers the dialog for importing passwords.
+   * @return A promise that resolves to the import results.
+   */
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet):
+      Promise<chrome.passwordsPrivate.ImportResults>;
+
+  /**
    * Queries the status of any ongoing export.
    */
   requestExportProgressStatus():
@@ -308,6 +315,12 @@ export interface PasswordManagerProxy {
    * @return A promise that resolves to whether the account store is default.
    */
   isAccountStoreDefault(): Promise<boolean>;
+
+  /**
+   * Moves a list of passwords from the device to the account
+   * @param ids The ids for the password entries being moved.
+   */
+  movePasswordsToAccount(ids: number[]): void;
 }
 
 /**
@@ -433,6 +446,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
   }
 
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
+    return chrome.passwordsPrivate.importPasswords(toStore);
+  }
+
   requestExportProgressStatus() {
     return chrome.passwordsPrivate.requestExportProgressStatus();
   }
@@ -505,6 +522,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   isAccountStoreDefault() {
     return chrome.passwordsPrivate.isAccountStoreDefault();
+  }
+
+  movePasswordsToAccount(ids: number[]) {
+    chrome.passwordsPrivate.movePasswordsToAccount(ids);
   }
 
   static getInstance(): PasswordManagerProxy {

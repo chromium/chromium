@@ -83,6 +83,8 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -95,7 +97,6 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/favicon",
-    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:logo",
@@ -125,6 +126,8 @@ source_set("content_suggestions") {
 
 source_set("metrics") {
   sources = [
+    "content_suggestions_metrics_recorder.h",
+    "content_suggestions_metrics_recorder.mm",
     "ntp_home_metrics.h",
     "ntp_home_metrics.mm",
   ]
@@ -136,6 +139,7 @@ source_set("metrics") {
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
   ]
 }
 

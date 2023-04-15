@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/base64url.h"
-#include "base/check_op.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -57,8 +55,8 @@ const size_t kAuthSecretBytes = 16;
 
 class GCMKeyStoreTest : public ::testing::Test {
  public:
-  GCMKeyStoreTest() {}
-  ~GCMKeyStoreTest() override {}
+  GCMKeyStoreTest() = default;
+  ~GCMKeyStoreTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -138,7 +136,6 @@ class GCMKeyStoreTest : public ::testing::Test {
 
  protected:
   GCMKeyStore* gcm_key_store() { return gcm_key_store_.get(); }
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   void UpdatedEntries(base::OnceClosure quit_closure, bool success) {
     EXPECT_TRUE(success);
@@ -149,17 +146,11 @@ class GCMKeyStoreTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
-  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<GCMKeyStore> gcm_key_store_;
 };
 
 TEST_F(GCMKeyStoreTest, EmptyByDefault) {
-  // The key store is initialized lazily, so this histogram confirms that
-  // calling the constructor does not in fact cause initialization.
-  histogram_tester()->ExpectTotalCount(
-      "GCM.Crypto.InitKeyStoreSuccessRate", 0);
-
   ECPrivateKeyUniquePtr key;
   std::string auth_secret;
   base::RunLoop run_loop;
@@ -173,9 +164,6 @@ TEST_F(GCMKeyStoreTest, EmptyByDefault) {
 
   ASSERT_FALSE(key);
   EXPECT_EQ(0u, auth_secret.size());
-
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.GetKeySuccessRate", 0, 1);  // failure
 }
 
 TEST_F(GCMKeyStoreTest, CreateAndGetKeys) {
@@ -198,8 +186,6 @@ TEST_F(GCMKeyStoreTest, CreateAndGetKeys) {
   EXPECT_GT(private_key.size(), 0u);
 
   ASSERT_GT(auth_secret.size(), 0u);
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.CreateKeySuccessRate", 1, 1);  // success
 
   ECPrivateKeyUniquePtr read_key;
   std::string read_auth_secret;
@@ -221,9 +207,6 @@ TEST_F(GCMKeyStoreTest, CreateAndGetKeys) {
   ASSERT_EQ(read_public_key, public_key);
   EXPECT_EQ(auth_secret, read_auth_secret);
 
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.GetKeySuccessRate", 1,
-                                        1);  // success
-
   // GetKey should also succeed if fallback_to_empty_authorized_entity is true
   // (fallback should not occur, since an exact match is found).
   base::RunLoop second_get_run_loop;
@@ -243,9 +226,6 @@ TEST_F(GCMKeyStoreTest, CreateAndGetKeys) {
   ASSERT_EQ(read_private_key, private_key);
   ASSERT_EQ(read_public_key, public_key);
   EXPECT_EQ(auth_secret, read_auth_secret);
-
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.GetKeySuccessRate", 1,
-                                        2);  // another success
 }
 
 TEST_F(GCMKeyStoreTest, GetKeysFallback) {
@@ -271,9 +251,6 @@ TEST_F(GCMKeyStoreTest, GetKeysFallback) {
   EXPECT_GT(private_key.size(), 0u);
   ASSERT_GT(auth_secret.size(), 0u);
 
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.CreateKeySuccessRate", 1,
-                                        1);  // success
-
   // GetKeys should fail when fallback_to_empty_authorized_entity is false, as
   // there is not an exact match for kFakeAuthorizedEntity.
   ECPrivateKeyUniquePtr read_key;
@@ -291,9 +268,6 @@ TEST_F(GCMKeyStoreTest, GetKeysFallback) {
 
   ASSERT_FALSE(read_key);
   EXPECT_EQ(0u, read_auth_secret.size());
-
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.GetKeySuccessRate", 0,
-                                        1);  // failure
 
   // GetKey should succeed when fallback_to_empty_authorized_entity is true, as
   // falling back to empty authorized entity will match the created key.
@@ -317,9 +291,6 @@ TEST_F(GCMKeyStoreTest, GetKeysFallback) {
   EXPECT_EQ(public_key, read_public_key);
 
   EXPECT_EQ(auth_secret, read_auth_secret);
-
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.GetKeySuccessRate", 1,
-                                        1);  // success
 }
 
 TEST_F(GCMKeyStoreTest, KeysPersistenceBetweenInstances) {
@@ -336,11 +307,6 @@ TEST_F(GCMKeyStoreTest, KeysPersistenceBetweenInstances) {
   }
 
   ASSERT_TRUE(key);
-
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.InitKeyStoreSuccessRate", 1, 1);  // success
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.LoadKeyStoreSuccessRate", 1, 1);  // success
 
   // Create a new GCM Key Store instance.
   CreateKeyStore();
@@ -360,11 +326,6 @@ TEST_F(GCMKeyStoreTest, KeysPersistenceBetweenInstances) {
 
   ASSERT_TRUE(read_key);
   EXPECT_GT(read_auth_secret.size(), 0u);
-
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.InitKeyStoreSuccessRate", 1, 2);  // success
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.LoadKeyStoreSuccessRate", 1, 2);  // success
 }
 
 TEST_F(GCMKeyStoreTest, CreateAndRemoveKeys) {
@@ -401,9 +362,6 @@ TEST_F(GCMKeyStoreTest, CreateAndRemoveKeys) {
                               base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
-
-  histogram_tester()->ExpectBucketCount(
-      "GCM.Crypto.RemoveKeySuccessRate", 1, 1);  // success
 
   {
     base::RunLoop run_loop;
@@ -452,9 +410,6 @@ TEST_F(GCMKeyStoreTest, CreateGetAndRemoveKeysSynchronously) {
                      base::OnceClosure()));
 
   base::RunLoop().RunUntilIdle();
-
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.RemoveKeySuccessRate", 1,
-                                        1);  // success
 
   ECPrivateKeyUniquePtr key_after_idle;
   std::string auth_secret_after_idle;
@@ -533,9 +488,6 @@ TEST_F(GCMKeyStoreTest, RemoveKeysWildcardAuthorizedEntity) {
                               base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
-
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.RemoveKeySuccessRate", 1,
-                                        1);  // success
 
   gcm_key_store()->GetKeys(
       kFakeAppId, kFakeAuthorizedEntity,
@@ -697,9 +649,6 @@ TEST_F(GCMKeyStoreTest, CannotShareAppIdFromInstanceIDToGCM) {
 }
 
 TEST_F(GCMKeyStoreTest, TestUpgradePathForKeyStorageDeprecation) {
-  // Expect Upgrade count to  be 0.
-  histogram_tester()->ExpectTotalCount("GCM.Crypto.GCMDatabaseUpgradeResult",
-                                       0);
   // Initialize GCM store and the underlying levelDB database by trying
   // to fetch keys.
   ECPrivateKeyUniquePtr key;
@@ -715,8 +664,6 @@ TEST_F(GCMKeyStoreTest, TestUpgradePathForKeyStorageDeprecation) {
     run_loop.Run();
   }
   ASSERT_FALSE(key);
-  histogram_tester()->ExpectTotalCount("GCM.Crypto.GCMDatabaseUpgradeResult",
-                                       0);
 
   // Add old format Encryption Data.
   ASSERT_NO_FATAL_FAILURE(AddOldFormatEncryptionDataToKeyStoreDatabase(
@@ -737,8 +684,6 @@ TEST_F(GCMKeyStoreTest, TestUpgradePathForKeyStorageDeprecation) {
     run_loop.Run();
   }
 
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.GCMDatabaseUpgradeResult",
-                                        1, 1);
   ASSERT_TRUE(key);
   ASSERT_GT(auth_secret.size(), 0u);
 
@@ -767,9 +712,6 @@ TEST_F(GCMKeyStoreTest, TestUpgradePathForKeyStorageDeprecation) {
   }
   ASSERT_FALSE(key);
   ASSERT_EQ(auth_secret.size(), 0u);
-  // GCMDatabaseUpgradeResult should not have increased.
-  histogram_tester()->ExpectBucketCount("GCM.Crypto.GCMDatabaseUpgradeResult",
-                                        1, 1);
 }
 
 }  // namespace gcm

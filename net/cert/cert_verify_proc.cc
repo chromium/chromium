@@ -415,12 +415,13 @@ base::Value::Dict CertVerifyParams(
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
-    scoped_refptr<CertNetFetcher> cert_net_fetcher) {
+    scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<CRLSet> crl_set) {
 #if BUILDFLAG(IS_ANDROID)
   return base::MakeRefCounted<CertVerifyProcAndroid>(
-      std::move(cert_net_fetcher));
+      std::move(cert_net_fetcher), std::move(crl_set));
 #elif BUILDFLAG(IS_IOS)
-  return base::MakeRefCounted<CertVerifyProcIOS>();
+  return base::MakeRefCounted<CertVerifyProcIOS>(std::move(crl_set));
 #else
 #error Unsupported platform
 #endif
@@ -430,8 +431,10 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS)
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
-    scoped_refptr<CertNetFetcher> cert_net_fetcher) {
+    scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<CRLSet> crl_set) {
   return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                     std::move(crl_set),
                                      CreateSslSystemTrustStore());
 }
 #endif
@@ -440,17 +443,21 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<CRLSet> crl_set,
     const ChromeRootStoreData* root_store_data) {
   std::unique_ptr<TrustStoreChrome> chrome_root =
       root_store_data ? std::make_unique<TrustStoreChrome>(*root_store_data)
                       : std::make_unique<TrustStoreChrome>();
   return CreateCertVerifyProcBuiltin(
-      std::move(cert_net_fetcher),
+      std::move(cert_net_fetcher), std::move(crl_set),
       CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root)));
 }
 #endif
 
-CertVerifyProc::CertVerifyProc() = default;
+CertVerifyProc::CertVerifyProc(scoped_refptr<CRLSet> crl_set)
+    : crl_set_(std::move(crl_set)) {
+  CHECK(crl_set_);
+}
 
 CertVerifyProc::~CertVerifyProc() = default;
 
@@ -459,13 +466,12 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                            const std::string& ocsp_response,
                            const std::string& sct_list,
                            int flags,
-                           CRLSet* crl_set,
                            const CertificateList& additional_trust_anchors,
                            CertVerifyResult* verify_result,
                            const NetLogWithSource& net_log) {
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC, [&] {
     return CertVerifyParams(cert, hostname, ocsp_response, sct_list, flags,
-                            crl_set, additional_trust_anchors);
+                            crl_set(), additional_trust_anchors);
   });
   // CertVerifyProc's contract allows ::VerifyInternal() to wait on File I/O
   // (such as the Windows registry or smart cards on all platforms) or may re-
@@ -479,10 +485,8 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   verify_result->Reset();
   verify_result->verified_cert = cert;
 
-  DCHECK(crl_set);
-  int rv =
-      VerifyInternal(cert, hostname, ocsp_response, sct_list, flags, crl_set,
-                     additional_trust_anchors, verify_result, net_log);
+  int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
+                          additional_trust_anchors, verify_result, net_log);
 
   // Check for mismatched signature algorithms and unknown signature algorithms
   // in the chain. Also fills in the has_* booleans for the digest algorithms
@@ -506,26 +510,26 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   }
 
   // Check to see if the connection is being intercepted.
-  if (crl_set) {
-    for (const auto& hash : verify_result->public_key_hashes) {
-      if (hash.tag() != HASH_VALUE_SHA256)
-        continue;
-      if (!crl_set->IsKnownInterceptionKey(base::StringPiece(
-              reinterpret_cast<const char*>(hash.data()), hash.size())))
-        continue;
-
-      if (verify_result->cert_status & CERT_STATUS_REVOKED) {
-        // If the chain was revoked, and a known MITM was present, signal that
-        // with a more meaningful error message.
-        verify_result->cert_status |= CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
-        rv = MapCertStatusToNetError(verify_result->cert_status);
-      } else {
-        // Otherwise, simply signal informatively. Both statuses are not set
-        // simultaneously.
-        verify_result->cert_status |= CERT_STATUS_KNOWN_INTERCEPTION_DETECTED;
-      }
-      break;
+  for (const auto& hash : verify_result->public_key_hashes) {
+    if (hash.tag() != HASH_VALUE_SHA256) {
+      continue;
     }
+    if (!crl_set()->IsKnownInterceptionKey(base::StringPiece(
+            reinterpret_cast<const char*>(hash.data()), hash.size()))) {
+      continue;
+    }
+
+    if (verify_result->cert_status & CERT_STATUS_REVOKED) {
+      // If the chain was revoked, and a known MITM was present, signal that
+      // with a more meaningful error message.
+      verify_result->cert_status |= CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
+      rv = MapCertStatusToNetError(verify_result->cert_status);
+    } else {
+      // Otherwise, simply signal informatively. Both statuses are not set
+      // simultaneously.
+      verify_result->cert_status |= CERT_STATUS_KNOWN_INTERCEPTION_DETECTED;
+    }
+    break;
   }
 
   std::vector<std::string> dns_names, ip_addrs;
@@ -887,5 +891,22 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
 
   return false;
 }
+
+CertVerifyProcFactory::ImplParams::ImplParams() {
+  crl_set = net::CRLSet::BuiltinCRLSet();
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  use_chrome_root_store =
+      base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+#endif
+}
+
+CertVerifyProcFactory::ImplParams::~ImplParams() = default;
+
+CertVerifyProcFactory::ImplParams::ImplParams(const ImplParams&) = default;
+CertVerifyProcFactory::ImplParams& CertVerifyProcFactory::ImplParams::operator=(
+    const ImplParams& other) = default;
+CertVerifyProcFactory::ImplParams::ImplParams(ImplParams&&) = default;
+CertVerifyProcFactory::ImplParams& CertVerifyProcFactory::ImplParams::operator=(
+    ImplParams&& other) = default;
 
 }  // namespace net

@@ -16,7 +16,6 @@ from contextlib import AbstractContextManager
 from common import check_ssh_config_file, find_image_in_sdk, get_system_info, \
                    run_ffx_command, SDK_ROOT
 from compatible_utils import get_host_arch, get_sdk_hash
-from ffx_integration import ScopedFfxConfig
 
 _EMU_COMMAND_RETRIES = 3
 
@@ -50,27 +49,12 @@ class FfxEmulator(AbstractContextManager):
         run_ffx_command(('config', 'set', 'pbms.storage.path',
                          os.path.join(SDK_ROOT, os.pardir, 'images')))
 
-        override_file = os.path.join(os.path.dirname(__file__), os.pardir,
-                                     'sdk_override.txt')
-        self._scoped_pb_metadata = None
-        if os.path.exists(override_file):
-            assert not args.everlasting, \
-                ('Do not use an everlasting emulator with the '
-                 'sdk_override.txt, it will mass up the local configuration.')
-            with open(override_file) as f:
-                pb_metadata = f.read().split('\n')
-                pb_metadata.append('{sdk.root}/*.json')
-                self._scoped_pb_metadata = ScopedFfxConfig(
-                    'pbms.metadata', json.dumps((pb_metadata)))
-
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
 
     def _start_emulator(self) -> None:
         """Start the emulator."""
         logging.info('Starting emulator %s', self._node_name)
-        if self._scoped_pb_metadata:
-            self._scoped_pb_metadata.__enter__()
         check_ssh_config_file()
         emu_command = [
             'emu', 'start', self._product_bundle, '--name', self._node_name
@@ -124,29 +108,27 @@ class FfxEmulator(AbstractContextManager):
                 json.dump(ast.literal_eval(qemu_arm64_meta), f)
             emu_command.extend(['--engine', 'qemu'])
 
-        with ScopedFfxConfig('emu.start.timeout', '90'):
-            for _ in range(_EMU_COMMAND_RETRIES):
+        for _ in range(_EMU_COMMAND_RETRIES):
 
-                # If the ffx daemon fails to establish a connection with
-                # the emulator after 85 seconds, that means the emulator
-                # failed to be brought up and a retry is needed.
-                # TODO(fxb/103540): Remove retry when start up issue is fixed.
-                try:
-                    run_ffx_command(emu_command, timeout=85)
-                    break
-                except (subprocess.TimeoutExpired,
-                        subprocess.CalledProcessError):
-                    run_ffx_command(('emu', 'stop'))
+            # If the ffx daemon fails to establish a connection with
+            # the emulator after 85 seconds, that means the emulator
+            # failed to be brought up and a retry is needed.
+            # TODO(fxb/103540): Remove retry when start up issue is fixed.
+            try:
+                run_ffx_command(emu_command,
+                                timeout=85,
+                                configs=['emu.start.timeout=90'])
+                break
+            except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
+                run_ffx_command(('emu', 'stop'))
 
-    def _shutdown_emulator(self, exc_type, exc_value, traceback) -> None:
+    def _shutdown_emulator(self) -> None:
         """Shutdown the emulator."""
+
         logging.info('Stopping the emulator %s', self._node_name)
         # The emulator might have shut down unexpectedly, so this command
         # might fail.
         run_ffx_command(('emu', 'stop', self._node_name), check=False)
-
-        if self._scoped_pb_metadata:
-            self._scoped_pb_metadata.__exit__(exc_type, exc_value, traceback)
 
     def __enter__(self) -> str:
         """Start the emulator if necessary.
@@ -171,6 +153,6 @@ class FfxEmulator(AbstractContextManager):
         """Shutdown the emulator if necessary."""
 
         if not self._everlasting():
-            self._shutdown_emulator(exc_type, exc_value, traceback)
+            self._shutdown_emulator()
         # Do not suppress exceptions.
         return False

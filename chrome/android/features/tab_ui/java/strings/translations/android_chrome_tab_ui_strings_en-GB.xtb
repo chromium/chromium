@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
-<translation id="1181037720776840403">Remove</translation>
 <translation id="125153950246128346">Tap to see another tab</translation>
 <translation id="1403228085774130835">You can find your closed tabs in Recent tabs under the Chrome main menu</translation>
 <translation id="1455506303394048917">Your activity in these Incognito tabs will be cleared from this device</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ungroup tab}other{Ungroup tabs}}</translation>
 <translation id="2277224997687551299">Edit group name</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Remove <ph name="TABS_COUNT_ONE" /> selected tab from group.}other{Remove <ph name="TABS_COUNT_MANY" /> selected tabs from group.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tabs}}</translation>
-<translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
-<translation id="257674075312929031">Group</translation>
 <translation id="2613747923081026172">Create group</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Drag tabs to group them</translation>
 <translation id="5846292395804797011">Close <ph name="TITLE_OF_GROUP" /> group with <ph name="NUMBER_OF_TABS" /> tabs</translation>
 <translation id="5972844218283131174">Deselect all</translation>
-<translation id="6040143037577758943">Close</translation>
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6228793724645064692">(shop rating)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Hide multi-select mode</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Share tab}other{Share tabs}}</translation>
 <translation id="7129458170538955174">Information about this shop opened at half height</translation>
-<translation id="7151209024774799310">Remove tabs from group</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
 <translation id="7326879924029668159">See return policy and more</translation>
 <translation id="7352298686197644113">See which item in your open tabs has a lower price</translation>

@@ -318,6 +318,10 @@ void BrowserTabStripController::AddSelectionFromAnchorTo(int model_index) {
 
 bool BrowserTabStripController::BeforeCloseTab(int model_index,
                                                CloseTabSource source) {
+  if (!model_->IsTabClosable(model_index)) {
+    return false;
+  }
+
   // Only consider pausing the close operation if this is the last remaining
   // tab (since otherwise closing it won't close the browser window).
   if (GetCount() > 1)

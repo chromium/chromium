@@ -63,10 +63,11 @@ class TestGLTexturePassthroughImageRepresentation
 
 class TestSkiaImageRepresentation : public SkiaImageRepresentation {
  public:
-  TestSkiaImageRepresentation(SharedImageManager* manager,
+  TestSkiaImageRepresentation(GrDirectContext* gr_context,
+                              SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(manager, backing, tracker) {}
+      : SkiaImageRepresentation(gr_context, manager, backing, tracker) {}
 
  protected:
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
@@ -294,7 +295,9 @@ std::unique_ptr<SkiaImageRepresentation> TestImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  return std::make_unique<TestSkiaImageRepresentation>(manager, this, tracker);
+  return std::make_unique<TestSkiaImageRepresentation>(
+      context_state ? context_state->gr_context() : nullptr, manager, this,
+      tracker);
 }
 
 std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(

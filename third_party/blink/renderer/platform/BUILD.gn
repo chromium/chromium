@@ -613,8 +613,6 @@ component("platform") {
     "fonts/font_height.cc",
     "fonts/font_height.h",
     "fonts/font_invalidation_reason.h",
-    "fonts/font_matching_metrics.cc",
-    "fonts/font_matching_metrics.h",
     "fonts/font_metrics.cc",
     "fonts/font_metrics.h",
     "fonts/font_metrics_override.h",
@@ -637,6 +635,7 @@ component("platform") {
     "fonts/font_selector.cc",
     "fonts/font_selector.h",
     "fonts/font_selector_client.h",
+    "fonts/font_size_adjust.h",
     "fonts/font_smoothing_mode.cc",
     "fonts/font_smoothing_mode.h",
     "fonts/font_unique_name_lookup.cc",
@@ -1383,15 +1382,8 @@ component("platform") {
     "storage/blink_storage_key_mojom_traits.cc",
     "supplementable.cc",
     "supplementable.h",
-    "text/bidi_character_run.h",
-    "text/bidi_context.cc",
-    "text/bidi_context.h",
     "text/bidi_paragraph.cc",
     "text/bidi_paragraph.h",
-    "text/bidi_resolver.h",
-    "text/bidi_run_list.h",
-    "text/bidi_text_run.cc",
-    "text/bidi_text_run.h",
     "text/capitalize.cc",
     "text/capitalize.h",
     "text/character.cc",
@@ -1436,7 +1428,6 @@ component("platform") {
     "text/text_encoding_detector.h",
     "text/text_run.cc",
     "text/text_run.h",
-    "text/text_run_iterator.h",
     "text/truncation.h",
     "text/unicode_bidi.h",
     "text/unicode_range.cc",
@@ -1512,8 +1503,8 @@ component("platform") {
     "webrtc/webrtc_video_frame_adapter.h",
     "webrtc/webrtc_video_utils.cc",
     "webrtc/webrtc_video_utils.h",
-    "widget/compositing/categorized_worker_pool.cc",
-    "widget/compositing/categorized_worker_pool.h",
+    "widget/compositing/blink_categorized_worker_pool_delegate.cc",
+    "widget/compositing/blink_categorized_worker_pool_delegate.h",
     "widget/compositing/layer_tree_settings.cc",
     "widget/compositing/layer_tree_settings.h",
     "widget/compositing/layer_tree_view.cc",
@@ -1691,6 +1682,7 @@ component("platform") {
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//cc",
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/paint_preview/common",
@@ -1838,10 +1830,6 @@ component("platform") {
   if (use_webaudio_pffft) {
     include_dirs += [ "//third_party/pffft/src" ]
     deps += [ "//third_party/pffft" ]
-  }
-
-  if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn:cpp" ]
   }
 
   if (!is_debug && !optimize_for_size) {
@@ -2197,8 +2185,7 @@ source_set("blink_platform_unittests_sources") {
     "runtime_enabled_features_test.cc",
     "storage/blink_storage_key_mojom_traits_test.cc",
     "storage/blink_storage_key_test.cc",
-    "text/bidi_resolver_test.cc",
-    "text/bidi_test_harness.h",
+    "text/bidi_paragraph_test.cc",
     "text/capitalize_test.cc",
     "text/character_test.cc",
     "text/date_time_format_test.cc",
@@ -2229,7 +2216,6 @@ source_set("blink_platform_unittests_sources") {
     "weborigin/security_policy_test.cc",
     "webrtc/convert_to_webrtc_video_frame_buffer_test.cc",
     "webrtc/webrtc_video_frame_adapter_test.cc",
-    "widget/compositing/categorized_worker_pool_unittest.cc",
     "widget/compositing/layer_tree_settings_unittest.cc",
     "widget/compositing/layer_tree_view_unittest.cc",
     "widget/compositing/render_frame_metadata_observer_impl_unittest.cc",

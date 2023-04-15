@@ -23,6 +23,16 @@ export class UntrustedProjectorBrowserProxyImpl {
         await this.pageHandlerRemote.getNewScreencastPrecondition();
     return precondition;
   }
+
+  async shouldDownloadSoda() {
+    const {shouldDownload} = await this.pageHandlerRemote.shouldDownloadSoda();
+    return shouldDownload;
+  }
+
+  async installSoda() {
+    const {triggered} = await this.pageHandlerRemote.installSoda();
+    return triggered;
+  }
 }
 
 /**

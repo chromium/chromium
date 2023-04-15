@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -69,6 +70,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -680,6 +682,14 @@ void AutocompleteController::OnProviderUpdate(
 
   CheckIfDone();
 
+  // Do not process or propagate asynchronous events coming from
+  // AutocompleteProviders. This helps us reduce the pressure on CPU and memory
+  // on low-end mobile devices.
+  if (base::FeatureList::IsEnabled(omnibox::kIgnoreIntermediateResults) &&
+      !done_) {
+    return;
+  }
+
   if (updated_matches || done_)
     UpdateResult(false, false);
 }
@@ -738,11 +748,10 @@ void AutocompleteController::
   bool search_feature_triggered =
       provider_client_->GetOmniboxTriggeredFeatureService()
           ->GetFeatureTriggeredInSession(
-              OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature) ||
+              metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE) ||
       provider_client_->GetOmniboxTriggeredFeatureService()
           ->GetFeatureTriggeredInSession(
-              OmniboxTriggeredFeatureService::Feature::
-                  kRemoteZeroSuggestFeature);
+              metrics::OmniboxEventProto_Feature_REMOTE_ZERO_SUGGEST_FEATURE);
   const std::string experiment_stats = base::StringPrintf(
       "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       search_feature_triggered, input_.current_page_classification());
@@ -1006,13 +1015,16 @@ void AutocompleteController::UpdateResult(
         input_, template_url_service_,
         preserve_default_after_transfer ? preserve_default_match : nullptr);
   } else {
-    // The async ml scoring is only run once all the providers are done.
-    if (MaybeRunUrlScoringModel(last_default_match,
-                                last_default_associated_keyword,
-                                force_notify_default_match_changed)) {
-      // When the ML Scoring model is run, sorting and processing of the result
-      // happens once all matches are scored in
-      // `OnUrlScoringModelDoneForAllMatches()`, so we can skip it here.
+    // The async ML scoring is only run once all the providers are done. Use a
+    // WeakPtr since the model is not owned and `this` may no longer be alive.
+    scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+    if (MaybeRunUrlScoringModel(base::BindOnce(
+            &AutocompleteController::AnnotateResultAndNotifyChanged,
+            scoring_model_weak_ptr_, last_default_match,
+            last_default_associated_keyword,
+            force_notify_default_match_changed))) {
+      // When the ML scoring model is run, processing the output and sorting
+      // and trimming of the matches happens in `OnUrlScoringModelDone()`.
       return;
     }
     // Sort the matches and trim them to a small number of "best" matches.
@@ -1024,8 +1036,8 @@ void AutocompleteController::UpdateResult(
 }
 
 void AutocompleteController::AnnotateResultAndNotifyChanged(
-    absl::optional<AutocompleteMatch>& last_default_match,
-    std::u16string& last_default_associated_keyword,
+    const absl::optional<AutocompleteMatch>& last_default_match,
+    const std::u16string& last_default_associated_keyword,
     bool force_notify_default_match_changed) {
 #if DCHECK_IS_ON()
   result_.Validate();
@@ -1095,7 +1107,7 @@ void AutocompleteController::AnnotateResultAndNotifyChanged(
   if (top_match_rich_autocompletion_type !=
       AutocompleteMatch::RichAutocompletionType::kNone) {
     provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
+        metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
   }
 
   DelayedNotifyChanged(force_notify_default_match_changed ||
@@ -1506,19 +1518,12 @@ bool AutocompleteController::ShouldRunProvider(
 }
 
 void AutocompleteController::OnUrlScoringModelDone(
-    base::OnceCallback<void(std::pair<absl::optional<float>, size_t>)> callback,
-    size_t match_index,
-    absl::optional<float> model_output) {
-  std::move(callback).Run(std::make_pair(model_output, match_index));
-}
-
-void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
     AutocompleteInput input,
-    absl::optional<AutocompleteMatch> last_default_match,
-    std::u16string last_default_associated_keyword,
-    bool force_notify_default_match_changed,
+    const base::ElapsedTimer elapsed_timer,
+    base::OnceClosure completion_callback,
     std::vector<std::pair<absl::optional<float>, size_t>>
         outputs_and_match_indices) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
   // The goal is to redistribute the existing relevance scores among the URL
   // suggestions according to the ML model output values. Construct two max
   // heaps for the (legacy) relevance score and the output scores.
@@ -1543,32 +1548,48 @@ void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
     output_and_match_index_heap.emplace(output.value(), index);
   }
 
-  while (!relevance_heap.empty()) {
-    // Assign the match with the highest respective model output with the
-    // highest relevance score.
-    auto match_index = output_and_match_index_heap.top().second;
-    auto* match = result_.match_at(match_index);
+  if (!relevance_heap.empty()) {
+    // Record whether the model was executed for at least one eligible match.
+    provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+        metrics::OmniboxEventProto_Feature_ML_URL_SCORING);
 
-    match->RecordAdditionalInfo("legacy_relevance", match->relevance);
-    match->relevance = relevance_heap.top();
+    // Record how many eligible matches the model was executed for.
+    base::UmaHistogramCounts1000("Omnibox.URLScoringModelExecuted.Matches",
+                                 relevance_heap.size());
 
-    relevance_heap.pop();
-    output_and_match_index_heap.pop();
+    // Record how long it took to execute the model for all eligible matches.
+    base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
+                            elapsed_timer.Elapsed());
   }
 
-  result_.SortAndCull(input, template_url_service_);
+  // Do not assign new relevance scores to the URL suggestions and do not rerank
+  // them in the counterfactual arm.
+  if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
+    while (!relevance_heap.empty()) {
+      // Assign the match with the highest respective model output with the
+      // highest relevance score.
+      auto match_index = output_and_match_index_heap.top().second;
+      auto* match = result_.match_at(match_index);
 
-  AnnotateResultAndNotifyChanged(last_default_match,
-                                 last_default_associated_keyword,
-                                 force_notify_default_match_changed);
+      match->RecordAdditionalInfo("legacy_relevance", match->relevance);
+      match->relevance = relevance_heap.top();
+
+      relevance_heap.pop();
+      output_and_match_index_heap.pop();
+    }
+
+    result_.SortAndCull(input, template_url_service_);
+  }
+
+  std::move(completion_callback).Run();
 }
 
 bool AutocompleteController::MaybeRunUrlScoringModel(
-    absl::optional<AutocompleteMatch>& last_default_match,
-    std::u16string& last_default_associated_keyword,
-    bool force_notify_default_match_changed) {
+    base::OnceClosure completion_callback) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::MaybeRunUrlScoringModel");
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
+  if (!OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     return false;
   }
 
@@ -1578,17 +1599,12 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     return false;
   }
 
-  // Needed because the model is not owned and `this` may not longer be alive.
-  scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-
   auto barrier_callback =
       base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
           result_.size(),
-          base::BindOnce(
-              &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
-              scoring_model_weak_ptr_, input_, last_default_match,
-              last_default_associated_keyword,
-              force_notify_default_match_changed));
+          base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
+                         scoring_model_weak_ptr_, input_, base::ElapsedTimer(),
+                         std::move(completion_callback)));
 
   for (size_t match_index = 0; match_index < result_.matches_.size();
        match_index++) {
@@ -1598,16 +1614,13 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     // any other match type.
     if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
         omnibox::GROUP_OTHER_NAVS) {
-      OnUrlScoringModelDone(barrier_callback,
-                            /*match_index=*/match_index,
-                            /*model_output=*/absl::nullopt);
+      barrier_callback.Run(std::make_pair(absl::nullopt, match_index));
       continue;
     }
 
     scoring_model_service->ScoreAutocompleteUrlMatch(
-        &scoring_model_task_tracker_, match->scoring_signals,
-        base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                       scoring_model_weak_ptr_, barrier_callback, match_index));
+        &scoring_model_task_tracker_, match->scoring_signals, match_index,
+        barrier_callback);
   }
 
   return true;

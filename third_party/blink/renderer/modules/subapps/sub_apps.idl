@@ -17,5 +17,5 @@ enum SubAppsResultCode {
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsResultCode>> add(record<DOMString, SubAppsAddParams> sub_apps_to_add);
   [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsListResult>> list();
-  [CallWith=ScriptState, RaisesException] Promise<void> remove(DOMString app_id);
+  [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsResultCode>> remove(sequence<DOMString> app_ids);
 };

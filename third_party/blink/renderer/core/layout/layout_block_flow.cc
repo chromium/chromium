@@ -874,12 +874,6 @@ PositionWithAffinity LayoutBlockFlow::PositionForPoint(
   if (!ChildrenInline())
     return LayoutBlock::PositionForPoint(point);
 
-  PhysicalOffset point_in_contents = point;
-  OffsetForContents(point_in_contents);
-  LayoutPoint point_in_logical_contents = FlipForWritingMode(point_in_contents);
-  if (!IsHorizontalWritingMode())
-    point_in_logical_contents = point_in_logical_contents.TransposedPoint();
-
   return CreatePositionWithAffinity(0);
 }
 

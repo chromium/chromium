@@ -132,7 +132,7 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
       ->OpenBucket(
           name, std::move(bucket_policies),
           WTF::BindOnce(&StorageBucketManager::DidOpen, WrapPersistent(this),
-                        WrapPersistent(resolver)));
+                        WrapPersistent(resolver), name));
   return promise;
 }
 
@@ -198,6 +198,7 @@ mojom::blink::BucketManagerHost* StorageBucketManager::GetBucketManager(
 
 void StorageBucketManager::DidOpen(
     ScriptPromiseResolver* resolver,
+    const String& name,
     mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
     mojom::blink::BucketError error) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -226,7 +227,7 @@ void StorageBucketManager::DidOpen(
   }
 
   resolver->Resolve(MakeGarbageCollected<StorageBucket>(
-      navigator_base_, std::move(bucket_remote)));
+      navigator_base_, name, std::move(bucket_remote)));
 }
 
 void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
@@ -266,7 +267,7 @@ void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
 
 void StorageBucketManager::GetBucketForDevtools(
     ScriptState* script_state,
-    const WTF::String& name,
+    const String& name,
     base::OnceCallback<void(StorageBucket*)> callback) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
@@ -279,11 +280,12 @@ void StorageBucketManager::GetBucketForDevtools(
           name,
           WTF::BindOnce(&StorageBucketManager::DidGetBucketForDevtools,
                         WrapPersistent(this), WrapPersistent(script_state),
-                        std::move(callback)));
+                        name, std::move(callback)));
 }
 
 void StorageBucketManager::DidGetBucketForDevtools(
     ScriptState* script_state,
+    const String& name,
     base::OnceCallback<void(StorageBucket*)> callback,
     mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
     mojom::blink::BucketError) {
@@ -298,7 +300,7 @@ void StorageBucketManager::DidGetBucketForDevtools(
     return;
   }
   std::move(callback).Run(MakeGarbageCollected<StorageBucket>(
-      navigator_base_, std::move(bucket_remote)));
+      navigator_base_, name, std::move(bucket_remote)));
 }
 
 void StorageBucketManager::Trace(Visitor* visitor) const {

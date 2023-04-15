@@ -117,6 +117,7 @@ web_component_files = [
   "chromeos/os_a11y_page/audio_and_captions_page.ts",
   "chromeos/os_a11y_page/change_dictation_locale_dialog.ts",
   "chromeos/os_a11y_page/chromevox_subpage.ts",
+  "chromeos/os_a11y_page/bluetooth_braille_display_ui.ts",
   "chromeos/os_a11y_page/cursor_and_touchpad_page.ts",
   "chromeos/os_a11y_page/display_and_magnification_page.ts",
   "chromeos/os_a11y_page/keyboard_and_text_input_page.ts",
@@ -261,7 +262,6 @@ web_component_files = [
   "controls/settings_toggle_button.ts",
   "privacy_page/secure_dns.ts",
   "privacy_page/secure_dns_input.ts",
-  "site_favicon.ts",
 ]
 
 # HTML files that are passed as input to html_to_wrapper().
@@ -285,6 +285,7 @@ foreach(f, html_files) {
 
 # CSS files that are passed as input to css_to_wrapper().
 css_files = [
+  "chromeos/device_page/input_device_settings_shared.css",
   "chromeos/internet_page/internet_shared.css",
   "chromeos/os_apps_page/app_management_page/app_management_cros_shared_style.css",
   "chromeos/os_apps_page/app_management_page/app_management_cros_shared_vars.css",
@@ -309,6 +310,7 @@ non_web_component_files = [
   "chromeos/assert_extras.ts",
   "chromeos/common/global_scroll_target_mixin.ts",
   "chromeos/common/types.ts",
+  "chromeos/os_files_page/google_drive_browser_proxy.ts",
   "chromeos/crostini_page/crostini_browser_proxy.ts",
   "chromeos/crostini_page/crostini_shared_usb_devices.ts",
   "chromeos/date_time_page/date_time_types.ts",
@@ -325,6 +327,7 @@ non_web_component_files = [
   "chromeos/device_page/input_device_settings_types.ts",
   "chromeos/device_page/input_device_settings_utils.ts",
   "chromeos/ensure_lazy_loaded.ts",
+  "chromeos/focus_config.ts",
   "chromeos/guest_os/guest_os_browser_proxy.ts",
   "chromeos/internet_page/cellular_setup_settings_delegate.ts",
   "chromeos/internet_page/internet_page_browser_proxy.ts",
@@ -352,6 +355,7 @@ non_web_component_files = [
   "chromeos/os_a11y_page/text_to_speech_page_browser_proxy.ts",
   "chromeos/os_a11y_page/tts_subpage_browser_proxy.ts",
   "chromeos/os_a11y_page/chromevox_subpage_browser_proxy.ts",
+  "chromeos/os_a11y_page/bluetooth_braille_display_manager.ts",
   "chromeos/os_a11y_page/select_to_speak_subpage_browser_proxy.ts",
   "chromeos/os_about_page/about_page_browser_proxy.ts",
   "chromeos/os_about_page/device_name_browser_proxy.ts",
@@ -407,27 +411,19 @@ non_web_component_files = [
   "chromeos/setting_id_param_util.ts",
 
   # Files below are from Browser Settings and shared with ChromeOS Settings
-  "a11y_page/captions_browser_proxy.ts",
-  "appearance_page/fonts_browser_proxy.ts",
   "controls/cr_policy_pref_mixin.ts",
   "controls/pref_control_mixin.ts",
   "controls/settings_boolean_control_mixin.ts",
-  "extension_control_browser_proxy.ts",
-  "focus_config.ts",
-  "i18n_setup.ts",
-  "lifetime_browser_proxy.ts",
-  "people_page/profile_info_browser_proxy.ts",
-  "people_page/sync_browser_proxy.ts",
-  "privacy_page/privacy_page_browser_proxy.ts",
-  "relaunch_mixin.ts",
 ]
 
 mojom_webui_files = [
   "chromeos/mojom-webui/app_notification_handler.mojom-webui.ts",
   "chromeos/mojom-webui/cros_audio_config.mojom-webui.ts",
+  "chromeos/mojom-webui/google_drive_handler.mojom-webui.ts",
   "chromeos/mojom-webui/input_device_settings_provider.mojom-webui.ts",
   "chromeos/mojom-webui/input_device_settings.mojom-webui.ts",
   "chromeos/mojom-webui/modifier_key.mojom-webui.ts",
+  "chromeos/mojom-webui/pin_manager_types.mojom-webui.ts",
   "chromeos/mojom-webui/routes.mojom-webui.ts",
   "chromeos/mojom-webui/setting.mojom-webui.ts",
 

@@ -111,6 +111,9 @@ enum EventResult {
                // happens if the event is being handled
                // asynchronously, or if the event is invalid and
                // shouldn't be handled at all.
+  ER_FORCE_PROCESS_GESTURE =
+      1 << 3,  // The event should be processed by gesture recognizer even if
+               // ER_HANDLED or ER_CONSUMED is set.
 };
 
 // Phase of the event dispatch.

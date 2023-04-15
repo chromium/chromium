@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1075622780330595106">Fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
-<translation id="1181037720776840403">Kendu</translation>
 <translation id="125153950246128346">Sakatu hau beste fitxa bat ikusteko</translation>
 <translation id="1403228085774130835">Chrome-ren menu nagusiko Azken fitxak atalean ikusiko dituzu itxitako fitxak</translation>
 <translation id="1455506303394048917">Ezkutuko moduko fitxa hauetan egin dituzun jarduerak garbituko dira gailu honetatik</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Orain, <ph name="CURRENT_PRICE" /> balio du <ph name="SOURCE_WEBSITE" /> webgunean</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Kendu fitxa taldetik}other{Kendu fitxak taldetik}}</translation>
 <translation id="2277224997687551299">Editatu taldearen izena</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Kendu hautatutako <ph name="TABS_COUNT_ONE" /> fitxa taldetik.}other{Kendu hautatutako <ph name="TABS_COUNT_MANY" /> fitxak taldetik.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Egin fitxaren laster-marka}other{Egin fitxen laster-markak}}</translation>
-<translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
 <translation id="2569352796411618312">Iradokizuna: fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
-<translation id="257674075312929031">Taldekatu</translation>
 <translation id="2613747923081026172">Sortu talde bat</translation>
 <translation id="2662028055331606429">Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Joan webgunera</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Fitxak taldekatzeko, arrasta itzazu</translation>
 <translation id="5846292395804797011">Itxi <ph name="NUMBER_OF_TABS" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea</translation>
 <translation id="5972844218283131174">Desautatu guztiak</translation>
-<translation id="6040143037577758943">Itxi</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Ezkutatu hautespen anizkoitzeko modua</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partekatu fitxa}other{Partekatu fitxak}}</translation>
 <translation id="7129458170538955174">Denda honi buruzko informazioa altuera erdian irekita dago</translation>
-<translation id="7151209024774799310">Kendu fitxak taldetik</translation>
 <translation id="7204204600596740190">Hautespen anizkoitzeko modua</translation>
 <translation id="7326879924029668159">Ikusi dendaren itzultze-gidalerroak</translation>
 <translation id="7352298686197644113">Ikusi irekita dauzkazun fitxetako zein produkturen prezioa jaitsi den</translation>

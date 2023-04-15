@@ -15,6 +15,7 @@
   }
 
   :host {
+    --navigation-view-panel-bg-color: var(--cros-bg-color);
     --navigation-view-panel-toolbar-height: 56px;
   }
 
@@ -59,13 +60,9 @@
     z-index: 3;
   }
 
-  #container {
-    height: 100%;
-    overflow: hidden;
-  }
-
   cr-drawer {
     --cr-separator-line: none;
+    --cr-drawer-background-color: var(--navigation-view-panel-bg-color);
     --cr-drawer-header-color: var(--cros-text-color-secondary);
     --cr-drawer-header-font-weight: 500;
     --cr-drawer-header-padding: 20px;
@@ -88,13 +85,10 @@
   }
 
   #navigationBody {
-    box-sizing: border-box;
     grid-area: main;
-    height: 100%;
+    justify-self: center;
     min-width: 0;
-    overflow: overlay;
     padding-inline: var(--container-padding-nav);
-    width: 100%;
   }
 
   .left-aligned {

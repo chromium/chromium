@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "device_authenticator_mac(|_unittest)\.mm": [
+    "+device/fido/mac/scoped_touch_id_test_environment.h",
+    "+device/fido/mac/touch_id_context.h",
+  ],
+}

@@ -10,17 +10,17 @@
         <div class="text-elide secondary">[[model.url]]</div>
       </div>
       <template is="dom-if" if="[[editable]]">
-        <cr-icon-button class="icon-more-vert" id="dots" on-click="onDotsTap_"
+        <cr-icon-button class="icon-more-vert" id="dots" on-click="onDotsClick_"
             title="$i18n{moreActions}" focus-row-control focus-type="menu">
         </cr-icon-button>
         <cr-lazy-render id="menu">
           <template>
             <cr-action-menu role-description="$i18n{menu}">
-              <button class="dropdown-item" on-click="onEditTap_">
+              <button class="dropdown-item" on-click="onEditClick_">
                 $i18n{edit}
               </button>
               <button class="dropdown-item" id="remove"
-                  on-click="onRemoveTap_">
+                  on-click="onRemoveClick_">
                 $i18n{onStartupRemove}
               </button>
             </cr-action-menu>

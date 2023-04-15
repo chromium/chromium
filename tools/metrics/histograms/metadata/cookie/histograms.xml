@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -546,13 +546,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FromStorageWithValidLength" enum="BooleanValid"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>bingler@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <summary>
     If a canonical cookie has a valid name+value length. Logged whenever a
     cookie is created FromStorage and if this cookie IsCanonical.
   </summary>
+</histogram>
+
+<histogram name="Cookie.HasNonASCII.{CookieField}" enum="Boolean"
+    expires_after="2023-10-01">
+  <owner>bingler@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    If a cookie's {CookieField} field contains a non-ASCII character.
+    Informally, this indicates if the field contains a (non-ASCII) Unicode
+    character. Logged whenever a cookie is created via
+    CanonicalCookie::Create().
+  </summary>
+  <token key="CookieField">
+    <variant name="Name"/>
+    <variant name="Value"/>
+  </token>
 </histogram>
 
 <histogram name="Cookie.IncludedRequestEffectiveSameSite"
@@ -850,7 +866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TruncatingCharacterInCookieString"
-    enum="TruncatingCharacterInCookieStringType" expires_after="2023-05-12">
+    enum="TruncatingCharacterInCookieStringType" expires_after="2024-04-11">
   <owner>bingler@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <summary>

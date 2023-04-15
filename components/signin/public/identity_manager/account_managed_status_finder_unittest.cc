@@ -6,8 +6,10 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
@@ -269,6 +271,79 @@ TEST_F(AccountManagedStatusFinderTest, ErrorOnAccountRemoved) {
 
   // The AccountManagedStatusFinder should detect this and report an error.
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kError);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       GmailAccountDeterminedImmediatelyAfterRefreshTokensAreLoaded) {
+  AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
+  // Simulate refresh tokens not being loaded state.
+  identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Outcome is pending until tokens are loaded.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get());
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // An @gmail.com account should be immediately determined as non-enterprise
+  // after refresh tokens are loaded.
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.ReloadAccountsFromDisk();
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kNonEnterprise);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       ErrorOnNonExistentAccountImmediatelyAfterRefreshTokensAreLoaded) {
+  AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
+  // The account gets removed before the AccountManagedStatusFinder is created.
+  identity_env_.RemoveRefreshTokenForAccount(account.account_id);
+  // Simulate refresh tokens not being loaded state.
+  identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Outcome is pending until tokens are loaded.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get());
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // The AccountManagedStatusFinder should detect non-existent account and
+  // immediately report an error after refresh tokens are loaded.
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.ReloadAccountsFromDisk();
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kError);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       EnterpriseAccountDeterminedAsynchronouslyAfterRefreshTokensAreLoaded) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  // Simulate refresh tokens not being loaded state.
+  identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Outcome is pending until tokens are loaded.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get());
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // Since the extended account info is not available yet, the enterprise
+  // account can not be identified immediately after refresh tokens are loaded -
+  // it's only a potential enterprise account for now, so the outcome is still
+  // pending.
+  identity_env_.ReloadAccountsFromDisk();
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // Once the extended account info becomes available, the
+  // AccountManagedStatusFinder should determine that it's an enterprise
+  // account (because it has a non-empty hosted domain).
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kEnterprise);
 }
 
 }  // namespace signin

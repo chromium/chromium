@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
-<translation id="1181037720776840403">Supprimer</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
 <translation id="1403228085774130835">Vous trouverez les onglets fermés dans le menu principal de Chrome, sous "Onglets récents"</translation>
 <translation id="1455506303394048917">Votre activité dans ces onglets de navigation privée sera effacée de cet appareil</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Supprimez du groupe <ph name="TABS_COUNT_ONE" /> onglet sélectionné.}one{Supprimez du groupe <ph name="TABS_COUNT_MANY" /> onglet sélectionné.}other{Supprimez du groupe <ph name="TABS_COUNT_MANY" /> onglets sélectionnés.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Ajouter onglet aux favoris}one{Ajouter onglet aux favoris}other{Ajouter onglets aux favoris}}</translation>
-<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}other{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
-<translation id="257674075312929031">Groupe</translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2662028055331606429">Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accéder au site</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5846292395804797011">Fermez le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
-<translation id="6040143037577758943">Fermer</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Masquer le mode de sélection multiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partager l'onglet}one{Partager l'onglet}other{Partager les onglets}}</translation>
 <translation id="7129458170538955174">Fiche d'infos sur ce magasin ouverte à mi-hauteur</translation>
-<translation id="7151209024774799310">Retirer des onglets du groupe</translation>
 <translation id="7204204600596740190">Mode de sélection multiple</translation>
 <translation id="7326879924029668159">Voir les conditions de retour et plus</translation>
 <translation id="7352298686197644113">Affichez l'article le moins cher parmi ceux présentés dans les onglets ouverts</translation>

@@ -5,6 +5,8 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_TEST_SCOPED_PRESSURE_MANAGER_OVERRIDER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_SCOPED_PRESSURE_MANAGER_OVERRIDER_H_
 
+#include <map>
+
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,6 +30,7 @@ class FakePressureManager : public mojom::PressureManager {
 
   // mojom::PressureManager implementation.
   void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
+                 mojom::PressureSource source,
                  AddClientCallback callback) override;
 
   void UpdateClients(const mojom::PressureUpdate& update);
@@ -37,7 +40,8 @@ class FakePressureManager : public mojom::PressureManager {
  private:
   bool is_supported_ = true;
   mojo::ReceiverSet<mojom::PressureManager> receivers_;
-  mojo::RemoteSet<mojom::PressureClient> clients_;
+  std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>
+      clients_;
 };
 
 class ScopedPressureManagerOverrider {

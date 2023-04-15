@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared.css.js';
+// clang-format off
 // <if expr="not is_macosx and not is_chromeos">
 import './captions_subpage.js';
 import '../settings_page/settings_subpage.js';
@@ -20,7 +21,9 @@ import '../settings_page/settings_subpage.js';
 // <if expr="is_win or is_macosx">
 import './live_caption_section.js';
 
+import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>
+// clang-format on
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,16 +35,13 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './a11y_page.html.js';
-// <if expr="is_win or is_macosx">
-import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
-
-// </if>
 
 // clang-format off
 // <if expr="not is_chromeos">
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 // clang-format on
+
 
 const SettingsA11yPageElementBase =
     WebUiListenerMixin(BaseMixin(PolymerElement));
@@ -229,7 +229,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // </if>
 
   // <if expr="is_chromeos">
-  private onManageSystemAccessibilityFeaturesTap_() {
+  private onManageSystemAccessibilityFeaturesClick_() {
     window.location.href = 'chrome://os-settings/osAccessibility';
   }
   // </if>

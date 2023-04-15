@@ -204,7 +204,16 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
   ASSERT_EQ(drm_gpu_display_manager_->GetDisplays().size(), kMaxDrmConnectors);
 }
 
-TEST_F(DrmGpuDisplayManagerTest, FindAndConfigureDisplaysOnSameDrmDevice) {
+// TODO(crbug.com/1431767): Re-enable this test
+#if defined(LEAK_SANITIZER)
+#define MAYBE_FindAndConfigureDisplaysOnSameDrmDevice \
+  DISABLED_FindAndConfigureDisplaysOnSameDrmDevice
+#else
+#define MAYBE_FindAndConfigureDisplaysOnSameDrmDevice \
+  FindAndConfigureDisplaysOnSameDrmDevice
+#endif
+TEST_F(DrmGpuDisplayManagerTest,
+       MAYBE_FindAndConfigureDisplaysOnSameDrmDevice) {
   // One DRM device.
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
@@ -250,8 +259,16 @@ TEST_F(DrmGpuDisplayManagerTest, FindAndConfigureDisplaysOnSameDrmDevice) {
 
 // This case tests scenarios in which a display ID is searched across multiple
 // DRM devices, such as in DisplayLink hubs.
+// TODO(crbug.com/1431767): Re-enable this test
+#if defined(LEAK_SANITIZER)
+#define MAYBE_FindAndConfigureDisplaysAcrossDifferentDrmDevices \
+  DISABLED_FindAndConfigureDisplaysAcrossDifferentDrmDevices
+#else
+#define MAYBE_FindAndConfigureDisplaysAcrossDifferentDrmDevices \
+  FindAndConfigureDisplaysAcrossDifferentDrmDevices
+#endif
 TEST_F(DrmGpuDisplayManagerTest,
-       FindAndConfigureDisplaysAcrossDifferentDrmDevices) {
+       MAYBE_FindAndConfigureDisplaysAcrossDifferentDrmDevices) {
   // Add 3 DRM devices, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
     auto drm_state =
@@ -296,8 +313,16 @@ TEST_F(DrmGpuDisplayManagerTest,
   ASSERT_TRUE(ConfigureDisplays(display_snapshots));
 }
 
+// TODO(crbug.com/1431767): Re-enable this test
+#if defined(LEAK_SANITIZER)
+#define MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations \
+  DISABLED_OriginsPersistThroughSimilarExtendedModeConfigurations
+#else
+#define MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations \
+  OriginsPersistThroughSimilarExtendedModeConfigurations
+#endif
 TEST_F(DrmGpuDisplayManagerTest,
-       OriginsPersistThroughSimilarExtendedModeConfigurations) {
+       MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations) {
   // One DRM device.
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
 

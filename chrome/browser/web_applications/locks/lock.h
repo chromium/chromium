@@ -11,9 +11,11 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+
+namespace content {
+struct PartitionedLockHolder;
+}
 
 namespace web_app {
 
@@ -27,7 +29,7 @@ class LockDescription {
     kBackgroundWebContents,
     kApp,
     kAppAndWebContents,
-    kFullSystem,
+    kAllAppsLock,
   };
 
   LockDescription(LockDescription&&);

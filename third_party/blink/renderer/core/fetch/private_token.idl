@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum PrivateTokenType {"private-state-token"};
 enum PrivateTokenVersion {"1"};
 enum RefreshPolicy { "none", "refresh" };
 enum OperationType { "token-request", "send-redemption-record", "token-redemption" };
@@ -11,9 +10,6 @@ enum SignRequestData { "omit", "include", "headers-only" };
 // A TrustToken object represents a request to execute a Trust Tokens protocol
 // operation (https://github.com/wicg/trust-token-api).
 dictionary PrivateToken {
-  // |type| indicates the type of the token to be used.
-  required PrivateTokenType type;
-
   // |version| specifies the token version to be used.
   required PrivateTokenVersion version;
 

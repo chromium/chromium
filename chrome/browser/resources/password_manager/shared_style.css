@@ -19,7 +19,7 @@
 }
 
 .label {
-  line-height: 20px;
+  min-height: 20px;
 }
 
 .single-line-label {
@@ -67,6 +67,12 @@
   display: block;
   height: auto;
   line-height: 154%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-elide {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

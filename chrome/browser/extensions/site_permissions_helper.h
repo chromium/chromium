@@ -70,6 +70,9 @@ class SitePermissionsHelper {
   bool HasBeenBlocked(const Extension& extension,
                       content::WebContents* web_contents) const;
 
+  // Returns whether the `blocked_actions` need a page refresh to run.
+  bool PageNeedsRefreshToRun(int blocked_actions);
+
   // Returns true if `extension_id` can show site access requests in the
   // toolbar.
   bool ShowAccessRequestsInToolbar(const std::string& extension_id);

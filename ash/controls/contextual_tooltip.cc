@@ -60,6 +60,8 @@ std::string TooltipTypeToString(TooltipType type) {
       return "keyboard_backlight_color";
     case TooltipType::kKeyboardBacklightWallpaperColor:
       return "keyboard_backlight_wallpaper_color";
+    case TooltipType::kTimeOfDayFeatureBanner:
+      return "time_of_day_feature_banner";
   }
   return "invalid";
 }
@@ -129,7 +131,9 @@ bool ShouldShowNudge(PrefService* prefs,
       (type == TooltipType::kInAppToHome &&
        success_count >= kSuccessLimitInAppToHome) ||
       (type == TooltipType::kKeyboardBacklightColor &&
-       success_count >= kSuccessLimitKeyboardBacklightColor)) {
+       success_count >= kSuccessLimitKeyboardBacklightColor) ||
+      (type == TooltipType::kTimeOfDayFeatureBanner &&
+       success_count >= kSuccessLimitTimeOfDayFeatureBanner)) {
     set_recheck_delay(base::TimeDelta());
     return false;
   }

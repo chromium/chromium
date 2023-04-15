@@ -1241,6 +1241,12 @@ void AppPlatformMetrics::UpdateUsageTime(
 }
 
 void AppPlatformMetrics::SaveUsageTime() {
+  if (!ShouldRecordUkm(profile_)) {
+    // Do not persist usage data to the pref store if it cannot be reported.
+    // This will prevent unnecessary disk space usage.
+    return;
+  }
+
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(), kAppUsageTime);
   for (auto it : usage_time_per_two_hours_) {
     const std::string& instance_id = it.first.ToString();

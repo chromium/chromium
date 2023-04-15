@@ -18,6 +18,7 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -473,7 +474,7 @@ void TextfieldTest::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_type) {
 void TextfieldTest::InitTextfield(int count) {
   ASSERT_FALSE(textfield_);
   textfield_ = PrepareTextfields(count, std::make_unique<TestTextfield>(),
-                                 gfx::Rect(100, 100, 100, 100));
+                                 gfx::Rect(100, 100, 200, 200));
 }
 
 void TextfieldTest::PrepareTextfieldsInternal(int count,
@@ -3639,6 +3640,8 @@ TEST_F(TextfieldTest, TestLongPressInitiatesDragDrop) {
       textfield_->CanStartDragForView(nullptr, kStringPoint, kStringPoint));
 }
 
+// No touch on desktop Mac.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(TextfieldTest, ScrollToAdjustDisplayOffset) {
   InitTextfield();
 
@@ -3652,29 +3655,25 @@ TEST_F(TextfieldTest, ScrollToAdjustDisplayOffset) {
   textfield_->SetTextWithoutCaretBoundsChangeNotification(
       u"0123456789_123456789_123456789", 0);
   test_api_->SetDisplayOffsetX(0);
+  constexpr gfx::Range kSelectionRange(2, 7);
+  textfield_->SetEditableSelectionRange(kSelectionRange);
+
+  // Scroll starting at a vertical angle to adjust the display offset.
+  constexpr int kDisplayOffsetXAdjustment = -30;
+  const gfx::Point kScrollStart = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(5), GetCursorYForTesting()});
+  const gfx::Point kScrollEnd =
+      kScrollStart + gfx::Vector2d(kDisplayOffsetXAdjustment, 60);
+  event_generator_->GestureScrollSequence(kScrollStart, kScrollEnd,
+                                          /*duration=*/base::Milliseconds(50),
+                                          /*steps=*/5);
+
+  // Display offset should have updated without the selection changing.
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, kSelectionRange);
   EXPECT_FALSE(test_api_->touch_selection_controller());
-
-  // A scroll which begins in a vertical direction should adjust the display
-  // offset.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 1));
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), 0);
-
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(5) - 30, GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), -30);
-
-  ui::GestureEvent scroll_end = CreateTestGestureEvent(
-      GetCursorPositionX(5) - 30, GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-  textfield_->OnGestureEvent(&scroll_end);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), -30);
-  // Touch handles shouldn't be shown since they weren't shown initially.
-  EXPECT_FALSE(test_api_->touch_selection_controller());
+  EXPECT_EQ(test_api_->GetDisplayOffsetX(), kDisplayOffsetXAdjustment);
 }
 
 TEST_F(TextfieldTest, TwoFingerScroll) {
@@ -3690,35 +3689,29 @@ TEST_F(TextfieldTest, TwoFingerScroll) {
   textfield_->SetTextWithoutCaretBoundsChangeNotification(
       u"0123456789_123456789_123456789", 0);
   test_api_->SetDisplayOffsetX(0);
+  constexpr gfx::Range kSelectionRange(2, 7);
+  textfield_->SetEditableSelectionRange(kSelectionRange);
+
+  // Scroll with two fingers to adjust the display offset.
+  constexpr int kDisplayOffsetXAdjustment = -30;
+  const gfx::Point kStart1 = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(5), GetCursorYForTesting()});
+  const gfx::Point kStart2 = kStart1 + gfx::Vector2d(20, 0);
+  const gfx::Point kStart[] = {kStart1, kStart2};
+  event_generator_->GestureMultiFingerScroll(
+      /*count=*/2, kStart,
+      /*event_separation_time_ms=*/50,
+      /*steps=*/5, /*move_x=*/kDisplayOffsetXAdjustment,
+      /*move_y=*/0);
+
+  // Display offset should have updated without the selection changing.
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, kSelectionRange);
   EXPECT_FALSE(test_api_->touch_selection_controller());
-
-  // Two finger scroll should adjust the display offset.
-  ui::GestureEventDetails scroll_begin_details(ui::ET_GESTURE_SCROLL_BEGIN);
-  scroll_begin_details.set_touch_points(2);
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(), scroll_begin_details);
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), 0);
-
-  ui::GestureEventDetails scroll_update_details(ui::ET_GESTURE_SCROLL_UPDATE);
-  scroll_update_details.set_touch_points(2);
-  ui::GestureEvent scroll_update =
-      CreateTestGestureEvent(GetCursorPositionX(5) - 30, GetCursorYForTesting(),
-                             scroll_update_details);
-  textfield_->OnGestureEvent(&scroll_update);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), -30);
-
-  ui::GestureEvent scroll_end = CreateTestGestureEvent(
-      GetCursorPositionX(5) - 30, GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-  textfield_->OnGestureEvent(&scroll_end);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), -30);
-  // Touch handles shouldn't be shown since they weren't shown initially.
-  EXPECT_FALSE(test_api_->touch_selection_controller());
+  EXPECT_EQ(test_api_->GetDisplayOffsetX(), kDisplayOffsetXAdjustment);
 }
 
-// No touch on desktop Mac.
-#if !BUILDFLAG(IS_MAC)
 TEST_F(TextfieldTest, ScrollToPlaceCursor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -3727,27 +3720,22 @@ TEST_F(TextfieldTest, ScrollToPlaceCursor) {
 
   InitTextfield();
   textfield_->SetText(u"Hello string world");
+
+  // Scroll in a horizontal direction to move the cursor.
+  constexpr int kCursorStartPos = 2;
+  constexpr int kCursorEndPos = 15;
+  const gfx::Point kScrollStart = views::View::ConvertPointToScreen(
+      textfield_,
+      {GetCursorPositionX(kCursorStartPos), GetCursorYForTesting()});
+  const gfx::Point kScrollEnd = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(kCursorEndPos), GetCursorYForTesting()});
+  event_generator_->GestureScrollSequence(kScrollStart, kScrollEnd,
+                                          /*duration=*/base::Milliseconds(50),
+                                          /*steps=*/5);
+
   gfx::Range range;
-
-  // A scroll which begins in a horizontal direction should move the cursor.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
-
-  ui::GestureEvent scroll_update_1 = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update_1);
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(5));
-
-  ui::GestureEvent scroll_update_2 = CreateTestGestureEvent(
-      GetCursorPositionX(7), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update_2);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(7));
+  EXPECT_EQ(range, gfx::Range(kCursorEndPos));
 }
 
 TEST_F(TextfieldTest, ScrollToPlaceCursorShowsTouchHandles) {
@@ -3759,24 +3747,24 @@ TEST_F(TextfieldTest, ScrollToPlaceCursorShowsTouchHandles) {
   InitTextfield();
   textfield_->SetText(u"Hello string world");
 
-  // A scroll which begins in a horizontal direction should move the cursor.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
+  // Scroll in a horizontal direction to move the cursor.
+  const gfx::Point kScrollStart = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  const gfx::Point kScrollEnd = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(15), GetCursorYForTesting()});
+  event_generator_->GestureScrollSequenceWithCallback(
+      kScrollStart, kScrollEnd, /*duration=*/base::Milliseconds(50),
+      /*steps=*/5,
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type != ui::ET_GESTURE_SCROLL_UPDATE) {
+              return;
+            }
+            // Touch handles should be hidden during scroll.
+            EXPECT_FALSE(test_api_->touch_selection_controller());
+          }));
 
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
-  // Touch handles should be hidden during scroll.
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-
-  ui::GestureEvent scroll_end = CreateTestGestureEvent(
-      GetCursorPositionX(7), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-  textfield_->OnGestureEvent(&scroll_end);
-  // Touch handles should be shown when scroll ends.
+  // Touch handles should be shown after scroll ends.
   EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 
@@ -3798,22 +3786,21 @@ TEST_F(TextfieldTest, ScrollToPlaceCursorAdjustsDisplayOffset) {
   textfield_->SetTextWithoutCaretBoundsChangeNotification(
       u"0123456789_123456789_123456789", 0);
   test_api_->SetDisplayOffsetX(0);
+
+  // Scroll in a horizontal direction to move the cursor.
+  const gfx::Point kScrollStart = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  const gfx::Point kScrollEnd = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(30), GetCursorYForTesting()});
+  event_generator_->GestureScrollSequence(kScrollStart, kScrollEnd,
+                                          /*duration=*/base::Milliseconds(50),
+                                          /*steps=*/5);
+
+  // Cursor should have moved and display should be offset so that the cursor is
+  // visible in the textfield.
   gfx::Range range;
-
-  // A scroll which begins in a horizontal direction should move the cursor.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), 0);
-
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(30), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(30));
-  // Display should be offset so that the cursor is visible in the textfield.
   EXPECT_EQ(test_api_->GetDisplayOffsetX(), -200);
 }
 
@@ -3835,52 +3822,32 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   textfield_->SetTextWithoutCaretBoundsChangeNotification(
       u"0123456789_123456789_123456789", 0);
   test_api_->SetDisplayOffsetX(0);
+  textfield_->SetEditableSelectionRange(gfx::Range(2, 7));
+
+  // Perform a scroll which starts with one finger then adds another finger
+  // after a delay.
+  const gfx::Point kStart1 = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(8), GetCursorYForTesting()});
+  const gfx::Point kStart2 = kStart1 + gfx::Vector2d(20, 0);
+  const gfx::Point kStart[] = {kStart1, kStart2};
+  constexpr gfx::Vector2d kDelta[] = {
+      gfx::Vector2d(-50, 0),
+      gfx::Vector2d(-30, 0),
+  };
+  constexpr int kDelayAddingFingerMs[] = {0, 40};
+  constexpr int kDelayReleasingFingerMs[] = {150, 150};
+  event_generator_->GestureMultiFingerScrollWithDelays(
+      /*count=*/2, kStart, kDelta, kDelayAddingFingerMs,
+      kDelayReleasingFingerMs, /*event_separation_time_ms=*/20, /*steps=*/5);
+
+  // Since the scroll started with one finger, the cursor should have moved.
   gfx::Range range;
-
-  // Start scrolling with one touch point in a horizontal direction.
-  ui::GestureEventDetails scroll_begin_details(ui::ET_GESTURE_SCROLL_BEGIN, 1,
-                                               0);
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(), scroll_begin_details);
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), 0);
-
-  // Scroll update should move the cursor.
-  ui::GestureEvent scroll_update_1 = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update_1);
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(5));
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), 0);
-
-  // Add second touch point to scroll sequence.
-  ui::GestureEventDetails scroll_update_details_2(ui::ET_GESTURE_SCROLL_UPDATE);
-  scroll_update_details_2.set_touch_points(2);
-  ui::GestureEvent scroll_update_2 = CreateTestGestureEvent(
-      GetCursorPositionX(5), GetCursorYForTesting(), scroll_update_details_2);
-  textfield_->OnGestureEvent(&scroll_update_2);
-  EXPECT_EQ(range, gfx::Range(5));
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), 0);
-
-  // Scroll update should adjust display offset without moving cursor.
-  ui::GestureEventDetails scroll_update_details_3(ui::ET_GESTURE_SCROLL_UPDATE);
-  scroll_update_details_3.set_touch_points(2);
-  ui::GestureEvent scroll_update_3 =
-      CreateTestGestureEvent(GetCursorPositionX(5) - 30, GetCursorYForTesting(),
-                             scroll_update_details_3);
-  textfield_->OnGestureEvent(&scroll_update_3);
-  EXPECT_EQ(range, gfx::Range(5));
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), -30);
-
-  ui::GestureEvent scroll_end = CreateTestGestureEvent(
-      GetCursorPositionX(5) - 30, GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-  textfield_->OnGestureEvent(&scroll_end);
-  EXPECT_EQ(test_api_->GetDisplayOffsetX(), -30);
-  // Touch handles should be shown when scroll ends since the scroll sequence
-  // was initially used for cursor placement.
+  EXPECT_EQ(range, gfx::Range(6));
   EXPECT_TRUE(test_api_->touch_selection_controller());
+  // Since a second finger was added, the display should also be slightly
+  // offset.
+  EXPECT_LT(test_api_->GetDisplayOffsetX(), 0);
 }
 
 TEST_F(TextfieldTest, LongPressDragLTR_Forward) {

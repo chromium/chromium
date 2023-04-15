@@ -4,9 +4,11 @@
 
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -112,6 +114,43 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
   GetCachedUserPopulation(profile) = population;
 
   return population;
+}
+
+ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
+    Profile* profile) {
+  ChromeUserPopulation population = GetUserPopulationForProfile(profile);
+
+  if (population.user_population() ==
+      ChromeUserPopulation::ENHANCED_PROTECTION) {
+    static const base::NoDestructor<std::vector<const base::Feature*>>
+        kCookieTheftExperiments{{
+#if BUILDFLAG(IS_WIN)
+            &features::kLockProfileCookieDatabase
+#endif
+        }};
+
+    GetExperimentStatus(*kCookieTheftExperiments, &population);
+  }
+
+  return population;
+}
+
+void GetExperimentStatus(const std::vector<const base::Feature*>& experiments,
+                         ChromeUserPopulation* population) {
+  for (const base::Feature* feature : experiments) {
+    base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(*feature);
+    if (!field_trial) {
+      continue;
+    }
+    const std::string& trial = field_trial->trial_name();
+    const std::string& group = field_trial->GetGroupNameWithoutActivation();
+    bool is_experimental = group.find("Enabled") != std::string::npos ||
+                           group.find("Control") != std::string::npos;
+    bool is_preperiod = group.find("Preperiod") != std::string::npos;
+    if (is_experimental && !is_preperiod) {
+      population->add_finch_active_groups(trial + "." + group);
+    }
+  }
 }
 
 ChromeUserPopulation::PageLoadToken GetPageLoadTokenForURL(Profile* profile,

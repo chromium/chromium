@@ -6,15 +6,13 @@ package org.chromium.components.browser_ui.widget.dragreorder;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +23,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+
+import java.util.function.BiFunction;
 
 /**
  * MVC-compatible adapter for a {@link RecyclerView} that manages drag-reorderable lists. Used in
@@ -38,8 +38,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  *    but it keeps track of the view to make it available to drag over later.
  */
 public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
-    private static final int ANIMATION_DELAY_MS = 100;
-
     /**
      * Responsible for binding draggable views to the items adapter. The viewHolder should add a
      * listener to the correct view (e.g. a drag handle) which informs the ItemTouchHandler that
@@ -48,6 +46,12 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
      */
     public interface DragBinder {
         void bind(ViewHolder viewHolder, ItemTouchHelper itemTouchHelper);
+    }
+
+    /** Controls draggability state on a per item basis. */
+    public interface DraggabilityProvider {
+        boolean isActivelyDraggable(PropertyModel propertyModel);
+        boolean isPassivelyDraggable(PropertyModel propertyModel);
     }
 
     /** Responsible for deciding when long-press drag is enabled. */
@@ -59,6 +63,7 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
     private RecyclerView mRecyclerView;
     private boolean mDragEnabled;
     private int mStart;
+    private @Nullable LongPressDragDelegate mLongPressDragDelegate;
 
     /** Classes to handle drag/drop functionality. */
     private final ItemTouchHelper.Callback mTouchHelperCallback = new DragTouchCallback();
@@ -66,12 +71,11 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
     private final ObserverList<DragListener> mListeners = new ObserverList<>();
     /** A map of view types to view binders. */
     private final SparseArray<DragBinder> mDragBinderMap = new SparseArray<>();
-    /** Tracks which views are passively draggable. */
-    private final SparseBooleanArray mPassiveDragMap = new SparseBooleanArray();
+    /** A map of view types to active/passive draggability. */
+    private final SparseArray<DraggabilityProvider> mDraggabilityProviderMap = new SparseArray<>();
     /** Styles to use while dragging */
     private final int mDraggedBackgroundColor;
     private final float mDraggedElevation;
-    private final LongPressDragDelegate mLongPressDragDelegate;
 
     /**
      * A callback for touch actions on drag-reorderable lists.
@@ -82,13 +86,11 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            int pos = viewHolder.getAdapterPosition();
             int dragFlags = 0;
-
             // This method may be called multiple times until the view is dropped
             // ensure there is only one bookmark being dragged.
             if ((mBeingDragged == viewHolder || mBeingDragged == null)
-                    && isActivelyDraggable(mListData.get(pos).type)) {
+                    && isActivelyDraggable(viewHolder)) {
                 dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
             }
             return makeMovementFlags(dragFlags, /*swipeFlags=*/0);
@@ -100,8 +102,7 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
             int from = current.getBindingAdapterPosition();
             int to = target.getBindingAdapterPosition();
             if (from == to) return false;
-            mListData.swap(from, to);
-            notifyItemMoved(from, to);
+            mListData.move(from, to);
             return true;
         }
 
@@ -120,8 +121,13 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
         @Override
         public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             super.clearView(recyclerView, viewHolder);
-            // We might need to use an explicit call here.
-            // the row has been dropped, even though it is possible at same row
+            // No need to commit change if recycler view is not attached to window, such as dragging
+            // is terminated by destroying activity.
+            if (viewHolder.getAdapterPosition() != mStart && recyclerView.isAttachedToWindow()) {
+                // Commit the position change for the dragged item when it's dropped and
+                // RecyclerView has finished layout computing.
+                recyclerView.post(() -> onSwap());
+            }
             mBeingDragged = null;
             onDragStateChange(false);
             updateVisualState(false, viewHolder);
@@ -129,7 +135,8 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
 
         @Override
         public boolean isLongPressDragEnabled() {
-            return mLongPressDragDelegate.isLongPressDragEnabled();
+            return mLongPressDragDelegate != null && mLongPressDragDelegate.isLongPressDragEnabled()
+                    && mDragEnabled;
         }
 
         @Override
@@ -143,29 +150,20 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
         @Override
         public boolean canDropOver(RecyclerView recyclerView, RecyclerView.ViewHolder current,
                 RecyclerView.ViewHolder target) {
-            int currentPos = current.getBindingAdapterPosition();
-            int targetPos = target.getBindingAdapterPosition();
             // The fact that current is being dragged is proof enough since draggable views are
             // also passively draggable.
-            return isPassivelyDraggable(mListData.get(currentPos).type)
-                    && isPassivelyDraggable(mListData.get(targetPos).type);
+            return isPassivelyDraggable(current) && isPassivelyDraggable(target);
         }
 
         /**
          * Update the visual state of this row.
-         *
          * @param dragged    Whether this row is currently being dragged.
          * @param viewHolder The DraggableRowViewHolder that is holding this row's content.
          */
         private void updateVisualState(boolean dragged, RecyclerView.ViewHolder viewHolder) {
-            // Animate background colors and elevations
-            ViewCompat.animate(viewHolder.itemView)
-                    .translationZ(dragged ? mDraggedElevation : 0)
-                    .withEndAction(
-                            ()
-                                    -> viewHolder.itemView.setBackgroundColor(
-                                            dragged ? mDraggedBackgroundColor : Color.TRANSPARENT))
-                    .setDuration(ANIMATION_DELAY_MS)
+            DragUtils
+                    .createViewDragAnimation(dragged, viewHolder.itemView, mDraggedBackgroundColor,
+                            mDraggedElevation)
                     .start();
         }
     }
@@ -179,24 +177,31 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
          *
          * @param drag True iff drag is currently on.
          */
-        void onDragStateChange(boolean drag);
+        default void onDragStateChange(boolean drag) {}
+
+        /** Called when a drag ends and it ends up in a swap. */
+        default void onSwap() {}
     }
 
     /**
      * @param context The context for that this DragReorderableRecyclerViewAdapter occupies.
      * @param modelList The {@link ModelList} which determines what's shown in the list.
-     * @param longPressDragDelegate The delegate which decides when long press dragging is enabled.
      */
-    public DragReorderableRecyclerViewAdapter(
-            Context context, ModelList modelList, LongPressDragDelegate longPressDragDelegate) {
+    public DragReorderableRecyclerViewAdapter(Context context, ModelList modelList) {
         super(modelList);
 
         Resources resource = context.getResources();
         // Set the alpha to 90% when dragging which is 230/255
         mDraggedBackgroundColor = ColorUtils.setAlphaComponent(
-                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1),
+                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_4),
                 resource.getInteger(R.integer.list_item_dragged_alpha));
         mDraggedElevation = resource.getDimension(R.dimen.list_item_dragged_elevation);
+    }
+
+    /**
+     * @param longPressDragDelegate The delegate which decides when long press dragging is enabled.
+     */
+    public void setLongPressDragDelegate(LongPressDragDelegate longPressDragDelegate) {
         mLongPressDragDelegate = longPressDragDelegate;
     }
 
@@ -209,24 +214,16 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
      * @param builder A mechanism for building new views of the specified type.
      * @param binder A means of binding a model to the provided view.
      * @param dragBinder A means of binding the view to Android's drag system.
+     * @param draggabilityProvider A way of resolving if a given row is draggable.
      */
     public <T extends View> void registerDraggableType(int typeId, ViewBuilder<T> builder,
-            ViewBinder<PropertyModel, T, PropertyKey> binder, DragBinder dragBinder) {
+            ViewBinder<PropertyModel, T, PropertyKey> binder, @NonNull DragBinder dragBinder,
+            @NonNull DraggabilityProvider draggabilityProvider) {
         super.registerType(typeId, builder, binder);
         assert mDragBinderMap.get(typeId) == null;
+        assert mDraggabilityProviderMap.get(typeId) == null;
         mDragBinderMap.put(typeId, dragBinder);
-    }
-
-    /**
-     * Registers a view that can be dragged over, but isn't itself draggable. The call is identical
-     * to SimpleRecyclerViewAdapter#registerType but it keeps track of the view to make it
-     * available to drag over later.
-     */
-    public <T extends View> void registerPassivelyDraggableType(
-            int typeId, ViewBuilder<T> builder, ViewBinder<PropertyModel, T, PropertyKey> binder) {
-        super.registerType(typeId, builder, binder);
-        assert !mPassiveDragMap.get(typeId);
-        mPassiveDragMap.put(typeId, true);
+        mDraggabilityProviderMap.put(typeId, draggabilityProvider);
     }
 
     // Drag/drop helper functions.
@@ -272,12 +269,31 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
         }
     }
 
-    private boolean isActivelyDraggable(int type) {
-        return mDragBinderMap.get(type) != null;
+    private void onSwap() {
+        for (DragListener dragListener : mListeners) {
+            dragListener.onSwap();
+        }
     }
 
-    private boolean isPassivelyDraggable(int type) {
-        return isActivelyDraggable(type) || mPassiveDragMap.get(type);
+    @VisibleForTesting
+    public boolean isActivelyDraggable(RecyclerView.ViewHolder viewHolder) {
+        return isDraggableHelper(viewHolder, (dp, pm) -> dp.isActivelyDraggable(pm));
+    }
+
+    @VisibleForTesting
+    public boolean isPassivelyDraggable(RecyclerView.ViewHolder viewHolder) {
+        return isDraggableHelper(viewHolder, (dp, pm) -> dp.isPassivelyDraggable(pm));
+    }
+
+    private boolean isDraggableHelper(RecyclerView.ViewHolder viewHolder,
+            BiFunction<DraggabilityProvider, PropertyModel, Boolean> isDraggable) {
+        if (!mDragEnabled) return false;
+        DraggabilityProvider draggabilityProvider =
+                mDraggabilityProviderMap.get(viewHolder.getItemViewType());
+        if (draggabilityProvider == null) return false;
+        int position = viewHolder.getBindingAdapterPosition();
+        PropertyModel propertyModel = mListData.get(position).model;
+        return isDraggable.apply(draggabilityProvider, propertyModel);
     }
 
     // RecyclerView implementation.
@@ -288,8 +304,9 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
         int typeId = mListData.get(position).type;
         // Overridden to given the draggable items a chance to bind correctly since a ViewHolder
         // is required.
-        if (mDragEnabled && isActivelyDraggable(typeId)) {
-            mDragBinderMap.get(typeId).bind(viewHolder, mItemTouchHelper);
+        DragBinder dragBinder = mDragBinderMap.get(typeId);
+        if (dragBinder != null) {
+            dragBinder.bind(viewHolder, mItemTouchHelper);
         }
     }
 

@@ -211,6 +211,7 @@ css_to_wrapper("css_wrapper_files") {
 }
 
 non_web_component_files_ts = [
+  "connectivity/mojo_connectivity_provider.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
   "typescript_utils/strict_query.ts",
@@ -222,7 +223,10 @@ preprocess_if_expr("preprocess_ts") {
   out_folder = preprocessed_dir
 }
 
-mojo_files_ts = [ "hotspot/cros_hotspot_config.mojom-webui.ts" ]
+mojo_files_ts = [
+  "connectivity/passpoint.mojom-webui.ts",
+  "hotspot/cros_hotspot_config.mojom-webui.ts",
+]
 
 ts_library("build_ts") {
   root_dir = preprocessed_dir
@@ -238,6 +242,7 @@ ts_library("build_ts") {
     ":generate_definitions",
     ":preprocess",
     ":preprocess_ts",
+    "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
   ]
 }

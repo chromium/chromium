@@ -36,8 +36,8 @@ class VizPixelTest : public cc::PixelTest {
       case RendererType::kSkiaGL:
       case RendererType::kSkiaVk:
         return "skia";
-      case RendererType::kSkiaDawn:
-        return "dawn";
+      case RendererType::kSkiaGraphite:
+        return "graphite";
     }
   }
 

@@ -66,9 +66,8 @@ TEST_F(LocalWebApprovalsFeatureTest,
   EXPECT_FALSE(IsLocalWebApprovalsEnabled());
 }
 
-// Tests that DCHECK is triggered when local web approval feature is enabled
+// Tests that CHECK is triggered when local web approval feature is enabled
 // without the refreshed web filter interstitial layout feature.
-#if DCHECK_IS_ON()
 TEST_F(LocalWebApprovalsFeatureTest,
        InterstitialRefreshDisableAndLocalApprovalsEnabled) {
   scoped_feature_list_.InitWithFeatures(
@@ -77,6 +76,5 @@ TEST_F(LocalWebApprovalsFeatureTest,
   EXPECT_DEATH_IF_SUPPORTED(IsWebFilterInterstitialRefreshEnabled(), "");
   EXPECT_DEATH_IF_SUPPORTED(IsLocalWebApprovalsEnabled(), "");
 }
-#endif
 
 }  // namespace supervised_user

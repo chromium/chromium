@@ -58,7 +58,7 @@ export class SettingsSmbSharesPageElement extends
     }
   }
 
-  private onAddShareTap_() {
+  private onAddShareClick_() {
     this.showAddSmbDialog_ = true;
   }
 

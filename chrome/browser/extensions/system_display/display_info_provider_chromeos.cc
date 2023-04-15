@@ -146,7 +146,7 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
       }
     }
     api::system_display::MirrorModeInfo info;
-    info.mode = system_display::MIRROR_MODE_NORMAL;
+    info.mode = system_display::MirrorMode::kNormal;
     SetMirrorMode(info, std::move(callback));
     return;
   }
@@ -387,13 +387,13 @@ void DisplayInfoProviderChromeOS::SetMirrorMode(
     const api::system_display::MirrorModeInfo& info,
     ErrorCallback callback) {
   auto display_layout_info = crosapi::mojom::DisplayLayoutInfo::New();
-  if (info.mode == api::system_display::MIRROR_MODE_OFF) {
+  if (info.mode == api::system_display::MirrorMode::kOff) {
     display_layout_info->layout_mode =
         crosapi::mojom::DisplayLayoutMode::kNormal;
   } else {
     display_layout_info->layout_mode =
         crosapi::mojom::DisplayLayoutMode::kMirrored;
-    if (info.mode == api::system_display::MIRROR_MODE_MIXED) {
+    if (info.mode == api::system_display::MirrorMode::kMixed) {
       if (!info.mirroring_source_id) {
         RunResultCallback(std::move(callback), "Mirror mode source id invalid");
         return;

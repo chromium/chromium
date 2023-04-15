@@ -126,10 +126,6 @@ bool AXTreeSourceViews::IsIgnored(AXAuraObjWrapper* node) const {
   return out_data.IsIgnored();
 }
 
-bool AXTreeSourceViews::IsValid(AXAuraObjWrapper* node) const {
-  return node;
-}
-
 bool AXTreeSourceViews::IsEqual(AXAuraObjWrapper* node1,
                                 AXAuraObjWrapper* node2) const {
   return node1 && node2 && node1->GetUniqueId() == node2->GetUniqueId();

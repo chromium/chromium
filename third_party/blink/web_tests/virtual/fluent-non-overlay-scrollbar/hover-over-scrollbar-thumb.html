@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- Tests that the thumb's color changes when hovered over. -->
+<script src='../../resources/gesture-util.js'></script>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/scrollbar-util.js'></script>
+<script src='../../resources/blink-coordinates-util.js'></script>
+
+<style>
+  body,
+  html {
+    width: 2000px;
+    height: 2000px;
+    margin: 0;
+    background-color: green;
+  }
+</style>
+
+<script>
+  window.onload = async () => {
+    if (!internals)
+      return;
+
+    testRunner.waitUntilDone();
+
+    const { x, y } = verticalThumb(document.documentElement);
+    await mouseMoveTo(x, y);
+    await waitForCompositorCommit();
+    testRunner.notifyDone();
+  }
+</script>

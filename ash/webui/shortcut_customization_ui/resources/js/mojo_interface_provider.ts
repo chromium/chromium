@@ -8,7 +8,7 @@ import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 
@@ -100,9 +100,8 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
 
   replaceAccelerator(
       source: AcceleratorSource, action: number, oldAccelerator: Accelerator,
-      newAccelerator: Accelerator): Promise<AcceleratorConfigResult> {
-    // TODO(cambickel) Replace with real mojo method.
-    return this.fakeProvider.replaceAccelerator(
+      newAccelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    return this.remote.replaceAccelerator(
         source, action, oldAccelerator, newAccelerator);
   }
 

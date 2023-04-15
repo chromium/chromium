@@ -8,7 +8,6 @@ import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
-import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
@@ -22,14 +21,13 @@ if (current_cpu == "mipsel" || current_cpu == "mips64el") {
   import("//build/config/mips.gni")
 }
 
-skia_support_gpu = use_blink
-skia_support_pdf = !is_ios && enable_printing
-
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
+    "ENABLE_SKIA_GRAPHITE=$enable_skia_graphite",
     "SKIA_USE_DAWN=$skia_use_dawn",
+    "SKIA_USE_METAL=$skia_use_metal",
   ]
 }
 
@@ -45,22 +43,14 @@ config("skia_config") {
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
     "SK_DISABLE_LEGACY_IMAGE_FACTORIES",
+    "SK_DISABLE_LEGACY_MAKE_TEXTURE_IMAGE",
+    "SK_DISABLE_LEGACY_IMAGE_FLUSH",
+    "SK_DISABLE_LEGACY_GET_BACKEND_TEXTURE",
+    "SK_DISABLE_LEGACY_IMAGE_ENCODE_METHODS",
+    "SK_DISABLE_LEGACY_IMAGE_ENCODER",
   ]
 
   include_dirs = [ "//third_party/skia" ]
-
-  if (use_blink) {
-    include_dirs += [ "//third_party/wuffs/src/release/c" ]
-  }
-  if (enable_vulkan) {
-    include_dirs += [ "//third_party/vulkan/include" ]
-    configs =
-        [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config" ]
-  }
-
-  if (skia_use_gl) {
-    defines += [ "SK_GL" ]
-  }
 
   if (use_blink) {
     defines += [
@@ -68,12 +58,7 @@ config("skia_config") {
       "SK_ENCODE_JPEG",
       "SK_HAS_WUFFS_LIBRARY",
     ]
-  }
-  if (enable_vulkan) {
-    defines += [ "SK_VULKAN=1" ]
-  }
-  if (skia_use_dawn) {
-    defines += [ "SK_DAWN" ]
+    include_dirs += [ "//third_party/wuffs/src/release/c" ]
   }
 
   if (is_component_build) {
@@ -85,14 +70,6 @@ config("skia_config") {
     }
   }
 
-  if (skia_support_gpu) {
-    workaround_header = "gpu/config/gpu_driver_bug_workaround_autogen.h"
-    defines += [
-      "SK_GANESH",
-      "SK_GPU_WORKAROUNDS_HEADER=\"$workaround_header\"",
-    ]
-  }
-
   if (is_android) {
     defines += [
       "SK_BUILD_FOR_ANDROID",
@@ -101,20 +78,43 @@ config("skia_config") {
   }
 
   if (is_mac) {
-    defines += [
-      "SK_BUILD_FOR_MAC",
-      "SK_METAL",
-    ]
+    defines += [ "SK_BUILD_FOR_MAC" ]
   }
   if (is_ios) {
-    defines += [
-      "SK_BUILD_FOR_IOS",
-      "SK_METAL",
-    ]
+    defines += [ "SK_BUILD_FOR_IOS" ]
   }
 
   if (is_win) {
     defines += [ "GR_GL_FUNCTION_TYPE=__stdcall" ]
+  }
+
+  if (skia_support_gpu) {
+    workaround_header = "gpu/config/gpu_driver_bug_workaround_autogen.h"
+    configs = []
+    defines += [
+      "SK_GANESH",
+      "SK_GPU_WORKAROUNDS_HEADER=\"$workaround_header\"",
+    ]
+    if (skia_use_gl) {
+      defines += [ "SK_GL" ]
+    }
+    if (enable_vulkan) {
+      defines += [ "SK_VULKAN=1" ]
+      include_dirs += [ "//third_party/vulkan/include" ]
+      configs += [
+        "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config",
+      ]
+    }
+    if (enable_skia_graphite) {
+      defines += [ "SK_GRAPHITE" ]
+      if (skia_use_dawn) {
+        defines += [ "SK_DAWN" ]
+        configs += [ "//third_party/dawn/include/dawn:public" ]
+      }
+      if (skia_use_metal) {
+        defines += [ "SK_METAL" ]
+      }
+    }
   }
 }
 
@@ -318,6 +318,9 @@ component("skia") {
   public += skia_effects_imagefilter_public
   public += skia_utils_chromium
   public += skia_discardable_memory_chromium
+  public += skia_encode_public
+  public += skia_encode_png_public
+  public += skia_encode_webp_public
 
   # The imported Skia gni source paths are made absolute by gn.
   defines = []
@@ -341,6 +344,7 @@ component("skia") {
     sources += skia_codec_core
     sources += skia_codec_decode_bmp
     sources += skia_encode_jpeg_srcs
+    public += skia_encode_jpeg_public
     sources += [
       "//third_party/skia/src/codec/SkEncodedInfo.cpp",
       "//third_party/skia/src/codec/SkIcoCodec.cpp",
@@ -357,6 +361,15 @@ component("skia") {
       "//third_party/skia/src/ports/SkImageGenerator_skia.cpp",
     ]
     deps += [ "//third_party/wuffs" ]
+  } else {
+    sources += skia_no_encode_jpeg_srcs
+  }
+
+  if (skia_support_xmp) {
+    sources += skia_xml_sources
+    sources += [ "//third_party/skia/src/codec/SkJpegXmp.cpp" ]
+    deps += [ "//third_party/expat" ]
+    defines += [ "SK_CODEC_DECODES_JPEG_GAINMAPS" ]
   }
 
   # Remove unused util sources.
@@ -485,14 +498,6 @@ component("skia") {
     ":buildflags",
     ":skia_core_and_effects",
   ]
-  if (skia_use_dawn) {
-    public_deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
-    deps += [
-      "//third_party/dawn/src/dawn:cpp",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
-    ]
-  }
 
   if (use_blink) {
     deps += [
@@ -521,34 +526,23 @@ component("skia") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  if (use_blink && is_apple) {
-    deps += [ ":skia_metal" ]
-    defines += [ "SK_METAL" ]
-    sources += skia_gpu_metal_cpp
-    frameworks = [
+  frameworks = []
+  if (is_ios) {
+    frameworks += [ "ImageIO.framework" ]
+  }
+  if (is_apple && skia_support_gpu) {
+    frameworks += [
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "CoreText.framework",
-      "Metal.framework",
       "Foundation.framework",
     ]
     if (is_mac) {
       frameworks += [ "AppKit.framework" ]
     }
     if (is_ios) {
-      frameworks += [
-        "ImageIO.framework",
-        "IOSurface.framework",
-      ]
+      frameworks += [ "IOSurface.framework" ]
     }
-  } else if (is_ios) {
-    frameworks = [ "ImageIO.framework" ]
-  }
-
-  if (skia_use_dawn) {
-    public += skia_gpu_dawn_public
-    sources += skia_gpu_dawn_private
-    sources += skia_shared_dawn_sources
   }
 
   if (is_fuchsia) {
@@ -572,6 +566,9 @@ component("skia") {
       sources += skia_gpu_vk_private
       sources += skia_shared_vk_sources
       sources += skia_gpu_vk_chromium_private
+    }
+    if (enable_skia_graphite) {
+      deps += [ ":skia_graphite" ]
     }
     deps += [ "//gpu/config:workaround_list" ]
   }
@@ -649,10 +646,6 @@ skia_source_set("skia_core_and_effects") {
   if (skia_support_gpu) {
     deps = [ "//gpu/config:workaround_list" ]
   }
-  if (skia_use_dawn) {
-    deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
-  }
-
   visibility = [ ":skia" ]
 }
 
@@ -773,20 +766,51 @@ skia_source_set("skia_opts") {
   visibility = [ ":skia" ]
 }
 
-# Split out metal sources, because they require ARC.
-if (use_blink && is_apple) {
-  skia_source_set("skia_metal") {
-    defines = [ "SK_METAL" ]
-    public = skia_gpu_metal_public
-    sources = skia_gpu_metal_private
-    sources += skia_shared_mtl_sources
-    cflags_objcc = [
-      "-Wno-unguarded-availability",
-      "-fobjc-arc",
-    ]
-    deps = [ "//gpu/config:workaround_list" ]
+# Split out Graphite sources because of conflicting file names with Ganesh.
+if (enable_skia_graphite) {
+  skia_source_set("skia_graphite") {
+    public = skia_graphite_public
+    sources = skia_graphite_sources
+    deps = []
     if (skia_use_dawn) {
-      deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
+      sources += skia_shared_dawn_sources
+      sources += skia_graphite_dawn_sources
+      deps += [
+        ":skia_ganesh_dawn",
+        "//third_party/dawn/src/dawn:cpp",
+        "//third_party/dawn/src/dawn:proc",
+      ]
+    }
+    if (skia_use_metal) {
+      sources += skia_shared_mtl_sources
+      sources += skia_graphite_mtl_sources
+      deps += [ ":skia_ganesh_metal" ]
+      frameworks = [ "Metal.framework" ]
+    }
+  }
+
+  # Even though we only use Dawn and Metal with Graphite, we need to build the
+  # Ganesh sources, since both Ganesh and Graphite use the same defines for
+  # enabling backends, or else we'll get undefined symbol errors in some cases.
+  if (skia_use_dawn) {
+    skia_source_set("skia_ganesh_dawn") {
+      public = skia_gpu_dawn_public
+      sources = skia_gpu_dawn_private
+
+      # Ganesh Dawn backend has SkASSERT(!"umimplemented") calls which cause
+      # -Wstring-conversion to fail - exempt this code since it's unused anyway.
+      cflags_cc = [ "-Wno-string-conversion" ]
+    }
+  }
+  if (skia_use_metal) {
+    # Split out Ganesh Metal sources, because they require ARC.
+    skia_source_set("skia_ganesh_metal") {
+      public = skia_gpu_metal_public
+      sources = skia_gpu_metal_private
+      cflags_objcc = [
+        "-Wno-unguarded-availability",
+        "-fobjc-arc",
+      ]
     }
   }
 }

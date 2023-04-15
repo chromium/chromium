@@ -4,6 +4,7 @@
 
 // Use the <code>chrome.feedbackPrivate</code> API to provide Chrome [OS]
 // feedback to the Google Feedback servers.
+[modernised_enums]
 namespace feedbackPrivate {
 
   dictionary AttachedFile {

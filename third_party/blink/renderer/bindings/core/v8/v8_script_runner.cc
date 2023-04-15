@@ -382,7 +382,11 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
       ThrowScriptForbiddenException(isolate);
       return v8::MaybeLocal<v8::Value>();
     }
-    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+    if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
+      CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+    } else {
+      DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+    }
 
     v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
     v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
@@ -565,11 +569,6 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
           // out-of-process iframes.
           page->GetV8CrowdsourcedCompileHintsProducer().RecordScript(
               frame, execution_context, script, script_state);
-        } else if (compile_options == v8::ScriptCompiler::kConsumeCodeCache) {
-          // Don't collect data if some scripts are cached; they decrease the
-          // data quality, because we won't be able to produce compile hints for
-          // cached scripts.
-          page->GetV8CrowdsourcedCompileHintsProducer().DisableDataCollection();
         }
       }
 #endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
@@ -658,7 +657,11 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
     ThrowScriptForbiddenException(isolate);
     return v8::MaybeLocal<v8::Value>();
   }
-  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
+    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  } else {
+    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  }
 
   // TODO(dominicc): When inspector supports tracing object
   // invocation, change this to use v8::Object instead of
@@ -715,7 +718,11 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     ThrowScriptForbiddenException(isolate);
     return v8::MaybeLocal<v8::Value>();
   }
-  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
+    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  } else {
+    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  }
 
   DCHECK(!frame ||
          BindingSecurity::ShouldAllowAccessToFrame(

@@ -33,26 +33,32 @@
     opacity: 0;
   }
 
-  #addShortcutBanner {
-    display: block;
-  }
-
   @media all and (display-mode: standalone) {
     #addShortcutBanner {
       display: none;
     }
+  }
+
+  pref-toggle-button:first-of-type {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+  }
+
+  cr-link-row:last-of-type {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
   }
 </style>
 <h3 class="page-title">$i18n{settings}</h3>
 <div class="card">
   <pref-toggle-button id="passwordToggle"
       label="$i18n{savePasswordsLabel}"
-      pref-key="credentials_enable_service">
+      pref="{{prefs.credentials_enable_service}}">
   </pref-toggle-button>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
-      pref-key="credentials_enable_autosignin">
+      pref="{{prefs.credentials_enable_autosignin}}">
   </pref-toggle-button>
   <if expr="is_win or is_macosx">
     <template is="dom-if"
@@ -60,7 +66,7 @@
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
           label="$i18n{biometricAuthenticaionForFillingLabel}"
           sub-label="$i18n{biometricAuthenticaionForFillingSublabel}"
-          pref-key="password_manager.biometric_authentication_filling"
+          pref="{{prefs.password_manager.biometric_authentication_filling}}"
           change-requires-validation
           on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
       </pref-toggle-button>
@@ -82,17 +88,25 @@
       button-aria-description="$i18n{opensInNewTab}"
       on-click="onTrustedVaultBannerClick_" external>
   </cr-link-row>
-  <cr-link-row id="importPasswords" class="cr-row settings-cr-link-row"
-      label="$i18n{importPasswords}" role-description="button"
-      sub-label="$i18n{importPasswordsDescription}" hide-icon>
-  </cr-link-row>
+  <template is="dom-if" if="[[!passwordManagerDisabled_]]" restamp>
+    <passwords-importer account-email="[[accountEmail]]"
+        is-account-store-user="[[isAccountStoreUser]]"
+        is-user-syncing-passwords="[[isSyncingPasswords]]">
+    </passwords-importer>
+  </template>
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
-      <passwords-exporter></passwords-exporter>
+    <passwords-exporter></passwords-exporter>
   </template>
   <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
       on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon
       sub-label="$i18n{addShortcutDescription}" role-description="button">
   </cr-link-row>
+  <if expr="is_win or is_macosx">
+    <cr-link-row id="managePasskeysRow" external
+        class="cr-row settings-cr-link-row" hidden$="[[!hasPasskeys_]]"
+        on-click="onManagePasskeysClick_" label="$i18n{managePasskeysLabel}">
+    </cr-link-row>
+  </if>
 </div>
 <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
 <div class="card" id="blockedSites">
@@ -109,7 +123,7 @@
         <div class="blocked-site-content flex-centered" first$="[[!index]]">
           <div class="label site-url">[[item.urls.shown]]</div>
           <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
-              on-click="onRemoveBlockedSiteClick_"
+              on-click="onRemoveBlockedSiteClick_" title="$i18n{deletePassword}"
               aria-label="[[getAriaLabelForBlockedSite_(item)]]">
           </cr-icon-button>
         </div>

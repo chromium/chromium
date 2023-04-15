@@ -400,11 +400,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
 
   // Verify the document language. We must use the deprecated
   // ExecuteScriptAndExtract*() instead of EvalJs() due to CSP.
-  std::string lang;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "domAutomationController.send(document.documentElement.lang)",
-      &lang));
-  EXPECT_EQ(lang, locale());
+  EXPECT_EQ(content::EvalJs(tab, "document.documentElement.lang"), locale());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

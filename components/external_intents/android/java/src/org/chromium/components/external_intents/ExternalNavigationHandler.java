@@ -1131,7 +1131,6 @@ public class ExternalNavigationHandler {
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
             boolean isExternalProtocol) {
         if (sAllowIntentsToSelfForTesting) return false;
-        if (!ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF.isEnabled()) return false;
         if (!ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF.isEnabled() && params.isMainFrame()) {
             return false;
         }

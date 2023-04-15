@@ -90,7 +90,8 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, OutOfBounds) {
+// TODO(crbug.com/1432526): Re-enable this test
+IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, DISABLED_OutOfBounds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto& url = embedded_test_server()->GetURL("/wasm/out_of_bounds.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

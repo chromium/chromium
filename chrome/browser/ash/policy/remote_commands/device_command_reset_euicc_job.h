@@ -17,22 +17,6 @@ namespace policy {
 // on the device.
 class DeviceCommandResetEuiccJob : public RemoteCommandJob {
  public:
-  DeviceCommandResetEuiccJob();
-  DeviceCommandResetEuiccJob(const DeviceCommandResetEuiccJob&) = delete;
-  DeviceCommandResetEuiccJob& operator=(const DeviceCommandResetEuiccJob&) =
-      delete;
-  ~DeviceCommandResetEuiccJob() override;
-
-  static const char kResetEuiccNotificationId[];
-
-  // RemoteCommandJob:
-  enterprise_management::RemoteCommand_Type GetType() const override;
-
- private:
-  friend class DeviceCommandResetEuiccJobTest;
-  FRIEND_TEST_ALL_PREFIXES(DeviceCommandResetEuiccJobTest, ResetEuicc);
-  FRIEND_TEST_ALL_PREFIXES(DeviceCommandResetEuiccJobTest, ResetEuiccFailure);
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class ResetEuiccResult {
@@ -41,6 +25,19 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
     kHermesResetFailed = 2,
     kMaxValue = kHermesResetFailed
   };
+
+  static const char kResetEuiccNotificationId[];
+
+  DeviceCommandResetEuiccJob();
+  DeviceCommandResetEuiccJob(const DeviceCommandResetEuiccJob&) = delete;
+  DeviceCommandResetEuiccJob& operator=(const DeviceCommandResetEuiccJob&) =
+      delete;
+  ~DeviceCommandResetEuiccJob() override;
+
+  // RemoteCommandJob:
+  enterprise_management::RemoteCommand_Type GetType() const override;
+
+ private:
   static void RecordResetEuiccResult(ResetEuiccResult result);
 
   // RemoteCommandJob:

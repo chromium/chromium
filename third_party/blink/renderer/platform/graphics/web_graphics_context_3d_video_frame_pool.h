@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   // If the YUV to RGB matrix of `dst_color_space` is not Rec601, then this
   // function will use the matrix for Rec709 (it supports no other values). See
   // https://crbug.com/skia/12545.
-  bool CopyRGBATextureToVideoFrame(viz::ResourceFormat src_format,
+  bool CopyRGBATextureToVideoFrame(viz::SharedImageFormat src_format,
                                    const gfx::Size& src_size,
                                    const gfx::ColorSpace& src_color_space,
                                    GrSurfaceOrigin src_surface_origin,

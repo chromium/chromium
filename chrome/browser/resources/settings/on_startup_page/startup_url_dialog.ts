@@ -112,11 +112,11 @@ export class SettingsStartupUrlDialogElement extends PolymerElement {
     return ['', invalidUrl, tooLong][this.error_];
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onActionButtonTap_() {
+  private onActionButtonClick_() {
     const whenDone = this.model ?
         this.browserProxy_.editStartupPage(this.model.modelIndex, this.url_) :
         this.browserProxy_.addStartupPage(this.url_);

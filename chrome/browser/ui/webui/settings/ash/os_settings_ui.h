@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/files_page/google_drive_page_handler_factory.h"
+#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-forward.h"
@@ -22,6 +24,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
+#include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -163,6 +166,15 @@ class OSSettingsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
+  // Binds to the Google Drive page handler mojo.
+  void BindInterface(
+      mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver);
+
+  // Binds to the cros Passpoint service.
+  void BindInterface(
+      mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+          receiver);
+
  private:
   base::TimeTicks time_when_opened_;
 
@@ -171,6 +183,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
   std::unique_ptr<mojom::UserActionRecorder> user_action_recorder_;
   std::unique_ptr<AppManagementPageHandlerFactory>
       app_management_page_handler_factory_;
+  std::unique_ptr<GoogleDrivePageHandlerFactory>
+      google_drive_page_handler_factory_;
 
   // This handler notifies the WebUI when the color provider changes.
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;

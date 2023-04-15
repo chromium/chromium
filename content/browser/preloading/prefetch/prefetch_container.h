@@ -130,6 +130,10 @@ class CONTENT_EXPORT PrefetchContainer {
       OnEligibilityCheckCompleteCallback
           on_eligibility_check_complete_callback);
 
+  // Returns whether or not a callback has been registered for the given URL via
+  // |SetOnEligibilityCheckCompleteCallback|.
+  bool IsOnEligibilityCheckCompleteCallbackRegistered(const GURL& url) const;
+
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
   GURL GetMatchingURLFromRedirectChain() const;

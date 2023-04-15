@@ -28,6 +28,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
@@ -535,6 +537,16 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithToken(
           &CameraHalDispatcherImpl::RegisterSensorClientWithTokenOnUIThread,
           weak_factory_.GetWeakPtr(), std::move(client), auth_token,
           base::BindPostTaskToCurrentDefault(std::move(callback))));
+}
+
+void CameraHalDispatcherImpl::BindServiceToMojoServiceManager(
+    const std::string& service_name,
+    mojo::ScopedMessagePipeHandle receiver) {
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::BindToMojoServiceManagerOnUIThread,
+          base::Unretained(this), service_name, std::move(receiver)));
 }
 
 void CameraHalDispatcherImpl::CameraDeviceActivityChange(
@@ -1125,6 +1137,15 @@ base::flat_set<std::string> CameraHalDispatcherImpl::GetDeviceIdsFromCameraIds(
 
 TokenManager* CameraHalDispatcherImpl::GetTokenManagerForTesting() {
   return &token_manager_;
+}
+
+void CameraHalDispatcherImpl::BindToMojoServiceManagerOnUIThread(
+    const std::string service_name,
+    mojo::ScopedMessagePipeHandle receiver) {
+  CHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(ash::mojo_service_manager::IsServiceManagerBound());
+  ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+      service_name, /*timeout=*/absl::nullopt, std::move(receiver));
 }
 
 }  // namespace media

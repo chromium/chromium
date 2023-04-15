@@ -56,7 +56,8 @@ class InterestGroupStorageTest : public testing::Test {
         blink::features::kInterestGroupStorage,
         {{"max_owners", "10"},
          {"max_groups_per_owner", "10"},
-         {"max_ops_before_maintenance", "100"}});
+         {"max_ops_before_maintenance", "100"},
+         {"max_storage_per_owner", "2048"}});
   }
 
   std::unique_ptr<InterestGroupStorage> CreateStorage() {
@@ -919,6 +920,60 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
               UnorderedElementsAreArray(remaining_groups_expected));
   histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 1);
   histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 1);
+}
+
+// Maintenance should prune groups when the interest group owner exceeds the
+// storage size limit.
+TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
+  base::HistogramTester histograms;
+  const size_t kExcessGroups = 3;
+  const url::Origin kTestOrigin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const size_t kGroupSize = 800;
+  const size_t groups_before_full =
+      blink::features::kInterestGroupStorageMaxStoragePerOwner.Get() /
+      kGroupSize;
+  std::vector<std::string> added_groups;
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  for (size_t i = 0; i < groups_before_full + kExcessGroups; i++) {
+    const std::string group_name = base::NumberToString(i);
+    // Allow time to pass so that they have different expiration times.
+    // This makes which groups get removed deterministic as they are sorted by
+    // expiration time.
+    task_environment().FastForwardBy(base::Microseconds(1));
+    blink::InterestGroup group = NewInterestGroup(kTestOrigin, group_name);
+    ASSERT_GT(kGroupSize, group.EstimateSize());
+    group.user_bidding_signals =
+        std::string(kGroupSize - group.EstimateSize(), 'P');
+    EXPECT_EQ(kGroupSize, group.EstimateSize());
+
+    storage->JoinInterestGroup(group, kTestOrigin.GetURL());
+    added_groups.push_back(group_name);
+  }
+
+  std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(1u, origins.size());
+
+  std::vector<StorageInterestGroup> interest_groups =
+      storage->GetInterestGroupsForOwner(kTestOrigin);
+  EXPECT_EQ(added_groups.size(), interest_groups.size());
+
+  // Allow enough idle time to trigger maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                   base::Seconds(1));
+
+  interest_groups = storage->GetInterestGroupsForOwner(kTestOrigin);
+  ASSERT_EQ(groups_before_full, interest_groups.size());
+
+  std::vector<std::string> remaining_groups;
+  for (const auto& db_group : interest_groups) {
+    remaining_groups.push_back(db_group.interest_group.name);
+  }
+  std::vector<std::string> remaining_groups_expected(
+      added_groups.begin() + kExcessGroups, added_groups.end());
+  EXPECT_THAT(remaining_groups,
+              UnorderedElementsAreArray(remaining_groups_expected));
 }
 
 // Excess group owners should have their groups pruned by maintenance.

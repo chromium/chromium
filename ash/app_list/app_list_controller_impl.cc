@@ -1913,10 +1913,11 @@ int AppListControllerImpl::GetPreferredBubbleWidth(
   return bubble_presenter_->GetPreferredBubbleWidth(root_window);
 }
 
-void AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
-  if (features::IsHomeButtonQuickAppAccessEnabled()) {
-    model_provider_->quick_app_access_model()->SetQuickApp(app_id);
+bool AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
+  if (!features::IsHomeButtonQuickAppAccessEnabled()) {
+    return false;
   }
+  return model_provider_->quick_app_access_model()->SetQuickApp(app_id);
 }
 
 }  // namespace ash

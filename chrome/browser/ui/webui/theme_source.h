@@ -59,8 +59,12 @@ class ThemeSource : public content::URLDataSource {
                      const content::WebContents::Getter& wc_getter,
                      content::URLDataSource::GotDataCallback callback);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SendTypographyCss(content::URLDataSource::GotDataCallback callback);
+#endif
+
   // The profile this object was initialized with.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Whether this source services chrome-unstrusted://theme.
   bool serve_untrusted_;

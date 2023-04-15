@@ -110,7 +110,10 @@ SkiaGLCommonRepresentation::SkiaGLCommonRepresentation(
     scoped_refptr<SharedContextState> context_state,
     std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(manager, backing, tracker),
+    : SkiaImageRepresentation(context_state->gr_context(),
+                              manager,
+                              backing,
+                              tracker),
       client_(client),
       context_state_(std::move(context_state)),
       promise_textures_(std::move(promise_textures)) {

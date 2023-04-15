@@ -293,6 +293,7 @@ static_library("browser") {
     ":password_hash_data",
     "//base",
     "//base:i18n",
+    "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/autofill/core/browser",

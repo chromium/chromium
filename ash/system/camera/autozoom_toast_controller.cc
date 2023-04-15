@@ -4,6 +4,8 @@
 
 #include "ash/system/camera/autozoom_toast_controller.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -11,7 +13,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "base/cxx17_backports.h"
 
 namespace ash {
 
@@ -149,8 +150,8 @@ void AutozoomToastController::OnAutozoomStateChanged(
 void AutozoomToastController::UpdateToastView() {
   if (toast_view_) {
     toast_view_->SetAutozoomEnabled(/*enabled=*/delegate_->IsAutozoomEnabled());
-    int width = base::clamp(toast_view_->GetPreferredSize().width(),
-                            kAutozoomToastMinWidth, kAutozoomToastMaxWidth);
+    int width = std::clamp(toast_view_->GetPreferredSize().width(),
+                           kAutozoomToastMinWidth, kAutozoomToastMaxWidth);
     bubble_view_->SetPreferredWidth(width);
   }
 }

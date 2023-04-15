@@ -50,13 +50,19 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
       size_t index) const override;
   absl::optional<ui::ColorId> GetDropdownBackgroundColorIdAt(
       size_t index) const override;
+  absl::optional<ui::ColorId> GetDropdownSelectedBackgroundColorIdAt(
+      size_t index) const override;
 
-  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
+  void SetForegroundColorId(ui::ColorId foreground_color) {
     foreground_color_id_ = foreground_color;
   }
 
-  void SetBackgroundColorId(absl::optional<ui::ColorId> background_color) {
+  void SetBackgroundColorId(ui::ColorId background_color) {
     background_color_id_ = background_color;
+  }
+
+  void SetSelectedBackgroundColorId(ui::ColorId selected_color) {
+    selected_color_id_ = selected_color;
   }
 
   // Used by tests only.
@@ -77,6 +83,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
 
   absl::optional<ui::ColorId> foreground_color_id_;
   absl::optional<ui::ColorId> background_color_id_;
+  absl::optional<ui::ColorId> selected_color_id_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,25 +95,33 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
 //
 class ReadAnythingColorsModel : public ReadAnythingMenuModel {
  public:
-  ReadAnythingColorsModel();
-  ReadAnythingColorsModel(const ReadAnythingColorsModel&) = delete;
-  ReadAnythingColorsModel& operator=(const ReadAnythingColorsModel&) = delete;
-  ~ReadAnythingColorsModel() override;
-
-  // Enum for logging the user-chosen color.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ReadAnythingColor {
-    kDefault = 0,
-    kLight = 1,
-    kDark = 2,
-    kYellow = 3,
-    kBlue = 4,
-    kMaxValue = kBlue,
-  };
-
   // Simple struct to hold the various colors to keep code cleaner.
   struct ColorInfo {
+    // Enum for logging the user-chosen color.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    enum class ReadAnythingColor {
+      kDefault = 0,
+      kLight = 1,
+      kDark = 2,
+      kYellow = 3,
+      kBlue = 4,
+      kMaxValue = kBlue,
+    };
+
+    ColorInfo(std::u16string name,
+              int icon_asset,
+              ui::ColorId foreground_color_id,
+              ui::ColorId background_color_id,
+              ui::ColorId separator_color_id,
+              ui::ColorId dropdown_color_id,
+              ui::ColorId selected_color_id,
+              ColorInfo::ReadAnythingColor logging_value);
+    ColorInfo(const ColorInfo& other);
+    ColorInfo(ColorInfo&&);
+    ColorInfo& operator=(const ColorInfo&);
+    ColorInfo& operator=(ColorInfo&&);
+
     // The name of the colors, e.g. Default, Light, Dark.
     std::u16string name;
 
@@ -126,9 +141,18 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
     // The color of the dropdown menu, used for the combobox menu model.
     ui::ColorId dropdown_color_id;
 
+    // The selected / hover color of the dropdown menu, used for the combobox
+    // menu model.
+    ui::ColorId selected_dropdown_color_id;
+
     // The enum value used to log this theme.
-    ReadAnythingColorsModel::ReadAnythingColor logging_value;
+    ColorInfo::ReadAnythingColor logging_value;
   };
+
+  ReadAnythingColorsModel();
+  ReadAnythingColorsModel(const ReadAnythingColorsModel&) = delete;
+  ReadAnythingColorsModel& operator=(const ReadAnythingColorsModel&) = delete;
+  ~ReadAnythingColorsModel() override;
 
   bool IsValidIndex(size_t index) override;
   ColorInfo& GetColorsAt(size_t index);
@@ -237,6 +261,7 @@ class ReadAnythingModel {
         ui::ColorId background_color_id,
         ui::ColorId separator_color_id,
         ui::ColorId dropdown_color_id,
+        ui::ColorId selected_color_id,
         read_anything::mojom::LineSpacing line_spacing,
         read_anything::mojom::LetterSpacing letter_spacing) = 0;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -289,7 +314,7 @@ class ReadAnythingModel {
   read_anything::mojom::LetterSpacing letter_spacing() {
     return letter_spacing_;
   }
-  ReadAnythingColorsModel::ReadAnythingColor color_logging_value() {
+  ReadAnythingColorsModel::ColorInfo::ReadAnythingColor color_logging_value() {
     return colors_model_->GetColorsAt(colors_combobox_index_).logging_value;
   }
 
@@ -306,6 +331,7 @@ class ReadAnythingModel {
   // Additional theme colors.
   ui::ColorId separator_color_id_ = kColorReadAnythingSeparator;
   ui::ColorId dropdown_color_id_ = kColorReadAnythingDropdownBackground;
+  ui::ColorId selected_dropdown_color_id_ = kColorReadAnythingDropdownSelected;
 
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;

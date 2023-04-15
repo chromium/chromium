@@ -213,6 +213,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Checks if we should show bounce in or fade in animation.
   bool IsShowAnimationEnabled();
 
+  // Callbacks for Animations
+  void OnAnimationAborted();
+  void OnAnimationEnded();
+
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
 
@@ -288,10 +292,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // for the window. If we don't override this method, the old layer and its
   // child layers will still be there until all the animation finished.
   std::unique_ptr<ui::Layer> RecreateLayer() override;
-
-  // Callbacks for Animations
-  void OnAnimationAborted();
-  void OnAnimationEnded();
 
   // Applies transformations to the |layer()| to animate the view when
   // SetVisible(false) is called.

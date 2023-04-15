@@ -125,6 +125,14 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
   return view;
 }
 
+bool IsForAshNotification() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 }  // anonymous namespace
 
 // CompactTitleMessageView /////////////////////////////////////////////////////
@@ -208,13 +216,7 @@ void NotificationViewBase::CreateOrUpdateViews(
 }
 
 NotificationViewBase::NotificationViewBase(const Notification& notification)
-    : MessageView(notification) {
-  for_ash_notification_ = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled())
-    for_ash_notification_ = true;
-#endif
-
+    : MessageView(notification), for_ash_notification_(IsForAshNotification()) {
   SetNotifyEnterExitOnChild(true);
 
   click_activator_ = std::make_unique<ClickActivator>(this);

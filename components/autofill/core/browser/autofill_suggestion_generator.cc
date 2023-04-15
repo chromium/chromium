@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filler.h"
@@ -129,6 +130,17 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   for (auto& suggestion : suggestions) {
     suggestion.frontend_id = MakeFrontendIdFromBackendId(
         suggestion.GetPayload<Suggestion::BackendId>());
+
+    // Populate feature IPH for externally created account profiles.
+    const AutofillProfile* profile = personal_data_->GetProfileByGUID(
+        suggestion.GetPayload<Suggestion::BackendId>().value());
+    if (profile && profile->source() == AutofillProfile::Source::kAccount &&
+        profile->initial_creator_id() !=
+            AutofillProfile::kInitialCreatorOrModifierChrome) {
+      suggestion.feature_for_iph =
+          feature_engagement::
+              kIPHAutofillExternalAccountProfileSuggestionFeature.name;
+    }
   }
 
   return suggestions;

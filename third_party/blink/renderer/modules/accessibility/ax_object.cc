@@ -663,19 +663,16 @@ void AXObject::Detach() {
     return;
   }
 
-#if DCHECK_IS_ON()
-  DCHECK(ax_object_cache_);
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(ax_object_cache_);
   // AXInlineTextBox objects are the only objects that are safe to remove during
   // serialization. This occurs when a the serializer reaches a static text
   // object and its ignored state changes. Ignored static text boxes should not
   // have any inline textbox children, and they are removed by ClearChildren().
-  DCHECK(!ax_object_cache_->IsFrozen() || IsAXInlineTextBox())
+  SANITIZER_CHECK(!ax_object_cache_->IsFrozen() || IsAXInlineTextBox())
       << "Do not detach children while the tree is frozen, in order to avoid "
          "an object detaching itself in the middle of computing its own "
          "accessibility properties.";
-#endif
-
-#if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
 #endif
 

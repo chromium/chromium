@@ -14,12 +14,13 @@ source_set("tangible_sync") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication/tangible_sync",
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
-    "//ios/chrome/browser/ui/main:scene_state_header",
   ]
   frameworks = [ "UIKit.framework" ]
 }

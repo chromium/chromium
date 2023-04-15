@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -76,7 +77,8 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
       : loader_(MakeGarbageCollected<FileReaderLoader>(this,
                                                        std::move(task_runner))),
         resolver_(resolver),
-        read_type_(read_type) {
+        read_type_(read_type),
+        keep_alive_(this) {
     loader_->Start(std::move(blob_data_handle));
   }
 
@@ -108,13 +110,13 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
 
  private:
   void Done() {
-    // FileReaderLoader holds us as a member, so clearing it will trigger our
-    // own garbage collection.
+    keep_alive_.Clear();
     loader_ = nullptr;
   }
   Member<FileReaderLoader> loader_;
   Member<ScriptPromiseResolver> resolver_;
   const FileReadType read_type_;
+  SelfKeepAlive<BlobFileReaderClient> keep_alive_;
 };
 
 Blob::Blob(scoped_refptr<BlobDataHandle> data_handle)

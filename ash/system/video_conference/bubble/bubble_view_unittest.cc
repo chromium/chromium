@@ -44,16 +44,19 @@ class SquareCinnamonCereal : public VcEffectsDelegate {
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kTestEffect),
         VcEffectId::kTestEffect);
+    effect->set_container_id(kSquareCinnamonCerealViewId);
+    effect->set_dependency_flags(dependency_flags);
+
     auto state = std::make_unique<VcEffectState>(
-        &ash::kPrivacyIndicatorsCameraIcon, u"Square Cinnamon Cereal",
+        &kVideoConferenceBackgroundBlurMaximumIcon, u"Square Cinnamon Cereal",
         IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
         base::BindRepeating(&SquareCinnamonCereal::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kTestEffect,
                             /*value=*/absl::nullopt));
+    state->set_disabled_icon(&kVideoConferenceBackgroundBlurOffIcon);
     effect->AddState(std::move(state));
-    effect->set_container_id(kSquareCinnamonCerealViewId);
-    effect->set_dependency_flags(dependency_flags);
+
     AddEffect(std::move(effect));
   }
   SquareCinnamonCereal(const SquareCinnamonCereal&) = delete;

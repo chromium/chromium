@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "media/base/audio_hash.h"
 #include "media/base/audio_renderer_sink.h"
 
 namespace media {
@@ -45,7 +46,7 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
   void StartAudioHashForTesting();
 
   // Returns the hash of all audio frames seen since construction.
-  std::string GetAudioHashForTesting();
+  const AudioHash& GetAudioHashForTesting() const;
 
   void SetIsOptimizedForHardwareParametersForTesting(bool value);
 

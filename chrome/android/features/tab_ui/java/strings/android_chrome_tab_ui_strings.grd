@@ -226,17 +226,8 @@
       </message>
 
       <!-- Tab Selection Editor strings -->
-      <message name="IDS_TAB_SELECTION_EDITOR_GROUP" desc="This text button is shown in the Tab Selection Editor Toolbar. 'Group' is a verb. When the user taps the button, Chrome creates a new group that contains the selected tabs.">
-        Group
-      </message>
       <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_SELECT_TABS" desc="Label shown on Tab Selection Editor Toolbar asking user to select tabs from the list.">
         Select tabs
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_GROUP_BUTTON" desc="The accessibility text to read when the 'Group' text button in the selection mode toolbar is focused. When this button is tapped, all the selected tabs will be grouped together.">
-        {TABS_COUNT, plural,
-          =1 {Group <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
-          other {Group <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
-        }
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BACK_BUTTON" desc="Accessibility string for the back button in the Tab Selection Editor Toolbar. Tap this button to exit out of the multi-select mode">
         Hide multi-select mode
@@ -334,12 +325,6 @@
       <message name="IDS_TAB_GRID_DIALOG_REMOVE_FROM_GROUP" desc="This text shows on the ungroup bar in TabGridDialog. When user drags a tab and drops it on the ungroup bar, this tab will be moved out of the group.">
         Remove from group
       </message>
-      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_REMOVE_FROM_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, user will enter a selection mode where they can select tabs that they want to move out of tab group. Two things worth mentioning here: 1. The remove here does not mean delete, it means move tab out of tab group and becomes a single tab. 2. If the translation goes beyond 30 characters, replace it with &quot;Remove tabs&quot; to keep this text under 30 characters.">
-        Remove tabs from group
-      </message>
-      <message name="IDS_TAB_GRID_DIALOG_SELECTION_MODE_REMOVE" desc="This texts shows on the action button of tab group selection mode. When user clicks this action button, all the tabs that are currently selected will be moved out of tab group. One thing worth mentioning here is that the remove here does not mean delete, it means move tab out of tab group and becomes a single tab.">
-        Remove
-      </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_NAME" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the group name field will be focused and the keyboard will show for users to edit the group name.">
         Edit group name
       </message>
@@ -350,12 +335,6 @@
       </message>
       <message name="IDS_ACCESSIBILITY_EXPAND_TAB_GROUP_WITH_GROUP_NAME" desc="The accessibility text to read when a card representing a tab group is clicked in grid tab switcher. TITLE_OF_GROUP is the title of the group. NUMBER_OF_TABS is the number of tabs within this group. Note that there are always at least two tabs in a group so plural form should always be used.">
         Expand <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group with <ph name="NUMBER_OF_TABS">%2$s<ex>2</ex></ph> tabs.
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_DIALOG_REMOVE_BUTTON" desc="The accessibility text to read when the 'Remove' text button in the selection mode toolbar is focused. When this button is tapped, all the selected tabs will be removed out of the existed group and become single tab(s).">
-        {TABS_COUNT, plural,
-          =1 {Remove <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab from group.}
-          other {Remove <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs from group.}
-        }
       </message>
       <message name="IDS_ACCESSIBILITY_DIALOG_BACK_BUTTON" desc="The accessibility text to read when the back button in the dialog is focused. When this button is tapped, the dialog will be hidden. NUMBER_OF_TABS is the number of tabs within this group. Note that after collapsing with one tab, that group becomes a tab.">
         {TABS_COUNT, plural,
@@ -399,9 +378,6 @@
       <message name="IDS_TAB_SUGGESTION_REVIEW_BUTTON" desc="This text button shows next to the message 'X of your tabs haven't been used lately. Close them?', or 'X tabs seem related. Group them?'. When a user clicks this 'Review' text button, they will enter a selection mode where they can see the suggested tabs to close or to group, see the rest of their open tabs, and choose what tabs to close or to group.">
           Review
       </message>
-      <message name="IDS_TAB_SUGGESTION_CLOSE_TAB_ACTION_BUTTON" desc="When a user chooses to review suggested tabs to close, they enter a section mode to review and close the tabs. In that selection mode, this text button in the toolbar lets the user finalize their choices. When this button is tapped, all the selected tabs will be closed.">
-          Close
-      </message>
       <message name="IDS_TAB_SUGGESTION_CLOSE_STALE_MESSAGE" desc="On Chrome mobile, this text shows as a suggestion under a user's tabs. The suggestion prompts the user to automatically close some tabs that haven't been used lately. The placeholder denotes the number of suggested tabs to close, which will always be 2 or more (so 'tabs' should be plural).">
           <ph name="NUMBER_OF_TABS">%1$s<ex>2</ex></ph> of your tabs haven't been used lately. Close them?
       </message>
@@ -421,12 +397,6 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SUGGESTION_DISMISS_BUTTON" desc="The accessibility text to read when the 'X' button on the TAB_SUGGESTION card is focused">
         Dismiss the suggestions.
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_SUGGESTION_CLOSE_TAB_ACTION_BUTTON" desc="The accessibility text to read when the 'Close' text button in the selection mode toolbar is focused. When this button is tapped, all the selected tabs will be closed.">
-        {TABS_COUNT, plural,
-          =1 {Close <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
-          other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
-        }
       </message>
 
       <!-- Accessibility strings for Tab Reordering -->
@@ -472,9 +442,6 @@
       </message>
       <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It asks users to turn on notifications in Android settings to get the price drop notifications.">
         To get an alert when there's a lower price in an open tab, turn on notifications in Settings.
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS" desc="This text button shows below 'Get alerts for price drops?'. When user clicks on the text button, we send them to the Android notification settings.">
-        Go to Settings
       </message>
 
       <!-- Price Tracking Settings Dialog strings -->

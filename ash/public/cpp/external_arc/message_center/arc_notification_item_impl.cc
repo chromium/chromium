@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
@@ -118,16 +119,26 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       app_id.empty() ? kDefaultArcNotifierId : app_id);
   notifier_id.profile_id = profile_id_.GetUserEmail();
 
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+
+  const auto notification_type = render_on_chrome
+                                     ? message_center::NOTIFICATION_TYPE_SIMPLE
+                                     : message_center::NOTIFICATION_TYPE_CUSTOM;
+
   auto notification = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_CUSTOM, notification_id_,
-      base::UTF8ToUTF16(data->title), base::UTF8ToUTF16(data->message),
-      ui::ImageModel(),
+      notification_type, notification_id_, base::UTF8ToUTF16(data->title),
+      base::UTF8ToUTF16(data->message), ui::ImageModel(),
       u"arc",  // display source
       GURL(),  // empty origin url, for system component
       notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
   notification->set_timestamp(base::Time::FromJavaTime(data->time));
-  notification->set_custom_view_type(kArcNotificationCustomViewType);
+
+  if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {
+    notification->set_custom_view_type(kArcNotificationCustomViewType);
+  }
 
   if (expand_state_ != ArcNotificationExpandState::FIXED_SIZE &&
       data->expand_state != ArcNotificationExpandState::FIXED_SIZE &&

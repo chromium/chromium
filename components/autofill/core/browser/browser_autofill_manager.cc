@@ -1207,9 +1207,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   };
 
   auto ShouldShowSuggestion = [&] {
-    if (client()->IsShowingFastCheckoutUI() ||
-        (form_element_was_clicked &&
-         client()->TryToShowFastCheckout(form, field, GetWeakPtr()))) {
+    if (fast_checkout_delegate_ &&
+        (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
+         (form_element_was_clicked &&
+          fast_checkout_delegate_->TryToShowFastCheckout(form, field,
+                                                         GetWeakPtr())))) {
       // The Fast Checkout surface is shown, so abort showing regular Autofill
       // UI. Now the flow is controlled by the `FastCheckoutClient` instead of
       // `external_delegate_`.
@@ -1566,7 +1568,9 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 
   single_field_form_fill_router_->CancelPendingQueries(this);
   client()->HideAutofillPopup(PopupHidingReason::kRendererEvent);
-  client()->HideFastCheckout(/*allow_further_runs=*/false);
+  if (fast_checkout_delegate_) {
+    fast_checkout_delegate_->HideFastCheckout(/*allow_further_runs=*/false);
+  }
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->HideTouchToFill();
   }

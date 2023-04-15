@@ -31,7 +31,7 @@
 // https://encoding.spec.whatwg.org/#textdecoder
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,SharedStorageWorklet)
 ] interface TextDecoder {
     [RaisesException, MeasureAs=TextDecoderConstructor] constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options = {});
     readonly attribute DOMString encoding;

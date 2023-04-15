@@ -195,7 +195,7 @@ TEST(TelemetryApiConverters, AudioInfo) {
 TEST(TelemetryApiConverters, CpuArchitectureEnum) {
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kUnknown,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kUnknown));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kX8664,
+  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kX86_64,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kX86_64));
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kAarch64,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kAArch64));
@@ -759,7 +759,7 @@ TEST(TelemetryApiConverters, UsbSpecSpeed) {
             telemetry_api::UsbSpecSpeed::kUnknown);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps),
-            telemetry_api::UsbSpecSpeed::kN15mbps);
+            telemetry_api::UsbSpecSpeed::kN1_5mbps);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps),
             telemetry_api::UsbSpecSpeed::kN12Mbps);

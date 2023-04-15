@@ -11,11 +11,16 @@
 
 namespace ui {
 
+namespace {
+constexpr gfx::Size kDefaultDisplaySize = gfx::Size(1280, 720);
+}  // namespace
+
 // TODO(crbug.com/1242052): Integrate with platform APIs for screen enumeration
 // and management, when available.
 
 FlatlandScreen::FlatlandScreen()
-    : displays_({display::Display::GetDefaultDisplay()}) {}
+    : displays_({display::Display(display::kDefaultDisplayId,
+                                  gfx::Rect(kDefaultDisplaySize))}) {}
 
 FlatlandScreen::~FlatlandScreen() = default;
 

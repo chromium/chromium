@@ -48,6 +48,11 @@ BASE_FEATURE(kAutofillAccountProfileStorage,
              "AutofillAccountProfileStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines if users located in an unsupported country (based on GeoIP) are
+// eligible to write to the account storage.
+const base::FeatureParam<bool> kAutofillAccountProfileStorageFromUnsupportedIPs{
+    &kAutofillAccountProfileStorage, "allow_writes_from_unsupported_ips", true};
+
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, address profile save problem will contain a dropdown for
@@ -381,22 +386,6 @@ BASE_FEATURE(kAutofillPreventOverridingPrefilledValues,
              "AutofillPreventOverridingPrefilledValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// We used to consider local heuristics only if at least 3 fields were
-// classified by the heuristics [*]. With this feature enabled, we require that
-// local heuristics discover at least 3 different fillable field *types*,
-// meaning that 3 fields of the same type don't meet the bar. This is motivated
-// by cases where we saw the same field type multiple times (e.g. due to the
-// occurrence of the term "name") which produced false positives. crbug/1352826
-// contains some statistics.
-// Note that "fillable" refers to the field type, not whether a specific field
-// is visible and editable by the user.
-// [*] Precisely, at least 3 fields had to have a fillable field type, except
-// that emails and other single field types were not bound to this rule.
-// TODO(crbug/1352826): Remove once experiment is finished.
-BASE_FEATURE(kAutofillMin3FieldTypesForLocalHeuristics,
-             "AutofillMin3FieldTypesForLocalHeuristics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, use the parsing patterns from a JSON file for heuristics, rather
 // than the hardcoded ones from autofill_regex_constants.cc.
 // The specific pattern set is controlled by the
@@ -482,11 +471,6 @@ BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
 BASE_FEATURE(kAutofillRequireNameForProfileImport,
              "AutofillRequireNameForProfileImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether or not overall prediction are retrieved from the cache.
-BASE_FEATURE(kAutofillRetrieveOverallPredictionsFromCache,
-             "AutofillRetrieveOverallPredictionsFromCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether UPI/VPA values will be saved and filled into payment forms.
 BASE_FEATURE(kAutofillSaveAndFillVPA,

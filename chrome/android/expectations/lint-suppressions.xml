@@ -230,9 +230,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.accessibility_omnibox_most_visited_tile` appears to be unused"/>
     <!-- 1: Some strings in components_strings_grd are not used in other targets. -->
     <ignore regexp="webview_.*__lint.*components_strings_grd"/>
-    <!-- 2: resource is used in C++ components/ntp_snippets. -->
-    <ignore regexp="The resource `R.string.ntp_article_suggestions_section_empty` appears to be unused"/>
-    <ignore regexp="The resource `R.string.ntp_article_suggestions_section_header` appears to be unused"/>
     <!-- 2: resource is used in C++ components/error_page. -->
     <ignore regexp="The resource `R.string.show_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>

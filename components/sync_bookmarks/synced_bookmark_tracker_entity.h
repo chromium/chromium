@@ -66,7 +66,7 @@ class SyncedBookmarkTrackerEntity {
   void clear_bookmark_node() { bookmark_node_ = nullptr; }
 
   // Used when replacing a node in order to update its otherwise immutable
-  // GUID.
+  // UUID.
   void set_bookmark_node(const bookmarks::BookmarkNode* bookmark_node) {
     bookmark_node_ = bookmark_node;
   }

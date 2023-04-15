@@ -36,22 +36,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Don't send empty displayName values to security keys when creating
-// credentials.
-BASE_DECLARE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR);
-
-// Include an indication for non-discoverable makeCredential calls in caBLE QR
-// codes.
-BASE_DECLARE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag);
-
-// Allow WebAuthn for sites with TLS errors.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kDisableWebAuthnWithBrokenCerts);
-
-// Enable a special-case dialog for when there are no internal credentials.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNoPasskeysError);
-
 // Set credProtect=3 when rk=required and uv=preferred.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCredProtectThree);

@@ -11,7 +11,7 @@
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {getCrActionMenuTop} from '../common/js/dom_utils.js';
+import {addCSSPrefixSelector, getCrActionMenuTop} from '../common/js/dom_utils.js';
 
 import {css, CSSResultGroup, customElement, html, property, query, XfBase} from './xf_base.js';
 
@@ -312,7 +312,7 @@ export class XfSelect extends XfBase {
  * CSS used by the xf-select widget.
  */
 function getCSS(): CSSResultGroup {
-  return css`
+  const legacyStyle = css`
     cr-button {
       --hover-bg-color: var(--cros-ripple-color);
       --hover-border-color: var(--cros-button-stroke-color-secondary);
@@ -383,6 +383,116 @@ function getCSS(): CSSResultGroup {
       visibility: visible;
     }
   `;
+
+  const refresh23Style = css`
+    cr-button {
+      --active-bg: none;
+      --hover-bg-color: var(--cros-sys-hover_on_subtle);
+      --hover-border-color: var(--cros-sys-separator);
+      --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+      --ripple-opacity: 100%;
+      --text-color: var(--cros-sys-on_surface);
+      box-shadow: none;
+    }
+    #dropdown-toggle {
+      --border-color: var(--cros-sys-separator);
+      --cr-button-height: 32px;
+      border-radius: 8px;
+      margin-inline: 4px;
+      min-width: auto;
+      padding-inline: 12px;
+      white-space: nowrap;
+    }
+    :host-context(.focus-outline-visible) #dropdown-toggle:focus {
+      outline: 2px solid var(--cros-sys-focus_ring);
+      outline-offset: 2px;
+    }
+    .xf-select-icon {
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-sys-on_surface);
+      height: 20px;
+      width: 20px;
+      margin-inline: 0 8px;
+    }
+    #xf-select-icon.select-location {
+      -webkit-mask-image:
+        url(/foreground/images/files/ui/select_location.svg);
+    }
+    #xf-select-icon.select-time {
+      -webkit-mask-image:
+        url(/foreground/images/files/ui/select_time.svg);
+    }
+    #xf-select-icon.select-filetype {
+      -webkit-mask-image:
+        url(/foreground/images/files/ui/select_filetype.svg);
+    }
+    #dropdown-icon {
+      -webkit-mask-image:
+        url(/foreground/images/files/ui/xf_select_dropdown.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-sys-on_surface);
+      height: 20px;
+      width: 20px;
+      margin-inline: 8px 0;
+    }
+    cr-button.dropdown-item {
+      --focus-shadow-color: none;
+      padding: 0 16px;
+    }
+    cr-button.dropdown-item:hover {
+      background-color: var(--cros-sys-hover_on_subtle);
+    }
+    cr-button.dropdown-item-center {
+      justify-content: center;
+    }
+    cr-button.dropdown-item-start {
+      justify-content: start;
+    }
+    cr-button.dropdown-item-end {
+      justify-content: end;
+    }
+    div.dropdown-filler {
+      flex-grow: 1;
+    }
+    div.selected-icon {
+      -webkit-mask-image: url(/foreground/images/common/ic_selected.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-sys-primary);
+      height: 20px;
+      width: 20px;
+      visibility: hidden;
+    }
+    cr-button[selected] div.selected-icon {
+      visibility: visible;
+    }
+    :host-context(.focus-outline-visible) cr-action-menu cr-button:focus {
+      outline: 2px solid var(--cros-sys-focus_ring);
+      outline-offset: -2px;
+    }
+    /** Reset the hover color when using keyboard to navigate the menu items. */
+    :host-context(.focus-outline-visible) cr-action-menu cr-button:hover {
+      background-color: unset;
+    }
+    cr-action-menu {
+      --cr-menu-background-color: var(--cros-sys-base_elevated);
+      --cr-menu-background-focus-color: none;
+      --cr-menu-background-sheen: none;
+      /* TODO(wenbojie): use elevation variable when it's ready.
+      --cros-sys-elevation3 */
+      --cr-menu-shadow: var(--cros-elevation-2-shadow);
+    }
+    cr-action-menu::part(dialog) {
+      border-radius: 8px;
+    }
+  `;
+
+  return [
+    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
+    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
+  ];
 }
 
 /**

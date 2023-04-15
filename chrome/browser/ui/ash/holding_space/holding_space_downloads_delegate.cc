@@ -752,7 +752,7 @@ void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
     return;
   }
 
-  service()->AddDownload(HoldingSpaceItem::Type::kArcDownload, path);
+  service()->AddItemOfType(HoldingSpaceItem::Type::kArcDownload, path);
 }
 
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
@@ -772,8 +772,8 @@ void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
   // if the download was ineligible for in-progress download handling.
   if (IsComplete(&mojo_download_item) &&
       !IsEligibleForInProgressIntegration(&mojo_download_item)) {
-    service()->AddDownload(HoldingSpaceItem::Type::kLacrosDownload,
-                           mojo_download_item.target_file_path);
+    service()->AddItemOfType(HoldingSpaceItem::Type::kLacrosDownload,
+                             mojo_download_item.target_file_path);
   }
 }
 
@@ -846,7 +846,7 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
         type = HoldingSpaceItem::Type::kLacrosDownload;
         break;
     }
-    const std::string& id = service()->AddDownload(
+    const std::string& id = service()->AddItemOfType(
         type, in_progress_download->GetFilePath(),
         in_progress_download->GetProgress(),
         in_progress_download->GetPlaceholderImageSkiaResolver());

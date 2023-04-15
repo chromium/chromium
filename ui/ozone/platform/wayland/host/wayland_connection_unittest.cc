@@ -27,15 +27,8 @@ TEST_P(WaylandConnectionTest, Ping) {
 
 TEST_P(WaylandConnectionTest, CompositorVersionTest) {
   wl::ServerConfig config = GetParam();
-  uint32_t expected_compositor_version = 0;
-  switch (config.compositor_version) {
-    case wl::CompositorVersion::kV3:
-      expected_compositor_version = 3;
-      break;
-    case wl::CompositorVersion::kV4:
-      expected_compositor_version = 4;
-      break;
-  }
+  uint32_t expected_compositor_version =
+      static_cast<uint32_t>(config.compositor_version);
 
   EXPECT_EQ(expected_compositor_version,
             wl::get_version_of_object(connection_->compositor()));
@@ -44,10 +37,12 @@ TEST_P(WaylandConnectionTest, CompositorVersionTest) {
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTest,
     WaylandConnectionTest,
-    Values(wl::ServerConfig{.compositor_version = wl::CompositorVersion::kV3}));
+    Values(wl::ServerConfig{
+        .compositor_version = wl::TestCompositor::Version::kV3}));
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestCompositorV4,
     WaylandConnectionTest,
-    Values(wl::ServerConfig{.compositor_version = wl::CompositorVersion::kV4}));
+    Values(wl::ServerConfig{
+        .compositor_version = wl::TestCompositor::Version::kV4}));
 
 }  // namespace ui

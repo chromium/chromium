@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
-<translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
 <translation id="1403228085774130835">Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરની ટૅબમાં તમે તમારી બંધ કરેલી ટૅબ શોધી શકશો</translation>
 <translation id="1455506303394048917">આ ડિવાઇસમાંથી આ છૂપી ટૅબમાંની તમારી પ્રવૃત્તિ સાફ કરવામાં આવશે</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ટૅબ અનગ્રૂપ કરો}one{ટૅબ અનગ્રૂપ કરો}other{ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબ કાઢી નાખો.}one{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}other{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ટૅબને બુકમાર્ક કરો}one{ટૅબને બુકમાર્ક કરો}other{ટૅબને બુકમાર્ક કરો}}</translation>
-<translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
-<translation id="257674075312929031">જૂથ</translation>
 <translation id="2613747923081026172">ગ્રૂપ બનાવો</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">ટૅબનું ગ્રૂપ બનાવવા માટે તેને ખેંચો</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>
-<translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>
 <translation id="7129458170538955174">આ સ્ટોર વિશેની માહિતી અડધી સ્ક્રીન પર ખુલી છે</translation>
-<translation id="7151209024774799310">ગ્રૂપમાંથી ટૅબ કાઢી નાખો</translation>
 <translation id="7204204600596740190">એક કરતાં વધુ પસંદગી કરવાનો મોડ</translation>
 <translation id="7326879924029668159">પરત કરવાની પૉલિસી અને બીજું ઘણું બધું જુઓ</translation>
 <translation id="7352298686197644113">તમારી ખુલ્લી ટૅબમાં કઈ આઇટમની કિંમત ઓછી થઈ છે, તે જુઓ</translation>

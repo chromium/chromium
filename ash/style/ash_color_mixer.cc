@@ -125,7 +125,7 @@ void AddContentColors(ui::ColorMixer& mixer,
       use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x24))
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x24));
   mixer[kColorAshTextColorPrimary] = {cros_tokens::kColorPrimary};
-  mixer[kColorAshTextColorSecondary] = {cros_tokens::kColorSecondary};
+  mixer[kColorAshTextColorSecondary] = {cros_tokens::kTextColorSecondary};
   mixer[kColorAshTextColorAlert] = {cros_tokens::kColorAlert};
   mixer[kColorAshTextColorWarning] = {cros_tokens::kColorWarning};
   mixer[kColorAshTextColorPositive] = {cros_tokens::kColorPositive};
@@ -241,6 +241,13 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
 
   mixer[cros_tokens::kColorSelection] = {
       cros_tokens::kCrosSysOnPrimaryContainer};
+
+  mixer[cros_tokens::kTextColorSecondaryLight] = {
+      cros_tokens::kCrosSysOnSurfaceVariantLight};
+  mixer[cros_tokens::kTextColorSecondaryDark] = {
+      cros_tokens::kCrosSysOnSurfaceVariantDark};
+  mixer[cros_tokens::kTextColorSecondary] = {
+      cros_tokens::kCrosSysOnSurfaceVariant};
 
   mixer[cros_tokens::kBgColor] = {cros_tokens::kCrosSysAppBase};
   mixer[cros_tokens::kBgColorElevation1] = {cros_tokens::kCrosSysBaseElevated};

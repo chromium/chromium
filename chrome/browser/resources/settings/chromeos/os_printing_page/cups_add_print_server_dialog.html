@@ -27,12 +27,12 @@
     </div>
   </div>
   <div slot="dialog-buttons">
-    <cr-button class="cancel-button" on-click="onCancelTap_">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
     <cr-button
       class="action-button"
-      on-click="onAddPrintServerTap_"
+      on-click="onAddPrintServerClick_"
       disabled="[[inProgress_]]"
     >
       $i18n{addPrinterButtonText}

@@ -22,6 +22,9 @@ class IOBuffer;
 }  // namespace net
 
 namespace network {
+namespace cors {
+class CorsURLLoaderSharedDictionaryTest;
+}  // namespace cors
 
 // A SharedDictionaryStorage which is managed by
 // SharedDictionaryManagerInMemory.
@@ -40,6 +43,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
  private:
   friend class SharedDictionaryManagerTest;
+  friend class network::cors::CorsURLLoaderSharedDictionaryTest;
 
   // This class is used to keep the dictionary information in memory.
   class DictionaryInfo {

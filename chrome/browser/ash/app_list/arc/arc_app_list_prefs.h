@@ -108,7 +108,8 @@ class ArcAppListPrefs : public KeyedService,
             bool launchable,
             bool need_fixup,
             absl::optional<uint64_t> app_size_in_bytes,
-            absl::optional<uint64_t> data_size_in_bytes);
+            absl::optional<uint64_t> data_size_in_bytes,
+            arc::mojom::AppCategory app_category);
     AppInfo(AppInfo&& other);
     AppInfo& operator=(AppInfo&& other);
     ~AppInfo();
@@ -151,6 +152,9 @@ class ArcAppListPrefs : public KeyedService,
     // Storage size of app and it's related data.
     absl::optional<uint64_t> app_size_in_bytes;
     absl::optional<uint64_t> data_size_in_bytes;
+
+    // App category from PackageManager.
+    arc::mojom::AppCategory app_category;
 
     static void SetIgnoreCompareInstallTimeForTesting(bool ignore);
 
@@ -464,6 +468,8 @@ class ArcAppListPrefs : public KeyedService,
   // Returns true if the package is a default package, even it's uninstalled.
   bool IsDefaultPackage(const std::string& package_name) const;
 
+  arc::mojom::AppCategory GetAppCategory(const std::string& app_id) const;
+
  private:
   friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
@@ -555,7 +561,8 @@ class ArcAppListPrefs : public KeyedService,
                          const bool need_fixup,
                          const WindowLayout& initial_window_layout,
                          const absl::optional<uint64_t> app_size_in_bytes,
-                         const absl::optional<uint64_t> data_size_in_bytes);
+                         const absl::optional<uint64_t> data_size_in_bytes,
+                         const arc::mojom::AppCategory app_category);
   // Adds or updates local pref for given package.
   void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package);
   // Removes given package from local pref.

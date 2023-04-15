@@ -26,6 +26,8 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
@@ -370,6 +372,14 @@ profile_metrics::BrowserProfileType ChromeAutofillClient::GetProfileType()
                  : profile_metrics::BrowserProfileType::kRegular;
 }
 
+FastCheckoutClient* ChromeAutofillClient::GetFastCheckoutClient() {
+#if BUILDFLAG(IS_ANDROID)
+  return fast_checkout_client_.get();
+#else
+  return nullptr;
+#endif
+}
+
 std::unique_ptr<webauthn::InternalAuthenticator>
 ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
     AutofillDriver* driver) {
@@ -421,13 +431,13 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
 }
 
 void ChromeAutofillClient::ShowCardUnmaskOtpInputDialog(
-    const size_t& otp_length,
+    const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   CardUnmaskOtpInputDialogControllerImpl::CreateForWebContents(web_contents());
   CardUnmaskOtpInputDialogControllerImpl* controller =
       CardUnmaskOtpInputDialogControllerImpl::FromWebContents(web_contents());
   DCHECK(controller);
-  controller->ShowDialog(otp_length, delegate);
+  controller->ShowDialog(challenge_option, delegate);
 }
 
 void ChromeAutofillClient::OnUnmaskOtpVerificationResult(
@@ -767,9 +777,10 @@ bool ChromeAutofillClient::TryToShowFastCheckout(
     const FormFieldData& field,
     base::WeakPtr<AutofillManager> autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
-  const GURL& url = web_contents()->GetLastCommittedURL();
-  return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->TryToStart(url, form, field, autofill_manager);
+  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
+         GetFastCheckoutClient()->TryToStart(
+             web_contents()->GetLastCommittedURL(), form, field,
+             autofill_manager);
 #else
   return false;
 #endif
@@ -778,8 +789,7 @@ bool ChromeAutofillClient::TryToShowFastCheckout(
 void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
 #if BUILDFLAG(IS_ANDROID)
   if (IsShowingFastCheckoutUI()) {
-    FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-        ->Stop(/*allow_further_runs=*/allow_further_runs);
+    GetFastCheckoutClient()->Stop(/*allow_further_runs=*/allow_further_runs);
   }
 #endif
 }
@@ -790,8 +800,7 @@ bool ChromeAutofillClient::IsFastCheckoutSupported(
     const AutofillManager& autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-             ->IsSupported(form, field, autofill_manager);
+         GetFastCheckoutClient()->IsSupported(form, field, autofill_manager);
 #else
   return false;
 #endif
@@ -799,8 +808,8 @@ bool ChromeAutofillClient::IsFastCheckoutSupported(
 
 bool ChromeAutofillClient::IsShowingFastCheckoutUI() {
 #if BUILDFLAG(IS_ANDROID)
-  return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->IsShowing();
+  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
+         GetFastCheckoutClient()->IsShowing();
 #else
   return false;
 #endif
@@ -1135,6 +1144,15 @@ ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
   return flow_id_;
 }
 
+scoped_refptr<device_reauth::DeviceAuthenticator>
+ChromeAutofillClient::GetDeviceAuthenticator() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
+#else
+  return nullptr;
+#endif
+}
+
 void ChromeAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   risk_util::LoadRiskData(0, web_contents(), std::move(callback));
@@ -1213,6 +1231,10 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(web_contents)) {
     zoom_observation_.Observe(zoom_controller);
+  }
+#else
+  if (base::FeatureList::IsEnabled(::features::kFastCheckout)) {
+    fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
   }
 #endif
 }

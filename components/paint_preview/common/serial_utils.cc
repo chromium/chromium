@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkString.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace paint_preview {
 
@@ -123,7 +124,7 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
     // Use the default PNG at quality 100 as it is safe.
     // TODO(crbug/1198304): Investigate supporting JPEG at quality 100 for
     // opaque images.
-    encoded_data = image->encodeToData();
+    encoded_data = SkPngEncoder::Encode(nullptr, image, {});
   }
 
   if (!encoded_data)

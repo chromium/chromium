@@ -155,11 +155,11 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
     });
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private async onSaveTap_(): Promise<void> {
+  private async onSaveClick_(): Promise<void> {
     const configToSet: HotspotConfig = {
       ssid: this.hotspotSsid_,
       passphrase: this.hotspotPassword_,

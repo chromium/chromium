@@ -14,6 +14,7 @@ import org.chromium.webengine.interfaces.INavigationParams;
  * {@link Navigation} contains information about the current Tab Navigation.
  */
 public class Navigation {
+    @NonNull
     private INavigationParams mNavigationParams;
 
     Navigation(@NonNull INavigationParams navigationParams) {

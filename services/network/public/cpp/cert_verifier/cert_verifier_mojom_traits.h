@@ -7,7 +7,6 @@
 
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/crl_set.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 
@@ -57,15 +56,6 @@ struct StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
   static bool disable_symantec_enforcement(
       const net::CertVerifier::Config& config) {
     return config.disable_symantec_enforcement;
-  }
-  static mojo_base::BigBuffer crl_set(const net::CertVerifier::Config& config) {
-    if (!config.crl_set) {
-      return mojo_base::BigBuffer();
-    }
-    const std::string& bytes = config.crl_set->unparsed_crl_set();
-    CHECK(!bytes.empty());
-    return mojo_base::BigBuffer(base::make_span(
-        reinterpret_cast<const uint8_t*>(bytes.data()), bytes.size()));
   }
   static const std::vector<scoped_refptr<net::X509Certificate>>&
   additional_trust_anchors(const net::CertVerifier::Config& config) {

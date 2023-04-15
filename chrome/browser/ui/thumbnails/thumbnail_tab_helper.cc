@@ -49,7 +49,7 @@ gfx::Size GetMinimumThumbnailSize() {
 
   // Compute minimum sizes for multiple uses of the thumbnail - currently,
   // tablet tabstrip previews and tab hover card preview images.
-  gfx::Size min_target_size = TabStyle::GetPreviewImageSize();
+  gfx::Size min_target_size = TabStyle::Get()->GetPreviewImageSize();
   min_target_size.SetToMax(
       {kMinThumbnailDimensionForTablet, kMinThumbnailDimensionForTablet});
 

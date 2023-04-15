@@ -656,9 +656,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns a pointer to the crop-ID if one was set; nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
 
-  // Support for all elements with region capture is currently experimental.
-  virtual bool IsSupportedByRegionCapture() const;
-
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
   // Returns true if the attachment was successful.

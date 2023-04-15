@@ -92,7 +92,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
         MAX_INPUT_LENGTH.toLocaleString());
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
@@ -124,7 +124,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     }
   }
 
-  private onDoneTap_() {
+  private onDoneClick_() {
     this.deviceNameBrowserProxy_.attemptSetDeviceName(this.deviceName_)
         .then(result => {
           this.handleSetDeviceNameResponse_(result);

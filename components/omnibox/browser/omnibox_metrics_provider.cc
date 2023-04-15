@@ -223,10 +223,9 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
   if (log.is_query_started_from_tile)
     omnibox_event->set_is_query_started_from_tile(true);
   for (auto feature : log.features_triggered)
-    omnibox_event->add_feature_triggered(static_cast<size_t>(feature));
+    omnibox_event->add_feature_triggered(feature);
   for (auto feature : log.features_triggered_in_session) {
-    omnibox_event->add_feature_triggered_in_session(
-        static_cast<size_t>(feature));
+    omnibox_event->add_feature_triggered_in_session(feature);
   }
 }
 

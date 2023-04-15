@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
-<translation id="1181037720776840403">Премахване</translation>
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1403228085774130835">Можете да намерите затворените си раздели в секцията „Скорошни раздели“ в главното меню на Chrome</translation>
 <translation id="1455506303394048917">Активността ви в съответните раздели в режим „инкогнито“ ще бъде изчистена от това устройство</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Разгрупиране на раздела}other{Разгрупиране на разделите}}</translation>
 <translation id="2277224997687551299">Редактиране на името на групата</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Премахване на <ph name="TABS_COUNT_ONE" /> избран раздел от групата.}other{Премахване на <ph name="TABS_COUNT_MANY" /> избрани раздела от групата.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Отметка към раздела}other{Отметка към разделите}}</translation>
-<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
-<translation id="257674075312929031">Група</translation>
 <translation id="2613747923081026172">Създаване на група</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Към сайта</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
 <translation id="5846292395804797011">Затваряне на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
-<translation id="6040143037577758943">Затваряне</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
 <translation id="6228793724645064692">(оценка на магазина)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Изход от режима за избор на няколко раздела</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Споделяне на раздела}other{Споделяне на разделите}}</translation>
 <translation id="7129458170538955174">Информацията за този магазин е отворена на половината височина</translation>
-<translation id="7151209024774799310">Премахване на раздели</translation>
 <translation id="7204204600596740190">Режим за избор на няколко раздела</translation>
 <translation id="7326879924029668159">Вижте правилата за връщане и др.</translation>
 <translation id="7352298686197644113">Вижте кой артикул в отворените раздели е с по-ниска цена</translation>

@@ -106,8 +106,10 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   // chunks.
   bool DrainConfig();
 
-  void NotifyMediaCodecError(std::string message, media_status_t status);
-  void NotifyError(base::StringPiece message, Error code);
+  void NotifyMediaCodecError(EncoderStatus encoder_status,
+                             media_status_t media_codec_status,
+                             std::string message);
+  void NotifyErrorStatus(EncoderStatus status);
 
   base::TimeDelta AssignMonotonicTimestamp(base::TimeDelta real_timestamp);
   base::TimeDelta RetrieveRealTimestamp(base::TimeDelta monotonic_timestamp);

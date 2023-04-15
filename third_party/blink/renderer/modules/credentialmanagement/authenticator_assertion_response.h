@@ -46,6 +46,10 @@ class MODULES_EXPORT AuthenticatorAssertionResponse final
 
   DOMArrayBuffer* userHandle() const { return user_handle_.Get(); }
 
+  absl::variant<AuthenticatorAssertionResponseJSON*,
+                AuthenticatorAttestationResponseJSON*>
+  toJSON() const override;
+
   void Trace(Visitor*) const override;
 
  private:

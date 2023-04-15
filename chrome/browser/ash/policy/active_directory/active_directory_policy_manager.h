@@ -35,11 +35,6 @@ class ActiveDirectoryPolicyManager
       public CloudPolicyStore::Observer,
       public ComponentActiveDirectoryPolicyService::Delegate {
  public:
-  // Fetch policy every 90 minutes, which matches the Windows default:
-  // https://technet.microsoft.com/en-us/library/cc940895.aspx
-  static constexpr base::TimeDelta kFetchIntervalChromadEnabled =
-      base::Minutes(90);
-
   // Policy fetch interval when Chromad is disabled. It's shorter than the
   // default interval, to reduce the average waiting time to start the
   // migration, after the `ChromadToCloudMigrationEnabled` policy is set.

@@ -92,12 +92,6 @@ void SyncInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestStopKeepData,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestStopKeepData,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       syncer::sync_ui_util::kRequestStopClearData,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleRequestStopClearData,
@@ -190,24 +184,12 @@ void SyncInternalsMessageHandler::HandleRequestStart(
     return;
   }
 
-  service->GetUserSettings()->SetSyncRequested(true);
+  service->GetUserSettings()->SetSyncRequested();
   // If the service was previously stopped with CLEAR_DATA, then the
   // "first-setup-complete" bit was also cleared, and now the service wouldn't
   // fully start up. So set that too.
   service->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-}
-
-void SyncInternalsMessageHandler::HandleRequestStopKeepData(
-    const base::Value::List& args) {
-  DCHECK_EQ(0U, args.size());
-
-  syncer::SyncService* service = GetSyncService();
-  if (!service) {
-    return;
-  }
-
-  service->GetUserSettings()->SetSyncRequested(false);
 }
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(

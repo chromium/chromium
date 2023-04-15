@@ -98,6 +98,13 @@ class QtNativeTheme : public ui::NativeThemeAura {
   QtNativeTheme& operator=(const QtNativeTheme&) = delete;
   ~QtNativeTheme() override = default;
 
+  void ThemeChanged(bool prefer_dark_theme) {
+    set_use_dark_colors(IsForcedDarkMode() || prefer_dark_theme);
+    set_preferred_color_scheme(CalculatePreferredColorScheme());
+
+    NotifyOnNativeThemeUpdated();
+  }
+
   // ui::NativeTheme:
   DISABLE_CFI_VCALL
   void PaintFrameTopArea(cc::PaintCanvas* canvas,
@@ -387,7 +394,7 @@ void QtUi::FontChanged() {
 }
 
 void QtUi::ThemeChanged() {
-  native_theme_->NotifyOnNativeThemeUpdated();
+  native_theme_->ThemeChanged(PreferDarkTheme());
 }
 
 DISABLE_CFI_VCALL

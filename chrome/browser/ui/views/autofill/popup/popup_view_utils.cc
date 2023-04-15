@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -49,9 +48,9 @@ bool IsElementSufficientlyVisibleForAVerticalArrow(
   }
 
   int visible_width =
-      base::clamp(element_bounds.right(), content_area_bounds.x(),
+      std::clamp(element_bounds.right(), content_area_bounds.x(),
                   content_area_bounds.right()) -
-      base::clamp(element_bounds.x(), content_area_bounds.x(),
+      std::clamp(element_bounds.x(), content_area_bounds.x(),
                   content_area_bounds.right());
 
   return visible_width > 3 * BubbleBorder::kVisibleArrowRadius;
@@ -113,7 +112,7 @@ void CalculatePopupXAndWidthHorizontallyCentered(
   // The preferred horizontal starting point for the pop-up is at the horizontal
   // center of the field.
   int preferred_starting_point =
-      base::clamp(element_bounds.x() + (element_bounds.size().width() / 2),
+      std::clamp(element_bounds.x() + (element_bounds.size().width() / 2),
                   content_area_bounds.x(), content_area_bounds.right());
 
   // The space available to the left and to the right.
@@ -154,10 +153,10 @@ void CalculatePopupXAndWidth(int popup_preferred_width,
                              const gfx::Rect& element_bounds,
                              bool is_rtl,
                              gfx::Rect* popup_bounds) {
-  int right_growth_start = base::clamp(
+  int right_growth_start = std::clamp(
       element_bounds.x(), content_area_bounds.x(), content_area_bounds.right());
   int left_growth_end =
-      base::clamp(element_bounds.right(), content_area_bounds.x(),
+      std::clamp(element_bounds.right(), content_area_bounds.x(),
                   content_area_bounds.right());
 
   int right_available = content_area_bounds.right() - right_growth_start;
@@ -187,10 +186,10 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
                               const gfx::Rect& content_area_bounds,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds) {
-  int top_growth_end = base::clamp(element_bounds.y(), content_area_bounds.y(),
+  int top_growth_end = std::clamp(element_bounds.y(), content_area_bounds.y(),
                                    content_area_bounds.bottom());
   int bottom_growth_start =
-      base::clamp(element_bounds.bottom(), content_area_bounds.y(),
+      std::clamp(element_bounds.bottom(), content_area_bounds.y(),
                   content_area_bounds.bottom());
 
   int top_available = top_growth_end - content_area_bounds.y();

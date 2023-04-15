@@ -95,11 +95,13 @@ TEST_F(PostRestoreSignInProviderTest, message) {
   EnableFeatureVariationAlert();
   NSString* expected;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    expected = @"You were signed out of your account person@example.org as "
-               @"part of your iPad reset. Tap continue below to sign in.";
+    expected = @"You were signed out of your account, person@example.org, as "
+               @"part of your iPad reset. To sign back in, tap \"Continue\" "
+               @"below.";
   } else {
-    expected = @"You were signed out of your account person@example.org as "
-               @"part of your iPhone reset. Tap continue below to sign in.";
+    expected = @"You were signed out of your account, person@example.org, as "
+               @"part of your iPhone reset. To sign back in, tap \"Continue\" "
+               @"below.";
   }
   EXPECT_TRUE([[provider_ message] isEqualToString:expected]);
 }

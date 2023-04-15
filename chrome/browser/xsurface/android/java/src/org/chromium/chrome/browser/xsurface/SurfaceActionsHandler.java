@@ -41,6 +41,33 @@ public interface SurfaceActionsHandler {
     }
 
     /**
+     * Options for entry points to the single web feed.
+     */
+    @IntDef({OpenWebFeedEntryPoint.ATTRIBUTION, OpenWebFeedEntryPoint.RECOMMENDATION,
+            OpenWebFeedEntryPoint.GROUP_HEADER, OpenWebFeedEntryPoint.OTHER,
+            OpenWebFeedEntryPoint.MAX_VALUE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface OpenWebFeedEntryPoint {
+        /**
+         * Feed Atteribution
+         */
+        int ATTRIBUTION = 0;
+        /**
+         * Feed Recomentation
+         */
+        int RECOMMENDATION = 1;
+        /**
+         * Group Header Attribution
+         */
+        int GROUP_HEADER = 2;
+        /**
+         * Other
+         */
+        int OTHER = 3;
+        int MAX_VALUE = OTHER;
+    }
+
+    /**
      * Options when opening URLs with openUrl().
      */
     interface OpenUrlOptions {
@@ -156,7 +183,17 @@ public interface SurfaceActionsHandler {
      * Opens a specific WebFeed by name.
      * @param webFeedName the relevant web feed name.
      */
-    default void openWebFeed(String webFeedName) {}
+    @Deprecated
+    default void openWebFeed(String webFeedName) {
+        openWebFeed(webFeedName, OpenWebFeedEntryPoint.OTHER);
+    }
+
+    /**
+     * Opens a specific WebFeed by name with a specific entrypoint.
+     * @param webFeedName the relevant web feed name.
+     * @param entryPoint the entry point used to launch the feed.
+     */
+    default void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {}
 
     /** Requests that a sync consent prompt be shown. */
     default void showSyncConsentPrompt() {}

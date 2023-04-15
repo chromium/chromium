@@ -416,6 +416,56 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
       host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false));
 }
 
+TEST_F(AnimationHostTest, TickScrollLinkedAnimationSmooth) {
+  ElementId element_id = element_id_;
+  const int linked_animation_id = 11;
+  const int scroll_animation_id = 12;
+
+  client_.RegisterElementId(element_id, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id, ElementListType::ACTIVE);
+  host_impl_->AddAnimationTimeline(timeline_);
+
+  PropertyTrees property_trees(*host_impl_);
+  property_trees.set_is_main_thread(false);
+  property_trees.set_is_active(true);
+  CreateScrollingNodeForElement(element_id, &property_trees);
+  const auto& scroll_tree = property_trees.scroll_tree();
+
+  ScrollTimeline::ScrollOffsets scroll_offsets(0, 100);
+  auto scroll_timeline = ScrollTimeline::Create(
+      element_id, ScrollTimeline::ScrollDown, scroll_offsets);
+
+  scoped_refptr<Animation> animation = Animation::Create(linked_animation_id);
+  host_impl_->AddAnimationTimeline(scroll_timeline);
+  scroll_timeline->AttachAnimation(animation);
+  animation->AttachElement(element_id);
+
+  AddOpacityTransitionToAnimation(animation.get(), 40, .7f, .3f, true);
+  auto* keyframe_model = animation->GetKeyframeModel(TargetProperty::OPACITY);
+  keyframe_model->set_needs_synchronized_start_time(false);
+
+  host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false);
+  TickAnimationsTransferEvents(base::TimeTicks(), 1u);
+
+  scoped_refptr<MockAnimation> mock_scroll_animation(
+      new MockAnimation(scroll_animation_id));
+  EXPECT_CALL(*mock_scroll_animation, Tick(_))
+      .WillOnce(InvokeWithoutArgs([&]() {
+        SetScrollOffset(&property_trees, element_id, gfx::PointF(0, 20));
+      }));
+  timeline_->AttachAnimation(mock_scroll_animation);
+  host_impl_->AddToTicking(mock_scroll_animation);
+
+  // This should tick the scroll animation first, and then the opacity animation
+  // that depends on the scroll position.
+  host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false);
+
+  const float expected_opacity = 0.5;
+  client_impl_.ExpectOpacityPropertyMutated(element_id, ElementListType::ACTIVE,
+                                            expected_opacity);
+}
+
 TEST_F(AnimationHostTest, PushPropertiesToImpl) {
   TestHostClient host_client(ThreadInstance::MAIN);
   AnimationHost* host = host_client.host();

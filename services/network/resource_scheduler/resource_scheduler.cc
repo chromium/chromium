@@ -517,16 +517,6 @@ class ResourceScheduler::Client
     return (!pending_requests_.IsEmpty() || !in_flight_requests_.empty());
   }
 
-  size_t CountInflightDelayableRequests() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return in_flight_delayable_count_;
-  }
-
-  size_t CountInflightNonDelayableRequests() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return in_flight_requests_.size() - in_flight_delayable_count_;
-  }
-
  private:
   enum ShouldStartReqResult {
     DO_NOT_START_REQUEST_AND_STOP_SEARCHING,
@@ -755,45 +745,6 @@ class ResourceScheduler::Client
               base::Milliseconds(10), base::Minutes(3), 50);
         }
       }
-
-      UMA_HISTOGRAM_COUNTS_100(
-          "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable",
-          in_flight_delayable_count_);
-      if (last_non_delayable_request_start_.has_value()) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "ResourceScheduler.NonDelayableLastStartToNonDelayableStart",
-            ticks_now - last_non_delayable_request_start_.value());
-      }
-      if (last_non_delayable_request_end_.has_value()) {
-        LOCAL_HISTOGRAM_CUSTOM_TIMES(
-            "ResourceScheduler.NonDelayableLastEndToNonDelayableStart",
-            ticks_now - last_non_delayable_request_end_.value(),
-            base::Milliseconds(10), base::Minutes(3), 50);
-      }
-
-      // Record time since last non-delayable request start or end, whichever
-      // happened later.
-      absl::optional<base::TimeTicks> last_non_delayable_request_start_or_end;
-      if (last_non_delayable_request_start_.has_value() &&
-          !last_non_delayable_request_end_.has_value()) {
-        last_non_delayable_request_start_or_end =
-            last_non_delayable_request_start_;
-      } else if (!last_non_delayable_request_start_.has_value() &&
-                 last_non_delayable_request_end_.has_value()) {
-        last_non_delayable_request_start_or_end =
-            last_non_delayable_request_end_;
-      } else if (last_non_delayable_request_start_.has_value() &&
-                 last_non_delayable_request_end_.has_value()) {
-        last_non_delayable_request_start_or_end =
-            std::max(last_non_delayable_request_start_.value(),
-                     last_non_delayable_request_end_.value());
-      }
-
-      if (last_non_delayable_request_start_or_end) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "ResourceScheduler.NonDelayableLastStartOrEndToNonDelayableStart",
-            ticks_now - last_non_delayable_request_start_or_end.value());
-      }
     }
   }
 
@@ -914,12 +865,6 @@ class ResourceScheduler::Client
              .CanThrottleNetworkTrafficAnnotationHash(unique_id_hash_code)) {
       return;
     }
-
-    base::TimeDelta queuing_duration =
-        tick_clock_->NowTicks() - request.url_request()->creation_time();
-    UMA_HISTOGRAM_LONG_TIMES(
-        "ResourceScheduler.BrowserInitiatedHeavyRequest.QueuingDuration",
-        queuing_duration);
   }
 
   // ShouldStartRequest is the main scheduling algorithm.
@@ -1288,9 +1233,6 @@ void ResourceScheduler::OnClientCreated(
 
   client_map_[client_id] = std::make_unique<Client>(
       is_browser_initiated, network_quality_estimator, this, tick_clock_);
-
-  UMA_HISTOGRAM_COUNTS_100("ResourceScheduler.ActiveSchedulerClientsCount",
-                           ActiveSchedulerClientsCounter());
 }
 
 void ResourceScheduler::OnClientDeleted(ClientId client_id) {
@@ -1316,18 +1258,6 @@ void ResourceScheduler::OnClientDeleted(ClientId client_id) {
   }
 
   client_map_.erase(it);
-}
-
-size_t ResourceScheduler::ActiveSchedulerClientsCounter() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  size_t active_scheduler_clients_count = 0;
-  for (const auto& client : client_map_) {
-    if (client.second->IsActiveResourceSchedulerClient()) {
-      ++active_scheduler_clients_count;
-    }
-  }
-  return active_scheduler_clients_count;
 }
 
 ResourceScheduler::Client* ResourceScheduler::GetClient(ClientId client_id) {

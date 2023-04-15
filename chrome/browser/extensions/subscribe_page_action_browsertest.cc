@@ -41,29 +41,21 @@ const char kInvalidFeed2[] = "/feeds/feed_invalid2.xml";
 const char kFeedTripleEncoded[] = "/feeds/url%25255Fdecoding.html";
 
 static const char kScriptFeedTitle[] =
-    "window.domAutomationController.send("
-    "  document.getElementById('title') ? "
-    "    document.getElementById('title').textContent : "
-    "    \"element 'title' not found\""
-    ");";
+    "document.getElementById('title') ? "
+    "  document.getElementById('title').textContent : "
+    "  \"element 'title' not found\"";
 static const char kScriptAnchor[] =
-    "window.domAutomationController.send("
-    "  document.getElementById('anchor_0') ? "
-    "    document.getElementById('anchor_0').textContent : "
-    "    \"element 'anchor_0' not found\""
-    ");";
+    "document.getElementById('anchor_0') ? "
+    "  document.getElementById('anchor_0').textContent : "
+    "  \"element 'anchor_0' not found\"";
 static const char kScriptDesc[] =
-    "window.domAutomationController.send("
-    "  document.getElementById('desc_0') ? "
-    "    document.getElementById('desc_0').textContent : "
-    "    \"element 'desc_0' not found\""
-    ");";
+    "document.getElementById('desc_0') ? "
+    "  document.getElementById('desc_0').textContent : "
+    "  \"element 'desc_0' not found\"";
 static const char kScriptError[] =
-    "window.domAutomationController.send("
-    "  document.getElementById('error') ? "
-    "    document.getElementById('error').textContent : "
-    "    \"No error\""
-    ");";
+    "document.getElementById('error') ? "
+    "  document.getElementById('error').textContent : "
+    "  \"No error\"";
 
 GURL GetFeedUrl(net::EmbeddedTestServer* server,
                 const std::string& feed_page,
@@ -119,15 +111,8 @@ class NamedFrameCreatedObserver : public content::WebContentsObserver {
 bool ValidatePageElement(content::RenderFrameHost* frame,
                          const std::string& javascript,
                          const std::string& expected_value) {
-  std::string returned_value;
-
-  if (!content::ExecuteScriptAndExtractString(frame,
-                                              javascript,
-                                              &returned_value))
-    return false;
-
-  EXPECT_STREQ(expected_value.c_str(), returned_value.c_str());
-  return expected_value == returned_value;
+  EXPECT_EQ(expected_value, content::EvalJs(frame, javascript));
+  return true;
 }
 
 // Navigates to a feed page and, if |sniff_xml_type| is set, wait for the

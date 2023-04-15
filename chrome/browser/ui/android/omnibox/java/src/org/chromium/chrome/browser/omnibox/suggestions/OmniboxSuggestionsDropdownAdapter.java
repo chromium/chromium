@@ -110,6 +110,7 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
     }
 
     @Override
+    // extend this
     protected View createView(ViewGroup parent, int viewType) {
         // This skips measuring Adapter.CreateViewHolder, which is final, but it capture
         // the creation of a view holder.

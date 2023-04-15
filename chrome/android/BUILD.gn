@@ -128,6 +128,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/signin/services/android:java_resources",
       "//chrome/browser/tab:java_resources",
       "//chrome/browser/ui/android/appmenu:java_resources",
+      "//chrome/browser/ui/android/device_lock:java_resources",
       "//chrome/browser/ui/android/favicon:java_resources",
       "//chrome/browser/ui/android/management:java_resources",
       "//chrome/browser/ui/android/omnibox:java_resources",
@@ -336,6 +337,9 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/appmenu:factory_java",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
+      "//chrome/browser/ui/android/device_lock:java",
+      "//chrome/browser/ui/android/edge_to_edge:factory_java",
+      "//chrome/browser/ui/android/edge_to_edge:java",
       "//chrome/browser/ui/android/fast_checkout:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/layouts:java",
@@ -715,6 +719,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/touch_to_fill/payments/android/internal:java",
       "//chrome/browser/ui/android/appmenu/internal:java",
       "//chrome/browser/ui/android/autofill/internal:java",
+      "//chrome/browser/ui/android/edge_to_edge/internal:java",
       "//chrome/browser/ui/android/fast_checkout/internal:java",
       "//chrome/browser/ui/android/webid/internal:java",
       "//chrome/browser/video_tutorials/internal:java",
@@ -817,6 +822,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_cast_java",
       "$google_play_services_package:google_play_services_gcm_java",
       "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
       "//base:base_junit_test_support",
       "//base/test:test_support_java",
       "//cc:cc_java",
@@ -937,6 +943,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/autofill/internal:junit",
       "//chrome/browser/ui/android/default_browser_promo:java",
       "//chrome/browser/ui/android/default_browser_promo:junit",
+      "//chrome/browser/ui/android/device_lock:junit",
+      "//chrome/browser/ui/android/edge_to_edge/internal:junit",
       "//chrome/browser/ui/android/fast_checkout/internal:junit",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/layouts:java",
@@ -1382,6 +1390,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
       "//base:jni_java",
       "//base/test:test_support_java",
       "//build/android:build_java",
@@ -1496,6 +1505,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/touch_to_fill/payments/android/internal:java_resources",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/test:test_support_java",
+      "//chrome/browser/ui/android/device_lock:javatests",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/layouts:java",
       "//chrome/browser/ui/android/layouts/test:java",
@@ -1858,6 +1868,7 @@ if (current_toolchain == default_toolchain) {
 
         deps = chrome_test_xr_java_deps + [
                  ":chrome_test_util_java",
+                 "//base:base_java_test_support_uncommon",
                  "//chrome/android:chrome_test_xr_java",
                  "//chrome/android/features/vr:java_resources",
                  "//chrome/browser/profiles/android:java",
@@ -2275,7 +2286,6 @@ if (current_toolchain == default_toolchain) {
     sources = [
       "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
-      "javatests/src/org/chromium/chrome/browser/query_tiles/QueryTileFakeServer.java",
       "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
       "javatests/src/org/chromium/chrome/browser/test/MockCertVerifierRuleAndroid.java",
     ]
@@ -2287,7 +2297,6 @@ if (current_toolchain == default_toolchain) {
     sources = [
       "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
-      "javatests/src/org/chromium/chrome/browser/query_tiles/QueryTileFakeServer.java",
       "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
       "javatests/src/org/chromium/chrome/browser/test/MockCertVerifierRuleAndroid.java",
     ]
@@ -2325,7 +2334,6 @@ if (current_toolchain == default_toolchain) {
       "../browser/android/ssl/mock_cert_verifier_rule_android.cc",
       "../browser/android/ssl/mock_cert_verifier_rule_android.h",
       "../browser/offline_pages/android/offline_test_util_jni.cc",
-      "../browser/query_tiles/query_tile_fake_server.cc",
       "../browser/sync/android/fake_server_helper_android.cc",
     ]
     deps = [
@@ -3112,10 +3120,8 @@ if (current_toolchain == default_toolchain) {
 
     if (_is_trichrome) {
       _bundle_name = "TrichromeChrome${invoker.bundle_suffix}"
-      _module_descs = trichrome_module_descs
     } else {
       _bundle_name = "MonochromePublic${invoker.bundle_suffix}"
-      _module_descs = monochrome_module_descs
     }
 
     monochrome_public_apk_or_module_tmpl(_base_module_target_name) {
@@ -3163,7 +3169,11 @@ if (current_toolchain == default_toolchain) {
       base_module_target = ":$_base_module_target_name"
       bundle_name = _bundle_name
       manifest_package = chrome_public_manifest_package
-      module_descs = _module_descs
+      if (is_monochrome) {
+        module_descs = monochrome_module_descs
+      } else {
+        module_descs = chrome_module_descs
+      }
       chrome_deps = [ ":delegate_public_impl_java" ]
       if (!_is_trichrome) {
         chrome_deps += [ "//chrome/android:monochrome_java" ]

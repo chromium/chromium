@@ -5,9 +5,10 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_INPUT_DEVICE_INFORMATION_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_INPUT_DEVICE_INFORMATION_H_
 
+#include <vector>
+
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -32,8 +33,7 @@ class InputDeviceInformation {
   // Keyboard-only fields:
   ui::KeyboardCapability::DeviceType keyboard_type;
   ui::KeyboardCapability::KeyboardTopRowLayout keyboard_top_row_layout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      keyboard_scan_code_map;
+  std::vector<uint32_t> keyboard_scan_codes;
 };
 
 // Class for running GetDeviceInfo in its own sequence, to allow it to block.

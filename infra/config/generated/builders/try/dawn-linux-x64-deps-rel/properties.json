@@ -125,5 +125,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.dawn",
-  "recipe": "chromium_trybot"
+  "recipe": "chromium_trybot",
+  "root_solution_revision": "refs/heads/main"
 }

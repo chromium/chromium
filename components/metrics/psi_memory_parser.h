@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_PSI_MEMORY_PARSER_H_
 #define COMPONENTS_METRICS_PSI_MEMORY_PARSER_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/gtest_prod_util.h"

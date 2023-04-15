@@ -31,6 +31,8 @@ class TestBuffer {
 
   wl_buffer* resource() { return resource_.get(); }
 
+  wl_buffer* GetResourceAndRelease() { return resource_.release(); }
+
   static void OnRelease(void* data, wl_buffer* resource);
 
  private:

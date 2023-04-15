@@ -11,7 +11,15 @@ from unexpected_passes_common import queries as upc_queries
 
 # Gets all image comparison failures from the past |sample_period| days from CI
 # bots.
-# TODO(crbug.com/1396136): Support Flag Specific Tests in the step check.
+# List of data selected from the database:
+# exported.id - build id of this test, like build-12345
+# test_metadata.name - the full test name, like external/wpt/rendering/test1
+# typ_tags - list of the test build tag, like [linux,release,trusty,x86_64]
+# typ_expectations - list of expectations, like [Failure,Pass,Timeout]
+# step_names - list of step name from test task, like [blink_wpt_tests on Mac]
+# test_type - test type of this test, like image
+# image_diff_max_difference - the color channel diff in int, like 100
+# image_diff_total_pixels - the pixel number diff in int, like 300
 CI_FAILED_IMAGE_COMPARISON_TEST_QUERY = """
 WITH
   failed_tests AS (
@@ -48,8 +56,6 @@ WITH
 SELECT *
 FROM failed_tests ft
 WHERE
-  (STARTS_WITH(ARRAY_TO_STRING(step_names, ''), 'blink_wpt_tests') OR
-   STARTS_WITH(ARRAY_TO_STRING(step_names, ''), 'blink_web_tests')) AND
   test_type = "image" AND
   image_diff_max_difference IS NOT NULL AND
   image_diff_total_pixels IS NOT NULL

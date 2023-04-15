@@ -703,7 +703,6 @@ void NGBoxFragmentPainter::PaintCaretsIfNeeded(
 
   // Apply overflow clip if needed.
   // reveal-caret-of-multiline-contenteditable.html needs this.
-  // TDOO(yoisn): We should share this code with |BlockPainter::Paint()|
   absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
   if (const auto* fragment = paint_state.FragmentToPaint()) {
     if (const auto* properties = fragment->PaintProperties()) {

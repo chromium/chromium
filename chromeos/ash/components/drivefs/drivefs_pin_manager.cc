@@ -6,6 +6,7 @@
 
 #include <iomanip>
 #include <locale>
+#include <sstream>
 #include <type_traits>
 
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -25,32 +27,14 @@ namespace {
 
 using base::SequencedTaskRunner;
 using base::TimeDelta;
-using drivefs::mojom::QueryItem;
-using drivefs::mojom::QueryItemPtr;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
+using mojom::QueryItem;
+using mojom::QueryItemPtr;
+using mojom::ShortcutDetails;
 using std::ostream;
 using Path = PinManager::Path;
-
-bool InProgress(const Stage stage) {
-  switch (stage) {
-    case Stage::kGettingFreeSpace:
-    case Stage::kListingFiles:
-    case Stage::kSyncing:
-      return true;
-
-    case Stage::kStopped:
-    case Stage::kPaused:
-    case Stage::kSuccess:
-    case Stage::kCannotGetFreeSpace:
-    case Stage::kCannotListFiles:
-    case Stage::kNotEnoughSpace:
-    case Stage::kCannotEnableDocsOffline:
-      return false;
-  }
-
-  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
-}
+using LookupStatus = ShortcutDetails::LookupStatus;
 
 int Percentage(const int64_t a, const int64_t b) {
   DCHECK_GE(a, 0);
@@ -94,6 +78,22 @@ Quoter<T> Quote(const T& value) {
   return {value};
 }
 
+template <typename T>
+  requires std::is_enum_v<T>
+ostream& operator<<(ostream& out, Quoter<T> q) {
+  // Convert enum value to string.
+  const std::string s = (std::ostringstream() << q.value).str();
+
+  // Does the string start with 'k'?
+  if (!s.empty() && s.front() == 'k') {
+    // Skip the 'k' prefix.
+    return out << base::StringPiece(s).substr(1);
+  }
+
+  // No 'k' prefix. Print between parentheses.
+  return out << '(' << s << ')';
+}
+
 ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
   const int64_t ms = q.value.InMilliseconds();
   if (ms < 1000) {
@@ -131,75 +131,7 @@ ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
   return out << Quote(*q.value);
 }
 
-ostream& operator<<(ostream& out, Quoter<FileMetadata::Type> q) {
-  using Type = FileMetadata::Type;
-  switch (q.value) {
-#define PRINT(s)   \
-  case Type::k##s: \
-    return out << #s;
-    PRINT(File)
-    PRINT(Hosted)
-    PRINT(Directory)
-#undef PRINT
-  }
-
-  return out << "FileMetadata::Type("
-             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent::State> q) {
-  using State = mojom::ItemEvent::State;
-  switch (q.value) {
-#define PRINT(s)    \
-  case State::k##s: \
-    return out << #s;
-    PRINT(Queued)
-    PRINT(InProgress)
-    PRINT(Completed)
-    PRINT(Failed)
-#undef PRINT
-  }
-
-  return out << "ItemEvent::State("
-             << static_cast<std::underlying_type_t<State>>(q.value) << ")";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::FileChange::Type> q) {
-  using Type = mojom::FileChange::Type;
-  switch (q.value) {
-#define PRINT(s)   \
-  case Type::k##s: \
-    return out << #s;
-    PRINT(Create)
-    PRINT(Delete)
-    PRINT(Modify)
-#undef PRINT
-  }
-
-  return out << "FileChange::Type("
-             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
-}
-
-ostream& operator<<(ostream& out,
-                    Quoter<mojom::ShortcutDetails::LookupStatus> q) {
-  using LookupStatus = mojom::ShortcutDetails::LookupStatus;
-  switch (q.value) {
-#define PRINT(s)           \
-  case LookupStatus::k##s: \
-    return out << #s;
-    PRINT(Ok)
-    PRINT(NotFound)
-    PRINT(PermissionDenied)
-    PRINT(Unknown)
-#undef PRINT
-  }
-
-  return out << "ShortcutDetails::LookupStatus("
-             << static_cast<std::underlying_type_t<LookupStatus>>(q.value)
-             << ")";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::ShortcutDetails> q) {
+ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
   return out << "{id: " << PinManager::Id(q.value.target_stable_id)
              << ", status: " << Quote(q.value.target_lookup_status) << "}";
 }
@@ -231,23 +163,6 @@ ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
   return out << "{" << Quote(change.type) << " "
              << PinManager::Id(change.stable_id) << " " << Quote(change.path)
              << "}";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::DriveError::Type> q) {
-  using Type = mojom::DriveError::Type;
-  switch (q.value) {
-#define PRINT(s)   \
-  case Type::k##s: \
-    return out << #s;
-    PRINT(CantUploadStorageFull)
-    PRINT(PinningFailedDiskFull)
-    PRINT(CantUploadStorageFullOrganization)
-    PRINT(CantUploadSharedDriveStorageFull)
-#undef PRINT
-  }
-
-  return out << "DriveError::Type("
-             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
@@ -312,28 +227,6 @@ ostream& operator<<(ostream& out, HumanReadableSize size) {
   return out << " (" << std::setprecision(4) << d << " " << *unit << ")";
 }
 
-ostream& operator<<(ostream& out, const Stage stage) {
-  switch (stage) {
-#define PRINT(s)    \
-  case Stage::k##s: \
-    return out << #s;
-    PRINT(Stopped)
-    PRINT(Paused)
-    PRINT(GettingFreeSpace)
-    PRINT(ListingFiles)
-    PRINT(Syncing)
-    PRINT(Success)
-    PRINT(CannotGetFreeSpace)
-    PRINT(CannotListFiles)
-    PRINT(NotEnoughSpace)
-    PRINT(CannotEnableDocsOffline)
-#undef PRINT
-  }
-
-  return out << "Stage(" << static_cast<std::underlying_type_t<Stage>>(stage)
-             << ")";
-}
-
 ostream& PinManager::File::PrintTo(ostream& out) const {
   return out << "{path: " << Quote(path)
              << ", transferred: " << HumanReadableSize(transferred)
@@ -375,7 +268,31 @@ bool Progress::IsError() const {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
+  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+bool InProgress(const Stage stage) {
+  switch (stage) {
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kSyncing:
+      return true;
+
+    case Stage::kStopped:
+    case Stage::kPaused:
+    case Stage::kSuccess:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+    case Stage::kCannotEnableDocsOffline:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+std::string ToString(Stage stage) {
+  return (std::ostringstream() << Quote(stage)).str();
 }
 
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
@@ -405,10 +322,8 @@ bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
     return false;
   }
 
-  // TODO(b/266037569): Setting root in the query made to DriveFS is currently
-  // unsupported.
-  if (!Path("/root").IsParent(path)) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
+  if (md.trashed) {
+    VLOG(1) << "Skipped " << id << " " << Quote(path) << ": Trashed";
     return false;
   }
 
@@ -596,7 +511,8 @@ PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
 
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+  DCHECK(!InProgress(progress_.stage))
+      << "Pin manager is " << Quote(progress_.stage);
 
   for (Observer& observer : observers_) {
     observer.OnDrop();
@@ -608,13 +524,13 @@ void PinManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (InProgress(progress_.stage)) {
-    LOG(ERROR) << "Pin manager is already started: " << progress_.stage;
+    LOG(ERROR) << "Pin manager is already started: " << Quote(progress_.stage);
     return;
   }
 
   VLOG(1) << "Starting";
   progress_ = {};
-  visited_dirs_.clear();
+  listed_items_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
   DCHECK_EQ(progress_.syncing_files, 0);
@@ -811,7 +727,7 @@ void PinManager::OnSearchResult(const Id dir_id,
             << progress_.listed_files << " files, " << progress_.listed_docs
             << " docs, " << progress_.listed_shortcuts << " shortcuts";
     VLOG(1) << NiceNum << "Tracking " << files_to_track_.size() << " files";
-    visited_dirs_.clear();
+    listed_items_.clear();
     return StartPinning();
   }
 
@@ -833,26 +749,63 @@ void PinManager::OnSearchResult(const Id dir_id,
 
 void PinManager::HandleQueryItem(Id dir_id,
                                  const Path& dir_path,
-                                 const drivefs::mojom::QueryItem& item) {
+                                 const QueryItem& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(item.metadata);
-  const FileMetadata& md = *item.metadata;
-  const Id id = Id(md.stable_id);
+  FileMetadata& md = *item.metadata;
+  Id id = Id(md.stable_id);
   const Path& path = item.path;
 
   if (!dir_path.IsParent(path)) {
-    progress_.skipped_items++;
-    LOG(ERROR) << "Unexpected path " << id << " " << Quote(path) << " for "
-               << Quote(md) << " when listing items in " << dir_id << " "
-               << Quote(dir_path);
-    return;
+    VLOG(1) << "Disconnected path for " << Quote(md.type) << " " << id << " "
+            << Quote(path) << " when listing items in Directory " << dir_id
+            << " " << Quote(dir_path);
   }
 
+  // Is this item a shortcut?
   if (md.shortcut_details) {
-    progress_.skipped_items++;
     progress_.listed_shortcuts++;
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
-            << md.type << " " << Id(md.shortcut_details->target_stable_id);
+
+    // Is the shortcut's target accessible?
+    if (md.shortcut_details->target_lookup_status != LookupStatus::kOk) {
+      // The shortcut target is not accessible.
+      progress_.skipped_items++;
+      VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
+              << "Target " << Quote(md.type) << " "
+              << Id(md.shortcut_details->target_stable_id)
+              << " has lookup error: "
+              << Quote(md.shortcut_details->target_lookup_status);
+      return;
+    }
+
+    // Is the shortcut's target in the trash bin?
+    if (md.trashed) {
+      // The shortcut target is in the trash bin.
+      progress_.skipped_items++;
+      VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
+              << "Target " << Quote(md.type) << " "
+              << Id(md.shortcut_details->target_stable_id) << " is trashed";
+      return;
+    }
+
+    // The shortcut target is accessible.
+    VLOG(1) << "Following shortcut " << id << " " << Quote(path) << " to "
+            << Quote(md.type) << " "
+            << Id(md.shortcut_details->target_stable_id);
+
+    // Follow the shortcut.
+    md.stable_id = md.shortcut_details->target_stable_id;
+    id = Id(md.stable_id);
+    md.shortcut_details.reset();
+  }
+
+  // Deduplicate items.
+  if (const auto [it, ok] = listed_items_.try_emplace(id, dir_id); !ok) {
+    DCHECK_EQ(it->first, id);
+    progress_.skipped_items++;
+    VLOG(1) << "Skipped " << Quote(md.type) << " " << id << " " << Quote(path)
+            << " seen in Directory " << dir_id << " " << Quote(dir_path)
+            << ": Previously seen in Directory " << it->second;
     return;
   }
 
@@ -870,16 +823,6 @@ void PinManager::HandleQueryItem(Id dir_id,
 
     case Type::kDirectory:
       progress_.listed_dirs++;
-
-      if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path); !ok) {
-        DCHECK_EQ(it->first, id);
-        progress_.skipped_items++;
-        VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
-                << dir_id << " " << Quote(dir_path)
-                << " was previously seen when listing " << Quote(it->second);
-        return;
-      }
-
       ListItems(id, path);
       return;
   }
@@ -908,11 +851,11 @@ void PinManager::Complete(const Stage stage) {
       break;
 
     default:
-      LOG(ERROR) << "Finished with error: " << stage;
+      LOG(ERROR) << "Finished with error: " << Quote(stage);
   }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  visited_dirs_.clear();
+  listed_items_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
   progress_.syncing_files = 0;
@@ -1158,7 +1101,7 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
 
   if (!InProgress(progress_.stage)) {
     VLOG(2) << "Ignored " << Quote(event) << ": PinManager is currently "
-            << progress_.stage;
+            << Quote(progress_.stage);
     return;
   }
 
@@ -1168,6 +1111,11 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
   if (id == Id::kNone) {
     // Ignore spurious event (b/268419828).
     VLOG(2) << "Ignored " << Quote(event) << ": Spurious event";
+    return;
+  }
+
+  if (!Path("/root").IsParent(path)) {
+    VLOG(2) << "Ignored " << Quote(event) << ": Not in 'My Drive'";
     return;
   }
 

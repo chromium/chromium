@@ -24,7 +24,7 @@ std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
   return std::make_unique<ImmersiveModeControllerChromeos>();
 #elif BUILDFLAG(IS_MAC)
   if (browser_view->UsesImmersiveFullscreenMode()) {
-    return CreateImmersiveModeControllerMac();
+    return CreateImmersiveModeControllerMac(browser_view);
   }
   return std::make_unique<ImmersiveModeControllerStub>();
 #else

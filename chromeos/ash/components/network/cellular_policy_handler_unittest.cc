@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -53,7 +54,13 @@ const char kInstallViaPolicyInitialOperationHistogram[] =
     "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.InitialAttempt";
 const char kInstallViaPolicyRetryOperationHistogram[] =
     "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry";
-const base::TimeDelta kInstallationRetryOnceDelay = base::Minutes(15);
+const char kUnmanagedCellularServicePath[] = "cellular_service_path";
+const char kUnmanagedCellularGuid[] = "unmanaged_cellular_guid";
+const char kUnmanagedCellularName[] = "unmanaged_cellular";
+const char kWifiServicePath[] = "wifi_service_path";
+const char kWifiGuid[] = "wifi_guid";
+const char kWifiName[] = "wifi";
+const base::TimeDelta kInstallationRetryDelay = base::Days(1);
 
 void CheckShillConfiguration(bool is_installed) {
   std::string service_path =
@@ -236,7 +243,7 @@ class CellularPolicyHandlerTest : public testing::Test {
       EXPECT_FALSE(smdp_address);
       return;
     }
-    EXPECT_TRUE(smdp_address);
+    ASSERT_TRUE(smdp_address);
     EXPECT_FALSE(smdp_address->empty());
   }
 
@@ -368,18 +375,34 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   SetupEuicc();
-  // Verify esim profile doesn't get installed when installing policy esim
-  // with a invalid SMDP address.
-  const std::string policy = GenerateCellularPolicy("000");
+
   base::HistogramTester histogram_tester;
+
+  // Make the first installation attempt fail, resulting in an immediate retry
+  // delay of |kInstallationRetryDelay|.
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextInstallProfileFromActivationCodeResult(
+          HermesResponseStatus::kErrorSendHttpsFailure);
+
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
   InstallESimPolicy(policy,
-                    /*activation_code=*/std::string(),
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
-  FastForwardBy(kInstallationRetryOnceDelay);
+
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/0);
   histogram_tester.ExpectBucketCount(
       kInstallViaPolicyOperationHistogram,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/2);
+      /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
       kInstallViaPolicyInitialOperationHistogram,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
@@ -387,9 +410,31 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   histogram_tester.ExpectBucketCount(
       kInstallViaPolicyRetryOperationHistogram,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*expected_count=*/1);
+      /*expected_count=*/0);
   CheckShillConfiguration(/*is_installed=*/false);
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
+
+  // Fast forward by |kInstallationRetryDelay| to trigger a retry. We use some
+  // buffer time since the retry mechanism doesn't happen synchronously.
+  FastForwardBy(kInstallationRetryDelay + base::Minutes(5));
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyInitialOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kInstallViaPolicyRetryOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/0);
+  CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallOnSecondEUICC) {
@@ -485,19 +530,12 @@ TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileFailure) {
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
-  FastForwardBy(kInstallationRetryOnceDelay);
+  FastForwardBy(kInstallationRetryDelay);
   CheckShillConfiguration(/*is_installed=*/false);
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
 }
 
 TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
-  const char kUnmanagedCellularServicePath[] = "cellular_service_path";
-  const char kUnmanagedCellularGuid[] = "unmanaged_cellular_guid";
-  const char kUnmanagedCellularName[] = "unmanaged_cellular";
-  const char kWifiServicePath[] = "wifi_service_path";
-  const char kWifiGuid[] = "wifi_guid";
-  const char kWifiName[] = "wifi";
-
   SetupEuicc();
   auto* shill_service = ShillServiceClient::Get()->GetTestInterface();
   shill_service->ClearServices();
@@ -513,7 +551,8 @@ TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
-  FastForwardBy(kInstallationRetryOnceDelay);
+  // Fast forward 6 minutes since the first retry should happen in 5 minutes.
+  FastForwardBy(base::Minutes(6));
   CheckShillConfiguration(/*is_installed=*/false);
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
   // Verify that cellular type of internet connectivity should not trigger the
@@ -523,8 +562,8 @@ TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
                             shill::kTypeCellular, shill::kStateOnline,
                             /*visible=*/true);
   base::RunLoop().RunUntilIdle();
-  // Fast forward 30 minutes since next retry should happen in 20 minutes.
-  FastForwardBy(base::Minutes(30));
+  // Fast forward 11 minutes since the first retry should happen in 10 minutes.
+  FastForwardBy(base::Minutes(11));
   CheckShillConfiguration(/*is_installed=*/false);
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
   // Verify that installation succeeds when a non-cellular type internet is
@@ -533,8 +572,8 @@ TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
                             shill::kTypeWifi, shill::kStateOnline,
                             /*visible=*/true);
   base::RunLoop().RunUntilIdle();
-  // Fast forward 50 minutes since next retry should happen in 40 minutes.
-  FastForwardBy(base::Minutes(50));
+  // Fast forward 21 minutes since the first retry should happen in 20 minutes.
+  FastForwardBy(base::Minutes(21));
   CheckShillConfiguration(/*is_installed=*/true);
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }

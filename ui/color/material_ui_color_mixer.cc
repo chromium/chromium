@@ -48,6 +48,9 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorComboboxBackground] = {kColorSysSurface};
   mixer[kColorComboboxBackgroundDisabled] = {GetResultingPaintColor(
       {kColorSysStateDisabledContainer}, {kColorComboboxBackground})};
+  mixer[kColorComboboxContainerOutline] = {kColorSysNeutralOutline};
+  mixer[kColorComboboxInkDropHovered] = {kColorSysStateHoverOnSubtle};
+  mixer[kColorComboboxInkDropRipple] = {kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorFocusableBorderFocused] = {kColorSysStateFocusRing};
   mixer[kColorFocusableBorderUnfocused] = {kColorSysOutline};
   mixer[kColorFrameActive] = {kColorSysHeader};
@@ -56,7 +59,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorListItemFolderIconBackground] = {kColorSysTonalContainer};
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};
   mixer[kColorListItemUrlFaviconBackground] = {kColorSysNeutralContainer};
-  mixer[kColorRadioButtonForegroundChecked] = {kColorSysOnSurfacePrimary};
+  mixer[kColorRadioButtonForegroundChecked] = {kColorSysPrimary};
   mixer[kColorRadioButtonForegroundDisabled] = {
       kColorSysStateDisabledContainer};
   mixer[kColorRadioButtonForegroundUnchecked] = {kColorSysOutline};

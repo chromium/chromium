@@ -46,10 +46,11 @@
   self = [super init];
   if (self) {
     _clipboardRecentContent = [[ClipboardRecentContentImplIOS alloc]
-           initWithMaxAge:1 * 60 * 60
-        authorizedSchemes:[NSSet setWithObjects:@"http", @"https", nil]
-             userDefaults:app_group::GetGroupUserDefaults()
-                 delegate:nil];
+               initWithMaxAge:1 * 60 * 60
+            authorizedSchemes:[NSSet setWithObjects:@"http", @"https", nil]
+                 userDefaults:app_group::GetGroupUserDefaults()
+        onlyUseClipboardAsync:NO
+                     delegate:nil];
     _copiedContentType = CopiedContentTypeNone;
     _command = [[AppGroupCommand alloc]
         initWithSourceApp:app_group::kOpenCommandSourceSearchExtension

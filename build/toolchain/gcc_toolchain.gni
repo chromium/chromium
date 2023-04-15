@@ -769,18 +769,6 @@ template("single_gcc_toolchain") {
         rust_sysroot = rust_sysroot_relative_to_out
       }
 
-      # Rustc attempts to link `libgcc` unconditionally on Android, but it's a
-      # mistake to do so. We get our unwinding from `libunwind`, which we link
-      # in explicitly ourselves, and we have no `libgcc` present. To avoid a
-      # missing library, we point rustc to an empty `libgcc.a` file. This allows
-      # rustc to link .so files targeting android: http://crbug.com/1278030
-      dummy_libgcc = ""
-      if (is_android) {
-        dummy_libgcc_path =
-            rebase_path("//build/android/dummy_libgcc", root_build_dir)
-        dummy_libgcc = "-L$dummy_libgcc_path"
-      }
-
       tool("rust_cdylib") {
         dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         depfile = "$dllname.d"
@@ -794,7 +782,7 @@ template("single_gcc_toolchain") {
         outputs = [ dllname ]
 
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} ${extra_ldflags} ${dummy_libgcc} RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative_to_out
       }
 

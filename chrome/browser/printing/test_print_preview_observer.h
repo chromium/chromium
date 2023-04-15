@@ -57,7 +57,7 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count_ = 0;
 
   const bool wait_for_loaded_;
-  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> preview_dialog_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;

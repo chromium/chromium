@@ -351,14 +351,14 @@ class LocalCardMigrationBrowserTest
         {DialogEvent::REQUESTED_LOCAL_CARD_MIGRATION,
          DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE});
     FillAndSubmitFormWithCard(card_number);
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
   }
 
   void ClickOnSaveButtonAndWaitForMigrationResults() {
     ResetEventWaiterForSequence({DialogEvent::SENT_MIGRATE_CARDS_REQUEST,
                                  DialogEvent::RECEIVED_MIGRATE_CARDS_RESPONSE});
     ClickOnOkButton(GetLocalCardMigrationMainDialogView());
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
   }
 
   void FillAndSubmitFormWithCard(std::string card_number) {
@@ -514,7 +514,9 @@ class LocalCardMigrationBrowserTest
         std::make_unique<EventWaiter<DialogEvent>>(std::move(event_sequence));
   }
 
-  void WaitForObservedEvent() { event_waiter_->Wait(); }
+  [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
+    return event_waiter_->Wait();
+  }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;

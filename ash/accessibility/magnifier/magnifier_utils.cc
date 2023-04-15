@@ -11,7 +11,6 @@
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -57,7 +56,7 @@ float GetNextMagnifierScaleValue(int delta_index,
   const int current_index = IndexFromScale(current_scale);
   const int new_scale_index = current_index + delta_index;
   const float new_scale = std::pow(kMagnificationScaleFactor, new_scale_index);
-  return base::clamp(new_scale, min_scale, max_scale);
+  return std::clamp(new_scale, min_scale, max_scale);
 }
 
 gfx::Rect GetViewportWidgetBoundsInRoot(aura::Window* root,

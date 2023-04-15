@@ -70,6 +70,7 @@ bool isAndroidPasswordManagerRequester(
     case device_reauth::DeviceAuthRequester::kIncognitoReauthPage:
     // kPasswordsInSettings flag is used only for desktop.
     case device_reauth::DeviceAuthRequester::kPasswordsInSettings:
+    case device_reauth::DeviceAuthRequester::kLocalCardAutofill:
       return false;
   }
 }

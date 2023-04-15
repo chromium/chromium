@@ -90,10 +90,18 @@ suite('DynamicColorElementTest', function() {
   test('displays content', async () => {
     await initDynamicColorElement();
 
+    const title = dynamicColorElement!.shadowRoot!.getElementById('themeTitle');
+    assertTrue(!!title);
     assertEquals(
-        '[temp]Theme color[temp]Auto',
-        dynamicColorElement!.shadowRoot!.getElementById(
-                                            'themeHeader')!.textContent);
+        dynamicColorElement!.i18n('dynamicColorLabel'), title.textContent);
+
+    const description = dynamicColorElement!.shadowRoot!.getElementById(
+        'dynamicColorToggleDescription');
+    assertTrue(!!description);
+    assertEquals(
+        dynamicColorElement!.i18n('dynamicColorDescription'),
+        description.textContent);
+
     assertTrue(getToggleButton().checked, 'default toggle should be on');
     assertFalse(
         getColorSchemeSelector().hidden,
@@ -213,7 +221,8 @@ suite('DynamicColorElementTest', function() {
         'when the toggle is off, the static color buttons should be visible.');
     const checkedButton = getStaticColorSelector().querySelector(
                               'cr-button[aria-checked="true"]') as HTMLElement;
-    assertEquals(staticColorHex, checkedButton.dataset['staticColor']);
+    assertTrue(checkedButton.getElementsByTagName('circle')[0]!
+                   .getAttribute('style')!.includes(staticColorHex));
   });
 
   test('flips toggle', async () => {
@@ -327,9 +336,13 @@ suite('DynamicColorElementTest', function() {
         await personalizationStore.waitForAction(
             ThemeActionName.SET_STATIC_COLOR) as SetStaticColorAction;
     assertTrue(!!action.staticColor);
+    // Gets the style attribute of the circle, uses regex to search for the hex
+    // string, and then converts it to an SkColor.
+    const buttonSkColor = hexColorToSkColor(
+        button.getElementsByTagName('circle')[0]!.getAttribute('style')!.match(
+            '#.{6}')![0]);
     assertDeepEquals(
-        hexColorToSkColor(button.dataset['staticColor']!),
-        personalizationStore.data.theme.staticColorSelected);
+        buttonSkColor, personalizationStore.data.theme.staticColorSelected);
     assertEquals(button.getAttribute('aria-checked'), 'true');
   });
 

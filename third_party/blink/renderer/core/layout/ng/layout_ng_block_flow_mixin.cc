@@ -102,7 +102,7 @@ bool LayoutNGBlockFlowMixin<Base>::HasNGInlineNodeData() const {
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
-    Vector<PhysicalRect>& rects,
+    OutlineRectCollector& collector,
     LayoutObject::OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
@@ -114,12 +114,12 @@ void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
     const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
     if (fragment->HasItems()) {
       fragment->AddSelfOutlineRects(additional_offset, include_block_overflows,
-                                    &rects, info);
+                                    collector, info);
       return;
     }
   }
 
-  Base::AddOutlineRects(rects, info, additional_offset,
+  Base::AddOutlineRects(collector, info, additional_offset,
                         include_block_overflows);
 }
 

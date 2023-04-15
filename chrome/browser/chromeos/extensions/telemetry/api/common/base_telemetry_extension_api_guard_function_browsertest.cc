@@ -421,6 +421,34 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      // Event APIs.
+      async function isEventSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.events.isEventSupported("audio_jack"),
+            'Error: Unauthorized access to ' +
+            'chrome.os.events.isEventSupported. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function startCapturingEvents() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.events.startCapturingEvents("audio_jack"),
+            'Error: Unauthorized access to ' +
+            'chrome.os.events.startCapturingEvents. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function stopCapturingEvents() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.events.stopCapturingEvents("audio_jack"),
+            'Error: Unauthorized access to ' +
+            'chrome.os.events.stopCapturingEvents. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
     ];
 
     chrome.test.runTests([
@@ -434,7 +462,8 @@ std::string GetServiceWorkerForError(const std::string& error) {
         }
         apiNames = [
           ...getMethods(chrome.os.telemetry).sort(),
-          ...getMethods(chrome.os.diagnostics).sort()
+          ...getMethods(chrome.os.diagnostics).sort(),
+          ...getMethods(chrome.os.events).sort()
         ];
         chrome.test.assertEq(getTestNames(tests), apiNames);
         chrome.test.succeed();
@@ -457,6 +486,36 @@ class TelemetryExtensionApiGuardBrowserTest
     // Include unreleased APIs.
     feature_list_.InitAndEnableFeature(
         extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ protected:
+  std::string GetManifestFile(const std::string& matches_origin) override {
+    return base::StringPrintf(R"(
+      {
+        "key": "%s",
+        "name": "Test Telemetry Extension",
+        "version": "1",
+        "manifest_version": 3,
+        "chromeos_system_extension": {},
+        "background": {
+          "service_worker": "sw.js"
+        },
+        "permissions": [
+          "os.diagnostics",
+          "os.events",
+          "os.telemetry",
+          "os.telemetry.serial_number",
+          "os.telemetry.network_info"
+        ],
+        "externally_connectable": {
+          "matches": [
+            "%s"
+          ]
+        },
+        "options_page": "options.html"
+      }
+    )",
+                              public_key().c_str(), matches_origin.c_str());
   }
 
  private:

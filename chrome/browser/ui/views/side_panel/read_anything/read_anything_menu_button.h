@@ -33,7 +33,8 @@ class ReadAnythingMenuButton : public views::MenuButton {
                int icon_size,
                ui::ColorId icon_color);
   void SetDropdownColorIds(ui::ColorId background_color,
-                           ui::ColorId foreground_color);
+                           ui::ColorId foreground_color,
+                           ui::ColorId selected_color);
 
  private:
   void ButtonPressed();

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.externalnav;
 
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.app.Activity;
@@ -604,9 +605,9 @@ public class UrlOverridingTest {
 
         PropertyModel message = getCurrentExternalNavigationMessage();
         Assert.assertNotNull(message);
-        Assert.assertThat(message.get(MessageBannerProperties.TITLE),
+        assertThat(message.get(MessageBannerProperties.TITLE),
                 Matchers.containsString(label.toString()));
-        Assert.assertThat(message.get(MessageBannerProperties.DESCRIPTION).toString(),
+        assertThat(message.get(MessageBannerProperties.DESCRIPTION).toString(),
                 Matchers.containsString(label.toString()));
         Assert.assertNotNull(message.get(MessageBannerProperties.ICON));
     }
@@ -737,25 +738,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
-    public void testNavigationWithFallbackURLInSubFrame_FallbackDisabled() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
-        String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
-                + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl, false, false);
-
-        OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(originalUrl, true, false);
-
-        Assert.assertEquals(
-                OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
-        Assert.assertEquals(fallbackUrl, result.getTargetUrl().getSpec());
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
-    public void testNavigationWithFallbackURLInSubFrame_FallbackEnabled() throws Exception {
+    public void testNavigationWithFallbackURLInSubFrame() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
@@ -939,21 +922,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
-    public void testSubframeLoadCannotLaunchPlayApp_FallbackDisabled() throws TimeoutException {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        // TODO(https://crbug.com/1365100): Verify the fallback URL is loaded once implemented.
-        OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(
-                mTestServer.getURL(SUBFRAME_REDIRECT_WITH_PLAY_FALLBACK), false, false);
-        Assert.assertEquals(
-                OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
-        Assert.assertEquals(FALLBACK_URL, result.getTargetUrl().getSpec());
-    }
-
-    @Test
-    @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
-    public void testSubframeLoadCannotLaunchPlayApp_FallbackEnabled() throws TimeoutException {
+    public void testSubframeLoadCannotLaunchPlayApp() throws TimeoutException {
         String fallbackUrl = "https://play.google.com/store/apps/details?id=com.android.chrome";
         String mainUrl = mTestServer.getURL(SUBFRAME_REDIRECT_WITH_PLAY_FALLBACK);
         String redirectUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1431,10 +1400,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME,
-            ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME})
-    public void
-    testSubframeNavigationToSelf() throws Exception {
+    public void testSubframeNavigationToSelf() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1531,14 +1497,12 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
     public void testIncognitoSubframeExternalNavigation_Rejected() throws Exception {
         doTestIncognitoSubframeExternalNavigation(false);
     }
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
     public void testIncognitoSubframeExternalNavigation_Accepted() throws Exception {
         doTestIncognitoSubframeExternalNavigation(true);
     }
@@ -1574,8 +1538,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
-            ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
     public void
     testIntentToSelf() {
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1597,8 +1560,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
-            ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
     public void
     testIntentToSelfWithFallback() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1645,8 +1607,7 @@ public class UrlOverridingTest {
     // that would escape the sandbox by clobbering the main frame.
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
-            ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
     public void
     testIntentToSelfWithFallback_Sandboxed() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();

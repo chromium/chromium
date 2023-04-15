@@ -254,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, Skipped) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Tos", 0);
 }
 
-// TODO(crbug.com/1418704) flaky.
-IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, DISABLED_Accepted) {
+IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, Accepted) {
   SetUpTermsOfServiceUrlPolicy();
   StartPublicSession();
 

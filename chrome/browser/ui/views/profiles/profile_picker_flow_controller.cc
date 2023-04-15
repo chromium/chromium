@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -23,7 +24,7 @@
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
@@ -143,11 +144,6 @@ class ProfileCreationSignedInFlowController
   ~ProfileCreationSignedInFlowController() override {
     // Record unfinished signed-in profile creation.
     if (!is_finishing_) {
-      // Schedule the profile for deletion, it's not needed any more.
-      g_browser_process->profile_manager()
-          ->GetDeleteProfileHelper()
-          .ScheduleEphemeralProfileForDeletion(profile()->GetPath());
-
       // TODO(crbug.com/1300109): Consider moving this recording into
       // ProfilePickerTurnSyncOnDelegate and unify this code with Cancel().
       ProfileMetrics::LogProfileAddSignInFlowOutcome(
@@ -177,11 +173,6 @@ class ProfileCreationSignedInFlowController
       return;
 
     is_finishing_ = true;
-
-    // Schedule the profile for deletion, it's not needed any more.
-    g_browser_process->profile_manager()
-        ->GetDeleteProfileHelper()
-        .ScheduleEphemeralProfileForDeletion(profile()->GetPath());
   }
 
   void FinishAndOpenBrowser(PostHostClearedCallback callback) override {
@@ -200,16 +191,10 @@ class ProfileCreationSignedInFlowController
     }
     DCHECK(callback.value());
 
-    if (profile_name_resolver_->resolved_profile_name().empty()) {
-      // Delay finishing the flow until we have obtained a profile name.
-      profile_name_resolver_->set_on_profile_name_resolved_callback(
-          base::BindOnce(
-              &ProfileCreationSignedInFlowController::FinishFlow,
-              // Unretained ok: `this` outlives `profile_name_resolver_`.
-              base::Unretained(this), std::move(callback)));
-    } else {
-      FinishFlow(std::move(callback));
-    }
+    profile_name_resolver_->RunWithProfileName(base::BindOnce(
+        &ProfileCreationSignedInFlowController::FinishFlow,
+        // Unretained ok: `this` outlives `profile_name_resolver_`.
+        base::Unretained(this), std::move(callback)));
   }
 
  private:
@@ -235,17 +220,18 @@ class ProfileCreationSignedInFlowController
     }
   }
 
-  void FinishFlow(PostHostClearedCallback callback) {
+  void FinishFlow(PostHostClearedCallback callback,
+                  std::u16string name_for_signed_in_profile) {
     TRACE_EVENT1("browser", "ProfileCreationSignedInFlowController::FinishFlow",
                  "profile_path", profile()->GetPath().AsUTF8Unsafe());
-    std::u16string name_for_signed_in_profile =
-        profile_name_resolver_->resolved_profile_name();
-    profile_name_resolver_.reset();
     DCHECK(!name_for_signed_in_profile.empty());
     DCHECK(callback.value());
     DCHECK(finish_flow_callback_.value());
 
-    FinalizeNewProfileSetup(profile(), name_for_signed_in_profile);
+    profile_name_resolver_.reset();
+
+    FinalizeNewProfileSetup(profile(), name_for_signed_in_profile,
+                            /*is_default_name=*/true);
 
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);

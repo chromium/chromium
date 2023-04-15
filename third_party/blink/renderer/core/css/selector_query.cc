@@ -236,7 +236,7 @@ void SelectorQuery::FindTraverseRootsAndExecute(
   bool is_affected_by_sibling_combinator = false;
 
   for (const CSSSelector* selector = selectors_[0]; selector;
-       selector = selector->TagHistory()) {
+       selector = selector->NextSimpleSelector()) {
     if (!is_affected_by_sibling_combinator &&
         selector->Match() == CSSSelector::kClass) {
       if (is_rightmost_selector) {
@@ -418,7 +418,7 @@ void SelectorQuery::Execute(
   }
 
   const CSSSelector& first_selector = *selectors_[0];
-  if (!first_selector.TagHistory()) {
+  if (!first_selector.NextSimpleSelector()) {
     // Fast path for querySelector*('.foo'), and querySelector*('div').
     switch (first_selector.Match()) {
       case CSSSelector::kClass:
@@ -466,7 +466,7 @@ SelectorQuery::SelectorQuery(CSSSelectorList* selector_list)
   if (selectors_.size() == 1) {
     use_slow_scan_ = false;
     for (const CSSSelector* current = selectors_[0]; current;
-         current = current->TagHistory()) {
+         current = current->NextSimpleSelector()) {
       if (current->Match() == CSSSelector::kId) {
         selector_id_ = current->Value();
         break;

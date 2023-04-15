@@ -89,23 +89,15 @@ NotificationCenterView::NotificationCenterView(
       scroller_(new views::ScrollView()),
       notification_list_view_(new NotificationListView(this, model)),
       last_scroll_position_from_bottom_(0),
-      is_notifications_refresh_enabled_(
-          features::IsNotificationsRefreshEnabled()),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
-  if (is_notifications_refresh_enabled_) {
-    auto* scroll_bar = new RoundedMessageCenterScrollBar(this);
-    scroll_bar->SetInsets(kScrollBarInsets);
-    scroll_bar_ = scroll_bar;
-  } else {
-    scroll_bar_ = new MessageCenterScrollBar(this);
-  }
+  auto* scroll_bar = new RoundedMessageCenterScrollBar(this);
+  scroll_bar->SetInsets(kScrollBarInsets);
+  scroll_bar_ = scroll_bar;
 
-  if (is_notifications_refresh_enabled_) {
-    layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        gfx::Insets(kMessageCenterPadding)));
-  }
+  layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets(kMessageCenterPadding)));
 }
 
 NotificationCenterView::~NotificationCenterView() {
@@ -124,10 +116,6 @@ NotificationCenterView::~NotificationCenterView() {
 void NotificationCenterView::Init() {
   notification_list_view_->Init();
 
-  if (!is_notifications_refresh_enabled_) {
-    AddChildView(notification_bar_);
-  }
-
   // Need to set the transparent background explicitly, since ScrollView has
   // set the default opaque background color.
   // TODO(crbug.com/1247455): Be able to do
@@ -137,11 +125,9 @@ void NotificationCenterView::Init() {
   scroller_->SetBackgroundColor(absl::nullopt);
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
   scroller_->SetDrawOverflowIndicator(false);
-  if (is_notifications_refresh_enabled_) {
-    scroller_->SetPaintToLayer();
-    scroller_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kMessageCenterScrollViewCornerRadius});
-  }
+  scroller_->SetPaintToLayer();
+  scroller_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kMessageCenterScrollViewCornerRadius});
 
   AddChildView(scroller_);
 
@@ -160,9 +146,7 @@ void NotificationCenterView::Init() {
                             base::Unretained(this)));
   }
 
-  if (is_notifications_refresh_enabled_) {
-    AddChildView(notification_bar_);
-  }
+  AddChildView(notification_bar_);
 }
 
 bool NotificationCenterView::UpdateNotificationBar() {
@@ -179,14 +163,9 @@ void NotificationCenterView::SetMaxHeight(int max_height) {
     return;
   }
 
-  int max_scroller_height = max_height;
-  if (notification_bar_->GetVisible()) {
-    max_scroller_height -=
-        is_notifications_refresh_enabled_
-            ? notification_bar_->GetPreferredSize().height() +
-                  2 * kMessageCenterPadding
-            : kStackedNotificationBarHeight;
-  }
+  int max_scroller_height = max_height -
+                            notification_bar_->GetPreferredSize().height() -
+                            2 * kMessageCenterPadding;
   scroller_->ClipHeightTo(0, max_scroller_height);
 }
 
@@ -207,12 +186,6 @@ void NotificationCenterView::SetExpanded() {
 
 void NotificationCenterView::SetCollapsed(bool animate) {
   if (!GetVisible() || collapsed_) {
-    return;
-  }
-
-  // Do not collapse the message center if notification bar is not visible.
-  // i.e. there is only one notification.
-  if (!notification_bar_->GetVisible()) {
     return;
   }
 
@@ -242,21 +215,12 @@ void NotificationCenterView::ExpandMessageCenter() {
   message_center_bubble_->ExpandMessageCenter();
 }
 
-bool NotificationCenterView::IsNotificationBarVisible() const {
-  return notification_bar_->GetVisible();
-}
-
 bool NotificationCenterView::IsScrollBarVisible() const {
   return scroll_bar_->GetVisible();
 }
 
 void NotificationCenterView::OnNotificationSlidOut() {
-  if (notification_bar_->GetVisible()) {
-    UpdateNotificationBar();
-    if (!notification_bar_->GetVisible()) {
-      StartHideStackingBarAnimation();
-    }
-  }
+  UpdateNotificationBar();
 
   if (!notification_list_view_->GetTotalNotificationCount()) {
     StartCollapseAnimation();
@@ -301,73 +265,6 @@ void NotificationCenterView::RemovedFromWidget() {
   }
   focus_manager_->RemoveFocusChangeListener(this);
   focus_manager_ = nullptr;
-}
-
-void NotificationCenterView::Layout() {
-  if (is_notifications_refresh_enabled_) {
-    return views::View::Layout();
-  }
-
-  if (notification_bar_->GetVisible()) {
-    gfx::Rect counter_bounds(GetContentsBounds());
-
-    int notification_bar_expanded_height = kStackedNotificationBarHeight;
-
-    int notification_bar_height = collapsed_
-                                      ? kStackedNotificationBarCollapsedHeight
-                                      : notification_bar_expanded_height;
-    int notification_bar_offset = 0;
-    if (animation_state_ ==
-        NotificationCenterAnimationState::HIDE_STACKING_BAR) {
-      notification_bar_offset = GetAnimationValue() * notification_bar_height;
-    }
-
-    counter_bounds.set_height(notification_bar_height);
-    counter_bounds.set_y(counter_bounds.y() - notification_bar_offset);
-    notification_bar_->SetBoundsRect(counter_bounds);
-
-    gfx::Rect scroller_bounds(GetContentsBounds());
-
-    scroller_bounds.Inset(gfx::Insets::TLBR(
-        notification_bar_height - notification_bar_offset, 0, 0, 0));
-    scroller_->SetBoundsRect(scroller_bounds);
-  } else {
-    scroller_->SetBoundsRect(GetContentsBounds());
-  }
-
-  ScrollToTarget();
-}
-
-gfx::Size NotificationCenterView::CalculatePreferredSize() const {
-  if (is_notifications_refresh_enabled_) {
-    return views::View::CalculatePreferredSize();
-  }
-
-  gfx::Size preferred_size = scroller_->GetPreferredSize();
-
-  if (notification_bar_->GetVisible()) {
-    int bar_height = kStackedNotificationBarHeight;
-
-    if (animation_state_ ==
-        NotificationCenterAnimationState::HIDE_STACKING_BAR) {
-      bar_height -= GetAnimationValue() * bar_height;
-    }
-    preferred_size.set_height(preferred_size.height() + bar_height);
-  }
-
-  if (animation_state_ == NotificationCenterAnimationState::COLLAPSE) {
-    int height = preferred_size.height() * (1.0 - GetAnimationValue());
-
-    if (collapsed_) {
-      height = std::max(kStackedNotificationBarCollapsedHeight, height);
-    }
-
-    preferred_size.set_height(height);
-  } else if (collapsed_) {
-    preferred_size.set_height(kStackedNotificationBarCollapsedHeight);
-  }
-
-  return preferred_size;
 }
 
 void NotificationCenterView::OnViewBoundsChanged(views::View* observed_view) {
@@ -599,16 +496,8 @@ NotificationCenterView::GetStackedNotifications() const {
     return notification_list_view_->GetAllNotifications();
   }
 
-  if (is_notifications_refresh_enabled_) {
-    const int y_offset = scroller_->GetVisibleRect().bottom() - scroller_->y();
-    return notification_list_view_->GetNotificationsBelowY(y_offset);
-  }
-
-  const int notification_bar_height =
-      IsNotificationBarVisible() ? kStackedNotificationBarHeight : 0;
-  const int y_offset = scroller_->GetVisibleRect().y() - scroller_->y() +
-                       notification_bar_height;
-  return notification_list_view_->GetNotificationsAboveY(y_offset);
+  const int y_offset = scroller_->GetVisibleRect().bottom() - scroller_->y();
+  return notification_list_view_->GetNotificationsBelowY(y_offset);
 }
 
 std::vector<std::string>
@@ -624,10 +513,8 @@ NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
     return notification_list_view_->GetAllNotificationIds();
   }
 
-  const int notification_bar_height =
-      IsNotificationBarVisible() ? kStackedNotificationBarHeight : 0;
   const int y_offset_above = scroller_->GetVisibleRect().y() - scroller_->y() +
-                             notification_bar_height;
+                             kStackedNotificationBarHeight;
   auto above_id_list =
       notification_list_view_->GetNotificationIdsAboveY(y_offset_above);
   const int y_offset_below =

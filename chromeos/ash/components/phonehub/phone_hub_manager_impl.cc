@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
@@ -290,6 +291,15 @@ void PhoneHubManagerImpl::SetEcheConnectionStatusHandler(
   eche_connection_status_handler_ = eche_connection_status_handler;
   recent_apps_interaction_handler_->SetConnectionStatusHandler(
       eche_connection_status_handler_);
+}
+
+void PhoneHubManagerImpl::SetSystemInfoProvider(
+    eche_app::SystemInfoProvider* system_info_provider) {
+  system_info_provider_ = system_info_provider;
+}
+
+eche_app::SystemInfoProvider* PhoneHubManagerImpl::GetSystemInfoProvider() {
+  return system_info_provider_;
 }
 
 // NOTE: These should be destroyed in the opposite order of how these objects

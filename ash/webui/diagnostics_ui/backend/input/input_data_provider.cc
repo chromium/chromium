@@ -28,8 +28,8 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 
@@ -70,7 +70,7 @@ InputDataProvider::InputDataProvider(aura::Window* window,
       accelerator_controller_(Shell::Get()->accelerator_controller()),
       event_rewriter_delegate_(Shell::Get()
                                    ->event_rewriter_controller()
-                                   ->event_rewriter_chromeos_delegate()) {
+                                   ->event_rewriter_ash_delegate()) {
   Initialize(window);
 }
 
@@ -80,7 +80,7 @@ InputDataProvider::InputDataProvider(
     std::unique_ptr<EventWatcherFactory> watcher_factory,
     KeyboardInputLog* keyboard_input_log_ptr,
     AcceleratorControllerImpl* accelerator_controller,
-    ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate)
+    ui::EventRewriterAsh::Delegate* event_rewriter_delegate)
     : keyboard_input_log_ptr_(keyboard_input_log_ptr),
       device_manager_(std::move(device_manager_for_test)),
       watcher_factory_(std::move(watcher_factory)),

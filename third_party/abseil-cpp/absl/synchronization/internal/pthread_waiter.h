@@ -40,6 +40,8 @@ class PthreadWaiter : public WaiterCrtp<PthreadWaiter> {
   static constexpr char kName[] = "PthreadWaiter";
 
  private:
+  int TimedWait(KernelTimeout t);
+
   // REQUIRES: mu_ must be held.
   void InternalCondVarPoke();
 

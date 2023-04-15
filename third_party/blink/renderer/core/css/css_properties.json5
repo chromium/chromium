@@ -1534,6 +1534,7 @@
       // Setting zoom affects the _EffectiveZoom_, which in turns affects every px value
       // stored on ComputedStyle; see CSSToLengthConversionData::ZoomedComputedPixels.
       supports_incremental_style: false,
+      runtime_flag: "CSSZoom",
     },
     {
       name: "accent-color",
@@ -2301,6 +2302,7 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -3014,6 +3016,7 @@
       keywords: ["auto", "fit-content", "min-content", "max-content"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       logical_property_group: {
         name: "size",
@@ -3138,6 +3141,7 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -3406,6 +3410,7 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length::None()",
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthMaxSizing",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -3423,6 +3428,7 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length::None()",
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthMaxSizing",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
@@ -3440,6 +3446,7 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length()",
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
@@ -3456,6 +3463,7 @@
       field_group: "box",
       field_template: "<length>",
       default_value: "Length()",
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
@@ -4058,6 +4066,7 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -4397,6 +4406,17 @@
       computable: false,
     },
     {
+      name: "scroll-timeline-attachment",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      field_group: "*->timeline",
+      field_template: "external",
+      default_value: "Vector<TimelineAttachment>()",
+      type_name: "Vector<TimelineAttachment>",
+      converter: "ConvertViewTimelineAttachment",
+      separator: ",",
+      runtime_flag: "CSSScrollTimeline",
+    },
+    {
       name: "scroll-timeline-axis",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*->timeline",
@@ -4696,8 +4716,8 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",
       field_template: "keyword",
-      default_value: "normal",
-      keywords: ["normal", "start", "end", "both"],
+      default_value: "none",
+      keywords: ["none", "start", "end", "both"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSTextBoxTrim",
     },
@@ -4991,6 +5011,7 @@
       keywords: ["auto"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthOrAuto",
       logical_property_group: {
         name: "inset",
@@ -5154,6 +5175,17 @@
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+    },
+    {
+      name: "view-timeline-attachment",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      field_group: "*->timeline",
+      field_template: "external",
+      default_value: "Vector<TimelineAttachment>()",
+      type_name: "Vector<TimelineAttachment>",
+      converter: "ConvertViewTimelineAttachment",
+      separator: ",",
+      runtime_flag: "CSSViewTimeline",
     },
     {
       name: "view-timeline-axis",
@@ -5969,6 +6001,7 @@
       keywords: ["auto", "fit-content", "min-content", "max-content"],
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
+      computed_style_protected_functions: ["getter"],
       converter: "ConvertLengthSizing",
       logical_property_group: {
         name: "size",
@@ -7171,7 +7204,7 @@
     },
     {
       name: "scroll-timeline",
-      longhands: ["scroll-timeline-name", "scroll-timeline-axis"],
+      longhands: ["scroll-timeline-name", "scroll-timeline-axis", "scroll-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSScrollTimeline",
     },
@@ -7197,7 +7230,7 @@
     },
     {
       name: "view-timeline",
-      longhands: ["view-timeline-name", "view-timeline-axis"],
+      longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSViewTimeline",
     },

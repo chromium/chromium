@@ -5,6 +5,8 @@
 #include "components/performance_manager/graph/worker_node_impl_describer.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 

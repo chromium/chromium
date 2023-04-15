@@ -7,7 +7,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -195,7 +194,10 @@ SkiaIOSurfaceRepresentation::SkiaIOSurfaceRepresentation(
     scoped_refptr<SharedContextState> context_state,
     std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(manager, backing, tracker),
+    : SkiaImageRepresentation(context_state->gr_context(),
+                              manager,
+                              backing,
+                              tracker),
       egl_state_(egl_state),
       context_state_(std::move(context_state)),
       promise_textures_(promise_textures) {

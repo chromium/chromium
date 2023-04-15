@@ -50,7 +50,7 @@ BASE_FEATURE(kIOSForceTranslateEnabled,
 
 BASE_FEATURE(kDesktopPartialTranslate,
              "DesktopPartialTranslate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int>
     kDesktopPartialTranslateTextSelectionMaxCharacters{
         &kDesktopPartialTranslate,

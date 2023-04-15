@@ -5,8 +5,10 @@
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -65,11 +67,7 @@ ProfileImportProcess::ProfileImportProcess(
       allow_only_silent_updates_(allow_only_silent_updates),
       import_metadata_(import_metadata) {
   DetermineProfileImportType();
-  // For eligible users, new profiles are stored in their account.
-  if (import_type_ == AutofillProfileImportType::kNewProfile &&
-      personal_data_manager_->IsEligibleForAddressAccountStorage()) {
-    import_candidate_ = import_candidate_->ConvertToAccountProfile();
-  }
+  DetermineSourceOfImportCandidate();
 }
 
 ProfileImportProcess::ProfileImportProcess(const ProfileImportProcess&) =
@@ -273,15 +271,37 @@ void ProfileImportProcess::DetermineProfileImportType() {
   DCHECK_NE(import_type_, AutofillProfileImportType::kImportTypeUnspecified);
 }
 
+void ProfileImportProcess::DetermineSourceOfImportCandidate() {
+  if (import_type_ != AutofillProfileImportType::kNewProfile) {
+    return;
+  }
+  CHECK(import_candidate_);
+  if (personal_data_manager_->IsEligibleForAddressAccountStorage() &&
+      personal_data_manager_->IsCountryEligibleForAccountStorage(
+          base::UTF16ToUTF8(
+              import_candidate_->GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
+    import_candidate_ = import_candidate_->ConvertToAccountProfile();
+  }
+}
+
 void ProfileImportProcess::MaybeSetMigrationCandidate(
     absl::optional<AutofillProfile>& migration_candidate,
     const AutofillProfile& profile) const {
-  if (!migration_candidate && !allow_only_silent_updates_ &&
-      profile.source() == AutofillProfile::Source::kLocalOrSyncable &&
-      personal_data_manager_->IsEligibleForAddressAccountStorage() &&
-      !personal_data_manager_->IsProfileMigrationBlocked(profile.guid())) {
-    migration_candidate = profile;
+  // Basic checks: No migration candidate was selected yet, prompts can be shown
+  // (i.e. not only silent updates) and the `profile` is not stored in the
+  // user's account already.
+  if (migration_candidate || allow_only_silent_updates_ ||
+      profile.source() != AutofillProfile::Source::kLocalOrSyncable) {
+    return;
   }
+  // Check the eligiblity of the user and profile.
+  if (!personal_data_manager_->IsEligibleForAddressAccountStorage() ||
+      personal_data_manager_->IsProfileMigrationBlocked(profile.guid()) ||
+      !personal_data_manager_->IsCountryEligibleForAccountStorage(
+          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
+    return;
+  }
+  migration_candidate = profile;
 }
 
 std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
@@ -466,29 +486,9 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   // For any finished import process record the type of the import.
   autofill_metrics::LogProfileImportType(import_type_);
 
-  // Tracks number of edited fields by the user in the storage prompt.
-  int num_edited_fields = 0;
-
-  // If the profile was edited by the user, record a histogram of edited types.
-  if (user_decision_ == UserDecision::kEditAccepted) {
-    const std::vector<ProfileValueDifference> edit_difference =
-        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-            import_candidate_.value(), confirmed_import_candidate_.value(),
-            app_locale_);
-    for (const auto& difference : edit_difference) {
-      if (import_type_ == AutofillProfileImportType::kNewProfile) {
-        autofill_metrics::LogNewProfileEditedType(difference.type);
-      } else {
-        autofill_metrics::LogProfileUpdateEditedType(difference.type);
-      }
-    }
-    num_edited_fields = edit_difference.size();
-    if (import_type_ == AutofillProfileImportType::kNewProfile) {
-      autofill_metrics::LogNewProfileNumberOfEditedFields(num_edited_fields);
-    } else {
-      autofill_metrics::LogUpdateProfileNumberOfEditedFields(num_edited_fields);
-    }
-  }
+  // Tracks number of edited fields by the user in the storage prompt. Zero if
+  // the user didn't edit any fields.
+  int num_edited_fields = CollectedEditedTypeHistograms();
 
   // For an import process that involves prompting the user, record the
   // decision.
@@ -522,9 +522,45 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   } else if (import_type_ == AutofillProfileImportType::kSilentUpdate) {
     LogUkmMetrics();
   } else if (is_migration()) {
-    // TODO(crbug.com/1423319): Log migration metrics.
+    autofill_metrics::LogProfileMigrationImportDecision(user_decision_);
     LogUkmMetrics(num_edited_fields);
   }
+}
+
+int ProfileImportProcess::CollectedEditedTypeHistograms() const {
+  if (user_decision_ != UserDecision::kEditAccepted) {
+    return 0;
+  }
+
+  // Compute the number of edited settings-visible fields.
+  std::vector<ProfileValueDifference> edit_difference =
+      AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+          *import_candidate_, *confirmed_import_candidate_, app_locale_);
+
+  // Log edited types.
+  for (const ProfileValueDifference& difference : edit_difference) {
+    if (import_type_ == AutofillProfileImportType::kNewProfile) {
+      autofill_metrics::LogNewProfileEditedType(difference.type);
+    } else if (is_confirmable_update()) {
+      autofill_metrics::LogProfileUpdateEditedType(difference.type);
+    } else {
+      CHECK(is_migration());
+      autofill_metrics::LogProfileMigrationEditedType(difference.type);
+    }
+  }
+
+  // Log number of edited fields.
+  int num_edited_fields = edit_difference.size();
+  if (import_type_ == AutofillProfileImportType::kNewProfile) {
+    autofill_metrics::LogNewProfileNumberOfEditedFields(num_edited_fields);
+  } else if (is_confirmable_update()) {
+    autofill_metrics::LogUpdateProfileNumberOfEditedFields(num_edited_fields);
+  } else {
+    CHECK(is_migration());
+    autofill_metrics::LogProfileMigrationNumberOfEditedFields(
+        num_edited_fields);
+  }
+  return num_edited_fields;
 }
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 namespace password_manager {
 enum class WarningType;
 }
+@class CrURL;
 
 // Commands relative to the Password Checkup homepage.
 @protocol PasswordCheckupCommands
@@ -19,6 +20,8 @@ enum class WarningType;
 // credentials.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType;
+// Navigates to the URL.
+- (void)dismissAndOpenURL:(CrURL*)URL;
 
 @end
 

@@ -20,11 +20,13 @@ export enum AmbientActionName {
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
   SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
+  SET_SHOULD_SHOW_TIME_OF_DAY_BANNER = 'set_should_show_time_of_day_banner',
 }
 
 export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
     SetAmbientModeEnabledAction|SetAnimationThemeAction|SetPreviewsAction|
-    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction;
+    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction|
+    SetShouldShowTimeOfDayBannerAction;
 
 export type SetAlbumsAction = Action&{
   name: AmbientActionName.SET_ALBUMS,
@@ -63,6 +65,11 @@ export type SetTopicSourceAction = Action&{
 export type SetAmbientUiVisibilityAction = Action&{
   name: AmbientActionName.SET_AMBIENT_UI_VISIBILITY,
   ambientUiVisibility: AmbientUiVisibility,
+};
+
+export type SetShouldShowTimeOfDayBannerAction = Action&{
+  name: AmbientActionName.SET_SHOULD_SHOW_TIME_OF_DAY_BANNER,
+  shouldShowTimeOfDayBanner: boolean,
 };
 
 /**
@@ -123,5 +130,16 @@ export function setAmbientUiVisibilityAction(
   return {
     name: AmbientActionName.SET_AMBIENT_UI_VISIBILITY,
     ambientUiVisibility,
+  };
+}
+
+/**
+ * Sets the boolean that determines whether to show the time of day banner.
+ */
+export function setShouldShowTimeOfDayBannerAction(
+    shouldShowTimeOfDayBanner: boolean): SetShouldShowTimeOfDayBannerAction {
+  return {
+    name: AmbientActionName.SET_SHOULD_SHOW_TIME_OF_DAY_BANNER,
+    shouldShowTimeOfDayBanner,
   };
 }

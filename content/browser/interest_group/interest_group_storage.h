@@ -160,6 +160,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   // and kInterestGroupStorageMaxGroupsPerOwner.
   const size_t max_owners_;
   const size_t max_owner_interest_groups_;
+  const size_t max_owner_storage_size_;
 
   // Maximum number of operations allowed between maintenance calls.
   // Set by the related blink::feature parameter

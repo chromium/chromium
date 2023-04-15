@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
-<translation id="1181037720776840403">Usuń</translation>
 <translation id="125153950246128346">Kliknij, by zobaczyć inną kartę</translation>
 <translation id="1403228085774130835">Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome</translation>
 <translation id="1455506303394048917">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Usuń kartę z grupy}few{Usuń karty z grupy}many{Usuń karty z grupy}other{Usuń karty z grupy}}</translation>
 <translation id="2277224997687551299">Edytuj nazwę grupy</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Usuń <ph name="TABS_COUNT_ONE" /> wybraną kartę z grupy.}few{Usuń <ph name="TABS_COUNT_MANY" /> wybrane karty z grupy.}many{Usuń <ph name="TABS_COUNT_MANY" /> wybranych kart z grupy.}other{Usuń <ph name="TABS_COUNT_MANY" /> wybranej karty z grupy.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Dodaj kartę do zakładek}few{Dodaj karty do zakładek}many{Dodaj karty do zakładek}other{Dodaj karty do zakładek}}</translation>
-<translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
-<translation id="257674075312929031">Grupa</translation>
 <translation id="2613747923081026172">Utwórz grupę</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otwórz stronę</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Przeciągaj karty, by je grupować</translation>
 <translation id="5846292395804797011">Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>
-<translation id="6040143037577758943">Zamknij</translation>
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Ukryj tryb wielokrotnego wyboru</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Udostępnij kartę}few{Udostępnij karty}many{Udostępnij karty}other{Udostępnij karty}}</translation>
 <translation id="7129458170538955174">Informacje o tym sklepie zostały otwarte na połowę wysokości</translation>
-<translation id="7151209024774799310">Usuń karty z grupy</translation>
 <translation id="7204204600596740190">Tryb wielokrotnego wyboru</translation>
 <translation id="7326879924029668159">Zasady zwrotów i inne informacje</translation>
 <translation id="7352298686197644113">Sprawdź, który produkt z otwartych kart ma niższą cenę</translation>

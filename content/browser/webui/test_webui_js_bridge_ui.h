@@ -12,7 +12,7 @@ namespace content {
 // WebUIController for WebUIJsBridge unittests.
 class TestWebUIJsBridgeUI : public WebUIController {
  public:
-  explicit TestWebUIJsBridgeUI() : WebUIController(nullptr) {}
+  explicit TestWebUIJsBridgeUI(WebUI* web_ui) : WebUIController(web_ui) {}
   ~TestWebUIJsBridgeUI() override = default;
 
   TestWebUIJsBridgeUI(const TestWebUIJsBridgeUI&) = delete;
@@ -24,7 +24,8 @@ class TestWebUIJsBridgeUI : public WebUIController {
 // WebUIController for WebUIJsBridge unittests.
 class TestWebUIJsBridgeIncorrectUI : public WebUIController {
  public:
-  explicit TestWebUIJsBridgeIncorrectUI() : WebUIController(nullptr) {}
+  explicit TestWebUIJsBridgeIncorrectUI(WebUI* web_ui)
+      : WebUIController(web_ui) {}
   ~TestWebUIJsBridgeIncorrectUI() override = default;
 
   TestWebUIJsBridgeIncorrectUI(const TestWebUIJsBridgeIncorrectUI&) = delete;

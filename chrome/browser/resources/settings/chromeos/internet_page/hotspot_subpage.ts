@@ -157,7 +157,7 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     return !!hotspotInfo?.config;
   }
 
-  private onHotspotConfigureTap_() {
+  private onHotspotConfigureClick_() {
     const event = new CustomEvent('show-hotspot-config-dialog', {
       bubbles: true,
       composed: true,

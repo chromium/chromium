@@ -745,6 +745,15 @@ class IsolatedScriptTestFilterAction(argparse.Action):
                 include.extend(extra_include)
                 exclude.extend(extra_exclude)
         namespace.include, namespace.exclude = include, exclude
+        # The `chromium_tests` recipe passes `--isolated-script-test-filter` to
+        # retry failed tests without the patch. Because the patch may have added
+        # the failed tests (common for imported tests),
+        #  1. `run_wpt_tests.py --isolated-script-test-filter` must tolerate
+        #     test IDs that don't exist.
+        #  2. When all tests retried don't exist without the patch, wptrunner
+        #     must run zero tests and exit successfully instead of interpreting
+        #     the lack of explicit tests as running all tests.
+        namespace.default_exclude = True
 
     def _resolve_tests(self, test_filter: str) -> Tuple[List[str], List[str]]:
         """Resolve an isolated script-style filter string into lists of tests.
@@ -790,7 +799,7 @@ def _load_entry_point(tools_root: str):
     if tools_root not in sys.path:
         sys.path.insert(0, tools_root)
     # Remove current cached modules to force a reload.
-    module_pattern = re.compile(r'\bwpt(runner|serve)?\b')
+    module_pattern = re.compile(r'^(tools|wpt(runner|serve)?)\b')
     for name in list(sys.modules):
         if module_pattern.search(name):
             del sys.modules[name]
@@ -939,6 +948,15 @@ class ChromeiOS(Product):
     def test_env(self):
         with super().test_env():
             self.update_options()
+            # Set up xcode log output dir.
+            output_dir = self._host.filesystem.join(
+                self._host.filesystem.dirname(
+                    self._options.log_chromium[0].name), "xcode-output")
+            self._options.webdriver_args.extend([
+                '--out-dir=' + output_dir,
+            ])
+
+            # Install xcode.
             if self._options.xcode_build_version:
                 try:
                     runtime_cache_folder = xcode.construct_runtime_cache_folder(

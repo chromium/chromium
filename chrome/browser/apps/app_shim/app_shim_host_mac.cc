@@ -188,6 +188,10 @@ void AppShimHost::OpenAppWithOverrideUrl(const GURL& override_url) {
   client_->OnShimOpenAppWithOverrideUrl(this, override_url);
 }
 
+void AppShimHost::ApplicationWillTerminate() {
+  client_->OnShimWillTerminate(this);
+}
+
 base::FilePath AppShimHost::GetProfilePath() const {
   // This should only be used by single-profile-app paths.
   DCHECK(!profile_path_.empty());

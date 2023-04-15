@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -37,10 +39,26 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
                  l10n_util::GetStringUTF16(IDS_NOT_NOW));
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetOwnedByWidget(true);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  SetTitle(base::FeatureList::IsEnabled(features::kUpdateTextOptions)
+               ? IDS_UPDATE_RECOMMENDED_DIALOG_TITLE_ALT
+               : IDS_UPDATE_RECOMMENDED_DIALOG_TITLE);
+#else
   SetTitle(IDS_UPDATE_RECOMMENDED_DIALOG_TITLE);
+#endif
+
   std::u16string update_message;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   update_message = l10n_util::GetStringUTF16(IDS_UPDATE_RECOMMENDED);
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  update_message = l10n_util::GetPluralStringFUTF16(
+      base::FeatureList::IsEnabled(features::kUpdateTextOptions)
+          ? IDS_UPDATE_RECOMMENDED_ALT
+          : IDS_UPDATE_RECOMMENDED,
+      BrowserList::GetIncognitoBrowserCount());
 #else
   update_message = l10n_util::GetPluralStringFUTF16(
       IDS_UPDATE_RECOMMENDED, BrowserList::GetIncognitoBrowserCount());

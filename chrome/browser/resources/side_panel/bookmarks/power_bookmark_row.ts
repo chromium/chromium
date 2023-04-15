@@ -99,6 +99,10 @@ export class PowerBookmarkRowElement extends PolymerElement {
     return this.bookmark.id === loadTimeData.getString('bookmarksBarId');
   }
 
+  private showTrailingIcon_(): boolean {
+    return !this.hasInput && !this.hasCheckbox;
+  }
+
   private onInputDisplayChange_() {
     const input = this.shadowRoot!.querySelector('#input');
     if (input) {

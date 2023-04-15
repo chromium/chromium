@@ -66,7 +66,6 @@ class MouseLockController : public ExclusiveAccessControllerBase {
 
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
-  void RecordBubbleReshowsHistogram(int bubble_reshow_count) override;
 
   void OnBubbleHidden(content::WebContents*, ExclusiveAccessBubbleHideReason);
 

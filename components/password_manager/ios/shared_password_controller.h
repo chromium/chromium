@@ -15,6 +15,7 @@
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_driver_bridge.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
+#import "ios/web/public/js_messaging/web_frames_manager_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 namespace password_manager {
@@ -64,7 +65,8 @@ class PasswordManagerClient;
 // Per-tab shared password controller. Handles parsing forms, loading
 // suggestions, filling forms, and generating passwords.
 @interface SharedPasswordController
-    : NSObject <CRWWebStateObserver,
+    : NSObject <CRWWebFramesManagerObserver,
+                CRWWebStateObserver,
                 FormActivityObserver,
                 FormSuggestionProvider,
                 PasswordFormHelperDelegate,

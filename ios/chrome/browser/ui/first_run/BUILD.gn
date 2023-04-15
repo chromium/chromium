@@ -267,10 +267,10 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:first_run_app_state_agent",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/main:scene_testing",
     "//ios/chrome/test/app:test_support",
     "//ios/third_party/earl_grey2:app_framework+link",
   ]

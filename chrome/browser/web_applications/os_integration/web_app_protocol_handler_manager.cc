@@ -136,15 +136,16 @@ void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
 
   const std::vector<apps::ProtocolHandlerInfo> handlers =
       GetAppProtocolHandlerInfos(app_id);
-  RegisterProtocolHandlersWithOs(app_id,
-                                 app_registrar_->GetAppShortName(app_id),
-                                 profile_, handlers, std::move(callback));
+  RegisterProtocolHandlersWithOs(
+      app_id, app_registrar_->GetAppShortName(app_id), profile_->GetPath(),
+      handlers, std::move(callback));
 }
 
 void WebAppProtocolHandlerManager::UnregisterOsProtocolHandlers(
     const AppId& app_id,
     base::OnceCallback<void(Result)> callback) {
-  UnregisterProtocolHandlersWithOs(app_id, profile_, std::move(callback));
+  UnregisterProtocolHandlersWithOs(app_id, profile_->GetPath(),
+                                   std::move(callback));
 }
 
 }  // namespace web_app

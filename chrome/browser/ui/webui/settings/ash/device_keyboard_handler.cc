@@ -8,15 +8,15 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/keyboard_capability.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_layout_util.h"
 
 namespace {
 
@@ -31,7 +31,7 @@ KeyboardsStateResult GetKeyboardsState() {
   KeyboardsStateResult result;
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    switch (ui::EventRewriterChromeOS::GetDeviceType(keyboard)) {
+    switch (ash::Shell::Get()->keyboard_capability()->GetDeviceType(keyboard)) {
       case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
         result.has_launcher_key = true;
         break;

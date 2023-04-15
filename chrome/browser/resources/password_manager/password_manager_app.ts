@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import './checkup_section.js';
 import './checkup_details_section.js';
 import './password_details_section.js';
@@ -17,6 +18,7 @@ import './side_bar.js';
 import './toolbar.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
@@ -51,10 +53,11 @@ export interface PasswordManagerAppElement {
     content: IronPagesElement,
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
+    prefs: SettingsPrefsElement,
+    removalToast: CrToastElement,
     settings: SettingsSectionElement,
     sidebar: PasswordManagerSideBarElement,
     toolbar: PasswordManagerToolbarElement,
-    removalToast: CrToastElement,
   };
 }
 
@@ -72,6 +75,11 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   static get properties() {
     return {
+      /**
+       * Preferences state.
+       */
+      prefs_: Object,
+
       selectedPage_: String,
 
       narrow_: {

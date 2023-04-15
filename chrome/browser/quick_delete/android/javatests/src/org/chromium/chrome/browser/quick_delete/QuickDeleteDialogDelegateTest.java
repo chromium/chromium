@@ -16,13 +16,12 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.View;
 
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -34,6 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
@@ -51,6 +51,9 @@ public class QuickDeleteDialogDelegateTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY)
@@ -58,15 +61,15 @@ public class QuickDeleteDialogDelegateTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"RenderTest"})
     public void testQuickDeleteDialogView() throws IOException {
         openQuickDeleteDialog();
+
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_description)).check(matches(isDisplayed()));
         onView(withText(R.string.clear_history_title)).check(matches(isDisplayed()));
@@ -80,6 +83,23 @@ public class QuickDeleteDialogDelegateTest {
                                   .getCurrentDialogForTest()
                                   .get(ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(dialogView, "quick_delete_dialog");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testSearchHistoryDisambiguationTextShown_WhenUserIsSignedIn() throws IOException {
+        mSigninTestRule.addTestAccountThenSignin();
+        openQuickDeleteDialog();
+
+        onView(withId(R.id.search_history_disambiguation)).check(matches(isDisplayed()));
+
+        View dialogView = mActivityTestRule.getActivity()
+                                  .getModalDialogManager()
+                                  .getCurrentDialogForTest()
+                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+
+        mRenderTestRule.render(dialogView, "quick_delete_dialog-signed-in");
     }
 
     private void openQuickDeleteDialog() {

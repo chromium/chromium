@@ -43,6 +43,7 @@ class ASH_EXPORT AppStreamLauncherView
 
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
+  void OnBubbleClose() override;
 
   // phonehub::AppStreamLauncherDataModel::Observer:
   void OnAppListChanged() override;

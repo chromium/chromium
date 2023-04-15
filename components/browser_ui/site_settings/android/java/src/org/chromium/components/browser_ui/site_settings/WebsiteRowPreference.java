@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceViewHolder;
 
@@ -39,12 +40,16 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
     private LayoutInflater mLayoutInflater;
 
+    private Runnable mOnDeleteCallback;
+
     WebsiteRowPreference(Context context, SiteSettingsDelegate siteSettingsDelegate,
             WebsiteEntry siteEntry, LayoutInflater layoutInflater) {
         super(context);
         mSiteSettingsDelegate = siteSettingsDelegate;
         mSiteEntry = siteEntry;
         mLayoutInflater = layoutInflater;
+        // Initialize with an empty callback.
+        mOnDeleteCallback = () -> {};
 
         // To make sure the layout stays stable throughout, we assign a
         // transparent drawable as the icon initially. This is so that
@@ -86,6 +91,10 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         }
     }
 
+    public void setOnDeleteCallback(Runnable callback) {
+        mOnDeleteCallback = callback;
+    }
+
     private void displayResetDialog() {
         View dialogView = mLayoutInflater.inflate(R.layout.clear_reset_dialog, null);
         TextView mainMessage = dialogView.findViewById(R.id.main_message);
@@ -111,20 +120,18 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                         .show();
     }
 
-    private void resetEntry() {
-        // TODO(crbug.com/1342991): Pass the correct Activity here and exit out of it once the data
-        // is cleared. In the case of AllSiteSettings, the view should be simply refreshed.
-        Runnable dataClearedCallback = () -> {};
+    @VisibleForTesting
+    void resetEntry() {
         if (mSiteEntry instanceof Website) {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (Website) mSiteEntry);
             SiteDataCleaner.clearData(mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (Website) mSiteEntry, dataClearedCallback);
+                    (Website) mSiteEntry, mOnDeleteCallback);
         } else {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (WebsiteGroup) mSiteEntry);
             SiteDataCleaner.clearData(mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (WebsiteGroup) mSiteEntry, dataClearedCallback);
+                    (WebsiteGroup) mSiteEntry, mOnDeleteCallback);
         }
     }
 

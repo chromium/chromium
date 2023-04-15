@@ -22,6 +22,7 @@
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/mdocs/mdoc_provider.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -59,10 +60,14 @@ namespace {
 static constexpr base::TimeDelta kDefaultTokenRequestDelay = base::Seconds(3);
 static constexpr base::TimeDelta kMaxRejectionTime = base::Seconds(60);
 
-std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
-                                           const std::string& nonce,
-                                           const std::string& account_id,
-                                           bool is_sign_in) {
+std::string ComputeUrlEncodedTokenPostData(
+    const std::string& client_id,
+    const std::string& nonce,
+    const std::string& account_id,
+    bool is_sign_in,
+    const std::vector<std::string>& scope,
+    const std::vector<std::string>& responseType,
+    const base::flat_map<std::string, std::string>& params) {
   std::string query;
   if (!client_id.empty())
     query +=
@@ -87,6 +92,36 @@ std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
   std::string disclosure_text_shown = is_sign_in ? "false" : "true";
   if (!query.empty())
     query += "&disclosure_text_shown=" + disclosure_text_shown;
+
+  if (IsFedCmAuthzEnabled()) {
+    // We keep the scope and response_type parameters consistenct with the OIDC
+    // spec [1] to the extent that we can:
+    //
+    // - They are an arrays of strings, separated by spaces
+    // - We use the singular (e.g. "scope") as opposed to the plural
+    //   (e.g. "scopes")
+    //
+    // We do, however, use a different escaping character for spaces: "+"
+    // rather than the "%20" to make it consitent with the other
+    // parameters in the FedCM spec.
+    //
+    // [1] https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
+    if (!scope.empty()) {
+      query += "&scope=" + base::EscapeUrlEncodedData(
+                               base::JoinString(scope, " "), /*use_plus=*/true);
+    }
+    if (!responseType.empty()) {
+      query += "&response_type=" +
+               base::EscapeUrlEncodedData(base::JoinString(responseType, " "),
+                                          /*use_plus=*/true);
+    }
+    for (const auto& pair : params) {
+      // TODO(crbug.com/1429083): Should we use a prefix with these custom
+      // parameters so that they don't collide with the standard ones?
+      query += "&" + base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
+               "=" + base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+    }
+  }
 
   return query;
 }
@@ -407,6 +442,22 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
                                        permission_context, std::move(receiver));
 }
 
+void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
+  if (!mdoc_provider_) {
+    std::move(mdoc_request_callback_)
+        .Run(RequestTokenStatus::kError, absl::nullopt, "");
+    return;
+  }
+
+  if (!mdoc.empty()) {
+    std::move(mdoc_request_callback_)
+        .Run(RequestTokenStatus::kSuccess, absl::nullopt, mdoc);
+  } else {
+    std::move(mdoc_request_callback_)
+        .Run(RequestTokenStatus::kError, absl::nullopt, "");
+  }
+}
+
 void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     RequestTokenCallback callback) {
@@ -434,11 +485,37 @@ void FederatedAuthRequestImpl::RequestToken(
       std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
       return;
     }
-    // TODO(https://crbug.com/1416939): make an Android API call to
-    // the underlying OS to fetch a real mdoc, as oppose to returning
-    // a fake / test one.
-    std::move(callback).Run(RequestTokenStatus::kSuccess, absl::nullopt,
-                            "test-mdoc");
+
+    if (mdoc_request_callback_) {
+      // Similar to the token request, only allow one in-flight mdoc request.
+      // TODO(https://crbug.com/1416939): Reconcile with federated identity
+      // requests.
+      std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
+                              absl::nullopt, "");
+      return;
+    }
+
+    mdoc_request_callback_ = std::move(callback);
+    // mdoc_provider_ is not destroyed after a successful mdoc request so we
+    // need to have the nullcheck to avoid duplicated creation.
+    if (!mdoc_provider_) {
+      mdoc_provider_ = CreateMDocProvider();
+    }
+    if (!mdoc_provider_) {
+      std::move(mdoc_request_callback_)
+          .Run(RequestTokenStatus::kError, absl::nullopt, "");
+      return;
+    }
+
+    auto mdoc = std::move(idp_get_params_ptrs[0]->providers[0]->get_mdoc());
+    std::string reader_public_key = mdoc->reader_public_key;
+    std::string document_type = mdoc->document_type;
+
+    mdoc_provider_->RequestMDoc(
+        WebContents::FromRenderFrameHost(&render_frame_host()),
+        reader_public_key, document_type, mdoc->requested_elements,
+        base::BindOnce(&FederatedAuthRequestImpl::CompleteMDocRequest,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     // TODO(https://crbug.com/1416939): rather than returning early,
     // we would ultimately like to make the mdocs response reconcile with the
@@ -1290,10 +1367,14 @@ void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
 
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
-      ComputeUrlEncodedTokenPostData(idp_info.provider->client_id,
-                                     idp_info.provider->nonce, account_id,
-                                     is_sign_in),
+      ComputeUrlEncodedTokenPostData(
+          idp_info.provider->client_id, idp_info.provider->nonce, account_id,
+          is_sign_in, idp_info.provider->scope, idp_info.provider->responseType,
+          idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     idp_info.provider->Clone()),
+      base::BindOnce(&FederatedAuthRequestImpl::OnContinueOnResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
 }
@@ -1341,6 +1422,28 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
                            should_embargo ? TokenStatus::kShouldEmbargo
                                           : TokenStatus::kNotSelectAccount,
                            /*should_delay_callback=*/false);
+}
+
+void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
+    IdentityProviderConfigPtr idp,
+    IdpNetworkRequestManager::FetchStatus status,
+    const GURL& continue_on) {
+  if (!IsFedCmAuthzEnabled()) {
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+        TokenStatus::kIdTokenInvalidResponse,
+        /*should_delay_callback=*/true);
+    return;
+  }
+
+  // TODO(crbug.com/1429083): record the appropriate metrics.
+  request_dialog_controller_->ShowPopUpWindow(
+      std::move(continue_on),
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(idp),
+                     std::move(status)),
+      base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
@@ -1690,6 +1793,17 @@ FederatedAuthRequestImpl::CreateDialogController() {
   }
 
   return GetContentClient()->browser()->CreateIdentityRequestDialogController();
+}
+
+std::unique_ptr<MDocProvider> FederatedAuthRequestImpl::CreateMDocProvider() {
+  // A provider may only be created in browser tests by this moment.
+  std::unique_ptr<MDocProvider> provider =
+      GetContentClient()->browser()->CreateMDocProvider();
+
+  if (!provider) {
+    return MDocProvider::Create();
+  }
+  return provider;
 }
 
 void FederatedAuthRequestImpl::SetTokenRequestDelayForTests(

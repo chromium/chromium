@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Addre
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -45,6 +44,8 @@ import java.util.UUID;
  * An address editor. Can be used for either shipping or billing address editing.
  */
 public class AddressEditor extends EditorBase<AutofillAddress> {
+    private static final Set<String> SANCTIONED_CONTRIES = Set.of("CU", "IR", "KP", "SD", "SY");
+
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
@@ -105,6 +106,18 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                 EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
 
         return addressFields;
+    }
+
+    // TODO(crbug.com/1432505): remove temporary sanctioned countries filtering.
+    private static List<EditorFieldModel.DropdownKeyValue> getSupportedCountries(
+            boolean filterOutSanctionedCountries) {
+        List<EditorFieldModel.DropdownKeyValue> supportedCountries =
+                AutofillProfileBridge.getSupportedCountries();
+        if (filterOutSanctionedCountries) {
+            supportedCountries.removeIf(entry -> SANCTIONED_CONTRIES.contains(entry.getKey()));
+        }
+
+        return supportedCountries;
     }
 
     /**
@@ -188,9 +201,8 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                 : mContext.getString(R.string.autofill_edit_address_dialog_title);
         // When creating a new autofill profile, we use the country code of the default locale on
         // the device.
-        final AutofillAddress address = mIsProfileNew
-                ? new AutofillAddress(mContext, new AutofillProfile(), CompletenessCheckType.NORMAL)
-                : toEdit;
+        final AutofillAddress address =
+                mIsProfileNew ? new AutofillAddress(mContext, new AutofillProfile()) : toEdit;
 
         mProfile = address.getProfile();
 
@@ -207,7 +219,8 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         if (mCountryField == null) {
             mCountryField = EditorFieldModel.createDropdown(
                     mContext.getString(R.string.autofill_profile_editor_country),
-                    AutofillProfileBridge.getSupportedCountries(), null /* hint */);
+                    getSupportedCountries(isAccountAddressProfile() && !mIsProfileNew),
+                    /*hint=*/null);
         }
 
         // Changing the country will update which fields are in the model. The actual fields are not
@@ -315,9 +328,13 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
 
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
+        String country = mCountryField.getValue().toString();
+        if (willBeSavedInAccount() && !SANCTIONED_CONTRIES.contains(country)) {
+            profile.setSource(Source.ACCOUNT);
+        }
         // Country code and phone number are always required and are always collected from the
         // editor model.
-        profile.setCountryCode(mCountryField.getValue().toString());
+        profile.setCountryCode(country);
         if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.getValue().toString());
         if (mEmailField != null) profile.setEmailAddress(mEmailField.getValue().toString());
         if (mHonorificField != null) {
@@ -424,7 +441,17 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         @Nullable
         String email = getUserEmail();
         if (email == null) return null;
-        return mContext.getString(R.string.autofill_edit_account_address_source_notice)
+
+        if (isAlreadySavedInAccount()) {
+            return mContext
+                    .getString(R.string.autofill_address_already_saved_in_account_source_notice)
+                    .replace("$1", email);
+        }
+
+        return mContext
+                .getString(mIsMigrationToAccount
+                                ? R.string.autofill_address_will_be_migrated_to_account_source_notice
+                                : R.string.autofill_address_will_be_saved_in_account_source_notice)
                 .replace("$1", email);
     }
 
@@ -443,8 +470,27 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         return mContext.getString(R.string.autofill_delete_local_address_source_notice);
     }
 
+    private boolean willBeSavedInAccount() {
+        if (mIsMigrationToAccount) {
+            return true;
+        }
+
+        if (mProfile.getSource() == Source.ACCOUNT && !mIsUpdate) {
+            return true; // Only already saved address can be updated.
+        }
+
+        // User creates a new address profile, which is going to be stored in their Google account
+        // according to the storage eligibility.
+        return mIsProfileNew
+                && PersonalDataManager.getInstance().isEligibleForAddressAccountStorage();
+    }
+
+    private boolean isAlreadySavedInAccount() {
+        return mProfile.getSource() == Source.ACCOUNT && mIsUpdate;
+    }
+
     private boolean isAccountAddressProfile() {
-        return mProfile.getSource() == Source.ACCOUNT || mIsMigrationToAccount;
+        return willBeSavedInAccount() || isAlreadySavedInAccount();
     }
 
     private boolean isAddressSyncOn() {

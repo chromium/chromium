@@ -59,7 +59,10 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   void Update(SitePermissionsButtonState site_permissions_button_state);
 
   // Updates the pin button.
-  void UpdatePinButton();
+  void UpdatePinButton(bool is_force_pinned, bool is_pinned);
+
+  // Updates the context menu button given `is_action_pinned`.
+  void UpdateContextMenuButton(bool is_action_pinned);
 
   ToolbarActionViewController* view_controller() { return controller_.get(); }
   const ToolbarActionViewController* view_controller() const {
@@ -82,10 +85,6 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   // Sets ups the context menu button controllers. Must be called by the
   // constructor.
   void SetupContextMenuButton();
-
-  // Returns whether the action corresponding to this view is pinned to the
-  // toolbar.
-  bool IsPinned() const;
 
   // Handles the context menu button press. This is passed as a callback to
   // `context_menu_button_`.

@@ -35,8 +35,8 @@ import zlib
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-17-init-4759-g547e3456'
-CLANG_SUB_REVISION = 2
+CLANG_REVISION = 'llvmorg-17-init-8029-g27f27d15'
+CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '17'
@@ -61,6 +61,10 @@ FORCE_HEAD_REVISION_FILE = os.path.normpath(os.path.join(LLVM_BUILD_DIR, '..',
 def RmTree(dir):
   """Delete dir."""
   def ChmodAndRetry(func, path, _):
+    # Windows can fail here with file does not exist. Since we're deleting
+    # everything, we can just ignore this and continue.
+    if not os.path.exists(path):
+      return
     # Subversion can leave read-only files around.
     if not os.access(path, os.W_OK):
       os.chmod(path, stat.S_IWUSR)
@@ -95,7 +99,7 @@ def DownloadUrl(url, output_file):
 
   while True:
     try:
-      sys.stdout.write('Downloading %s ' % url)
+      sys.stdout.write(f'Downloading {url} ')
       sys.stdout.flush()
       request = urllib.request.Request(url)
       request.add_header('Accept-Encoding', 'gzip')
@@ -127,8 +131,8 @@ def DownloadUrl(url, output_file):
           sys.stdout.flush()
           dots_printed = num_dots
       if total_size is not None and bytes_done != total_size:
-        raise urllib.error.URLError("only got %d of %d bytes" %
-                                    (bytes_done, total_size))
+        raise urllib.error.URLError(
+            f'only got {bytes_done} of {total_size} bytes')
       if is_gzipped:
         output_file.write(gzip_decode.flush())
       print(' Done.')
@@ -142,7 +146,7 @@ def DownloadUrl(url, output_file):
       num_retries -= 1
       output_file.seek(0)
       output_file.truncate()
-      print('Retrying in %d s ...' % retry_wait_s)
+      print(f'Retrying in {retry_wait_s} s ...')
       sys.stdout.flush()
       time.sleep(retry_wait_s)
       retry_wait_s *= 2
@@ -245,8 +249,7 @@ def UpdatePackage(package_name, host_os, dir=LLVM_BUILD_DIR):
     package_file = 'llvm-code-coverage'
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
-  elif package_name in ['clang-libs', 'clang-tidy', 'clangd', 'libclang',
-                        'translation_unit']:
+  elif package_name in ['clang-tidy', 'clangd', 'libclang', 'translation_unit']:
     package_file = package_name
   else:
     print('Unknown package: "%s".' % package_name)

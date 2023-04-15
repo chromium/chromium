@@ -234,7 +234,7 @@ using password_manager::WarningType;
                                browser:self.browser
                             credential:credential
                           reauthModule:self.reauthModule
-                  supportMoveToAccount:YES];
+                               context:DetailsContext::kGeneral];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -247,7 +247,7 @@ using password_manager::WarningType;
                                browser:self.browser
                        affiliatedGroup:affiliatedGroup
                           reauthModule:self.reauthModule
-                  supportMoveToAccount:YES];
+                               context:DetailsContext::kGeneral];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }

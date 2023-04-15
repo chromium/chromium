@@ -65,7 +65,6 @@
 <translation id="1298077576058087471">დაზოგეთ მონაცემების 60%-მდე — გაეცანით დღის სიახლეებს</translation>
 <translation id="1303339473099049190">ეს პაროლი ვერ მოიძებნა. შეამოწმეთ მართლწერა და ცადეთ ხელახლა.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — გამოგზავნილია <ph name="DEVICE_NAME" />-დან</translation>
-<translation id="1310482092992808703">ჩანართების დაჯგუფება</translation>
 <translation id="1311657260431405215">ეს QR კოდი არ არის URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">სანიშნეების შენახვის ნაკადის საქაღალდეები გახსნილია სრულ სიმაღლეზე</translation>
@@ -108,6 +107,7 @@
 <translation id="1493287004536771723">თქვენ თვალს ადევნებთ <ph name="SITE_NAME" />-ს</translation>
 <translation id="1502010315804028179">თქვენი პაროლები რომ მართოთ, განაახლეთ Google Play services</translation>
 <translation id="1506061864768559482">საძიებო სისტემა</translation>
+<translation id="1508960385613684700">კონფიდენციალურობის სახელმძღვანელო <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">სანიშნეები და ვებ-ისტორია</translation>
 <translation id="1513814250881909472">შეასრულეთ სინქრონიზაცია, თქვენი სხვა მოწყობილობებიდან ჩანართები რომ მიიღოთ</translation>
 <translation id="1513858653616922153">პაროლის წაშლა</translation>
@@ -162,6 +162,7 @@
 <translation id="1910950723001426294">გაზიარების ვარიანტების სია დახურულია</translation>
 <translation id="1919130412786645364">Chrome-ში შესვლის დაშვება</translation>
 <translation id="1922362554271624559">შემოთავაზებული ენები</translation>
+<translation id="1924255092154549435">ჩანართი გაფართოებულია</translation>
 <translation id="1925021887439448749">შეიყვანეთ მორგებული ვებ-მისამართი</translation>
 <translation id="1928696683969751773">განახლება</translation>
 <translation id="19288952978244135">Chrome-ის ხელახლა გახსნა.</translation>
@@ -770,6 +771,7 @@
 <translation id="5161254044473106830">საჭიროა სათაური</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5171045022955879922">მოძებნეთ ან აკრიფეთ URL</translation>
+<translation id="5174700554036517242">ჩანართი დაბრუნდა თავდაპირველ სიმაღლეზე</translation>
 <translation id="5184329579814168207">Chrome-ში გახსნა</translation>
 <translation id="5191251636205085390">შეიტყვეთ იმ ახალი ტექნოლოგიების შესახებ, რომელთა მეშვეობითაც მესამე მხარის ქუქი-ჩანაწერების ჩანაცვლება იგეგმება, ასევე, გაეცანით მათი გაკონტროლების ხერხებს</translation>
 <translation id="5193988420012215838">თქვენს გაცვლის ბუფერში კოპირებული</translation>
@@ -1252,6 +1254,7 @@
 <translation id="7686086654630106285">ვრცლად საიტების მიერ შემოთავაზებული რეკლამის შესახებ</translation>
 <translation id="768618399695552958">თქვენ მიერ მონახულებული ზოგიერთი გვერდი წინასწარ ჩატვირთულია. გვერდები შეიძლება წინასწარ იტვირთებოდეს Google-ის სერვერების მეშვეობით, როცა მათზე ბმული გადადის Google საიტიდან.</translation>
 <translation id="7691043218961417207">გაეცანით კონტენტს, რომელსაც შეგიძლიათ თვალი მიადევნოთ</translation>
+<translation id="7697383401610880082">სახელური ჩავლებისთვის</translation>
 <translation id="7698359219371678927">ელფოსტის <ph name="APP_NAME" />-ში შექმნა</translation>
 <translation id="7707922173985738739">მობილური ინტერნეტის გამოყენება</translation>
 <translation id="7709094866268987903">თქვენ მიერ ამოშლილი ინტერესები აქ გამოჩნდება</translation>

@@ -62,6 +62,18 @@ std::string SelectChallengeOptionRequest::GetRequestContent() {
     selected_idv_method.Set("sms_otp_challenge_option",
                             std::move(sms_challenge_option));
   }
+  if (request_details_.selected_challenge_option.type ==
+      CardUnmaskChallengeOptionType::kEmailOtp) {
+    base::Value::Dict email_challenge_option;
+    // We only get and set the challenge id.
+    if (!request_details_.selected_challenge_option.id.value().empty()) {
+      email_challenge_option.Set(
+          "challenge_id",
+          request_details_.selected_challenge_option.id.value());
+    }
+    selected_idv_method.Set("email_otp_challenge_option",
+                            std::move(email_challenge_option));
+  }
   request_dict.Set("selected_idv_challenge_option",
                    std::move(selected_idv_method));
 

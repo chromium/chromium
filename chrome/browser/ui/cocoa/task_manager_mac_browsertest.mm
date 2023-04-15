@@ -199,6 +199,71 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   }
 }
 
+// Tests that pressing Enter/return kills a process.
+IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, PressingEnterKillsProcess) {
+  ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
+  ui_controls::EnableUIControls();
+
+  // Set up a running tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  chrome::ShowTaskManager(browser());
+
+  TaskManagerMac* task_manager = GetTaskManagerMac();
+
+  ASSERT_TRUE(task_manager);
+
+  NSTableView* table = GetTable();
+
+  ASSERT_TRUE(table);
+
+  TaskManagerWindowController* window_controller =
+      task_manager->CocoaControllerForTests();
+  std::unique_ptr<TaskManagerTester> tester =
+      TaskManagerTester::Create(base::RepeatingClosure());
+
+  auto pattern = browsertest_util::MatchTab("Title *");
+
+  // Wait for the title of the tab to appear in the task manager.
+  size_t rows = 1;
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(rows, pattern));
+
+  std::u16string title = u"";
+
+  for (size_t i = 0; i < tester->GetRowCount(); ++i) {
+    // Press down to select the first/next row.
+    ui_controls::SendKeyPress(window_controller.window, ui::VKEY_DOWN, false,
+                              false, false, false);
+
+    ASSERT_TRUE(TableFirstSelectedRow().has_value());
+
+    std::u16string currentTitle =
+        tester->GetRowTitle(TableFirstSelectedRow().value());
+
+    // Found the tab, stop pressing down.
+    if (base::MatchPattern(currentTitle, pattern)) {
+      title = currentTitle;
+      break;
+    }
+  }
+
+  // Found the tab.
+  EXPECT_NE(u"", title);
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+    // Press Enter/return to simulate a click on the end process button.
+    ui_controls::SendKeyPress(window_controller.window, ui::VKEY_RETURN, false,
+                              false, false, false);
+
+    // The rows for the tab should disappear.
+    size_t no_rows = 0;
+    ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(no_rows, pattern));
+  }
+}
+
 // TODO(crbug.com/1426429): Re-enable when fixed.
 IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());

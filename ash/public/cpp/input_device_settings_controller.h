@@ -39,6 +39,8 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
     virtual void OnMouseConnected(const mojom::Mouse& mouse) {}
     virtual void OnMouseDisconnected(const mojom::Mouse& mouse) {}
     virtual void OnMouseSettingsUpdated(const mojom::Mouse& mouse) {}
+    virtual void OnMousePoliciesUpdated(
+        const mojom::MousePolicies& keyboard_policies) {}
 
     virtual void OnPointingStickConnected(
         const mojom::PointingStick& pointing_stick) {}
@@ -76,6 +78,9 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // Returns the current set of enterprise policies which control keyboard
   // settings.
   virtual const mojom::KeyboardPolicies& GetKeyboardPolicies() = 0;
+  // Returns the current set of enterprise policies which control mouse
+  // settings.
+  virtual const mojom::MousePolicies& GetMousePolicies() = 0;
 
   // Configure the settings for keyboard of `id` with the provided
   // `settings`.

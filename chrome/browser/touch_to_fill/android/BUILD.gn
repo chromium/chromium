@@ -76,6 +76,7 @@ robolectric_binary("touch_to_fill_junit_tests") {
     "//components/favicon/android:java",
     "//components/module_installer/android:module_installer_java",
     "//components/url_formatter/android:url_formatter_java",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",

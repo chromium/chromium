@@ -30,9 +30,11 @@ const char kPrivateTopicNameKey[] = "privateTopicName";
 const std::string* GetTopicName(const base::Value& value) {
   if (!value.is_dict())
     return nullptr;
-  if (value.FindBoolKey("isPublic").value_or(false))
-    return value.FindStringKey(kPublicTopicNameKey);
-  return value.FindStringKey(kPrivateTopicNameKey);
+  const base::Value::Dict& dict = value.GetDict();
+  if (dict.FindBool("isPublic").value_or(false)) {
+    return dict.FindString(kPublicTopicNameKey);
+  }
+  return dict.FindString(kPrivateTopicNameKey);
 }
 
 bool IsNetworkError(int net_error) {
@@ -324,11 +326,11 @@ HttpRequestHeaders PerUserTopicSubscriptionRequest::Builder::BuildHeaders()
 }
 
 std::string PerUserTopicSubscriptionRequest::Builder::BuildBody() const {
-  base::Value request(base::Value::Type::DICT);
+  base::Value::Dict request;
 
-  request.SetStringKey("public_topic_name", topic_);
+  request.Set("public_topic_name", topic_);
   if (topic_is_public_)
-    request.SetBoolKey("is_public", true);
+    request.Set("is_public", true);
 
   std::string request_json;
   bool success = base::JSONWriter::Write(request, &request_json);

@@ -40,6 +40,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private requestCredentialsDetailsResponse_:
       chrome.passwordsPrivate.PasswordUiEntry[]|null = null;
 
+  private importResults_: chrome.passwordsPrivate.ImportResults = {
+    status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+    numberImported: 0,
+    displayedEntries: [],
+    fileName: '',
+  };
+
   constructor() {
     super([
       'addPassword',
@@ -47,6 +54,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeSavedPassword',
       'exportPasswords',
       'extendAuthValidity',
+      'importPasswords',
       'isAccountStoreDefault',
       'isOptedInForAccountStorage',
       'getBlockedSitesList',
@@ -56,6 +64,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getPasswordCheckStatus',
       'getSavedPasswordList',
       'getUrlCollection',
+      'movePasswordsToAccount',
       'muteInsecureCredential',
       'optInForAccountStorage',
       'recordPasswordCheckInteraction',
@@ -302,6 +311,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.listeners.accountStorageOptInStateListener = null;
   }
 
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
+    this.methodCalled('importPasswords', toStore);
+    return Promise.resolve(this.importResults_);
+  }
+
   isOptedInForAccountStorage() {
     this.methodCalled('isOptedInForAccountStorage');
     return Promise.resolve(this.data.isOptedInAccountStorage);
@@ -315,5 +329,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   isAccountStoreDefault() {
     this.methodCalled('isAccountStoreDefault');
     return Promise.resolve(this.data.isAccountStorageDefault);
+  }
+
+  movePasswordsToAccount(ids: number[]) {
+    this.methodCalled('movePasswordsToAccount', ids);
   }
 }

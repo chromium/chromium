@@ -5,10 +5,11 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -16,20 +17,22 @@ import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperCollectionsTest', function() {
   let wallpaperCollectionsElement: WallpaperCollections|null = null;
-
   let wallpaperProvider: TestWallpaperProvider;
-
   let personalizationStore: TestPersonalizationStore;
+  const routerOriginal = PersonalizationRouter.instance;
+  const routerMock = TestMock.fromClass(PersonalizationRouter);
 
   setup(function() {
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
     personalizationStore = mocks.personalizationStore;
+    PersonalizationRouter.instance = () => routerMock;
   });
 
   teardown(async () => {
     await teardownElement(wallpaperCollectionsElement);
     wallpaperCollectionsElement = null;
+    PersonalizationRouter.instance = routerOriginal;
   });
 
   test('shows error when fails to load', async () => {
@@ -224,13 +227,13 @@ suite('WallpaperCollectionsTest', function() {
       {
         id: 'asdf',
         name: 'asdf name',
-        description: 'asdf description',
+        descriptionContent: 'asdf description',
         previews: [{url: createSvgDataUrl('asdf')}],
       },
       {
         id: 'qwerty',
         name: 'qwerty name',
-        description: '',
+        descriptionContent: '',
         previews: [{url: createSvgDataUrl('qwerty')}],
       },
     ]);
@@ -258,4 +261,34 @@ suite('WallpaperCollectionsTest', function() {
         Array.from(onlineTiles).map(item => item.infoText),
         'correct info text set for both online collections');
   });
+
+  test(
+      'dismisses the banner after clicking on time of day collection',
+      async () => {
+        personalizationStore.data.ambient.shouldShowTimeOfDayBanner = true;
+        personalizationStore.data.wallpaper.backdrop.collections =
+            wallpaperProvider.collections;
+        personalizationStore.data.wallpaper.backdrop.images = {
+          [wallpaperProvider.timeOfDayCollectionId]: wallpaperProvider.images,
+        };
+        personalizationStore.data.wallpaper.loading.collections = false;
+        personalizationStore.data.wallpaper.loading.images = {
+          [wallpaperProvider.timeOfDayCollectionId]: false,
+        };
+        wallpaperCollectionsElement = initElement(WallpaperCollections);
+        await waitAfterNextRender(wallpaperCollectionsElement);
+
+        const onlineTiles =
+            wallpaperCollectionsElement.shadowRoot!
+                .querySelectorAll<WallpaperGridItem>(`${
+                    WallpaperGridItem
+                        .is}[data-online][data-is-time-of-day-collection]`);
+        assertEquals(1, onlineTiles.length);
+
+        personalizationStore.setReducersEnabled(true);
+        onlineTiles[0]!.click();
+        assertFalse(
+            personalizationStore.data.ambient.shouldShowTimeOfDayBanner,
+            'banner is dismissed');
+      });
 });

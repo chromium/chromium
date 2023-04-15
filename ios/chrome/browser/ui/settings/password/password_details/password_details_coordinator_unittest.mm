@@ -36,7 +36,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
                                  browser:browser_.get()
                          affiliatedGroup:affiliateGroup
                             reauthModule:nil
-                    supportMoveToAccount:YES];
+                                 context:DetailsContext::kGeneral];
   }
 
   web::WebTaskEnvironment task_environment_;

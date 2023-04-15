@@ -1159,34 +1159,26 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // "input-focus" will be sent once the input field's focus event fires.
   content::RenderFrameHost* child =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  std::string result;
   std::string script =
       "function onInput(e) {"
-      "  domAutomationController.send(getInputFieldText());"
+      "  resultQueue.push(getInputFieldText());"
       "}"
       "inputField = document.getElementById('text-field');"
       "inputField.addEventListener('input', onInput, false);";
-  EXPECT_TRUE(ExecuteScript(child, script));
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      child, "window.focus(); focusInputField();", &result));
-  EXPECT_EQ("input-focus", result);
+  EXPECT_TRUE(ExecJs(child, script));
+  EXPECT_EQ("input-focus", EvalJs(child, "window.focus(); focusInputField();"));
   EXPECT_EQ(child, web_contents->GetFocusedFrame());
 
   // Generate a couple of keystrokes, which will be routed to the subframe.
-  content::DOMMessageQueue msg_queue(web_contents);
-  std::string reply;
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('1'),
                    ui::DomCode::DIGIT1, ui::VKEY_1, false, false, false, false);
-  EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
+  EXPECT_TRUE(ExecJs(child, "waitForInput()"));
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('2'),
                    ui::DomCode::DIGIT2, ui::VKEY_2, false, false, false, false);
-  EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
+  EXPECT_TRUE(ExecJs(child, "waitForInput()"));
 
   // Verify that the input field in the subframe received the keystrokes.
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      child, "window.domAutomationController.send(getInputFieldText());",
-      &result));
-  EXPECT_EQ("12", result);
+  EXPECT_EQ("12", EvalJs(child, "getInputFieldText();"));
 
   // Define and install a test delegate that translates any keystroke to a
   // command to delete all text from current cursor position to the beginning
@@ -1225,10 +1217,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   ui::LinuxUi::SetInstance(old_linux_ui);
 
   // Verify that the input field in the subframe is erased.
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      child, "window.domAutomationController.send(getInputFieldText());",
-      &result));
-  EXPECT_EQ("", result);
+  EXPECT_EQ("", EvalJs(child, "getInputFieldText();"));
 }
 #endif
 

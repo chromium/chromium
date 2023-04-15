@@ -271,7 +271,7 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, writing_direction.GetWritingMode());
   absl::optional<LayoutUnit> left;
-  if (const Length& left_length = style.Left(); !left_length.IsAuto()) {
+  if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ false,
                               available_size.width);
@@ -279,7 +279,7 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
                                  anchor_evaluator);
   }
   absl::optional<LayoutUnit> right;
-  if (const Length& right_length = style.Right(); !right_length.IsAuto()) {
+  if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ true,
                               available_size.width);
@@ -288,7 +288,7 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
   }
 
   absl::optional<LayoutUnit> top;
-  if (const Length& top_length = style.Top(); !top_length.IsAuto()) {
+  if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ false,
                               available_size.height);
@@ -296,7 +296,8 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
                                 anchor_evaluator);
   }
   absl::optional<LayoutUnit> bottom;
-  if (const Length& bottom_length = style.Bottom(); !bottom_length.IsAuto()) {
+  if (const Length& bottom_length = style.UsedBottom();
+      !bottom_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ true,
                               available_size.height);

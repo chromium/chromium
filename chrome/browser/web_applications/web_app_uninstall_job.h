@@ -53,7 +53,8 @@ class WebAppUninstallJob {
       WebAppRegistrar& registrar,
       WebAppInstallManager& install_manager,
       WebAppTranslationManager& translation_manager,
-      PrefService& profile_prefs);
+      PrefService& profile_prefs,
+      webapps::WebappUninstallSource uninstall_source);
 
   ~WebAppUninstallJob();
 
@@ -67,7 +68,8 @@ class WebAppUninstallJob {
                      WebAppRegistrar& registrar,
                      WebAppInstallManager& install_manager,
                      WebAppTranslationManager& translation_manager,
-                     PrefService& profile_prefs);
+                     PrefService& profile_prefs,
+                     webapps::WebappUninstallSource uninstall_source);
 
   // The given `app_id` must correspond to an app in the `registrar`.
   // This modifies the app to set `is_uninstalling()` to true, and delete the
@@ -99,6 +101,7 @@ class WebAppUninstallJob {
   raw_ptr<WebAppSyncBridge> sync_bridge_;
   raw_ptr<WebAppInstallManager> install_manager_;
 
+  webapps::WebappUninstallSource uninstall_source_;
   bool app_data_deleted_ = false;
   bool translation_data_deleted_ = false;
   bool hooks_uninstalled_ = false;

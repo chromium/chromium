@@ -42,15 +42,15 @@ PerformanceManagerImpl* g_performance_manager = nullptr;
 // |g_performance_manager|. Should only be accessed on the main thread.
 bool g_pm_is_available = false;
 
-// Task traits appropriate for the PM task runner. This is a macro because it
-// is used to build both content::BrowserTaskTraits and base::TaskTraits, which
-// are type incompatible.
+constexpr base::TaskPriority kPmTaskPriority = base::TaskPriority::USER_VISIBLE;
+
+// Task traits appropriate for the PM task runner.
 // NOTE: The PM task runner has to block shutdown as some of the tasks posted to
 // it should be guaranteed to run before shutdown (e.g. removing some entries
 // from the site data store).
-#define PM_TASK_TRAITS              \
-  base::TaskPriority::USER_VISIBLE, \
-      base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()
+constexpr base::TaskTraits kPMTaskTraits = {
+    kPmTaskPriority, base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+    base::MayBlock()};
 
 // Builds a UI task runner with the appropriate traits for the PM.
 // TODO(crbug.com/1189677): The PM task runner has to block shutdown as some of
@@ -59,7 +59,7 @@ bool g_pm_is_available = false;
 // MayBlock and TaskShutdownBehavior, so these tasks and any blocking tasks must
 // be found and migrated to a worker thread.
 scoped_refptr<base::SequencedTaskRunner> GetUITaskRunner() {
-  return content::GetUIThreadTaskRunner({PM_TASK_TRAITS});
+  return content::GetUIThreadTaskRunner({kPmTaskPriority});
 }
 
 }  // namespace
@@ -262,14 +262,12 @@ PerformanceManagerImpl::GetTaskRunner() {
     // identified in traces.
     static base::LazyThreadPoolSingleThreadTaskRunner task_runner =
         LAZY_THREAD_POOL_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-            base::TaskTraits{PM_TASK_TRAITS},
-            base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+            kPMTaskTraits, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
     return task_runner.Get();
   }
   static base::LazyThreadPoolSequencedTaskRunner
       performance_manager_task_runner =
-          LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-              base::TaskTraits{PM_TASK_TRAITS});
+          LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(kPMTaskTraits);
   return performance_manager_task_runner.Get();
 }
 

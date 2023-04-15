@@ -19,7 +19,7 @@ BookmarkLoadDetails::BookmarkLoadDetails(BookmarkClient* client)
   // thread, and |client_| is not thread safe, and/or may be destroyed before
   // this.
   root_node_ = std::make_unique<BookmarkNode>(
-      /*id=*/0, base::Uuid::ParseLowercase(BookmarkNode::kRootNodeGuid),
+      /*id=*/0, base::Uuid::ParseLowercase(BookmarkNode::kRootNodeUuid),
       GURL());
   root_node_ptr_ = root_node_.get();
   // WARNING: order is important here, various places assume the order is

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 dzień temu}few{# dni temu}many{# dni temu}other{# dnia temu}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Dzień temu}few{# dni temu}many{# dni temu}other{# dnia temu}}</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1243314992276662751">Prześlij</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Od lewej do prawej</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1398853756734560583">Maksymalizuj</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />: nie udało się udostępnić</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Miesiąc temu}few{# miesiące temu}many{# miesięcy temu}other{# miesiąca temu}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuta i }few{# minuty i }many{# minut i }other{# minuty i }}</translation>
 <translation id="1643823602425662293">Powiadomienie</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Obraz</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
 <translation id="4588090240171750605">Przewiń w prawo</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Rok temu}few{# lata temu}many{# lat temu}other{# roku temu}}</translation>
 <translation id="4724120544754982507">Centrum powiadomień, liczba nieprzeczytanych powiadomień: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">numer</translation>
 <translation id="4746179598275229723">Rozszerzenie zostało odpięte</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Wysyłam...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="8996630695507351249">Upewnij się, że <ph name="TARGET_DEVICE_NAME" /> jest połączony z internetem.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}few{# s}many{# s}other{# s}}</translation>
 <translation id="9059834730836941392">Zwiń powiadomienie</translation>
 <translation id="9170848237812810038">&amp;Cofnij</translation>
 <translation id="932327136139879170">Strona główna</translation>
 <translation id="944069440740578670">Nieprzeczytane powiadomienia</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Sekundę temu}few{# sekundy temu}many{# sekund temu}other{# sekundy temu}}</translation>
 </translationbundle>

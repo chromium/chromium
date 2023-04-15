@@ -291,6 +291,11 @@ BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
 #endif
 );
 
+// If enabled, allow-listed PWAs cannot be closed manually by the user.
+BASE_FEATURE(kDesktopPWAsPreventClose,
+             "DesktopPWAsPreventClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Runs diagnostics during start up to measure how broken web app icons are to
 // feed into metrics.
 BASE_FEATURE(kDesktopPWAsIconHealthChecks,
@@ -640,11 +645,12 @@ BASE_FEATURE(kImmersiveFullscreen,
 // for this feature to have an effect.
 BASE_FEATURE(kImmersiveFullscreenTabs,
              "ImmersiveFullscreenTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables immersive fullscreen mode for PWA windows. PWA windows will use
-// immersive fullscreen mode if and only if both this and the previous feature
-// are enabled.
+// immersive fullscreen mode if and only if both this and kImmersiveFullscreen
+// are enabled. PWA windows currently do not use ImmersiveFullscreenTabs even if
+// the feature is enabled.
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1448,17 +1454,17 @@ BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Whether to enable "dark mode" enhancements in Mac Mojave or Windows 10 for
-// UIs implemented with web technologies.
+// Whether to enable "dark mode" enhancements in Mac Mojave, Windows 10, or
+// Linux for UIs implemented with web technologies.
 BASE_FEATURE(kWebUIDarkMode,
              "WebUIDarkMode",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 );
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1531,7 +1537,7 @@ const base::FeatureParam<SearchPreloadShareableCacheType>::Option
 const base::FeatureParam<SearchPreloadShareableCacheType>
     kSearchPreloadShareableCacheTypeParam{
         &kSupportSearchSuggestionForPrerender2, "shareable_cache",
-        SearchPreloadShareableCacheType::kDisabled,
+        SearchPreloadShareableCacheType::kEnabled,
         &search_preload_shareable_cache_types};
 
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,

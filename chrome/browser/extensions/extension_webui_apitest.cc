@@ -242,22 +242,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
                          "});",
                          storage_key)));
 
-  std::string set_result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      guest_rfh,
-      content::JsReplace(
-          "try {"
-          "  chrome.storage.local.set({$1: $2}, () => {"
-          "    domAutomationController.send("
-          "        chrome.runtime.lastError ?"
-          "            chrome.runtime.lastError.message : 'success');"
-          "  });"
-          "} catch (e) {"
-          "  domAutomationController.send(e.name + ': ' + e.message);"
-          "}",
-          storage_key, storage_value),
-      &set_result));
-  ASSERT_EQ("success", set_result);
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          guest_rfh,
+          content::JsReplace(
+              "try {"
+              "  new Promise(resolve => {"
+              "    chrome.storage.local.set({$1: $2}, () => {"
+              "      resolve("
+              "          chrome.runtime.lastError ?"
+              "              chrome.runtime.lastError.message : 'success');"
+              "    });"
+              "  });"
+              "} catch (e) {"
+              "  e.name + ': ' + e.message;"
+              "}",
+              storage_key, storage_value)));
 
   EXPECT_EQ(
       storage_value,

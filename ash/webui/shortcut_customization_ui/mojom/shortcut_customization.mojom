@@ -101,6 +101,14 @@ interface AcceleratorConfigurationProvider {
                     SimpleAccelerator accelerator)
         => (AcceleratorResultData result);
 
+  // Atomic version of `RemoveAccelerator(old_accelerator)` then
+  // `AddAccelerator(new_accelerator)`. This follows behaviors detailed by both
+  // respective sub-actions.
+  ReplaceAccelerator(ash.mojom.AcceleratorSource source, uint32 action_id,
+                     SimpleAccelerator old_accelerator,
+                     SimpleAccelerator new_accelerator)
+        => (AcceleratorResultData result);
+
   // Resets the accelerators of `action_id` to the system defaults. This will
   // remove any user added accelerators. If a default accelerator is used by
   // another accelerator, it will be disable for `action_id`.

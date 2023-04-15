@@ -54,8 +54,6 @@ class AX_EXPORT AXTreeSourceAdapter : public AXTreeSource<const AXNode*> {
     return node->IsIgnored();
   }
 
-  bool IsValid(const AXNode* node) const override { return node != nullptr; }
-
   bool IsEqual(const AXNode* node1, const AXNode* node2) const override {
     return node1 == node2;
   }

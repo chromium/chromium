@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1013598600051641573">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Bu işlem, <ph name="APP_NAME" /> uygulaması, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
+<translation id="1017556409696559990">Chrome'da geri geçmişi olmadığında üst pencereyi küçült</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı kaydedin</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
 <translation id="1036073649888683237">Bildirimleri yönetmek için Ayarlar'a gidin</translation>
@@ -146,6 +148,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1651914502370159744">Geçmiş sayfasını aç</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
+<translation id="1675844249244994876">Sağdaki pencereyi güncelleyin</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> bağlı değil.</translation>
 <translation id="1677582821739292812">Ekranınıza bakan biri var</translation>
@@ -190,6 +193,7 @@ Başlamak için şunları deneyebilirsin.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Konum erişimini aç</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> sabitlemesi kaldırıldı</translation>
 <translation id="1838895407229022812">Gece Işığı kapalı.</translation>
 <translation id="1854180393107901205">Yayını durdur</translation>
@@ -343,6 +347,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
 <translation id="263399434338050016">"Tümünü seç"</translation>
+<translation id="2644422758626431000">Pencereyi sola sabitle</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">Kullanılabilir alan: <ph name="USED_MEMORY" />/<ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Pencere ekran görüntüsü alma</translation>
@@ -363,7 +368,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2726420622004325180">Hotspot sunabilmesi için telefonunuzun mobil verisi olmalıdır</translation>
 <translation id="2727175239389218057">Yanıtla</translation>
 <translation id="2727977024730340865">Düşük güçlü bir şarj cihazına takıldı. Şarj durumu güvenilir olmayabilir.</translation>
-<translation id="2740531572673183784">Tamam</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Sil"</translation>
 <translation id="2750941250130734256">Etkin pencere çıkarıldı.</translation>
@@ -466,6 +470,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3256109297135787951">Rafınızdaki bir öğenin vurgusunu kaldırır</translation>
 <translation id="3260969790895726815">Konuşma yerel olarak işlenir ve dikte özelliği çevrimdışı çalışır ancak bazı sesli komutlar kullanılamaz.</translation>
+<translation id="3265032511221679826">Tam konum erişimi açılsın mı?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
 <translation id="3289364673986435196">Güç menüsü</translation>
 <translation id="3289544412142055976">Linux uygulamaları şu anda desteklenmiyor</translation>
@@ -576,6 +581,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
 <translation id="3666266999138159418">Kayan pencerenizi gizlemek için kaydırın</translation>
 <translation id="367531336287639526">Adres çubuğunun solundaki ilk simgeyi seçin</translation>
+<translation id="3677931086890821290">Bu işlem, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
 <translation id="3679827876008292680">Penceredeki son sekmeye git</translation>
 <translation id="36813544980941320">Kablosuz ağlar; telefonunuz ve <ph name="DEVICE_NAME" /> arasında paylaşılacak</translation>
 <translation id="3694122362646626770">Web siteleri</translation>
@@ -842,6 +848,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="493076006037866439">Ekranı uzaklaştırın</translation>
 <translation id="4936329710968938986">Herkes, kapalı</translation>
 <translation id="4938176435186993759">Tüm önerileri gizle</translation>
+<translation id="4943007472417128747">Kablosuz bağlantının kullanılması için hotspot kapatıldı. Hotspot'u kullanmak için kablosuz bağlantıyı kapatın.</translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
@@ -1054,6 +1061,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
+<translation id="5922962980596822074">En son kullanılandan başlayarak pencereler arasında geçiş yap</translation>
 <translation id="5924855612669061715">Hotspot açık</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
@@ -1064,6 +1072,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5976112937189445008">Pencereyi kaydetmek için enter tuşuna basın</translation>
 <translation id="5978382165065462689">Ekranınızın kontrolü Uzaktan Yardım kullanılarak paylaşılıyor.</translation>
 <translation id="5980301590375426705">Misafir oturumundan çık</translation>
+<translation id="5983567367406220847">Herhangi bir etkinlik olmadığı için hotspot kapatıldı.</translation>
 <translation id="598407983968395253">Şablonu kullan</translation>
 <translation id="598882571027504733">Güncellemeyi almak için Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
 <translation id="6002179289567220515">Fiziksel anahtarı kullanarak 1 kamerayı kapattınız. İsterseniz tüm kameralar için erişimi kapatabilirsiniz.</translation>
@@ -1143,6 +1152,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6352082849089527770">Bilinmeyen ağlar</translation>
 <translation id="6359587239691116345">En son özellikleri ve güvenlik iyileştirmelerini edinin. Bu güncellemeyi reddederseniz cihazınız artık düzgün çalışmayabilir, ayrıca güvenlik ve performans sorunları yaşayabilirsiniz.</translation>
 <translation id="6376931439017688372">Bluetooth açık</translation>
+<translation id="6378515133128829137">Pencereyi sağa sabitle</translation>
 <translation id="6381109794406942707">Cihazın kilidini açmak için PIN'inizi girin.</translation>
 <translation id="638716340450135524">Kamera erişimini etkinleştirin</translation>
 <translation id="639644700271529076">CAPS LOCK kapalı</translation>
@@ -1162,6 +1172,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6459472438155181876">Ekran şuraya genişletiliyor: <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Dosya indirilemiyor</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
+<translation id="6483727822843292440">En az kullanılandan başlayarak pencereler arasında geçiş yap</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> son tarihten önce bu <ph name="DEVICE_TYPE" /> cihazı güncellemenizi gerektiriyor</translation>
 <translation id="649452524636452238">Akıllı kart PIN'i</translation>
@@ -1215,6 +1226,7 @@ Yeni yüklenmiş</translation>
 <translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6696025732084565524">Çıkarılabilir klavyenizde kritik bir güncelleme yapılması gerekiyor</translation>
 <translation id="6700713906295497288">IME menü düğmesi</translation>
+<translation id="6705577071209924099">Işığı Ayarla</translation>
 <translation id="6707693040195709527">Cihazın önceki sürüme geçiş işlemi gecikti</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6723839937902243910">Güç</translation>
@@ -1363,6 +1375,7 @@ Yeni yüklenmiş</translation>
 <translation id="7452560014878697800">Bir uygulama kameranızı kullanıyor</translation>
 <translation id="7453330308669753048">Arama geçmişi sonucu kaldırıldı</translation>
 <translation id="7455047553373871740">%<ph name="BATTERY_PERCENTAGE" /> - Tamamen dolmasına <ph name="TIME" /> kaldı</translation>
+<translation id="7459485586006128091">Dahili bir hata nedeniyle hotspot kapatıldı. Birkaç dakika sonra tekrar bağlanmayı deneyin.</translation>
 <translation id="7461924472993315131">Sabitle</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
@@ -1382,6 +1395,7 @@ Yeni yüklenmiş</translation>
 Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Soldaki pencereyi güncelleyin</translation>
 <translation id="7543399541175347147">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor. Diğer uygulamalar kaydedilecek.</translation>
 <translation id="7544300628205093162">Klavye arka ışığı açık</translation>
 <translation id="7548434653388805669">Uyku vakti geldi</translation>
@@ -1435,6 +1449,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="776344839111254542">Güncelleme ayrıntılarını görüntülemek için tıklayın</translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
 <translation id="7769299611924763557">GIF'iniz kısa süre içinde hazır olacak</translation>
+<translation id="7773536009433685931">Bunun yerine kablosuz bağlantıyı açın</translation>
 <translation id="7780094051999721182">Kısayollar</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7796735576426975947">Yeni bildirim gösterilmiyor</translation>
@@ -1462,6 +1477,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7893503627044934815">Bu dosyanın gösterilmesini istemiyorum</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ekran döndürme klavye kısayoluna bastınız. Ekranı döndürmek istiyor musunuz?</translation>
+<translation id="7901190436359881020">Pencereleri değiştirin</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Parmak izi sensörüne dokunun</translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
@@ -1737,6 +1753,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9198992156681343238">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> cihazını bu Chromebook'a bağlayın</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Yöneticiniz tarafından yönetiliyor</translation>
+<translation id="9207682216934703221">Bu işlem, <ph name="APP_NAME" /> ile <ph name="APP2_NAME" /> uygulaması, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
 <translation id="9210037371811586452">Birleşik masaüstü modundan çıkılıyor</translation>
 <translation id="9211490828691860325">Tüm masalar</translation>
 <translation id="9211681782751733685">Pilin tam olarak şarj olmasına <ph name="TIME_REMAINING" /> kaldı.</translation>

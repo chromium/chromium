@@ -41,6 +41,7 @@ class SystemInfoProvider
   explicit SystemInfoProvider(
       std::unique_ptr<SystemInfo> system_info,
       chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config);
+  SystemInfoProvider();
   ~SystemInfoProvider() override;
 
   SystemInfoProvider(const SystemInfoProvider&) = delete;
@@ -64,8 +65,10 @@ class SystemInfoProvider
   void SetAndroidDeviceNetworkInfoChanged(bool is_different_network,
                                           bool android_device_on_cellular);
 
+  bool is_different_network() { return is_different_network_; }
+  bool android_device_on_cellular() { return android_device_on_cellular_; }
+
  protected:
-  SystemInfoProvider();
   std::string hashed_wifi_ssid_;
 
  private:
@@ -89,6 +92,8 @@ class SystemInfoProvider
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
 
+  bool is_different_network_ = false;
+  bool android_device_on_cellular_ = false;
   mojo::Receiver<mojom::SystemInfoProvider> info_receiver_{this};
   mojo::Remote<mojom::SystemInfoObserver> observer_remote_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>

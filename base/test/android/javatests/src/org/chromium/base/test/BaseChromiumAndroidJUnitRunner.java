@@ -765,7 +765,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                     && !f.getName().equals("org.chromium.android_webview.devui.MainActivity.xml")
                     && !f.getName().equals("AwComponentUpdateServicePreferences.xml")
                     && !f.getName().equals("ComponentsProviderServicePreferences.xml")
-                    && !f.getName().equals("org.chromium.webengine.shell_preferences.xml")) {
+                    && !f.getName().equals("org.chromium.webengine.test."
+                            + "instrumentation_test_apk_preferences.xml")) {
                 if (check) {
                     badFiles.add(f);
                 } else {

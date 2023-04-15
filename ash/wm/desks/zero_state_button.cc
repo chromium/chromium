@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/zero_state_button.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,7 +15,6 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "base/cxx17_backports.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -82,8 +83,8 @@ gfx::Size ZeroStateDefaultDeskButton::CalculatePreferredSize() const {
   const int max_width =
       std::max(preview_width, kZeroStateDefaultDeskButtonMinWidth);
   const int width =
-      base::clamp(label_width + 2 * kZeroStateDefaultButtonHorizontalPadding,
-                  min_width, max_width);
+      std::clamp(label_width + 2 * kZeroStateDefaultButtonHorizontalPadding,
+                 min_width, max_width);
   return gfx::Size(width, kZeroStateButtonHeight);
 }
 

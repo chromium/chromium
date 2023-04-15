@@ -61,6 +61,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) override;
   const mojom::KeyboardPolicies& GetKeyboardPolicies() override;
+  const mojom::MousePolicies& GetMousePolicies() override;
   void SetKeyboardSettings(DeviceId id,
                            mojom::KeyboardSettingsPtr settings) override;
   void SetTouchpadSettings(DeviceId id,
@@ -116,6 +117,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // Correctly initializes settings depending on whether we have an active
   // user session or not.
   void InitializeKeyboardSettings(mojom::Keyboard* keyboard);
+  void InitializeMouseSettings(mojom::Mouse* mouse);
+  void InitializePointingStickSettings(mojom::PointingStick* pointing_stick);
+  void InitializeTouchpadSettings(mojom::Touchpad* touchpad);
 
   // Update the cached per-user keyboard settings on the login screen using the
   // most recently connected internal/external device (if applicable). This
@@ -125,6 +129,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // - A user makes an update to a device setting.
   // - The active pref service changes.
   void RefreshStoredLoginScreenKeyboardSettings();
+  void RefreshStoredLoginScreenMouseSettings();
+  void RefreshStoredLoginScreenPointingStickSettings();
+  void RefreshStoredLoginScreenTouchpadSettings();
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 

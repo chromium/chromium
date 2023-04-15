@@ -90,8 +90,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
   // Explicitly disable using style of focus ring that is drawn with a 2dp gap
   // between the focus ring and component.
-  void SetOutsetFocusRingDisabled() { outset_focus_ring_disabled_ = true; }
-  bool GetOutsetFocusRingDisabled() { return outset_focus_ring_disabled_; }
+  void SetOutsetFocusRingDisabled(bool disable);
+  bool GetOutsetFocusRingDisabled() const;
 
   bool ShouldPaintForTesting();
 

@@ -41,6 +41,41 @@ bool AreExperimentalFeaturesEnabled() {
       switches::kEnableExperimentalWebPlatformFeatures);
 }
 
+enum LoggableEventMask {
+  CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES = 0,
+  CLEAR_SITE_DATA_COOKIES = 1 << 0,
+  CLEAR_SITE_DATA_STORAGE = 1 << 1,
+  CLEAR_SITE_DATA_CACHE = 1 << 2,
+  CLEAR_SITE_DATA_BUCKETS = 1 << 3,
+  CLEAR_SITE_DATA_MAX_VALUE = 1 << 4,
+};
+
+void LogEvent(int event) {
+  UMA_HISTOGRAM_ENUMERATION("Storage.ClearSiteDataHeader.Parameters", event,
+                            static_cast<int>(CLEAR_SITE_DATA_MAX_VALUE));
+}
+
+// Represents the parameters as a single number to be recorded in a histogram.
+int ParametersMask(bool clear_cookies,
+                   bool clear_storage,
+                   bool clear_cache,
+                   bool has_buckets) {
+  int mask = CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES;
+  if (clear_cookies) {
+    mask = mask | CLEAR_SITE_DATA_COOKIES;
+  }
+  if (clear_storage) {
+    mask = mask | CLEAR_SITE_DATA_STORAGE;
+  }
+  if (clear_cache) {
+    mask = mask | CLEAR_SITE_DATA_CACHE;
+  }
+  if (has_buckets) {
+    mask = mask | CLEAR_SITE_DATA_BUCKETS;
+  }
+  return mask;
+}
+
 // Outputs a single |formatted_message| on the UI thread.
 void OutputFormattedMessage(WebContents* web_contents,
                             blink::mojom::ConsoleMessageLevel level,
@@ -232,6 +267,7 @@ bool ClearSiteDataHandler::ParseHeader(
   if (!base::IsStringASCII(header)) {
     delegate->AddMessage(current_url, "Must only contain ASCII characters.",
                          blink::mojom::ConsoleMessageLevel::kError);
+    LogEvent(CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES);
     return false;
   }
 
@@ -300,6 +336,7 @@ bool ClearSiteDataHandler::ParseHeader(
       storage_buckets_to_remove->empty()) {
     delegate->AddMessage(current_url, "No recognized types specified.",
                          blink::mojom::ConsoleMessageLevel::kError);
+    LogEvent(CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES);
     return false;
   }
 
@@ -326,6 +363,10 @@ bool ClearSiteDataHandler::ParseHeader(
   }
   delegate->AddMessage(current_url, console_output,
                        blink::mojom::ConsoleMessageLevel::kInfo);
+
+  // Note that presence of headers is also logged in WebRequest.ResponseHeader
+  LogEvent(ParametersMask(*clear_cookies, *clear_storage, *clear_cache,
+                          !storage_buckets_to_remove->empty()));
 
   return true;
 }

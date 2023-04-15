@@ -238,9 +238,6 @@ bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
 bool ChromeWebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
     content::RenderFrameHost* rfh,
     const url::Origin& caller_origin) {
-  if (!base::FeatureList::IsEnabled(device::kDisableWebAuthnWithBrokenCerts)) {
-    return true;
-  }
   const Profile* profile =
       Profile::FromBrowserContext(rfh->GetBrowserContext());
   if (profile->GetPrefs()->GetBoolean(
@@ -540,11 +537,11 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
 
 void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     const url::Origin& origin,
-    device::CableRequestType request_type,
+    device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     device::FidoDiscoveryFactory* discovery_factory) {
-  DCHECK(request_type == device::CableRequestType::kGetAssertion ||
+  DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
 
   phone_names_.clear();
@@ -626,10 +623,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   const bool non_extension_cablev2_enabled =
       (!cable_extension_permitted ||
        (!cable_extension_provided &&
-        request_type == device::CableRequestType::kGetAssertion) ||
-       ((request_type == device::CableRequestType::kMakeCredential ||
-         request_type ==
-             device::CableRequestType::kDiscoverableMakeCredential) &&
+        request_type == device::FidoRequestType::kGetAssertion) ||
+       (request_type == device::FidoRequestType::kMakeCredential &&
         resident_key_requirement.has_value() &&
         resident_key_requirement.value() !=
             device::ResidentKeyRequirement::kDiscouraged) ||

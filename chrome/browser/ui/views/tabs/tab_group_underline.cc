@@ -119,7 +119,7 @@ void TabGroupUnderline::MaybeSetVisible(const bool visible) {
 
 // static
 int TabGroupUnderline::GetStrokeInset() {
-  return TabStyle::GetTabOverlap() + kStrokeThickness;
+  return TabStyle::Get()->GetTabOverlap() + kStrokeThickness;
 }
 
 BEGIN_METADATA(TabGroupUnderline, views::View)

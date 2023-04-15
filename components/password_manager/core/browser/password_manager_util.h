@@ -179,7 +179,6 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
 
 // Helper which checks if biometric authentication is available.
 bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
-                         device_reauth::DeviceAuthRequester requester,
                          password_manager::PasswordManagerClient* client);
 
 // Strips any authentication data, as well as query and ref portions of URL.

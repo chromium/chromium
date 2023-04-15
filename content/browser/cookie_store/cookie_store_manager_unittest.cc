@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
@@ -20,6 +21,7 @@
 #include "content/test/storage_partition_test_helpers.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -105,6 +107,10 @@ const char kGoogleScope[] = "https://google.com/a/";
 const char kGoogleWorkerScript[] = "https://google.com/a/script.js";
 const char kLegacyScope[] = "https://legacy.com/a/";
 const char kLegacyWorkerScript[] = "https://legacy.com/a/script.js";
+const char kThirdPartyTopLevelSite[] = "https://toplevelsite.com";
+
+const base::UnguessableToken kStorageKeyNonce =
+    base::UnguessableToken::Create();
 
 // Mocks a service worker that uses the cookieStore API.
 class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
@@ -196,17 +202,18 @@ class CookieStoreManagerTest
     SetUpServiceWorkerContext();
   }
 
-  // Returns the new service worker's registration id.
+  // Returns the new service worker's registration id after it is registered
+  // with the specified StorageKey.
   //
   // Spins in a nested RunLoop until the new service worker is activated. The
   // new service worker is guaranteed to be running when the method returns.
-  int64_t RegisterServiceWorker(const char* scope, const char* script_url) {
+  int64_t RegisterServiceWorkerWithStorageKey(const char* scope,
+                                              const char* script_url,
+                                              const blink::StorageKey& key) {
     bool success = false;
     int64_t registration_id;
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL(scope);
-    const blink::StorageKey key =
-        blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(scope)));
     base::RunLoop run_loop;
     worker_test_helper_->context()->RegisterServiceWorker(
         GURL(script_url), key, options,
@@ -228,6 +235,16 @@ class CookieStoreManagerTest
 
     worker_test_helper_->WaitForActivateEvent();
     return registration_id;
+  }
+
+  // Returns the new service worker's registration id.
+  //
+  // Spins in a nested RunLoop until the new service worker is activated. The
+  // new service worker is guaranteed to be running when the method returns.
+  int64_t RegisterServiceWorker(const char* scope, const char* script_url) {
+    return RegisterServiceWorkerWithStorageKey(
+        scope, script_url,
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(scope))));
   }
 
   // The given service worker will be running after the method returns.
@@ -385,6 +402,23 @@ class CookieStoreManagerTest
     legacy_service_ =
         std::make_unique<CookieStoreSync>(legacy_service_remote_.get());
 
+    cookie_store_manager_->BindReceiver(
+        third_party_service_remote_.BindNewPipeAndPassReceiver(),
+        blink::StorageKey::Create(
+            url::Origin::Create(GURL(kExampleScope)),
+            net::SchemefulSite(GURL(kThirdPartyTopLevelSite)),
+            blink::mojom::AncestorChainBit::kCrossSite,
+            /*third_party_partitioning_allowed=*/true));
+    third_party_service_ =
+        std::make_unique<CookieStoreSync>(third_party_service_remote_.get());
+
+    cookie_store_manager_->BindReceiver(
+        nonced_service_remote_.BindNewPipeAndPassReceiver(),
+        blink::StorageKey::CreateWithNonce(
+            url::Origin::Create(GURL(kExampleScope)), kStorageKeyNonce));
+    nonced_service_ =
+        std::make_unique<CookieStoreSync>(nonced_service_remote_.get());
+
     // Set Legacy cookie access setting for legacy.com to test
     // CookieAccessSemantics.
     std::vector<ContentSettingPatternSource> legacy_settings;
@@ -409,9 +443,13 @@ class CookieStoreManagerTest
     example_service_.reset();
     google_service_.reset();
     legacy_service_.reset();
+    third_party_service_.reset();
+    nonced_service_.reset();
     example_service_remote_.reset();
     google_service_remote_.reset();
     legacy_service_remote_.reset();
+    third_party_service_remote_.reset();
+    nonced_service_remote_.reset();
     cookie_manager_.reset();
     cookie_store_manager_.reset();
     storage_partition_impl_.reset();
@@ -427,9 +465,10 @@ class CookieStoreManagerTest
   base::RepeatingClosure cookie_store_initializer_;
 
   mojo::Remote<blink::mojom::CookieStore> example_service_remote_,
-      google_service_remote_, legacy_service_remote_;
+      google_service_remote_, legacy_service_remote_,
+      third_party_service_remote_, nonced_service_remote_;
   std::unique_ptr<CookieStoreSync> example_service_, google_service_,
-      legacy_service_;
+      legacy_service_, third_party_service_, nonced_service_;
 };
 
 const int64_t CookieStoreManagerTest::kInvalidRegistrationId;
@@ -1775,6 +1814,210 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
   EXPECT_FALSE(untrustworthy_service_remote.is_connected());
   EXPECT_EQ("Cookie Store access from an insecure origin",
             bad_mesage_observer.WaitForBadMessage());
+}
+
+// TODO(crbug.com/1427879): Test that the worker still can access unpartitioned
+// cookies with third-party cookie blocking on.
+TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
+                                 net::features::kThirdPartyStoragePartitioning},
+                                {});
+
+  // Register 1P worker.
+  int64_t first_party_registration_id =
+      RegisterServiceWorker(kExampleScope, kExampleWorkerScript);
+  ASSERT_NE(first_party_registration_id, kInvalidRegistrationId);
+
+  // Add cookie change subscriptions to each worker.
+  CookieStoreSync::Subscriptions subscriptions;
+  subscriptions.emplace_back(blink::mojom::CookieChangeSubscription::New());
+  subscriptions.back()->name = "";
+  subscriptions.back()->match_type =
+      ::network::mojom::CookieMatchType::STARTS_WITH;
+  subscriptions.back()->url = GURL(kExampleScope);
+  EXPECT_TRUE(example_service_->AddSubscriptions(first_party_registration_id,
+                                                 std::move(subscriptions)));
+
+  // Set unpartitioned cookie.
+  ASSERT_TRUE(
+      SetSessionCookie("cookie-name1", "new-value1", "example.com", "/"));
+  task_environment_.RunUntilIdle();
+
+  // 1P workers should see the unpartitioned cookie.
+  ASSERT_EQ(1u, worker_test_helper_->changes().size());
+
+  worker_test_helper_->changes().clear();
+
+  // Set partitioned cookie in the same partition.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name3", "new-value3", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope)))));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1u, worker_test_helper_->changes().size());
+
+  worker_test_helper_->changes().clear();
+
+  // Set partitioned cookie in a different partition.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name4", "new-value4", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL(kThirdPartyTopLevelSite)))));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(0u, worker_test_helper_->changes().size());
+}
+
+// TODO(crbug.com/1427879): Test that the worker cannot access unpartitioned
+// cookies with third-party cookie blocking on.
+TEST_F(CookieStoreManagerTest, PartitionedWorker_ThirdPartyPartition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
+                                 net::features::kThirdPartyStoragePartitioning},
+                                {});
+
+  // Register 3P partitioned worker.
+  blink::StorageKey third_party_storage_key = blink::StorageKey::Create(
+      url::Origin::Create(GURL(kExampleScope)),
+      net::SchemefulSite(GURL(kThirdPartyTopLevelSite)),
+      blink::mojom::AncestorChainBit::kCrossSite);
+
+  int64_t third_party_registration_id = RegisterServiceWorkerWithStorageKey(
+      kExampleScope, kExampleWorkerScript, third_party_storage_key);
+  ASSERT_NE(third_party_registration_id, kInvalidRegistrationId);
+
+  CookieStoreSync::Subscriptions subscriptions;
+  subscriptions.emplace_back(blink::mojom::CookieChangeSubscription::New());
+  subscriptions.back()->name = "";
+  subscriptions.back()->match_type =
+      ::network::mojom::CookieMatchType::STARTS_WITH;
+  subscriptions.back()->url = GURL(kExampleScope);
+  EXPECT_TRUE(third_party_service_->AddSubscriptions(
+      third_party_registration_id, std::move(subscriptions)));
+
+  // Set unpartitioned cookie.
+  ASSERT_TRUE(
+      SetSessionCookie("cookie-name1", "new-value1", "example.com", "/"));
+  task_environment_.RunUntilIdle();
+
+  // 1P workers should see the unpartitioned cookie.
+  ASSERT_EQ(1u, worker_test_helper_->changes().size());
+
+  worker_test_helper_->changes().clear();
+
+  // Set unpartitioned cookie with SameSite=Lax.
+  // Third-party workers should not get access to a SameSite=Lax cookie.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name2", "new-value2", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false)));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(0u, worker_test_helper_->changes().size());
+
+  // Set partitioned cookie in the same partition.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name3", "new-value3", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL(kThirdPartyTopLevelSite)))));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1u, worker_test_helper_->changes().size());
+
+  worker_test_helper_->changes().clear();
+
+  // Set partitioned cookie in a different partition.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name4", "new-value4", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope)))));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(0u, worker_test_helper_->changes().size());
+}
+
+TEST_F(CookieStoreManagerTest, PartitionedWorker_NoncedPartition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
+                                 net::features::kThirdPartyStoragePartitioning},
+                                {});
+
+  // Register nonced partitioned worker.
+  blink::StorageKey nonced_storage_key = blink::StorageKey::CreateWithNonce(
+      url::Origin::Create(GURL(kExampleScope)), kStorageKeyNonce);
+
+  int64_t nonced_registration_id = RegisterServiceWorkerWithStorageKey(
+      kExampleScope, kExampleWorkerScript, nonced_storage_key);
+  ASSERT_NE(nonced_registration_id, kInvalidRegistrationId);
+
+  CookieStoreSync::Subscriptions subscriptions;
+  subscriptions.emplace_back(blink::mojom::CookieChangeSubscription::New());
+  subscriptions.back()->name = "";
+  subscriptions.back()->match_type =
+      ::network::mojom::CookieMatchType::STARTS_WITH;
+  subscriptions.back()->url = GURL(kExampleScope);
+  EXPECT_TRUE(nonced_service_->AddSubscriptions(nonced_registration_id,
+                                                std::move(subscriptions)));
+
+  // Set unpartitioned cookie.
+  ASSERT_TRUE(
+      SetSessionCookie("cookie-name1", "new-value1", "example.com", "/"));
+  task_environment_.RunUntilIdle();
+
+  // Nonced workers should not see unpartitioned cookies.
+  ASSERT_EQ(0u, worker_test_helper_->changes().size());
+
+  // Set partitioned cookie in the same partition.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name2", "new-value2", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope),
+                                                     kStorageKeyNonce))));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(1u, worker_test_helper_->changes().size());
+
+  worker_test_helper_->changes().clear();
+
+  // Set partitioned cookie in a different partition.
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "cookie-name2", "new-value2", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope)))));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(0u, worker_test_helper_->changes().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

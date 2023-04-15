@@ -197,6 +197,6 @@ void FirstRunService::RegisterSyntheticFieldTrial(
   DCHECK(!group_name.empty());
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "ForYouFreSynthetic", group_name,
+      FirstRunService::kSyntheticTrialName, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }

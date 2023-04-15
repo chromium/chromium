@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -571,7 +571,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
       (show_expanded_view_ ? expanded_view_table->children().size() : 0);
   const int new_target = static_cast<int>(keyboard_highlighted_target_) + delta;
   keyboard_highlighted_target_ = static_cast<size_t>(
-      base::clamp(new_target, 0, static_cast<int>(targets) - 1));
+      std::clamp(new_target, 0, static_cast<int>(targets) - 1));
 
   if (keyboard_highlighted_target_ < default_views) {
     default_view_->children()[keyboard_highlighted_target_]->RequestFocus();

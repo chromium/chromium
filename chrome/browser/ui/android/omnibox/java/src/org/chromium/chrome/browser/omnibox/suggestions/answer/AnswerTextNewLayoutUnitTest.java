@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import android.content.Context;
@@ -47,7 +49,7 @@ public class AnswerTextNewLayoutUnitTest {
     /** Check the validity of TextAppearanceSpan. */
     private void verifyTextAppearanceSpan(MetricAffectingSpan[] textAppearanceSpan) {
         Assert.assertEquals(1, textAppearanceSpan.length);
-        Assert.assertThat(textAppearanceSpan[0], instanceOf(TextAppearanceSpan.class));
+        assertThat(textAppearanceSpan[0], instanceOf(TextAppearanceSpan.class));
     }
 
     /**

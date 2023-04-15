@@ -11,7 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ui/aura/env_observer.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 
 namespace ui {
 class EventRewriter;
@@ -36,7 +36,7 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   ~EventRewriterControllerImpl() override;
 
   // EventRewriterController:
-  void Initialize(ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate,
+  void Initialize(ui::EventRewriterAsh::Delegate* event_rewriter_delegate,
                   AccessibilityEventRewriterDelegate*
                       accessibility_event_rewriter_delegate) override;
   void AddEventRewriter(std::unique_ptr<ui::EventRewriter> rewriter) override;
@@ -51,11 +51,11 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   void OnHostInitialized(aura::WindowTreeHost* host) override;
 
   // Enable/disable the combination of alt + other key or mouse event
-  // mapping in EventRewriterChromeOS.
+  // mapping in EventRewriterAsh.
   void SetAltDownRemappingEnabled(bool enabled);
 
-  ui::EventRewriterChromeOS::Delegate* event_rewriter_chromeos_delegate() {
-    return event_rewriter_chromeos_delegate_;
+  ui::EventRewriterAsh::Delegate* event_rewriter_ash_delegate() {
+    return event_rewriter_ash_delegate_;
   }
 
  private:
@@ -65,9 +65,8 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   // Owned by |rewriters_|.
   AccessibilityEventRewriter* accessibility_event_rewriter_ = nullptr;
   KeyboardDrivenEventRewriter* keyboard_driven_event_rewriter_ = nullptr;
-  ui::EventRewriterChromeOS* event_rewriter_chromeos_ = nullptr;
-  ui::EventRewriterChromeOS::Delegate* event_rewriter_chromeos_delegate_ =
-      nullptr;
+  ui::EventRewriterAsh* event_rewriter_ash_ = nullptr;
+  ui::EventRewriterAsh::Delegate* event_rewriter_ash_delegate_ = nullptr;
 };
 
 }  // namespace ash

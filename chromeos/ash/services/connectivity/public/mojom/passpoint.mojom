@@ -1,0 +1,65 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.connectivity.mojom;
+
+// PasspointSubscription describes a set of credentials installed in Shill.
+struct PasspointSubscription {
+  // Subscription unique identifier. This is a Shill identifier that can be
+  // used to match with the passpointID service property.
+  string id;
+
+  // List of the domains compatible with the service provider. Domains are Fully
+  // Qualified Domain Name (like "passpoint.myprovider.com").
+  array<string> domains;
+
+  // Human readable name of the service provider.
+  string friendly_name;
+
+  // Source of the credentials: an application package name when provisioned
+  // through an ARC application, or a string that describes the provisioning
+  // method otherwise.
+  string provisioning_source;
+
+  // Certificate authority trusted to validate server identity in PEM format. It
+  // is an ascii string that contains the PEM header, the certificate content in
+  // base64 string and the PEM footer.
+  string? trusted_ca;
+
+  // Time before the expiration of the set of credentials, in milliseconds since
+  // January 1, 1970, 00:00:00 GMT. The min value of int64_t means the field is
+  // unset.
+  int64 expiration_epoch_ms;
+};
+
+// Listener to the changes in Passpoint credentials set and list.
+interface PasspointEventsListener {
+  // Called when a new set of Passpoint credentials has been added.
+  // `subscription` is the subscription added.
+  OnPasspointSubscriptionAdded(PasspointSubscription subscription);
+
+  // Called when the subscription represented by `subscription` has been
+  // removed.
+  OnPasspointSubscriptionRemoved(PasspointSubscription subscription);
+};
+
+// Interface used by any service that wants to access Passpoint subscriptions
+// and follow their changes. The expected client is the network settings UI.
+interface PasspointService {
+  // Obtain the details of a Passpoint subscription designated by its unique
+  // identifier `id`.
+  GetPasspointSubscription(string id) => (PasspointSubscription? result);
+
+  // Obtain all the Passpoint subscriptions registered for the current Shill
+  // user profile.
+  ListPasspointSubscriptions() => (array<PasspointSubscription> result);
+
+  // Delete the Passpoint subscription designed by id.
+  DeletePasspointSubscription(string id) => (bool success);
+
+  // Register a listener to be notified of any changes on Passpoint credentials
+  // for the current Shill user profile. It must be registered before calling
+  // ListPasspointSubscriptions to avoid missing updates.
+  RegisterPasspointListener(pending_remote<PasspointEventsListener> listener);
+};

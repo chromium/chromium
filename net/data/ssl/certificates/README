@@ -41,8 +41,10 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- caninesonduty.com.pem : A certificate issued by a public trust anchor valid
-    for the domain caninesonduty.com, which expires on 2023-11-06.
+- leaf_from_known_root.pem : A certificate issued by a public trust anchor,
+     used for CertVerifyProcInternalTest.TestKnownRoot. Using for other
+     purposes is not recommended. This needs to be updated periodically so the
+     server name the cert is valid for may change.
 
 - treadclimber.pem: A chain where the leaf does not contain embedded SCTs,
   and which has a notBefore date after 2018/10/15. Expires 2020/02/07.
@@ -54,8 +56,6 @@ unit tests.
 - lets-encrypt-isrg-x1-root.pem: A chain that ends in the Lets encrypt ISRG X1
   root (https://crt.sh/?id=9314791). Has the same leaf as
   lets-encrypt-dst-x3-root.pem.
-- vrk_gov_root.pem: A root certificate that is marked as a legacy CA in the
-  known roots list.
 
 ===== Manually generated certificates
 - client.p12 : A PKCS #12 file containing a client certificate and a private

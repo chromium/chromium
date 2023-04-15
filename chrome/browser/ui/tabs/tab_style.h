@@ -104,28 +104,31 @@ class TabStyle {
 
   // Returns the preferred width of a single Tab, assuming space is
   // available.
-  static int GetStandardWidth();
+  virtual int GetStandardWidth() const;
 
   // Returns the width for pinned tabs. Pinned tabs always have this width.
-  static int GetPinnedWidth();
+  virtual int GetPinnedWidth() const;
 
   // Returns the overlap between adjacent tabs.
-  static int GetTabOverlap();
+  virtual int GetTabOverlap() const;
 
   // Gets the size of the separator drawn between tabs, if any.
-  static gfx::Size GetSeparatorSize();
+  virtual gfx::Size GetSeparatorSize() const;
 
   // Returns, for a tab of height |height|, how far the window top drag handle
   // can extend down into inactive tabs or the new tab button. This behavior
   // is not used in all cases.
-  static int GetDragHandleExtension(int height);
+  virtual int GetDragHandleExtension(int height) const;
 
   // Gets the preferred size for tab previews, which could be screencaps, hero
   // or og:image images, etc.
-  static gfx::Size GetPreviewImageSize();
+  virtual gfx::Size GetPreviewImageSize() const;
 
   // Returns the radius of the outer corners of the tab shape.
-  static int GetCornerRadius();
+  virtual int GetCornerRadius() const;
+
+  // Opacity of the active tab background painted over inactive selected tabs.
+  virtual float GetSelectedTabOpacity() const;
 
   // The largest valid value of TabStyle::GetZValue(). Currently,
   // GM2TabStyle::GetZValue is the only implementation, and it can't return
@@ -134,15 +137,15 @@ class TabStyle {
 
   static constexpr float kDefaultSelectedTabOpacity = 0.75f;
 
-  static std::unique_ptr<const TabStyle> Create();
+  static const TabStyle* Get();
+
+  // Returns how far from the leading and trailing edges of a tab the contents
+  // should actually be laid out.
+  int GetContentsHorizontalInsetSize() const;
 
  protected:
   // Avoid implicitly-deleted constructor.
   TabStyle() = default;
-
-  // Returns how far from the leading and trailing edges of a tab the contents
-  // should actually be laid out.
-  static int GetContentsHorizontalInsetSize();
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STYLE_H_

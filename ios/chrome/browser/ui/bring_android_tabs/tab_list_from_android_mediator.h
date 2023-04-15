@@ -12,12 +12,16 @@
 
 class BringAndroidTabsToIOSService;
 class FaviconLoader;
+@protocol TabListFromAndroidConsumer;
 class UrlLoadingBrowserAgent;
 
 // Mediator for the "Tab List From Android" table.
 @interface TabListFromAndroidMediator
-    : NSObject <TabListFromAndroidViewControllerDelegate,
-                TableViewFaviconDataSource>
+    : NSObject <TableViewFaviconDataSource,
+                TabListFromAndroidViewControllerDelegate>
+
+// The main consumer for this mediator.
+@property(nonatomic, weak) id<TabListFromAndroidConsumer> consumer;
 
 // Designated initializer for the mediator. `service` is used to load the user's
 // tabs to bring to iOS from their Android device.

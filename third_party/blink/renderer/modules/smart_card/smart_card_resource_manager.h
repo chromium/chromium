@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -32,7 +33,6 @@ class MODULES_EXPORT SmartCardResourceManager final
 
  public:
   using SmartCardReaderInfoPtr = mojom::blink::SmartCardReaderInfoPtr;
-  using SmartCardResponseCode = mojom::blink::SmartCardResponseCode;
 
   static const char kSupplementName[];
 
@@ -57,7 +57,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   void ReaderAdded(SmartCardReaderInfoPtr reader_info) override;
   void ReaderRemoved(SmartCardReaderInfoPtr reader_info) override;
   void ReaderChanged(SmartCardReaderInfoPtr reader_info) override;
-  void Error(SmartCardResponseCode response_code) override;
+  void Error(device::mojom::blink::SmartCardError error) override;
 
  private:
   SmartCardReader* GetOrCreateReader(SmartCardReaderInfoPtr info);
@@ -73,6 +73,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   SmartCardReaderPresenceObserver* GetOrCreatePresenceObserver();
 
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::SmartCardServiceClient> receiver_{
       this};
   HeapHashSet<Member<ScriptPromiseResolver>> get_readers_promises_;

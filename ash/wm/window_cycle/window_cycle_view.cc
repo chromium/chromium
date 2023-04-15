@@ -4,19 +4,20 @@
 
 #include "ash/wm/window_cycle/window_cycle_view.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -122,11 +123,14 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
 
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysScrim2, kBackgroundCornerRadius));
+      is_jellyroll_enabled ? cros_tokens::kCrosSysScrim2
+                           : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
+      kBackgroundCornerRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBackgroundCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
+      is_jellyroll_enabled
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
@@ -146,9 +150,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp,
                             kInsideBorderVerticalPaddingDp,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp),
-          chromeos::features::IsJellyrollEnabled()
-              ? kBetweenChildPaddingDpCrOSNext
-              : kBetweenChildPaddingDp));
+          is_jellyroll_enabled ? kBetweenChildPaddingDpCrOSNext
+                               : kBetweenChildPaddingDp));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -175,7 +178,9 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     // Configure the focus ring for the tab slider selector view.
     views::FocusRing::Install(tab_slider_selector_view);
     auto* focus_ring = views::FocusRing::Get(tab_slider_selector_view);
-    focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+    focus_ring->SetColorId(is_jellyroll_enabled ? cros_tokens::kCrosSysFocusRing
+                                                : static_cast<ui::ColorId>(
+                                                      ui::kColorAshFocusRing));
     const float halo_inset = focus_ring->GetHaloThickness() / 2.f + 2;
     focus_ring->SetHaloInset(-halo_inset);
     // Set a pill shaped (fully rounded rect) highlight path to focus ring.
@@ -194,9 +199,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     no_recent_items_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     no_recent_items_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
 
-    no_recent_items_label_->SetEnabledColor(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorSecondary));
+    no_recent_items_label_->SetEnabledColorId(kColorAshIconColorSecondary);
     no_recent_items_label_->SetFontList(
         no_recent_items_label_->font_list()
             .DeriveWithSizeDelta(
@@ -567,12 +570,12 @@ void WindowCycleView::Layout() {
     // However, the container must span the screen, i.e. the maximum x is 0
     // and the minimum for its right boundary is the width of the screen.
     int minimum_x = width() - content_container_bounds.width();
-    x_offset = base::clamp(x_offset, minimum_x, 0);
+    x_offset = std::clamp(x_offset, minimum_x, 0);
 
     // If the user has dragged, offset the container based on how much they
     // have dragged. Cap |horizontal_distance_dragged_| based on the available
     // distance from the container to the left and right boundaries.
-    float clamped_horizontal_distance_dragged = base::clamp(
+    float clamped_horizontal_distance_dragged = std::clamp(
         horizontal_distance_dragged_, static_cast<float>(minimum_x - x_offset),
         static_cast<float>(-x_offset));
     if (horizontal_distance_dragged_ != clamped_horizontal_distance_dragged)

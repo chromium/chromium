@@ -43,9 +43,7 @@
 
 namespace blink {
 
-class Font;
 class ComputedStyle;
-class LayoutText;
 
 enum TextRunFlag {
   kDefaultTextRunFlags = 0,
@@ -55,34 +53,12 @@ enum TextRunFlag {
 
 typedef unsigned TextRunFlags;
 
-// Direction resolved from string value.
-TextRun ConstructTextRun(const Font&,
-                         const String&,
+// TODO(1229581): All the calls to this function are bad. They are passing in
+// TextRun::ExpansionBehaviour to flags instead of TextRunFlag above.
+// Remove this function.
+TextRun ConstructTextRun(const String&,
                          const ComputedStyle&,
                          TextRunFlags = kDefaultTextRunFlags);
-
-// Explicit direction.
-TextRun ConstructTextRun(const Font&,
-                         const String&,
-                         const ComputedStyle&,
-                         TextDirection,
-                         TextRunFlags = kDefaultTextRunFlags);
-TextRun ConstructTextRun(const Font&,
-                         const LayoutText*,
-                         unsigned offset,
-                         unsigned length,
-                         const ComputedStyle&,
-                         TextDirection);
-TextRun ConstructTextRun(const Font&,
-                         const LChar*,
-                         int length,
-                         const ComputedStyle&,
-                         TextDirection);
-TextRun ConstructTextRun(const Font&,
-                         const UChar*,
-                         int length,
-                         const ComputedStyle&,
-                         TextDirection);
 
 }  // namespace blink
 

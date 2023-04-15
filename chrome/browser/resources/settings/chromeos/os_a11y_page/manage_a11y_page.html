@@ -56,7 +56,7 @@
     <template is="dom-if"
         if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
       <cr-link-row id="chromevoxSubpageTrigger"
-          class="settings-box" on-click="onChromeVoxNewSettingsTap_"
+          class="settings-box" on-click="onChromeVoxNewSettingsClick_"
           label="$i18n{chromeVoxOptionsLabel}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -64,15 +64,19 @@
     <template is="dom-if"
         if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
       <cr-link-row id="chromeVoxSubpageButton"
-          class="settings-box" on-click="onChromeVoxSettingsTap_"
-          label="$i18n{chromeVoxOptionsLabel}" external>
+          class="settings-box" on-click="onChromeVoxSettingsClick_"
+          label="$i18n{chromeVoxOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
   <div class="sub-item">
     <cr-link-row id="chromeVoxTutorialButton"
-        class="settings-box" on-click="onChromeVoxTutorialTap_"
-        label="$i18n{chromeVoxTutorialLabel}" external>
+        class="settings-box" on-click="onChromeVoxTutorialClick_"
+        label="$i18n{chromeVoxTutorialLabel}"
+        external
+        button-aria-description="$i18n{opensInNewTab}">
     </cr-link-row>
   </div>
 </iron-collapse>
@@ -89,7 +93,7 @@
     <template is="dom-if"
         if="[[isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
       <cr-link-row id="selectToSpeakSubpageTrigger"
-          class="settings-box" on-click="onSelectToSpeakNewSettingsTap_"
+          class="settings-box" on-click="onSelectToSpeakNewSettingsClick_"
           label="$i18n{selectToSpeakLinkTitle}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -97,15 +101,17 @@
     <template is="dom-if"
         if="[[!isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
       <cr-link-row id="selectToSpeakSubpageButton"
-          class="settings-box" on-click="onSelectToSpeakSettingsTap_"
-          label="$i18n{selectToSpeakOptionsLabel}" external>
+          class="settings-box" on-click="onSelectToSpeakSettingsClick_"
+          label="$i18n{selectToSpeakOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
 </iron-collapse>
 
 <cr-link-row id="ttsSubpageButton" class="hr"
-    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsTap_"
+    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsClick_"
     sub-label="$i18n{ttsSettingsLinkDescription}"
     role-description="$i18n{subpageArrowRoleDescription}" embedded>
 </cr-link-row>
@@ -195,14 +201,17 @@
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="displaySubpageButton" class="hr"
-      label="$i18n{displaySettingsTitle}" on-click="onDisplayTap_"
+      label="$i18n{displaySettingsTitle}" on-click="onDisplayClick_"
       sub-label="$i18n{displaySettingsDescription}"
       role-description="$i18n{subpageArrowRoleDescription}" embedded>
   </cr-link-row>
   <cr-link-row id="appearanceSubpageButton" class="hr"
-      label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceTap_"
-      sub-label="$i18n{appearanceSettingsDescription}" external
-      embedded></cr-link-row>
+      label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceClick_"
+      sub-label="$i18n{appearanceSettingsDescription}"
+      external
+      button-aria-description="$i18n{opensInNewTab}"
+      embedded>
+  </cr-link-row>
 </template>
 
 <h2>$i18n{keyboardAndTextInputHeading}</h2>
@@ -288,13 +297,13 @@
     <div class="sub-item">
       <cr-link-row id="switchAccessSubpageButton"
           label="$i18n{switchAccessOptionsLabel}"
-          on-click="onSwitchAccessSettingsTap_"
+          on-click="onSwitchAccessSettingsClick_"
           role-description="$i18n{subpageArrowRoleDescription}" embedded>
       </cr-link-row>
     </div>
   </iron-collapse>
   <cr-link-row id="keyboardSubpageButton" class="hr"
-      label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardTap_"
+      label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardClick_"
       sub-label="$i18n{keyboardSettingsDescription}"
       role-description="$i18n{subpageArrowRoleDescription}" embedded>
   </cr-link-row>
@@ -381,7 +390,7 @@
     deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
 </settings-toggle-button>
 <cr-link-row id="pointerSubpageButton" class="hr"
-    label="$i18n{mouseSettingsTitle}" on-click="onMouseTap_"
+    label="$i18n{mouseSettingsTitle}" on-click="onMouseClick_"
     role-description="$i18n{subpageArrowRoleDescription}" embedded>
 </cr-link-row>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
@@ -431,6 +440,8 @@
   <cr-link-row
       id="additionalFeaturesLink" class="hr"
       label="$i18n{additionalFeaturesTitle}"
-      on-click="onAdditionalFeaturesClick_" external>
+      on-click="onAdditionalFeaturesClick_"
+      external
+      button-aria-description="$i18n{opensInNewTab}">
   </cr-link-row>
 </template>

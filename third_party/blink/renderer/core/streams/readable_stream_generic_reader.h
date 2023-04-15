@@ -57,8 +57,8 @@ class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  friend class PipeToEngine;
   friend class ReadableStreamDefaultController;
-  friend class ReadableStream;
 
   Member<StreamPromiseResolver> closed_promise_;
 

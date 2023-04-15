@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -17,6 +18,7 @@
 #include "base/observer_list_types.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -300,8 +302,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   // info, etc.) and fires notifications that the result and potentially the
   // default match has changed.
   void AnnotateResultAndNotifyChanged(
-      absl::optional<AutocompleteMatch>& last_default_match,
-      std::u16string& last_default_associated_keyword,
+      const absl::optional<AutocompleteMatch>& last_default_match,
+      const std::u16string& last_default_associated_keyword,
       bool force_notify_default_match_changed);
 
   // Updates ML scoring signals of suggestions in the autocomplete result.
@@ -360,37 +362,24 @@ class AutocompleteController : public AutocompleteProviderListener,
   // only runs on Lacros and the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
-  // Called each time the model returns for a match. Passes the output from the
-  // model and the index of the associated match to the final
-  // `OnUrlScoringModelDoneForAllMatches()` callback.
-  void OnUrlScoringModelDone(
-      base::OnceCallback<void(std::pair<absl::optional<float>, size_t>)>
-          callback,
-      size_t match_index,
-      absl::optional<float> model_output);
-
-  // Called when the model finishes running for ALL matches in
+  // Called when the model is done running for all the eligible matches in
   // `results_.matches_`. Redistributes the existing relevance scores to the
   // matches based on the model output (i.e. highest relevance now belongs to
-  // the match with the highest output value, and vice versa), re-sorts the
-  // matches, and notifies listeners.
-  void OnUrlScoringModelDoneForAllMatches(
+  // the match with the highest output value, and vice versa), re-sorts and
+  // trims the matches, and calls `completion_callback`.
+  void OnUrlScoringModelDone(
       AutocompleteInput input,
-      absl::optional<AutocompleteMatch> last_default_match,
-      std::u16string last_default_associated_keyword,
-      bool force_notify_default_match_changed,
+      const base::ElapsedTimer elapsed_timer,
+      base::OnceClosure completion_callback,
       std::vector<std::pair<absl::optional<float>, size_t>>
           outputs_and_match_indices);
 
-  // If ML Relevance Scoring is enabled, runs the model for all the supported
-  // `matches_` in `results_` and returns true. `OnUrlScoringModelOutput()`
-  // callback is expected to be called for every match and
-  // `OnUrlScoringModelDoneForAllMatches()` callback is expected to be called
-  // once the scoring is done for ALL matches, whether successfully or not.
-  bool MaybeRunUrlScoringModel(
-      absl::optional<AutocompleteMatch>& last_default_match,
-      std::u16string& last_default_associated_keyword,
-      bool force_notify_default_match_changed);
+  // If ML Relevance Scoring is not enabled returns false. Otherwise runs the
+  // model asynchronously for all the eligible matches in `results_.matches_`
+  // and returns true. Passes `completion_callback` to `OnUrlScoringModelDone()`
+  // callback which is called once the scoring is done for all the eligible
+  // matches, whether successfully or not.
+  bool MaybeRunUrlScoringModel(base::OnceClosure completion_callback);
 
   base::ObserverList<Observer> observers_;
 

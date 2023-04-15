@@ -44,7 +44,11 @@
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#endif
+
+#if BUILDFLAG(SKIA_USE_METAL)
 #include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
@@ -169,35 +173,13 @@ SharedContextState::SharedContextState(
       real_context_(std::move(context)),
       surface_(std::move(surface)),
       sk_surface_cache_(MaxNumSkSurface()) {
-  static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
-  crash_key.Set(
-      base::StringPrintf("%u", static_cast<uint32_t>(gr_context_type_)));
-  // If |gr_context_type_| is not GL, then initialize |gr_context_| here. In
-  // the case of GL, |gr_context_| will be initialized in InitializeGrContext.
-  // Note that if |gr_context_| is not GL and also not initialized here (e.g,
-  // due to vk/metal/dawn_context_provider_ being nullptr), then
-  // InitializeGrContext will fail.
-  switch (gr_context_type_) {
-    case GrContextType::kGL:
-      break;
-    case GrContextType::kVulkan:
-      if (vk_context_provider_) {
+  if (gr_context_type_ == GrContextType::kVulkan) {
+    if (vk_context_provider_) {
 #if BUILDFLAG(ENABLE_VULKAN)
-        external_semaphore_pool_ =
-            std::make_unique<ExternalSemaphorePool>(this);
+      external_semaphore_pool_ = std::make_unique<ExternalSemaphorePool>(this);
 #endif
-        use_virtualized_gl_contexts_ = false;
-      }
-      break;
-    case GrContextType::kDawn:
-      if (dawn_context_provider_) {
-#if BUILDFLAG(SKIA_USE_DAWN)
-        gr_context_ = dawn_context_provider_->GetGrContext();
-#endif
-        use_virtualized_gl_contexts_ = false;
-        DCHECK(gr_context_);
-      }
-      break;
+      use_virtualized_gl_contexts_ = false;
+    }
   }
 
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
@@ -229,8 +211,8 @@ SharedContextState::~SharedContextState() {
 
   // We should have the last ref on this GrContext to ensure we're not holding
   // onto any skia objects using this context. Note that some tests don't run
-  // InitializeGrContext(), so |owned_gr_context_| is not expected to be
-  // initialized.
+  // InitializeSkia(), so |owned_gr_context_| is not expected to be initialized,
+  // and also when using Graphite.
   DCHECK(!owned_gr_context_ || owned_gr_context_->unique());
 
   // GPU memory allocations except skia_gr_cache_size_ tracked by this
@@ -262,7 +244,26 @@ SharedContextState::~SharedContextState() {
       this);
 }
 
-bool SharedContextState::InitializeGrContext(
+bool SharedContextState::InitializeSkia(
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& workarounds,
+    gpu::raster::GrShaderCache* cache,
+    GpuProcessActivityFlags* activity_flags,
+    gl::ProgressReporter* progress_reporter) {
+  static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
+  crash_key.Set(
+      base::StringPrintf("%u", static_cast<uint32_t>(gr_context_type_)));
+
+  if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn ||
+      gpu_preferences.gr_context_type == GrContextType::kGraphiteMetal) {
+    return InitializeGraphite(gpu_preferences);
+  }
+
+  return InitializeGanesh(gpu_preferences, workarounds, cache, activity_flags,
+                          progress_reporter);
+}
+
+bool SharedContextState::InitializeGanesh(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     gpu::raster::GrShaderCache* cache,
@@ -270,11 +271,6 @@ bool SharedContextState::InitializeGrContext(
     gl::ProgressReporter* progress_reporter) {
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
-
-#if BUILDFLAG(IS_APPLE)
-  if (metal_context_provider_)
-    metal_context_provider_->SetProgressReporter(progress_reporter);
-#endif
 
   size_t max_resource_cache_bytes;
   size_t glyph_cache_max_texture_bytes;
@@ -285,7 +281,7 @@ bool SharedContextState::InitializeGrContext(
   // affect text rendering, make sure to match the capabilities initialized
   // in GetCapabilities and ensuring these are also used by the
   // PaintOpBufferSerializer.
-  GrContextOptions options = GetDefaultGrContextOptions(gr_context_type_);
+  GrContextOptions options = GetDefaultGrContextOptions();
   options.fPersistentCache = cache;
   options.fShaderErrorHandler = this;
   if (gpu_preferences.force_max_texture_size)
@@ -342,7 +338,8 @@ bool SharedContextState::InitializeGrContext(
     }
 
     gr_context_ = owned_gr_context_.get();
-  } else if (gr_context_type_ == GrContextType::kVulkan) {
+  } else {
+    CHECK_EQ(gr_context_type_, GrContextType::kVulkan);
 #if BUILDFLAG(ENABLE_VULKAN)
     if (vk_context_provider_) {
       // TODO(vasilyt): Remove this if there is no problem with caching.
@@ -368,6 +365,46 @@ bool SharedContextState::InitializeGrContext(
   gr_context_->setResourceCacheLimit(max_resource_cache_bytes);
   transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
   return true;
+}
+
+bool SharedContextState::InitializeGraphite(
+    const GpuPreferences& gpu_preferences) {
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  skgpu::graphite::ContextOptions context_options =
+      GetDefaultGraphiteContextOptions();
+
+  if (gr_context_type_ == GrContextType::kGraphiteDawn) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    if (dawn_context_provider_ &&
+        dawn_context_provider_->InitializeGraphiteContext(context_options)) {
+      graphite_context_ = dawn_context_provider_->GetGraphiteContext();
+    } else {
+      DLOG(ERROR) << "Failed to create Graphite Context for Dawn";
+    }
+#endif
+  } else {
+    CHECK_EQ(gr_context_type_, GrContextType::kGraphiteMetal);
+#if BUILDFLAG(SKIA_USE_METAL)
+    if (metal_context_provider_ &&
+        metal_context_provider_->InitializeGraphiteContext(context_options)) {
+      graphite_context_ = metal_context_provider_->GetGraphiteContext();
+    } else {
+      DLOG(ERROR) << "Failed to create Graphite Context for Metal";
+      return false;
+    }
+#endif
+  }
+  if (!graphite_context_) {
+    LOG(ERROR) << "Skia Graphite disabled: Graphite Context creation failed.";
+    return false;
+  }
+  gpu_main_graphite_recorder_ = graphite_context_->makeRecorder();
+  viz_compositor_graphite_recorder_ = graphite_context_->makeRecorder();
+  transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
+  return true;
+#else   // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 }
 
 bool SharedContextState::InitializeGL(

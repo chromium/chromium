@@ -26,4 +26,10 @@ void CrosHotspotConfigTestHelper::EnableHotspot() {
   cros_hotspot_config_impl_->EnableHotspot(base::DoNothing());
 }
 
+void CrosHotspotConfigTestHelper::SetHotspotConfig(
+    hotspot_config::mojom::HotspotConfigPtr hotspot_config) {
+  cros_hotspot_config_impl_->SetHotspotConfig(std::move(hotspot_config),
+                                              base::DoNothing());
+}
+
 }  // namespace ash::hotspot_config

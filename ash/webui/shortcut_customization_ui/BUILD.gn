@@ -64,7 +64,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/base/ime/ash",
-    "//ui/chromeos/events",
+    "//ui/events/ash",
     "//ui/events/devices",
     "//ui/events/devices:test_support",
   ]

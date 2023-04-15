@@ -430,9 +430,9 @@ bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
                << node_b->parent()->GetIndexOf(node_b).value();
     return false;
   }
-  if (node_a->guid() != node_b->guid()) {
-    LOG(ERROR) << "GUID mismatch: " << node_a->guid() << " vs. "
-               << node_b->guid();
+  if (node_a->uuid() != node_b->uuid()) {
+    LOG(ERROR) << "GUID mismatch: " << node_a->uuid() << " vs. "
+               << node_b->uuid();
     return false;
   }
   if (node_a->parent()->is_root() != node_b->parent()->is_root() ||
@@ -444,7 +444,7 @@ bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
     return false;
   }
   if (!node_a->parent()->is_root() &&
-      node_a->parent()->guid() != node_b->parent()->guid()) {
+      node_a->parent()->uuid() != node_b->parent()->uuid()) {
     LOG(ERROR) << "Parent node mismatch: " << node_a->parent()->GetTitle()
                << " vs. " << node_b->parent()->GetTitle();
     return false;
@@ -847,7 +847,7 @@ size_t CountFoldersWithTitlesMatching(int profile, const std::string& title) {
 bool ContainsBookmarkNodeWithGUID(int profile, const base::GUID& guid) {
   for (const BookmarkNode* node :
        GetAllBookmarkNodes(GetBookmarkModel(profile))) {
-    if (node->guid() == guid) {
+    if (node->uuid() == guid) {
       return true;
     }
   }
@@ -1255,7 +1255,7 @@ bool BookmarksUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
 
 BookmarksGUIDChecker::BookmarksGUIDChecker(int profile, const base::GUID& guid)
     : SingleBookmarksModelMatcherChecker(profile,
-                                         testing::Contains(HasGuid(guid))) {}
+                                         testing::Contains(HasUuid(guid))) {}
 
 BookmarksGUIDChecker::~BookmarksGUIDChecker() = default;
 
@@ -1295,9 +1295,9 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
       continue;
     }
 
-    auto iter = server_bookmarks_by_guid.find(node->guid());
+    auto iter = server_bookmarks_by_guid.find(node->uuid());
     if (iter == server_bookmarks_by_guid.end()) {
-      *os << "Missing a node from on the server for GUID: " << node->guid();
+      *os << "Missing a node from on the server for UUID: " << node->uuid();
       return false;
     }
     const sync_pb::SyncEntity& server_entity = iter->second;
@@ -1314,7 +1314,7 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
         server_guids_by_parent_id.find(server_entity.parent_id_string());
     DCHECK(parent_iter != server_guids_by_parent_id.end());
     auto server_position_iter =
-        base::ranges::find(parent_iter->second, node->guid());
+        base::ranges::find(parent_iter->second, node->uuid());
     DCHECK(server_position_iter != parent_iter->second.end());
     const size_t server_position =
         server_position_iter - parent_iter->second.begin();
@@ -1368,7 +1368,7 @@ bool BookmarkModelMatchesFakeServerChecker::CheckPermanentParentNode(
   DCHECK(parent_node->is_permanent_node());
 
   // Matching server entity must exist.
-  DCHECK_EQ(node->guid().AsLowercaseString(),
+  DCHECK_EQ(node->uuid().AsLowercaseString(),
             server_entity.specifics().bookmark().guid());
 
   const std::map<std::string, sync_pb::SyncEntity>
@@ -1398,13 +1398,13 @@ bool BookmarkModelMatchesFakeServerChecker::CheckParentNode(
     const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid,
     std::ostream* os) const {
   // Only one matching server entity must exist.
-  DCHECK_EQ(1u, server_bookmarks_by_guid.count(node->guid()));
-  auto iter = server_bookmarks_by_guid.find(node->guid());
+  DCHECK_EQ(1u, server_bookmarks_by_guid.count(node->uuid()));
+  auto iter = server_bookmarks_by_guid.find(node->uuid());
   const sync_pb::SyncEntity& server_entity = iter->second;
 
   const BookmarkNode* parent_node = node->parent();
   if (server_entity.specifics().bookmark().parent_guid() !=
-      parent_node->guid().AsLowercaseString()) {
+      parent_node->uuid().AsLowercaseString()) {
     *os << " Parent node's GUID in specifics does not match";
     return false;
   }
@@ -1413,7 +1413,7 @@ bool BookmarkModelMatchesFakeServerChecker::CheckParentNode(
     return CheckPermanentParentNode(node, server_entity, os);
   }
 
-  auto parent_iter = server_bookmarks_by_guid.find(parent_node->guid());
+  auto parent_iter = server_bookmarks_by_guid.find(parent_node->uuid());
   if (parent_iter == server_bookmarks_by_guid.end()) {
     *os << " Missing a parent node on the server for node: "
         << node->GetTitle();

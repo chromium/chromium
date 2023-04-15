@@ -49,6 +49,11 @@
   managed-dialog {
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }
+
+  :host-context([chrome-refresh-2023]) customize-chrome-color {
+    background-color: lightgrey;
+    border-radius: 12px;
+  }
 </style>
 <!-- TODO(crbug.com/1395210): Make grid adaptive. -->
 <cr-grid columns="4" role="radiogroup"
@@ -65,7 +70,8 @@
         checked="[[isDefaultColorSelected_]]"
         aria-checked$="[[boolToString_(isDefaultColorSelected_)]]"
         tabindex$="[[tabIndex_(isDefaultColorSelected_)]]"
-        on-click="onDefaultColorClick_">
+        on-click="onDefaultColorClick_"
+        basic-color>
     </customize-chrome-color>
   </template>
   <template is="dom-if" if="[[themeHasMainColor_(theme_)]]" restamp>
@@ -79,7 +85,8 @@
         checked="[[isMainColorSelected_]]"
         aria-checked$="[[boolToString_(isMainColorSelected_)]]"
         tabindex$="[[tabIndex_(isMainColorSelected_)]]"
-        on-click="onMainColorClick_">
+        on-click="onMainColorClick_"
+        basic-color>
     </customize-chrome-color>
   </template>
   <template id="chromeColors" is="dom-repeat" items="[[colors_]]">
@@ -95,7 +102,8 @@
         aria-checked$=
             "[[getChromeColorCheckedStatus_(item.seed, selectedColor_)]]"
         tabindex$="[[chromeColorTabIndex_(item.seed, selectedColor_)]]"
-        on-click="onChromeColorClick_">
+        on-click="onChromeColorClick_"
+        basic-color>
     </customize-chrome-color>
   </template>
   <div id="customColorContainer"
@@ -110,7 +118,8 @@
         background-color="[[customColor_.background]]"
         foreground-color="[[customColor_.foreground]]"
         background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
-        checked="[[isCustomColorSelected_]]">
+        checked="[[isCustomColorSelected_]]"
+        basic-color>
     </customize-chrome-color>
     <div id="colorPickerIcon"></div>
     <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"

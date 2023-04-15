@@ -20,6 +20,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <cassert>
 #include <cerrno>
 
 #include "absl/base/config.h"
@@ -73,12 +74,44 @@ PthreadWaiter::PthreadWaiter() : waiter_count_(0), wakeup_count_(0) {
   }
 }
 
-bool PthreadWaiter::Wait(KernelTimeout t) {
-  struct timespec abs_timeout;
-  if (t.has_timeout()) {
-    abs_timeout = t.MakeAbsTimespec();
+#ifdef __APPLE__
+#define ABSL_INTERNAL_HAS_PTHREAD_COND_TIMEDWAIT_RELATIVE_NP 1
+#endif
+
+#if defined(__GLIBC__) && \
+    (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30))
+#define ABSL_INTERNAL_HAVE_PTHREAD_COND_CLOCKWAIT 1
+#endif
+
+// Calls pthread_cond_timedwait() or possibly something else like
+// pthread_cond_timedwait_relative_np() depending on the platform and
+// KernelTimeout requested. The return value is the same as the return
+// value of pthread_cond_timedwait().
+int PthreadWaiter::TimedWait(KernelTimeout t) {
+#ifndef __GOOGLE_GRTE_VERSION__
+  constexpr bool kRelativeTimeoutSupported = true;
+#else
+  constexpr bool kRelativeTimeoutSupported = false;
+#endif
+
+  assert(t.has_timeout());
+  if (kRelativeTimeoutSupported && t.is_relative_timeout()) {
+#ifdef ABSL_INTERNAL_HAS_PTHREAD_COND_TIMEDWAIT_RELATIVE_NP
+    const auto rel_timeout = t.MakeRelativeTimespec();
+    return pthread_cond_timedwait_relative_np(&cv_, &mu_, &rel_timeout);
+#elif defined(ABSL_INTERNAL_HAVE_PTHREAD_COND_CLOCKWAIT) && \
+    defined(CLOCK_MONOTONIC)
+    const auto abs_clock_timeout = t.MakeClockAbsoluteTimespec(CLOCK_MONOTONIC);
+    return pthread_cond_clockwait(&cv_, &mu_, CLOCK_MONOTONIC,
+                                  &abs_clock_timeout);
+#endif
   }
 
+  const auto abs_timeout = t.MakeAbsTimespec();
+  return pthread_cond_timedwait(&cv_, &mu_, &abs_timeout);
+}
+
+bool PthreadWaiter::Wait(KernelTimeout t) {
   PthreadMutexHolder h(&mu_);
   ++waiter_count_;
   // Loop until we find a wakeup to consume or timeout.
@@ -94,13 +127,13 @@ bool PthreadWaiter::Wait(KernelTimeout t) {
         ABSL_RAW_LOG(FATAL, "pthread_cond_wait failed: %d", err);
       }
     } else {
-      const int err = pthread_cond_timedwait(&cv_, &mu_, &abs_timeout);
+      const int err = TimedWait(t);
       if (err == ETIMEDOUT) {
         --waiter_count_;
         return false;
       }
       if (err != 0) {
-        ABSL_RAW_LOG(FATAL, "pthread_cond_timedwait failed: %d", err);
+        ABSL_RAW_LOG(FATAL, "PthreadWaiter::TimedWait() failed: %d", err);
       }
     }
     first_pass = false;

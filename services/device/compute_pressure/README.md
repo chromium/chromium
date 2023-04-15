@@ -34,7 +34,11 @@ a dependency injection point for tests.
 `blink::PressureObserver` implements bindings for the PressureObserver
 interface. There can be more than one PressureObserver per frame.
 
-`blink::PressureObserverManager` maintains the list of active observers.
-The class receives `device::mojom::PressureUpdate` from
+`blink::PressureObserverManager` keeps track of `blink::PressureClientImpl` and
+the connection to the `device::mojom::PressureManager` remote.
+
+`blink::PressureClientImpl` implements the `device::mojom::PressureClient`
+interface to receive `device::mojom::PressureUpdate` from
 `device::PressureManagerImpl` and broadcasts the information to active
-observers.
+`blink::PressureObserver`. This class also keeps track of State and active
+`blink::PressureObserver` per source type.

@@ -33,14 +33,19 @@ class ReadAnythingMenuModel : public ui::SimpleMenuModel,
   absl::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
   absl::optional<ui::ColorId> GetSubmenuBackgroundColorId(
       size_t index) override;
+  absl::optional<ui::ColorId> GetSelectedBackgroundColorId(
+      size_t index) override;
 
-  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
+  void SetForegroundColorId(ui::ColorId foreground_color) {
     foreground_color_id_ = foreground_color;
   }
 
-  void SetSubmenuBackgroundColorId(
-      absl::optional<ui::ColorId> background_color) {
+  void SetSubmenuBackgroundColorId(ui::ColorId background_color) {
     submenu_background_color_id_ = background_color;
+  }
+
+  void SetSelectedBackgroundColorId(ui::ColorId selected_color) {
+    selected_color_id_ = selected_color;
   }
 
  private:
@@ -48,6 +53,7 @@ class ReadAnythingMenuModel : public ui::SimpleMenuModel,
   base::RepeatingClosure callback_;
   absl::optional<ui::ColorId> foreground_color_id_;
   absl::optional<ui::ColorId> submenu_background_color_id_;
+  absl::optional<ui::ColorId> selected_color_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_

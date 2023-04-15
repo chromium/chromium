@@ -4618,6 +4618,22 @@ void GLES2Implementation::GetUniformuiv(GLuint program,
   CheckGLError();
 }
 
+void GLES2Implementation::WritePixelsINTERNAL(const GLbyte* mailbox,
+                                              const void* src_color_space,
+                                              GLuint src_color_space_offset,
+                                              GLuint src_size,
+                                              GLuint src_width,
+                                              GLuint src_height,
+                                              GLuint src_sk_color_type,
+                                              GLuint src_sk_alpha_type,
+                                              GLuint src_row_bytes,
+                                              GLint x_offset,
+                                              GLint y_offset,
+                                              GLint plane_index,
+                                              const void* src_pixels) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
     const GLbyte* mailbox,
     const void* dst_sk_color_space,

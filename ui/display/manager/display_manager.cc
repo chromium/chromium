@@ -44,6 +44,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/display/util/display_util.h"
@@ -635,7 +636,9 @@ void DisplayManager::RegisterDisplayProperty(
     float device_scale_factor,
     float display_zoom_factor,
     float refresh_rate,
-    bool is_interlaced) {
+    bool is_interlaced,
+    VariableRefreshRateState variable_refresh_rate_state,
+    const absl::optional<uint16_t>& vsync_rate_min) {
   if (display_info_.find(display_id) == display_info_.end())
     display_info_[display_id] =
         ManagedDisplayInfo(display_id, std::string(), false);
@@ -655,6 +658,8 @@ void DisplayManager::RegisterDisplayProperty(
 
   info.set_refresh_rate(refresh_rate);
   info.set_is_interlaced(is_interlaced);
+  info.set_variable_refresh_rate_state(variable_refresh_rate_state);
+  info.set_vsync_rate_min(vsync_rate_min);
 
   if (!resolution_in_pixels.IsEmpty()) {
     DCHECK(!IsInternalDisplayId(display_id));
@@ -987,6 +992,13 @@ void DisplayManager::UpdateDisplaysWith(
 
       if (current_display.label() != new_display.label())
         metrics |= DisplayObserver::DISPLAY_METRIC_LABEL;
+
+      if (current_display_info.variable_refresh_rate_state() !=
+              new_display_info.variable_refresh_rate_state() ||
+          current_display_info.vsync_rate_min() !=
+              new_display_info.vsync_rate_min()) {
+        metrics |= DisplayObserver::DISPLAY_METRIC_VRR;
+      }
 
       if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
         display_changes.insert(

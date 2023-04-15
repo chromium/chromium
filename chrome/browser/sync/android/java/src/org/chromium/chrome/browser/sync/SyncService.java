@@ -171,7 +171,7 @@ public abstract class SyncService {
 
     public abstract boolean isFirstSetupComplete();
 
-    public abstract void setSyncRequested(boolean requested);
+    public abstract void setSyncRequested();
 
     /**
      * Checks whether syncing is requested by the user, i.e. the user has at least started a Sync

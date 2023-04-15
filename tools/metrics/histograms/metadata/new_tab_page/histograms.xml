@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.BackgroundService.Collections.RequestLatency"
-    units="ms" expires_after="2023-08-08">
+    units="ms" expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.CartCount" units="count"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -357,17 +357,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.CategoryDismissed"
-    enum="ContentSuggestionsCategory" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: A category of content suggestions that was dismissed (by swiping
-    away its empty state card).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible"
     units="units" expires_after="2021-06-20">
   <owner>carlosk@chromium.org</owner>
@@ -395,36 +384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.DismissedUnvisited"
-    units="index" expires_after="2021-11-21">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a suggestion card on the NTP that is dismissed,
-    typically by swiping it away. The suggestion had a URL that was NOT visited
-    before. We track the position the card had in the list when it was first
-    seen by the user. This tracked position can be different from the position
-    observed by the user, e.g. when the user dismissed some suggestions from the
-    list or requested more that got inserted in the middle of the feed.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.DismissedVisited" units="index"
-    expires_after="2021-07-18">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a suggestion card on the NTP that is dismissed,
-    typically by swiping it away. The suggestion had a URL that was visited
-    before. We track the position the card had in the list when it was first
-    seen by the user. This tracked position can be different from the position
-    observed by the user, e.g. when the user dismissed some suggestions from the
-    list or requested more that got inserted in the middle of the feed.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.MenuOpened" units="index"
     expires_after="2022-01-16">
   <owner>freedjm@chromium.org</owner>
@@ -432,61 +391,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: The position of a suggestion card whose long-press menu was opened,
     analogous to NewTabPage.ContentSuggestions.Opened.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MenuOpenedAge" units="ms"
-    expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The age of a suggestion card on the NTP whose long-press menu was
-    opened, analogous to NewTabPage.ContentSuggestions.OpenedAge.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MenuOpenedScoreNormalized"
-    enum="NormalizedScore" expires_after="M85">
-  <owner>tschumann@chromium.org</owner>
-  <summary>
-    Android: The relevance score of a suggestion card on the NTP whose
-    long-press menu was opened, analogous to
-    NewTabPage.ContentSuggestions.OpenedScoreNormalized. Scores (which are
-    typically floats within (0,1]) get reported as discrete integers within
-    [1,10]. For instance, the discrete value 1 represents score values from
-    (0.0, 0.1]. The discrete value 11 is the overflow bucket for unexpectedly
-    high scores.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MoreButtonClicked" units="index"
-    expires_after="2021-11-07">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a &quot;More&quot; suggestion card that was clicked
-    on the NTP. A card is considered shown when at least 2/3 of its height is
-    visible on the screen. We track the position the card had in the list when
-    it was first seen by the user. This tracked position can be different from
-    the position observed by the user, e.g. when the user dismissed some
-    suggestions from the list or requested more that got inserted in the middle
-    of the feed.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MoreButtonShown" units="index"
-    expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a &quot;More&quot; suggestion card that was shown
-    on the NTP. A card is considered shown when at least 2/3 of its height is
-    visible on the screen. For each card, at most one impression is recorded per
-    NTP instance. We track the position the card had in the list when it was
-    first seen by the user. This tracked position can be different from the
-    position observed by the user, e.g. when the user dismissed some suggestions
-    from the list or requested more that got inserted in the middle of the feed.
   </summary>
 </histogram>
 
@@ -533,17 +437,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.OpenDisposition"
-    enum="WindowOpenDisposition" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: How an article linked from a suggestion card on the NTP was opened
-    (e.g. plain click, open in new tab, open in incognito).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.Opened" units="index"
     expires_after="never">
 <!-- expires-never: key feature metric.  We will need the Opened
@@ -579,44 +472,6 @@ chromium-metrics-reviews@google.com.
     This tracked position can be different from the position observed by the
     user, e.g. when the user dismissed some suggestions from the list or
     requested more that got inserted in the middle of the feed.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.OpenedAge" units="ms"
-    expires_after="2021-12-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The age of a suggestion card on the NTP that is clicked through to
-    the host website of the content. The age is measured from the moment the
-    content has been published.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.OpenedCategoryIndex"
-    units="index" expires_after="M77">
-  <owner>vitaliii@chromium.org</owner>
-  <summary>
-    Android: The index of a category on the NTP, whose suggestion card is
-    clicked through to the host website of the content. This tracked index can
-    be different from the position observed by the user, e.g. for the user a
-    category may be at the top of the NTP, but with index 1, because they
-    dismissed the one that was previously at the top.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.OpenedScoreNormalized"
-    enum="NormalizedScore" expires_after="M85">
-  <owner>tschumann@chromium.org</owner>
-  <summary>
-    Android: The score of a suggestion card on the NTP that is clicked through
-    to the host website of the content. The recorded score is from the moment
-    the suggestion was fetched, it could have changed since. Scores (which are
-    typically floats within (0,1]) get reported as discrete integers within
-    [1,10]. For instance, the discrete value 1 represents score values from
-    (0.0, 0.1]. The discrete value 11 is the overflow bucket for unexpectedly
-    high scores.
   </summary>
 </histogram>
 
@@ -660,26 +515,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NewTabPage.ContentSuggestions.Shown.Articles.Prefetched.Offline2"
-    units="index" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a prefetched suggestion card that was shown on the
-    NTP when offline. Analogous to NewTabPage.ContentSuggestions.Shown. That is
-    a card is considered shown when at least 2/3 of its height is visible on the
-    screen. For each card, at most one impression is recorded per NTP instance.
-    We track the position the card had in the list when it was first seen by the
-    user. This tracked position can be different from the position observed by
-    the user, e.g. when the user dismissed some suggestions from the list or
-    requested more that got inserted in the middle of the feed. This metric is
-    reported not immediately after the impression, but once the request to
-    Offline Page model to check the URL finishes.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.ShownAge" units="ms"
     expires_after="2022-01-09">
   <owner>freedjm@chromium.org</owner>
@@ -702,18 +537,6 @@ chromium-metrics-reviews@google.com.
     within [1,10]. For instance, the discrete value 1 represents score values
     from (0.0, 0.1]. The discrete value 11 is the overflow bucket for
     unexpectedly high scores.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.TimeSinceSuggestionFetched"
-    units="ms" expires_after="2021-10-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the displayed content suggestions was fetched.
-    Recorded when the user looks at content suggestions on the NTP. The metric
-    is only recorded for suggestions of the Articles for you section.
   </summary>
 </histogram>
 
@@ -784,29 +607,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: The time since the last fetch, recorded upon a startup fetch. This
     is used to understand what are the real soft fetching intervals in the wild.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.UsageTimeLocal" units="units"
-    expires_after="2021-12-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time of day (in the local timezone) when the user used content
-    suggestions. Recorded for example when the user scrolls to the articles
-    suggestions or opens an article suggestions.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.VisitDuration" units="ms"
-    expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Time spent reading the page linked by an opened suggestion card.
-    Exit conditions include the tab not being in the foreground or starting a
-    new navigation.
   </summary>
 </histogram>
 
@@ -945,7 +745,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Height" units="pixels" expires_after="2023-08-08">
+<histogram name="NewTabPage.Height" units="pixels" expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -958,7 +758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.DisplayLayout"
-    enum="NTPHistoryClustersModuleDisplayLayout" expires_after="2023-08-08">
+    enum="NTPHistoryClustersModuleDisplayLayout" expires_after="2023-10-08">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -971,7 +771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.HasCartForTopCluster"
-    enum="Boolean" expires_after="2023-08-08">
+    enum="Boolean" expires_after="2023-10-08">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -984,7 +784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.HasClusterToShow" enum="Boolean"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>sophiechang@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1009,7 +809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.IneligibleReason"
-    enum="NTPHistoryClustersIneligibleReason" expires_after="2023-08-08">
+    enum="NTPHistoryClustersIneligibleReason" expires_after="2023-10-08">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1081,7 +881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.NumClusterCandidates"
-    units="counts" expires_after="2023-08-08">
+    units="counts" expires_after="2023-10-08">
   <owner>sophiechang@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1281,8 +1081,10 @@ chromium-metrics-reviews@google.com.
     time when user uses Omnibox or voice search on Omnibox to navigate. This is
     consistent with MobileOmniboxUse. For tab switcher button: is recorded every
     time when user clicks on the tab switcher button. For home button: is
-    recorded when user clicks on the home button. The histogram is logged on New
-    tab page and is Android-only.
+    recorded when user clicks on the home button. For profile button: is
+    recorded when user clicks on the profile button. For doodle logo: is
+    recorded every time when user clicks on the doodle and navigates to another
+    website. The histogram is logged on New tab page and is Android-only.
   </summary>
 </histogram>
 
@@ -1331,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Dismissed" units="count"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1344,7 +1146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="NewTabPage.Modules.EnabledOnNTPLoad"
-    enum="BooleanEnabled" expires_after="2023-08-08">
+    enum="BooleanEnabled" expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1375,7 +1177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.FreExplicitOptIn" units="count"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1388,7 +1190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.FreImplicitOptIn" enum="BooleanEnabled"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1401,7 +1203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.FreImpression" enum="BooleanEnabled"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1414,7 +1216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.FreLoaded" enum="BooleanEnabled"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1569,7 +1371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.ShownTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1581,7 +1383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Usage" units="count"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1594,7 +1396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.VisibleOnNTPLoad" enum="BooleanVisible"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1811,7 +1613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Promos.ShownTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1842,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.RecipeTasks.RecipeClick" units="index"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1878,7 +1680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.RecipeTasks.RelatedSearchDownloadCount"
-    units="count" expires_after="2023-08-08">
+    units="count" expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -2035,7 +1837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.DeletedTileType"
-    enum="SuggestTileType" expires_after="2023-08-08">
+    enum="SuggestTileType" expires_after="2023-10-08">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2050,7 +1852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.SelectedTileType"
-    enum="SuggestTileType" expires_after="2023-08-08">
+    enum="SuggestTileType" expires_after="2023-10-08">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2238,7 +2040,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Width" units="pixels" expires_after="2023-08-08">
+<histogram name="NewTabPage.Width" units="pixels" expires_after="2023-10-08">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

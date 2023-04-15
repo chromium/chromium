@@ -45,9 +45,9 @@ void DefaultCdmFactory::Create(
     return;
   }
 
-  scoped_refptr<ContentDecryptionModule> cdm(
-      new AesDecryptor(session_message_cb, session_closed_cb,
-                       session_keys_change_cb, session_expiration_update_cb));
+  auto cdm = base::MakeRefCounted<AesDecryptor>(
+      session_message_cb, session_closed_cb, session_keys_change_cb,
+      session_expiration_update_cb);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), cdm, ""));
 }

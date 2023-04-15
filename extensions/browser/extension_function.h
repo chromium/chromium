@@ -433,7 +433,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   template <typename... Args>
   ResponseValue Error(const std::string& format, const Args&... args) {
     return CreateErrorResponseValue(
-        (extensions::ErrorUtils::FormatErrorMessage(format, args), ...));
+        extensions::ErrorUtils::FormatErrorMessage(format, args...));
   }
   // Error with a list of arguments |args| to pass to caller.
   // Using this ResponseValue indicates something is wrong with the API.

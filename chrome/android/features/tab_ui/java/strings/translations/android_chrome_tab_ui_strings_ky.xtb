@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
-<translation id="1181037720776840403">Алып салуу</translation>
 <translation id="125153950246128346">Башка өтмөктү көрүү үчүн таптап коюңуз</translation>
 <translation id="1403228085774130835">Жабылган өтмөктөрүңүздү Chome'дун негизги менюсундагы "Акыркы өтмөктөр" бөлүмүнөн таба аласыз</translation>
 <translation id="1455506303394048917">Ушул Жашыруун өтмөктөрдө издеген нерселериңиз бул түзмөктөн өчүрүлөт</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Өтмөктү топтон ажыратуу}other{Өтмөктөрдү топтон ажыратуу}}</translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Топтогу тандалган <ph name="TABS_COUNT_ONE" /> өтмөк өчүрүлсүн.}other{Топтогу тандалган <ph name="TABS_COUNT_MANY" /> өтмөк өчүрүлсүн.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Кыстарылган өтмөк}other{Кыстарылган өтмөктөр}}</translation>
-<translation id="2479148705183875116">Жөндөөлөргө өтүү</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобу жыйыштырылсын.}}</translation>
 <translation id="2569352796411618312">Сунуш: Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
-<translation id="257674075312929031">Топ</translation>
 <translation id="2613747923081026172">Топ түзүү</translation>
 <translation id="2662028055331606429">Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтка баш багуу</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Топтоо үчүн өтмөктөрдү сүйрөп келиңиз</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> тобундагы <ph name="NUMBER_OF_TABS" /> өтмөктү жабуу</translation>
 <translation id="5972844218283131174">Баарын тандоодон чыгаруу</translation>
-<translation id="6040143037577758943">Жабуу</translation>
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Бир нече тандоосу бар режимди жашыруу</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Өтмөктү бөлүшүү}other{Өтмөктөрдү бөлүшүү}}</translation>
 <translation id="7129458170538955174">Бул дүкөн тууралуу маалымат жарым экранда ачылды</translation>
-<translation id="7151209024774799310">Топтогу өтмөктөрдү алып салуу</translation>
 <translation id="7204204600596740190">Бир нече тандоосу бар режим</translation>
 <translation id="7326879924029668159">Кайтаруу саясатын жана башкаларды окуп чыгыңыз</translation>
 <translation id="7352298686197644113">Ачык өтмөктөрүңүздө кайсы нерсе арзандаганын көрүңүз</translation>

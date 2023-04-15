@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/uuid.h"
 #include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
 #include "google_apis/gcm/engine/gcm_store.h"
@@ -38,7 +38,7 @@ const char kGCMSendToGaiaIdAppIdKey[] = "gcmb";
 
 
 std::string GenerateMessageID() {
-  return base::GenerateGUID();
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 }  // namespace

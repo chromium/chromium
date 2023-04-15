@@ -45,6 +45,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
   void TearDown() override {
     web_contents_.reset();
     browser_context_.reset();
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
     RenderViewHostImplTestHarness::TearDown();
   }
 

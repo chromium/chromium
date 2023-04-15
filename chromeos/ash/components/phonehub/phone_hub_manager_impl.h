@@ -96,6 +96,9 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler* eche_connection_status_handler)
       override;
+  void SetSystemInfoProvider(
+      eche_app::SystemInfoProvider* system_info_provider) override;
+  eche_app::SystemInfoProvider* GetSystemInfoProvider() override;
 
  private:
   // KeyedService:
@@ -138,6 +141,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<PingManager> ping_manager_;
   eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
       nullptr;
+  eche_app::SystemInfoProvider* system_info_provider_ = nullptr;
 };
 
 }  // namespace phonehub

@@ -63,7 +63,7 @@ dnl
 #include <string.h>
 #include <opus.h>
 
-int main ()
+int main (void)
 {
   system("touch conf.opustest");
   return 0;

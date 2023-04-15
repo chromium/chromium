@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
-<translation id="1181037720776840403">移除</translation>
 <translation id="125153950246128346">点按即可查看另一标签页</translation>
 <translation id="1403228085774130835">您可通过在 Chrome 主菜单中点击“最近打开的标签页”找到您已关闭的标签页</translation>
 <translation id="1455506303394048917">您在这些无痕式标签页中的活动记录将从这个设备上清除</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{为标签页取消分组}other{为标签页取消分组}}</translation>
 <translation id="2277224997687551299">修改组名称</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{将所选的 <ph name="TABS_COUNT_ONE" /> 个标签页从组内移出。}other{将所选的 <ph name="TABS_COUNT_MANY" /> 个标签页从组内移出。}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{为所选标签页添加书签}other{为所有所选标签页添加书签}}</translation>
-<translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页组。}}</translation>
 <translation id="2569352796411618312">建议：您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
-<translation id="257674075312929031">群组</translation>
 <translation id="2613747923081026172">创建群组</translation>
 <translation id="2662028055331606429">当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">访问网站</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">拖动标签可进行分组</translation>
 <translation id="5846292395804797011">关闭包含 <ph name="NUMBER_OF_TABS" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”组</translation>
 <translation id="5972844218283131174">取消全选</translation>
-<translation id="6040143037577758943">关闭</translation>
 <translation id="6054741997831917303">这件商品的价格最近从 <ph name="PREVIOUS_PRICE" />降至 <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6228793724645064692">（商店评分）</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">隐藏多选模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享标签页}other{分享标签页}}</translation>
 <translation id="7129458170538955174">此商店的相关信息已半屏打开</translation>
-<translation id="7151209024774799310">移出组内的标签页</translation>
 <translation id="7204204600596740190">多选模式</translation>
 <translation id="7326879924029668159">查看退货政策及其他信息</translation>
 <translation id="7352298686197644113">查看您打开的标签页中哪件商品降价了</translation>

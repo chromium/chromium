@@ -244,16 +244,19 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // when using this method.
   virtual void ShowOneShotWallpaper(const gfx::ImageSkia& image) = 0;
 
-  // Shows a wallpaper that stays on top of everything except for the power off
-  // animation. All other wallpaper requests are ignored when the always-on-top
-  // wallpaper is being shown.
+  // Shows an override wallpaper instead of the wallpaper that would normally be
+  // shown. All other wallpaper requests are ignored when the override wallpaper
+  // is being shown.
   // |image_path|: The file path to read the image data from.
-  virtual void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) = 0;
+  // |always_on_top|: Whether the override wallpaper should be shown on top of
+  //                  everything except for the power off animation.
+  virtual void ShowOverrideWallpaper(const base::FilePath& image_path,
+                                     bool always_on_top) = 0;
 
-  // Removes the always-on-top wallpaper. The wallpaper will revert to the
-  // previous one, or a default one if there was none. No-op if the current
-  // wallpaper is not always-on-top.
-  virtual void RemoveAlwaysOnTopWallpaper() = 0;
+  // Removes the override wallpaper. The wallpaper will revert to the previous
+  // one, or a default one if there was none. No-op if the current wallpaper is
+  // not overridden.
+  virtual void RemoveOverrideWallpaper() = 0;
 
   // Removes all of the user's saved wallpapers and related info.
   // |account_id|: The user's account id.

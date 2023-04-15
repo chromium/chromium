@@ -38,11 +38,11 @@ class SettingsCrostiniDiskResizeConfirmationDialogElement extends
     this.getDialog_().showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.getDialog_().cancel();
   }
 
-  private onReserveSizeTap_() {
+  private onReserveSizeClick_() {
     this.getDialog_().close();
   }
 

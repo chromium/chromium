@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 
 namespace cc::slim {
 
@@ -49,6 +50,7 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
   void DidDeleteSharedBitmap(const gpu::Mailbox& id) override {}
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
+  void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override {}
 #if BUILDFLAG(IS_ANDROID)
   void SetThreadIds(const std::vector<int32_t>& thread_ids) override {}
 #endif

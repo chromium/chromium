@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -13,7 +14,10 @@
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
+#include "base/values.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 namespace {
@@ -87,6 +91,42 @@ mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
   return settings;
 }
 
+base::Value::Dict ConvertSettingsToDict(
+    const mojom::PointingStick& pointing_stick,
+    const ForcePointingStickSettingPersistence& force_persistence,
+    const base::Value::Dict* existing_settings_dict) {
+  // Populate `settings_dict` with all settings in `settings`.
+  base::Value::Dict settings_dict;
+
+  if (ShouldPersistSetting(prefs::kPointingStickSettingSwapRight,
+                           pointing_stick.settings->swap_right,
+                           kDefaultSwapRight, force_persistence.swap_right,
+                           existing_settings_dict)) {
+    settings_dict.Set(prefs::kPointingStickSettingSwapRight,
+                      pointing_stick.settings->swap_right);
+  }
+
+  if (ShouldPersistSetting(
+          prefs::kPointingStickSettingSensitivity,
+          static_cast<int>(pointing_stick.settings->sensitivity),
+          kDefaultSensitivity, force_persistence.sensitivity,
+          existing_settings_dict)) {
+    settings_dict.Set(prefs::kPointingStickSettingSensitivity,
+                      pointing_stick.settings->sensitivity);
+  }
+
+  if (ShouldPersistSetting(prefs::kPointingStickSettingAcceleration,
+                           pointing_stick.settings->acceleration_enabled,
+                           kDefaultAccelerationEnabled,
+                           force_persistence.acceleration_enabled,
+                           existing_settings_dict)) {
+    settings_dict.Set(prefs::kPointingStickSettingAcceleration,
+                      pointing_stick.settings->acceleration_enabled);
+  }
+
+  return settings_dict;
+}
+
 void UpdatePointingStickSettingsImpl(
     PrefService* pref_service,
     const mojom::PointingStick& pointing_stick,
@@ -97,34 +137,9 @@ void UpdatePointingStickSettingsImpl(
           .Clone();
   base::Value::Dict* existing_settings_dict =
       devices_dict.FindDict(pointing_stick.device_key);
-  const mojom::PointingStickSettings& settings = *pointing_stick.settings;
 
-  // Populate `settings_dict` with all settings in `settings`.
-  base::Value::Dict settings_dict;
-
-  if (ShouldPersistSetting(prefs::kPointingStickSettingSwapRight,
-                           settings.swap_right, kDefaultSwapRight,
-                           force_persistence.swap_right,
-                           existing_settings_dict)) {
-    settings_dict.Set(prefs::kPointingStickSettingSwapRight,
-                      settings.swap_right);
-  }
-
-  if (ShouldPersistSetting(prefs::kPointingStickSettingSensitivity,
-                           static_cast<int>(settings.sensitivity),
-                           kDefaultSensitivity, force_persistence.sensitivity,
-                           existing_settings_dict)) {
-    settings_dict.Set(prefs::kPointingStickSettingSensitivity,
-                      settings.sensitivity);
-  }
-
-  if (ShouldPersistSetting(
-          prefs::kPointingStickSettingAcceleration,
-          settings.acceleration_enabled, kDefaultAccelerationEnabled,
-          force_persistence.acceleration_enabled, existing_settings_dict)) {
-    settings_dict.Set(prefs::kPointingStickSettingAcceleration,
-                      settings.acceleration_enabled);
-  }
+  base::Value::Dict settings_dict = ConvertSettingsToDict(
+      pointing_stick, force_persistence, existing_settings_dict);
 
   // If an old settings dict already exists for the device, merge the updated
   // settings into the old settings. Otherwise, insert the dict at
@@ -138,6 +153,20 @@ void UpdatePointingStickSettingsImpl(
   pref_service->SetDict(
       std::string(prefs::kPointingStickDeviceSettingsDictPref),
       std::move(devices_dict));
+}
+
+mojom::PointingStickSettingsPtr GetPointingStickSettingsFromOldLocalStatePrefs(
+    PrefService* local_state,
+    const AccountId& account_id,
+    const mojom::PointingStick& pointing_stick) {
+  mojom::PointingStickSettingsPtr settings = GetDefaultPointingStickSettings();
+  settings->swap_right =
+      user_manager::KnownUser(local_state)
+          .FindBoolPath(account_id,
+                        prefs::kOwnerPrimaryPointingStickButtonRight)
+          .value_or(kDefaultSwapRight);
+
+  return settings;
 }
 
 }  // namespace
@@ -180,6 +209,60 @@ void PointingStickPrefHandlerImpl::UpdatePointingStickSettings(
     const mojom::PointingStick& pointing_stick) {
   UpdatePointingStickSettingsImpl(pref_service, pointing_stick,
                                   /*force_persistence=*/{});
+}
+
+void PointingStickPrefHandlerImpl::InitializeLoginScreenPointingStickSettings(
+    PrefService* local_state,
+    const AccountId& account_id,
+    mojom::PointingStick* pointing_stick) {
+  CHECK(local_state);
+  // If the flag is disabled, clear all the settings dictionaries.
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    user_manager::KnownUser known_user(local_state);
+    known_user.SetPath(account_id,
+                       prefs::kPointingStickLoginScreenInternalSettingsPref,
+                       absl::nullopt);
+    known_user.SetPath(account_id,
+                       prefs::kPointingStickLoginScreenExternalSettingsPref,
+                       absl::nullopt);
+    return;
+  }
+
+  const auto* settings_dict = GetLoginScreenSettingsDict(
+      local_state, account_id,
+      pointing_stick->is_external
+          ? prefs::kPointingStickLoginScreenExternalSettingsPref
+          : prefs::kPointingStickLoginScreenInternalSettingsPref);
+  if (settings_dict) {
+    pointing_stick->settings =
+        RetrievePointingStickSettings(*pointing_stick, *settings_dict);
+  } else {
+    pointing_stick->settings = GetPointingStickSettingsFromOldLocalStatePrefs(
+        local_state, account_id, *pointing_stick);
+  }
+}
+
+void PointingStickPrefHandlerImpl::UpdateLoginScreenPointingStickSettings(
+    PrefService* local_state,
+    const AccountId& account_id,
+    const mojom::PointingStick& pointing_stick) {
+  CHECK(local_state);
+  const auto* pref_name =
+      pointing_stick.is_external
+          ? prefs::kPointingStickLoginScreenExternalSettingsPref
+          : prefs::kPointingStickLoginScreenInternalSettingsPref;
+  auto* settings_dict =
+      GetLoginScreenSettingsDict(local_state, account_id, pref_name);
+
+  user_manager::KnownUser(local_state)
+      .SetPath(account_id, pref_name,
+               absl::make_optional<base::Value>(ConvertSettingsToDict(
+                   pointing_stick, /*force_persistence=*/{}, settings_dict)));
+}
+
+void PointingStickPrefHandlerImpl::InitializeWithDefaultPointingStickSettings(
+    mojom::PointingStick* pointing_stick) {
+  pointing_stick->settings = GetDefaultPointingStickSettings();
 }
 
 }  // namespace ash

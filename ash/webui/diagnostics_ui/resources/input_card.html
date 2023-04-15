@@ -1,4 +1,9 @@
 <style include="diagnostics-shared">
+  :host-context(body.jelly-enabled) .device #deviceIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    background-color: var(--cros-sys-highlight_shape);
+  }
+
   paper-tooltip {
     --paper-tooltip-background: var(--cros-tooltip-background-color);
     --paper-tooltip-min-width: 0px;

@@ -99,13 +99,13 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
         'refresh-pref', {bubbles: true, composed: true, detail: 'proxy'}));
   }
 
-  private onProxyTap_() {
+  private onProxyClick_() {
     if (this.isProxyDefault_) {
       SystemPageBrowserProxyImpl.getInstance().showProxySettings();
     }
   }
 
-  private onRestartTap_(e: Event) {
+  private onRestartClick_(e: Event) {
     // Prevent event from bubbling up to the toggle button.
     e.stopPropagation();
     this.performRestart(RestartType.RESTART);

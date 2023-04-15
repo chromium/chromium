@@ -56,7 +56,9 @@ use). The `content` module itself must remain generic, with no hardcoded
 vendor-specific logic.
 
 ## Architectural Diagram
-TODO: Draw a modern diagram.
+![Chrome browser depends on content, which as a whole depends on Chromium's
+  low-level libraries and on the constituent parts of
+  //content.](./architecture.png)
 
 See an older diagram at: https://www.chromium.org/developers/content-module.
 

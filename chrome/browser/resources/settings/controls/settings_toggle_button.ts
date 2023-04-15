@@ -105,7 +105,7 @@ export class SettingsToggleButtonElement extends
   override ready() {
     super.ready();
 
-    this.addEventListener('click', this.onHostTap_);
+    this.addEventListener('click', this.onHostClick_);
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -140,7 +140,7 @@ export class SettingsToggleButtonElement extends
    * Handles non cr-toggle button clicks (cr-toggle handles its own click events
    * which don't bubble).
    */
-  private onHostTap_(e: Event) {
+  private onHostClick_(e: Event) {
     e.stopPropagation();
     if (this.controlDisabled()) {
       return;

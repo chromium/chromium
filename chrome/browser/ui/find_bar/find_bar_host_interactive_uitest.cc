@@ -49,12 +49,8 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
 
 }  // namespace
 
-[[nodiscard]] bool FocusedOnPage(WebContents* web_contents,
-                                 std::string* result) {
-  return content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(getFocusedElement());",
-      result);
+[[nodiscard]] std::string FocusedOnPage(WebContents* web_contents) {
+  return content::EvalJs(web_contents, "getFocusedElement();").ExtractString();
 }
 
 // This tests the FindInPage end-state, in other words: what is focused when you
@@ -78,9 +74,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
       find_in_page::FindTabHelper::FromWebContents(web_contents);
 
   // Verify that nothing has focus.
-  std::string result;
-  ASSERT_TRUE(FocusedOnPage(web_contents, &result));
-  ASSERT_STREQ("{nothing focused}", result.c_str());
+  ASSERT_EQ("{nothing focused}", FocusedOnPage(web_contents));
 
   // Search for a text that exists within a link on the page.
   int ordinal = 0;
@@ -92,8 +86,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
   find_tab_helper->StopFinding(find_in_page::SelectionAction::kKeep);
 
   // Verify that the link is focused.
-  ASSERT_TRUE(FocusedOnPage(web_contents, &result));
-  EXPECT_STREQ("link1", result.c_str());
+  EXPECT_EQ("link1", FocusedOnPage(web_contents));
 
   // Search for a text that exists within a link on the page.
   EXPECT_EQ(1, FindInPageASCII(web_contents, "Google",
@@ -101,15 +94,11 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
   EXPECT_EQ(1, ordinal);
 
   // Move the selection to link 1, after searching.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(selectLink1());",
-      &result));
+  EXPECT_TRUE(content::ExecJs(web_contents, "selectLink1();"));
 
   // End the find session.
   find_tab_helper->StopFinding(find_in_page::SelectionAction::kKeep);
 
   // Verify that link2 is not focused.
-  ASSERT_TRUE(FocusedOnPage(web_contents, &result));
-  EXPECT_STREQ("", result.c_str());
+  EXPECT_EQ("", FocusedOnPage(web_contents));
 }

@@ -377,7 +377,8 @@ void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
       AMediaCodec_setParameters(media_codec_.get(), format.get());
 
   if (status != AMEDIA_OK) {
-    NotifyMediaCodecError("Failed to change bitrate and framerate", status);
+    NotifyMediaCodecError(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                          status, "Failed to change bitrate and framerate");
     return;
   }
   effective_framerate_ = framerate;
@@ -496,7 +497,8 @@ void NdkVideoEncodeAccelerator::FeedInput() {
         AMediaCodec_setParameters(media_codec_.get(), format.get());
 
     if (status != AMEDIA_OK) {
-      NotifyMediaCodecError("Failed to request a keyframe", status);
+      NotifyMediaCodecError(EncoderStatus::Codes::kEncoderFailedEncode, status,
+                            "Failed to request a keyframe");
       return;
     }
   }
@@ -508,8 +510,8 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   uint8_t* buffer_ptr =
       AMediaCodec_getInputBuffer(media_codec_.get(), buffer_idx, &capacity);
   if (!buffer_ptr) {
-    NotifyError("Can't obtain input buffer from media codec.",
-                kPlatformFailureError);
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                       "Can't obtain input buffer from media codec"});
     return;
   }
 
@@ -534,11 +536,11 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       uv_plane_size.width() * 2;
 
   if (queued_size > capacity) {
-    auto message = base::StringPrintf(
-        "Frame doesn't fit into the input buffer. queued_size: %zu capacity: "
-        "%zu",
-        queued_size, capacity);
-    NotifyError(message, kPlatformFailureError);
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       base::StringPrintf("Frame doesn't fit into the input "
+                                          "buffer. queued_size: %zu capacity: "
+                                          "%zu",
+                                          queued_size, capacity)});
     return;
   }
 
@@ -559,11 +561,16 @@ void NdkVideoEncodeAccelerator::FeedInput() {
                                   frame->stride(VideoFrame::kUVPlane), dst_y,
                                   dst_stride_y, dst_uv, dst_stride_uv,
                                   visible_size.width(), visible_size.height());
+  } else {
+    NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
+                       "Unsupported frame format: " +
+                           VideoPixelFormatToString(frame->format())});
+    return;
   }
 
   if (!converted) {
-    NotifyError("Failed to copy pixels to input buffer.",
-                kPlatformFailureError);
+    NotifyErrorStatus({EncoderStatus::Codes::kFormatConversionError,
+                       "Failed to copy pixels to input buffer"});
     return;
   }
 
@@ -579,25 +586,30 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       media_codec_.get(), buffer_idx, /*offset=*/0, queued_size,
       generate_timestamp.InMicroseconds(), flags);
   if (status != AMEDIA_OK) {
-    NotifyMediaCodecError("Failed to queueInputBuffer", status);
+    NotifyMediaCodecError(EncoderStatus::Codes::kEncoderHardwareDriverError,
+                          status, "Failed to queueInputBuffer");
     return;
   }
 }
 
-void NdkVideoEncodeAccelerator::NotifyMediaCodecError(std::string message,
-                                                      media_status_t error) {
-  auto message_and_code = base::StringPrintf("%s MediaCodec error code: %d",
-                                             message.c_str(), error);
-  NotifyError(message_and_code, kPlatformFailureError);
+void NdkVideoEncodeAccelerator::NotifyMediaCodecError(
+    EncoderStatus encoder_status,
+    media_status_t media_codec_status,
+    std::string message) {
+  NotifyErrorStatus({encoder_status.code(),
+                     base::StringPrintf("%s MediaCodec error code: %d",
+                                        message.c_str(), media_codec_status)});
 }
 
-void NdkVideoEncodeAccelerator::NotifyError(base::StringPiece message,
-                                            Error code) {
+void NdkVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MEDIA_LOG(ERROR, log_) << message;
-  LOG(ERROR) << message;
+  CHECK(!status.is_ok());
+  MEDIA_LOG(ERROR, log_) << status.message();
+  LOG(ERROR) << "Call NotifyErrorStatus(): code="
+             << static_cast<int>(status.code())
+             << ", message=" << status.message();
   if (!error_occurred_) {
-    client_ptr_factory_->GetWeakPtr()->NotifyError(code);
+    client_ptr_factory_->GetWeakPtr()->NotifyErrorStatus(status);
     error_occurred_ = true;
   }
 }
@@ -650,8 +662,9 @@ void NdkVideoEncodeAccelerator::OnAsyncError(AMediaCodec* codec,
   self->task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NdkVideoEncodeAccelerator::NotifyMediaCodecError,
-                     self->callback_weak_ptr_, "Media codec async error.",
-                     error));
+                     self->callback_weak_ptr_,
+                     EncoderStatus::Codes::kEncoderFailedEncode, error,
+                     "Media codec async error"));
 }
 
 bool NdkVideoEncodeAccelerator::DrainConfig() {
@@ -672,17 +685,17 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
       media_codec_.get(), output_buffer.buffer_index, &capacity);
 
   if (!buf_data) {
-    NotifyError("Can't obtain output buffer from media codec.",
-                kPlatformFailureError);
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       "Can't obtain output buffer from media codec"});
     return false;
   }
 
   if (mc_buffer_info.offset + mc_buffer_size > capacity) {
-    auto message = base::StringPrintf(
-        "Invalid output buffer layout."
-        "offset: %d size: %zu capacity: %zu",
-        mc_buffer_info.offset, mc_buffer_size, capacity);
-    NotifyError(message, kPlatformFailureError);
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StringPrintf("Invalid output buffer layout."
+                            "offset: %d size: %zu capacity: %zu",
+                            mc_buffer_info.offset, mc_buffer_size, capacity)});
     return false;
   }
 
@@ -723,12 +736,13 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
 
   const size_t config_size = key_frame ? config_data_.size() : 0u;
   if (config_size + mc_buffer_size > bitstream_buffer.size()) {
-    auto message = base::StringPrintf(
-        "Encoded output is too large. mc output size: %zu"
-        " bitstream buffer size: %zu"
-        " config size: %zu",
-        mc_buffer_size, bitstream_buffer.size(), config_size);
-    NotifyError(message, kPlatformFailureError);
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StringPrintf("Encoded output is too large. mc output size: %zu"
+                            " bitstream buffer size: %zu"
+                            " config size: %zu",
+                            mc_buffer_size, bitstream_buffer.size(),
+                            config_size)});
     return;
   }
 
@@ -737,17 +751,17 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       media_codec_.get(), output_buffer.buffer_index, &capacity);
 
   if (!buf_data) {
-    NotifyError("Can't obtain output buffer from media codec.",
-                kPlatformFailureError);
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       "Can't obtain output buffer from media codec"});
     return;
   }
 
   if (mc_buffer_info.offset + mc_buffer_size > capacity) {
-    auto message = base::StringPrintf(
-        "Invalid output buffer layout."
-        "offset: %d size: %zu capacity: %zu",
-        mc_buffer_info.offset, mc_buffer_size, capacity);
-    NotifyError(message, kPlatformFailureError);
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StringPrintf("Invalid output buffer layout."
+                            "offset: %d size: %zu capacity: %zu",
+                            mc_buffer_info.offset, mc_buffer_size, capacity)});
     return;
   }
 
@@ -755,7 +769,8 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   auto mapping =
       region.MapAt(bitstream_buffer.offset(), bitstream_buffer.size());
   if (!mapping.IsValid()) {
-    NotifyError("Failed to map SHM", kPlatformFailureError);
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError, "Failed to map SHM"});
     return;
   }
 

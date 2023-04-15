@@ -14,6 +14,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test.*": [
+    "+components/user_education/views",
     "+ui/message_center/message_center.h",
   ],
   "assistant_timers_browsertest\.cc": [

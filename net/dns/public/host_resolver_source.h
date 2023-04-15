@@ -29,7 +29,9 @@ enum class HostResolverSource {
   // No external sources will be used. Results will only come from fast local
   // sources that are available no matter the source setting, e.g. cache, hosts
   // file, IP literal resolution, etc. Resolves with this setting are guaranteed
-  // to finish synchronously.
+  // to finish synchronously. Resolves with this settings will return
+  // ERR_NAME_NOT_RESOLVED if an asynchronous IPv6 reachability probe needs to
+  // be done.
   LOCAL_ONLY,
 
   MAX = LOCAL_ONLY

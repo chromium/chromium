@@ -475,39 +475,8 @@ bool CrossThreadMediaSourceAttachment::RunExclusively(
 }
 
 void CrossThreadMediaSourceAttachment::Unregister() {
-  DVLOG(1) << __func__ << " this=" << this
-           << ", IsMainThread=" << IsMainThread();
-
-  // Release our strong reference to the MediaSource. Note that revokeObjectURL
-  // of the url associated with this attachment could commonly follow this path
-  // while the MediaSource (and any attachment to an HTMLMediaElement) may still
-  // be alive/active. Also note that |registered_media_source_| could be
-  // incorrectly cleared already if its owner's execution context destruction
-  // has completed without notifying us, hence careful locking in
-  // MediaSourceRegistryImpl around this scenario, and allowance for us to be
-  // called on the worker context. Locking there instead of cross-thread posting
-  // to the main thread to reach us enables stability in cases where worker's
-  // context destruction or explicit object URL revocation from worker context
-  // races attempted usage of the object URL (or |registered_media_source_|
-  // here).
-  {
-    base::AutoLock lock(attachment_state_lock_);
-    DCHECK(registered_media_source_);
-
-    // MSE-in-Worker using MediaSourceHandle for attachment does NOT use object
-    // URLs, so we must not be called if MediaSourceHandle feature is enabled.
-    DCHECK(!RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
-        registered_media_source_->GetExecutionContext()));
-
-    // The only expected caller is a MediaSourceRegistryImpl on the main thread
-    // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
-    // The |registered_media_source_|'s context might be in the process of being
-    // destructed, so we cannot easily DCHECK thread assumptions here: part of
-    // that verification would access a potentially destroyed context while
-    // checking if the OT has enabled MSEIW.
-
-    registered_media_source_ = nullptr;
-  }
+  // MSE-in-Worker does NOT use object URLs, so this should not be called.
+  NOTREACHED_NORETURN();
 }
 
 MediaSourceTracer*
@@ -534,21 +503,13 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
     // Prevent sequential re-use of this attachment for multiple successful
     // attachments. See declaration of |have_ever_attached_|.
     if (have_ever_attached_) {
-      if (RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
-              element->GetExecutionContext())) {
-        // With current restrictions on ability to only ever obtain at most one
-        // MediaSourceHandle per MediaSource and only allow loading to succeed
-        // at most once per each MediaSourceHandle, fail if there is attempt to
-        // reuse either in a load.
-        DVLOG(1) << __func__ << " this=" << this << ", element=" << element
-                 << ": failed: reuse of MediaSource for more than one load "
-                    "is not supported for MSE-in-Workers";
-      } else {
-        DVLOG(1) << __func__ << " this=" << this << ", element=" << element
-                 << ": failed: reuse of MediaSource object URL by disabling "
-                    "RevokeMediaSourceObjectURLOnAttach is not supported for "
-                    "MSE-in-Workers";
-      }
+      // With current restrictions on ability to only ever obtain at most one
+      // MediaSourceHandle per MediaSource and only allow loading to succeed
+      // at most once per each MediaSourceHandle, fail if there is attempt to
+      // reuse either in a load.
+      DVLOG(1) << __func__ << " this=" << this << ", element=" << element
+               << ": failed: reuse of MediaSource for more than one load "
+                  "is not supported for MSE-in-Workers";
       *success = false;
       return nullptr;
     }

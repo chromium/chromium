@@ -51,11 +51,11 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     [RaisesException, MeasureAs=AudioContextCreateWaveShaper] WaveShaperNode createWaveShaper();
     [RaisesException, MeasureAs=AudioContextCreatePannerAutomated] PannerNode createPanner();
     [RaisesException, MeasureAs=AudioContextCreateConvolver] ConvolverNode createConvolver();
-    [RaisesException, MeasureAs=AudioContextCreateDynamicsCompressor] DynamicsCompressorNode createDynamicsCompressor();
+    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateDynamicsCompressor] DynamicsCompressorNode createDynamicsCompressor();
     [RaisesException, MeasureAs=AudioContextCreateAnalyser] AnalyserNode createAnalyser();
     [RaisesException, MeasureAs=AudioContextCreateScriptProcessor] ScriptProcessorNode createScriptProcessor(optional unsigned long bufferSize, optional unsigned long numberOfInputChannels, optional unsigned long numberOfOutputChannels);
     [RaisesException, MeasureAs=AudioContextCreateStereoPanner] StereoPannerNode createStereoPanner();
-    [RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
+    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
     [RaisesException, MeasureAs=AudioContextCreatePeriodicWave] PeriodicWave createPeriodicWave(sequence<float> real, sequence<float> imag, optional PeriodicWaveConstraints constraints = {});
 
     // Channel splitting and merging

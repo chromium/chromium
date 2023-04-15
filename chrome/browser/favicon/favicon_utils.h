@@ -7,6 +7,8 @@
 
 #include "components/favicon/content/content_favicon_driver.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 
 namespace content {
 class WebContents;
@@ -37,6 +39,12 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents);
 // Returns the image to use when no favicon is available, taking dark mode
 // into account if necessary.
 gfx::Image GetDefaultFavicon();
+
+// Returns the image to use when no favicon is available, taking the background
+// color into account. If no background color is provided the window background
+// color will be used (which is appropriate for most use cases).
+ui::ImageModel GetDefaultFaviconModel(
+    ui::ColorId bg_color = ui::kColorWindowBackground);
 
 // Saves the favicon for the last committed navigation entry to the favicon
 // database.

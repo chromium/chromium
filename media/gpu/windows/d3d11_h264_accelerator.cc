@@ -28,9 +28,9 @@
 
 namespace media {
 
-using DecoderStatus = H264Decoder::H264Accelerator::Status;
-
 namespace {
+
+using H264DecoderStatus = H264Decoder::H264Accelerator::Status;
 
 // Converts SubsampleEntry to D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK.
 void AppendSubsamples(
@@ -91,7 +91,7 @@ scoped_refptr<H264Picture> D3D11H264Accelerator::CreateH264Picture() {
   return base::MakeRefCounted<D3D11H264Picture>(picture);
 }
 
-DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
+H264DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     const H264SPS* sps,
     const H264PPS* pps,
     const H264DPB& dpb,
@@ -103,14 +103,14 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
   if (is_encrypted) {
     RecordFailure("Cannot find decrypt context for the frame.",
                   D3D11Status::Codes::kCryptoConfigFailed);
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   }
 
   HRESULT hr;
   for (;;) {
     D3D11H264Picture* d3d11_pic = pic->AsD3D11H264Picture();
     if (!d3d11_pic)
-      return DecoderStatus::kFail;
+      return H264DecoderStatus::kFail;
 
     ID3D11VideoDecoderOutputView* output_view = nullptr;
     auto result = d3d11_pic->picture->AcquireOutputView();
@@ -118,7 +118,7 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
       output_view = std::move(result).value();
     } else {
       RecordFailure(std::move(result).error());
-      return DecoderStatus::kFail;
+      return H264DecoderStatus::kFail;
     }
 
     hr = video_context_->DecoderBeginFrame(video_decoder_.Get(), output_view, 0,
@@ -131,7 +131,7 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     } else if (!SUCCEEDED(hr)) {
       RecordFailure("DecoderBeginFrame failed",
                     D3D11Status::Codes::kDecoderBeginFrameFailed, hr);
-      return DecoderStatus::kFail;
+      return H264DecoderStatus::kFail;
     } else {
       break;
     }
@@ -156,7 +156,7 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     // something is clearly wrong, and we should just fail decoding rather than
     // try to sort out which pictures really shouldn't be included.
     if (i >= media::kRefFrameMaxCount)
-      return DecoderStatus::kFail;
+      return H264DecoderStatus::kFail;
 
     D3D11H264Picture* our_ref_pic = it->get()->AsD3D11H264Picture();
     // How does a non-d3d11 picture get here you might ask? The decoder
@@ -177,7 +177,8 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     non_existing_frame_flags_ |= (our_ref_pic->nonexisting) << i;
   }
   slice_info_.clear();
-  return RetrieveBitstreamBuffer() ? DecoderStatus::kOk : DecoderStatus::kFail;
+  return RetrieveBitstreamBuffer() ? H264DecoderStatus::kOk
+                                   : H264DecoderStatus::kFail;
 }
 
 bool D3D11H264Accelerator::RetrieveBitstreamBuffer() {
@@ -327,7 +328,7 @@ void D3D11H264Accelerator::PicParamsFromPic(DXVA_PicParams_H264* pic_param,
   }
 }
 
-DecoderStatus D3D11H264Accelerator::SubmitSlice(
+H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
     const H264PPS* pps,
     const H264SliceHeader* slice_hdr,
     const H264Picture::Vector& ref_pic_list0,
@@ -342,12 +343,12 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
 
   PicParamsFromSPS(&pic_param, &sps_, slice_hdr->field_pic_flag);
   if (!PicParamsFromPPS(&pic_param, pps))
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   PicParamsFromSliceHeader(&pic_param, slice_hdr);
 
   D3D11H264Picture* d3d11_pic = pic->AsD3D11H264Picture();
   if (!d3d11_pic)
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   PicParamsFromPic(&pic_param, d3d11_pic);
 
   memcpy(pic_param.RefFrameList, ref_frame_list_,
@@ -369,7 +370,7 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
   if (!SUCCEEDED(hr)) {
     RecordFailure("GetDecoderBuffer (PictureParams) failed",
                   D3D11Status::Codes::kGetPicParamBufferFailed, hr);
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   }
 
   memcpy(buffer, &pic_param, sizeof(pic_param));
@@ -378,7 +379,7 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
   if (!SUCCEEDED(hr)) {
     RecordFailure("ReleaseDecoderBuffer (PictureParams) failed",
                   D3D11Status::Codes::kReleasePicParamBufferFailed, hr);
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   }
 
   DXVA_Qmatrix_H264 iq_matrix_buf = {};
@@ -415,7 +416,7 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
   if (!SUCCEEDED(hr)) {
     RecordFailure("GetDecoderBuffer (QuantMatrix) failed",
                   D3D11Status::Codes::kGetQuantBufferFailed, hr);
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   }
   memcpy(buffer, &iq_matrix_buf, sizeof(iq_matrix_buf));
   hr = video_context_->ReleaseDecoderBuffer(
@@ -424,7 +425,7 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
   if (!SUCCEEDED(hr)) {
     RecordFailure("ReleaseDecoderBuffer (QuantMatrix) failed",
                   D3D11Status::Codes::kReleaseQuantBufferFailed, hr);
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   }
 
   // Ideally all slices in a frame are put in the same bitstream buffer.
@@ -444,7 +445,7 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
                         ") too big to fit in the bistream buffer (" +
                         base::NumberToString(bitstream_buffer_size_) + ").",
                     D3D11Status::Codes::kBitstreamBufferSliceTooBig);
-      return DecoderStatus::kFail;
+      return H264DecoderStatus::kFail;
     }
 
     AppendSubsamples(subsamples, &subsamples_);
@@ -464,10 +465,10 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
     if (bitstream_buffer_size_ < remaining_bitstream &&
         slice_info_.size() > 0) {
       if (!SubmitSliceData())
-        return DecoderStatus::kFail;
+        return H264DecoderStatus::kFail;
 
       if (!RetrieveBitstreamBuffer())
-        return DecoderStatus::kFail;
+        return H264DecoderStatus::kFail;
     }
 
     size_t bytes_to_copy = remaining_bitstream;
@@ -507,7 +508,7 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
     bitstream_buffer_bytes_ += bytes_to_copy;
   }
 
-  return DecoderStatus::kOk;
+  return H264DecoderStatus::kOk;
 }
 
 bool D3D11H264Accelerator::SubmitSliceData() {
@@ -586,19 +587,19 @@ bool D3D11H264Accelerator::SubmitSliceData() {
   return true;
 }
 
-DecoderStatus D3D11H264Accelerator::SubmitDecode(
+H264DecoderStatus D3D11H264Accelerator::SubmitDecode(
     scoped_refptr<H264Picture> pic) {
   if (!SubmitSliceData())
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
 
   HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (!SUCCEEDED(hr)) {
     RecordFailure("DecoderEndFrame failed",
                   D3D11Status::Codes::kDecoderEndFrameFailed, hr);
-    return DecoderStatus::kFail;
+    return H264DecoderStatus::kFail;
   }
 
-  return DecoderStatus::kOk;
+  return H264DecoderStatus::kOk;
 }
 
 void D3D11H264Accelerator::Reset() {

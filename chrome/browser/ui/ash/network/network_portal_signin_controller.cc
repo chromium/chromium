@@ -87,8 +87,24 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   GURL url;
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  if (default_network)
-    url = default_network->probe_url();
+  if (!default_network) {
+    // If no network is connected, do not attempt to show the signin page.
+    NET_LOG(EVENT) << "Show signin mode from: " << source << ": No network.";
+    return;
+  }
+  auto portal_state = default_network->GetPortalState();
+  if (portal_state != NetworkState::PortalState::kPortal &&
+      portal_state != NetworkState::PortalState::kPortalSuspected &&
+      portal_state != NetworkState::PortalState::kProxyAuthRequired) {
+    // If no portal or proxy signin is required, do not attempt to show the
+    // signin page.
+    NET_LOG(EVENT) << "Show signin mode from: " << source << ": Network '"
+                   << default_network->guid()
+                   << "' is in a non portal state: " << portal_state;
+    return;
+  }
+
+  url = default_network->probe_url();
   if (url.is_empty())
     url = GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
 

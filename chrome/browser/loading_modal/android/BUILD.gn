@@ -58,6 +58,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/loading_modal/android:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",

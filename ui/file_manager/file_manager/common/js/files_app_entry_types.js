@@ -257,12 +257,19 @@ export class EntryList {
   /**
    * @param {!VolumeInfo} volumeInfo that's desired to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
+   * Note: we compare the volumeId instead of the whole volumeInfo reference
+   * because the same volume could be mounted multiple times and every time a
+   * new volumeInfo is created.
    * @return {number} index of entry on this EntryList or -1 if not found.
    */
   findIndexByVolumeInfo(volumeInfo) {
-    return this.children_.findIndex(childEntry => {
-      return /** @type {VolumeEntry} */ (childEntry).volumeInfo === volumeInfo;
-    });
+    return this.children_.findIndex(
+        childEntry =>
+            /** @type {VolumeEntry} */ (childEntry).volumeInfo ?
+            /** @type {VolumeEntry} */ (childEntry).volumeInfo.volumeId ===
+                volumeInfo.volumeId :
+            false,
+    );
   }
 
   /**
@@ -590,12 +597,19 @@ export class VolumeEntry {
   /**
    * @param {!VolumeInfo} volumeInfo that's desired to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
+   * Note: we compare the volumeId instead of the whole volumeInfo reference
+   * because the same volume could be mounted multiple times and every time a
+   * new volumeInfo is created.
    * @return {number} index of entry within VolumeEntry or -1 if not found.
    */
   findIndexByVolumeInfo(volumeInfo) {
     return this.children_.findIndex(
         childEntry =>
-            /** @type {VolumeEntry} */ (childEntry).volumeInfo === volumeInfo);
+            /** @type {VolumeEntry} */ (childEntry).volumeInfo ?
+            /** @type {VolumeEntry} */ (childEntry).volumeInfo.volumeId ===
+                volumeInfo.volumeId :
+            false,
+    );
   }
 
   /**

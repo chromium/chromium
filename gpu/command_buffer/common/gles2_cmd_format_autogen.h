@@ -16007,6 +16007,109 @@ static_assert(
     offsetof(ReadbackARGBImagePixelsINTERNAL, mailbox_offset) == 52,
     "offset of ReadbackARGBImagePixelsINTERNAL mailbox_offset should be 52");
 
+struct WritePixelsINTERNAL {
+  typedef WritePixelsINTERNAL ValueType;
+  static const CommandId kCmdId = kWritePixelsINTERNAL;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLint _x_offset,
+            GLint _y_offset,
+            GLint _plane_index,
+            GLuint _src_width,
+            GLuint _src_height,
+            GLuint _src_row_bytes,
+            GLuint _src_sk_color_type,
+            GLuint _src_sk_alpha_type,
+            GLint _shm_id,
+            GLuint _shm_offset,
+            GLuint _pixels_offset,
+            GLuint _mailbox_offset) {
+    SetHeader();
+    x_offset = _x_offset;
+    y_offset = _y_offset;
+    plane_index = _plane_index;
+    src_width = _src_width;
+    src_height = _src_height;
+    src_row_bytes = _src_row_bytes;
+    src_sk_color_type = _src_sk_color_type;
+    src_sk_alpha_type = _src_sk_alpha_type;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+    pixels_offset = _pixels_offset;
+    mailbox_offset = _mailbox_offset;
+  }
+
+  void* Set(void* cmd,
+            GLint _x_offset,
+            GLint _y_offset,
+            GLint _plane_index,
+            GLuint _src_width,
+            GLuint _src_height,
+            GLuint _src_row_bytes,
+            GLuint _src_sk_color_type,
+            GLuint _src_sk_alpha_type,
+            GLint _shm_id,
+            GLuint _shm_offset,
+            GLuint _pixels_offset,
+            GLuint _mailbox_offset) {
+    static_cast<ValueType*>(cmd)->Init(
+        _x_offset, _y_offset, _plane_index, _src_width, _src_height,
+        _src_row_bytes, _src_sk_color_type, _src_sk_alpha_type, _shm_id,
+        _shm_offset, _pixels_offset, _mailbox_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t x_offset;
+  int32_t y_offset;
+  int32_t plane_index;
+  uint32_t src_width;
+  uint32_t src_height;
+  uint32_t src_row_bytes;
+  uint32_t src_sk_color_type;
+  uint32_t src_sk_alpha_type;
+  int32_t shm_id;
+  uint32_t shm_offset;
+  uint32_t pixels_offset;
+  uint32_t mailbox_offset;
+};
+
+static_assert(sizeof(WritePixelsINTERNAL) == 52,
+              "size of WritePixelsINTERNAL should be 52");
+static_assert(offsetof(WritePixelsINTERNAL, header) == 0,
+              "offset of WritePixelsINTERNAL header should be 0");
+static_assert(offsetof(WritePixelsINTERNAL, x_offset) == 4,
+              "offset of WritePixelsINTERNAL x_offset should be 4");
+static_assert(offsetof(WritePixelsINTERNAL, y_offset) == 8,
+              "offset of WritePixelsINTERNAL y_offset should be 8");
+static_assert(offsetof(WritePixelsINTERNAL, plane_index) == 12,
+              "offset of WritePixelsINTERNAL plane_index should be 12");
+static_assert(offsetof(WritePixelsINTERNAL, src_width) == 16,
+              "offset of WritePixelsINTERNAL src_width should be 16");
+static_assert(offsetof(WritePixelsINTERNAL, src_height) == 20,
+              "offset of WritePixelsINTERNAL src_height should be 20");
+static_assert(offsetof(WritePixelsINTERNAL, src_row_bytes) == 24,
+              "offset of WritePixelsINTERNAL src_row_bytes should be 24");
+static_assert(offsetof(WritePixelsINTERNAL, src_sk_color_type) == 28,
+              "offset of WritePixelsINTERNAL src_sk_color_type should be 28");
+static_assert(offsetof(WritePixelsINTERNAL, src_sk_alpha_type) == 32,
+              "offset of WritePixelsINTERNAL src_sk_alpha_type should be 32");
+static_assert(offsetof(WritePixelsINTERNAL, shm_id) == 36,
+              "offset of WritePixelsINTERNAL shm_id should be 36");
+static_assert(offsetof(WritePixelsINTERNAL, shm_offset) == 40,
+              "offset of WritePixelsINTERNAL shm_offset should be 40");
+static_assert(offsetof(WritePixelsINTERNAL, pixels_offset) == 44,
+              "offset of WritePixelsINTERNAL pixels_offset should be 44");
+static_assert(offsetof(WritePixelsINTERNAL, mailbox_offset) == 48,
+              "offset of WritePixelsINTERNAL mailbox_offset should be 48");
+
 struct EnableiOES {
   typedef EnableiOES ValueType;
   static const CommandId kCmdId = kEnableiOES;

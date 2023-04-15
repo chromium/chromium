@@ -68,7 +68,9 @@
 
 namespace blink {
 
-ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
+ExecutionContext::ExecutionContext(v8::Isolate* isolate,
+                                   Agent* agent,
+                                   bool is_window)
     : isolate_(isolate),
       security_context_(this),
       agent_(agent),
@@ -78,8 +80,14 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
       window_interaction_tokens_(0),
       origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)),
+      // RuntimeFeatureStateOverrideContext shouldn't attempt to communcate back
+      // to browser for ExecutionContexts that aren't windows.
+      // TODO(https://crbug.com/1410817): Add support for workers/non-frames.
       runtime_feature_state_override_context_(
-          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>(this)) {
+          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>(
+              this,
+              this,
+              /*send_runtime_features_to_browser=*/is_window)) {
   DCHECK(agent_);
 }
 
@@ -704,6 +712,33 @@ ContextType GetContextType(const ExecutionContext& execution_context) {
   }
   return ContextType::UNKNOWN_CONTEXT;
 }
+
+using WorldType = ExecutionContext::Proto::WorldType;
+WorldType GetWorldType(const ExecutionContext& execution_context) {
+  auto current_world = execution_context.GetCurrentWorld();
+  if (current_world == nullptr) {
+    return WorldType::WORLD_UNKNOWN;
+  }
+
+  switch (current_world->GetWorldType()) {
+    case DOMWrapperWorld::WorldType::kMain:
+      return WorldType::WORLD_MAIN;
+    case DOMWrapperWorld::WorldType::kIsolated:
+      return WorldType::WORLD_ISOLATED;
+    case DOMWrapperWorld::WorldType::kInspectorIsolated:
+      return WorldType::WORLD_INSPECTOR_ISOLATED;
+    case DOMWrapperWorld::WorldType::kRegExp:
+      return WorldType::WORLD_REG_EXP;
+    case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain:
+      return WorldType::WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN;
+    case DOMWrapperWorld::WorldType::kWorker:
+      return WorldType::WORLD_WORKER;
+    case DOMWrapperWorld::WorldType::kShadowRealm:
+      return WorldType::WORLD_SHADOW_REALM;
+    default:
+      return WorldType::WORLD_UNKNOWN;
+  }
+}
 }  // namespace
 
 void ExecutionContext::WriteIntoTrace(
@@ -711,6 +746,7 @@ void ExecutionContext::WriteIntoTrace(
   proto->set_url(Url().GetString().Utf8());
   proto->set_origin(GetSecurityOrigin()->ToString().Utf8());
   proto->set_type(GetContextType(*this));
+  proto->set_world_type(GetWorldType(*this));
 }
 
 }  // namespace blink

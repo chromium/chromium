@@ -5,10 +5,10 @@
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
 #include "base/base64.h"
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -51,7 +51,7 @@ enum class ExpectedCorruptionReason {
   DUPLICATED_SERVER_ID = 6,
   UNKNOWN_BOOKMARK_ID = 7,
   UNTRACKED_BOOKMARK = 8,
-  BOOKMARK_GUID_MISMATCH = 9,
+  BOOKMARK_UUID_MISMATCH = 9,
   DUPLICATED_CLIENT_TAG_HASH = 10,
   TRACKED_MANAGED_NODE = 11,
   MISSING_CLIENT_TAG_HASH = 12,
@@ -81,7 +81,7 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
   bookmark_metadata.mutable_metadata()->set_server_id(server_id);
   bookmark_metadata.mutable_metadata()->set_client_tag_hash(
       syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
-                                          node->guid().AsLowercaseString())
+                                          node->uuid().AsLowercaseString())
           .value());
   // Required by the validation logic.
   if (!node->is_folder()) {
@@ -130,7 +130,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
   const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
   const int64_t kId = 1;
-  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kCreationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
@@ -172,7 +172,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldRemoveEntity) {
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
-  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
@@ -211,7 +211,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldBuildBookmarkModelMetadata) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
 
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), kUrl);
+  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), kUrl);
   tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
 
   sync_pb::BookmarkModelMetadata bookmark_model_metadata =
@@ -234,7 +234,7 @@ TEST(SyncedBookmarkTrackerTest,
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
+  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), GURL());
   const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
@@ -253,7 +253,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
+  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), GURL());
   const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
@@ -286,7 +286,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateUponCommitResponseWithNewId) {
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
+  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), GURL());
   const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
   ASSERT_THAT(entity, NotNull());
@@ -318,7 +318,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateId) {
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(/*id=*/1, base::GUID::GenerateRandomV4(),
+  bookmarks::BookmarkNode node(/*id=*/1, base::Uuid::GenerateRandomV4(),
                                GURL());
   // Track a sync entity.
   const SyncedBookmarkTrackerEntity* entity = tracker->Add(
@@ -473,7 +473,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
-  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
@@ -512,7 +512,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
-  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
@@ -828,7 +828,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfGuidMismatch) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::BOOKMARK_GUID_MISMATCH,
+      /*sample=*/ExpectedCorruptionReason::BOOKMARK_UUID_MISMATCH,
       /*expected_bucket_count=*/1);
 }
 
@@ -849,7 +849,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   const syncer::ClientTagHash client_tag_hash =
       syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
-                                          node0->guid().AsLowercaseString());
+                                          node0->uuid().AsLowercaseString());
   node0_metadata->mutable_metadata()->set_client_tag_hash(
       client_tag_hash.value());
 
@@ -1005,7 +1005,7 @@ TEST(SyncedBookmarkTrackerTest,
   sync_pb::EntitySpecifics specifics = GenerateSpecifics(kTitle, kUrl.spec());
   specifics.mutable_bookmark()->set_favicon(kFaviconPngBytes);
 
-  bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), kUrl);
+  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), kUrl);
   const SyncedBookmarkTrackerEntity* entity =
       tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
 

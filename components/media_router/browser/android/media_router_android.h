@@ -70,6 +70,11 @@ class MediaRouterAndroid : public MediaRouterBase {
                       int request_id,
                       bool is_local);
 
+  // Notifies the media router when the route media source is updated. This can
+  // happen during remote playback with the media element's source URL changes.
+  void OnRouteMediaSourceUpdated(const MediaRoute::Id& route_id,
+                                 const MediaSource::Id& source_id);
+
   // Notifies the media router that route creation or joining failed.
   void OnCreateRouteRequestError(const std::string& error_text, int request_id);
   void OnJoinRouteRequestError(const std::string& error_text, int request_id);

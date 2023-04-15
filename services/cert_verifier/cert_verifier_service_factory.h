@@ -33,10 +33,8 @@ namespace cert_verifier {
 class CertVerifierServiceFactoryImpl
     : public mojom::CertVerifierServiceFactory {
  public:
-  // Creates a CertVerifierServiceFactoryImpl. `params` may be null to use
-  // defaults.
+  // Creates a CertVerifierServiceFactoryImpl.
   explicit CertVerifierServiceFactoryImpl(
-      mojom::CertVerifierServiceParamsPtr params,
       mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver);
   ~CertVerifierServiceFactoryImpl() override;
 
@@ -45,8 +43,6 @@ class CertVerifierServiceFactoryImpl
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
-  void GetServiceParamsForTesting(
-      GetServiceParamsForTestingCallback callback) override;
 
   // Performs the same function as above, but stores a ref to the new
   // CertNetFetcherURLLoader in |*cert_net_fetcher_ptr|, if the
@@ -57,23 +53,30 @@ class CertVerifierServiceFactoryImpl
       mojom::CertVerifierCreationParamsPtr creation_params,
       scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // mojom::CertVerifierServiceFactory implementation:
+  void UpdateCRLSet(mojo_base::BigBuffer crl_set,
+                    mojom::CertVerifierServiceFactory::UpdateCRLSetCallback
+                        callback) override;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
                              UpdateChromeRootStoreCallback callback) override;
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  void SetUseChromeRootStore(bool use_crs,
+                             SetUseChromeRootStoreCallback callback) override;
 #endif
 
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
 
  private:
-  mojom::CertVerifierServiceParamsPtr service_params_;
+  // Update all the `verifier_services_` with the current data.
+  void UpdateVerifierServices();
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  // The most recent version of the Chrome Root Store that we've seen.
-  absl::optional<net::ChromeRootStoreData> root_store_data_;
-#endif
+  void OnCRLSetParsed(scoped_refptr<net::CRLSet> parsed_crl_set);
+
+  net::CertVerifyProcFactory::ImplParams proc_params_;
 
   mojo::Receiver<mojom::CertVerifierServiceFactory> receiver_;
 

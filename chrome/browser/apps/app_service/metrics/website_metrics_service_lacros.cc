@@ -23,7 +23,17 @@ constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
 }  // namespace
 
 WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile) {}
+
+WebsiteMetricsServiceLacros::~WebsiteMetricsServiceLacros() = default;
+
+// static
+void WebsiteMetricsServiceLacros::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kWebsiteUsageTime);
+}
+
+void WebsiteMetricsServiceLacros::InitDeviceTypeAndStart() {
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<crosapi::mojom::DeviceAttributes>()) {
     return;
@@ -41,14 +51,6 @@ WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros(Profile* profile)
       ->GetDeviceTypeForMetrics(base::BindOnce(
           &WebsiteMetricsServiceLacros::OnGetDeviceTypeForMetrics,
           weak_ptr_factory_.GetWeakPtr()));
-}
-
-WebsiteMetricsServiceLacros::~WebsiteMetricsServiceLacros() = default;
-
-// static
-void WebsiteMetricsServiceLacros::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kWebsiteUsageTime);
 }
 
 void WebsiteMetricsServiceLacros::Start() {
@@ -83,6 +85,7 @@ void WebsiteMetricsServiceLacros::OnGetDeviceTypeForMetrics(
     int user_type_by_device_type) {
   website_metrics_ = std::make_unique<apps::WebsiteMetrics>(
       profile_, user_type_by_device_type);
+  Start();
 }
 
 }  // namespace apps

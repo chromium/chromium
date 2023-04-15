@@ -61,6 +61,14 @@ class UkmConsentStateObserver
       bool total_purge,
       UkmConsentState previous_consent_state) = 0;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Used to set is_demo_mode_ field.
+  void SetIsDemoMode(bool is_demo_mode);
+
+  // Return whether the device is in demo mode.
+  bool IsDeviceInDemoMode();
+#endif
+
  private:
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -109,7 +117,7 @@ class UkmConsentStateObserver
 
   // Gets the current state of a profile.
   // |sync| and |consent_helper| must not be null.
-  static ProfileState GetProfileState(
+  ProfileState GetProfileState(
       syncer::SyncService* sync,
       unified_consent::UrlKeyedDataCollectionConsentHelper* consent_helper);
 
@@ -135,6 +143,13 @@ class UkmConsentStateObserver
   // change. Consent is only granted when EVERY profile consents.
   // Empty means none.
   UkmConsentState ukm_consent_state_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Indicate whether the device is in demo mode. If it is true,
+  // set APPS consent to collect App usage data for active demo
+  // session. Default to false.
+  bool is_device_in_demo_mode_ = false;
+#endif
 };
 
 }  // namespace ukm

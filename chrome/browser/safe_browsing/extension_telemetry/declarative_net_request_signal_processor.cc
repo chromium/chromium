@@ -37,9 +37,9 @@ void DeclarativeNetRequestSignalProcessor::ProcessSignal(
 
   for (auto& rule : dnr_signal.rules()) {
     if (rule.action.type != extensions::api::declarative_net_request::
-                                RULE_ACTION_TYPE_REDIRECT &&
+                                RuleActionType::kRedirect &&
         rule.action.type != extensions::api::declarative_net_request::
-                                RULE_ACTION_TYPE_MODIFYHEADERS) {
+                                RuleActionType::kModifyHeaders) {
       continue;
     }
 

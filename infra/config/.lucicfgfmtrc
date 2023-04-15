@@ -74,3 +74,15 @@ rules {
         arg: "category"
     }
 }
+rules {
+    path: "targets"
+    function_args_sort {
+        arg: "name"
+        arg: "label"
+        arg: "label_type"
+        arg: "script"
+        arg: "executable"
+        arg: "executable_suffix"
+        arg: "skip_usage_check"
+    }
+}

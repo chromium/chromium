@@ -193,19 +193,12 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAblateSendPendingAccessibilityEvents);
 AX_BASE_EXPORT bool IsAblateSendPendingAccessibilityEventsEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
-// Compute the AXMode based on AccessibilityServiceInfo. If disabled,
-// the AXMode is either entirely on or entirely off.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kComputeAXMode);
+// Enable AXModes based on running services. If disabled, then AXModes
+// will not be available to be set.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAXModes);
 
-// Returns true if the IChromeAccessible COM API is enabled.
-AX_BASE_EXPORT bool IsComputeAXModeEnabled();
-
-// Enable form controls AXMode based on running services. If disabled,
-// then form controls AXMode will not be available to be set.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFormControlsMode);
-
-// Returns true if the form controls AXMode is enabled.
-AX_BASE_EXPORT bool IsAccessibilityFormControlsAXModeEnabled();
+// Returns true if AXMode is enabled.
+AX_BASE_EXPORT bool IsAccessibilityAXModesEnabled();
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

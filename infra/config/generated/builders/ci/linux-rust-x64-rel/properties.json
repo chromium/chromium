@@ -21,9 +21,6 @@
                 "target_bits": 64
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "checkout_clang_libs"
-                ],
                 "config": "chromium"
               }
             }
@@ -40,10 +37,6 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "linux-rust-x64-rel",
-          "group": "tryserver.chromium.rust"
-        },
-        {
-          "builder": "linux-rust-x64-rel-android-toolchain",
           "group": "tryserver.chromium.rust"
         }
       ]

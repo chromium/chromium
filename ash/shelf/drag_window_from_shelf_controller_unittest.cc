@@ -35,6 +35,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1636,15 +1637,19 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
       right_window.get(), SplitViewController::SnapPosition::kSecondary);
 
   // Ensure we are in a both snapped state with a floated window.
+  wm::ActivateWindow(floated_window.get());
   ASSERT_TRUE(WindowState::Get(left_window.get())->IsSnapped());
   ASSERT_TRUE(WindowState::Get(right_window.get())->IsSnapped());
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
-  wm::ActivateWindow(floated_window.get());
 
   // Verify that the floated window by default is magnetized to the bottom right
   // corner.
-  ASSERT_TRUE(right_window->GetBoundsInScreen().Contains(
-      floated_window->GetBoundsInScreen()));
+  const gfx::Rect work_area =
+      WorkAreaInsets::ForWindow(floated_window.get())->user_work_area_bounds();
+  ASSERT_EQ(
+      gfx::Point(work_area.right() - chromeos::wm::kFloatedWindowPaddingDp,
+                 work_area.bottom() - chromeos::wm::kFloatedWindowPaddingDp),
+      floated_window->GetBoundsInScreen().bottom_right());
 
   // Drag under the floated window. It should be the dragged window.
   const gfx::Rect shelf_bounds = GetShelfBounds();
@@ -1656,10 +1661,12 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
   auto* drag_controller = GetDragWindowFromShelfController();
   ASSERT_TRUE(drag_controller);
   EXPECT_EQ(floated_window.get(), drag_controller->dragged_window());
+  EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
   // Move back towards the shelf to ensure we do not enter overview.
   GetEventGenerator()->MoveTouchBy(0, 200);
   GetEventGenerator()->ReleaseTouch();
+  EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
   // Drag under the right snapped window. It should be the dragged window.
   const gfx::Point drag_point_under_right(
@@ -1670,6 +1677,11 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
   drag_controller = GetDragWindowFromShelfController();
   ASSERT_TRUE(drag_controller);
   EXPECT_EQ(right_window.get(), drag_controller->dragged_window());
+
+  // Verify that all the window states remain the same.
+  EXPECT_TRUE(WindowState::Get(left_window.get())->IsSnapped());
+  EXPECT_TRUE(WindowState::Get(right_window.get())->IsSnapped());
+  EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 }
 
 }  // namespace ash

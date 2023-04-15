@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -130,12 +131,14 @@ class ServiceWorkerRegistration final
   // to the Mojo connection. It is bound on the
   // main thread for service worker clients (document), and is bound on the
   // service worker thread for service worker execution contexts.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::ServiceWorkerRegistrationObjectHost>
       host_;
   // |receiver_| receives messages from the ServiceWorkerRegistrationObjectHost
   // in the browser process. It is bound on the main thread for service worker
   // clients (document), and is bound on the service worker thread for service
   // worker execution contexts.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::ServiceWorkerRegistrationObject>
       receiver_{this};
 

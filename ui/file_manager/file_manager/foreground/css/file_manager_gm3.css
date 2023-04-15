@@ -308,6 +308,21 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 /* Can be removed after new directory replacement. -- END */
 
 /* Splitter. */
+/* Prevent the sudden flickering when opening the Files app. "div.splitter" is
+  the legacy splitter DOM element. We need to maintain the existing DOM
+  structure to make sure it can cater both the legacy splitter style and the
+  refresh23 style. In file_manager_ui.js we will remove the legacy ".splitter"
+  element if the jelly flag is on, this sudden removal will cause a flickering
+  issue due to position change, hence setting a width here for the legacy
+  splitter to prevent that.  */
+div.splitter {
+  width: 24px;
+}
+
+div.splitter .splitter-button {
+  display: none;
+}
+
 .jelly-splitter {
   --xf-splitter-tracker-offset: 16px;
   --xf-splitter-z-index: 500;  /* Must be below the contextmenu (600). */
@@ -445,7 +460,7 @@ body.check-select .dialog-header
   margin: 0 8px;
   padding-bottom: 0;
   padding-inline: 16px;
-  padding-top: 2px;
+  padding-top: 0;
 }
 
 .dialog-header #tasks[multiple] {
@@ -1418,15 +1433,15 @@ body:not(.check-select) .thumbnail-grid.image-dominant
    bar when it's not needed. Max height is set to fit 8 items before showing
    scroll bar. */
 body.files-ng #default-tasks-list {
-  border-top: solid 1px var(--cros-separator-color);
   height: 240px;
-  margin: 16px -16px;
-  margin-bottom: 12px;
-  padding-top: 8px;
+  margin-bottom: 32px;
+  margin-top: 20px;
+  padding-inline: 32px;
 }
 
 #default-task-dialog.bottom-shadow::after {
-  background: linear-gradient(transparent 0, var(--cros-bg-color) 100%);
+  background:
+      linear-gradient(transparent 0, var(--cros-sys-base_elevated) 100%);
   bottom: 24px;
   content: '';
   height: 40px;
@@ -1434,13 +1449,6 @@ body.files-ng #default-tasks-list {
   pointer-events: none;
   position: absolute;
   width: 100%
-}
-
-@media (prefers-color-scheme: dark) {
-  #default-task-dialog.bottom-shadow::after {
-    background: linear-gradient(transparent 0,
-                                var(--cros-bg-color-elevation-2) 100%);
-  }
 }
 
 #default-tasks-list li {
@@ -1482,7 +1490,8 @@ body.files-ng #list-container list:focus > li[lead] {
 
 body.files-ng #default-tasks-list:focus > li[selected],
 body.files-ng #default-tasks-list > li[selected] {
-  background-color: var(--cros-highlight-color);
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
   outline: none;
 }
 
@@ -1490,7 +1499,7 @@ body.files-ng #default-tasks-list li[selected]::after {
   -webkit-mask-image: url(../images/common/ic_selected.svg);
   -webkit-mask-position: right;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-selection);
+  background-color: var(--cros-sys-on_primary_container);
   content: ' ';
   height: 40px;
   position: absolute;
@@ -2157,8 +2166,25 @@ body.files-ng #list-container li .detail-checkmark {
   flex: none;
 }
 
-.cr-dialog-container.files-ng #default-task-dialog {
+/* Default task dialog has its own background color for title and text
+   section. */
+.cr-dialog-container #default-task-dialog {
+  /* Override the default padding so we can have background color for different
+     sections in the dialog. */
+  padding: 0;
   width: 352px;
+}
+
+.cr-dialog-container #default-task-dialog .cr-dialog-title {
+  background-color: var(--cros-sys-surface1);
+  border-radius: 20px 20px 0 0;
+  margin-bottom: 0;
+  padding: 32px 32px 16px;
+}
+
+.cr-dialog-container #default-task-dialog .cr-dialog-text {
+  background-color: var(--cros-sys-surface1);
+  padding: 0 32px 20px;
 }
 
 .install-linux-package-details-frame {
@@ -2380,4 +2406,8 @@ files-tooltip:not(:defined) {
   padding-inline-start: 0;
   padding-top: 12px;
   visibility: visible;
+}
+
+#path-display-container {
+  background-color: var(--cros-sys-app_base_shaded);
 }

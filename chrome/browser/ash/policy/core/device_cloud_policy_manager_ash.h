@@ -10,15 +10,18 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/user_manager/user_manager.h"
 
 namespace reporting {
 class MetricReportingManager;
-class UserAddedRemovedReporter;
 class OsUpdatesReporter;
+class UserAddedRemovedReporter;
+class UserEventReporterHelper;
 }  // namespace reporting
 
 namespace ash {
@@ -57,7 +60,8 @@ class LookupKeyUploader;
 enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED, HANDS_OFF };
 
 // CloudPolicyManager specialization for device policy in Ash.
-class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
+class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
+                                    public user_manager::UserManager::Observer {
  public:
   class Observer {
    public:
@@ -146,6 +150,16 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
     return machine_certificate_uploader_.get();
   }
 
+  // Called when UserManager is created.
+  void OnUserManagerCreated(user_manager::UserManager* user_manager);
+  // Called just before UserManager is destroyed.
+  void OnUserManagerWillBeDestroyed(user_manager::UserManager* user_manager);
+
+  // user_manager::UserManager::Observer:
+  void OnUserToBeRemoved(const AccountId& account_id) override;
+  void OnUserRemoved(const AccountId& account_id,
+                     user_manager::UserRemovalReason reason) override;
+
  protected:
   // Object that monitors managed session related events used by reporting
   // services, protected for testing.
@@ -169,6 +183,12 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   std::unique_ptr<reporting::OsUpdatesReporter> os_updates_reporter_;
 
  private:
+  // Caches removed users. Passed to the reporter, when it is created.
+  struct RemovedUser {
+    std::string user_email;  // Maybe empty, if the user should not be reported.
+    user_manager::UserRemovalReason reason;
+  };
+
   // Saves the state keys received from |session_manager_client_|.
   void OnStateKeysUpdated();
 
@@ -237,7 +257,18 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   // component cloud policy service creation).
   bool component_policy_disabled_for_testing_ = false;
 
+  // Caches users being removed.
+  base::flat_map<AccountId, bool> users_to_be_removed_;
+
+  std::vector<RemovedUser> removed_users_;
+
+  std::unique_ptr<reporting::UserEventReporterHelper> helper_;
+
   base::ObserverList<Observer, true>::Unchecked observers_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          DeviceCloudPolicyManagerAsh>
+      user_manager_observation_{this};
 };
 
 }  // namespace policy

@@ -20,6 +20,7 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
+import {GoogleDriveBrowserProxy, Status} from './google_drive_browser_proxy.js';
 import {getTemplate} from './google_drive_subpage.html.js';
 
 const SettingsGoogleDriveSubpageElementBase =
@@ -32,6 +33,11 @@ const GOOGLE_DRIVE_DISABLED_PREF = 'gdata.disabled';
 
 export class SettingsGoogleDriveSubpageElement extends
     SettingsGoogleDriveSubpageElementBase {
+  constructor() {
+    super();
+    this.proxy_ = GoogleDriveBrowserProxy.getInstance();
+  }
+
   static get is() {
     return 'settings-google-drive-subpage';
   }
@@ -81,6 +87,75 @@ export class SettingsGoogleDriveSubpageElement extends
   private showDisconnectDriveConfirmationDialog_: boolean;
 
   /**
+   * A connection with the browser process to send/receive messages.
+   */
+  private proxy_: GoogleDriveBrowserProxy;
+
+  /**
+   * Keeps track of the latest response about bulk pinning from the page
+   * handler.
+   */
+  private bulkPinningStatus_?: Status;
+
+  /**
+   * If the underlying service is unavailable, this will get set to true.
+   */
+  private bulkPinningServiceUnavailable_: boolean = false;
+
+  /**
+   * Returns the browser proxy page handler (to invoke functions).
+   */
+  get pageHandler() {
+    return this.proxy_.handler;
+  }
+
+  /**
+   * Returns the browser proxy callback router (to receive async messages).
+   */
+  get callbackRouter() {
+    return this.proxy_.observer;
+  }
+
+  /**
+   * Returns the required space that is currently stored or -1 of no value. Used
+   * for testing.
+   */
+  get requiredSpace() {
+    return this.bulkPinningStatus_?.requiredSpace || -1;
+  }
+
+  /**
+   * Returns the remaining space that is currently stored or -1 of no value.
+   * Used for testing.
+   */
+  get remainingSpace() {
+    return this.bulkPinningStatus_?.remainingSpace || -1;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.callbackRouter.onServiceUnavailable.addListener(
+        this.onServiceUnavailable_.bind(this));
+    this.callbackRouter.onProgress.addListener(this.onProgress_.bind(this));
+  }
+
+
+  /**
+   * Invoked when the underlying service is not longer available.
+   */
+  private onServiceUnavailable_() {
+    this.bulkPinningServiceUnavailable_ = true;
+  }
+
+  /**
+   * Invoked when progress has occurred with the underlying pinning operation.
+   * This could also end up in an error state (e.g. no free space).
+   */
+  private onProgress_(status: Status) {
+    this.bulkPinningStatus_ = status;
+  }
+
+  /**
    * Invoked when the `prefs.gdata.disabled` preference changes value.
    */
   private updateDriveDisabled_() {
@@ -95,6 +170,7 @@ export class SettingsGoogleDriveSubpageElement extends
     }
 
     this.attemptDeepLink();
+    this.pageHandler.calculateRequiredSpace();
   }
 
   /**
@@ -111,7 +187,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * connected, show the confirmation dialog instead of immediately updating the
    * preference when the button is pressed.
    */
-  private onConnectDisconnectTap_(): void {
+  private onConnectDisconnectClick_(): void {
     if (this.driveDisabled_) {
       this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, false);
       return;

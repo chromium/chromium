@@ -105,9 +105,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct SchedulingSettings {
     SchedulingSettings();
 
-    // Prioritise one BeginMainFrame after an input task.
-    bool prioritize_compositing_after_input;
-
     // If enabled, base::SingleThreadTaskRunner::GetCurrentDefault() and
     // base::SequencedTaskRunner::GetCurrentDefault() returns the current active
     // per-ASG task runner instead of the per-thread task runner.

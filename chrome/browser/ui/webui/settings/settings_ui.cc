@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -92,6 +93,11 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/interaction/element_identifier.h"
+
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+#include "chrome/grit/settings_shared_resources.h"
+#include "chrome/grit/settings_shared_resources_map.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
@@ -290,10 +296,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "turnOffSyncAllowedForManagedProfiles",
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
 
-  html_source->AddBoolean("showImportPasswords",
-                          base::FeatureList::IsEnabled(
-                              password_manager::features::kPasswordImport));
-
   html_source->AddBoolean("enablePasswordsImportM2",
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordsImportM2));
@@ -370,6 +372,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableEsbCollapse",
       safe_browsing::kEsbIphBubbleAndCollapseSettingsEnableCollapse.Get());
 
+  html_source->AddBoolean("downloadBubbleEnabled",
+                          download::IsDownloadBubbleEnabled(profile));
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   html_source->AddBoolean(
       "biometricAuthenticationForFilling",
@@ -377,6 +382,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           ShouldBiometricAuthenticationForFillingToggleBeVisible(
               g_browser_process->local_state()));
 #endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddBoolean(
+      "showGetTheMostOutOfChromeSection",
+      base::FeatureList::IsEnabled(features::kGetTheMostOutOfChrome));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
@@ -447,6 +458,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
       IDR_SETTINGS_SETTINGS_HTML);
 
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+  html_source->AddResourcePaths(
+      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+#endif
+
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
 
   ManagedUIHandler::Initialize(web_ui, html_source);
@@ -485,10 +501,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
-  html_source->AddBoolean(
-      "highEfficiencyModeAvailable",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyModeAvailable));
+  // TODO(crbug.com/1430884): Remove this when the WebUI doesn't look for it.
+  html_source->AddBoolean("highEfficiencyModeAvailable", true);
   html_source->AddBoolean(
       "batterySaverModeAvailable",
       base::FeatureList::IsEnabled(

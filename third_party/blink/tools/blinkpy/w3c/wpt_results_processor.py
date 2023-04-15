@@ -68,7 +68,7 @@ class WPTResult(Result):
         'CRASH': ResultType.Crash,
         'INTERNAL-ERROR': ResultType.Crash,
         'SKIP': ResultType.Skip,
-        'NOTRUN': ResultType.Skip,
+        'NOTRUN': ResultType.Failure,
     }
 
     _status_priority = [
@@ -85,13 +85,14 @@ class WPTResult(Result):
         super().__init__(*args, **kwargs)
         self.messages = []
         self._test_section = wptnode.DataNode(_test_basename(self.name))
+        self.has_expected_fail = False
 
     def _add_expected_status(self, section: wptnode.DataNode, status: str):
         expectation = wptnode.KeyValueNode('expected')
         expectation.append(wptnode.ValueNode(status))
         section.append(expectation)
 
-    def _maybe_set_statuses(self, status: str, expected: Set[str]):
+    def _maybe_set_statuses(self, actual: str, unexpected: bool):
         """Set this result's actual/expected statuses.
 
         A `testharness.js` test may have subtests with their own statuses and
@@ -104,19 +105,12 @@ class WPTResult(Result):
         latest status. The order tiebreaker ensures a test-level status
         overrides a subtest-level status when they have the same priority.
         """
-        actual = self._wptrunner_to_chromium_statuses[status]
-        expected = {
-            self._wptrunner_to_chromium_statuses[status]
-            for status in expected
-        }
-        unexpected = actual not in expected
         priority = (self._status_priority.index(actual), unexpected)
         # pylint: disable=access-member-before-definition
         # `actual` and `unexpected` are set in `Result`'s constructor.
-        if priority >= (self._status_priority.index(
+        if priority > (self._status_priority.index(
                 self.actual), self.unexpected):
-            self.actual, self.expected = actual, expected
-            self.unexpected = unexpected
+            self.actual, self.unexpected = actual, unexpected
 
     def update_from_subtest(self,
                             subtest: str,
@@ -128,8 +122,22 @@ class WPTResult(Result):
         subtest_section = wptnode.DataNode(subtest)
         self._add_expected_status(subtest_section, status)
         self._test_section.append(subtest_section)
+
         # Tentatively promote "interesting" statuses to the test level.
-        self._maybe_set_statuses(status, expected)
+        # Rules for promoting subtest status to test level:
+        #     Any result against 'NOTRUN' is an unexpected pass.
+        #     'NOTRUN' against other expected results is an unexpected failure.
+        #     Expected results only come from test level expectations
+        #     Only promote subtest status when run unexpected.
+        #     Exception: report expected failure if all subtest failures are expected.
+        unexpected = status not in expected
+        actual = (ResultType.Pass if 'NOTRUN' in expected else
+                  self._wptrunner_to_chromium_statuses[status])
+        self.has_expected_fail = (self.has_expected_fail
+                                  or actual == ResultType.Failure
+                                  and not unexpected)
+        if unexpected:
+            self._maybe_set_statuses(actual, unexpected)
 
     def update_from_test(self,
                          status: str,
@@ -138,7 +146,21 @@ class WPTResult(Result):
         if message:
             self.messages.insert(0, 'Harness: %s\n' % message)
         self._add_expected_status(self._test_section, status)
-        self._maybe_set_statuses(status, expected)
+
+        unexpected = status not in expected
+        actual = self._wptrunner_to_chromium_statuses[status]
+        self.expected = {
+            self._wptrunner_to_chromium_statuses[status]
+            for status in expected
+        }
+        self._maybe_set_statuses(actual, unexpected)
+
+        # Report expected failure instead of expected pass when there are
+        # expected subtest failures.
+        if (self.actual == ResultType.Pass and not self.unexpected
+                and self.has_expected_fail):
+            self.actual = ResultType.Failure
+            self.expected = {ResultType.Failure}
 
     @property
     def actual_metadata(self):

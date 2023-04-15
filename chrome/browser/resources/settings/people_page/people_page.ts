@@ -22,6 +22,8 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
+import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 // <if expr="chromeos_ash">
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
@@ -45,8 +47,6 @@ import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js
 // </if>
 
 import {getTemplate} from './people_page.html.js';
-import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
-import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export interface SettingsPeoplePageElement {
   $: {
@@ -338,7 +338,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
   // </if>
 
-  private onProfileTap_() {
+  private onProfileClick_() {
     // <if expr="chromeos_ash">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // Post-SplitSettings. The browser C++ code loads OS settings in a window.
@@ -359,13 +359,13 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
 
-  private onSyncTap_() {
+  private onSyncClick_() {
     // Users can go to sync subpage regardless of sync status.
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
   // <if expr="not is_chromeos">
-  private onImportDataTap_() {
+  private onImportDataClick_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
 

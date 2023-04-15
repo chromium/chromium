@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -12,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
@@ -145,6 +146,8 @@ public class FeedStreamTest {
     @Mock
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock
+    private FeedUserInteractionReliabilityLogger mUserInteractionReliabilityLogger;
+    @Mock
     private FeedActionDelegate mActionDelegate;
     @Mock
     WebFeedBridge.Natives mWebFeedBridgeJni;
@@ -172,6 +175,7 @@ public class FeedStreamTest {
     private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
+        overrides.put(ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT, true);
         FeatureList.setTestFeatures(overrides);
     }
 
@@ -191,6 +195,8 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerScrollDistanceDp())
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
+        when(mSurfaceScope.getFeedUserInteractionReliabilityLogger())
+                .thenReturn(mUserInteractionReliabilityLogger);
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
@@ -1171,6 +1177,14 @@ public class FeedStreamTest {
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
         assertTrue(stream.supportsOptions());
+    }
+
+    @Test
+    @SmallTest
+    public void testReportStreamOpened() {
+        bindToView();
+        verify(mUserInteractionReliabilityLogger).onStreamOpened(anyInt());
+        mFeedStream.unbind(false);
     }
 
     private int getLoadMoreTriggerScrollDistance() {

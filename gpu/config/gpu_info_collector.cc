@@ -269,10 +269,13 @@ void ForceDawnTogglesForWebGPU(
 }
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
-void ForceDawnTogglesForSkia(std::vector<const char*>* force_enabled_toggles,
-                             std::vector<const char*>* force_disabled_toggles) {
+void ForceDawnTogglesForSkiaGraphite(
+    std::vector<const char*>* force_enabled_toggles,
+    std::vector<const char*>* force_disabled_toggles) {
 #if !DCHECK_IS_ON()
-  force_enabled_toggles->push_back("skip_validation");
+  force_enabled_toggles.push_back("disable_robustness");
+  force_enabled_toggles.push_back("skip_validation");
+  force_disabled_toggles.push_back("lazy_clear_resource_on_first_use");
 #endif
 }
 #endif
@@ -742,12 +745,15 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-      if (gpu_preferences.gr_context_type == gpu::GrContextType::kDawn) {
+      if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
         // Get the list of forced toggles for Skia.
+        // TODO(sunnyps): Ideally these should come from a single source of
+        // truth e.g. from DawnContextProvider or a common helper, instead of
+        // just assuming some values here.
         std::vector<const char*> force_enabled_toggles_skia;
         std::vector<const char*> force_disabled_toggles_skia;
-        ForceDawnTogglesForSkia(&force_enabled_toggles_skia,
-                                &force_disabled_toggles_skia);
+        ForceDawnTogglesForSkiaGraphite(&force_enabled_toggles_skia,
+                                        &force_disabled_toggles_skia);
 
         if (!force_enabled_toggles_skia.empty()) {
           dawn_info_list->push_back("[Skia Forced Toggles - enabled]");

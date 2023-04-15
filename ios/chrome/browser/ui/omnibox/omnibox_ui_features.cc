@@ -24,6 +24,11 @@ BASE_FEATURE(kOmniboxMultilineSearchSuggest,
              "OmniboxMultilineSearchSuggest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Tail suggest is triggered server side.
+BASE_FEATURE(kOmniboxTailSuggest,
+             "OmniboxTailSuggest",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsIpadPopoutOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;

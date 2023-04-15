@@ -16,6 +16,7 @@
 #include "ash/system/message_center/message_center_constants.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -79,6 +80,10 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
   EventForwarder& operator=(const EventForwarder&) = delete;
 
   ~EventForwarder() override = default;
+
+  // Insert itself to pre-target handler lists of |window|
+  void Observe(aura::Window* window) { observation_.Observe(window); }
+  void Reset() { observation_.Reset(); }
 
  private:
   // ui::EventHandler
@@ -213,6 +218,8 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
 
   ArcNotificationContentView* const owner_;
   bool is_current_slide_handled_by_android_ = false;
+
+  base::ScopedObservation<ui::EventTarget, ui::EventHandler> observation_{this};
 };
 
 class ArcNotificationContentView::SlideHelper {
@@ -253,9 +260,7 @@ class ArcNotificationContentView::SlideHelper {
 
 // static
 int ArcNotificationContentView::GetNotificationContentViewWidth() {
-  return features::IsNotificationsRefreshEnabled()
-             ? kNotificationInMessageCenterWidth
-             : message_center::kNotificationWidth;
+  return kNotificationInMessageCenterWidth;
 }
 
 ArcNotificationContentView::ArcNotificationContentView(
@@ -264,20 +269,17 @@ ArcNotificationContentView::ArcNotificationContentView(
     message_center::MessageView* message_view)
     : item_(item),
       notification_key_(item->GetNotificationKey()),
-      event_forwarder_(new EventForwarder(this)),
-      mouse_enter_exit_handler_(new MouseEnterExitHandler(this)),
+      event_forwarder_(std::make_unique<EventForwarder>(this)),
+      mouse_enter_exit_handler_(std::make_unique<MouseEnterExitHandler>(this)),
       message_view_(message_view),
-      control_buttons_view_(message_view),
-      notification_width_(GetNotificationContentViewWidth()) {
+      control_buttons_view_(message_view) {
   DCHECK(message_view);
   control_buttons_view_.SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());
 
-  // |notification_width_| must be 360 (or 344 for refreshed notifications),
-  // since this value is separately defined in ArcNotificationWrapperView class
-  // in Android side.
-  DCHECK_EQ(features::IsNotificationsRefreshEnabled() ? 344 : 360,
-            notification_width_);
+  // `kNotificationInMessageCenterWidth` must be 344 since this value is
+  // separately defined in `ArcNotificationWrapperView` class in Android side.
+  static_assert(kNotificationInMessageCenterWidth == 344);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
@@ -451,7 +453,7 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
     DCHECK(surface_->GetWindow());
     DCHECK(surface_->GetContentWindow());
     surface_->GetContentWindow()->RemoveObserver(this);
-    surface_->GetWindow()->RemovePreTargetHandler(event_forwarder_.get());
+    event_forwarder_->Reset();
 
     if (surface_->GetAttachedHost() == this) {
       DCHECK_EQ(this, surface_->GetAttachedHost());
@@ -465,7 +467,7 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
     DCHECK(surface_->GetWindow());
     DCHECK(surface_->GetContentWindow());
     surface_->GetContentWindow()->AddObserver(this);
-    surface_->GetWindow()->AddPreTargetHandler(event_forwarder_.get());
+    event_forwarder_->Observe(surface_->GetWindow());
 
     if (GetWidget()) {
       // Force to detach the surface.
@@ -484,14 +486,9 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
     }
   }
 
-  // Maybe this if-branch is not needed but if the refresh flag is disabled we
-  // don't have to call |SchedulePaint()| because the notification background is
-  // opaque. Let's keep this if-branch not to break any existing behavior.
-  if (ash::features::IsNotificationsRefreshEnabled()) {
-    // Setting/resetting |surface_| changes the visibility of the snapshot so we
-    // here request to paint.
-    SchedulePaint();
-  }
+  // Setting/resetting |surface_| changes the visibility of the snapshot so we
+  // here request to paint.
+  SchedulePaint();
 }
 
 void ArcNotificationContentView::UpdatePreferredSize() {
@@ -504,10 +501,10 @@ void ArcNotificationContentView::UpdatePreferredSize() {
   if (preferred_size.IsEmpty())
     return;
 
-  if (preferred_size.width() != notification_width_) {
-    const float scale =
-        static_cast<float>(notification_width_) / preferred_size.width();
-    preferred_size.SetSize(notification_width_,
+  if (preferred_size.width() != kNotificationInMessageCenterWidth) {
+    const float scale = static_cast<float>(kNotificationInMessageCenterWidth) /
+                        preferred_size.width();
+    preferred_size.SetSize(kNotificationInMessageCenterWidth,
                            preferred_size.height() * scale);
   }
 
@@ -668,7 +665,8 @@ void ArcNotificationContentView::Layout() {
     const gfx::Size surface_size = surface_->GetSize();
     if (!surface_size.IsEmpty()) {
       const float factor =
-          static_cast<float>(notification_width_) / surface_size.width();
+          static_cast<float>(kNotificationInMessageCenterWidth) /
+          surface_size.width();
       transform.Scale(factor, factor);
     }
 
@@ -719,14 +717,12 @@ void ArcNotificationContentView::OnPaint(gfx::Canvas* canvas) {
         item_->GetSnapshot().height(), contents_bounds.x(), contents_bounds.y(),
         contents_bounds.width(), contents_bounds.height(), true /* filter */);
   } else {
-    // Draw a white background otherwise. The height of the view/ surface and
+    // Draw a clear background otherwise. The height of the view/ surface and
     // animation buffer size are not exactly synced and user may see the blank
     // area out of the surface.
     // TODO: This can be removed once both ARC and Chrome notifications have
     // smooth expansion animations.
-    canvas->DrawColor(ash::features::IsNotificationsRefreshEnabled()
-                          ? SK_ColorTRANSPARENT
-                          : SK_ColorWHITE);
+    canvas->DrawColor(SK_ColorTRANSPARENT);
   }
 }
 
@@ -768,12 +764,10 @@ void ArcNotificationContentView::OnThemeChanged() {
   if (GetWidget() && GetNativeViewContainer())
     UpdateMask(true);
 
-  if (ash::features::IsNotificationsRefreshEnabled()) {
-    // Adjust control button color.
-    control_buttons_view_.SetButtonIconColors(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
-  }
+  // Adjust control button color.
+  control_buttons_view_.SetButtonIconColors(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
 }
 
 void ArcNotificationContentView::OnRemoteInputActivationChanged(

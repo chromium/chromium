@@ -123,10 +123,16 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     // it.
     GetMediaSessionService().BindAudioFocusManager(
         audio_focus_remote_.BindNewPipeAndPassReceiver());
+    audio_focus_remote_->SetEnforcementMode(
+        media_session::mojom::EnforcementMode::kDefault);
   }
 
   void TearDown() override {
     mock_media_session_service_.reset();
+
+    scoped_feature_list_.Reset();
+    audio_focus_remote_->SetEnforcementMode(
+        media_session::mojom::EnforcementMode::kDefault);
 
     RenderViewHostTestHarness::TearDown();
   }

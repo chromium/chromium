@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -174,7 +175,9 @@ class JsSandboxIsolate {
   // of an evaluation is a JS promise which is pending resolution/rejection.
   //
   // This pointer must only be accessed from the isolate thread.
-  JsSandboxIsolateCallback* current_callback_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION JsSandboxIsolateCallback* current_callback_;
 
   bool console_enabled_;
 

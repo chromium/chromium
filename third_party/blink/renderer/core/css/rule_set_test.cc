@@ -453,7 +453,7 @@ std::deque<bool> CoveredByBucketing(const String& selector_text,
     std::deque<bool> covered;
     while (selector) {
       covered.push_back(selector->IsCoveredByBucketing());
-      selector = selector->TagHistory();
+      selector = selector->NextSimpleSelector();
     }
     return covered;
   }

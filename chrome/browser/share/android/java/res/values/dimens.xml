@@ -25,5 +25,5 @@ found in the LICENSE file.
     <dimen name="toggle_iph_y_inset">8dp</dimen>
 
     <!-- Android share sheet -->
-    <dimen name="share_preview_favicon_size">32dp</dimen>
+    <dimen name="share_preview_favicon_size">48dp</dimen>
 </resources>

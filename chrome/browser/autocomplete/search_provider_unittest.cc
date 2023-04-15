@@ -2546,11 +2546,10 @@ TEST_F(SearchProviderTest, FieldTrialTriggeredParsing) {
     // Check for the match and field trial triggered bits.
     AutocompleteMatch match;
     EXPECT_TRUE(FindMatchWithContents(u"foo bar", &match));
-    EXPECT_EQ(
-        client_->GetOmniboxTriggeredFeatureService()
-            ->GetFeatureTriggeredInSession(
-                OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature),
-        trigger);
+    EXPECT_EQ(client_->GetOmniboxTriggeredFeatureService()
+                  ->GetFeatureTriggeredInSession(
+                      metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE),
+              trigger);
   };
 
   {

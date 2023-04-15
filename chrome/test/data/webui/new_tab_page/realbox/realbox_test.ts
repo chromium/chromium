@@ -2203,8 +2203,7 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(areMatchesShowing());
 
     // The first match is showing. The second match is initially hidden.
-    let matchEls =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+    let matchEls = realbox.$.matches.selectableMatchElements;
     assertEquals(1, matchEls.length);
 
     // The suggestion group header and the toggle button are visible.
@@ -2241,8 +2240,7 @@ suite('NewTabPageRealboxTest', () => {
     testProxy.handler.reset();
 
     // Second match is visible.
-    matchEls =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+    matchEls = realbox.$.matches.selectableMatchElements;
     assertEquals(2, matchEls.length);
 
     // Hide the second match by clicking the toggle button.
@@ -2256,8 +2254,7 @@ suite('NewTabPageRealboxTest', () => {
         1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
 
     // Second match is hidden.
-    matchEls =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+    matchEls = realbox.$.matches.selectableMatchElements;
     assertEquals(1, matchEls.length);
 
     testProxy.handler.reset();
@@ -2271,8 +2268,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(
         1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
     // Second match is visible again.
-    matchEls =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+    matchEls = realbox.$.matches.selectableMatchElements;
     assertEquals(2, matchEls.length);
   });
 

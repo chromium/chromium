@@ -4,6 +4,9 @@
 
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
@@ -21,10 +24,15 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace safe_browsing {
 
 namespace {
+
+BASE_FEATURE(kTestCookieTheftFeature,
+             "TestCookieTheftFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
@@ -209,5 +217,85 @@ TEST(GetPageLoadTokenForURLTest, PopulatesExistingTokenValueForURL) {
       GetPageLoadTokenForURL(&profile, profile.GetHomePage());
   EXPECT_TRUE(token.has_token_value());
 }
+
+TEST(GetExperimentStatusTest, HasEnabled) {
+  base::FieldTrialList::CreateFieldTrial("TestCookieTheftFeature", "Enabled");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "TestCookieTheftFeature<TestCookieTheftFeature.Enabled", "");
+
+  ChromeUserPopulation population;
+  GetExperimentStatus({&kTestCookieTheftFeature}, &population);
+
+  ASSERT_EQ(population.finch_active_groups_size(), 1);
+  EXPECT_EQ(population.finch_active_groups(0),
+            "TestCookieTheftFeature.Enabled");
+}
+
+TEST(GetExperimentStatusTest, HasControl) {
+  base::FieldTrialList::CreateFieldTrial("TestCookieTheftFeature", "Control");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "TestCookieTheftFeature<TestCookieTheftFeature.Control", "");
+
+  ChromeUserPopulation population;
+  GetExperimentStatus({&kTestCookieTheftFeature}, &population);
+
+  ASSERT_EQ(population.finch_active_groups_size(), 1);
+  EXPECT_EQ(population.finch_active_groups(0),
+            "TestCookieTheftFeature.Control");
+}
+
+TEST(GetExperimentStatusTest, OmitsDefault) {
+  base::FieldTrialList::CreateFieldTrial("TestCookieTheftFeature", "Default");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "TestCookieTheftFeature<TestCookieTheftFeature.Default", "");
+
+  ChromeUserPopulation population;
+  GetExperimentStatus({&kTestCookieTheftFeature}, &population);
+
+  ASSERT_EQ(population.finch_active_groups_size(), 0);
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST(GetUserPopulationForProfileWithCookieTheftExperiments,
+     PopulatesExperimentsForEsb) {
+  content::BrowserTaskEnvironment task_environment;
+  base::FieldTrialList::CreateFieldTrial("LockProfileCookieDatabase",
+                                         "Enabled");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "LockProfileCookieDatabase<LockProfileCookieDatabase.Enabled", "");
+
+  TestingProfile profile;
+  SetSafeBrowsingState(profile.GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ChromeUserPopulation population =
+      GetUserPopulationForProfileWithCookieTheftExperiments(&profile);
+
+  EXPECT_TRUE(base::Contains(population.finch_active_groups(),
+                             "LockProfileCookieDatabase.Enabled"));
+}
+
+TEST(GetUserPopulationForProfileWithCookieTheftExperiments,
+     DoesNotPopulateExperimentsForSsb) {
+  content::BrowserTaskEnvironment task_environment;
+  base::FieldTrialList::CreateFieldTrial("LockProfileCookieDatabase",
+                                         "Enabled");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "LockProfileCookieDatabase<LockProfileCookieDatabase.Enabled", "");
+
+  TestingProfile profile;
+  SetSafeBrowsingState(profile.GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  ChromeUserPopulation population =
+      GetUserPopulationForProfileWithCookieTheftExperiments(&profile);
+
+  EXPECT_FALSE(base::Contains(population.finch_active_groups(),
+                              "LockProfileCookieDatabase.Enabled"));
+}
+#endif
 
 }  // namespace safe_browsing

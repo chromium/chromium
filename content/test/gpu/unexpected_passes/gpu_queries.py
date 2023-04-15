@@ -9,16 +9,29 @@ from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import queries as queries_module
 
+# step_name can be either the step_name tag or test_suite variant because of the
+# way Skylab builders work. In normal Chromium test tasks, the step name is
+# reported to the task-level RDB invocation, which then gets applied to every
+# result that task reports. Skylab test steps are actually separate
+# Buildbucket builds that report results a bit differently. They do not report
+# a step_name tag, but do put the same information in for the test_suite
+# variant. So, we will look for step_name first to cover most builders and fall
+# back to test_suite for Skylab builders.
 RESULTS_SUBQUERY = """\
   results AS (
     SELECT
       exported.id,
       test_id,
       status,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
+      IFNULL(
+        (
+          SELECT value
+          FROM tr.tags
+          WHERE key = "step_name"),
+        (
+          SELECT value
+          FROM tr.variant
+          WHERE key = "test_suite")) as step_name,
       ARRAY(
         SELECT value
         FROM tr.tags

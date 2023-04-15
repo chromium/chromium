@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_java_script_feature.h"
 
-#import "base/feature_list.h"
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -56,17 +54,14 @@ BottomSheetJavaScriptFeature::~BottomSheetJavaScriptFeature() = default;
 void BottomSheetJavaScriptFeature::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheet)) {
-    base::Value::List renderer_id_list =
-        base::Value::List::with_capacity(renderer_ids.size());
-    for (auto renderer_id : renderer_ids) {
-      renderer_id_list.Append(static_cast<int>(renderer_id.value()));
-    }
-    std::vector<base::Value> parameters;
-    parameters.push_back(base::Value(std::move(renderer_id_list)));
-    CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
+  base::Value::List renderer_id_list =
+      base::Value::List::with_capacity(renderer_ids.size());
+  for (auto renderer_id : renderer_ids) {
+    renderer_id_list.Append(static_cast<int>(renderer_id.value()));
   }
+  std::vector<base::Value> parameters;
+  parameters.push_back(base::Value(std::move(renderer_id_list)));
+  CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
 }
 
 void BottomSheetJavaScriptFeature::DetachListenersAndRefocus(

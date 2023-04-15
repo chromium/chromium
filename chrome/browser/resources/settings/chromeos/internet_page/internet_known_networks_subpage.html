@@ -35,7 +35,7 @@
       </cr-link-row>
       <div class="separator"></div>
       <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_" title="[[getMenuButtonTitle_(item)]]">
+          on-click="onMenuButtonClick_" title="[[getMenuButtonTitle_(item)]]">
       </cr-icon-button>
     </div>
   </template>
@@ -63,7 +63,7 @@
       </cr-link-row>
       <div class="separator"></div>
       <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_" title="[[getMenuButtonTitle_(item)]]">
+          on-click="onMenuButtonClick_" title="[[getMenuButtonTitle_(item)]]">
       </cr-icon-button>
     </div>
   </template>
@@ -71,15 +71,15 @@
 
 <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" hidden="[[!showAddPreferred_]]"
-      on-click="onAddPreferredTap_">
+      on-click="onAddPreferredClick_">
     $i18n{knownNetworksMenuAddPreferred}
   </button>
   <button class="dropdown-item"
-      hidden="[[!showRemovePreferred_]]" on-click="onRemovePreferredTap_">
+      hidden="[[!showRemovePreferred_]]" on-click="onRemovePreferredClick_">
     $i18n{knownNetworksMenuRemovePreferred}
   </button>
   <button class="dropdown-item" disabled="[[!enableForget_]]"
-      on-click="onForgetTap_">
+      on-click="onForgetClick_">
     $i18n{knownNetworksMenuForget}
   </button>
 </cr-action-menu>

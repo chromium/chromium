@@ -37,6 +37,8 @@ namespace ash {
 
 namespace {
 
+using Sensor = SensorDisabledNotificationDelegate::Sensor;
+
 class MockSwitchAPI : public CameraPrivacySwitchAPI {
  public:
   MOCK_METHOD(void,
@@ -737,8 +739,8 @@ TEST_P(PrivacyHubCameraControllerTest, MetricCollection) {
                 false),
             0);
 
-  CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
-      false);
+  PrivacyHubNotificationController::SetAndLogSensorPreferenceFromNotification(
+      Sensor::kCamera, false);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
@@ -750,8 +752,8 @@ TEST_P(PrivacyHubCameraControllerTest, MetricCollection) {
                 false),
             1);
 
-  CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
-      true);
+  PrivacyHubNotificationController::SetAndLogSensorPreferenceFromNotification(
+      Sensor::kCamera, true);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
                     kPrivacyHubCameraEnabledFromNotificationHistogram,

@@ -90,7 +90,7 @@ TEST(AutocompleteGrouperSectionsTest, ZpsSection) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
-    sections.push_back(std::make_unique<DesktopZpsSection>(group_configs));
+    sections.push_back(std::make_unique<DesktopNTPZpsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -119,19 +119,18 @@ TEST(AutocompleteGrouperSectionsTest, ZpsSection) {
     for (size_t i = 0; i < 10; ++i) {
       matches.push_back(CreateMatch(90 - i, omnibox::GROUP_TRENDS));
     }
-    // `GROUP_PERSONALIZED_ZERO_SUGGEST` matches come 2nd and should not be
-    // added.
+    // `GROUP_PERSONALIZED_ZERO_SUGGEST` matches come 1st and should be added.
     for (size_t i = 0; i < 10; ++i) {
       matches.push_back(
           CreateMatch(80 - i, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST));
     }
-    // `GROUP_PREVIOUS_SEARCH_RELATED` matches come 1st and should be added.
+    // `GROUP_PREVIOUS_SEARCH_RELATED` matches should not be added.
     for (size_t i = 0; i < 10; ++i) {
       matches.push_back(
           CreateMatch(70 - i, omnibox::GROUP_PREVIOUS_SEARCH_RELATED));
     }
     std::vector<int> expected_relevances;
-    for (size_t i = 70; i > 70 - 8; --i) {
+    for (size_t i = 80; i > 80 - 8; --i) {
       expected_relevances.push_back(i);
     }
     test(matches, expected_relevances);

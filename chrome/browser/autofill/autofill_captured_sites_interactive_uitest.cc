@@ -67,9 +67,13 @@ namespace autofill {
 
 namespace {
 
+// The timeout for actions like bringing up the Autofill popup or showing the
+// preview of suggestions.
 constexpr base::TimeDelta kAutofillWaitForActionInterval = base::Seconds(5);
-constexpr base::TimeDelta kAutofillWaitForFormToFillWithCvcInterval =
-    base::Seconds(30);
+// The timeout for autofilling a form. This is much higher than for other
+// actions because autofilling may trigger expensive JavaScript activity.
+// It may also be expensive due to CVC validation.
+constexpr base::TimeDelta kAutofillWaitForFillInterval = base::Seconds(60);
 
 base::FilePath GetReplayFilesRootDirectory() {
   base::FilePath src_dir;
@@ -172,6 +176,7 @@ class AutofillCapturedSitesInteractiveTest
     int tries = 0;
     while (tries < attempts) {
       tries++;
+      LOG(INFO) << "Autofill attempt " << tries << " of " << attempts;
 
       // Translation bubbles and address-save prompts and others may overlap
       // with and thus prevent the Autofill popup, so we preemptively close all
@@ -182,9 +187,11 @@ class AutofillCapturedSitesInteractiveTest
       autofill_manager->client()->HideAutofillPopup(
           autofill::PopupHidingReason::kViewDestroyed);
 
-      if (!ShowAutofillSuggestion(focus_element_css_selector, iframe_path,
-                                  frame)) {
-        LOG(WARNING) << "Failed to bring up the autofill suggestion drop down.";
+      testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
+          focus_element_css_selector, iframe_path, frame);
+      if (!suggestions_shown) {
+        LOG(WARNING) << "Failed to bring up the autofill suggestion drop down: "
+                     << suggestions_shown.message();
         continue;
       }
 
@@ -193,9 +200,11 @@ class AutofillCapturedSitesInteractiveTest
       test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData},
                                        kAutofillWaitForActionInterval);
       SendKeyToPopup(frame, ui::DomKey::ARROW_DOWN);
-      if (!test_delegate()->Wait()) {
+      testing::AssertionResult preview_shown = test_delegate()->Wait();
+      if (!preview_shown) {
         LOG(WARNING) << "Failed to select an option from the "
-                     << "autofill suggestion drop down.";
+                     << "autofill suggestion drop down: "
+                     << preview_shown.message();
         continue;
       }
 
@@ -210,10 +219,8 @@ class AutofillCapturedSitesInteractiveTest
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 
       // Press the enter key to invoke autofill using the first suggestion.
-      test_delegate()->SetExpectations(
-          {ObservedUiEvents::kFormDataFilled},
-          should_cvc_dialog_pop_up ? kAutofillWaitForFormToFillWithCvcInterval
-                                   : kAutofillWaitForActionInterval);
+      test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled},
+                                       kAutofillWaitForFillInterval);
       TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
           web_contents,
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()));
@@ -229,8 +236,9 @@ class AutofillCapturedSitesInteractiveTest
           }
         }
       }
-      if (!test_delegate()->Wait()) {
-        LOG(WARNING) << "Failed to fill the form.";
+      testing::AssertionResult form_filled = test_delegate()->Wait();
+      if (!form_filled) {
+        LOG(WARNING) << "Failed to fill the form: " << form_filled.message();
         continue;
       }
 
@@ -347,9 +355,10 @@ class AutofillCapturedSitesInteractiveTest
   }
 
  private:
-  bool ShowAutofillSuggestion(const std::string& target_element_xpath,
-                              const std::vector<std::string> iframe_path,
-                              content::RenderFrameHost* frame) {
+  [[nodiscard]] testing::AssertionResult ShowAutofillSuggestion(
+      const std::string& target_element_xpath,
+      const std::vector<std::string> iframe_path,
+      content::RenderFrameHost* frame) {
     // First, automation should focus on the frame containing the autofill form.
     // Doing so ensures that Chrome scrolls the element into view if the
     // element is off the page.
@@ -357,21 +366,28 @@ class AutofillCapturedSitesInteractiveTest
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::PlaceFocusOnElement(
             target_element_xpath, iframe_path, frame)) {
-      return false;
+      return testing::AssertionFailure()
+             << "PlaceFocusOnElement() failed in " << FROM_HERE.ToString();
+    }
+    if (test_delegate()->Wait()) {
+      return testing::AssertionSuccess();
     }
 
     gfx::Rect rect;
     if (!captured_sites_test_utils::TestRecipeReplayer::
             GetBoundingRectOfTargetElement(target_element_xpath, iframe_path,
                                            frame, &rect)) {
-      return false;
+      return testing::AssertionFailure()
+             << "GetBoundingRectOfTargetElement() failed in "
+             << FROM_HERE.ToString();
     }
 
     test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::
             SimulateLeftMouseClickAt(rect.CenterPoint(), frame))
-      return false;
+      return testing::AssertionFailure()
+             << "SimulateLeftMouseClickAt() failed in " << FROM_HERE.ToString();
 
     return test_delegate()->Wait();
   }

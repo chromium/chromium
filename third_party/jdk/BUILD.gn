@@ -12,6 +12,7 @@ config("jdk") {
 group("java_data") {
   data = [
     "current/bin/java",
+    "current/bin/jcmd",
     "current/conf/",
     "current/jmods/",
     "current/lib/",

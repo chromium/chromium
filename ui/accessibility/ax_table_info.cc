@@ -81,7 +81,7 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   DCHECK(table_node);
 
 #if DCHECK_IS_ON()
-  // Sanity check, make sure the node is in the tree.
+  // Confidence check, make sure the node is in the tree.
   AXNode* node = table_node;
   while (node && node != tree->root())
     node = node->GetParent();

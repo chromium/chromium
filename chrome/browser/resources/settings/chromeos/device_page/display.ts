@@ -1083,7 +1083,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Handles event when a touch calibration option is selected.
    */
-  private onTouchCalibrationTap_() {
+  private onTouchCalibrationClick_() {
     getDisplayApi().showNativeTouchCalibration(this.selectedDisplay!.id);
   }
 
@@ -1229,7 +1229,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         .then(() => this.setPropertiesCallback_());
   }
 
-  private onMirroredTap_(event: Event) {
+  private onMirroredClick_(event: Event) {
     // Blur the control so that when the transition animation completes and
     // the UI is focused, the control does not receive focus. crbug.com/785070
     (event.currentTarget as CrCheckboxElement).blur();
@@ -1246,7 +1246,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
   }
 
-  private onUnifiedDesktopTap_() {
+  private onUnifiedDesktopClick_() {
     const properties: DisplayProperties = {
       isUnified: !this.unifiedDesktopMode_,
     };
@@ -1255,7 +1255,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         .then(() => this.setPropertiesCallback_());
   }
 
-  private onOverscanTap_(e: Event) {
+  private onOverscanClick_(e: Event) {
     e.preventDefault();
     this.overscanDisplayId = this.selectedDisplay!.id;
     this.showOverscanDialog_(true);

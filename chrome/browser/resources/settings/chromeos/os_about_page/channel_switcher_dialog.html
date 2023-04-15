@@ -44,15 +44,15 @@
     </iron-selector>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelTap_"
+    <cr-button class="cancel-button" on-click="onCancelClick_"
         id="cancel">$i18n{cancel}</cr-button>
     <cr-button id="changeChannel" class="action-button"
-        on-click="onChangeChannelTap_"
+        on-click="onChangeChannelClick_"
         hidden="[[!shouldShowButtons_.changeChannel]]">
       $i18n{aboutChangeChannel}
     </cr-button>
     <cr-button id="changeChannelAndPowerwash" class="action-button"
-        on-click="onChangeChannelAndPowerwashTap_"
+        on-click="onChangeChannelAndPowerwashClick_"
         hidden="[[!shouldShowButtons_.changeChannelAndPowerwash]]">
       $i18n{aboutChangeChannelAndPowerwash}
     </cr-button>

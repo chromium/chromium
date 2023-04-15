@@ -150,7 +150,7 @@ export class SettingsAutofillSectionElement extends
   /**
    * Open the address action menu.
    */
-  private onAddressMenuTap_(
+  private onAddressMenuClick_(
       e: DomRepeatEvent<chrome.autofillPrivate.AddressEntry>) {
     const item = e.model.item;
 
@@ -165,7 +165,7 @@ export class SettingsAutofillSectionElement extends
   /**
    * Handles tapping on the "Add address" button.
    */
-  private onAddAddressTap_(e: Event) {
+  private onAddAddressClick_(e: Event) {
     e.preventDefault();
     this.activeAddress = {};
     this.showAddressDialog_ = true;
@@ -182,7 +182,7 @@ export class SettingsAutofillSectionElement extends
   /**
    * Handles tapping on the "Edit" address button.
    */
-  private onMenuEditAddressTap_(e: Event) {
+  private onMenuEditAddressClick_(e: Event) {
     e.preventDefault();
     this.showAddressDialog_ = true;
     this.$.addressSharedMenu.close();
@@ -212,7 +212,7 @@ export class SettingsAutofillSectionElement extends
   /**
    * Handles tapping on the "Remove" address button.
    */
-  private onMenuRemoveAddressTap_() {
+  private onMenuRemoveAddressClick_() {
     this.showAddressRemoveConfirmationDialog_ = true;
     this.$.addressSharedMenu.close();
   }

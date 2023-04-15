@@ -15,8 +15,12 @@ source_set("muxers") {
     "file_webm_muxer_delegate.h",
     "live_webm_muxer_delegate.cc",
     "live_webm_muxer_delegate.h",
+    "mp4_muxer_context.cc",
+    "mp4_muxer_context.h",
     "muxer.cc",
     "muxer.h",
+    "output_position_tracker.cc",
+    "output_position_tracker.h",
     "webm_muxer.cc",
     "webm_muxer.h",
   ]
@@ -34,7 +38,11 @@ source_set("muxers") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "webm_muxer_unittest.cc" ]
+  sources = [
+    "mp4_muxer_context_unittest.cc",
+    "output_position_tracker_unittest.cc",
+    "webm_muxer_unittest.cc",
+  ]
 
   deps = [
     "//base/test:test_support",

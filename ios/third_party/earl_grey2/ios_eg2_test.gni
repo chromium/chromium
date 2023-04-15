@@ -81,6 +81,7 @@ template("ios_eg2_test") {
                            [
                              "xcode_test_application_name",
                              "xctest_bundle_principal_class",
+                             "runner_only_bundle_deps",
                              "bundle_deps",
                              "deps",
                              "data_deps",
@@ -95,6 +96,14 @@ template("ios_eg2_test") {
     # are going to append with the _test in the naming, which won't be backwards
     # compatible during migration from iOS recipe to Chromium.
     output_name = "${_target_name}"
+
+    # Those frameworks are force-linked via //base/test:test_support, so
+    # ensure the framework bundles are packaged in the test runner and
+    # not the test module.
+    if (!defined(runner_only_bundle_deps)) {
+      runner_only_bundle_deps = []
+    }
+    runner_only_bundle_deps += [ "//base/test:test_trace_processor+bundle" ]
   }
 
   ios_test_runner_wrapper(target_name) {

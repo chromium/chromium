@@ -525,7 +525,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         // If we didn't get a favicon, use the generic favicon instead.
         Bitmap scaledIcon;
         if (icon == null) {
-            scaledIcon = FaviconUtils.createGenericFaviconBitmap(mActivity, size);
+            scaledIcon = FaviconUtils.createGenericFaviconBitmap(mActivity, size, null);
             RecordUserAction.record("SharingHubAndroid.GenericFaviconShown");
         } else {
             scaledIcon = Bitmap.createScaledBitmap(icon, size, size, true);

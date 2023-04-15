@@ -363,7 +363,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ResetEventWaiterForSequence(
         {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                     ->GetVisible());
   }
@@ -376,7 +376,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
          DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
          DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                     ->GetVisible());
     EXPECT_TRUE(
@@ -740,7 +740,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
         std::make_unique<EventWaiter<DialogEvent>>(std::move(event_sequence));
   }
 
-  void WaitForObservedEvent() { event_waiter_->Wait(); }
+  [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
+    return event_waiter_->Wait();
+  }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
@@ -767,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
   ClickOnCancelButton();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
@@ -830,7 +832,7 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     // Open up Manage Cards prompt.
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     ClickOnView(GetSaveCardIconView());
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     // Click on the redirect button.
     ClickOnDialogViewWithId(DialogViewId::MANAGE_CARDS_BUTTON);
@@ -1016,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
        DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                   ->GetVisible());
 
@@ -1089,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
   ClickOnCancelButton();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
@@ -1374,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                   ->GetVisible());
 }
@@ -1400,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                   ->GetVisible());
 }
@@ -1440,7 +1442,7 @@ IN_PROC_BROWSER_TEST_F(
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
        DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(GetSaveCardBubbleViews());
 }
 
@@ -1465,7 +1467,7 @@ IN_PROC_BROWSER_TEST_F(
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE});
   FillFormWithCardDetailsOnly();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 }
 
@@ -1482,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE});
   FillFormWithoutCvc();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
@@ -1499,7 +1501,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE});
   FillFormWithInvalidCvc();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
@@ -1517,7 +1519,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE});
   FillFormWithoutName();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
@@ -1539,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE});
   FillForm();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
@@ -1556,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE});
   FillFormWithoutAddress();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
@@ -1578,7 +1580,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::REQUESTED_UPLOAD_SAVE});
   FillForm();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 // Tests UMA logging for the upload save bubble. Ensures that if the user
@@ -1810,7 +1812,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
   ClickOnCancelButton();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
@@ -1833,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
   ClickOnCancelButton();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
@@ -1858,7 +1860,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
     base::HistogramTester histogram_tester;
     ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
     ClickOnCancelButton();
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     // Ensure that a strike was added due to the bubble being declined.
     // The sample logged is the Nth strike added, or (i+1).
@@ -1875,14 +1877,14 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
       {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::ICON_SHOWN});
   FillForm();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
   // Click the icon to show the bubble.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                   ->GetVisible());
 
@@ -1925,7 +1927,7 @@ IN_PROC_BROWSER_TEST_F(
 
     ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
     ClickOnCancelButton();
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     // Ensure that a strike was added due to the bubble being declined.
     // The sample logged is the Nth strike added, or (i+1).
@@ -1945,14 +1947,14 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
   // Click the icon to show the bubble.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                   ->GetVisible());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::FOOTNOTE_VIEW)->GetVisible());
@@ -2055,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Bubble should be showing.
   EXPECT_TRUE(
@@ -2084,7 +2086,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Click on the [Done] button.
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);

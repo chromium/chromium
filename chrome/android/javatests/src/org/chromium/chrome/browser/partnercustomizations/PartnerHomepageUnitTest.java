@@ -20,6 +20,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
@@ -33,6 +34,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Unit test suite for partner homepage.
  */
+@DoNotBatch(reason = "Testing tests start up and homepage loading.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class PartnerHomepageUnitTest {
     @Rule
@@ -326,6 +328,6 @@ public class PartnerHomepageUnitTest {
     private void assertHomePageIsNtp() {
         // The home page should default to the NTP
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        Assert.assertEquals(UrlConstants.NTP_NON_NATIVE_URL, HomepageManager.getHomepageUri());
+        Assert.assertEquals(UrlConstants.NTP_URL, HomepageManager.getHomepageUri());
     }
 }

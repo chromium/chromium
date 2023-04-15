@@ -163,12 +163,30 @@ ScriptPromise MLModelLoader::load(ScriptState* script_state,
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
+  auto* execution_context = ExecutionContext::From(script_state);
+  Load(script_state, buffer,
+       WTF::BindOnce(&OnRemoteModelLoad, WrapPersistent(execution_context),
+                     WrapPersistent(resolver)));
+
+  return promise;
+}
+
+void MLModelLoader::Trace(Visitor* visitor) const {
+  visitor->Trace(ml_context_);
+  visitor->Trace(remote_loader_);
+
+  ScriptWrappable::Trace(visitor);
+}
+
+void MLModelLoader::Load(ScriptState* script_state,
+                         DOMArrayBuffer* buffer,
+                         ModelLoadedCallback callback) {
   if (ml_context_->GetML() == nullptr) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Internal error."));
+    std::move(callback).Run(LoadModelResult::kUnknownError, mojo::NullRemote(),
+                            nullptr);
   } else if (buffer == nullptr) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kConstraintError, "Invalid input arguments."));
+    std::move(callback).Run(LoadModelResult::kInvalidModel, mojo::NullRemote(),
+                            nullptr);
   } else {
     if (!remote_loader_.is_bound()) {
       // Needs to bootstrap the mojo connection first.
@@ -184,44 +202,32 @@ ScriptPromise MLModelLoader::load(ScriptState* script_state,
           script_state, std::move(options_mojo),
           WTF::BindOnce(&MLModelLoader::OnRemoteLoaderCreated,
                         WrapPersistent(this), WrapPersistent(script_state),
-                        WrapPersistent(resolver), WrapPersistent(buffer)));
+                        WrapPersistent(buffer), std::move(callback)));
     } else {
       // Directly use `remote_loader_`.
       remote_loader_->Load(
           base::make_span(static_cast<const uint8_t*>(buffer->Data()),
                           buffer->ByteLength()),
-          WTF::BindOnce(&OnRemoteModelLoad,
-                        WrapPersistent(ExecutionContext::From(script_state)),
-                        WrapPersistent(resolver)));
+          std::move(callback));
     }
   }
-
-  return promise;
-}
-
-void MLModelLoader::Trace(Visitor* visitor) const {
-  visitor->Trace(ml_context_);
-  visitor->Trace(remote_loader_);
-
-  ScriptWrappable::Trace(visitor);
 }
 
 void MLModelLoader::OnRemoteLoaderCreated(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
     DOMArrayBuffer* buffer,
+    ModelLoadedCallback callback,
     CreateModelLoaderResult result,
     mojo::PendingRemote<ModelLoader> pending_remote) {
   switch (result) {
     case CreateModelLoaderResult::kUnknownError: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "Internal error."));
+      std::move(callback).Run(LoadModelResult::kUnknownError,
+                              mojo::NullRemote(), nullptr);
       return;
     }
     case CreateModelLoaderResult::kNotSupported: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "The context can not be supported."));
+      std::move(callback).Run(LoadModelResult::kNotSupported,
+                              mojo::NullRemote(), nullptr);
       return;
     }
     case CreateModelLoaderResult::kOk: {
@@ -234,8 +240,7 @@ void MLModelLoader::OnRemoteLoaderCreated(
       remote_loader_->Load(
           base::make_span(static_cast<const uint8_t*>(buffer->Data()),
                           buffer->ByteLength()),
-          WTF::BindOnce(&OnRemoteModelLoad, WrapPersistent(execution_context),
-                        WrapPersistent(resolver)));
+          std::move(callback));
       return;
     }
   }

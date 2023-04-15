@@ -15,24 +15,21 @@ class ScopedProfileSelectionsForFactoryTesting;
 
 // Detailed doc: "./profile_keyed_service_factory.md"
 //
-// Purpose of this API:
-// Provide a Profile type specific implementation logic for
+// ProfileKeyedServiceFactory provides a `Profile`-specific interface for
 // `KeyedServiceFactory` under chrome/.
-// When a KeyedServiceFactory is building a service for a "Profile A", it can
-// actually return a service that is attached to a "Profile B". Common
-// cases is that an Off-The-Record profile uses it's parent service (redirecting
-// to Original) or not use any service at all (no service for OTR).
-
-// `ProfileKeyedServiceFactory' is an intermediate interface to create
-// KeyedServiceFactory under chrome/ that provides a more restricted default
-// creation of services for non regular profiles. Main purpose of this class is
-// to provide an easy and efficient way to provide the redirection logic for
-// each main profile types using `ProfileSelections` instance. Those profile
-// choices are overridable by setting the proper combination of
-// `ProfileSelection` and Profile type in the `ProfileSelections` passed in the
-// constructor.
 //
-// - Example usage, for a factory redirecting in incognito.
+// When a KeyedServiceFactory builds a service for a "Profile A", it can
+// actually return a service attached to a "Profile B". A common case is when a
+// service of the original profile is reused by the Off-The-Record (OTR) profile
+// (ProfileSelection::kRedirectedToOriginal()). Furthermore, a service can also
+// be created for either only the original profile, or only the OTR profile.
+//
+// `ProfileKeyedServiceFactory' provides control over how services are created
+// by default for non-regular profiles and how services are redirected across
+// profiles. The defaults can be overridden with the `ProfileSelections`
+// constructor parameter.
+//
+// - Example of a factory redirecting in incognito:
 //
 // class MyRedirectingKeyedServiceFactory: public ProfileKeyedServiceFactory {
 //  private:
@@ -45,7 +42,7 @@ class ScopedProfileSelectionsForFactoryTesting;
 // };
 //
 //
-// - Example service that does not exist in OTR (default behavior):
+// - Example of a service that does not exist in OTR (default behavior):
 //
 // class MyDefaultKeyedServiceFactory: public ProfileKeyedServiceFactory {
 //  private:
@@ -53,6 +50,7 @@ class ScopedProfileSelectionsForFactoryTesting;
 //       : ProfileKeyedServiceFactory("MyDefaultKeyedService") {}
 //   }
 // };
+//
 // Any change to this class should also be reflected on
 // `RefcountedProfileKeyedServiceFactory`.
 class ProfileKeyedServiceFactory : public BrowserContextKeyedServiceFactory {

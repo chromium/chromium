@@ -101,11 +101,11 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
 
   mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
   switch (details_->css_origin) {
-    case api::extension_types::CSS_ORIGIN_NONE:
-    case api::extension_types::CSS_ORIGIN_AUTHOR:
+    case api::extension_types::CSSOrigin::kNone:
+    case api::extension_types::CSSOrigin::kAuthor:
       css_origin = mojom::CSSOrigin::kAuthor;
       break;
-    case api::extension_types::CSS_ORIGIN_USER:
+    case api::extension_types::CSSOrigin::kUser:
       css_origin = mojom::CSSOrigin::kUser;
       break;
   }
@@ -163,7 +163,7 @@ ExtensionFunction::ResponseAction ExecuteCodeFunction::Run() {
   if (details_->code && details_->file)
     return RespondNow(Error(kMoreThanOneValuesError));
 
-  if (details_->css_origin != api::extension_types::CSS_ORIGIN_NONE &&
+  if (details_->css_origin != api::extension_types::CSSOrigin::kNone &&
       !ShouldInsertCSS() && !ShouldRemoveCSS()) {
     return RespondNow(Error(kCSSOriginForNonCSSError));
   }

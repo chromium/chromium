@@ -78,7 +78,7 @@ public class PaymentHandlerCoordinator {
         if (activity == null) return null;
         Profile profile = IncognitoUtils.getProfileFromWindowAndroid(windowAndroid, isIncognito);
         mPaymentHandlerWebContents =
-                WebContentsFactory.createWebContents(profile, /*initiallyHidden=*/false);
+                WebContentsFactory.createWebContents(profile, /*initiallyHidden=*/false, false);
         PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(mPaymentHandlerWebContents);
         ContentView webContentView = ContentView.createContentView(
                 activity, null /* eventOffsetHandler */, mPaymentHandlerWebContents);

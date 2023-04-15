@@ -91,10 +91,16 @@
 
   <!-- ARC Passpoint approval dialog -->
   <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE" desc="Dialog title that asks user to allow an app to set up WiFi networks through Passpoint">
-    Allow the <ph name="APP_NAME">$1<ex>OpenRoaming</ex></ph> app to set up WiFi networks?
+    Allow the <ph name="APP_NAME">$1<ex>OpenRoaming</ex></ph> app to set up Wi-Fi networks?
   </message>
   <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_BODY" desc="Dialog body that asks user to allow an app to set up WiFi networks through Passpoint.">
-    This app is requesting permission to set up new WiFi networks. After setup, your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will automatically connect to participating WiFi networks. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+    This app is requesting permission to install Wi-Fi credentials. After setup, your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will automatically connect to participating Wi-Fi networks. To remove these credentials, uninstall the app.
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_BODY_WITH_LEARN_MORE" desc="Dialog body that asks user to allow an app to set up WiFi networks through Passpoint.">
+    This app is requesting permission to install Wi-Fi credentials. After setup, your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will automatically connect to participating Wi-Fi networks. To remove these credentials, uninstall the app. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_SUBSCRIPTION_BODY_WITH_LEARN_MORE" desc="Dialog body that asks user to allow an app to set up WiFi networks through Passpoint. This dialog only exists if the Passpoint subscription is near its expiration date.">
+    Removing a Passpoint subscription from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will remove the associated networks. Contact "<ph name="FRIENDLY_NAME">$2<ex>OpenRoaming</ex></ph>" to make changes to your subscription plan. <ph name="LEARN_MORE">$3<ex>Learn more</ex></ph>
   </message>
   <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_LEARN_MORE_LABEL" desc="The label for the link that leads to a help support article to learn more about Passpoint.">
     Learn more

@@ -60,21 +60,6 @@ export class ProjectorBrowserProxy {
       accountEmail) {}
 
   /**
-   * Returns true if the "install speech recognition" button should be shown to
-   * the user.
-   * @return {!Promise<boolean>}
-   */
-  shouldDownloadSoda() {}
-
-  /**
-   * Triggers the installation of on device speech recognition binary and
-   * language packs for the user's locale. Returns true if download and
-   * installation started.
-   * @return {!Promise<boolean>}
-   */
-  installSoda() {}
-
-  /**
    * Gets the list of pending screencasts that are uploading to drive.
    * @return {Promise<Array<projectorApp.PendingScreencast>>}
    */
@@ -169,16 +154,6 @@ export class ProjectorBrowserProxyImpl {
       headers,
       accountEmail,
     ]);
-  }
-
-  /** @override */
-  shouldDownloadSoda() {
-    return sendWithPromise('shouldDownloadSoda');
-  }
-
-  /** @override */
-  installSoda() {
-    return sendWithPromise('installSoda');
   }
 
   /** @override */

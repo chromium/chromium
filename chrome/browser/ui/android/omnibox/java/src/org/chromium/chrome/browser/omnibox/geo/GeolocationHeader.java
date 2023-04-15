@@ -25,7 +25,6 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -373,17 +372,6 @@ public class GeolocationHeader {
                     visibleNetworksToAttach = VisibleNetworksTracker.getLastKnownVisibleNetworks(
                             ContextUtils.getApplicationContext());
                 }
-            }
-
-            // TODO(crbug.com/1330739): remove this.
-            if (!ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OPTIMIZE_GEOLOCATION_HEADER_GENERATION)) {
-                // These calls used to be necessary to record obsoleted
-                // histograms. We keep them here temporarily to measure the
-                // impact of removing them.
-                getLocationSource();
-                getGeolocationPermission(tab);
-                getDomainPermission(profile, url);
             }
 
             // Proto encoding

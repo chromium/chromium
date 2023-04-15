@@ -11,6 +11,35 @@ import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {MethodType, PromoAction, PromoType} from './companion.mojom-webui.js';
 import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
 
+/**
+ * Method arguments to be passed as part of the JSON message object to be sent
+ * across the postmessage boundary.
+ * Keep this file in sync with
+ * google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts
+ */
+enum ParamType {
+  // Arguments for iframe -> browser communication.
+  // Mandatory arguments.
+  METHOD_TYPE = 'type',
+
+  // Optional arguments.
+  // Arguments for MethodType.kOnExpsOptInStatusAvailable.
+  IS_EXPS_OPTED_IN = 'isExpsOptedIn',
+
+  // Arguments for MethodType.kOnPromoAction.
+  PROMO_ACTION = 'promoAction',
+  PROMO_TYPE = 'promoType',
+
+  // Arguments for MethodType.kOnPhAction.
+  PH_ACTION = 'phAction',
+
+  // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
+  URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
+
+  // Arguments for browser -> iframe communcation.
+  COMPANION_UPDATE_PARAMS = 'companion_update_params',
+}
+
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
 
 // Validation check for incoming enums from the iframe postMessage().
@@ -21,12 +50,28 @@ function validatePromoArguments(promoType: any, promoAction: any): boolean {
 }
 
 function initialize() {
-  // When the url is changed, we update our iframe src to pass new parameters.
-  companionProxy.callbackRouter.onURLChanged.addListener((newUrl: Url) => {
+  // For the initial navigation, we update our iframe src to pass new
+  // URL.
+  companionProxy.callbackRouter.loadCompanionPage.addListener((newUrl: Url) => {
     const frame = document.body.querySelector('iframe');
     assert(frame);
     frame.src = newUrl.url;
   });
+
+  // For subsequent navigations, we send a post message.
+  companionProxy.callbackRouter.updateCompanionPage.addListener(
+      (companionUpdateProto: string) => {
+        const companionOrigin =
+            new URL(loadTimeData.getString('companion_origin')).origin;
+        const message =
+            {[ParamType.COMPANION_UPDATE_PARAMS]: companionUpdateProto};
+
+        const frame = document.body.querySelector('iframe');
+        assert(frame);
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage(message, companionOrigin);
+        }
+      });
 
   companionProxy.handler.showUI();
 }
@@ -44,12 +89,18 @@ function onCompanionMessageEvent(event: MessageEvent) {
   }
 
   const data = event.data;
-  if (data.type === MethodType.kOnRegionSearchClicked) {
+  const methodType = data[ParamType.METHOD_TYPE];
+  if (methodType === MethodType.kOnRegionSearchClicked) {
     companionProxy.handler.onRegionSearchClicked();
-  } else if (data.type === MethodType.kOnPromoAction) {
-    if (validatePromoArguments(data.promoType, data.promoAction)) {
-      companionProxy.handler.onPromoAction(data.promoType, data.promoAction);
+  } else if (methodType === MethodType.kOnPromoAction) {
+    const promoType = data[ParamType.PROMO_TYPE];
+    const promoAction = data[ParamType.PROMO_ACTION];
+    if (validatePromoArguments(promoType, promoAction)) {
+      companionProxy.handler.onPromoAction(promoType, promoAction);
     }
+  } else if (methodType === MethodType.kOnExpsOptInStatusAvailable) {
+    companionProxy.handler.onExpsOptInStatusAvailable(
+        data[ParamType.IS_EXPS_OPTED_IN]);
   }
 }
 

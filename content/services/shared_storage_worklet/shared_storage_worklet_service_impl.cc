@@ -26,15 +26,11 @@ void SharedStorageWorkletServiceImpl::Initialize(
     mojo::PendingAssociatedRemote<
         blink::mojom::SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-        private_aggregation_host,
     const absl::optional<std::u16string>& embedder_context) {
   DCHECK(!global_scope_);
   client_.Bind(std::move(client));
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
-  if (private_aggregation_host)
-    private_aggregation_host_.Bind(std::move(private_aggregation_host));
   embedder_context_ = embedder_context;
 }
 
@@ -44,26 +40,32 @@ void SharedStorageWorkletServiceImpl::AddModule(
     const GURL& script_source_url,
     AddModuleCallback callback) {
   DCHECK(!global_scope_);
-  GetGlobalScope()->AddModule(
-      std::move(pending_url_loader_factory), client_.get(),
-      private_aggregation_host_ ? private_aggregation_host_.get() : nullptr,
-      script_source_url, std::move(callback));
+  GetGlobalScope()->AddModule(std::move(pending_url_loader_factory),
+                              client_.get(), script_source_url,
+                              std::move(callback));
 }
 
 void SharedStorageWorkletServiceImpl::RunURLSelectionOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+        private_aggregation_host,
     RunURLSelectionOperationCallback callback) {
-  GetGlobalScope()->RunURLSelectionOperation(name, urls, serialized_data,
-                                             std::move(callback));
+  GetGlobalScope()->RunURLSelectionOperation(
+      name, urls, serialized_data, std::move(private_aggregation_host),
+      std::move(callback));
 }
 
 void SharedStorageWorkletServiceImpl::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+        private_aggregation_host,
     RunOperationCallback callback) {
-  GetGlobalScope()->RunOperation(name, serialized_data, std::move(callback));
+  GetGlobalScope()->RunOperation(name, serialized_data,
+                                 std::move(private_aggregation_host),
+                                 std::move(callback));
 }
 
 SharedStorageWorkletGlobalScope*

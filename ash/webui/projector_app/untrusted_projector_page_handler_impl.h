@@ -34,11 +34,19 @@ class UntrustedProjectorPageHandlerImpl
   // ProjectorAppClient:Observer:
   void OnNewScreencastPreconditionChanged(
       const NewScreencastPrecondition& precondition) override;
+  void OnSodaProgress(int percentage) override;
+  void OnSodaError() override;
+  void OnSodaInstalled() override;
 
   //  projector::mojom::UntrustedProjectorPageHandler:
   void GetNewScreencastPrecondition(
       projector::mojom::UntrustedProjectorPageHandler::
           GetNewScreencastPreconditionCallback callback) override;
+  void ShouldDownloadSoda(projector::mojom::UntrustedProjectorPageHandler::
+                              ShouldDownloadSodaCallback callback) override;
+  void InstallSoda(
+      projector::mojom::UntrustedProjectorPageHandler::InstallSodaCallback
+          callback) override;
 
  private:
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;

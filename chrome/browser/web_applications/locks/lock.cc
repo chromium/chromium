@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/locks/lock.h"
 
+#include <memory>
 #include <ostream>
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -18,8 +19,8 @@ std::string LockTypeToString(LockDescription::Type type) {
       return "AppAndWebContents";
     case web_app::LockDescription::Type::kBackgroundWebContents:
       return "WebContents";
-    case web_app::LockDescription::Type::kFullSystem:
-      return "FullSystem";
+    case web_app::LockDescription::Type::kAllAppsLock:
+      return "AllApps";
     case web_app::LockDescription::Type::kNoOp:
       return "NoOp";
   }
@@ -33,8 +34,8 @@ LockDescription::~LockDescription() = default;
 bool LockDescription::IncludesSharedWebContents() const {
   switch (type_) {
     case Type::kNoOp:
-    case Type::kFullSystem:
     case Type::kApp:
+    case Type::kAllAppsLock:
       return false;
     case Type::kBackgroundWebContents:
     case Type::kAppAndWebContents:

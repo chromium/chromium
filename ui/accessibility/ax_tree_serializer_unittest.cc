@@ -237,8 +237,8 @@ TEST_F(AXTreeSerializerTest, ReparentingWithDirtySubtreeUpdates) {
   EXPECT_TRUE(dst_tree.Unserialize(update)) << dst_tree.error();
 }
 
-// A variant of AXTreeSource that returns true for IsValid() for one
-// particular id.
+// A variant of AXTreeSource that does not serialize one particular id,
+// returning nullptr from methods that try to retrieve it.
 class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
  public:
   AXTreeSourceWithInvalidId(AXTree* tree, int invalid_id)
@@ -257,14 +257,17 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
     return true;
   }
   AXNode* GetRoot() const override { return tree_->root(); }
-  AXNode* GetFromId(AXNodeID id) const override { return tree_->GetFromId(id); }
+  AXNode* GetFromId(AXNodeID id) const override {
+    return id == invalid_id_ ? nullptr : tree_->GetFromId(id);
+  }
   AXNodeID GetId(const AXNode* node) const override { return node->id(); }
   void CacheChildrenIfNeeded(const AXNode*) override {}
   size_t GetChildCount(const AXNode* node) const override {
     return node->children().size();
   }
   AXNode* ChildAt(const AXNode* node, size_t index) const override {
-    return node->children()[index];
+    AXNode* result = node->children()[index];
+    return result->id() == invalid_id_ ? nullptr : result;
   }
   void ClearChildCache(const AXNode*) override {}
 
@@ -273,9 +276,6 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   }
   bool IsIgnored(const AXNode* node) const override {
     return node->IsIgnored();
-  }
-  bool IsValid(const AXNode* node) const override {
-    return node != nullptr && node->id() != invalid_id_;
   }
   bool IsEqual(const AXNode* node1, const AXNode* node2) const override {
     return node1 == node2;
@@ -310,16 +310,17 @@ TEST(AXTreeSerializerInvalidTest, InvalidChild) {
 
   BasicAXTreeSerializer serializer(&source);
   AXTreeUpdate update;
-#if !defined(GTEST_HAS_DEATH_TEST)
-  // Do not complete test.
-#elif DCHECK_IS_ON()
-  EXPECT_DEATH(serializer.SerializeChanges(tree.root(), &update), "");
-#else
+  // TODO(crbug.com/1432184, crbug.com/1432126, crbug.com/1431535,
+  // crbug.com/1418319): Once the DCHECKs in BlinkAXTreeSource::ChildAt()
+  // are resolved, and CHECKs for ChildAt() return values are restored in
+  // AXTreeSerializer, turn this into a death expectation.
+  // EXPECT_DEATH_IF_SUPPORTED(serializer.SerializeChanges(tree.root(),
+  // &update),
+  //                           "");
   ASSERT_TRUE(serializer.SerializeChanges(tree.root(), &update));
   ASSERT_EQ(2U, update.nodes.size());
   EXPECT_EQ(1, update.nodes[0].id);
   EXPECT_EQ(2, update.nodes[1].id);
-#endif
 }
 
 // Test that we can set a maximum number of nodes to serialize.

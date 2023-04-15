@@ -259,8 +259,8 @@ void CompressTask(SkBitmap raw_data,
 
   if (!raw_data.empty()) {
     gfx::Size raw_data_size(raw_data.width(), raw_data.height());
-    size_t pixel_size = 4;  // Pixel size is 4 bytes for kARGB_8888_Config.
-    size_t stride = pixel_size * raw_data_size.width();
+    constexpr size_t kPixelSize = 4;  // For kARGB_8888_Config.
+    size_t stride = kPixelSize * raw_data_size.width();
 
     size_t encoded_bytes =
         etc1_get_encoded_data_size(encoded_size.width(), encoded_size.height());
@@ -273,7 +273,7 @@ void CompressTask(SkBitmap raw_data,
 
     bool success = etc1_encode_image(
         reinterpret_cast<unsigned char*>(raw_data.getPixels()),
-        raw_data_size.width(), raw_data_size.height(), pixel_size, stride,
+        raw_data_size.width(), raw_data_size.height(), kPixelSize, stride,
         reinterpret_cast<unsigned char*>(etc1_pixel_ref->pixels()),
         encoded_size.width(), encoded_size.height());
     etc1_pixel_ref->setImmutable();

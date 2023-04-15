@@ -30,6 +30,10 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
 #endif
 
+#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_cros.h"
+#endif
+
 namespace blink {
 
 namespace {
@@ -1508,6 +1512,43 @@ MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
                      exception_state);
 }
 
+MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
+                                 const MLOperand* slope,
+                                 ExceptionState& exception_state) {
+  if (input->Type() != slope->Type()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The type of slope doesn't match the type of input.");
+    return nullptr;
+  }
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The type of input and slope must be one of the floating point types.");
+    return nullptr;
+  }
+  // BroadcastShape unidirectionally broadcasts the slope->Dimensions() to the
+  // input->Dimensions().
+  if (!BroadcastShapes(slope->Dimensions(), input->Dimensions(), false)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The shape of slope is not broadcastable to the shape of input.");
+    return nullptr;
+  }
+  auto* prelu =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kPRelu);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), prelu, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  prelu->Connect({input, slope}, {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::relu(const MLOperand* input,
                                 ExceptionState& exception_state) {
   auto* relu =
@@ -1876,6 +1917,15 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
       ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
     MLGraphXnnpack::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    return promise;
+  }
+#endif
+
+#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+  // On ChromeOS, ML model inferencing is off-loaded to ModelLoader service.
+  if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
+      ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
+    MLGraphCrOS::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
     return promise;
   }
 #endif

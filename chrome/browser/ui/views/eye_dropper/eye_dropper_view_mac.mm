@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view_mac.h"
 
+#include <Carbon/Carbon.h>  // For keycode names in Carbon's Event.h.
 #import <Cocoa/Cocoa.h>
 
-// Include Carbon to use the keycode names in Carbon's Event.h
-#include <Carbon/Carbon.h>
+#include <memory>
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,14 +35,19 @@ EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
   }
 }
 
-EyeDropperViewMac::~EyeDropperViewMac() {}
+EyeDropperViewMac::~EyeDropperViewMac() = default;
+
+struct EyeDropperView::PreEventDispatchHandler::ObjCStorage {
+  id click_event_tap_ = nil;
+  id notification_observer_ = nil;
+};
 
 EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
     EyeDropperView* view,
     gfx::NativeView parent)
-    : view_(view) {
+    : view_(view), objc_storage_(std::make_unique<ObjCStorage>()) {
   // Ensure that this handler is called before color popup handler.
-  clickEventTap_ = [NSEvent
+  objc_storage_->click_event_tap_ = [NSEvent
       addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                    handler:^NSEvent*(NSEvent* event) {
                                      NSEventType eventType = [event type];
@@ -66,7 +71,7 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
   // menubar.
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
-  notificationObserver_ =
+  objc_storage_->notification_observer_ =
       [notificationCenter addObserverForName:NSMenuDidBeginTrackingNotification
                                       object:[NSApp mainMenu]
                                        queue:[NSOperationQueue mainQueue]
@@ -76,16 +81,16 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
 }
 
 EyeDropperView::PreEventDispatchHandler::~PreEventDispatchHandler() {
-  if (clickEventTap_) {
-    [NSEvent removeMonitor:clickEventTap_];
-    clickEventTap_ = nil;
+  if (objc_storage_->click_event_tap_) {
+    [NSEvent removeMonitor:objc_storage_->click_event_tap_];
+    objc_storage_->click_event_tap_ = nil;
   }
 
-  if (notificationObserver_) {
+  if (objc_storage_->notification_observer_) {
     NSNotificationCenter* notificationCenter =
         [NSNotificationCenter defaultCenter];
-    [notificationCenter removeObserver:notificationObserver_];
-    notificationObserver_ = nil;
+    [notificationCenter removeObserver:objc_storage_->notification_observer_];
+    objc_storage_->notification_observer_ = nil;
   }
 }
 

@@ -8,8 +8,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
@@ -94,6 +94,6 @@ template class WebAppCommandTemplate<NoopLock>;
 template class WebAppCommandTemplate<SharedWebContentsLock>;
 template class WebAppCommandTemplate<AppLock>;
 template class WebAppCommandTemplate<SharedWebContentsWithAppLock>;
-template class WebAppCommandTemplate<FullSystemLock>;
+template class WebAppCommandTemplate<AllAppsLock>;
 
 }  // namespace web_app

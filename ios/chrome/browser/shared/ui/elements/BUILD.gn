@@ -5,6 +5,8 @@
 source_set("elements") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "crossfade_label.h",
+    "crossfade_label.mm",
     "extended_touch_target_button.h",
     "extended_touch_target_button.mm",
     "fade_truncating_label+private.h",
@@ -67,6 +69,7 @@ source_set("unit_tests") {
   sources = [
     "activity_overlay_coordinator_unittest.mm",
     "chrome_activity_overlay_coordinator_unittest.mm",
+    "crossfade_label_unittest.mm",
     "fade_truncating_label_unittest.mm",
     "text_field_configuration_unittest.mm",
     "windowed_container_view_unittest.mm",
@@ -80,6 +83,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -102,8 +106,9 @@ source_set("elements_internal") {
     ":constants",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scoped_ui_blocker:scoped_ui_blocker",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

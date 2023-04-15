@@ -88,7 +88,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
       case SYNC_FEATURE_TEMPORARILY_DISABLED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
         // Temporarily disable sync without turning it off.
-        sync_service_->GetUserSettings()->SetSyncRequested(false);
+        sync_service_->GetUserSettings()->ClearSyncRequested();
 
         CHECK(!sync_service_->GetUserSettings()->IsSyncRequested());
         CHECK(syncer::SyncService::DisableReasonSet(

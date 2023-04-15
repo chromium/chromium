@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 
 namespace chromeos::converters {
 
@@ -15,22 +16,33 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryAudioJackEventInfoPtr ptr) {
   api::os_events::AudioJackEventInfo result;
 
-  result.event_state = Convert(ptr->state);
+  result.event = Convert(ptr->state);
 
   return result;
 }
 
 }  // namespace unchecked
 
-api::os_events::AudioJackEventState Convert(
+api::os_events::AudioJackEvent Convert(
     crosapi::mojom::TelemetryAudioJackEventInfo::State state) {
   switch (state) {
     case crosapi::mojom::TelemetryAudioJackEventInfo_State::kUnmappedEnumField:
-      return api::os_events::AudioJackEventState::kNone;
+      return api::os_events::AudioJackEvent::kNone;
     case crosapi::mojom::TelemetryAudioJackEventInfo_State::kAdd:
-      return api::os_events::AudioJackEventState::kAdd;
+      return api::os_events::AudioJackEvent::kConnected;
     case crosapi::mojom::TelemetryAudioJackEventInfo_State::kRemove:
-      return api::os_events::AudioJackEventState::kRemove;
+      return api::os_events::AudioJackEvent::kDisconnected;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryEventCategoryEnum Convert(
+    api::os_events::EventCategory input) {
+  switch (input) {
+    case api::os_events::EventCategory::kNone:
+      return crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField;
+    case api::os_events::EventCategory::kAudioJack:
+      return crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack;
   }
   NOTREACHED();
 }

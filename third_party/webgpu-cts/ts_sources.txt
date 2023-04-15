@@ -240,7 +240,6 @@ src/webgpu/api/validation/capability_checks/limits/maxComputeWorkgroupStorageSiz
 src/webgpu/api/validation/capability_checks/limits/maxComputeWorkgroupsPerDimension.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxDynamicStorageBuffersPerPipelineLayout.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxDynamicUniformBuffersPerPipelineLayout.spec.ts
-src/webgpu/api/validation/capability_checks/limits/maxFragmentCombinedOutputResources.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxInterStageShaderComponents.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxInterStageShaderVariables.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxSampledTexturesPerShaderStage.spec.ts
@@ -371,6 +370,7 @@ src/webgpu/shader/execution/expression/call/builtin/atomicOr.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomicStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomicSub.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomicXor.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/bitcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/ceil.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/clamp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/cos.spec.ts

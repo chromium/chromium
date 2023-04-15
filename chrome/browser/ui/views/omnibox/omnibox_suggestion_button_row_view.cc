@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -19,6 +20,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -26,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/color_utils.h"
@@ -57,12 +60,22 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetTriggerableEventFlags(GetTriggerableEventFlags() |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
     views::InstallPillHighlightPathGenerator(this);
-    SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
-    SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
-        INSETS_OMNIBOX_PILL_BUTTON));
-    SetCornerRadius(GetInsets().height() +
-                    GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
+
+    if (base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips) ||
+        features::GetChromeRefresh2023Level() ==
+            features::ChromeRefresh2023Level::kLevel2) {
+      SetImageLabelSpacing(4);
+      SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          INSETS_OMNIBOX_PILL_BUTTON));
+      SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
+    } else {
+      SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+      SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          INSETS_OMNIBOX_PILL_BUTTON));
+      SetCornerRadius(GetInsets().height() +
+                      GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
+    }
 
     auto* const ink_drop = views::InkDrop::Get(this);
     ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);

@@ -285,9 +285,6 @@ if (!is_android && !is_mac) {
           # Chromium functionality directly into the executable.
           ":dependencies",
 
-          # For configuring PartitionAlloc
-          "//base/allocator:buildflags",
-
           # For the sampling profiler.
           "//chrome/common/profiler",
 
@@ -433,7 +430,6 @@ if (is_win) {
       ":chrome_dll_manifest",
       ":chrome_dll_version",
       ":dependencies",
-      "//base/allocator:buildflags",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources",
@@ -1161,7 +1157,6 @@ if (is_win) {
 
     deps = [
       ":dependencies",
-      "//base/allocator:buildflags",
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
       "//chrome/app:notification_metrics",

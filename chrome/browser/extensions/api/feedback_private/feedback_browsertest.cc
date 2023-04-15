@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedback) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_REGULAR, std::string());
+  StartFeedbackUI(FeedbackFlow::kRegular, std::string());
   VerifyFeedbackAppLaunch();
 }
 
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowLoginFeedback) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_LOGIN, std::string());
+  StartFeedbackUI(FeedbackFlow::kLogin, std::string());
   VerifyFeedbackAppLaunch();
 
   AppWindow* const window =
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AnonymousUser) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_REGULAR, std::string());
+  StartFeedbackUI(FeedbackFlow::kRegular, std::string());
   VerifyFeedbackAppLaunch();
 
   AppWindow* const window =
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ExtraDiagnostics) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_REGULAR, "Some diagnostics");
+  StartFeedbackUI(FeedbackFlow::kRegular, "Some diagnostics");
   VerifyFeedbackAppLaunch();
 
   AppWindow* const window =
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedbackFromAssistant) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL, std::string(),
+  StartFeedbackUI(FeedbackFlow::kGoogleInternal, std::string(),
                   /*from_assistant*/ true);
   VerifyFeedbackAppLaunch();
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ProvideBluetoothLogs) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL, std::string(),
+  StartFeedbackUI(FeedbackFlow::kGoogleInternal, std::string(),
                   /*from_assistant*/ false, /*include_bluetooth_logs*/ true);
   VerifyFeedbackAppLaunch();
 
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaire) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL, std::string(),
+  StartFeedbackUI(FeedbackFlow::kGoogleInternal, std::string(),
                   /*from_assistant*/ false, /*include_bluetooth_logs*/ true,
                   /*show_questionnaire*/ true);
   VerifyFeedbackAppLaunch();
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaireNotGoogler) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_REGULAR, std::string(),
+  StartFeedbackUI(FeedbackFlow::kRegular, std::string(),
                   /*from_assistant*/ false, /*include_bluetooth_logs*/ false,
                   /*show_questionnaire*/ false);
   VerifyFeedbackAppLaunch();
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
-  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL, std::string());
+  StartFeedbackUI(FeedbackFlow::kGoogleInternal, std::string());
   VerifyFeedbackAppLaunch();
 
   AppWindow* const window =

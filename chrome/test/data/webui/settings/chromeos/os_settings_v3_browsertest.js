@@ -253,10 +253,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CupsPrinterEntry', 'cups_printer_entry_tests.js'],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.js'],
- [
-   'CursorAndTouchpadPage',
-   'cursor_and_touchpad_page_tests.js',
- ],
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
@@ -302,10 +298,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'DevicePagePerDevicePointingStickSubsection',
    'device_page/per_device_pointing_stick_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
- ],
- [
-   'DisplayAndMagnificationPage',
-   'display_and_magnification_page_tests.js',
  ],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
@@ -367,23 +359,36 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'KeyboardShortcutBanner',
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
- ['LockScreenSubpage', 'lock_screen_subpage_tests.js'],
+ ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
- ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
+ ['MultidevicePage', 'multidevice_page/multidevice_page_tests.js'],
  [
-   'MultideviceNotificationAccessSetupDialog',
-   'multidevice_notification_access_setup_dialog_tests.js',
+   'MultidevicePageMultideviceNotificationAccessSetupDialog',
+   'multidevice_page/multidevice_notification_access_setup_dialog_tests.js',
  ],
- ['MultidevicePage', 'multidevice_page_tests.js'],
  [
-   'MultidevicePermissionsSetupDialog',
-   'multidevice_permissions_setup_dialog_tests.js',
+   'MultidevicePageMultidevicePermissionsSetupDialog',
+   'multidevice_page/multidevice_permissions_setup_dialog_tests.js',
  ],
- ['MultideviceSmartLockItem', 'multidevice_smartlock_item_test.js'],
- ['MultideviceSubPage', 'multidevice_subpage_tests.js'],
+ [
+   'MultidevicePageMultideviceSmartlockItem',
+   'multidevice_page/multidevice_smartlock_item_test.js'
+ ],
+ [
+   'MultidevicePageMultideviceSubPage',
+   'multidevice_page/multidevice_subpage_tests.js'
+ ],
+ [
+   'MultiDevicePageMultideviceCombinedSetupItem',
+   'multidevice_page/multidevice_combined_setup_item_test.js'
+ ],
+ [
+   'MultidevicePageMultideviceWifiSyncItem',
+   'multidevice_page/multidevice_wifi_sync_item_test.js'
+ ],
  [
    'MultideviceTaskContinuationItem',
    'multidevice_task_continuation_item_tests.js',
@@ -396,7 +401,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'MultideviceWifiSyncDisabledLink',
    'multidevice_wifi_sync_disabled_link_tests.js',
  ],
- ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.js'],
  [
    'NearbySharePageNearbyShareConfirmPage',
    'nearby_share_page/nearby_share_confirm_page_test.js'
@@ -417,29 +421,37 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
    'OsA11yPage',
-   'os_a11y_page/os_a11y_page_tests.js',
+   'os_a11y_page/os_a11y_page_test.js',
    {enabled: ['features::kPdfOcr']},
  ],
  [
    'OsA11yPageAudioAndCaptionsPage',
-   'os_a11y_page/audio_and_captions_page_tests.js',
+   'os_a11y_page/audio_and_captions_page_test.js',
+ ],
+ [
+   'OsA11yPageCursorAndTouchpadPage',
+   'os_a11y_page/cursor_and_touchpad_page_test.js',
+ ],
+ [
+   'OsA11yPageDisplayAndMagnificationPage',
+   'os_a11y_page/display_and_magnification_page_test.js',
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',
-   'os_a11y_page/keyboard_and_text_input_page_tests.js',
+   'os_a11y_page/keyboard_and_text_input_page_test.js',
  ],
  [
    'OsA11yPageManageAccessibilityPage',
-   'os_a11y_page/manage_accessibility_page_tests.js'
+   'os_a11y_page/manage_accessibility_page_test.js'
  ],
  [
    'OsA11yPageTextToSpeechPage',
-   'os_a11y_page/text_to_speech_page_tests.js',
+   'os_a11y_page/text_to_speech_page_test.js',
    {enabled: ['features::kPdfOcr']},
  ],
  [
    'OsA11yPageTextToSpeechSubpage',
-   'os_a11y_page/text_to_speech_subpage_tests.js',
+   'os_a11y_page/text_to_speech_subpage_test.js',
  ],
  ['OsA11yPageTtsSubpage', 'os_a11y_page/tts_subpage_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
@@ -471,7 +483,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
- ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_tests.js'],
+ ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
  [
    'OsLanguagesPageSmartInputsPage',
    'os_languages_page/smart_inputs_page_test.js'
@@ -479,11 +491,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
- ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
- ['OsPrintingPage', 'os_printing_page/os_printing_page_tests.js'],
+ ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
+ ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  [
    'OsPrivacyPageSmartPrivacySubpage',
-   'os_privacy_page/smart_privacy_subpage_tests.js'
+   'os_privacy_page/smart_privacy_subpage_test.js'
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
@@ -595,11 +607,6 @@ function registerTest(testName, module, featureList) {
     TEST_F(className, 'OfficialBuild' || 'All', () => {
       mocha.grep('SearchFeedback_OfficialBuild').run();
     });
-    GEN('#endif');
-  } else if (testName === 'OsSettingsPage') {
-    // TODO(crbug.com/1411677): times out (flaky) debug builds
-    GEN('#if defined(NDEBUG)');
-    TEST_F(className, 'All', () => mocha.run());
     GEN('#endif');
   } else {
     TEST_F(className, 'All', () => mocha.run());

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1013598600051641573">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> 赫兹）。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="1013923882670373915">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下PIN码：<ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">如果您开启地理定位，即意味着允许“<ph name="APP_NAME" />”、所有具有位置信息权限的应用和网站以及 ChromeOS 使用 Wi-Fi 和移动网络位置信息。</translation>
 <translation id="1017556409696559990">当 Chrome 中没有任何后退历史记录时，将顶部窗口最小化</translation>
 <translation id="1024364763893396229">保存您的“<ph name="NAME" />”</translation>
 <translation id="1032891413405719768">触控笔电池电量较低</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">打开“历史记录”页</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
+<translation id="1675844249244994876">更新右侧窗口</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">以太网：<ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">开启位置信息访问权限</translation>
 <translation id="1830308660060964064">“<ph name="ITEM_TITLE" />”已被取消固定</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -365,7 +368,6 @@
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
-<translation id="2740531572673183784">确定</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“删除”</translation>
 <translation id="2750941250130734256">取消停靠活动窗口。</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">你能做些什么？</translation>
 <translation id="3256109297135787951">取消任务栏中某项内容的突出显示状态</translation>
 <translation id="3260969790895726815">系统会在本地处理语音，并支持离线语音输入，但部分语音指令会不起作用。</translation>
+<translation id="3265032511221679826">开启确切位置信息访问权限？</translation>
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3289364673986435196">电源菜单</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑动即可隐藏浮动窗口</translation>
 <translation id="367531336287639526">选择地址栏左侧的第一个图标</translation>
+<translation id="3677931086890821290">如果您开启地理定位，即意味着允许所有具有位置信息权限的应用和网站以及 ChromeOS 使用 Wi-Fi 和移动网络位置信息。</translation>
 <translation id="3679827876008292680">转到窗口中的最后一个标签页</translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
 <translation id="3694122362646626770">网站</translation>
@@ -844,6 +848,7 @@
 <translation id="493076006037866439">缩小屏幕</translation>
 <translation id="4936329710968938986">所有人，已关闭</translation>
 <translation id="4938176435186993759">隐藏所有建议</translation>
+<translation id="4943007472417128747">为了使用 Wi-Fi，已关闭热点。若要使用热点，请关闭 Wi-Fi。</translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>
@@ -1067,6 +1072,7 @@
 <translation id="5976112937189445008">按 Enter 键即可录制窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
+<translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
 <translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="6002179289567220515">您使用实物开关关闭了 1 个摄像头。您还可以关闭所有摄像头的使用权限。</translation>
@@ -1366,6 +1372,7 @@
 <translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
+<translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
@@ -1385,6 +1392,7 @@
 要将设备关机，请再次按住设备上的电源按钮。</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">更新左侧窗口</translation>
 <translation id="7543399541175347147">目前不支持 Linux 应用和无痕式窗口。其他应用会被保存。</translation>
 <translation id="7544300628205093162">键盘背光已开启</translation>
 <translation id="7548434653388805669">该睡觉了</translation>
@@ -1438,6 +1446,7 @@
 <translation id="776344839111254542">点击即可查看相关更新的详情</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
+<translation id="7773536009433685931">改为开启 Wi-Fi</translation>
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
@@ -1465,6 +1474,7 @@
 <translation id="7893503627044934815">不想让系统显示此文件</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您按下了旋转屏幕的键盘快捷键。要旋转屏幕吗？</translation>
+<translation id="7901190436359881020">切换窗口</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7902625623987030061">请轻触指纹传感器</translation>
 <translation id="7904094684485781019">此帐号的管理员已停用多帐号登录。</translation>
@@ -1740,6 +1750,7 @@
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="9201044636667689546">将“<ph name="NAME" />”连接到此 Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由您的管理员管理</translation>
+<translation id="9207682216934703221">如果您开启地理定位，即意味着允许“<ph name="APP_NAME" />”“<ph name="APP2_NAME" />”、所有具有位置信息权限的应用和网站以及 ChromeOS 使用 Wi-Fi 和移动网络位置信息。</translation>
 <translation id="9210037371811586452">正在退出统一桌面模式</translation>
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="9211681782751733685">电池电量将在 <ph name="TIME_REMAINING" />后充满。</translation>

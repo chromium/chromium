@@ -34,6 +34,9 @@ CC_BASE_EXPORT extern const char kEnableGpuBenchmarking[];
 // Switches for LayerTreeHost.
 CC_BASE_EXPORT extern const char kDisableLayerTreeHostMemoryPressure[];
 
+// Switches for raster.
+CC_BASE_EXPORT extern const char kNumRasterThreads[];
+
 // Debug visualizations.
 CC_BASE_EXPORT extern const char kShowCompositedLayerBorders[];
 CC_BASE_EXPORT extern const char kUIShowCompositedLayerBorders[];

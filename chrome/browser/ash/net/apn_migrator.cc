@@ -20,6 +20,11 @@ namespace ash {
 
 namespace {
 
+using chromeos::network_config::mojom::ApnPropertiesPtr;
+using chromeos::network_config::mojom::ApnState;
+using chromeos::network_config::mojom::ApnType;
+using chromeos::network_config::mojom::ManagedApnPropertiesPtr;
+
 void OnSetShillCustomApnListSuccess() {}
 
 void OnSetShillCustomApnListFailure(const std::string& guid,
@@ -27,6 +32,19 @@ void OnSetShillCustomApnListFailure(const std::string& guid,
   NET_LOG(ERROR) << "ApnMigrator: Failed to update the custom APN "
                     "list in Shill for network: "
                  << guid << ": [" << error_name << ']';
+}
+
+absl::optional<ApnPropertiesPtr> GetApnFromDict(
+    const base::Value::Dict* cellular_dict,
+    const char* key,
+    bool is_apn_revamp_enabled) {
+  const base::Value::Dict* apn_dict =
+      chromeos::network_config::GetDictionary(cellular_dict, key);
+  if (!apn_dict || !apn_dict->Find(::onc::cellular_apn::kAccessPointName)) {
+    return absl::nullopt;
+  }
+  return chromeos::network_config::GetApnProperties(*apn_dict,
+                                                    is_apn_revamp_enabled);
 }
 
 }  // namespace
@@ -194,25 +212,25 @@ void ApnMigrator::OnGetManagedProperties(
     return;
   }
 
+  ApnPropertiesPtr pre_revamp_custom_apn =
+      chromeos::network_config::GetApnProperties(
+          custom_apn_list->front().GetDict(),
+          /*is_apn_revamp_enabled=*/false);
+  const base::Value::Dict* cellular_dict =
+      chromeos::network_config::GetDictionary(&properties.value(),
+                                              ::onc::network_config::kCellular);
+
   if (network->IsManagedByPolicy()) {
-    chromeos::network_config::mojom::ApnPropertiesPtr pre_revamp_custom_apn =
-        chromeos::network_config::GetApnProperties(
-            custom_apn_list->front().GetDict(),
-            /*is_apn_revamp_enabled=*/false);
-    const base::Value::Dict* cellular_dict =
-        chromeos::network_config::GetDictionary(
-            &properties.value(), ::onc::network_config::kCellular);
-    chromeos::network_config::mojom::ManagedApnPropertiesPtr selected_apn =
+    ManagedApnPropertiesPtr selected_apn =
         chromeos::network_config::GetManagedApnProperties(
             cellular_dict, ::onc::cellular::kAPN);
     if (selected_apn && pre_revamp_custom_apn->access_point_name ==
                             selected_apn->access_point_name->active_value) {
       NET_LOG(EVENT) << "Managed network's selected APN matches the saved "
                      << "custom APN, migrating APN: " << guid;
-      // Ensure the network is enabled when it's migrated so that it's attempted
+      // Ensure the APN is enabled when it's migrated so that it's attempted
       // to be used by the new UI.
-      pre_revamp_custom_apn->state =
-          chromeos::network_config::mojom::ApnState::kEnabled;
+      pre_revamp_custom_apn->state = ApnState::kEnabled;
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     } else {
@@ -223,7 +241,58 @@ void ApnMigrator::OnGetManagedProperties(
       SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     }
   } else {
-    // TODO(b/162365553): Implement this case.
+    absl::optional<ApnPropertiesPtr> last_connected_attach_apn = GetApnFromDict(
+        cellular_dict, ::onc::cellular::kLastConnectedAttachApnProperty,
+        /*is_apn_revamp_enabled=*/false);
+
+    absl::optional<ApnPropertiesPtr> last_connected_default_apn =
+        GetApnFromDict(cellular_dict,
+                       ::onc::cellular::kLastConnectedDefaultApnProperty,
+                       /*is_apn_revamp_enabled=*/false);
+
+    if (!last_connected_attach_apn && !last_connected_default_apn) {
+      absl::optional<ApnPropertiesPtr> last_good_apn =
+          GetApnFromDict(cellular_dict, ::onc::cellular::kLastGoodAPN,
+                         /*is_apn_revamp_enabled=*/false);
+
+      if (last_good_apn && pre_revamp_custom_apn->access_point_name ==
+                               (*last_good_apn)->access_point_name) {
+        NET_LOG(EVENT) << "Network's last good APN matches the saved "
+                       << "custom APN, migrating APN: " << guid
+                       << "in the Enabled state";
+        // Ensure the APN is enabled when it's migrated so that it's
+        // attempted to be used by the new UI.
+        pre_revamp_custom_apn->state = ApnState::kEnabled;
+      } else {
+        NET_LOG(EVENT) << "Network's last good APN does not match the saved "
+                       << "custom APN, migrating APN: " << guid
+                       << "in the Disabled state";
+        // The custom APN was last unsuccessful in connecting when the flag was
+        // off. Preserve the details of the custom APN but with a state of
+        // Disabled.
+        pre_revamp_custom_apn->state = ApnState::kDisabled;
+        // TODO(b/162365553): Surface a notification to the user indicating that
+        // their APN configuration was changed.
+      }
+      remote_cros_network_config_->CreateCustomApn(
+          guid, std::move(pre_revamp_custom_apn));
+    } else if (last_connected_attach_apn && last_connected_default_apn &&
+               pre_revamp_custom_apn->access_point_name ==
+                   (*last_connected_attach_apn)->access_point_name &&
+               pre_revamp_custom_apn->access_point_name ==
+                   (*last_connected_default_apn)->access_point_name) {
+      NET_LOG(EVENT)
+          << "Network's last connected default APN and attach APN match the "
+             "saved custom APN, migrating APN: "
+          << guid << " in the Enabled state with Apn types Attach and Default";
+
+      pre_revamp_custom_apn->state = ApnState::kEnabled;
+      pre_revamp_custom_apn->apn_types = {ApnType::kAttach, ApnType::kDefault};
+      remote_cros_network_config_->CreateCustomApn(
+          guid, std::move(pre_revamp_custom_apn));
+    }
+  // TODO(b/162365553): Implement other cases of |last_connected_attach_apn|
+  // and |last_connected_default_apn|.
   }
 
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);

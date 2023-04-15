@@ -5533,6 +5533,7 @@ interface MLGraphBuilder
     method min
     method mul
     method pad
+    method prelu
     method relu
     method resample2d
     method reshape
@@ -6878,6 +6879,7 @@ interface PerformanceEventTiming : PerformanceEntry
     method toJSON
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     attribute @@toStringTag
+    getter blockingDuration
     getter desiredRenderStart
     getter firstUIEventTimestamp
     getter renderStart
@@ -7190,6 +7192,7 @@ interface PublicKeyCredential : Credential
     getter response
     method constructor
     method getClientExtensionResults
+    method toJSON
 interface PushManager
     static getter supportedContentEncodings
     attribute @@toStringTag
@@ -9171,6 +9174,7 @@ interface StorageBucket
     getter caches
     getter indexedDB
     getter locks
+    getter name
     method constructor
     method durability
     method estimate

@@ -347,10 +347,9 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
 
   device_mode_ = client_->device_mode();
 
-  // If Chromad features are disabled and the management mode setting from DM
-  // Server is Active Directory, we override this setting to cloud management.
-  if (!ash::features::IsChromadAvailableEnabled() &&
-      device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
+  // If the management mode setting from DM Server is Active Directory, we
+  // override this setting to cloud management (b/259180126).
+  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
     device_mode_ = DEVICE_MODE_ENTERPRISE;
   }
 

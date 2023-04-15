@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! This module contains useful functions and macros for testing.
+//! This module contains useful functions for testing.
 
 use std::env;
 use std::ffi::{CStr, CString};
@@ -10,25 +10,6 @@ use std::os::raw::c_char;
 use std::ptr;
 use std::slice;
 use std::vec::Vec;
-
-/// This macro sets up tests by adding in Mojo embedder initialization.
-///
-/// Note: this macro is quite delicate because of rustmt's inconsistent handling
-/// of macro invocations. Slight changes to macro syntax can make rustfmt ignore
-/// the inside of an invocation, which is not what we want.
-#[macro_export]
-macro_rules! mojo_test {
-    {$i: ident, $(#[$attr:meta])* $b:block} => {
-        #[test]
-        $(
-        #[ $attr ]
-        )*
-        fn $i() {
-            $crate::init();
-            $b
-        }
-    }
-}
 
 /// Calls Mojo initialization code on first call. Can be called multiple times.
 /// Has no effect after the first call.

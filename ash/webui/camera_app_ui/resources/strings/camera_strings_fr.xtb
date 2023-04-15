@@ -27,7 +27,6 @@
 <translation id="199526504800285197">L'enregistrement s'est arrêté</translation>
 <translation id="1995951722691075581">L'enregistrement s'est arrêté, car l'espace de stockage de votre appareil est insuffisant. Pour enregistrer plus de vidéos, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="2036868001356139588">Durée du retardateur</translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176">Option <ph name="CAMERA" /> activée</translation>
 <translation id="2128052519899549250">Enregistrer une vidéo en accéléré</translation>
 <translation id="2134029355740465625">Paramètres vidéo</translation>
@@ -123,6 +122,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="6888362557094394345">Déplacement vers le bas</translation>
 <translation id="695140971690006676">Tout réinitialiser</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965830616442491568">Portrait</translation>
 <translation id="698156982839284926">3 secondes</translation>
 <translation id="7134221860976209830">Minuteur de 10 secondes</translation>
 <translation id="7191890674911603392">Type d'enregistrement</translation>

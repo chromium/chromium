@@ -8,7 +8,6 @@ include_rules = [
   "+components/services/storage/public",
   "+components/viz/common",
   "+components/viz/host",
-  "+device/fido",
   "+device/vr/buildflags",
   "+device/vr/public/cpp",
   "+device/vr/public/mojom",
@@ -32,6 +31,10 @@ specific_include_rules = {
   ],
   ".*\.mm": [
     "+content/browser",
+  ],
+
+  "authenticator_request_client_delegate\.*": [
+    "+device/fido",
   ],
 
   "desktop_capture\.h": [

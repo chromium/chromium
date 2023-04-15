@@ -23,7 +23,6 @@
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
-#include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
@@ -180,14 +179,13 @@ class VideoDecoderPipelineTest
                 gfx::Rect(kCodedSize),
                 kCodedSize,
                 EmptyExtraData(),
-                EncryptionScheme::kUnencrypted),
-        converter_(new VideoFrameConverter) {
+                EncryptionScheme::kUnencrypted) {
     auto pool = std::make_unique<MockVideoFramePool>();
     pool_ = pool.get();
     decoder_ = base::WrapUnique(new VideoDecoderPipeline(
         gpu::GpuDriverBugWorkarounds(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(pool),
-        std::move(converter_),
+        /*frame_converter=*/nullptr,
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.
@@ -381,7 +379,6 @@ class VideoDecoderPipelineTest
   scoped_refptr<DecoderBuffer> transcrypted_buffer_;
   media::CallbackRegistry<CdmContext::EventCB::RunType> event_callbacks_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<VideoFrameConverter> converter_;
   std::unique_ptr<VideoDecoderPipeline> decoder_;
   raw_ptr<MockVideoFramePool> pool_;
 };

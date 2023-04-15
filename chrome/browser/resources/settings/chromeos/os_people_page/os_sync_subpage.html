@@ -96,9 +96,9 @@
           value="{{existingPassphrase_}}"
           placeholder="$i18n{passphrasePlaceholder}"
           error-message="$i18n{incorrectPassphraseError}"
-          on-keypress="onSubmitExistingPassphraseTap_">
+          on-keypress="onSubmitExistingPassphraseClick_">
         <cr-button id="submitExistingPassphrase" slot="suffix"
-            on-click="onSubmitExistingPassphraseTap_"
+            on-click="onSubmitExistingPassphraseClick_"
             class="action-button" disabled="[[!existingPassphrase_]]">
           $i18n{submitPassphraseButton}
         </cr-button>
@@ -132,7 +132,10 @@
       <cr-link-row id="syncDashboardLink" class="hr"
           label="$i18n{manageSyncedDataTitle}"
           on-click="onSyncDashboardLinkClick_"
-          hidden="[[syncStatus.supervisedUser]]" external></cr-link-row>
+          hidden="[[syncStatus.supervisedUser]]"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
+      </cr-link-row>
 
       <cr-expand-button id="encryptionDescription"
           hidden="[[syncPrefs.passphraseRequired]]"

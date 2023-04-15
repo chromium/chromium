@@ -49,6 +49,10 @@ namespace gcm {
 class GCMDriver;
 }
 
+namespace metrics {
+class MetricsService;
+}
+
 namespace network {
 class TestNetworkConnectionTracker;
 class TestNetworkQualityTracker;
@@ -155,6 +159,7 @@ class TestingBrowserProcess : public BrowserProcess {
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
   void SetLocalState(PrefService* local_state);
+  void SetMetricsService(metrics::MetricsService* metrics_service);
   void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
   void SetRulesetService(
@@ -193,6 +198,7 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<network::TestNetworkQualityTracker>
       test_network_quality_tracker_;
   std::unique_ptr<device::GeolocationManager> geolocation_manager_;
+  raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
   std::unique_ptr<ProfileManager> profile_manager_;
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)

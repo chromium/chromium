@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CRASH_CORE_APP_CRASH_REPORTER_CLIENT_H_
 #define COMPONENTS_CRASH_CORE_APP_CRASH_REPORTER_CLIENT_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "build/build_config.h"

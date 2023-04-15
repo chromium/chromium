@@ -46,7 +46,9 @@
     width: 6px;
   }
 
-  :host(:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator {
+  /* TODO(crbug.com/1430996): Add focus indicator for secondary results. */
+  :host(:is(:focus-visible, [selected]:not(:focus-within)):not(
+      [side-type-class_='secondary-side'])) #focus-indicator {
     display: block;
   }
 
@@ -130,6 +132,67 @@
     opacity: 1;
   }
 
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]) {
+    border-radius: 16px;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      .container {
+    box-sizing: border-box;
+    flex-direction: column;
+    padding: 6px;
+    padding-block-end: 16px;
+    width: 124px;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      .focus-indicator {
+    display: none;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #icon {
+    height: 112px;
+    margin-block-end: 8px;
+    width: 112px;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #text-container {
+    padding: 0;
+    white-space: normal;
+    width: 100%;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #contents,
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #description {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    font-weight: 400;
+    overflow: hidden;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #contents {
+    font-size: 14px;
+    line-height: 20px;
+    margin-block-end: 4px;
+  }
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #description {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+
+  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+      #remove {
+    display: none;
+  }
 </style>
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>

@@ -4,10 +4,12 @@
 
 #include "services/cert_verifier/cert_verifier_creation.h"
 
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/net_buildflags.h"
@@ -64,14 +66,9 @@ crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-// CertVerifyProcFactory that returns a CertVerifyProc that supports the old
-// configuration for platforms where we are transitioning from one cert
-// configuration to another. If the platform only supports one configuration,
-// return a CertVerifyProc that supports that configuration.
-class OldDefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
+class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
  public:
-  explicit OldDefaultCertVerifyProcFactory(
+  explicit CertVerifyProcFactoryImpl(
       mojom::CertVerifierCreationParams* creation_params) {
 #if BUILDFLAG(IS_CHROMEOS)
     user_slot_restriction_ =
@@ -81,51 +78,61 @@ class OldDefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const net::ChromeRootStoreData* root_store_data) override {
+      const CertVerifyProcFactory::ImplParams& impl_params) override {
+#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+    return CreateNewCertVerifyProc(
+        cert_net_fetcher, impl_params.crl_set,
+        base::OptionalToPtr(impl_params.root_store_data));
+#else
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+    if (impl_params.use_chrome_root_store) {
+      return CreateNewCertVerifyProc(
+          cert_net_fetcher, impl_params.crl_set,
+          base::OptionalToPtr(impl_params.root_store_data));
+    }
+#endif
+    return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set);
+#endif
+  }
+
+ protected:
+  ~CertVerifyProcFactoryImpl() override = default;
+
+#if !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+  // Factory function that returns a CertVerifyProc that supports the old
+  // configuration for platforms where we are transitioning from one cert
+  // configuration to another. If the platform only supports one configuration,
+  // return a CertVerifyProc that supports that configuration.
+  scoped_refptr<net::CertVerifyProc> CreateOldCertVerifyProc(
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set) {
     scoped_refptr<net::CertVerifyProc> verify_proc;
 #if BUILDFLAG(IS_CHROMEOS)
     verify_proc = net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher),
+        std::move(cert_net_fetcher), std::move(crl_set),
         net::CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
             user_slot_restriction_ ? crypto::ScopedPK11Slot(PK11_ReferenceSlot(
                                          user_slot_restriction_.get()))
                                    : nullptr));
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
     verify_proc = net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), net::CreateSslSystemTrustStore());
+        std::move(cert_net_fetcher), std::move(crl_set),
+        net::CreateSslSystemTrustStore());
 #else
     verify_proc = net::CertVerifyProc::CreateSystemVerifyProc(
-        std::move(cert_net_fetcher));
+        std::move(cert_net_fetcher), std::move(crl_set));
 #endif
     return verify_proc;
   }
-
- protected:
-  ~OldDefaultCertVerifyProcFactory() override = default;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  crypto::ScopedPK11Slot user_slot_restriction_;
-#endif
-};
 #endif  // !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// CertVerifyProcFactory that returns a CertVerifyProc that uses the
-// Chrome Cert Verifier with the Chrome Root Store.
-class NewCertVerifyProcChromeRootStoreFactory
-    : public net::CertVerifyProcFactory {
- public:
-  explicit NewCertVerifyProcChromeRootStoreFactory(
-      mojom::CertVerifierCreationParams* creation_params) {
-#if BUILDFLAG(IS_CHROMEOS)
-    user_slot_restriction_ =
-        GetUserSlotRestrictionForChromeOSParams(creation_params);
-#endif
-  }
-
-  scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
+  // CertVerifyProcFactory that returns a CertVerifyProc that uses the
+  // Chrome Cert Verifier with the Chrome Root Store.
+  scoped_refptr<net::CertVerifyProc> CreateNewCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const net::ChromeRootStoreData* root_store_data) override {
+      scoped_refptr<net::CRLSet> crl_set,
+      const net::ChromeRootStoreData* root_store_data) {
     std::unique_ptr<net::TrustStoreChrome> chrome_root;
     if (!root_store_data) {
       chrome_root = std::make_unique<net::TrustStoreChrome>();
@@ -159,17 +166,15 @@ class NewCertVerifyProcChromeRootStoreFactory
     net::InitializeTrustStoreAndroid();
 #endif
     return net::CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                            std::move(crl_set),
                                             std::move(trust_store));
   }
-
- protected:
-  ~NewCertVerifyProcChromeRootStoreFactory() override = default;
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS)
   crypto::ScopedPK11Slot user_slot_restriction_;
 #endif
 };
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 // Returns true if creation_params are requesting the creation of a
@@ -185,29 +190,15 @@ bool IsTrialVerificationOn(
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::ChromeRootStoreData* root_store_data) {
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
   DCHECK(IsTrialVerificationOn(creation_params));
 
-  // If we're doing trial verification, we always do it between the old
-  // default and the proposed new default, giving the user the value computed
-  // by the old default.
-  auto primary_proc_factory =
-      base::MakeRefCounted<OldDefaultCertVerifyProcFactory>(creation_params);
-  scoped_refptr<net::CertVerifyProc> primary_proc =
-      primary_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
-                                                 root_store_data);
+  scoped_refptr<net::CertVerifyProcFactory> proc_factory =
+      base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  auto trial_proc_factory =
-      base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>(
-          creation_params);
-#else
+#if !BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 #error "CHROME_ROOT_STORE_OPTIONAL must be true"
 #endif
-
-  scoped_refptr<net::CertVerifyProc> trial_proc =
-      trial_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
-                                               root_store_data);
 
   return std::make_unique<TrialComparisonCertVerifierMojo>(
       creation_params->trial_comparison_cert_verifier_params->initial_allowed,
@@ -215,8 +206,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
                     ->config_client_receiver),
       std::move(creation_params->trial_comparison_cert_verifier_params
                     ->report_client),
-      std::move(primary_proc), std::move(primary_proc_factory),
-      std::move(trial_proc), std::move(trial_proc_factory));
+      std::move(proc_factory), cert_net_fetcher, impl_params);
 }
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
@@ -234,46 +224,23 @@ bool IsUsingCertNetFetcher() {
 }
 
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
-    mojom::CertVerifierServiceParams* impl_params,
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::ChromeRootStoreData* root_store_data) {
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
-  std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier;
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (!cert_verifier
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-      && impl_params->use_chrome_root_store
-#endif
-  ) {
-    scoped_refptr<NewCertVerifyProcChromeRootStoreFactory> proc_factory =
-        base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>(
-            creation_params);
-    cert_verifier = std::make_unique<net::MultiThreadedCertVerifier>(
-        proc_factory->CreateCertVerifyProc(cert_net_fetcher, root_store_data),
-        proc_factory);
-  }
-#endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  if (!cert_verifier && IsTrialVerificationOn(creation_params)) {
-    cert_verifier = CreateTrialCertVerifier(creation_params, cert_net_fetcher,
-                                            root_store_data);
+  if (IsTrialVerificationOn(creation_params)) {
+    return CreateTrialCertVerifier(creation_params, cert_net_fetcher,
+                                   impl_params);
   }
 #endif
 
-#if !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-  if (!cert_verifier) {
-    scoped_refptr<OldDefaultCertVerifyProcFactory> proc_factory =
-        base::MakeRefCounted<OldDefaultCertVerifyProcFactory>(creation_params);
-    cert_verifier = std::make_unique<net::MultiThreadedCertVerifier>(
-        proc_factory->CreateCertVerifyProc(cert_net_fetcher, root_store_data),
-        proc_factory);
-  }
-#endif
-
-  return cert_verifier;
+  scoped_refptr<net::CertVerifyProcFactory> proc_factory =
+      base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);
+  return std::make_unique<net::MultiThreadedCertVerifier>(
+      proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params),
+      proc_factory);
 }
 
 }  // namespace cert_verifier

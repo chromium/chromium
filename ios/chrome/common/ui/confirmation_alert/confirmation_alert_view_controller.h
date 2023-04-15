@@ -87,6 +87,10 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // with a green checkmark. Must be set before the view is loaded. Default is NO.
 @property(nonatomic) BOOL imageEnclosedWithShadowAndBadge;
 
+// Set to NO to prevent the scroll view from showing a vertical scrollbar
+// indicator. Must be set before the view is loaded. Default is YES.
+@property(nonatomic) BOOL showsVerticalScrollIndicator;
+
 // When set, this value will be set as the accessibility label for the help
 // button.
 @property(nonatomic, copy) NSString* helpButtonAccessibilityLabel;

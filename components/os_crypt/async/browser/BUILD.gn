@@ -8,6 +8,8 @@ component("browser") {
     "os_crypt_async.h",
   ]
 
+  deps = [ ":key_provider_interface" ]
+
   public_deps = [
     "//base",
     "//components/os_crypt/async/common",
@@ -16,14 +18,27 @@ component("browser") {
   defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
 }
 
+source_set("key_provider_interface") {
+  sources = [ "key_provider.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/os_crypt/async/common",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_async_unittest.cc" ]
   deps = [
     ":browser",
+    ":key_provider_interface",
     "//base",
     "//base/test:test_support",
     "//components/os_crypt/async/common",
+    "//components/os_crypt/sync",
+    "//components/os_crypt/sync:test_support",
+    "//crypto",
     "//testing/gtest",
   ]
 }

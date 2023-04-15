@@ -11,4 +11,7 @@ specific_include_rules = {
     # is only used on Views platforms.
     "+chrome/browser/ui/views",
   ],
+  "secure_payment_confirmation_authenticator_browsertest\.cc": [
+    "+device/fido/virtual_fido_device_factory.h",
+  ],
 }

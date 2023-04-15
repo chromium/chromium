@@ -6,6 +6,7 @@
 // network using TCP and UDP connections. <b>Note:</b> Starting with Chrome 33,
 // this API is deprecated in favor of the $(ref:sockets.udp), $(ref:sockets.tcp) and
 // $(ref:sockets.tcpServer) APIs.
+[modernised_enums]
 namespace socket {
   enum SocketType {
     tcp,

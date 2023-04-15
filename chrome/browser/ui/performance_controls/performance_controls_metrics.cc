@@ -21,11 +21,6 @@ void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type) {
       "PerformanceControls.HighEfficiency.BubbleAction", type);
 }
 
-void RecordHighEfficiencyInfoIPHOpenSettings(bool success) {
-  base::UmaHistogramBoolean(
-      "PerformanceControls.HighEfficiency.InfoIPHOpenSettings", success);
-}
-
 void RecordHighEfficiencyIPHEnableMode(bool success) {
   base::UmaHistogramBoolean("PerformanceControls.HighEfficiency.IPHEnableMode",
                             success);

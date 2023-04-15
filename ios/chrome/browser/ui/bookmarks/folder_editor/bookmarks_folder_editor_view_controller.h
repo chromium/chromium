@@ -69,9 +69,10 @@ class SyncService;
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // `bookmarkModel` must not be `nullptr` and must be loaded.
-// Both `parentFolder` and `folder` cannot be `nullptr`. If `folder` is not
-// `nullptr` than it must also be editable. If `folder` is not `nullptr` then
-// it also means that we're editing an existing folder.
+// `parentFolder` must not be `nullptr`.
+// If `folder` is not `nullptr` than it means we're editing an existing folder
+// and `folder` must also be editable (`folder` can't be the root node or any
+// of the permanent nodes).
 // `browser` must not be `nullptr`.
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                            folderNode:(const bookmarks::BookmarkNode*)folder

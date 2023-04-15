@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
          DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
          DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
     ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "buy()"));
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     ExpectBodyContains({"bobpay.test"});
   }
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     // requested and both apps are installed.
     ResetEventWaiterForDialogOpened();
     content::ExecuteScriptAsync(GetActiveWebContents(), "buy()");
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     // Click on pay.
     EXPECT_TRUE(IsPayButtonEnabled());
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
         "testPaymentMethods([{supportedMethods: 'https://bobpay.test'}, "
         "{supportedMethods: 'https://kylepay.test'}], true /*= "
         "requestShippingContact */)"));
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     ExpectBodyContains({"kylepay.test"});
   }
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
         "(function() { "
         "document.getElementById('buyWithRequestedEmail').click(); })();";
     ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsPayButtonEnabled());
 
     ResetEventWaiterForSequence(
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
       GetActiveWebContents(),
       "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
       "true /*= requestShippingContact */);"));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Pay button should be enabled without any autofill profiles since the
   // selected payment instrument (kylepay) handles all merchant required

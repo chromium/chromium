@@ -168,7 +168,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         }
         if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
 
-        return UrlConstants.NTP_NON_NATIVE_URL;
+        return UrlConstants.NTP_URL;
     }
 
     /**
@@ -205,7 +205,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
             return HomepagePolicyManager.getHomepageUrl().getSpec();
         }
         if (getPrefHomepageUseChromeNTP()) {
-            return UrlConstants.NTP_NON_NATIVE_URL;
+            return UrlConstants.NTP_URL;
         }
         if (getPrefHomepageUseDefaultUri()) {
             return getDefaultHomepageUri();

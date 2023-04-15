@@ -33,9 +33,9 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The tests in this file use the Network Service implementation of
 // NetworkContext, to test sending and receiving of data over UDP sockets.
@@ -267,16 +267,16 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSocketError) {
 
 class DirectSocketsBoundUdpBrowserTest : public DirectSocketsUdpBrowserTest {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DirectSocketsBoundUdpBrowserTest() {
     chromeos::PermissionBrokerClient::InitializeFake();
-    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(true);
+    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting();
   }
 
   ~DirectSocketsBoundUdpBrowserTest() override {
     chromeos::PermissionBrokerClient::Shutdown();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, ExchangeUdp) {
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, ExchangeUdp) {
               testing::HasSubstr("succeeded"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, HasFirewallHole) {
   class DelegateImpl : public chromeos::FakePermissionBrokerClient::Delegate {
    public:
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, FirewallHoleDenied) {
   EXPECT_THAT(EvalJs(shell(), open_script).ExtractString(),
               testing::HasSubstr("Firewall"));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, UdpMessageConfigurations) {
   {

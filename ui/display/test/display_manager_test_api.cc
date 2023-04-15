@@ -125,8 +125,9 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
     display_manager_->RegisterDisplayProperty(
         info.id(), info.GetRotation(Display::RotationSource::USER),
         /*overscan_insets=*/nullptr,
-        /*native_resolution=*/gfx::Size(), info.device_scale_factor(),
-        info.zoom_factor(), info.refresh_rate(), info.is_interlaced());
+        /*resolution_in_pixels=*/gfx::Size(), info.device_scale_factor(),
+        info.zoom_factor(), info.refresh_rate(), info.is_interlaced(),
+        info.variable_refresh_rate_state(), info.vsync_rate_min());
   }
 
   display_manager_->OnNativeDisplaysChanged(display_info_list);

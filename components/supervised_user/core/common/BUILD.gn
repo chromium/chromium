@@ -18,8 +18,6 @@ static_library("common") {
     "pref_names.h",
     "supervised_user_constants.cc",
     "supervised_user_constants.h",
-    "supervised_user_denylist.cc",
-    "supervised_user_denylist.h",
     "supervised_user_utils.cc",
     "supervised_user_utils.h",
     "supervised_users.h",
@@ -36,10 +34,7 @@ static_library("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "features_unittest.cc",
-    "supervised_user_denylist_unittest.cc",
-  ]
+  sources = [ "features_unittest.cc" ]
   deps = [
     ":common",
     "//base",

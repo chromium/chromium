@@ -1,7 +1,15 @@
 <style include="sp-shared-style">
+  :host([has-checkbox]) cr-url-list-item {
+    pointer-events: none;
+  }
+
   cr-url-list-item[size=compact] {
     padding-inline-end: 14px;
     padding-inline-start: 14px;
+  }
+
+  cr-checkbox {
+    pointer-events: auto;
   }
 
   /* Visually hide the label but allow the screen reader to pick it up. */
@@ -57,12 +65,12 @@
     </cr-input>
   </template>
 
-  <template is="dom-if" if="[[!hasInput]]"
+  <template is="dom-if" if="[[showTrailingIcon_(hasInput, hasCheckbox)]]"
       on-dom-change="onInputDisplayChange_">
    <slot slot="badges" id="badges" name="badges"></slot>
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
-        disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel]]">
+        aria-label="[[trailingIconAriaLabel]]">
   </template>
 
   <template is="dom-if" if="[[isBookmarksBar_(bookmark)]]" restamp>

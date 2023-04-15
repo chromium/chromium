@@ -435,20 +435,8 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
     bool allow_skipping_pin_touch) {
   InitDiscoveryFactory();
 
-  device::CableRequestType cable_request_type;
-  switch (make_credential_options_->resident_key) {
-    case device::ResidentKeyRequirement::kDiscouraged:
-    case device::ResidentKeyRequirement::kPreferred:
-      cable_request_type = device::CableRequestType::kMakeCredential;
-      break;
-    case device::ResidentKeyRequirement::kRequired:
-      cable_request_type =
-          device::CableRequestType::kDiscoverableMakeCredential;
-      break;
-  }
-
   request_delegate_->ConfigureCable(
-      caller_origin_, cable_request_type,
+      caller_origin_, device::FidoRequestType::kMakeCredential,
       make_credential_options_->resident_key,
       base::span<const device::CableDiscoveryData>(), discovery_factory());
 
@@ -491,7 +479,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
     cable_pairings = *ctap_get_assertion_request_->cable_extension;
   }
   request_delegate_->ConfigureCable(caller_origin_,
-                                    device::CableRequestType::kGetAssertion,
+                                    device::FidoRequestType::kGetAssertion,
                                     /*resident_key_requirement=*/absl::nullopt,
                                     cable_pairings, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)

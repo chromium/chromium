@@ -54,10 +54,6 @@ MockExtensionSystem::store_factory() {
   return nullptr;
 }
 
-InfoMap* MockExtensionSystem::info_map() {
-  return nullptr;
-}
-
 QuotaService* MockExtensionSystem::quota_service() {
   return nullptr;
 }

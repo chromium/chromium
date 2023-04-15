@@ -189,6 +189,8 @@ viz_component("service") {
     "hit_test/hit_test_aggregator_delegate.h",
     "hit_test/hit_test_manager.cc",
     "hit_test/hit_test_manager.h",
+    "layers/layer_context_impl.cc",
+    "layers/layer_context_impl.h",
     "performance_hint/hint_session.cc",
     "performance_hint/hint_session.h",
     "performance_hint/utils.cc",
@@ -246,6 +248,7 @@ viz_component("service") {
     "//media",
     "//media/capture:capture_lib",
     "//media/mojo/services",
+    "//services/metrics/public/mojom",
     "//services/tracing/public/cpp:cpp",
     "//services/viz/privileged/mojom",
     "//skia",
@@ -257,6 +260,8 @@ viz_component("service") {
 
   public_deps = [
     "//base",
+    "//cc",
+    "//cc/animation",
     "//cc/debug",
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",
@@ -264,6 +269,7 @@ viz_component("service") {
     "//gpu/vulkan:buildflags",
     "//media/gpu/ipc/service",
     "//media/mojo/services",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/privileged/mojom/gl",
     "//services/viz/public/mojom",

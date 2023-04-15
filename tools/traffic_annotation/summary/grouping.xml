@@ -75,7 +75,6 @@ after discussions on the right group.
       <annotation id="remote_apps_image_downloader"/>
       <annotation id="remote_command_screenshot"/>
       <annotation id="smb_netbios_name_query"/>
-      <annotation id="supervised_users_denylist"/>
       <annotation id="tachyon_ice_config_fetcher"/>
       <annotation id="terms_of_service_fetch"/>
       <annotation id="timezone_lookup"/>
@@ -254,6 +253,8 @@ after discussions on the right group.
       <annotation id="nearby_share_update_device"/>
       <annotation id="nearby_share_contacts"/>
       <annotation id="nearby_share_list_public_certificates"/>
+      <annotation id="nearby_presence_update_device"/>
+      <annotation id="nearby_presence_list_public_certificates"/>
       <annotation id="managed_acccount_signin_restrictions_secure_connect_chromeos"/>
       <annotation id="fenced_frame_reporting_beacon"/>
       <annotation id="ntp_custom_background"/>
@@ -505,7 +506,6 @@ after discussions on the right group.
       <annotation id="signed_in_profile_avatar"/>
     </sender>
     <sender name="Favicon">
-      <annotation id="content_suggestion_get_favicon"/>
       <annotation id="icon_catcher_get_large_icon"/>
       <annotation id="favicon_fetcher_get_favicon"/>
     </sender>
@@ -521,11 +521,9 @@ after discussions on the right group.
       <annotation id="backdrop_collection_names_download"/>
       <annotation id="backdrop_next_image_download"/>
       <annotation id="drive_service"/>
-      <annotation id="ntp_snippets_fetch"/>
       <annotation id="nux_ntp_background_preview"/>
       <annotation id="photos_service"/>
       <annotation id="popular_sites_fetch"/>
-      <annotation id="remote_suggestions_provider"/>
       <annotation id="promo_service"/>
       <annotation id="recipes_service"/>
       <annotation id="chrome_cart_discounts_lookup"/>

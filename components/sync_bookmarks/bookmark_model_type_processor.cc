@@ -201,7 +201,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
     absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!model_type_state.cache_guid().empty());
-  DCHECK_EQ(model_type_state.cache_guid(), cache_guid_);
+  DCHECK_EQ(model_type_state.cache_guid(), cache_uuid_);
   DCHECK(syncer::IsInitialSyncDone(model_type_state.initial_sync_state()));
   DCHECK(start_callback_.is_null());
   // Processor should never connect if
@@ -215,7 +215,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
       syncer::BOOKMARKS,
       /*is_initial_sync=*/!bookmark_tracker_, updates.size());
 
-  // Clients before M94 did not populate the parent GUID in specifics.
+  // Clients before M94 did not populate the parent UUID in specifics.
   PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
 
   if (!bookmark_tracker_) {
@@ -383,7 +383,7 @@ size_t BookmarkModelTypeProcessor::EstimateMemoryUsage() const {
   if (bookmark_tracker_) {
     memory_usage += bookmark_tracker_->EstimateMemoryUsage();
   }
-  memory_usage += EstimateMemoryUsage(cache_guid_);
+  memory_usage += EstimateMemoryUsage(cache_uuid_);
   return memory_usage;
 }
 
@@ -402,11 +402,11 @@ void BookmarkModelTypeProcessor::OnSyncStarting(
   DCHECK(favicon_service_);
   DVLOG(1) << "Sync is starting for Bookmarks";
 
-  cache_guid_ = request.cache_guid;
+  cache_uuid_ = request.cache_guid;
   start_callback_ = std::move(start_callback);
   error_handler_ = request.error_handler;
 
-  DCHECK(!cache_guid_.empty());
+  DCHECK(!cache_uuid_.empty());
   DCHECK(error_handler_);
   ConnectIfReady();
 }
@@ -457,12 +457,12 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  DCHECK(!cache_guid_.empty());
+  DCHECK(!cache_uuid_.empty());
 
   if (bookmark_tracker_ &&
-      bookmark_tracker_->model_type_state().cache_guid() != cache_guid_) {
+      bookmark_tracker_->model_type_state().cache_guid() != cache_uuid_) {
     // TODO(crbug.com/820049): Add basic unit testing.
-    // In case of a cache guid mismatch, treat it as a corrupted metadata and
+    // In case of a cache uuid mismatch, treat it as a corrupted metadata and
     // start clean.
     StopTrackingMetadataAndResetTracker();
   }
@@ -476,7 +476,7 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     sync_pb::ModelTypeState model_type_state;
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(syncer::BOOKMARKS));
-    model_type_state.set_cache_guid(cache_guid_);
+    model_type_state.set_cache_guid(cache_uuid_);
     activation_context->model_type_state = model_type_state;
   }
   activation_context->type_processor =
@@ -495,7 +495,7 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
   DCHECK(bookmark_model_);
   DCHECK(!start_callback_);
 
-  cache_guid_.clear();
+  cache_uuid_.clear();
   worker_.reset();
 
   switch (metadata_fate) {

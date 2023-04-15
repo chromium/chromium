@@ -38,6 +38,7 @@ source_set("coordinator_impl") {
     "//base",
     "//components/bookmarks/browser",
     "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin:signin",
     "//ios/chrome/browser/sync:sync",

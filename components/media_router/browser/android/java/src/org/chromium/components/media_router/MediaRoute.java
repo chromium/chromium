@@ -22,9 +22,9 @@ public class MediaRoute {
     public final String sinkId;
 
     /**
-     * The presentation URL that the route was created for.
+     * The URL or URN that the route is casting.
      */
-    public final String sourceId;
+    private String mSourceId;
 
     /**
      * The presentation id that was assigned to the route.
@@ -34,7 +34,7 @@ public class MediaRoute {
     public MediaRoute(String sinkId, String sourceId, String presentationId) {
         this.id = createMediaRouteId(presentationId, sinkId, sourceId);
         this.sinkId = sinkId;
-        this.sourceId = sourceId;
+        this.mSourceId = sourceId;
         this.presentationId = presentationId;
     }
 
@@ -48,5 +48,13 @@ public class MediaRoute {
         builder.append(MEDIA_ROUTE_ID_SEPARATOR);
         builder.append(sourceUrn);
         return builder.toString();
+    }
+
+    public void setSourceId(String sourceId) {
+        this.mSourceId = sourceId;
+    }
+
+    public String getSourceId() {
+        return mSourceId;
     }
 }

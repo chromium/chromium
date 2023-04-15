@@ -202,6 +202,26 @@ bool VariationsIdsProvider::ForceDisableVariationIds(
                                   &force_disabled_ids_set_)) {
     return false;
   }
+
+  // When disabling a variation ID through the command line, ensure it is
+  // disabled in every contexts.
+  static_assert(
+      ID_COLLECTION_COUNT == 6,
+      "If you add a new collection key, make sure it can be disabled here.");
+  std::set<VariationIDEntry> additional_disabled_ids;
+  for (const auto& entry : force_disabled_ids_set_) {
+    if (entry.second == GOOGLE_WEB_PROPERTIES_ANY_CONTEXT) {
+      additional_disabled_ids.insert(
+          VariationIDEntry(entry.first, GOOGLE_WEB_PROPERTIES_SIGNED_IN));
+      additional_disabled_ids.insert(
+          VariationIDEntry(entry.first, GOOGLE_WEB_PROPERTIES_FIRST_PARTY));
+    } else if (entry.second == GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT) {
+      additional_disabled_ids.insert(VariationIDEntry(
+          entry.first, GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY));
+    }
+  }
+  force_disabled_ids_set_.merge(additional_disabled_ids);
+
   if (variation_ids_cache_initialized_) {
     // Update the cached variation ids header value after cache initialization,
     // otherwise the change won't be in the cache.

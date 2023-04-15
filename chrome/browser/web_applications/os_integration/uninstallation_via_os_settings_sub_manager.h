@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_UNINSTALLATION_VIA_OS_SETTINGS_SUB_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_UNINSTALLATION_VIA_OS_SETTINGS_SUB_MANAGER_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -21,8 +22,8 @@ class WebAppRegistrar;
 // settings. Currently this is only used on Windows OS.
 class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
  public:
-  explicit UninstallationViaOsSettingsSubManager(Profile& profile,
-                                                 WebAppRegistrar& registrar);
+  UninstallationViaOsSettingsSubManager(const base::FilePath& profile_path,
+                                        WebAppRegistrar& registrar);
   ~UninstallationViaOsSettingsSubManager() override;
 
   void Configure(const AppId& app_id,
@@ -35,7 +36,7 @@ class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
                base::OnceClosure callback) override;
 
  private:
-  const raw_ref<Profile> profile_;
+  const base::FilePath profile_path_;
   const raw_ref<WebAppRegistrar> registrar_;
   base::WeakPtrFactory<UninstallationViaOsSettingsSubManager> weak_factory_{
       this};

@@ -64,8 +64,7 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
     public static MessagePayload fromWebMessageBoundaryInterface(
             @NonNull WebMessageBoundaryInterface boundaryInterface) {
         if (BoundaryInterfaceReflectionUtil.containsFeature(
-                    boundaryInterface.getSupportedFeatures(),
-                    Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD)) {
+                    boundaryInterface.getSupportedFeatures(), Features.WEB_MESSAGE_ARRAY_BUFFER)) {
             // MessagePayload API is supported by AndroidX.
             final MessagePayload messagePayload =
                     SupportLibWebMessagePayloadAdapter.toMessagePayload(
@@ -79,7 +78,7 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
         return new MessagePayload(boundaryInterface.getData());
     }
 
-    private static MessagePayload toMessagePayload(
+    public static MessagePayload toMessagePayload(
             /* MessagePayload */ InvocationHandler invocationHandler) {
         if (invocationHandler == null) {
             return null;
@@ -97,7 +96,7 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
             default:
                 // String and ArrayBuffer are covered by WEB_MESSAGE_GET_MESSAGE_PAYLOAD feature.
                 // Please add new feature flags for new types.
-                throw new RuntimeException("Unsupported type: " + type);
+                throw new IllegalArgumentException("Unsupported type: " + type);
         }
     }
 }

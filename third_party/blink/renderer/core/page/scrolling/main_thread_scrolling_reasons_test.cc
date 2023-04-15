@@ -399,7 +399,13 @@ class NonCompositedMainThreadScrollingReasonsTest
     if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
       return GetScrollNode(scrollable_area)->main_thread_scrolling_reasons;
     }
-    return scrollable_area.GetNonCompositedMainThreadScrollingReasons();
+    return scrollable_area.GetNonCompositedMainThreadScrollingReasons() |
+           scrollable_area.GetLayoutBox()
+               ->FirstFragment()
+               .PaintProperties()
+               ->ScrollTranslation()
+               ->ScrollNode()
+               ->GetMainThreadScrollingReasons();
   }
 
   void TestNonCompositedReasons(const AtomicString& style_class,
@@ -480,10 +486,18 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest,
        CantPaintScrollingBackgroundTest) {
   TestNonCompositedReasons(
       "cant-paint-scrolling-background",
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-          ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
-          : cc::MainThreadScrollingReason::
-                kCantPaintScrollingBackgroundAndLCDText);
+      cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll |
+          (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+               ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
+               : cc::MainThreadScrollingReason::
+                     kCantPaintScrollingBackgroundAndLCDText));
+}
+
+TEST_P(NonCompositedMainThreadScrollingReasonsTest,
+       BackgroundNeedsRepaintOnScroll) {
+  TestNonCompositedReasons(
+      "needs-repaint-on-scroll",
+      cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, ClipTest) {

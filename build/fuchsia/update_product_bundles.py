@@ -210,14 +210,15 @@ def get_product_bundles():
   return list(filter(bundle_is_active, downloaded_bundles))
 
 
-def download_product_bundle(product_bundle):
+def download_product_bundle(product_bundle, download_config):
   """Download product bundles using the SDK."""
   # This also updates the repository list, in case it is stale.
   update_repositories_list()
 
   try:
     common.run_ffx_command(
-        ('product-bundle', 'get', product_bundle, '--force-repo'))
+        ('product-bundle', 'get', product_bundle, '--force-repo'),
+        configs=download_config)
   except subprocess.CalledProcessError as cpe:
     logging.error('Product bundle download has failed. ' +
                   _PRODUCT_BUNDLE_FIX_INSTRUCTIONS)
@@ -295,13 +296,11 @@ def main():
     # TODO(crbug/1380807): Remove when product bundles can be downloaded
     # for custom SDKs without editing metadata
     override_file = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
+    pb_metadata = None
     if os.path.isfile(override_file):
       with open(override_file) as f:
         pb_metadata = f.read().strip().split('\n')
         pb_metadata.append('{sdk.root}/*.json')
-      stack.enter_context(
-          ffx_integration.ScopedFfxConfig('pbms.metadata',
-                                          json.dumps((pb_metadata))))
       logging.debug('Applied overrides')
 
     logging.debug('Getting new SDK hash')
@@ -338,9 +337,14 @@ def main():
     logging.debug('Make clean images root')
     common.make_clean_directory(common.IMAGES_ROOT)
 
+    download_config = None
+    if pb_metadata:
+      download_config = [
+          '{"pbms":{"metadata": %s}}' % json.dumps((pb_metadata))
+      ]
     for pb in new_product_bundles:
       logging.debug('Downloading bundle: %s', pb)
-      download_product_bundle(pb)
+      download_product_bundle(pb, download_config)
 
     current_pb = get_product_bundles()
 

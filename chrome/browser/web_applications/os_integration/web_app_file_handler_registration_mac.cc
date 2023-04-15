@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
-#include "chrome/browser/profiles/profile.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -24,7 +24,7 @@ bool FileHandlingIconsSupportedByOs() {
 
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
-                                Profile* profile,
+                                const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
   // On MacOS, file associations are managed through app shims in the
@@ -36,15 +36,14 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
   // saved during `FileHandlingSubManager::Configure`.
   if (!AreSubManagersExecuteEnabled()) {
     AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-        app_id, profile->GetPath(),
-        GetFileExtensionsFromFileHandlers(file_handlers),
+        app_id, profile_path, GetFileExtensionsFromFileHandlers(file_handlers),
         GetMimeTypesFromFileHandlers(file_handlers));
   }
   std::move(callback).Run(Result::kOk);
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
-                                  Profile* profile,
+                                  const base::FilePath& profile_path,
                                   ResultCallback callback) {
   // File handler information is embedded in the app shims. When those are
   // updated, file handlers are also unregistered.
@@ -52,7 +51,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
   // saved during `FileHandlingSubManager::Configure`.
   if (!AreSubManagersExecuteEnabled()) {
     AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-        app_id, profile->GetPath(), {}, {});
+        app_id, profile_path, {}, {});
   }
   // When updating file handlers, |callback| here triggers the registering of
   // the new file handlers. It is therefore important that |callback| not be

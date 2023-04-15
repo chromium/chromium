@@ -140,9 +140,10 @@ class FlossAdapterClientTest : public testing::Test {
     EXPECT_CALL(*bus_.get(), GetExportedObject)
         .WillRepeatedly(::testing::Return(exported_callbacks_.get()));
 
-    // Exported callback methods that we don't need to invoke.
-    // This will need to be updated once new callbacks are added.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(8);
+    // Exported callback methods that we don't need to invoke.  This will need
+    // to be updated once new callbacks are added.
+    // TODO(b/233124093): Reduce this count by 2 when SDP tests are added.
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(10);
 
     // Save the method handlers of exported callbacks that we need to invoke in
     // test.

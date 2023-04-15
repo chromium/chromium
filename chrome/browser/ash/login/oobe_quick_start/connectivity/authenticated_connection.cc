@@ -8,11 +8,13 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
@@ -69,19 +71,46 @@ void AuthenticatedConnection::RequestWifiCredentials(
     int32_t session_id,
     RequestWifiCredentialsCallback callback) {
   // Build the Wifi Credential Request payload
-  std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
+  std::string shared_secret_str(secondary_shared_secret_.begin(),
+                                secondary_shared_secret_.end());
   SendMessage(
       requests::BuildRequestWifiCredentialsMessage(session_id,
                                                    shared_secret_str),
-      base::BindOnce(&AuthenticatedConnection::OnWifiCredentialsResponse,
+      base::BindOnce(&AuthenticatedConnection::OnRequestWifiCredentialsResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AuthenticatedConnection::OnWifiCredentialsResponse(
+void AuthenticatedConnection::OnRequestWifiCredentialsResponse(
     RequestWifiCredentialsCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
-  // TODO (b/234655072): Implement response parsing.
-  NOTIMPLEMENTED();
+  if (!response_bytes.has_value()) {
+    QS_LOG(ERROR) << "No response bytes received for wifi credentials request";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  auto parse_mojo_response_callback =
+      base::BindOnce(&AuthenticatedConnection::ParseWifiCredentialsResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  decoder_->DecodeWifiCredentialsResponse(
+      response_bytes.value(), std::move(parse_mojo_response_callback));
+}
+
+void AuthenticatedConnection::ParseWifiCredentialsResponse(
+    RequestWifiCredentialsCallback callback,
+    ::ash::quick_start::mojom::GetWifiCredentialsResponsePtr response) {
+  if (!response->is_credentials()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  WifiCredentials credentials;
+  credentials.ssid = response->get_credentials()->ssid;
+  credentials.password = response->get_credentials()->password;
+  credentials.is_hidden = response->get_credentials()->is_hidden;
+  credentials.security_type = response->get_credentials()->security_type;
+  std::move(callback).Run(std::move(credentials));
 }
 
 void AuthenticatedConnection::OnRequestAccountTransferAssertionResponse(

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Her er nogle andre nyttige ressourcer:</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
+<translation id="1923388006036088459">Kontrastfarver</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Et standard-APN er påkrævet</translation>
@@ -140,6 +141,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2085089206770112532">Reducer skærmens lysstyrke</translation>
+<translation id="209751264101900360">Daggry til mørkets frembrud – Skyernes bevægelse</translation>
 <translation id="2102231663024125441">Tekstredigering</translation>
 <translation id="2105810540595158374">Enheden er en spilcontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -331,6 +333,7 @@
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3969602104473960991">ChromeOS-adgangskoden er opdateret</translation>
 <translation id="397105322502079400">Beregner...</translation>
+<translation id="3974175076798940554">Eksklusive Chromebook Plus-aktiver er nu tilgængelige</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="3993704782688964914">Din <ph name="DEVICE_NAME" /> er nu opdateret</translation>
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
@@ -370,6 +373,7 @@
 <translation id="4275663329226226506">Medier</translation>
 <translation id="4289540628985791613">Oversigt</translation>
 <translation id="4289849978083912975">Slide show</translation>
+<translation id="4293621540182258188">Daggry til mørkets frembrud – Jordens bevægelse</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="4311195029067684288">Fuld</translation>
@@ -544,6 +548,7 @@
 <translation id="576835345334454681">Øg skærmens lysstyrke</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
+<translation id="5809090008577139505">Nordlys</translation>
 <translation id="5826644637650799838">Om baggrunden</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="583281660410589416">Ukendt</translation>
@@ -562,6 +567,7 @@
 <translation id="5907649332524363701">farve på taster</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
+<translation id="5918201491776799918">Vælg kunst, der kun fås til Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
 <translation id="5939518447894949180">Nulstil</translation>
@@ -818,6 +824,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vælg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Udviklerværktøjer</translation>
+<translation id="8153923300383192510">Kun på Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Vedhæft</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -840,6 +847,7 @@
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8364946094152050673">Navneserverne er ikke angivet</translation>
 <translation id="8372477600026034341">Ekstra hosts</translation>
+<translation id="8373046809163484087">Brug farvesæt, der matcher din baggrund</translation>
 <translation id="8380114448424469341">Fastgør vinduet på halvdelen af skærmen (<ph name="DIRECTION" />)</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" /> administreres af en virksomhed</translation>
 <translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
@@ -859,6 +867,7 @@
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
 <translation id="8508640263392900755">Oplysninger om adgangspunkt</translation>
+<translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>

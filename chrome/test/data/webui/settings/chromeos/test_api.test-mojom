@@ -39,9 +39,13 @@ interface LockScreenSettings {
   // the recovery is still disabled.
   EnableRecoveryConfiguration() => ();
 
-  // Try to toggle whether recovery is configured or not. Does not assume that
-  // the action is successful.
+  // Try to enable data recovery. Data recovery must not be configured before
+  // calling this. Does not assume that the action is successful.
   TryEnableRecoveryConfiguration() => ();
+
+  // Try to enable data recovery. Data recovery must be configured before
+  // calling this. Does not assume that the action is successful.
+  TryDisableRecoveryConfiguration() => ();
 
   // The following function expects the cryptohome recovery toggle is on.
   // Clicks on the recovery toggle, expecting the recovery dialog to show up.
@@ -124,6 +128,14 @@ interface LockScreenSettings {
   AssertAutoLockScreenFocused() => ();
 };
 
+// The interface used to control Google drive settings.
+interface GoogleDriveSettings {
+  // Asserts that the values returned from the Google drive PageHandler match
+  // the supplied values.
+  AssertBulkPinningSpace(string required_space,
+      string remaining_space) => ();
+};
+
 // An interface that allows clients to manipulate the os settings ui. Served by
 // Javascript injected into the os settings page. Consumed by C++ running in
 // the browser process during tests.
@@ -138,6 +150,12 @@ interface OSSettingsDriver {
   // screen settings.
   GoToLockScreenSettings() =>
       (pending_remote<LockScreenSettings> lock_screen_settings);
+
+  // Navigate to Google drive settings subpage. The settings page must be in its
+  // initial state before calling this. The return value can be used to
+  // manipulate Google drive settings.
+  AssertOnGoogleDriveSettings() =>
+      (pending_remote<GoogleDriveSettings> google_drive_settings);
 };
 
 // The interface served from within the browser process in tests. Consumed by

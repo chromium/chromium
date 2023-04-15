@@ -35,7 +35,6 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 namespace {
 
 constexpr auto kQsSliderRowPadding = gfx::Insets::TLBR(0, 12, 4, 16);
-constexpr int kQsSliderViewSpacing = 8;
 constexpr auto kQsSliderIconInsets = gfx::Insets::VH(0, 10);
 constexpr auto kQsSliderBorder = gfx::Insets::TLBR(0, 4, 0, 16);
 
@@ -139,7 +138,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kQsSliderRowPadding,
-      kQsSliderViewSpacing));
+      kSliderChildrenViewSpacing));
   container_ = AddChildView(std::move(container));
   layout->SetFlexForView(container_, /*flex=*/1);
   layout->set_cross_axis_alignment(

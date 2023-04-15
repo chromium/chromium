@@ -67,12 +67,11 @@ void OfflinePageShareHelper::OnPageGetForShare(
     return;
   }
   const OfflinePageItem& page = pages[0];
-  const bool is_suggested = GetPolicy(page.client_id.name_space).is_suggested;
   const bool in_private_dir = model_->IsArchiveInInternalDir(page.file_path);
 
   // Need to publish internal page to public directory to share the file with
   // content URI instead of the web page URL.
-  if (!is_suggested && in_private_dir) {
+  if (in_private_dir) {
     AcquireFileAccessPermission();
     return;
   }

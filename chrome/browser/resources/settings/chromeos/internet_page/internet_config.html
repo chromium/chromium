@@ -28,18 +28,18 @@
     <template is="dom-if" if="[[error_]]" restamp>
       <div class="flex error">[[getError_(error_)]]</div>
     </template>
-    <cr-button class="cancel-button" on-click="onCancelTap_">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
     <template is="dom-if" if="[[!showConnect]]">
       <cr-button id="saveButton" class="action-button"
-          on-click="onSaveTap_" disabled="[[!enableSave_]]">
+          on-click="onSaveClick_" disabled="[[!enableSave_]]">
         $i18n{save}
       </cr-button>
     </template>
     <template is="dom-if" if="[[showConnect]]">
       <cr-button id="connectButton" class="action-button"
-          on-click="onConnectTap_" disabled="[[!enableConnect_]]">
+          on-click="onConnectClick_" disabled="[[!enableConnect_]]">
         $i18n{networkButtonConnect}
       </cr-button>
     </template>

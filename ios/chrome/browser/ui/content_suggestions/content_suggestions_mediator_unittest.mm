@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
@@ -115,6 +116,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.NTPMetrics = NTPMetrics_;
     mediator_.NTPMetrics.webState = fake_web_state_.get();
 
+    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
+    mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
+
     promos_manager_ = std::make_unique<MockPromosManager>();
     mediator_.promosManager = promos_manager_.get();
 
@@ -153,6 +157,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   NTPHomeMetrics* NTPMetrics_;
   FakeUrlLoadingBrowserAgent* url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  ContentSuggestionsMetricsRecorder* metrics_recorder_;
 };
 
 // Tests that the command is sent to the dispatcher when opening the Reading

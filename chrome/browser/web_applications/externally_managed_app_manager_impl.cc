@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -168,16 +168,16 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
   if (current_install_ || IsShuttingDown()) {
     return;
   }
-  command_scheduler()->ScheduleCallbackWithLock<FullSystemLock>(
+  command_scheduler()->ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppManagerImpl::MaybeStartNext",
-      std::make_unique<FullSystemLockDescription>(),
+      std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(
           &ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
-    FullSystemLock& lock) {
+    AllAppsLock& lock) {
   if (current_install_ || IsShuttingDown()) {
     return;
   }

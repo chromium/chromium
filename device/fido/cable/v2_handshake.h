@@ -123,7 +123,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   // request_type contains the hinted type of the request. This can
   // be used to guide UI ahead of receiving the actual request. This defaults to
   // `kGetAssertion` if not present or if the value in the QR code is unknown.
-  CableRequestType request_type = CableRequestType::kGetAssertion;
+  FidoRequestType request_type = FidoRequestType::kGetAssertion;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -132,7 +132,7 @@ absl::optional<Components> Parse(const std::string& qr_url);
 // Encode returns the contents of a QR code that represents |qr_key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
-                   CableRequestType request_type);
+                   FidoRequestType request_type);
 
 // BytesToDigits returns a base-10 encoding of |in|.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -184,12 +184,12 @@ void Derive(uint8_t* out,
 // client payload to give the phone an early hint about the type of request.
 // This lets it craft better UI.
 COMPONENT_EXPORT(DEVICE_FIDO)
-const char* RequestTypeToString(CableRequestType request_type);
+const char* RequestTypeToString(FidoRequestType request_type);
 
 // RequestTypeFromString performs the inverse of `RequestTypeToString`. If the
 // value of `s` is unknown, `kGetAssertion` is returned.
 COMPONENT_EXPORT(DEVICE_FIDO)
-CableRequestType RequestTypeFromString(const std::string& s);
+FidoRequestType RequestTypeFromString(const std::string& s);
 
 // Derive derives a sub-secret from a secret and nonce. It is not possible to
 // learn anything about |secret| from the value of the sub-secret, assuming that

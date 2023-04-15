@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
@@ -98,6 +100,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // method call.
     virtual void QueueHermesErrorStatus(HermesResponseStatus status) = 0;
 
+    // Sets the return for the next call to
+    // HermesEuiccClient::InstallProfileFromActivationCode(). The implementation
+    // of this method should only accept error statuses since clients expect
+    // addition information about the installed profile on success.
+    virtual void SetNextInstallProfileFromActivationCodeResult(
+        HermesResponseStatus status) = 0;
+
     // Set delay for interactive methods.
     virtual void SetInteractiveDelay(base::TimeDelta delay) = 0;
 
@@ -121,10 +130,15 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     dbus::Property<bool>& is_active() { return is_active_; }
     dbus::Property<std::vector<dbus::ObjectPath>>&
     installed_carrier_profiles() {
+      DCHECK(!features::IsSmdsDbusMigrationEnabled());
       return installed_carrier_profiles_;
     }
-    dbus::Property<std::vector<dbus::ObjectPath>>& profiles();
+    dbus::Property<std::vector<dbus::ObjectPath>>& profiles() {
+      DCHECK(features::IsSmdsDbusMigrationEnabled());
+      return profiles_;
+    }
     dbus::Property<std::vector<dbus::ObjectPath>>& pending_carrier_profiles() {
+      DCHECK(!features::IsSmdsDbusMigrationEnabled());
       return pending_carrier_profiles_;
     }
     dbus::Property<int32_t>& physical_slot() { return physical_slot_; }

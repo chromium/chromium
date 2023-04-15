@@ -238,18 +238,6 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
                                 : RSAKeyUsage::kMissingDigitalSignature;
 }
 
-// IsCECPQ2Host returns true if the given host is eligible for CECPQ2. This is
-// used to implement a gradual rollout as the larger TLS messages may cause
-// middlebox issues.
-bool IsCECPQ2Host(const std::string& host) {
-  // Currently only eTLD+1s that start with "aa" are included, for example
-  // aardvark.com or aaron.com.
-  return registry_controlled_domains::GetDomainAndRegistry(
-             host, registry_controlled_domains::PrivateRegistryFilter::
-                       EXCLUDE_PRIVATE_REGISTRIES)
-             .find(features::kPostQuantumCECPQ2Prefix.Get()) == 0;
-}
-
 bool HostIsIPAddressNoBrackets(base::StringPiece host) {
   // Note this cannot directly call url::HostIsIPAddress, because that function
   // expects bracketed IPv6 literals. By the time hosts reach SSLClientSocket,
@@ -758,20 +746,10 @@ int SSLClientSocketImpl::Init() {
     return ERR_UNEXPECTED;
   }
 
-  if (base::FeatureList::IsEnabled(features::kPostQuantumKyber)) {
+  if (context_->config().post_quantum_enabled &&
+      base::FeatureList::IsEnabled(features::kPostQuantumKyber)) {
     static const int kCurves[] = {NID_X25519Kyber768, NID_X25519,
-                                  NID_P256Kyber768, NID_X9_62_prime256v1,
-                                  NID_secp384r1};
-    if (!SSL_set1_curves(ssl_.get(), kCurves, std::size(kCurves))) {
-      return ERR_UNEXPECTED;
-    }
-  } else if (context_->config().cecpq2_enabled &&
-      (base::FeatureList::IsEnabled(features::kPostQuantumCECPQ2) ||
-       (!host_is_ip_address &&
-        base::FeatureList::IsEnabled(features::kPostQuantumCECPQ2SomeDomains) &&
-        IsCECPQ2Host(host_and_port_.host())))) {
-    static const int kCurves[] = {NID_CECPQ2, NID_X25519, NID_X9_62_prime256v1,
-                                  NID_secp384r1};
+                                  NID_X9_62_prime256v1, NID_secp384r1};
     if (!SSL_set1_curves(ssl_.get(), kCurves, std::size(kCurves))) {
       return ERR_UNEXPECTED;
     }

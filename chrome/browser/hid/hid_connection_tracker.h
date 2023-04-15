@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HID_HID_CONNECTION_TRACKER_H_
 #define CHROME_BROWSER_HID_HID_CONNECTION_TRACKER_H_
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
@@ -17,13 +18,10 @@ class HidConnectionTracker : public KeyedService {
   HidConnectionTracker& operator=(HidConnectionTracker&) = delete;
   ~HidConnectionTracker() override;
 
-  virtual void IncrementConnectionCount();
-  virtual void DecrementConnectionCount();
+  virtual void IncrementConnectionCount(const url::Origin& origin);
+  virtual void DecrementConnectionCount(const url::Origin& origin);
 
-  // Generate a notification about a connection created for |origin|.
-  virtual void NotifyDeviceConnected(const url::Origin& origin);
-
-  virtual void ShowHidContentSettingsExceptions();
+  virtual void ShowContentSettingsExceptions();
   virtual void ShowSiteSettings(const url::Origin& origin);
 
   // This is used by either the destructor or
@@ -31,12 +29,20 @@ class HidConnectionTracker : public KeyedService {
   // from HidSystemTrayIcon.
   void CleanUp();
 
-  int connection_count() { return connection_count_; }
+  int total_connection_count() { return total_connection_count_; }
   Profile* profile() { return profile_; }
 
+  const base::flat_map<url::Origin, int>& GetOriginsForTesting() {
+    return origins_;
+  }
+
  private:
-  int connection_count_ = 0;
+  int total_connection_count_ = 0;
   raw_ptr<Profile> profile_;
+
+  // The structure that tracks the connection count for each origin that has
+  // active connection(s).
+  base::flat_map<url::Origin, int> origins_;
 };
 
 #endif  // CHROME_BROWSER_HID_HID_CONNECTION_TRACKER_H_

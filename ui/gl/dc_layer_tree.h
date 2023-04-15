@@ -224,7 +224,17 @@ class DCLayerTree {
       void set_z_order(int z_order) { z_order_ = z_order; }
 
      private:
+      // The root of this subtree. In root space and contains the clip rect.
       Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
+      // The child of |clip_visual_|, transforms its children from quad to root
+      // space. This visual exists because |offset_| is in quad space, so it
+      // must be affected by |transform_|. They cannot be on the same visual
+      // since |IDCompositionVisual::SetTransform| and
+      // |IDCompositionVisual::SetOffset[XY]| are applied in the opposite order
+      // than we want.
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> transform_visual_;
+      // The child of |transform_visual_|. In quad space, holds
+      // |dcomp_visual_content_|.
       Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
 
       // The content to be placed at the leaf of the visual subtree. Either an

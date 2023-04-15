@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PAGE_NODE_IMPL_DESCRIBER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PAGE_NODE_IMPL_DESCRIBER_H_
 
+#include "base/values.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 
 namespace performance_manager {
+
+class PageNode;
 
 // Describes the state of of a PageNodeImpl for human consumption.
 class PageNodeImplDescriber : public GraphOwned,

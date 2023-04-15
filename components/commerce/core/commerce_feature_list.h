@@ -28,6 +28,7 @@ extern const char kEnableChromeCart[];
 }
 
 BASE_DECLARE_FEATURE(kCommercePriceTracking);
+BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam
@@ -74,6 +75,8 @@ BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates);
 BASE_DECLARE_FEATURE(kCommerceAllowServerImages);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
+BASE_DECLARE_FEATURE(kCommerceProductInfoApiEnabled);
+BASE_DECLARE_FEATURE(kCommerceProductInfoApiEnabledRegionLaunched);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);

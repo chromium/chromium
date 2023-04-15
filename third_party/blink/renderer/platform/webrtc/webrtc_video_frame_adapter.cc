@@ -246,8 +246,8 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     // SkImage.
     auto format = (source_frame->format() == media::PIXEL_FORMAT_XBGR ||
                    source_frame->format() == media::PIXEL_FORMAT_ABGR)
-                      ? viz::ResourceFormat::RGBA_8888
-                      : viz::ResourceFormat::BGRA_8888;
+                      ? viz::SinglePlaneFormat::kRGBA_8888
+                      : viz::SinglePlaneFormat::kBGRA_8888;
 
     scoped_refptr<media::VideoFrame> dst_frame;
     {

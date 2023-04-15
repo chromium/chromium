@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,16 +69,17 @@ LocationIconView::LocationIconView(
 
   SetAccessibleProperties(/*is_initialization*/ true);
 
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
     // you do not need to hardcode color values.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
     views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
-          const SkColor pressed_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateRippleNeutralOnSubtle);
+          const SkColor pressed_color =
+              host->GetColorProvider()->GetColor(kColorPageInfoIconPressed);
           const float pressed_alpha = SkColorGetA(pressed_color);
+
           return std::make_unique<views::FloodFillInkDropRipple>(
               views::InkDrop::Get(host), host->size(),
               host->GetLocalBounds().CenterPoint(),
@@ -88,9 +90,10 @@ LocationIconView::LocationIconView(
 
     views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](views::View* host) {
-          const SkColor hover_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateHoverDimBlendProtection);
+          const SkColor hover_color =
+              host->GetColorProvider()->GetColor(kColorPageInfoIconHover);
           const float hover_alpha = SkColorGetA(hover_color);
+
           auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
               host->size(), host->height() / 2,
               gfx::PointF(host->GetLocalBounds().CenterPoint()),
@@ -124,7 +127,7 @@ SkColor LocationIconView::GetForegroundColor() const {
 }
 
 bool LocationIconView::ShouldShowSeparator() const {
-  return !features::IsChromeRefresh2023() && ShouldShowLabel();
+  return !OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && ShouldShowLabel();
 }
 
 bool LocationIconView::ShowBubble(const ui::Event& event) {
@@ -192,7 +195,7 @@ int LocationIconView::GetInternalSpacing() const {
 
   return (ui::TouchUiController::Get()->touch_ui()
               ? kDefaultInternalSpacingTouchUI
-              : (features::IsChromeRefresh2023()
+              : (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
                      ? kDefaultInternalSpacingChromeRefresh
                      : kDefaultInternalSpacing)) +
          GetExtraInternalSpacing();
@@ -298,10 +301,9 @@ void LocationIconView::UpdateIcon() {
 }
 
 void LocationIconView::UpdateBackground() {
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
-        height() / 2));
+        GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
   }
 }
 
@@ -372,7 +374,7 @@ void LocationIconView::UpdateBorder() {
   // child views in the location bar have the same height. The visible height of
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
     if (ShouldShowLabel()) {
       // An extra space between chip's label and right edge.

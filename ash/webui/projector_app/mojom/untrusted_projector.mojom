@@ -11,6 +11,16 @@ interface UntrustedProjectorPageHandler {
   // Requested by the Projector SWA to check the new screencast precondition
   // state.
   GetNewScreencastPrecondition() => (NewScreencastPrecondition precondition);
+
+  // Requested by the Projector SWA to check if SODA is not available and should
+  // be downloaded. Returns false if the device doesn't support SODA.
+  ShouldDownloadSoda() => (bool should_download);
+
+  // Requested by the Projector SWA to trigger SODA installation.
+  // Returns true if installation was triggered. The installation progress
+  // is returned via the OnSoda* methods defined in  UntrustedProjectorPage
+  // below.
+  InstallSoda() => (bool triggered);
 };
 
 // Implemented in Javascript to handle requests from the browser process.
@@ -18,6 +28,13 @@ interface UntrustedProjectorPage {
     // Called by the browser process when the precondition for starting a new
     // projector session changes.
     OnNewScreencastPreconditionChanged(NewScreencastPrecondition precondition);
+    // Called by the browser process when SODA installation is making progress.
+    OnSodaInstallProgressUpdated(int32 progress);
+    // Called by the browser process when SODA has been installed.
+    OnSodaInstalled();
+    // Called by the browser process when SODA installation has
+    // encountered an error.
+    OnSodaInstallError();
 };
 
 // Implemented in C++ in the browser process to set up the communication between

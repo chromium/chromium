@@ -12,6 +12,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -19,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,6 +60,19 @@ std::string GenerateTestSuffix(
   return suffix;
 }
 
+void UseFixedPlaceholderTextAndHideCursor(
+    raw_ptr<SearchBoxView> search_box_view) {
+  ASSERT_TRUE(search_box_view);
+
+  // Use a fixed placeholder text instead of the one picked randomly to
+  // avoid the test flakiness.
+  search_box_view->UseFixedPlaceholderTextForTest();
+
+  // Hide the search box cursor to avoid the flakiness due to the blinking.
+  views::TextfieldTestApi(search_box_view->search_box())
+      .SetCursorLayerOpacity(0.f);
+}
+
 }  // namespace
 
 class AppListViewPixelRTLTest
@@ -75,18 +90,6 @@ class AppListViewPixelRTLTest
   void ShowAppList() {
     AppListTestHelper* test_helper = GetAppListTestHelper();
     test_helper->ShowAppList();
-
-    // Use a fixed placeholder text instead of the one picked randomly to
-    // avoid the test flakiness.
-    test_helper->GetSearchBoxView()->UseFixedPlaceholderTextForTest();
-  }
-
-  // Hide the search box cursor to avoid the flakiness due to the
-  // blinking.
-  void HideCursor() {
-    views::TextfieldTestApi(
-        GetAppListTestHelper()->GetBubbleSearchBoxView()->search_box())
-        .SetCursorLayerOpacity(0.f);
   }
 
   void SetUpAnswerCardResult(SearchModel::SearchResults* results,
@@ -158,7 +161,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   // OnSearchResultContainerResultsChanged will schedule show animations().
   base::RunLoop().RunUntilIdle();
 
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_answer_card_search_results",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
@@ -180,7 +183,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
   // OnSearchResultContainerResultsChanged will schedule show animations().
   base::RunLoop().RunUntilIdle();
 
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_url_search_results",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
@@ -193,7 +196,8 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
       /*num_apps=*/2, AppListTestHelper::IconColorType::kAlternativeColor,
       /*set_name=*/true);
   ShowAppList();
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(
+      GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_basics",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
@@ -206,7 +210,8 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
       /*num_apps=*/22, AppListTestHelper::IconColorType::kAlternativeColor,
       /*set_name=*/true);
   ShowAppList();
-  HideCursor();
+  UseFixedPlaceholderTextAndHideCursor(
+      GetAppListTestHelper()->GetSearchBoxView());
   views::ScrollView* scroll_view =
       GetAppListTestHelper()->GetBubbleAppsPage()->scroll_view();
 
@@ -268,11 +273,13 @@ TEST_P(AppListViewLauncherSearchIphTest, Basic) {
     event_generator->ClickLeftButton();
   }
 
-  // Wait re-layout for adding IPH view.
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(search_box_view->iph_view());
+  ViewDrawnWaiter view_drawn_waiter;
+  view_drawn_waiter.Wait(search_box_view->iph_view());
 
+  UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "launcher_search_iph", /*revision_number=*/0, search_box_view));
+      "launcher_search_iph", /*revision_number=*/1, search_box_view));
 }
 
 class AppListViewTabletPixelTest
@@ -360,36 +367,14 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
       "search_box_view_active", /*revision_number=*/0, search_box_view));
 }
 
-class AppListViewAssistantZeroStateParams {
- public:
-  AppListViewAssistantZeroStateParams(bool rtl, bool dark_theme)
-      : rtl_(rtl), dark_theme_(dark_theme) {}
-
-  static std::string ToTestSuffix(
-      const testing::TestParamInfo<AppListViewAssistantZeroStateParams>& info) {
-    std::string suffix;
-    suffix.append(info.param.rtl() ? "rtl" : "ltr");
-    suffix.append("_");
-    suffix.append(info.param.dark_theme() ? "dark" : "light");
-    return suffix;
-  }
-
-  bool rtl() const { return rtl_; }
-  bool dark_theme() const { return dark_theme_; }
-
- private:
-  bool rtl_;
-  bool dark_theme_;
-};
-
 class AppListViewAssistantZeroStateTest
     : public AssistantAshTestBase,
-      public testing::WithParamInterface<AppListViewAssistantZeroStateParams> {
+      public testing::WithParamInterface<TestVariantsParam> {
  public:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam().rtl();
+    init_params.under_rtl = IsRtl(GetParam());
     return init_params;
   }
 
@@ -401,19 +386,19 @@ class AppListViewAssistantZeroStateTest
     SetNumberOfSessionsWhereOnboardingShown(
         assistant::ui::kOnboardingMaxSessionsShown);
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
-        GetParam().dark_theme());
+        IsDarkMode(GetParam()));
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(
+        IsTabletMode(GetParam()));
     ShowAssistantUi();
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    RTL,
-    AppListViewAssistantZeroStateTest,
-    testing::Values(AppListViewAssistantZeroStateParams(false, false),
-                    AppListViewAssistantZeroStateParams(false, true),
-                    AppListViewAssistantZeroStateParams(true, false),
-                    AppListViewAssistantZeroStateParams(true, true)),
-    &AppListViewAssistantZeroStateParams::ToTestSuffix);
+INSTANTIATE_TEST_SUITE_P(RTL,
+                         AppListViewAssistantZeroStateTest,
+                         testing::Combine(/*IsRtl=*/testing::Bool(),
+                                          /*IsDarkMode=*/testing::Bool(),
+                                          /*IsTabletMode=*/testing::Bool()),
+                         &GenerateTestSuffix);
 
 TEST_P(AppListViewAssistantZeroStateTest, Basic) {
   // Wait layout.
@@ -421,7 +406,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "app_list_view_assistant_zero_state", /*revision_number=*/0,
-      page_view()));
+      page_view()->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 
 }  // namespace ash

@@ -36,22 +36,6 @@ BASE_FEATURE(kWebAuthPasskeysUI,
              "WebAuthenticationPasskeysUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR,
-             "WebAuthenticationNoEmptyDisplayNameCBOR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag,
-             "WebAuthenticationNonDiscoverableMakeCredentialQRFlag",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDisableWebAuthnWithBrokenCerts,
-             "DisableWebAuthnWithBrokenCerts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAuthnNoPasskeysError,
-             "WebAuthenticationNoPasskeysError",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Added in M112. Remove in or after M115.
 BASE_FEATURE(kWebAuthnCredProtectThree,
              "WebAuthenticationCredProtectThree",

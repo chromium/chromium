@@ -307,6 +307,10 @@ phone_hub_metrics::Screen AppStreamLauncherView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kMiniLauncher;
 }
 
+void AppStreamLauncherView::OnBubbleClose() {
+  RemoveAllChildViews();
+}
+
 void AppStreamLauncherView::OnAppListChanged() {
   if (!features::IsEcheSWAEnabled() || !features::IsEcheLauncherEnabled())
     return;

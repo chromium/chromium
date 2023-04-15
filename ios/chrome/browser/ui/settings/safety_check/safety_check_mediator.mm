@@ -1161,7 +1161,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
               : self.passwordCheckManager->GetInsecureCredentials().size();
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-              IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT,
+              IsPasswordCheckupEnabled()
+                  ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
+                  : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
               compromisedPasswordCount));
       self.passwordCheckItem.warningState = WarningState::kSevereWarning;
       break;

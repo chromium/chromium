@@ -91,15 +91,22 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
       constexpr auto kDefaultSize = gfx::Size(4096, 4096);
       constexpr auto kSoftwareCodec = true;
       constexpr auto kHardwareCodec = false;
+      constexpr char kUnknownDecoderName[] = "";
       return std::vector<MediaCodecDecoderInfo>({
-          {H264PROFILE_BASELINE, gfx::Size(), kDefaultSize, kHardwareCodec},
-          {H264PROFILE_MAIN, gfx::Size(), kDefaultSize, kHardwareCodec},
-          {H264PROFILE_HIGH, gfx::Size(), kDefaultSize, kHardwareCodec},
-          {HEVCPROFILE_MAIN, gfx::Size(), kDefaultSize, kHardwareCodec},
+          {H264PROFILE_BASELINE, kNoVideoCodecLevel, gfx::Size(), kDefaultSize,
+           kHardwareCodec, SecureCodecCapability::kClear, kUnknownDecoderName},
+          {H264PROFILE_MAIN, kNoVideoCodecLevel, gfx::Size(), kDefaultSize,
+           kHardwareCodec, SecureCodecCapability::kClear, kUnknownDecoderName},
+          {H264PROFILE_HIGH, kNoVideoCodecLevel, gfx::Size(), kDefaultSize,
+           kHardwareCodec, SecureCodecCapability::kClear, kUnknownDecoderName},
+          {HEVCPROFILE_MAIN, kNoVideoCodecLevel, gfx::Size(), kDefaultSize,
+           kHardwareCodec, SecureCodecCapability::kClear, kUnknownDecoderName},
 
           // Report codecs as software where we have a bundled decoder.
-          {VP8PROFILE_ANY, gfx::Size(), kDefaultSize, kSoftwareCodec},
-          {VP9PROFILE_PROFILE0, gfx::Size(), kDefaultSize, kSoftwareCodec},
+          {VP8PROFILE_ANY, kNoVideoCodecLevel, gfx::Size(), kDefaultSize,
+           kSoftwareCodec, SecureCodecCapability::kClear, kUnknownDecoderName},
+          {VP9PROFILE_PROFILE0, kNoVideoCodecLevel, gfx::Size(), kDefaultSize,
+           kSoftwareCodec, SecureCodecCapability::kClear, kUnknownDecoderName},
       });
     }
 
@@ -108,6 +115,7 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
       MediaCodecDecoderInfo info;
       info.profile = static_cast<VideoCodecProfile>(
           Java_SupportedProfileAdapter_getProfile(env, java_profile));
+      info.level = Java_SupportedProfileAdapter_getLevel(env, java_profile);
       info.coded_size_min = gfx::Size(
           Java_SupportedProfileAdapter_getMinWidth(env, java_profile),
           Java_SupportedProfileAdapter_getMinHeight(env, java_profile));
@@ -116,6 +124,22 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
           Java_SupportedProfileAdapter_getMaxHeight(env, java_profile));
       info.is_software_codec =
           Java_SupportedProfileAdapter_isSoftwareCodec(env, java_profile);
+      bool supports_secure_playback =
+          Java_SupportedProfileAdapter_supportsSecurePlayback(env,
+                                                              java_profile);
+      bool requires_secure_playback =
+          Java_SupportedProfileAdapter_requiresSecurePlayback(env,
+                                                              java_profile);
+      // If the decoder requires secure playback, it must support secure
+      // playback.
+      DCHECK(!requires_secure_playback || supports_secure_playback);
+      info.secure_codec_capability =
+          requires_secure_playback
+              ? SecureCodecCapability::kEncrypted
+              : (supports_secure_playback ? SecureCodecCapability::kAny
+                                          : SecureCodecCapability::kClear);
+      info.name = base::android::ConvertJavaStringToUTF8(
+          Java_SupportedProfileAdapter_getName(env, java_profile));
       cpp_infos.push_back(info);
     }
     std::sort(

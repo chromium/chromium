@@ -29,7 +29,7 @@
     <template is="dom-if"
         if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
       <cr-link-row id="chromevoxSubpageTrigger"
-          class="settings-box" on-click="onChromeVoxNewSettingsTap_"
+          class="settings-box" on-click="onChromeVoxNewSettingsClick_"
           label="$i18n{chromeVoxOptionsLabel}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -37,15 +37,19 @@
     <template is="dom-if"
         if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
       <cr-link-row id="chromeVoxSubpageButton"
-          class="settings-box" on-click="onChromeVoxSettingsTap_"
-          label="$i18n{chromeVoxOptionsLabel}" external>
+          class="settings-box" on-click="onChromeVoxSettingsClick_"
+          label="$i18n{chromeVoxOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
   <div class="sub-item">
     <cr-link-row id="chromeVoxTutorialButton"
-        class="settings-box" on-click="onChromeVoxTutorialTap_"
-        label="$i18n{chromeVoxTutorialLabel}" external>
+        class="settings-box" on-click="onChromeVoxTutorialClick_"
+        label="$i18n{chromeVoxTutorialLabel}"
+        external
+        button-aria-description="$i18n{opensInNewTab}">
     </cr-link-row>
   </div>
 </iron-collapse>
@@ -63,7 +67,7 @@
     <template is="dom-if"
         if="[[isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
       <cr-link-row id="select-to-speak-subpage-trigger"
-          class="settings-box" on-click="onSelectToSpeakTap_"
+          class="settings-box" on-click="onSelectToSpeakClick_"
           label="$i18n{selectToSpeakLinkTitle}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -71,8 +75,10 @@
     <template is="dom-if"
         if="[[!isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
       <cr-link-row id="selectToSpeakSubpageButton"
-          class="settings-box" on-click="onSelectToSpeakSettingsTap_"
-          label="$i18n{selectToSpeakOptionsLabel}" external>
+          class="settings-box" on-click="onSelectToSpeakSettingsClick_"
+          label="$i18n{selectToSpeakOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
@@ -85,7 +91,7 @@
 </settings-toggle-button>
 
 <cr-link-row id="ttsSubpageButton" class="hr"
-    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsTap_"
+    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsClick_"
     sub-label="$i18n{ttsSettingsLinkDescription}"
     role-description="$i18n{subpageArrowRoleDescription}" embedded>
 </cr-link-row>

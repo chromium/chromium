@@ -958,6 +958,20 @@ if (is_ios) {
   }
 }
 
+source_set("run_all_unittests") {
+  testonly = true
+  sources = [ "test/run_all_unittests.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/display",
+  ]
+}
+
 test("ui_base_unittests") {
   use_xvfb = use_xvfb_in_this_config
 

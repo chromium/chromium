@@ -139,7 +139,8 @@ phone_hub_metrics::Screen PhoneConnectedView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kPhoneConnected;
 }
 
-void PhoneConnectedView::ShowAppStreamErrorDialog() {
+void PhoneConnectedView::ShowAppStreamErrorDialog(bool is_different_network,
+                                                  bool is_phone_on_cellular) {
   if (!features::IsEcheNetworkConnectionStateEnabled()) {
     return;
   }
@@ -148,7 +149,8 @@ void PhoneConnectedView::ShowAppStreamErrorDialog() {
       base::BindOnce(&PhoneConnectedView::OnAppStreamErrorDialogClosed,
                      base::Unretained(this)),
       base::BindOnce(&PhoneConnectedView::OnAppStreamErrorDialogButtonClicked,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      is_different_network, is_phone_on_cellular);
   app_stream_error_dialog_->UpdateBounds();
   app_stream_error_dialog_->widget()->Show();
 }

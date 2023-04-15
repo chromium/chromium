@@ -584,10 +584,6 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
                                  kOverviewItemCornerRadius / scale);
   }
 
-  if (auto* shadow = overview_item_->shadow()) {
-    shadow->SetRoundedCornerRadius(kOverviewItemCornerRadius);
-  }
-
   layer->SetRoundedCornerRadius(radii);
 }
 

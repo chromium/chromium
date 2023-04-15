@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -22,20 +21,23 @@ namespace reporting {
 
 // static
 std::unique_ptr<UserAddedRemovedReporter> UserAddedRemovedReporter::Create(
+    base::flat_map<AccountId, bool> users_to_be_removed,
     policy::ManagedSessionService* managed_session_service) {
-  return base::WrapUnique(
-      new UserAddedRemovedReporter(std::make_unique<UserEventReporterHelper>(
-                                       Destination::ADDED_REMOVED_EVENTS),
-                                   managed_session_service));
+  return base::WrapUnique(new UserAddedRemovedReporter(
+      std::make_unique<UserEventReporterHelper>(
+          Destination::ADDED_REMOVED_EVENTS),
+      std::move(users_to_be_removed), managed_session_service));
 }
 
 // static
 std::unique_ptr<UserAddedRemovedReporter>
 UserAddedRemovedReporter::CreateForTesting(
     std::unique_ptr<UserEventReporterHelper> helper,
+    base::flat_map<AccountId, bool> users_to_be_removed,
     policy::ManagedSessionService* managed_session_service) {
-  return base::WrapUnique(
-      new UserAddedRemovedReporter(std::move(helper), managed_session_service));
+  return base::WrapUnique(new UserAddedRemovedReporter(
+      std::move(helper), std::move(users_to_be_removed),
+      managed_session_service));
 }
 
 UserAddedRemovedReporter::~UserAddedRemovedReporter() = default;
@@ -115,22 +117,13 @@ void UserAddedRemovedReporter::OnUserRemoved(
                      reason);
 }
 
-void UserAddedRemovedReporter::ProcessRemoveUserCache() {
-  ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
-  auto users = user_manager->GetRemovedUserCache();
-
-  for (const auto& user : users) {
-    ProcessRemovedUser(user.first, user.second);
-  }
-
-  user_manager->MarkReporterInitialized();
-}
-
 UserAddedRemovedReporter::UserAddedRemovedReporter(
     std::unique_ptr<UserEventReporterHelper> helper,
+    base::flat_map<AccountId, bool> users_to_be_removed,
     policy::ManagedSessionService* managed_session_service)
-    : helper_(std::move(helper)) {
-  ProcessRemoveUserCache();
+    : helper_(std::move(helper)),
+      users_to_be_removed_(std::move(users_to_be_removed)) {
   managed_session_observation_.Observe(managed_session_service);
 }
+
 }  // namespace reporting

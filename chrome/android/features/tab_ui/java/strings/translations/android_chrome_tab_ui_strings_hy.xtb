@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
-<translation id="1181037720776840403">Ջնջել</translation>
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1403228085774130835">Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում</translation>
 <translation id="1455506303394048917">Այս ինկոգնիտո ներդիրներում ձեր կատարած գործողությունները կհեռացվեն սարքից</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Հեռացնել ներդիրը խմբից}one{Հեռացնել ներդիրը խմբից}other{Հեռացնել ներդիրները խմբից}}</translation>
 <translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Հեռացնել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը խմբից։}one{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը խմբից։}other{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները խմբից։}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Էջանշել ներդիրը}one{Էջանշել ներդիրը}other{Էջանշել ներդիրները}}</translation>
-<translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="2569352796411618312">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վաղուց չեք օգտագործել։ Փակե՞լ դրանք։</translation>
-<translation id="257674075312929031">Խումբ</translation>
 <translation id="2613747923081026172">Ստեղծել խումբ</translation>
 <translation id="2662028055331606429">Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Անցնել կայք</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Քաշեք ներդիրները՝ դրանք խմբավորելու համար</translation>
 <translation id="5846292395804797011">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>
-<translation id="6040143037577758943">Փակել</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Կիսվել ներդիրով}one{Կիսվել ներդիրով}other{Կիսվել ներդիրներով}}</translation>
 <translation id="7129458170538955174">Այս խանութի մասին տեղեկությունները բացված են կիսով չափ</translation>
-<translation id="7151209024774799310">Հեռացնել ներդիները խմբից</translation>
 <translation id="7204204600596740190">Մի քանի ներդիրի ընտրության ռեժիմ</translation>
 <translation id="7326879924029668159">Դիտեք վերադարձման կանոնները և այլ տեղեկություններ</translation>
 <translation id="7352298686197644113">Տեսեք, թե ձեր բացված ներդիրներում որ ապրանքն ունի ամենացածր գինը</translation>

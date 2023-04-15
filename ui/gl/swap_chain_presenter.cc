@@ -208,10 +208,9 @@ struct IntelVpeExt {
   raw_ptr<void> param;
 };
 
-// Return true if VpSuperResolution has been set successfully.
-bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
-                                  ID3D11VideoProcessor* video_processor,
-                                  bool enable) {
+HRESULT ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
+                                     ID3D11VideoProcessor* video_processor,
+                                     bool enable) {
   TRACE_EVENT1("gpu", "ToggleIntelVpSuperResolution", "on", enable);
 
   IntelVpeExt ext = {};
@@ -229,7 +228,7 @@ bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
-    return false;
+    return hr;
   }
 
   ext.function = kIntelVpeFnMode;
@@ -242,7 +241,7 @@ bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
-    return false;
+    return hr;
   }
 
   ext.function = kIntelVpeFnScaling;
@@ -257,15 +256,14 @@ bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
-    return false;
   }
-  return enable;
+
+  return hr;
 }
 
-// Return true if VpSuperResolution has been set successfully.
-bool ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
-                                   ID3D11VideoProcessor* video_processor,
-                                   bool enable) {
+HRESULT ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
+                                      ID3D11VideoProcessor* video_processor,
+                                      bool enable) {
   TRACE_EVENT1("gpu", "ToggleNvidiaVpSuperResolution", "on", enable);
 
   constexpr GUID kNvidiaPPEInterfaceGUID = {
@@ -295,25 +293,27 @@ bool ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
-    return false;
   }
-  return enable;
+
+  return hr;
 }
 
-bool ToggleVpSuperResolution(UINT gpu_vendor_id,
-                             ID3D11VideoContext* video_context,
-                             ID3D11VideoProcessor* video_processor,
-                             bool enable) {
+HRESULT ToggleVpSuperResolution(UINT gpu_vendor_id,
+                                ID3D11VideoContext* video_context,
+                                ID3D11VideoProcessor* video_processor,
+                                bool enable) {
   if (gpu_vendor_id == 0x8086 &&
       base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
     return ToggleIntelVpSuperResolution(video_context, video_processor, enable);
   }
+
   if (gpu_vendor_id == 0x10de &&
       base::FeatureList::IsEnabled(features::kNvidiaVpSuperResolution)) {
     return ToggleNvidiaVpSuperResolution(video_context, video_processor,
                                          enable);
   }
-  return false;
+
+  return E_NOTIMPL;
 }
 
 bool IsWithinMargin(int i, int j) {
@@ -605,10 +605,10 @@ bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
   if (params.clip_rect.has_value())
     clipped_onscreen_rect.Intersect(*visual_clip_rect);
 
-  // Restore after test
-  // if (clipped_onscreen_rect == gfx::Rect(monitor_size)) {
-  //  return true;
-  //}
+  // Skip adjustment if the current swap chain size is already correct.
+  if (clipped_onscreen_rect == gfx::Rect(monitor_size)) {
+    return true;
+  }
 
   // Because of the rounding when converting between pixels and DIPs, a
   // fullscreen video can become slightly larger than the monitor - e.g. on
@@ -825,10 +825,10 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     }
   }
 
-  // Restore after test
-  // if (new_onscreen_rect == clipped_onscreen_rect) {
-  //  return true;
-  //}
+  // Skip adjustment if the current swap chain size is already correct.
+  if (new_onscreen_rect == clipped_onscreen_rect) {
+    return;
+  }
 
   //
   // Adjust the clip rect.
@@ -1673,9 +1673,13 @@ bool SwapChainPresenter::VideoProcessorBlt(
     bool use_vp_super_resolution = false;
     if (!layer_tree_->disable_vp_super_resolution() &&
         !force_vp_super_resolution_off_) {
-      use_vp_super_resolution =
+      hr =
           ToggleVpSuperResolution(gpu_vendor_id_, video_context.Get(),
                                   video_processor.Get(), !is_on_battery_power_);
+      if (FAILED(hr)) {
+        force_vp_super_resolution_off_ = true;
+      }
+      use_vp_super_resolution = !is_on_battery_power_ && SUCCEEDED(hr);
     }
 
     hr = video_context->VideoProcessorBlt(video_processor.Get(),

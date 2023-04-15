@@ -73,6 +73,7 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,
       ui::ColorId dropdown_color_id,
+      ui::ColorId selected_dropdown_color_id,
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing) override;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

@@ -103,8 +103,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
     EXPECT_THAT(result, testing::HasSubstr(param.second_custodian));
     EXPECT_THAT(result, testing::HasSubstr(param.second_custodian_email));
   }
-  if (param.reason == FilteringBehaviorReason::ASYNC_CHECKER ||
-      param.reason == FilteringBehaviorReason::DENYLIST) {
+  if (param.reason == FilteringBehaviorReason::ASYNC_CHECKER) {
     EXPECT_THAT(result, testing::HasSubstr("\"showFeedbackLink\":true"));
   } else {
     EXPECT_THAT(result, testing::HasSubstr("\"showFeedbackLink\":false"));

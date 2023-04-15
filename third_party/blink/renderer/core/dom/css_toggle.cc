@@ -437,12 +437,12 @@ CSSToggle* CSSToggle::FindToggleInScope(Element& start_element,
   }
 }
 
-void CSSToggle::FireToggleActivation(Element& activated_element,
+bool CSSToggle::FireToggleActivation(Element& activated_element,
                                      const ToggleTrigger& activation) {
   const AtomicString& name = activation.Name();
   CSSToggle* toggle = FindToggleInScope(activated_element, name);
   if (!toggle)
-    return;
+    return false;
 
   CSSToggle::State old_value = toggle->Value();
   toggle->ChangeToggle(activation, toggle->FindToggleSpecifier());
@@ -450,6 +450,8 @@ void CSSToggle::FireToggleActivation(Element& activated_element,
 
   if (old_value != new_value)
     toggle->FireToggleChangeEvent();
+
+  return true;
 }
 
 // Implement https://tabatkins.github.io/css-toggle/#change-a-toggle

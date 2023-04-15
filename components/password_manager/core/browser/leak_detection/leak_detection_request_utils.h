@@ -15,8 +15,16 @@ namespace password_manager {
 
 struct SingleLookupResponse;
 
+enum class LeakDetectionInitiator {
+  kSignInCheck = 0,
+  kBulkSyncedPasswordsCheck = 1,
+  kEditCheck = 2,
+  kMaxValue = kEditCheck,
+};
+
 // Contains the payload for analysing one credential against the leaks.
 struct LookupSingleLeakPayload {
+  LeakDetectionInitiator initiator;
   std::string username_hash_prefix;
   std::string encrypted_payload;
 };
@@ -58,7 +66,8 @@ using SingleLeakResponseAnalysisCallback =
 // Asynchronously creates a data payload for single credential check.
 // Callback is invoked on the calling thread with the protobuf and the
 // encryption key used.
-void PrepareSingleLeakRequestData(const std::string& username,
+void PrepareSingleLeakRequestData(LeakDetectionInitiator initiator,
+                                  const std::string& username,
                                   const std::string& password,
                                   SingleLeakRequestDataCallback callback);
 
@@ -68,6 +77,7 @@ void PrepareSingleLeakRequestData(const std::string& username,
 void PrepareSingleLeakRequestData(
     base::CancelableTaskTracker& task_tracker,
     base::TaskRunner& task_runner,
+    LeakDetectionInitiator initiator,
     const std::string& encryption_key,
     const std::string& username,
     const std::string& password,

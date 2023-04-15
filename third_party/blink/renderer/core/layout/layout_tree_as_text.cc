@@ -123,11 +123,6 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Size& s) {
   return ts << "width=" << s.width() << " height=" << s.height();
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Rect& r) {
-  return ts << "at " << r.origin() << " size " << r.width() << "x"
-            << r.height();
-}
-
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::SizeF& s) {
   ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.width());
   ts << " height="
@@ -458,8 +453,7 @@ void Write(WTF::TextStream& ts,
           layout_view->GetDocument().UpdateStyleAndLayout(
               DocumentUpdateReason::kTest);
           if (auto* layer = layout_view->Layer()) {
-            LayoutTreeAsText::WriteLayers(ts, layer, layer, indent + 1,
-                                          behavior);
+            LayoutTreeAsText::WriteLayers(ts, layer, indent + 1, behavior);
           }
         }
       }
@@ -475,17 +469,12 @@ enum LayerPaintPhase {
 
 static void Write(WTF::TextStream& ts,
                   PaintLayer& layer,
-                  const PhysicalRect& layer_bounds,
-                  const PhysicalRect& background_clip_rect,
-                  const PhysicalRect& clip_rect,
+                  const PhysicalOffset& layer_offset,
                   LayerPaintPhase paint_phase = kLayerPaintPhaseAll,
                   int indent = 0,
                   LayoutAsTextBehavior behavior = kLayoutAsTextBehaviorNormal,
                   const PaintLayer* marked_layer = nullptr) {
-  gfx::Rect adjusted_layout_bounds = ToPixelSnappedRect(layer_bounds);
-  gfx::Rect adjusted_background_clip_rect =
-      ToPixelSnappedRect(background_clip_rect);
-  gfx::Rect adjusted_clip_rect = ToPixelSnappedRect(clip_rect);
+  gfx::Point adjusted_layer_offset = ToRoundedPoint(layer_offset);
 
   if (marked_layer)
     ts << (marked_layer == &layer ? "*" : " ");
@@ -500,14 +489,8 @@ static void Write(WTF::TextStream& ts,
   if (behavior & kLayoutAsTextShowAddresses)
     ts << static_cast<const void*>(&layer) << " ";
 
-  ts << adjusted_layout_bounds;
+  ts << "at " << adjusted_layer_offset;
 
-  if (!adjusted_layout_bounds.IsEmpty()) {
-    if (!adjusted_background_clip_rect.Contains(adjusted_layout_bounds))
-      ts << " backgroundClip " << adjusted_background_clip_rect;
-    if (!adjusted_clip_rect.Contains(adjusted_layout_bounds))
-      ts << " clip " << adjusted_clip_rect;
-  }
   if (layer.Transform())
     ts << " hasTransform";
   if (layer.IsTransparent())
@@ -566,30 +549,16 @@ static HeapVector<Member<PaintLayer>> ChildLayers(
 }
 
 void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
-                                   const PaintLayer* root_layer_arg,
                                    PaintLayer* layer,
                                    int indent,
                                    LayoutAsTextBehavior behavior,
                                    const PaintLayer* marked_layer) {
-  // Calculate the clip rects we should use.
-  const PaintLayer* root_layer = layer->Transform() ? layer : root_layer_arg;
-  PhysicalOffset layer_offset;
-  ClipRect background_rect, foreground_rect;
-  if (layer->GetLayoutObject().FirstFragment().HasLocalBorderBoxProperties()) {
-    layer->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-        .CalculateRects(
-            ClipRectsContext(root_layer,
-                             &root_layer->GetLayoutObject().FirstFragment()),
-            &layer->GetLayoutObject().FirstFragment(), layer_offset,
-            background_rect, foreground_rect);
-  } else {
-    layer->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-        .CalculateRects(ClipRectsContext(root_layer, nullptr), nullptr,
-                        layer_offset, background_rect, foreground_rect);
-  }
+  const LayoutObject& layer_object = layer->GetLayoutObject();
+  PhysicalOffset layer_offset =
+      layer_object.LocalToAbsolutePoint(PhysicalOffset());
 
   bool should_dump = true;
-  auto* embedded = DynamicTo<LayoutEmbeddedContent>(layer->GetLayoutObject());
+  auto* embedded = DynamicTo<LayoutEmbeddedContent>(layer_object);
   if (embedded && embedded->IsThrottledFrameView())
     should_dump = false;
 
@@ -600,16 +569,13 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 #endif
 
-  bool should_dump_children =
-      !layer->GetLayoutObject().ChildLayoutBlockedByDisplayLock();
+  bool should_dump_children = !layer_object.ChildLayoutBlockedByDisplayLock();
 
   const auto& neg_list = ChildLayers(layer, kNegativeZOrderChildren);
-  PhysicalRect layer_bounds(layer_offset, layer->Size());
   bool paints_background_separately = !neg_list.empty();
   if (should_dump && paints_background_separately) {
-    Write(ts, *layer, layer_bounds, background_rect.Rect(),
-          foreground_rect.Rect(), kLayerPaintPhaseBackground, indent, behavior,
-          marked_layer);
+    Write(ts, *layer, layer_offset, kLayerPaintPhaseBackground, indent,
+          behavior, marked_layer);
   }
 
   if (should_dump_children && !neg_list.empty()) {
@@ -620,14 +586,12 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ++curr_indent;
     }
     for (auto& child_layer : neg_list) {
-      WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
-                  marked_layer);
+      WriteLayers(ts, child_layer, curr_indent, behavior, marked_layer);
     }
   }
 
   if (should_dump) {
-    Write(ts, *layer, layer_bounds, background_rect.Rect(),
-          foreground_rect.Rect(),
+    Write(ts, *layer, layer_offset,
           paints_background_separately ? kLayerPaintPhaseForeground
                                        : kLayerPaintPhaseAll,
           indent, behavior, marked_layer);
@@ -642,8 +606,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ++curr_indent;
     }
     for (auto& child_layer : normal_flow_list) {
-      WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
-                  marked_layer);
+      WriteLayers(ts, child_layer, curr_indent, behavior, marked_layer);
     }
   }
 
@@ -656,8 +619,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ++curr_indent;
     }
     for (auto& child_layer : pos_list) {
-      WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
-                  marked_layer);
+      WriteLayers(ts, child_layer, curr_indent, behavior, marked_layer);
     }
   }
 }
@@ -730,7 +692,7 @@ static String ExternalRepresentation(LayoutBox* layout_object,
     return ts.Release();
 
   PaintLayer* layer = layout_object->Layer();
-  LayoutTreeAsText::WriteLayers(ts, layer, layer, 0, behavior, marked_layer);
+  LayoutTreeAsText::WriteLayers(ts, layer, 0, behavior, marked_layer);
   WriteSelection(ts, layout_object);
   return ts.Release();
 }

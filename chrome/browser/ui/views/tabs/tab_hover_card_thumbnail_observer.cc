@@ -18,7 +18,7 @@ void TabHoverCardThumbnailObserver::Observe(
     return;
 
   subscription_ = current_image_->Subscribe();
-  subscription_->SetSizeHint(TabStyle::GetPreviewImageSize());
+  subscription_->SetSizeHint(TabStyle::Get()->GetPreviewImageSize());
   subscription_->SetUncompressedImageCallback(base::BindRepeating(
       &TabHoverCardThumbnailObserver::ThumbnailImageCallback,
       base::Unretained(this), base::Unretained(current_image_.get())));

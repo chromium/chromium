@@ -78,7 +78,7 @@ export class SettingsDefaultBrowserPageElement extends
     }
   }
 
-  private onSetDefaultBrowserTap_() {
+  private onSetDefaultBrowserClick_() {
     this.browserProxy_.setAsDefaultBrowser();
   }
 }

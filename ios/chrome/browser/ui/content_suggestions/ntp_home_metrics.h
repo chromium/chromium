@@ -14,15 +14,6 @@ class ChromeBrowserState;
 namespace web {
 class WebState;
 }
-
-namespace ntp_home {
-
-// Records an NTP impression of type `impression_type`.
-void RecordNTPImpression(ntp_home::IOSNTPImpression impression_type);
-// Records when an NTP impression has occurred for Tile Ablation.
-void NTPImpressionHasOccurred();
-}  // namespace ntp_home
-
 // These values are persisted to IOS.ContentSuggestions.ActionOn* histograms.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class IOSContentSuggestionsActionType {
@@ -33,15 +24,6 @@ enum class IOSContentSuggestionsActionType {
   kFakebox = 4,
   kTrendingQuery = 5,
   kMaxValue = kTrendingQuery,
-};
-
-// These values are persisted to IOS.NTP.OverscrollAction histograms.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class OverscrollActionType {
-  kOpenedNewTab = 0,
-  kPullToRefresh = 1,
-  kCloseTab = 2,
-  kMaxValue = kCloseTab,
 };
 
 // Metrics recorder for the action used to potentially leave the NTP.
@@ -59,9 +41,6 @@ enum class OverscrollActionType {
 // Records a user action on a ContentSuggestions module `type`.
 - (void)recordContentSuggestionsActionForType:
     (IOSContentSuggestionsActionType)type;
-
-// Records an Overscroll user action of type: `type`.
-- (void)recordOverscrollActionForType:(OverscrollActionType)type;
 
 @end
 

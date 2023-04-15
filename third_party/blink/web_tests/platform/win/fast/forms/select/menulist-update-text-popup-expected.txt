@@ -4,12 +4,12 @@ Needs run-layout-test.
 A
 B
 C
-layer at (0,0) size 33x20
+layer at (8,50)
   LayoutNGBlockFlow (positioned) {DIV} at (8,50) size 33x20
-    LayoutFlexibleBox {SELECT} at (0,0) size 33x20 [bgcolor=#FFFFFF] [border: (1px solid #767676)]
+    LayoutNGFlexibleBox {SELECT} at (0,0) size 33x20 [bgcolor=#FFFFFF] [border: (1px solid #767676)]
     LayoutText {#text} at (0,0) size 0x0
-layer at (5,1) size 9x18
-  LayoutBlockFlow {DIV} at (5,1) size 9x18
+layer at (13,51)
+  LayoutNGBlockFlow {DIV} at (5,1) size 9x18
     LayoutText {#text} at (0,1) size 9x16
       text run at (0,1) width 9: "C"
 

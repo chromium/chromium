@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/version_item.h"
@@ -164,7 +165,8 @@ const CGFloat kDefaultHeight = 70;
 #pragma mark - VersionFooterDelegate
 
 - (void)didTapVersionFooter:(VersionFooter*)footer {
-  [[UIPasteboard generalPasteboard] setString:[self versionOnlyString]];
+  StoreTextInPasteboard([self versionOnlyString]);
+
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* messageText = l10n_util::GetNSString(IDS_IOS_VERSION_COPIED);
   MDCSnackbarMessage* message =

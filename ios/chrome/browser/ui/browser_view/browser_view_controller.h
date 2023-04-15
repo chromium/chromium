@@ -10,8 +10,8 @@
 #import "base/ios/block_types.h"
 
 #import "base/memory/weak_ptr.h"
-#import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
-#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
@@ -51,27 +50,26 @@ class FullscreenController;
 @class NewTabPageCoordinator;
 @class LensCoordinator;
 @protocol OmniboxCommands;
+class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 @protocol PopupMenuUIUpdating;
 class PrerenderService;
 @class PrimaryToolbarCoordinator;
+class ReadingListBrowserAgent;
 @class SafeAreaProvider;
 @class SecondaryToolbarCoordinator;
 @class SideSwipeController;
-@protocol SnackbarCommands;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
 class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
-@protocol ToolbarCommands;
 @class ToolbarContainerCoordinator;
 @protocol IncognitoReauthCommands;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
-class ReadingListModel;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
@@ -95,16 +93,14 @@ typedef struct {
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
-  id<SnackbarCommands> snackbarCommandsHandler;
   id<ApplicationCommands> applicationCommandsHandler;
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
-  id<ToolbarCommands> toolbarCommandsHandler;
   id<LoadQueryCommands> loadQueryCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
-  ReadingListModel* readingModel;
+  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
@@ -170,6 +166,9 @@ typedef struct {
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
 
+// TODO(crbug.com/1272540): Remove this command.
+@property(nonatomic) ReadingListBrowserAgent* readingListBrowserAgent;
+
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
 
@@ -185,13 +184,6 @@ typedef struct {
 // the next time a tab is added to the Browser this object was initialized
 // with.
 - (void)appendTabAddedCompletion:(ProceduralBlock)tabAddedCompletion;
-
-// Informs the BVC that a new foreground tab is about to be opened. This is
-// intended to be called before setWebUsageSuspended:NO in cases where a new tab
-// is about to appear in order to allow the BVC to avoid doing unnecessary work
-// related to showing the previously selected tab.
-// TODO(crbug.com/1329109): Move this to a browser agent or web event mediator.
-- (void)expectNewForegroundTab;
 
 // Shows the voice search UI.
 - (void)startVoiceSearch;

@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor.h"
@@ -252,6 +253,9 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
         ExtensionSignalType::kCookiesGetAll,
         std::make_unique<CookiesGetAllSignalProcessor>());
     signal_processors_.emplace(
+        ExtensionSignalType::kDeclarativeNetRequest,
+        std::make_unique<DeclarativeNetRequestSignalProcessor>());
+    signal_processors_.emplace(
         ExtensionSignalType::kTabsExecuteScript,
         std::make_unique<TabsExecuteScriptSignalProcessor>());
     signal_processors_.emplace(
@@ -267,6 +271,10 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
         signal_processors_[ExtensionSignalType::kCookiesGet].get()};
     std::vector<ExtensionSignalProcessor*> subscribers_for_cookies_get_all = {
         signal_processors_[ExtensionSignalType::kCookiesGetAll].get()};
+    std::vector<ExtensionSignalProcessor*>
+        subscribers_for_declarative_net_request = {
+            signal_processors_[ExtensionSignalType::kDeclarativeNetRequest]
+                .get()};
     std::vector<ExtensionSignalProcessor*> subscribers_for_tabs_execute_script =
         {signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
     std::vector<ExtensionSignalProcessor*>
@@ -281,6 +289,9 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
                                 std::move(subscribers_for_cookies_get));
     signal_subscribers_.emplace(ExtensionSignalType::kCookiesGetAll,
                                 std::move(subscribers_for_cookies_get_all));
+    signal_subscribers_.emplace(
+        ExtensionSignalType::kDeclarativeNetRequest,
+        std::move(subscribers_for_declarative_net_request));
     signal_subscribers_.emplace(ExtensionSignalType::kTabsExecuteScript,
                                 std::move(subscribers_for_tabs_execute_script));
     signal_subscribers_.emplace(
@@ -761,6 +772,7 @@ void ExtensionTelemetryService::DumpReportForTest(
         }
         continue;
       }
+
       // Potential Password Theft
       if (signal_pb.has_potential_password_theft_info()) {
         const auto& potential_password_theft_info_pb =
@@ -806,6 +818,23 @@ void ExtensionTelemetryService::DumpReportForTest(
             ss << "      ReuseCount: " << reused_password_infos_pb.count()
                << "\n";
           }
+        }
+      }
+
+      // Declarative Net Request
+      if (signal_pb.has_declarative_net_request_info()) {
+        const auto& declarative_net_request_info_pb =
+            signal_pb.declarative_net_request_info();
+        const RepeatedPtrField<std::string>& rules =
+            declarative_net_request_info_pb.rules();
+        if (!rules.empty()) {
+          ss << "  Signal: DeclarativeNetRequest\n";
+          for (const auto& rule : rules) {
+            ss << "    Rule:" << rule << "\n";
+          }
+          ss << "    MaxExceededRulesCount:"
+             << declarative_net_request_info_pb.max_exceeded_rules_count()
+             << "\n";
         }
         continue;
       }

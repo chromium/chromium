@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_preview_view.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
@@ -395,8 +395,8 @@ int DeskPreviewView::GetHeight(aura::Window* root) {
       root->bounds().width() <= kUseSmallerHeightDividerWidthThreshold
           ? kRootHeightDividerForSmallScreen
           : kRootHeightDivider;
-  return base::clamp(root->bounds().height() / height_divider,
-                     kDeskPreviewMinHeight, kDeskPreviewMaxHeight);
+  return std::clamp(root->bounds().height() / height_divider,
+                    kDeskPreviewMinHeight, kDeskPreviewMaxHeight);
 }
 
 void DeskPreviewView::SetHighlightOverlayVisibility(bool visible) {

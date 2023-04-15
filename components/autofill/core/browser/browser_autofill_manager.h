@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/sync_utils.h"
+#include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -328,6 +329,15 @@ class BrowserAutofillManager : public AutofillManager,
   void set_touch_to_fill_delegate(
       std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate) {
     touch_to_fill_delegate_ = std::move(touch_to_fill_delegate);
+  }
+
+  FastCheckoutDelegate* fast_checkout_delegate() {
+    return fast_checkout_delegate_.get();
+  }
+
+  void set_fast_checkout_delegate(
+      std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate) {
+    fast_checkout_delegate_ = std::move(fast_checkout_delegate);
   }
 
   void SetExternalDelegateForTest(
@@ -745,6 +755,7 @@ class BrowserAutofillManager : public AutofillManager,
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
   std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate_;
+  std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate_;
 
   std::string app_locale_;
 

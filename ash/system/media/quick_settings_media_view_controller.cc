@@ -120,4 +120,8 @@ void QuickSettingsMediaViewController::SetShowMediaView(bool show_media_view) {
   tray_controller_->SetShowMediaView(show_media_view);
 }
 
+void QuickSettingsMediaViewController::UpdateMediaItemOrder() {
+  media_view_->UpdateItemOrder(media_item_manager_->GetActiveItemIds());
+}
+
 }  // namespace ash

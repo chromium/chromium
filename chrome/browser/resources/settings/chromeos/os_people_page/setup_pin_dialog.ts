@@ -102,7 +102,7 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
     this.$.pinKeyboard.resetState();
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.pinKeyboard.resetState();
     this.$.dialog.close();
   }

@@ -2210,13 +2210,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   const char kScript[] = R"(
       var img = document.createElement('img');
       img.src = 'chrome://resources/images/arrow_down.svg';
-      img.onload = () => domAutomationController.send('LOADED');
-      img.onerror = e => domAutomationController.send('ERROR: ' + e);
+      new Promise(resolve => {
+        img.onload = () => resolve('LOADED');
+        img.onerror = e => resolve('ERROR: ' + e);
+      });
   )";
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(active_web_contents(),
-                                                     kScript, &result));
-  EXPECT_EQ("LOADED", result);
+  EXPECT_EQ("LOADED", content::EvalJs(active_web_contents(), kScript));
 }
 
 class CorbAndCorsAppBrowserTest : public PlatformAppBrowserTest {

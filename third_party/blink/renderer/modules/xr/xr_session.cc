@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -89,9 +90,11 @@ const char kDuplicateLayer[] = "All layers in render state must be unique.";
 const char kInlineVerticalFOVNotSupported[] =
     "This session does not support inlineVerticalFieldOfView";
 
-const char kAnchorsNotSupportedByDevice[] = "Device does not support anchors!";
+const char kFeatureNotSupportedByDevicePrefix[] =
+    "Device does not support feature ";
 
-const char kHitTestNotSupportedByDevice[] = "Device does not support hit test!";
+const char kFeatureNotSupportedBySessionPrefix[] =
+    "Session does not support feature ";
 
 const char kDeviceDisconnected[] = "The XR device has been disconnected.";
 
@@ -103,18 +106,9 @@ const char kUnableToRetrieveNativeOrigin[] =
     "The operation was unable to retrieve the native origin from XRSpace and "
     "could not be completed.";
 
-const char kHitTestFeatureNotSupported[] =
-    "Hit test feature is not supported by the session.";
-
 const char kHitTestSubscriptionFailed[] = "Hit test subscription failed.";
 
 const char kAnchorCreationFailed[] = "Anchor creation failed.";
-
-const char kLightEstimationFeatureNotSupported[] =
-    "Light estimation feature is not supported.";
-
-const char kImageTrackingFeatureNotSupported[] =
-    "Image tracking feature is not supported.";
 
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
@@ -702,8 +696,10 @@ ScriptPromise XRSession::CreateAnchorHelper(
 
   // Reject the promise if device doesn't support the anchors API.
   if (!xr_->xrEnvironmentProviderRemote()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kAnchorsNotSupportedByDevice);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        kFeatureNotSupportedByDevicePrefix +
+            XRSessionFeatureToString(device::mojom::XRSessionFeature::ANCHORS));
     return ScriptPromise();
   }
 
@@ -824,8 +820,11 @@ ScriptPromise XRSession::requestHitTestSource(
   DCHECK(options_init);
 
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kHitTestFeatureNotSupported);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kFeatureNotSupportedBySessionPrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::HIT_TEST));
     return {};
   }
 
@@ -836,8 +835,11 @@ ScriptPromise XRSession::requestHitTestSource(
   }
 
   if (!xr_->xrEnvironmentProviderRemote()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kHitTestNotSupportedByDevice);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        kFeatureNotSupportedByDevicePrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::HIT_TEST));
     return {};
   }
 
@@ -917,8 +919,11 @@ ScriptPromise XRSession::requestHitTestSourceForTransientInput(
   DCHECK(options_init);
 
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kHitTestFeatureNotSupported);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kFeatureNotSupportedBySessionPrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::HIT_TEST));
     return {};
   }
 
@@ -929,8 +934,11 @@ ScriptPromise XRSession::requestHitTestSourceForTransientInput(
   }
 
   if (!xr_->xrEnvironmentProviderRemote()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kHitTestNotSupportedByDevice);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        kFeatureNotSupportedByDevicePrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::HIT_TEST));
     return {};
   }
 
@@ -1302,8 +1310,11 @@ ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
   }
 
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kLightEstimationFeatureNotSupported);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kFeatureNotSupportedBySessionPrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::LIGHT_ESTIMATION));
     return ScriptPromise();
   }
 
@@ -1749,8 +1760,11 @@ ScriptPromise XRSession::getTrackedImageScores(
   }
 
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kImageTrackingFeatureNotSupported);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kFeatureNotSupportedBySessionPrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::IMAGE_TRACKING));
     return ScriptPromise();
   }
 
@@ -1808,8 +1822,11 @@ void XRSession::ProcessTrackedImagesData(
 HeapVector<Member<XRImageTrackingResult>> XRSession::ImageTrackingResults(
     ExceptionState& exception_state) {
   if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kImageTrackingFeatureNotSupported);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        kFeatureNotSupportedBySessionPrefix +
+            XRSessionFeatureToString(
+                device::mojom::XRSessionFeature::IMAGE_TRACKING));
     return {};
   }
 

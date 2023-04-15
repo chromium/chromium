@@ -21,6 +21,7 @@ declare global {
         url?: string;
         title: string;
         dateAdded?: number;
+        dateLastUsed?: number;
         dateGroupModified?: number;
         unmodifiable?: BookmarkTreeNodeUnmodifiable;
         children?: BookmarkTreeNode[];

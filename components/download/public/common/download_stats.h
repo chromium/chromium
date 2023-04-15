@@ -220,17 +220,8 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDangerousDownloadAccept(
     DownloadDangerType danger_type,
     const base::FilePath& file_path);
 
-// Records various metrics at the start of a download resumption.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadResumption(
-    DownloadInterruptReason reason,
-    bool user_resume);
-
 // Records the interrupt reason when a download is retried.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadRetry(
-    DownloadInterruptReason reason);
-
-// Records whenever a download hits max auto-resumption limit.
-COMPONENTS_DOWNLOAD_EXPORT void RecordAutoResumeCountLimitReached(
     DownloadInterruptReason reason);
 
 // Returns the type of download.
@@ -245,9 +236,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadMimeType(
 // Records the mime type of the download for normal profile.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadMimeTypeForNormalProfile(
     const std::string& mime_type);
-
-// Record the number of completed unopened downloads when a download is opened.
-COMPONENTS_DOWNLOAD_EXPORT void RecordOpensOutstanding(int size);
 
 // Record overall bandwidth stats at the file end.
 // Does not count in any hash computation or file open/close time.
@@ -365,22 +353,9 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadHttpResponseCode(
 COMPONENTS_DOWNLOAD_EXPORT void RecordInProgressDBCount(
     InProgressDBCountTypes type);
 
-COMPONENTS_DOWNLOAD_EXPORT void RecordDuplicateInProgressDownloadIdCount(
-    int count);
-
-// Records the interrupt reason that causes download to restart.
-COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartReason(
-    DownloadInterruptReason reason);
-
 // Records the interrupt reason that causes download to restart.
 COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
     DownloadInterruptReason reason);
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerCreationTimeSinceStartup(
-    base::TimeDelta elapsed_time);
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerMemoryUsage(
-    size_t bytes_used);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
     DownloadInterruptReason reason);
@@ -407,10 +382,6 @@ enum class BackgroudTargetDeterminationResultTypes {
   kMaxValue = kPathReservationFailed
 };
 
-// Records whether download target determination is successfully completed in
-// reduced mode.
-COMPONENTS_DOWNLOAD_EXPORT void RecordBackgroundTargetDeterminationResult(
-    BackgroudTargetDeterminationResultTypes type);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

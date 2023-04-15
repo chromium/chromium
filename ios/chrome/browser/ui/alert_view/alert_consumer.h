@@ -25,7 +25,8 @@
     (NSArray<TextFieldConfiguration*>*)textFieldConfigurations;
 
 // Sets the actions for this alert. The double array of actions would be
-// represented visually with each sub-array being a row of buttons.
+// represented visually with each sub-array being a row of buttons, unless the
+// sum of the button text widths cannot fit into a single row.
 - (void)setActions:(NSArray<NSArray<AlertAction*>*>*)actions;
 
 // Sets the accessibility identifier for the alert view.

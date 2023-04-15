@@ -41,7 +41,7 @@ enum AppendMode {
 
 [
     ActiveScriptWrappable,
-    Exposed(Window MediaSourceStable, DedicatedWorker MediaSourceInWorkers)
+    Exposed=(Window, DedicatedWorker)
 ] interface SourceBuffer : EventTarget {
 
     // Gets or sets the AppendMode.

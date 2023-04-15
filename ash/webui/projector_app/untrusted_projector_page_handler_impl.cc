@@ -48,11 +48,37 @@ void UntrustedProjectorPageHandlerImpl::OnNewScreencastPreconditionChanged(
   projector_remote_->OnNewScreencastPreconditionChanged(ToMojom(precondition));
 }
 
+void UntrustedProjectorPageHandlerImpl::OnSodaProgress(int progress) {
+  projector_remote_->OnSodaInstallProgressUpdated(progress);
+}
+
+void UntrustedProjectorPageHandlerImpl::OnSodaError() {
+  projector_remote_->OnSodaInstallError();
+}
+
+void UntrustedProjectorPageHandlerImpl::OnSodaInstalled() {
+  projector_remote_->OnSodaInstalled();
+}
+
 void UntrustedProjectorPageHandlerImpl::GetNewScreencastPrecondition(
     projector::mojom::UntrustedProjectorPageHandler::
         GetNewScreencastPreconditionCallback callback) {
   std::move(callback).Run(
       ToMojom(ProjectorController::Get()->GetNewScreencastPrecondition()));
+}
+
+void UntrustedProjectorPageHandlerImpl::ShouldDownloadSoda(
+    projector::mojom::UntrustedProjectorPageHandler::ShouldDownloadSodaCallback
+        callback) {
+  bool should_download = ProjectorAppClient::Get()->ShouldDownloadSoda();
+  std::move(callback).Run(should_download);
+}
+void UntrustedProjectorPageHandlerImpl::InstallSoda(
+    projector::mojom::UntrustedProjectorPageHandler::InstallSodaCallback
+        callback) {
+  ProjectorAppClient::Get()->InstallSoda();
+  // We have successfully triggered the request.
+  std::move(callback).Run(/*triggered=*/true);
 }
 
 }  // namespace ash

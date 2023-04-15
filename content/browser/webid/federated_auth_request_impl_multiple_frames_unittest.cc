@@ -107,7 +107,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void SendTokenRequest(const GURL& token_url,
                         const std::string& account,
                         const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback) override {
+                        TokenRequestCallback callback,
+                        ContinueOnCallback continue_on) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), kFetchStatusSuccess, kToken));

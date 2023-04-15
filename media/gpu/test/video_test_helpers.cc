@@ -114,6 +114,9 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
     case VideoCodec::kVP9:
       strcpy(&ivf_header[8], "VP90");
       break;
+    case VideoCodec::kAV1:
+      strcpy(&ivf_header[8], "AV01");
+      break;
     default:
       LOG(ERROR) << "Unknown codec: " << GetCodecName(codec);
       return false;

@@ -20,30 +20,6 @@ export class UntrustedAppClient extends PostMessageAPIClient {
   }
 
   /**
-   * Notifies the Projector App the download and installation progress of the
-   * SODA binary and language packs.
-   * @param {number} progress A number in range 0 -100 indicating installation
-   *     progress.
-   */
-  onSodaInstallProgressUpdated(progress) {
-    return this.callApiFn('onSodaInstallProgressUpdated', [progress]);
-  }
-
-  /**
-   * Notifies the Projector App when SODA download and installation is complete.
-   */
-  onSodaInstalled() {
-    return this.callApiFn('onSodaInstalled', []);
-  }
-
-  /**
-   * Notifies the Projector App when there is a SODA installation error.
-   */
-  onSodaInstallError() {
-    return this.callApiFn('onSodaInstallError', []);
-  }
-
-  /**
    * Notfies the app when screencasts' pending state have changed.
    * @param {!Array<!projectorApp.PendingScreencast>} pendingScreencasts
    */
@@ -105,12 +81,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
       return this.browserProxy_.sendXhr(
           values[0], values[1], values[2], values[3], values[4], values[5],
           values[6]);
-    });
-    this.registerMethod('shouldDownloadSoda', (args) => {
-      return this.browserProxy_.shouldDownloadSoda();
-    });
-    this.registerMethod('installSoda', (args) => {
-      return this.browserProxy_.installSoda();
     });
     this.registerMethod('getPendingScreencasts', (args) => {
       return this.browserProxy_.getPendingScreencasts();

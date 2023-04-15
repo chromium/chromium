@@ -102,17 +102,22 @@ std::vector<std::string> GetAllVariationIds() {
   return variation_ids;
 }
 
-// Returns the parsed |variation_id|. If it is malformed, returns absl::nullopt.
-absl::optional<int> ParseVariationId(const std::string& variation_id) {
-  // Remove the "t" prefix if it is there.
-  std::string trimmed_id =
-      base::StartsWith(variation_id, "t", base::CompareCase::SENSITIVE)
-          ? variation_id.substr(1)
-          : variation_id;
-  int id;
-  if (base::StringToInt(trimmed_id, &id) && id >= 0)
-    return id;
-  return absl::nullopt;
+// Returns the parsed pair: <variation_id, is_triggering>.
+std::pair<int, bool> ParseVariationId(const std::string& variation_str) {
+  // Fail if an empty string has been supplied as variation_id.
+  EXPECT_FALSE(variation_str.empty())
+      << "Empty string used to denote variation ID. Use `nullptr` instead.";
+
+  int variation_id{};
+  bool is_triggering = variation_str[0] == 't';
+
+  // Fail if we could not process the integer value.
+  EXPECT_TRUE(
+      base::StringToInt(&variation_str[is_triggering ? 1 : 0], &variation_id))
+      << "Invalid variation string: \"" << variation_str
+      << "\": must be either `#######` or `t#######`";
+
+  return {variation_id, is_triggering};
 }
 
 }  // namespace
@@ -166,20 +171,41 @@ TEST(AboutFlagsTest, RecentUnexpireFlagsArePresent) {
       testing::GetFeatureEntries(), CHROME_VERSION_MAJOR);
 }
 
-// Ensures that all variation IDs specified are well-formed and unique.
+// Ensures that all variation IDs specified are well-formed.
+// - Variation IDs may be re-used, when multiple variants change client-side
+//   behavior alone.
+// - Variation IDs must be associated with the appropriate pool of valid numbers
 TEST(AboutFlagsTest, VariationIdsAreValid) {
-  std::set<int> variation_ids;
+  std::set<int> nontriggering_variation_ids;
+  std::set<int> triggering_variation_ids;
 
-  for (const std::string& variation_id : GetAllVariationIds()) {
-    absl::optional<int> id = ParseVariationId(variation_id);
-    EXPECT_TRUE(id)
+  // See: go/finch-allocating-gws-ids.
+  int LOWER_VALID_VARIATION_ID = 3340000;
+  int UPPER_VALID_VARIATION_ID = 3399999;
+
+  for (const std::string& variation_str : GetAllVariationIds()) {
+    auto [variation_id, is_triggering] = ParseVariationId(variation_str);
+    // Reject variation IDs used both as triggering and non-triggering.
+    // This is generally considered invalid.
+    EXPECT_FALSE(
+        // Triggering, but already recorded as visible.
+        (is_triggering && nontriggering_variation_ids.contains(variation_id)) ||
+        // Visible, but already recorded as triggering.
+        (!is_triggering && triggering_variation_ids.contains(variation_id)))
         << "Variation ID \"" << variation_id
-        << "\" is malformed. It must be a nonnegative integer and can "
-           "optionally start with a \"t\".";
+        << "\" used both as triggering and "
+        << "non-triggering.";
 
-    if (id.has_value()) {
-      EXPECT_TRUE(variation_ids.insert(id.value()).second)
-          << "Variation ID " << variation_id << " is duplicated.";
+    EXPECT_TRUE(variation_id >= LOWER_VALID_VARIATION_ID &&
+                variation_id <= UPPER_VALID_VARIATION_ID)
+        << "Variation ID \"" << variation_id << "\" falls outside of range of "
+        << "valid variation IDs: [" << LOWER_VALID_VARIATION_ID << ", "
+        << UPPER_VALID_VARIATION_ID << "].";
+
+    if (is_triggering) {
+      triggering_variation_ids.insert(variation_id);
+    } else {
+      nontriggering_variation_ids.insert(variation_id);
     }
   }
 }

@@ -344,7 +344,8 @@ NOINLINE void RawResourceClientStateChecker::DataSent() {
 }
 
 NOINLINE void RawResourceClientStateChecker::ResponseReceived() {
-  SECURITY_CHECK(state_ == kStarted);
+  // TODO(crbug.com/1431421): remove |state_| dump when the cause is clarified.
+  SECURITY_CHECK(state_ == kStarted) << " state_ was " << state_;
   state_ = kResponseReceived;
 }
 

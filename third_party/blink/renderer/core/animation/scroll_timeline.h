@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_attachment.h"
-#include "third_party/blink/renderer/core/animation/timeline_attachment_type.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -53,12 +52,14 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   static ScrollTimeline* Create(Document* document,
                                 Element* source,
-                                ScrollAxis axis);
+                                ScrollAxis axis,
+                                TimelineAttachment attachment);
 
   // Construct ScrollTimeline objects through one of the Create methods, which
   // perform initial snapshots, as it can't be done during the constructor due
   // to possibly depending on overloaded functions.
   ScrollTimeline(Document*,
+                 TimelineAttachment attachment,
                  ReferenceType reference_type,
                  Element* reference,
                  ScrollAxis axis);
@@ -101,7 +102,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
-  bool Matches(ReferenceType, Element* reference_element, ScrollAxis) const;
+  bool Matches(TimelineAttachment,
+               ReferenceType,
+               Element* reference_element,
+               ScrollAxis) const;
 
   ScrollAxis GetAxis() const;
 
@@ -136,6 +140,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // the resolved source so that timeline offsets can be properly computed.
   virtual void FlushStyleUpdate();
 
+  TimelineAttachment GetTimelineAttachment() const { return attachment_type_; }
+
   ScrollTimelineAttachment* CurrentAttachment() {
     return (attachments_.size() == 1u) ? attachments_.back().Get() : nullptr;
   }
@@ -144,8 +150,11 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     return const_cast<ScrollTimeline*>(this)->CurrentAttachment();
   }
 
+  void AddAttachment(ScrollTimelineAttachment*);
+  void RemoveAttachment(ScrollTimelineAttachment*);
+
  protected:
-  ScrollTimeline(Document*, TimelineAttachmentType, ScrollTimelineAttachment*);
+  ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
 
   PhaseAndTime CurrentPhaseAndTime() override;
 
@@ -186,7 +195,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   TimelineState ComputeTimelineState();
 
-  TimelineAttachmentType attachment_type_;
+  TimelineAttachment attachment_type_;
   Member<Node> resolved_source_;
   bool is_resolved_ = false;
 

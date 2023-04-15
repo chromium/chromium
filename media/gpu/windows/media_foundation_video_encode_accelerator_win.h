@@ -126,6 +126,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Initializes encoder parameters for real-time use.
   bool SetEncoderModes();
 
+  // Helper function to notify the client of an error status. This also sets
+  // the state to kError.
+  void NotifyErrorStatus(EncoderStatus status);
+
   // Set the encoder state to |state|.
   void SetState(State state);
 

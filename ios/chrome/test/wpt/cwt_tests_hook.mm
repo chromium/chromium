@@ -44,6 +44,9 @@ bool DisableUpdateService() {
 bool DisableMainThreadFreezeDetection() {
   return true;
 }
+bool DelayAppLaunchPromos() {
+  return true;
+}
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }

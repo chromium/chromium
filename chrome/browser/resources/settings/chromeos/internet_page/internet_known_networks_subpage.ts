@@ -234,7 +234,7 @@ class SettingsInternetKnownNetworksPageElement extends
         this.getNetworkDisplayName_(networkState));
   }
 
-  private async onMenuButtonTap_(
+  private async onMenuButtonClick_(
       event: DomRepeatEvent<OncMojo.NetworkStateProperties>): Promise<void> {
     const button = event.target as HTMLButtonElement;
     const networkState = event.model.item;
@@ -281,7 +281,7 @@ class SettingsInternetKnownNetworksPageElement extends
     }
   }
 
-  private onRemovePreferredTap_(): void {
+  private onRemovePreferredClick_(): void {
     assertExists(this.networkType);
     const config = OncMojo.getDefaultConfigProperties(this.networkType);
     config.priority = {value: 0};
@@ -289,7 +289,7 @@ class SettingsInternetKnownNetworksPageElement extends
     this.$.dotsMenu.close();
   }
 
-  private onAddPreferredTap_(): void {
+  private onAddPreferredClick_(): void {
     assertExists(this.networkType);
     const config = OncMojo.getDefaultConfigProperties(this.networkType);
     config.priority = {value: 1};
@@ -297,7 +297,7 @@ class SettingsInternetKnownNetworksPageElement extends
     this.$.dotsMenu.close();
   }
 
-  private async onForgetTap_(): Promise<void> {
+  private async onForgetClick_(): Promise<void> {
     if (this.networkType === NetworkType.kWiFi) {
       recordSettingChange(Setting.kForgetWifiNetwork);
     } else {
@@ -327,7 +327,7 @@ class SettingsInternetKnownNetworksPageElement extends
   }
 
   /**
-   * Make sure events in embedded components do not propagate to onDetailsTap_.
+   * Make sure events in embedded components do not propagate to onDetailsClick_.
    */
   private doNothing_(event: Event): void {
     event.stopPropagation();

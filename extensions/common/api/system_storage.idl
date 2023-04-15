@@ -5,6 +5,7 @@
 // Use the <code>chrome.system.storage</code> API to query storage device
 // information and be notified when a removable storage device is attached and
 // detached.
+[modernised_enums]
 namespace system.storage {
 
   enum StorageUnitType {

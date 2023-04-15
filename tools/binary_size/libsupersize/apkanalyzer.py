@@ -78,7 +78,7 @@ def RunApkAnalyzerAsync(apk_path, mapping_path):
   return parallel.CallOnThread(subprocess.run,
                                args,
                                env=env,
-                               encoding='utf8',
+                               encoding='utf-8',
                                capture_output=True,
                                check=True)
 
@@ -432,7 +432,7 @@ def _MakeFakeSourcePath(class_name):
 def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
                               class_deobfuscation_map):
   if not dexfile:
-    return [], 0
+    return []
   logging.info('Extractng string symbols from %s', apk_path)
 
   # Code strings: Strings accessed via class -> method -> code -> string.
@@ -440,19 +440,17 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
   fresh_string_idx_set = set(range(len(dexfile.string_data_item_list)))
   lambda_normalizer = LambdaNormalizer()
   object_path = str(apk_path)
-  dex_string_data_size = 0
   dex_string_symbols = []
   string_iter = _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map)
   for string_idx, size, decoded_string, string_user_class_names in string_iter:
     fresh_string_idx_set.remove(string_idx)
-    dex_string_data_size += size
     num_aliases = len(string_user_class_names)
     aliases = []
     for class_name in string_user_class_names:
       outer_class, _ = lambda_normalizer.ExtractOuterClassAndDesugarLambda(
           class_name)
       full_name = string_extract.GetNameOfStringLiteralBytes(
-          decoded_string.encode('utf-8'))
+          decoded_string.encode('utf-8', errors='surrogatepass'))
       source_path = (source_map.get(outer_class, '')
                      or _MakeFakeSourcePath(class_name))
       sym = models.Symbol(models.SECTION_DEX,
@@ -483,35 +481,30 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
     fresh_string_idx_set -= string_idx_set
     logging.info('Counted %d %s strings among %d found', len(string_idx_set),
                  name, old_count)
-    total_size = 0
     if string_idx_set:
       # Each string has +4 for pointer.
       size = sum(dexfile.string_data_item_list[string_idx].byte_size
                  for string_idx in string_idx_set) + 4 * len(string_idx_set)
-      total_size += size
       sym = models.Symbol(models.SECTION_DEX,
                           size,
                           full_name=f'** .dex ({name} strings)')
       dex_string_symbols.append(sym)
-    return total_size
 
   # Type strings.
   type_string_idx_set = {i.descriptor_idx for i in dexfile.type_id_item_list}
-  dex_string_data_size += _AddAggregateStringSymbol('type', type_string_idx_set)
+  _AddAggregateStringSymbol('type', type_string_idx_set)
 
   # Method and field strings.
   method_string_idx_set = {i.name_idx for i in dexfile.method_id_item_list}
   field_string_idx_set = {i.name_idx for i in dexfile.field_id_item_list}
-  dex_string_data_size += _AddAggregateStringSymbol(
-      'method and field', method_string_idx_set | field_string_idx_set)
+  _AddAggregateStringSymbol('method and field',
+                            method_string_idx_set | field_string_idx_set)
 
   # Prototype strings.
   proto_string_idx_set = {i.shorty_idx for i in dexfile.proto_id_item_list}
-  dex_string_data_size += _AddAggregateStringSymbol('prototype',
-                                                    proto_string_idx_set)
+  _AddAggregateStringSymbol('prototype', proto_string_idx_set)
 
-  return dex_string_symbols, dex_string_data_size
-
+  return dex_string_symbols
 
 def _ParseMainDexfileInApk(apk_path):
   with zipfile.ZipFile(apk_path) as src_zip:
@@ -531,7 +524,8 @@ def _ParseMainDexfileInApk(apk_path):
 
 
 def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
-                     class_deobfuscation_map, size_info_prefix):
+                     class_deobfuscation_map, size_info_prefix,
+                     track_string_literals):
   """Creates DEX symbols given apk_analyzer output.
 
   Args:
@@ -540,6 +534,7 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
     dex_total_size: Sum of the sizes of all .dex files in the apk.
     class_deobfuscation_map: Map from obfuscated names to class names.
     size_info_prefix: Path such as: out/Release/size-info/BaseName.
+    track_string_literals: Create symbols for string literals.
 
   Returns:
     A tuple of (section_ranges, raw_symbols, metrics_by_file), where
@@ -570,20 +565,25 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
   dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
 
   dex_path, dexfile = _ParseMainDexfileInApk(apk_path)
-  # TODO(huangs): Handle the case where an APK contains multiple DEX files.
-  dex_string_symbols, dex_string_data_size = _StringSymbolsFromDexFile(
-      apk_path, dexfile, source_map, class_deobfuscation_map)
-  if dex_string_symbols:
-    logging.info('Converting excessive DEX string aliases into shared-path '
-                 'symbols')
-    archive_util.CompactLargeAliasesIntoSharedSymbols(
-        dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT)
+
+  if track_string_literals:
+    # TODO(huangs): Handle the case where an APK contains multiple DEX files.
+    dex_string_symbols = _StringSymbolsFromDexFile(apk_path, dexfile,
+                                                   source_map,
+                                                   class_deobfuscation_map)
+    if dex_string_symbols:
+      logging.info('Converting excessive DEX string aliases into shared-path '
+                   'symbols')
+      archive_util.CompactLargeAliasesIntoSharedSymbols(
+          dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT)
+  else:
+    dex_string_symbols = []
 
   dex_method_size = round(sum(s.pss for s in dex_method_symbols))
   dex_other_size = round(sum(s.pss for s in dex_other_symbols))
+  dex_other_size += round(sum(s.pss for s in dex_string_symbols))
 
-  unattributed_dex = (dex_total_size - dex_method_size - dex_other_size -
-                      dex_string_data_size)
+  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
   # Compare against -5 instead of 0 to guard against round-off errors.
   assert unattributed_dex >= -5, (
       'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(

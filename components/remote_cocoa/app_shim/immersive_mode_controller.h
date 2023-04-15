@@ -45,14 +45,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   virtual void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
   mojom::ToolbarVisibilityStyle last_used_style() { return last_used_style_; }
 
-  // Lock the titlebar in place forcing the attached top chrome to also lock in
-  // place. The titlebar will be unlocked once calls to TitlebarLock() are
-  // balanced with TitlebarUnlock(). When a lock is present, both the titlebar
-  // and the top chrome are visible.
-  virtual void TitlebarLock();
-  virtual void TitlebarUnlock();
-  int titlebar_lock_count() { return titlebar_lock_count_; }
-
   // Reveal top chrome leaving it visible until all outstanding calls to
   // RevealLock() are balanced with RevealUnlock(). Reveal locks will persist
   // through calls to UpdateToolbarVisibility(). For example, the current
@@ -88,11 +80,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // a different window.
   void ImmersiveModeViewWillMoveToWindow(NSWindow* window);
 
-  // When true the titlebar is assumed to be fully visible. For testing only.
-  void SetTitlebarFullyVisibleForTesting(bool fully_visible) {
-    titlebar_fully_visible_ = fully_visible;
-  }
-
   // Returns true if kImmersiveFullscreenTabs is being used.
   virtual bool IsTabbed();
 
@@ -105,9 +92,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   }
 
  private:
-  // Pin or unpin the titlebar.
-  void SetTitlebarPinned(bool pinned);
-
   // Reparent children of `source` to `target`.
   void ReparentChildWindows(NSWindow* source, NSWindow* target);
 
@@ -120,17 +104,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // A controller for top chrome.
   base::scoped_nsobject<ImmersiveModeTitlebarViewController>
       immersive_mode_titlebar_view_controller_;
-
-  // A "clear" controller for locking the titlebar in place. Unfortunately
-  // there is no discovered way to make a controller actually clear. The
-  // controller's view is added to a discrete NSWindow controlled by AppKit.
-  // Making the view clear will simply make the underling portion of the
-  // NSWindow visible. To achieve "clear" this controller immediately hides
-  // itself. This has the side effect of still extending the mouse capture area
-  // allowing the title bar to stay visible while this controller's view is
-  // hidden.
-  base::scoped_nsobject<ClearTitlebarViewController>
-      clear_titlebar_view_controller_;
 
   // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
   // NSWindow on screen.
@@ -145,14 +118,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   base::scoped_nsobject<ImmersiveModeTitlebarObserver>
       immersive_mode_titlebar_observer_;
 
-  int titlebar_lock_count_ = 0;
   int reveal_lock_count_ = 0;
 
   mojom::ToolbarVisibilityStyle last_used_style_ =
       mojom::ToolbarVisibilityStyle::kAutohide;
-
-  bool titlebar_fully_visible_ = false;
-  bool titlebar_frame_change_barrier_ = false;
 
   // Keeps the view controllers hidden until the fullscreen transition is
   // complete.

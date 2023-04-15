@@ -2776,8 +2776,8 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
 
   // Two event-level reports, two aggregatable reports.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(TriggerDebugKeyIs(1), TriggerDebugKeyIs(2),
-                          TriggerDebugKeyIs(1), TriggerDebugKeyIs(2)));
+              UnorderedElementsAre(TriggerDebugKeyIs(1), TriggerDebugKeyIs(2),
+                                   TriggerDebugKeyIs(1), TriggerDebugKeyIs(2)));
 }
 
 TEST_F(AttributionStorageTest, SourceBudgetValueRetrieved) {

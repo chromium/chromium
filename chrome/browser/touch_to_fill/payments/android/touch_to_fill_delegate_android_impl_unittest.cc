@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -169,7 +170,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
 
     auto touch_to_fill_delegate =
         std::make_unique<TouchToFillDelegateAndroidImpl>(
-            browser_autofill_manager_.get(), &fast_checkout_client_);
+            browser_autofill_manager_.get());
     touch_to_fill_delegate_ = touch_to_fill_delegate.get();
     base::WeakPtr<TouchToFillDelegateAndroidImpl> touch_to_fill_delegate_weak =
         touch_to_fill_delegate->GetWeakPtr();
@@ -197,7 +198,10 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
             delegate->OnDismissed(/*dismissed_by_user=*/false);
           }
         });
-    ON_CALL(fast_checkout_client_, IsNotShownYet)
+    MockFastCheckoutClient* fast_checkout_client =
+        static_cast<MockFastCheckoutClient*>(
+            autofill_client_.GetFastCheckoutClient());
+    ON_CALL(*fast_checkout_client, IsNotShownYet)
         .WillByDefault(testing::Return(true));
 
     test::CreateTestCreditCardFormData(&form_, /*is_https=*/true,
@@ -225,7 +229,6 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  NiceMock<MockFastCheckoutClient> fast_checkout_client_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
@@ -509,8 +512,13 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfFastCheckoutWasShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kFastCheckout);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(fast_checkout_client_, IsNotShownYet).WillOnce(Return(false));
+  MockFastCheckoutClient* fast_checkout_client =
+      static_cast<MockFastCheckoutClient*>(
+          autofill_client_.GetFastCheckoutClient());
+  EXPECT_CALL(*fast_checkout_client, IsNotShownYet).WillOnce(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(

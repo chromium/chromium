@@ -45,7 +45,7 @@ EventRewriterControllerImpl::~EventRewriterControllerImpl() {
 }
 
 void EventRewriterControllerImpl::Initialize(
-    ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate,
+    ui::EventRewriterAsh::Delegate* event_rewriter_delegate,
     AccessibilityEventRewriterDelegate* accessibility_event_rewriter_delegate) {
   std::unique_ptr<KeyboardDrivenEventRewriter> keyboard_driven_event_rewriter =
       std::make_unique<KeyboardDrivenEventRewriter>();
@@ -57,22 +57,22 @@ void EventRewriterControllerImpl::Initialize(
     privacy_screen_supported = true;
   }
 
-  event_rewriter_chromeos_delegate_ = event_rewriter_delegate;
-  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos =
-      std::make_unique<ui::EventRewriterChromeOS>(
-          event_rewriter_delegate, Shell::Get()->sticky_keys_controller(),
-          privacy_screen_supported);
-  event_rewriter_chromeos_ = event_rewriter_chromeos.get();
+  event_rewriter_ash_delegate_ = event_rewriter_delegate;
+  std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash =
+      std::make_unique<ui::EventRewriterAsh>(
+          event_rewriter_delegate, Shell::Get()->keyboard_capability(),
+          Shell::Get()->sticky_keys_controller(), privacy_screen_supported);
+  event_rewriter_ash_ = event_rewriter_ash.get();
 
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter =
       std::make_unique<AccessibilityEventRewriter>(
-          event_rewriter_chromeos.get(), accessibility_event_rewriter_delegate);
+          event_rewriter_ash.get(), accessibility_event_rewriter_delegate);
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
   // EventRewriters are notified in the order they are added.
   AddEventRewriter(std::move(accessibility_event_rewriter));
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
-  AddEventRewriter(std::move(event_rewriter_chromeos));
+  AddEventRewriter(std::move(event_rewriter_ash));
 }
 
 void EventRewriterControllerImpl::AddEventRewriter(
@@ -116,8 +116,9 @@ void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
 }
 
 void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {
-  if (event_rewriter_chromeos_)
-    event_rewriter_chromeos_->set_alt_down_remapping_enabled(enabled);
+  if (event_rewriter_ash_) {
+    event_rewriter_ash_->set_alt_down_remapping_enabled(enabled);
+  }
 }
 
 void EventRewriterControllerImpl::OnHostInitialized(

@@ -5,14 +5,8 @@
 #ifndef COMPONENTS_JAVASCRIPT_DIALOGS_EXTENSIONS_CLIENT_H_
 #define COMPONENTS_JAVASCRIPT_DIALOGS_EXTENSIONS_CLIENT_H_
 
-#include <string>
-
 namespace content {
 class WebContents;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace javascript_dialogs {
@@ -30,13 +24,6 @@ class ExtensionsClient {
   // Called when a dialog created by the extension associated with
   // |web_contents| is closed.
   virtual void OnDialogClosed(content::WebContents* web_contents) = 0;
-
-  // Sets the name of the extensions associated with the
-  // |web_contents| in the |name_out| if there is one, returning true;
-  // returns false otherwise.
-  virtual bool GetExtensionName(content::WebContents* web_contents,
-                                const url::Origin& alerting_frame_origin,
-                                std::string* name_out) = 0;
 };
 
 }  // namespace javascript_dialogs

@@ -19,44 +19,38 @@ namespace web_app {
 WebAppIconDownloader::WebAppIconDownloader(
     content::WebContents* web_contents,
     base::flat_set<GURL> extra_favicon_urls,
-    WebAppIconDownloaderCallback callback)
+    WebAppIconDownloaderCallback callback,
+    IconDownloaderOptions options)
     : content::WebContentsObserver(web_contents),
       extra_favicon_urls_(std::move(extra_favicon_urls)),
+      options_(options),
       callback_(std::move(callback)) {
   DCHECK(web_contents);
 }
 
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
-void WebAppIconDownloader::SkipPageFavicons() {
-  need_favicon_urls_ = false;
-}
-
-void WebAppIconDownloader::FailAllIfAnyFail() {
-  fail_all_if_any_fail_ = true;
-}
-
 void WebAppIconDownloader::Start() {
   CHECK(!web_contents()->IsBeingDestroyed());
+  starting_ = true;
   // Favicons are supported only in HTTP or HTTPS WebContents.
   const GURL& url = web_contents()->GetLastCommittedURL();
   if (!url.is_empty() && !url.inner_url() && !url.SchemeIsHTTPOrHTTPS()) {
-    SkipPageFavicons();
+    options_.skip_page_favicons = true;
   }
 
-  // If the candidates aren't loaded, icons will be fetched when
-  // DidUpdateFaviconURL() is called.
   FetchIcons(extra_favicon_urls_);
 
-  if (need_favicon_urls_) {
+  if (!options_.skip_page_favicons) {
     // The call to `GetFaviconURLsFromWebContents()` is to allow this method to
     // be mocked by unit tests.
     const auto& favicon_urls = GetFaviconURLsFromWebContents();
     if (!favicon_urls.empty()) {
-      need_favicon_urls_ = false;
       FetchIcons(favicon_urls);
     }
   }
+  starting_ = false;
+  MaybeCompleteCallback();
 }
 
 int WebAppIconDownloader::DownloadImage(const GURL& url) {
@@ -101,12 +95,7 @@ void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
       in_progress_requests_.insert(DownloadImage(url));
     }
   }
-
-  // If no downloads were initiated, we can proceed directly to running the
-  // callback.
-  if (in_progress_requests_.empty() && !need_favicon_urls_) {
-    CompleteCallback();
-  }
+  MaybeCompleteCallback();
 }
 
 void WebAppIconDownloader::DidDownloadFavicon(
@@ -126,7 +115,7 @@ void WebAppIconDownloader::DidDownloadFavicon(
     icons_http_results_[image_url] = http_status_code;
   }
 
-  if (fail_all_if_any_fail_ && bitmaps.empty()) {
+  if (options_.fail_all_if_any_fail && bitmaps.empty()) {
     // Reports http status code for the failure.
     CancelDownloads(IconsDownloadedResult::kAbortedDueToFailure,
                     std::move(icons_http_results_));
@@ -135,28 +124,12 @@ void WebAppIconDownloader::DidDownloadFavicon(
 
   icons_map_[image_url] = bitmaps;
 
-  // Once all requests have been resolved, perform post-download tasks.
-  if (in_progress_requests_.empty() && !need_favicon_urls_) {
-    CompleteCallback();
-  }
+  MaybeCompleteCallback();
 }
 
 void WebAppIconDownloader::PrimaryPageChanged(content::Page& page) {
   CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
                   DownloadedIconsHttpResults{});
-}
-
-void WebAppIconDownloader::DidUpdateFaviconURL(
-    content::RenderFrameHost* rfh,
-    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
-  // Only consider the first candidates we are given. This prevents pages that
-  // change their favicon from spamming us.
-  if (!need_favicon_urls_) {
-    return;
-  }
-
-  need_favicon_urls_ = false;
-  FetchIcons(candidates);
 }
 
 void WebAppIconDownloader::WebContentsDestroyed() {
@@ -165,8 +138,10 @@ void WebAppIconDownloader::WebContentsDestroyed() {
                   DownloadedIconsHttpResults{});
 }
 
-void WebAppIconDownloader::CompleteCallback() {
-  DCHECK(callback_);
+void WebAppIconDownloader::MaybeCompleteCallback() {
+  if (starting_ || !in_progress_requests_.empty() || callback_.is_null()) {
+    return;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), IconsDownloadedResult::kCompleted,
@@ -181,7 +156,6 @@ void WebAppIconDownloader::CancelDownloads(
   in_progress_requests_.clear();
   icons_map_.clear();
   icons_http_results_.clear();
-  need_favicon_urls_ = false;
 
   if (callback_) {
     std::move(callback_).Run(result, IconsMap{}, std::move(icons_http_results));

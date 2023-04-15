@@ -223,6 +223,11 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     FakeHumanPresenceDBusClient::Get()->set_hps_service_is_available(true);
     NoSessionAshTestBase::SetUp();
 
+    // Sets adaptive charging hardware support.
+    power_manager::PowerSupplyProperties power_props;
+    power_props.set_adaptive_charging_supported(true);
+    power_manager_client()->UpdatePowerProperties(power_props);
+
     power_policy_controller_ = chromeos::PowerPolicyController::Get();
     power_prefs_ = ShellTestApi().power_prefs();
 
@@ -658,6 +663,19 @@ TEST_F(PowerPrefsTest, SetAdaptiveChargingParams) {
   // Should be enabled after setting the prefs to true.
   SetAdaptiveChargingPreference(true);
   EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  // Removes adaptive charging hardware support.
+  power_manager::PowerSupplyProperties power_props;
+  power_props.set_adaptive_charging_supported(false);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  // Should be disabled in spite of the prefs setting because lack of hardware
+  // support.
+  SetAdaptiveChargingPreference(false);
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  SetAdaptiveChargingPreference(true);
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
 }
 
 }  // namespace ash

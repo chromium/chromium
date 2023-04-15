@@ -44,6 +44,8 @@ constexpr base::TimeDelta kSetButtonsToSnapModeDelay = base::Milliseconds(150);
 const int kMaxOvershootX = 200;
 const int kMaxOvershootY = 50;
 
+// TODO(b/277770052): Adjust the press duration to reflect the shorter overall
+// time to activate the multitask menu.
 constexpr base::TimeDelta kPieAnimationPressDuration = base::Milliseconds(150);
 constexpr base::TimeDelta kPieAnimationHoverDuration = base::Milliseconds(500);
 
@@ -104,13 +106,23 @@ class FrameSizeButton::PieAnimationView : public views::View,
   void Start(base::TimeDelta duration, MultitaskMenuEntryType entry_type) {
     entry_type_ = entry_type;
 
-    animation_.Reset(0.0);
+    const double animation_value =
+        entry_type_ == MultitaskMenuEntryType::kFrameSizeButtonLongPress
+            ? animation_.GetCurrentValue()
+            : 0.0;
+
+    animation_.Reset(animation_value);
     // `SlideAnimation` is unaffected by debug tools such as
     // "--ui-slow-animations" flag, so manually multiply the duration here. Note
     // that this will also cause `AnimationEnded` to run immediately if the test
-    // is using zero duration.
+    // is using zero duration. If we are partially through the animation when
+    // the button is pressed, then we want the duration to be relative to the
+    // percentage of the animation that still needs to be completed. For
+    // example, if we are 1/4 through the animation when pressed, then we want
+    // the remaining animation to only take 3/4 of the full long press duration.
     animation_.SetSlideDuration(
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration);
+        ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration *
+        (1 - animation_value));
     animation_.Show();
   }
 
@@ -320,7 +332,8 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate::kYes);
     return;
   }
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap()) {
+  if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap() &&
+      !TabletState::Get()->InTabletMode()) {
     StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.
@@ -362,7 +375,10 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
     // activate the window.
     StartPieAnimation(kPieAnimationHoverDuration,
                       MultitaskMenuEntryType::kFrameSizeButtonHover);
-  } else if (old_state == views::Button::STATE_HOVERED) {
+  } else if (old_state == views::Button::STATE_HOVERED &&
+             GetState() != views::Button::STATE_PRESSED) {
+    // We want to continue the animation if the button was pressed while it was
+    // already hovered, so only stop in other instances.
     DCHECK(pie_animation_view_);
     pie_animation_view_->Stop();
   }

@@ -131,8 +131,9 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   DCHECK(model()->items().empty());
 
-  // Clear suggestions before restoration if needed.
-  MaybeRemoveSuggestionsFromPersistence();
+  // Remove items from persistent storage that should not be restored to the
+  // in-memory holding space model.
+  MaybeRemoveItemsFromPersistence();
 
   const base::Value::List& persisted_holding_space_items =
       profile()->GetPrefs()->GetList(kPersistencePath);
@@ -160,16 +161,27 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   std::move(persistence_restored_callback_).Run();
 }
 
-void HoldingSpacePersistenceDelegate::MaybeRemoveSuggestionsFromPersistence() {
-  DCHECK(is_restoring_persistence());
+void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
+  CHECK(is_restoring_persistence());
 
-  if (features::IsHoldingSpaceSuggestionsEnabled())
+  const bool remove_camera_app_items =
+      !features::IsHoldingSpaceCameraAppIntegrationEnabled();
+  const bool remove_suggestion_items =
+      !features::IsHoldingSpaceSuggestionsEnabled();
+
+  // No-op when there are no item types we'd attempt to remove.
+  if (!remove_camera_app_items && !remove_suggestion_items) {
     return;
+  }
 
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->EraseIf([](const base::Value& persisted_item) {
-    return HoldingSpaceItem::IsSuggestion(
-        HoldingSpaceItem::DeserializeType(persisted_item.GetDict()));
+  update->EraseIf([&](const base::Value& persisted_item) {
+    auto type = HoldingSpaceItem::DeserializeType(persisted_item.GetDict());
+    if ((remove_camera_app_items && HoldingSpaceItem::IsCameraAppType(type)) ||
+        (remove_suggestion_items && HoldingSpaceItem::IsSuggestion(type))) {
+      return true;
+    }
+    return false;
   });
 }
 

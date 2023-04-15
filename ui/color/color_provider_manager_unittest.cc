@@ -35,7 +35,8 @@ ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
       {ColorProviderManager::ColorMode::kLight,
        ColorProviderManager::ContrastMode::kNormal, ui::SystemTheme::kDefault,
-       ColorProviderManager::FrameType::kChromium, absl::nullopt, nullptr});
+       ColorProviderManager::FrameType::kChromium, /*user_color=*/absl::nullopt,
+       /*scheme_variant=*/absl::nullopt, nullptr});
 }
 
 class TestInitializerSupplier

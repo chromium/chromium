@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_DRIVE_DRIVE_INTEGRATION_SERVICE_BROWSER_TEST_BASE_H_
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace drivefs {
 class FakeDriveFs;
@@ -16,7 +16,8 @@ namespace drive {
 class FakeDriveFsHelper;
 
 // The test base that supports adding drive files.
-class DriveIntegrationServiceBrowserTestBase : public InProcessBrowserTest {
+class DriveIntegrationServiceBrowserTestBase
+    : public MixinBasedInProcessBrowserTest {
  public:
   DriveIntegrationServiceBrowserTestBase();
   DriveIntegrationServiceBrowserTestBase(

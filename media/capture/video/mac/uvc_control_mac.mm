@@ -212,6 +212,9 @@ static ScopedIOUSBInterfaceInterface OpenVideoClassSpecificControlInterface(
 }
 
 UvcControl::UvcControl(std::string device_model, int descriptor_subtype) {
+  TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "UvcControl::CreateUvcControl", "device_model", device_model,
+               "descriptor_subtype", descriptor_subtype);
   interface_ = OpenVideoClassSpecificControlInterface(
       device_model, descriptor_subtype, &unit_id_);
 }

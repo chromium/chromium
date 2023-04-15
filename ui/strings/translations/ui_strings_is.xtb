@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Fyrir 1 degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Fyrir einni mínútu}one{Fyrir # mínútu}other{Fyrir # mínútum}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}one{#m}other{#m}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Fyrir 1 degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1243314992276662751">Hlaða inn</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Frá vinstri til hægri</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1398853756734560583">Stækka</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Fyrir 1 mínútu}one{Fyrir # mínútu}other{Fyrir # mínútum}}</translation>
 <translation id="1450753235335490080">Ekki er hægt að deila <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Fyrir 1 mánuði}one{Fyrir # mánuði}other{Fyrir # mánuðum}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 mínúta og }one{# mínúta og }other{# mínútur og }}</translation>
 <translation id="1643823602425662293">Tilkynning</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Mynd</translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4588090240171750605">Fletta til hægri</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Fyrir 1 ári}one{Fyrir # ári}other{Fyrir # árum}}</translation>
 <translation id="4724120544754982507">Tilkynningamiðstöð, <ph name="UNREAD_NOTIFICATION_COUNT" /> ólesnar tilkynningar</translation>
 <translation id="4729257764711776855">númeri</translation>
 <translation id="4746179598275229723">Viðbót losuð</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8394908167088220973">Spila/gera hlé á margmiðlunarefni</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1á}one{#á}other{#á}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> skrá (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/sek.</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> í viðbót</translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Sendir...</translation>
 <translation id="8876215549894133151">Snið:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Fyrir 1 klukkustund}one{Fyrir # klukkustund}other{Fyrir # klukkustundum}}</translation>
 <translation id="8996630695507351249">Gakktu úr skugga um að <ph name="TARGET_DEVICE_NAME" /> sé tengt við internetið.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}one{# sek.}other{# sek.}}</translation>
 <translation id="9059834730836941392">Draga tilkynningu saman</translation>
 <translation id="9170848237812810038">Aft&amp;urkalla</translation>
 <translation id="932327136139879170">Heim</translation>
 <translation id="944069440740578670">Ólesnar tilkynningar</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Fyrir 1 sekúndu}one{Fyrir # sekúndu}other{Fyrir # sekúndum}}</translation>
 </translationbundle>

@@ -174,7 +174,8 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   LoginRegularProfile(user_email, managed_session_service.get());
 
@@ -212,7 +213,8 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   LoginRegularProfile(user_email, managed_session_service.get());
 
@@ -242,7 +244,8 @@ TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   auto profile = LoginRegularProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
@@ -267,7 +270,8 @@ TEST_F(UserAddedRemovedReporterTest, TestExistingUserLogin) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   LoginRegularProfile(user_email, managed_session_service.get());
 }
@@ -288,7 +292,8 @@ TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   LoginGuestProfile(managed_session_service.get());
 }
@@ -312,7 +317,8 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   LoginKioskProfile(user_email, managed_session_service.get());
 }
@@ -346,7 +352,8 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   auto profile = LoginRegularProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
@@ -392,7 +399,8 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   auto profile = LoginRegularProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
@@ -426,7 +434,8 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
 
   auto profile = LoginKioskProfile(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
@@ -436,8 +445,6 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
 
 TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
   static constexpr char user_email[] = "user@managed.org";
-  ash::ChromeUserManager::Get()->CacheRemovedUser(
-      user_email, user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED);
 
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
@@ -464,7 +471,10 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
       std::make_unique<policy::ManagedSessionService>();
 
   auto reporter = UserAddedRemovedReporter::CreateForTesting(
-      std::move(test_helper), managed_session_service.get());
+      std::move(test_helper), /*users_to_be_removed=*/{},
+      managed_session_service.get());
+  reporter->ProcessRemovedUser(
+      user_email, user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED);
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());

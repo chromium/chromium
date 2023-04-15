@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
@@ -67,150 +66,6 @@
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
-
-namespace {
-
-class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
- public:
-  explicit WebIDBGetDBNamesCallbacksImpl(
-      ScriptPromiseResolver* promise_resolver)
-      : promise_resolver_(promise_resolver) {
-    async_task_context_.Schedule(
-        ExecutionContext::From(promise_resolver_->GetScriptState()),
-        indexed_db_names::kIndexedDB);
-  }
-
-  ~WebIDBGetDBNamesCallbacksImpl() override {
-    if (!promise_resolver_)
-      return;
-
-    auto* script_state = promise_resolver_->GetScriptState();
-    if (!script_state->ContextIsValid())
-      return;
-
-    async_task_context_.Cancel();
-    promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError,
-        "An unexpected shutdown occured before the "
-        "databases() promise could be resolved"));
-  }
-
-  void SetState(base::WeakPtr<WebIDBCursor> cursor,
-                int64_t transaction_id) override {}
-
-  void Error(mojom::blink::IDBException code, const String& message) override {
-    if (!promise_resolver_)
-      return;
-
-    probe::AsyncTask async_task(
-        ExecutionContext::From(promise_resolver_->GetScriptState()),
-        &async_task_context_, "error");
-    promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError,
-        "The databases() promise was rejected."));
-  }
-
-  void SuccessNamesAndVersionsList(
-      Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions) override {
-    if (!promise_resolver_)
-      return;
-    DCHECK(!async_task_.has_value());
-
-    HeapVector<Member<IDBDatabaseInfo>> name_and_version_list;
-    name_and_version_list.ReserveInitialCapacity(name_and_version_list.size());
-    for (const mojom::blink::IDBNameAndVersionPtr& name_version :
-         names_and_versions) {
-      const IDBNameAndVersion idb_name_and_version(name_version->name,
-                                                   name_version->version);
-      IDBDatabaseInfo* idb_info = IDBDatabaseInfo::Create();
-      idb_info->setName(name_version->name);
-      idb_info->setVersion(name_version->version);
-      name_and_version_list.push_back(idb_info);
-    }
-
-    async_task_.emplace(
-        ExecutionContext::From(promise_resolver_->GetScriptState()),
-        &async_task_context_, "success");
-    promise_resolver_->Resolve(name_and_version_list);
-    // Note: Resolve may cause |this| to be deleted.  async_task_ will be
-    // completed in the destructor.
-  }
-
-  void SuccessCursor(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
-      std::unique_ptr<IDBKey> key,
-      std::unique_ptr<IDBKey> primary_key,
-      absl::optional<std::unique_ptr<IDBValue>> optional_value) override {
-    NOTREACHED();
-  }
-
-  void SuccessCursorPrefetch(
-      Vector<std::unique_ptr<IDBKey>> keys,
-      Vector<std::unique_ptr<IDBKey>> primary_keys,
-      Vector<std::unique_ptr<IDBValue>> values) override {
-    NOTREACHED();
-  }
-
-  void SuccessDatabase(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_backend,
-      const IDBDatabaseMetadata& metadata) override {
-    NOTREACHED();
-  }
-
-  void SuccessKey(std::unique_ptr<IDBKey> key) override { NOTREACHED(); }
-
-  void SuccessValue(mojom::blink::IDBReturnValuePtr return_value) override {
-    NOTREACHED();
-  }
-
-  void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr> values) override {
-    NOTREACHED();
-  }
-
-  void SuccessArrayArray(
-      Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) override {
-    NOTREACHED();
-  }
-
-  void SuccessInteger(int64_t value) override { NOTREACHED(); }
-
-  void Success() override { NOTREACHED(); }
-
-  void SuccessCursorContinue(
-      std::unique_ptr<IDBKey> key,
-      std::unique_ptr<IDBKey> primary_key,
-      absl::optional<std::unique_ptr<IDBValue>> value) override {
-    NOTREACHED();
-  }
-
-  void ReceiveGetAllResults(
-      bool key_only,
-      mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver)
-      override {
-    NOTREACHED();
-  }
-
-  void Blocked(int64_t old_version) override { NOTREACHED(); }
-
-  void UpgradeNeeded(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
-      int64_t old_version,
-      mojom::IDBDataLoss data_loss,
-      const String& data_loss_message,
-      const IDBDatabaseMetadata& metadata) override {
-    NOTREACHED();
-  }
-
-  void DetachRequestFromCallback() override { NOTREACHED(); }
-
- private:
-  probe::AsyncTaskContext async_task_context_;
-  GC_PLUGIN_IGNORE("crbug.com/1404924")
-  absl::optional<probe::AsyncTask> async_task_;
-  Persistent<ScriptPromiseResolver> promise_resolver_;
-};
-
-}  // namespace
 
 static const char kPermissionDeniedErrorMessage[] =
     "The user denied permission to access the database.";
@@ -275,7 +130,7 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
-  if (!IsContextValid(ExecutionContext::From(script_state))) {
+  if (!IsContextValid(context)) {
     resolver->Reject();
     return resolver->Promise();
   }
@@ -313,16 +168,46 @@ void IDBFactory::GetDatabaseInfoImpl(ExecutionContext* context,
     return;
   }
 
-  auto callbacks = std::make_unique<WebIDBGetDBNamesCallbacksImpl>(resolver);
-  callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
-
-  auto& factory = GetFactory(context);
-  factory->GetDatabaseInfo(GetCallbacksProxy(std::move(callbacks)));
+  GetFactory(context)->GetDatabaseInfo(
+      WTF::BindOnce(&IDBFactory::DidGetDatabaseInfo, WrapWeakPersistent(this),
+                    WrapPersistent(resolver)));
 }
 
-void IDBFactory::GetDatabaseInfo(
+void IDBFactory::DidGetDatabaseInfo(
+    ScriptPromiseResolver* resolver,
+    Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
+    mojom::blink::IDBErrorPtr error) {
+  if (!resolver) {
+    return;
+  }
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  if (error) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        static_cast<DOMExceptionCode>(error->error_code),
+        error->error_message));
+    return;
+  }
+
+  HeapVector<Member<IDBDatabaseInfo>> name_and_version_list;
+  name_and_version_list.ReserveInitialCapacity(name_and_version_list.size());
+  for (const mojom::blink::IDBNameAndVersionPtr& name_version :
+       names_and_versions) {
+    IDBDatabaseInfo* idb_info = IDBDatabaseInfo::Create();
+    idb_info->setName(name_version->name);
+    idb_info->setVersion(name_version->version);
+    name_and_version_list.push_back(idb_info);
+  }
+
+  resolver->Resolve(name_and_version_list);
+}
+
+void IDBFactory::GetDatabaseInfoForDevTools(
     ScriptState* script_state,
-    std::unique_ptr<mojom::blink::IDBCallbacks> callbacks) {
+    mojom::blink::IDBFactory::GetDatabaseInfoCallback callback) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
@@ -332,39 +217,39 @@ void IDBFactory::GetDatabaseInfo(
   }
 
   if (!context->GetSecurityOrigin()->CanAccessDatabase()) {
-    callbacks->Error(mojom::blink::IDBException::kAbortError,
-                     "Access to the IndexedDB API is denied in this context.");
+    std::move(callback).Run(
+        {}, mojom::blink::IDBError::New(
+                mojom::blink::IDBException::kAbortError,
+                "Access to the IndexedDB API is denied in this context."));
     return;
   }
 
   AllowIndexedDB(
-      context, WTF::BindOnce(&IDBFactory::GetDatabaseInfoImplHelper,
+      context, WTF::BindOnce(&IDBFactory::GetDatabaseInfoForDevToolsHelper,
                              WrapWeakPersistent(this), WrapPersistent(context),
-                             std::move(callbacks)));
+                             std::move(callback)));
   return;
 }
 
-void IDBFactory::GetDatabaseInfoImplHelper(
+void IDBFactory::GetDatabaseInfoForDevToolsHelper(
     ExecutionContext* context,
-    std::unique_ptr<mojom::blink::IDBCallbacks> callbacks) {
+    mojom::blink::IDBFactory::GetDatabaseInfoCallback callback) {
   if (context->IsContextDestroyed()) {
-    callbacks->Error(mojom::blink::IDBException::kAbortError,
-                     "Access to the IndexedDB API is denied in this context.");
+    std::move(callback).Run(
+        {}, mojom::blink::IDBError::New(
+                mojom::blink::IDBException::kAbortError,
+                "Access to the IndexedDB API is denied in this context."));
     return;
   }
 
   if (!allowed_.value()) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     kPermissionDeniedErrorMessage);
+    std::move(callback).Run({}, mojom::blink::IDBError::New(
+                                    mojom::blink::IDBException::kUnknownError,
+                                    kPermissionDeniedErrorMessage));
     return;
   }
 
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::move(callbacks),
-      pending_callbacks.InitWithNewEndpointAndPassReceiver());
-
-  GetFactory(context)->GetDatabaseInfo(std::move(pending_callbacks));
+  GetFactory(context)->GetDatabaseInfo(std::move(callback));
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,

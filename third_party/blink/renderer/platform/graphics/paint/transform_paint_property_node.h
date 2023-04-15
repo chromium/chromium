@@ -317,6 +317,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return DirectCompositingReasons() & CompositingReason::kStickyPosition;
   }
 
+  bool RequiresCompositingForAnchorScroll() const {
+    return DirectCompositingReasons() & CompositingReason::kAnchorScroll;
+  }
+
   CompositingReasons DirectCompositingReasonsForDebugging() const {
     return DirectCompositingReasons();
   }

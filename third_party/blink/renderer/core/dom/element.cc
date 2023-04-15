@@ -84,6 +84,8 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_key_handling.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -191,7 +193,8 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/toggle_root_list.h"
+#include "third_party/blink/renderer/core/style/toggle_trigger.h"
+#include "third_party/blink/renderer/core/style/toggle_trigger_list.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -2790,11 +2793,16 @@ void Element::AttachLayoutTree(AttachContext& context) {
   bool being_rendered =
       context.parent && style && !style->IsEnsuredInDisplayNone();
 
+  bool skipped_container_descendants = SkippedContainerStyleRecalc();
+
   if (!being_rendered && !ChildNeedsReattachLayoutTree()) {
-    // We may have skipped recalc for this Element if it's a container query
-    // container. This recalc must be resumed now, since we're not going to
+    // We may have skipped recalc for this Element if it's a query container for
+    // size queries. This recalc must be resumed now, since we're not going to
     // create a LayoutObject for the Element after all.
-    style_engine.RecalcStyleForNonLayoutNGContainerDescendants(*this);
+    if (skipped_container_descendants) {
+      style_engine.UpdateStyleForNonEligibleContainer(*this);
+      skipped_container_descendants = false;
+    }
     // The above recalc may have marked some descendant for reattach, which
     // would set the child-needs flag.
     if (!ChildNeedsReattachLayoutTree()) {
@@ -2831,20 +2839,14 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
-  if ((being_rendered && !children_context.parent) ||
-      (layout_object &&
-       !IsGuaranteedToEnterNGBlockNodeLayout(*layout_object))) {
-    // If the created LayoutObject is forced into a legacy object, or if a
-    // LayoutObject was not created, even if we thought it should have been, for
-    // instance because the parent LayoutObject returns false for
-    // IsChildAllowed, we need to complete the skipped style recalc for size
-    // query containers as we would not have an NGBlockNode to resume from.
-    style_engine.RecalcStyleForNonLayoutNGContainerDescendants(*this);
+  if (skipped_container_descendants &&
+      (!layout_object || !layout_object->IsEligibleForSizeContainment())) {
+    style_engine.UpdateStyleForNonEligibleContainer(*this);
+    skipped_container_descendants = false;
   }
 
-  bool skip_container_descendants = SkippedContainerStyleRecalc();
   bool skip_lock_descendants = ChildStyleRecalcBlockedByDisplayLock();
-  if (skip_container_descendants || skip_lock_descendants) {
+  if (skipped_container_descendants || skip_lock_descendants) {
     // Since we block style recalc on descendants of this node due to display
     // locking or container queries, none of its descendants should have the
     // NeedsReattachLayoutTree bit set.
@@ -3101,12 +3103,8 @@ bool Element::SkipStyleRecalcForContainer(
     DCHECK(!child_change.TraverseChildren(*this));
     return false;
   }
-  if (child_change.ReattachLayoutTree()) {
-    if (!LayoutObjectIsNeeded(style) || style.Display() == EDisplay::kInline ||
-        style.IsDisplayTableType()) {
-      return false;
-    }
-  } else {
+
+  if (!child_change.ReattachLayoutTree()) {
     LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !layout_object->SelfNeedsLayout() ||
         !layout_object->IsEligibleForSizeContainment() ||
@@ -3525,6 +3523,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // ending up calling StyleResolver::ResolveStyle()).
     new_style = StyleForLayoutObject(new_style_recalc_context);
   }
+  bool base_is_display_none =
+      !new_style ||
+      new_style->GetBaseComputedStyleOrThis()->Display() == EDisplay::kNone;
   if (new_style && !ShouldStoreComputedStyle(*new_style)) {
     new_style = nullptr;
     if (auto* ax_cache = GetDocument().ExistingAXObjectCache()) {
@@ -3639,7 +3640,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
     ElementRareDataVector* rare_data = GetElementRareData();
     if (ElementAnimations* element_animations =
             rare_data->GetElementAnimations()) {
-      element_animations->CssAnimations().Cancel();
+      // The animation should only be canceled when the base style is
+      // display:none. If new_style is otherwise set to display:none, then it
+      // means an animation set display:none, and an animation shouldn't
+      // cancel itself in this case.
+      if (base_is_display_none ||
+          !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled()) {
+        element_animations->CssAnimations().Cancel();
+      }
     }
     rare_data->SetContainerQueryEvaluator(nullptr);
     rare_data->ClearPseudoElements();
@@ -4261,11 +4269,6 @@ void Element::SetRegionCaptureCropId(
 const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
   return HasRareData() ? GetElementRareData()->GetRegionCaptureCropId()
                        : nullptr;
-}
-
-bool Element::IsSupportedByRegionCapture() const {
-  return base::FeatureList::IsEnabled(
-      features::kRegionCaptureExperimentalSubtypes);
 }
 
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {
@@ -4910,6 +4913,19 @@ void Element::DefaultEventHandler(Event& event) {
             }
           }
         }
+      }
+    }
+  } else if (event.type() == event_type_names::kKeydown) {
+    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (keyboard_event) {
+      bool handled =
+          css_toggle_key_handling::HandleKeydownEvent(this, *keyboard_event);
+      if (handled) {
+        event.SetDefaultHandled();
+        // We don't want to continue to the default handlers for base
+        // classes, because those are likely to treat the same event as
+        // scrolling the page.
+        return;
       }
     }
   }
@@ -8103,7 +8119,13 @@ void Element::RecalcTransitionPseudoTreeStyle(
     const Vector<AtomicString>& view_transition_names) {
   DCHECK_EQ(this, GetDocument().documentElement());
 
-  auto* old_transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
+  DisplayLockStyleScope display_lock_style_scope(this);
+  if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
+    return;
+  }
+
+  PseudoElement* old_transition_pseudo =
+      GetPseudoElement(kPseudoIdViewTransition);
   if (view_transition_names.empty() && !old_transition_pseudo) {
     return;
   }
@@ -8113,7 +8135,7 @@ void Element::RecalcTransitionPseudoTreeStyle(
       StyleRecalcContext::FromInclusiveAncestors(
           *GetDocument().documentElement());
 
-  auto* transition_pseudo =
+  PseudoElement* transition_pseudo =
       UpdatePseudoElement(kPseudoIdViewTransition, style_recalc_change,
                           style_recalc_context, g_null_atom);
   if (!transition_pseudo) {
@@ -8121,14 +8143,14 @@ void Element::RecalcTransitionPseudoTreeStyle(
   }
 
   for (const auto& view_transition_name : view_transition_names) {
-    auto* container_pseudo = transition_pseudo->UpdatePseudoElement(
+    PseudoElement* container_pseudo = transition_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionGroup, style_recalc_change, style_recalc_context,
         view_transition_name);
     if (!container_pseudo) {
       continue;
     }
 
-    auto* wrapper_pseudo = container_pseudo->UpdatePseudoElement(
+    PseudoElement* wrapper_pseudo = container_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionImagePair, style_recalc_change,
         style_recalc_context, view_transition_name);
     if (!wrapper_pseudo) {
@@ -8177,10 +8199,56 @@ bool Element::IsInertRoot() {
 
 FocusgroupFlags Element::GetFocusgroupFlags() const {
   ExecutionContext* context = GetExecutionContext();
-  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context) || !HasRareData()) {
-    return FocusgroupFlags::kNone;
+
+  // Explicit flags from the focusgroup attribute take priority, when present.
+  if (RuntimeEnabledFeatures::FocusgroupEnabled(context) && HasRareData()) {
+    FocusgroupFlags flags = GetElementRareData()->GetFocusgroupFlags();
+    if (flags != FocusgroupFlags::kNone) {
+      return flags;
+    }
   }
-  return GetElementRareData()->GetFocusgroupFlags();
+
+  // We can also have flags from inferred roles from CSS toggles.
+  if (CSSToggleInference* toggle_inference =
+          GetDocument().GetCSSToggleInference()) {
+    DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled(context));
+    switch (toggle_inference->RoleForElement(this)) {
+      case CSSToggleRole::kNone:
+      case CSSToggleRole::kAccordion:
+      case CSSToggleRole::kAccordionItem:
+      case CSSToggleRole::kAccordionItemButton:
+      case CSSToggleRole::kButton:
+      case CSSToggleRole::kButtonWithPopup:
+      case CSSToggleRole::kCheckbox:
+      case CSSToggleRole::kDisclosure:
+      case CSSToggleRole::kDisclosureButton:
+      case CSSToggleRole::kListboxItem:
+      case CSSToggleRole::kRadioItem:
+      case CSSToggleRole::kTab:
+      case CSSToggleRole::kTabPanel:
+      case CSSToggleRole::kTreeItem:
+        break;
+      case CSSToggleRole::kCheckboxGroup:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleCheckbox;
+      case CSSToggleRole::kListbox:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleListboxItem;
+      case CSSToggleRole::kRadioGroup:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleRadioItem;
+      case CSSToggleRole::kTabContainer:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleTab;
+      case CSSToggleRole::kTree:
+      case CSSToggleRole::kTreeGroup:
+        // TODO(https://crbug.com/1250716): This needs more work!
+        return FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleTreeItem;
+    }
+  }
+
+  return FocusgroupFlags::kNone;
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
@@ -8621,11 +8689,7 @@ void Element::DecrementImplicitlyAnchoredElementCount() {
   GetElementRareData()->DecrementImplicitlyAnchoredElementCount();
 }
 bool Element::HasImplicitlyAnchoredElement() const {
-  // TODO(xiaochengh): <selectmenu> should also use the implicitly anchored
-  // element count on element rare data.
-  return (HasRareData() &&
-          GetElementRareData()->HasImplicitlyAnchoredElement()) ||
-         IsA<HTMLSelectMenuElement>(this);
+  return HasRareData() && GetElementRareData()->HasImplicitlyAnchoredElement();
 }
 
 AnchorElementObserver* Element::GetAnchorElementObserver() const {

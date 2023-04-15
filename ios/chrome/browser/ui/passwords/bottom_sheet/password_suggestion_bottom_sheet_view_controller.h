@@ -9,8 +9,6 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
-class FaviconLoader;
-
 @protocol PasswordControllerDelegate;
 @protocol PasswordSuggestionBottomSheetDelegate;
 
@@ -21,7 +19,7 @@ class FaviconLoader;
     : ConfirmationAlertViewController <PasswordSuggestionBottomSheetConsumer>
 
 // Initialize with the favicon loader.
-- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader;
+- (instancetype)init;
 
 // The delegate for the bottom sheet view controller.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetDelegate> delegate;

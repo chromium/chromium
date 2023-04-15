@@ -138,10 +138,12 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
     {BackupRefPtrMode::kEnabledWithoutZapping, "enabled-without-zapping"},
-    {BackupRefPtrMode::kEnabledWithoutMemoryReclaimer,
-     "enabled-without-memory-reclaimer"},
+    {BackupRefPtrMode::kEnabledWithMemoryReclaimer,
+     "enabled-with-memory-reclaimer"},
     {BackupRefPtrMode::kDisabledButSplitPartitions2Way,
      "disabled-but-2-way-split"},
+    {BackupRefPtrMode::kDisabledButSplitPartitions2WayWithMemoryReclaimer,
+     "disabled-but-2-way-split-with-memory-reclaimer"},
     {BackupRefPtrMode::kDisabledButSplitPartitions3Way,
      "disabled-but-3-way-split"},
     {BackupRefPtrMode::kDisabledButAddDummyRefCount,
@@ -168,7 +170,6 @@ BASE_FEATURE(kPartitionAllocUseAlternateDistribution,
 const base::FeatureParam<AlternateBucketDistributionMode>::Option
     kPartitionAllocAlternateDistributionOption[] = {
         {AlternateBucketDistributionMode::kDefault, "default"},
-        {AlternateBucketDistributionMode::kCoarser, "coarser"},
         {AlternateBucketDistributionMode::kDenser, "denser"},
 };
 const base::FeatureParam<AlternateBucketDistributionMode>

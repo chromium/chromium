@@ -16,6 +16,8 @@
 
 #include <string.h>
 
+#include "util/linux/pac_helper.h"
+
 namespace crashpad {
 namespace internal {
 
@@ -62,8 +64,9 @@ class MemorySanitizer : public MemorySnapshot::Delegate {
     auto words =
         reinterpret_cast<Pointer*>(static_cast<char*>(data) + aligned_offset);
     for (size_t index = 0; index < word_count; ++index) {
-      if (words[index] > MemorySnapshotSanitized::kSmallWordMax &&
-          !ranges_->Contains(words[index])) {
+      auto word = StripPACBits(words[index]);
+      if (word > MemorySnapshotSanitized::kSmallWordMax &&
+          !ranges_->Contains(word)) {
         words[index] = defaced;
       }
     }

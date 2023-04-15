@@ -56,7 +56,7 @@ const char kAndroidOneDriveAuthority[] =
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::kODFSExtensionId);
+      file_manager::file_tasks::GetODFSExtensionId(profile));
   return service->GetProvidedFileSystemInfoList(provider_id);
 }
 
@@ -183,7 +183,7 @@ bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
 
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::kODFSExtensionId);
+          file_manager::file_tasks::GetODFSExtensionId(profile));
   if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
     return false;
   }
@@ -638,10 +638,9 @@ void CloudOpenTask::SetTaskArgs(
     for (const file_manager::file_tasks::FullTaskDescriptor& task :
          resulting_tasks->tasks) {
       // Ignore Google Docs and MS Office tasks as they are already
-      // set up to show in the dialog. And ignore QuickOffice.
+      // set up to show in the dialog.
       if (IsWebDriveOfficeTask(task.task_descriptor) ||
-          file_manager::file_tasks::IsOpenInOfficeTask(task.task_descriptor) ||
-          extension_misc::IsQuickOfficeExtension(task.task_descriptor.app_id)) {
+          file_manager::file_tasks::IsOpenInOfficeTask(task.task_descriptor)) {
         continue;
       }
       mojom::DialogTaskPtr dialog_task = mojom::DialogTask::New();

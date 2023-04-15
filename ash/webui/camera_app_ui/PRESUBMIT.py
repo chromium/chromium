@@ -33,6 +33,9 @@ def _CommonChecks(input_api, output_api):
     results += _CheckHtml(input_api, output_api)
   if any(f for f in affected if f.LocalPath() in STRING_RESOURCE_FILES):
     results += _CheckStringResouce(input_api, output_api)
+  if any(f for f in affected if f.LocalPath().endswith('metrics.ts')):
+    results += _CheckModifyMetrics(input_api, output_api)
+
   return results
 
 
@@ -49,6 +52,22 @@ def _CheckStringResouce(input_api, output_api):
         output_api.PresubmitPromptWarning(
             'String resources check failed, ' +
             'please make sure the relevant string files are all modified.')
+    ]
+
+  return []
+
+
+def _CheckModifyMetrics(input_api, output_api):
+  if not input_api.change.METRICS_DOCUMENTATION_UPDATED:
+    return [
+      output_api.PresubmitPromptWarning(
+          'Metrics are modified but `METRICS_DOCUMENTATION_UPDATED=true` is ' +
+          'not found in the commit messages.\n' +
+          'The CL author should confirm CCA metrics are still synced in ' +
+          'PDD (go/cca-metrics-pdd) and Schema (go/cca-metrics-schema).\n' +
+          'Once done, the CL author should explicitly claim it by including ' +
+          '`METRICS_DOCUMENTATION_UPDATED=true` in the commit messages.'
+      )
     ]
 
   return []

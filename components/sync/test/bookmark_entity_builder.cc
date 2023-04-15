@@ -120,7 +120,7 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
     parent_id_ =
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
     parent_guid_ = base::Uuid::ParseLowercase(
-        bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
+        bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
   }
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndLegacyTitle) {

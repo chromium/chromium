@@ -74,7 +74,9 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return new RealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForProfile(profile),
-      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
+      base::BindRepeating(
+          &safe_browsing::GetUserPopulationForProfileWithCookieTheftExperiments,
+          profile),
       profile->GetPrefs(),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),

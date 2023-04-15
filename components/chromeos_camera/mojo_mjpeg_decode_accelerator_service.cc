@@ -261,7 +261,9 @@ void MojoMjpegDecodeAcceleratorService::DecodeWithDmaBuf(
   const gfx::Size coded_size(base::checked_cast<int>(dst_frame->coded_width),
                              base::checked_cast<int>(dst_frame->coded_height));
   scoped_refptr<media::VideoFrame> frame = ConstructVideoFrame(
-      std::move(dst_frame->planes), dst_frame->format, coded_size);
+      std::move(dst_frame->planes), dst_frame->format, coded_size,
+      dst_frame->has_modifier ? dst_frame->modifier
+                              : gfx::NativePixmapHandle::kNoModifier);
   if (!frame) {
     LOG(ERROR) << "Failed to create video frame";
     std::move(callback).Run(

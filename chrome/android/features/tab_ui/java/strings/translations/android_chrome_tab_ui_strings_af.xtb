@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
-<translation id="1181037720776840403">Verwyder</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
 <translation id="1403228085774130835">Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry</translation>
 <translation id="1455506303394048917">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af uitgevee word</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Nou <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ongroepeer oortjie}other{Ongroepeer oortjies}}</translation>
 <translation id="2277224997687551299">Wysig groep se naam</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Verwyder <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie uit die groep.}other{Verwyder <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies uit die groep.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Boekmerk oortjie}other{Boekmerk oortjies}}</translation>
-<translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2569352796411618312">Voorstel: <ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
-<translation id="257674075312929031">Groep</translation>
 <translation id="2613747923081026172">Skep groep</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />-gradering</translation>
 <translation id="266935134738038806">Besoek werf</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Sleep oortjies om hulle te groepeer</translation>
 <translation id="5846292395804797011">Maak <ph name="TITLE_OF_GROUP" />-groep met <ph name="NUMBER_OF_TABS" /> oortjies toe</translation>
 <translation id="5972844218283131174">Ontkies alles</translation>
-<translation id="6040143037577758943">Maak toe</translation>
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Versteek multikeusemodus</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deel oortjie}other{Deel oortjies}}</translation>
 <translation id="7129458170538955174">Inligting oor hierdie winkel is teen halwe hoogte oopgemaak</translation>
-<translation id="7151209024774799310">Verwyder oortjies uit groep</translation>
 <translation id="7204204600596740190">Multikeusemodus</translation>
 <translation id="7326879924029668159">Lees terugsendingbeleid en meer</translation>
 <translation id="7352298686197644113">Sien watter item in jou oop oortjies 'n laer prys het</translation>

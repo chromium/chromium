@@ -42,7 +42,7 @@
     </style>
     <settings-section page-title="$i18n{aboutPageTitle}" section="about">
       <div class="cr-row two-line first">
-        <img id="product-logo" on-click="onProductLogoTap_"
+        <img id="product-logo" on-click="onProductLogoClick_"
             srcset="chrome://theme/current-channel-logo@1x 1x,
                     chrome://theme/current-channel-logo@2x 2x"
             alt="$i18n{aboutProductLogoAlt}"
@@ -92,7 +92,7 @@
         <div class="separator" hidden="[[!showButtonContainer_]]"></div>
         <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
           <cr-button id="relaunch" hidden="[[!showRelaunch_]]"
-              on-click="onRelaunchTap_">
+              on-click="onRelaunchClick_">
             $i18n{aboutRelaunch}
           </cr-button>
         </span>
@@ -103,12 +103,12 @@
         <div id="promoteUpdater"
             class$="cr-row [[getPromoteUpdaterClass_(promoteUpdaterStatus_.disabled)]]"
             actionable$="[[promoteUpdaterStatus_.actionable]]"
-            on-click="onPromoteUpdaterTap_">
+            on-click="onPromoteUpdaterClick_">
           <div class="flex">
             [[promoteUpdaterStatus_.text]]
             <a href="https://support.google.com/chrome/answer/95414"
                 target="_blank" id="updaterLearnMore"
-                on-click="onLearnMoreTap_"
+                on-click="onLearnMoreClick_"
                 aria-label="$i18nPolymer{aboutLearnMoreUpdating}">
               $i18n{learnMore}
             </a>
@@ -120,23 +120,23 @@
         </div>
       </template>
 </if>
-      <cr-link-row class="hr" id="help" on-click="onHelpTap_"
+      <cr-link-row class="hr" id="help" on-click="onHelpClick_"
           label="$i18n{aboutGetHelpUsingChrome}"
           button-aria-description="$i18n{opensInNewTab}"
           external></cr-link-row>
 <if expr="_google_chrome">
-      <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueTap_"
+      <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueClick_"
           hidden="[[!prefs.feedback_allowed.value]]"
           button-aria-description="$i18n{opensInNewTab}"
           label="$i18n{aboutReportAnIssue}" external></cr-link-row>
       <cr-link-row class="hr" id="getTheMostOutOfChrome"
-          on-click="onGetTheMostOutOfChromeTap_"
+          on-click="onGetTheMostOutOfChromeClick_"
           label="$i18n{getTheMostOutOfChrome}"
           sub-label="$i18n{getTheMostOutOfChromeDescription}"
           role-description="$i18n{subpageArrowRoleDescription}"
           hidden$="[[!showGetTheMostOutOfChromeSection_]]"></cr-link-row>
 </if>
-      <cr-link-row class="hr" on-click="onManagementPageTap_"
+      <cr-link-row class="hr" on-click="onManagementPageClick_"
           start-icon="cr:domain" label="$i18n{managementPage}"
           role-description="$i18n{subpageArrowRoleDescription}"
           hidden$="[[!isManaged_]]"></cr-link-row>

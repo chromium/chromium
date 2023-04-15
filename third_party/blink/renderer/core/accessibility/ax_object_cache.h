@@ -218,8 +218,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXObject* GetPluginRoot() = 0;
 
   // Serialize entire tree, returning true if successful.
-  virtual bool SerializeEntireTree(bool exclude_offscreen,
-                                   size_t max_node_count,
+  virtual bool SerializeEntireTree(size_t max_node_count,
                                    base::TimeDelta timeout,
                                    ui::AXTreeUpdate*) = 0;
 

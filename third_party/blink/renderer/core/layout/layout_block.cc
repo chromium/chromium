@@ -513,22 +513,6 @@ void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
   }
 }
 
-LayoutUnit LayoutBlock::MarginIntrinsicLogicalWidthForChild(
-    const LayoutBox& child) const {
-  NOT_DESTROYED();
-  // A margin has three types: fixed, percentage, and auto (variable).
-  // Auto and percentage margins become 0 when computing min/max width.
-  // Fixed margins can be added in as is.
-  const Length& margin_left = child.StyleRef().MarginStartUsing(StyleRef());
-  const Length& margin_right = child.StyleRef().MarginEndUsing(StyleRef());
-  LayoutUnit margin;
-  if (margin_left.IsFixed())
-    margin += margin_left.Value();
-  if (margin_right.IsFixed())
-    margin += margin_right.Value();
-  return margin;
-}
-
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   NOTREACHED_NORETURN();
@@ -597,11 +581,6 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
     GetPositionedDescendantsMap().erase(container);
     container->has_positioned_objects_ = false;
   }
-}
-
-bool LayoutBlock::IsAnonymousNGFieldsetContentWrapper() const {
-  NOT_DESTROYED();
-  return Parent() && Parent()->IsFieldset() && IsAnonymous();
 }
 
 void LayoutBlock::InvalidatePaint(
@@ -828,12 +807,6 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
   }
 
   return LayoutBox::PositionForPoint(point);
-}
-
-void LayoutBlock::OffsetForContents(PhysicalOffset& offset) const {
-  NOT_DESTROYED();
-  if (IsScrollContainer())
-    offset += PhysicalOffset(PixelSnappedScrolledContentOffset());
 }
 
 MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
@@ -1105,15 +1078,6 @@ bool LayoutBlock::HasLineIfEmpty() const {
   return FirstLineStyleRef().HasLineIfEmpty();
 }
 
-LayoutUnit LayoutBlock::EmptyLineBaseline(
-    LineDirectionMode line_direction) const {
-  NOT_DESTROYED();
-  if (!HasLineIfEmpty())
-    return LayoutUnit(-1);
-  const auto baseline_offset = BaselineForEmptyLine(line_direction);
-  return baseline_offset ? *baseline_offset : LayoutUnit(-1);
-}
-
 absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
@@ -1145,20 +1109,6 @@ LayoutUnit LayoutBlock::LineHeight(bool first_line,
   const ComputedStyle& style = StyleRef(
       first_line && GetDocument().GetStyleEngine().UsesFirstLineRules());
   return LayoutUnit(style.ComputedLineHeight());
-}
-
-LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
-    bool is_first_line,
-    LayoutUnit replaced_height) const {
-  NOT_DESTROYED();
-  if (!GetDocument().InNoQuirksMode() && replaced_height)
-    return replaced_height;
-
-  return std::max<LayoutUnit>(
-      replaced_height,
-      LineHeight(is_first_line,
-                 IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine,
-                 kPositionOfInteriorLineBoxes));
 }
 
 bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
@@ -1245,7 +1195,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
   return caret_rect;
 }
 
-void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
+void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
                                   OutlineInfo* info,
                                   const PhysicalOffset& additional_offset,
                                   NGOutlineType include_block_overflows) const {
@@ -1259,17 +1209,19 @@ void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
   }
 #endif  // DCHECK_IS_ON()
 
-  if (!IsAnonymous())  // For anonymous blocks, the children add outline rects.
-    rects.emplace_back(additional_offset, Size());
+  // For anonymous blocks, the children add outline rects.
+  if (!IsAnonymous()) {
+    collector.AddRect(PhysicalRect(additional_offset, Size()));
+  }
 
   if (ShouldIncludeBlockVisualOverflow(include_block_overflows) &&
       !HasNonVisibleOverflow() && !HasControlClip()) {
-    AddOutlineRectsForNormalChildren(rects, additional_offset,
+    AddOutlineRectsForNormalChildren(collector, additional_offset,
                                      include_block_overflows);
     if (TrackedLayoutBoxLinkedHashSet* positioned_objects =
             PositionedObjects()) {
       for (const auto& box : *positioned_objects)
-        AddOutlineRectsForDescendant(*box, rects, additional_offset,
+        AddOutlineRectsForDescendant(*box, collector, additional_offset,
                                      include_block_overflows);
     }
   }

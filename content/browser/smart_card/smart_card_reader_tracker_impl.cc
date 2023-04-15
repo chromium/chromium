@@ -4,7 +4,6 @@
 
 #include "content/browser/smart_card/smart_card_reader_tracker_impl.h"
 #include "base/functional/callback.h"
-#include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 
 namespace content {
 namespace {
@@ -84,71 +83,14 @@ blink::mojom::SmartCardReaderState ToBlinkSmartCardReaderState(
   return blink::mojom::SmartCardReaderState::kUnavailable;
 }
 
-blink::mojom::SmartCardResponseCode ToBlinkResponseCode(
-    device::mojom::SmartCardError error) {
-#define FORWARD(Name)                       \
-  case device::mojom::SmartCardError::Name: \
-    return blink::mojom::SmartCardResponseCode::Name
-
-  switch (error) {
-    // Errors with a 1:1 mapping between device and blink:
-    FORWARD(kRemovedCard);
-    FORWARD(kResetCard);
-    FORWARD(kUnpoweredCard);
-    FORWARD(kUnresponsiveCard);
-    FORWARD(kUnsupportedCard);
-    FORWARD(kReaderUnavailable);
-    FORWARD(kSharingViolation);
-    FORWARD(kNotTransacted);
-    FORWARD(kProtoMismatch);
-    FORWARD(kSystemCancelled);
-    FORWARD(kNotReady);
-    FORWARD(kUnsupportedFeature);
-    FORWARD(kNoService);
-    FORWARD(kServerTooBusy);
-    case device::mojom::SmartCardError::kNoSmartcard:
-      return blink::mojom::SmartCardResponseCode::kNoSmartCard;
-    case device::mojom::SmartCardError::kInvalidHandle:
-      return blink::mojom::SmartCardResponseCode::kInvalidConnection;
-    case device::mojom::SmartCardError::kServiceStopped:
-    case device::mojom::SmartCardError::kShutdown:
-    case device::mojom::SmartCardError::kCommError:
-    case device::mojom::SmartCardError::kInternalError:
-    case device::mojom::SmartCardError::kNoMemory:
-    case device::mojom::SmartCardError::kUnexpected:
-    case device::mojom::SmartCardError::kUnknownError:
-    case device::mojom::SmartCardError::kUnknown:
-      LOG(WARNING) << "An unmapped PC/SC error has occurred.";
-      return blink::mojom::SmartCardResponseCode::kUnknownError;
-
-    // Handled internally but listed here for completeness.
-    // Also, technically nothing stops the PC/SC stack from spilling those
-    // unexpectedly (eg, in unrelated requests).
-    case device::mojom::SmartCardError::kCancelled:
-    case device::mojom::SmartCardError::kTimeout:
-    case device::mojom::SmartCardError::kUnknownReader:
-    case device::mojom::SmartCardError::kNoReadersAvailable:
-    // Errors that indicate bad usage of the API (ie, a programming
-    // error in browser code).
-    // But technically nothing stops the PC/SC stack from spilling those
-    // unexpectedly.
-    case device::mojom::SmartCardError::kInsufficientBuffer:
-    case device::mojom::SmartCardError::kInvalidParameter:
-    case device::mojom::SmartCardError::kInvalidValue:
-      LOG(WARNING) << "An unexpected PC/SC error has occurred: " << error;
-      return blink::mojom::SmartCardResponseCode::kUnexpected;
-  }
-#undef FORWARD
-}
-
 void FailRequests(base::queue<SmartCardReaderTracker::StartCallback>& requests,
-                  blink::mojom::SmartCardResponseCode response_code) {
+                  device::mojom::SmartCardError error) {
   while (!requests.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(requests.front()),
-                       blink::mojom::SmartCardGetReadersResult::NewResponseCode(
-                           response_code)));
+        base::BindOnce(
+            std::move(requests.front()),
+            blink::mojom::SmartCardGetReadersResult::NewError(error)));
 
     requests.pop();
   }
@@ -397,8 +339,7 @@ class SmartCardReaderTrackerImpl::Tracking
           error == device::mojom::SmartCardError::kTimeout) {
         TrackChangesOrGiveUp();
       } else {
-        tracker_->observer_list_.NotifyError(
-            ToBlinkResponseCode(result->get_error()));
+        tracker_->observer_list_.NotifyError(result->get_error());
         tracker_->ChangeState(std::make_unique<Uninitialized>(*tracker_));
       }
       return;
@@ -476,9 +417,8 @@ class SmartCardReaderTrackerImpl::WaitInitialReaderStatus
       device::mojom::SmartCardStatusChangeResultPtr result) {
     if (result->is_error()) {
       FailRequests(pending_get_readers_requests_,
-                   blink::mojom::SmartCardResponseCode::kNoService);
-      tracker_->observer_list_.NotifyError(
-          ToBlinkResponseCode(result->get_error()));
+                   device::mojom::SmartCardError::kNoService);
+      tracker_->observer_list_.NotifyError(result->get_error());
       tracker_->ChangeState(std::make_unique<Uninitialized>(*tracker_));
       return;
     }
@@ -550,8 +490,7 @@ void SmartCardReaderTrackerImpl::WaitReadersList::OnListReadersDone(
   if (result->is_error()) {
     if (result->get_error() !=
         device::mojom::SmartCardError::kNoReadersAvailable) {
-      FailRequests(pending_get_readers_requests_,
-                   ToBlinkResponseCode(result->get_error()));
+      FailRequests(pending_get_readers_requests_, result->get_error());
       tracker_->ChangeState(std::make_unique<Uninitialized>(*tracker_));
       return;
     }
@@ -657,8 +596,7 @@ class SmartCardReaderTrackerImpl::WaitContext
   void OnEstablishContextDone(
       device::mojom::SmartCardCreateContextResultPtr result) {
     if (result->is_error()) {
-      FailRequests(pending_get_readers_requests_,
-                   ToBlinkResponseCode(result->get_error()));
+      FailRequests(pending_get_readers_requests_, result->get_error());
       tracker_->ChangeState(std::make_unique<Uninitialized>(*tracker_));
       return;
     }

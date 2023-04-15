@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "chrome/browser/bookmarks/url_and_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
@@ -52,7 +53,9 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
   }
 }
 
-SavedTabGroupKeyedService::~SavedTabGroupKeyedService() = default;
+SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
+  model_.RemoveObserver(this);
+}
 
 syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
   DCHECK(ModelTypeStoreServiceFactory::GetForProfile(profile()));
@@ -82,8 +85,9 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // If the group already has a local group open, then activate it.
   if (saved_group->local_group_id().has_value()) {
-    Browser* browser_for_activation = listener_.GetBrowserWithTabGroupId(
-        saved_group->local_group_id().value());
+    Browser* browser_for_activation =
+        SavedTabGroupUtils::GetBrowserWithTabGroupId(
+            saved_group->local_group_id().value());
 
     // Only activate the tab group's first tab if it exists in any browser's
     // tabstrip model.
@@ -158,15 +162,18 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   DCHECK(first_tab.has_value());
   tab_strip_model_for_creation->ActivateTabAt(first_tab.value());
 
+  // Set the group's visual data after the tab strip is in its final state. This
+  // ensures the tab group's bounds are correctly set. crbug/1408814.
+  UpdateGroupVisualData(saved_group_guid,
+                        saved_group->local_group_id().value());
+
   listener_.ConnectToLocalTabGroup(*model_.Get(saved_group_guid),
                                    local_and_saved_tab_mapping);
-
-  UpdateTabGroupVisualData(tab_group, saved_group);
 }
 
 void SavedTabGroupKeyedService::SaveGroup(
     const tab_groups::TabGroupId& group_id) {
-  Browser* browser = listener_.GetBrowserWithTabGroupId(group_id);
+  Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   CHECK(browser);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -220,6 +227,19 @@ void SavedTabGroupKeyedService::UnsaveGroup(
   model_.Remove(group->saved_guid());
 }
 
+void SavedTabGroupKeyedService::PauseTrackingLocalTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  listener_.PauseTrackingLocalTabGroup(group_id);
+}
+
+void SavedTabGroupKeyedService::ResumeTrackingLocalTabGroup(
+    const base::GUID& saved_group_guid,
+    const tab_groups::TabGroupId& group_id) {
+  listener_.ResumeTrackingLocalTabGroup(group_id);
+  model_.OnGroupOpenedInTabStrip(saved_group_guid, group_id);
+  UpdateGroupVisualData(saved_group_guid, group_id);
+}
+
 void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
   listener_.DisconnectLocalTabGroup(group_id);
@@ -260,7 +280,7 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   listener_.ConnectToLocalTabGroup(*model_.Get(saved_guid),
                                    std::move(web_contents_to_guid_mapping));
 
-  UpdateTabGroupVisualData(tab_group, saved_group);
+  UpdateGroupVisualData(saved_guid, local_group_id);
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
@@ -270,30 +290,61 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
     ConnectLocalTabGroup(local_group_id, saved_guid);
   }
 
-  // SavedTabGroupModelLoaded is only called once when the model is initially
-  // loaded. As such we can stop oberserving the model and assume that all of
-  // the data in `saved_guid_to_local_group_id_mapping_` has been used.
-  model_.RemoveObserver(this);
+  // Clear `saved_guid_to_local_group_id_mapping_` expecting that this observer
+  // function will only be called once on startup freeing unsued space.
+  //
+  // TODO(dljames): Investigate using a single use callback to connect local and
+  // saved groups together. There are crashes that occur when restarting the
+  // browser before the browser process completely shuts down. This triggers the
+  // CHECK in StoreLocalToSavedId because the SavedTabGroupModel has already
+  // loaded. The callback will also remove the need of
+  // `saved_guid_to_local_group_id_mapping_`.
   saved_guid_to_local_group_id_mapping_.clear();
   CHECK(saved_guid_to_local_group_id_mapping_.empty());
+}
+
+void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(
+    const base::Uuid& group_guid,
+    const absl::optional<base::Uuid>& tab_guid) {
+  const SavedTabGroup* const saved_group = model_.Get(group_guid);
+  CHECK(saved_group);
+
+  // Do nothing if the saved group is not open in the tabstrip.
+  if (!saved_group->local_group_id().has_value()) {
+    return;
+  }
+
+  if (tab_guid.has_value()) {
+    // TODO(dljames): Update tabs in the tabstrip if the respective group is
+    // open with the updated tab metadata. Figure out if the tab should be
+    // added, removed, or updated based on the data in saved_group.
+    NOTIMPLEMENTED();
+  } else {
+    // Update the visual data of the saved group if it exists and is open in
+    // the tabstrip.
+    UpdateGroupVisualData(group_guid, saved_group->local_group_id().value());
+  }
 }
 
 const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(
     const tab_groups::TabGroupId& local_group_id) {
   const Browser* const browser =
-      listener_.GetBrowserWithTabGroupId(local_group_id);
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
   CHECK(browser);
   return browser->tab_strip_model();
 }
 
-void SavedTabGroupKeyedService::UpdateTabGroupVisualData(
-    TabGroup* const tab_group,
-    const SavedTabGroup* saved_group) {
-  // Update the group to use the saved title and color.
-  const tab_groups::TabGroupVisualData visual_data(
-      saved_group->title(), saved_group->color(), /*is_collapsed=*/false);
+void SavedTabGroupKeyedService::UpdateGroupVisualData(
+    const base::GUID saved_group_guid,
+    const tab_groups::TabGroupId group_id) {
+  TabGroup* const tab_group = SavedTabGroupUtils::GetTabGroupWithId(group_id);
+  CHECK(tab_group);
+  const SavedTabGroup* const saved_group = model_.Get(saved_group_guid);
+  CHECK(saved_group);
 
-  // Set the groups visual data after the tab strip is in its final state. This
-  // ensures the tab group's bounds are correctly set. crbug/1408814.
+  // Update the group to use the saved title and color.
+  tab_groups::TabGroupVisualData visual_data(saved_group->title(),
+                                             saved_group->color(),
+                                             /*is_collapsed=*/false);
   tab_group->SetVisualData(visual_data, /*is_customized=*/true);
 }

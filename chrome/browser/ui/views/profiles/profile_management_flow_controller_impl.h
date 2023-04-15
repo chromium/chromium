@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

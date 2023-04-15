@@ -6,6 +6,7 @@
 #define DEVICE_BASE_SYNCHRONIZATION_ONE_WRITER_SEQLOCK_H_
 
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 #include <type_traits>
 

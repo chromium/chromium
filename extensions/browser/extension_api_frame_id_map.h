@@ -86,11 +86,11 @@ class ExtensionApiFrameIdMap {
 
     // The type that this frame represents.
     api::extension_types::FrameType frame_type =
-        api::extension_types::FRAME_TYPE_NONE;
+        api::extension_types::FrameType::kNone;
 
     // The lifecycle state the frame is currently in.
     api::extension_types::DocumentLifecycle document_lifecycle =
-        api::extension_types::DOCUMENT_LIFECYCLE_NONE;
+        api::extension_types::DocumentLifecycle::kNone;
   };
 
   // An invalid extension API frame ID.

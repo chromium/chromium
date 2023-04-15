@@ -118,10 +118,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   bool IsUsingVulkan() const {
     return gr_context_type() == gpu::GrContextType::kVulkan;
   }
-
-  bool IsUsingDawn() const {
-    return gr_context_type() == gpu::GrContextType::kDawn;
-  }
 };
 
 }  // namespace viz

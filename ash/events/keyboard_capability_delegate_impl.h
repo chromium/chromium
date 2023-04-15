@@ -8,7 +8,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 class PrefService;
 
@@ -27,7 +27,7 @@ class KeyboardCapabilityDelegateImpl : public ui::KeyboardCapability::Delegate,
       const KeyboardCapabilityDelegateImpl&) = delete;
   ~KeyboardCapabilityDelegateImpl() override;
 
-  // ui::EventRewriterChromeOS::Delegate:
+  // ui::KeyboardCapability::Delegate:
   void AddObserver(ui::KeyboardCapability::Observer* observer) override;
   void RemoveObserver(ui::KeyboardCapability::Observer* observer) override;
   bool TopRowKeysAreFKeys() const override;

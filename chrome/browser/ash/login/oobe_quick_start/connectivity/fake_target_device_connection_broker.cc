@@ -16,15 +16,15 @@ namespace ash::quick_start {
 
 namespace {
 
-// Arbitrary string to use as the connection's authentication token.
-constexpr char kAuthenticationToken[] = "auth_token";
-
 // 32 random bytes to use as the shared secret.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
     0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
     0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
     0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
 
+// Arbitrary string to use as the connection's authentication token when
+// deriving PIN.
+constexpr char kAuthenticationToken[] = "auth_token";
 }  // namespace
 
 FakeTargetDeviceConnectionBroker::Factory::Factory() = default;
@@ -52,6 +52,7 @@ FakeTargetDeviceConnectionBroker::GetFeatureSupportStatus() const {
 
 void FakeTargetDeviceConnectionBroker::StartAdvertising(
     ConnectionLifecycleListener* listener,
+    bool use_pin_authentication,
     ResultCallback on_start_advertising_callback) {
   ++num_start_advertising_calls_;
   connection_lifecycle_listener_ = listener;
@@ -66,15 +67,14 @@ void FakeTargetDeviceConnectionBroker::StopAdvertising(
 
 void FakeTargetDeviceConnectionBroker::InitiateConnection(
     const std::string& source_device_id) {
-  auto random_session_id = RandomSessionId();
-  fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
-  NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-  fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
-  auto fake_incomming_connection = std::make_unique<FakeIncommingConnection>(
-      nearby_connection, random_session_id, kAuthenticationToken);
-  connection_lifecycle_listener_->OnIncomingConnectionInitiated(
-      source_device_id, fake_incomming_connection->AsWeakPtr());
-  fake_connection_ = std::move(fake_incomming_connection);
+  if (use_pin_authentication_) {
+    connection_lifecycle_listener_->OnPinVerificationRequested(
+        DerivePin(kAuthenticationToken));
+  } else {
+    auto random_session_id = RandomSessionId();
+    connection_lifecycle_listener_->OnQRCodeVerificationRequested(
+        GetQrCodeData(random_session_id, kSharedSecret));
+  }
 }
 
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(

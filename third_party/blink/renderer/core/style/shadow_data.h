@@ -41,7 +41,7 @@ class CORE_EXPORT ShadowData {
   USING_FAST_MALLOC(ShadowData);
 
  public:
-  ShadowData(const gfx::PointF& location,
+  ShadowData(gfx::PointF location,
              float blur,
              float spread,
              ShadowStyle style,

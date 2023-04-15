@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">A continuación, se incluyen otros recursos útiles:</translation>
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1908234395526491708">Fallos de solicitudes de UDP</translation>
+<translation id="1923388006036088459">Colores de los elementos destacados</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1962550982027027473">Debes ingresar un APN predeterminado</translation>
@@ -140,6 +141,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2085089206770112532">Disminuir el brillo de la pantalla</translation>
+<translation id="209751264101900360">Del amanecer a la noche: Flujo de nubes</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
 <translation id="2105810540595158374">El dispositivo es un control de juegos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
@@ -331,6 +333,7 @@
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969602104473960991">Se actualizó la contraseña de Chrome OS</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3974175076798940554">Ya están disponibles los recursos exclusivos para Chromebook Plus</translation>
 <translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
 <translation id="4003384961948020559">Error: La bandeja de salida está llena</translation>
@@ -370,6 +373,7 @@
 <translation id="4275663329226226506">Multimedia</translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4289849978083912975">Presentación de diapositivas</translation>
+<translation id="4293621540182258188">Del amanecer a la noche: Flujo de la Tierra</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
 <translation id="4311195029067684288">Total</translation>
@@ -544,6 +548,7 @@
 <translation id="576835345334454681">Aumentar el brillo de la pantalla</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
+<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Acerca del arte</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -562,6 +567,7 @@
 <translation id="5907649332524363701">color de la tecla</translation>
 <translation id="5916084858004523819">Prohibido</translation>
 <translation id="5916664084637901428">Activado</translation>
+<translation id="5918201491776799918">Selecciona obras de arte exclusivas de Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se escaneó correctamente y se guardó en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se escanearon correctamente y se guardaron en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="5939518447894949180">Restablecer</translation>
@@ -818,6 +824,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Herramientas del programador</translation>
+<translation id="8153923300383192510">Exclusivos para Chromebook Plus</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183974620058026102">Adjuntar</translation>
 <translation id="8206859287963243715">Celular</translation>
@@ -840,6 +847,7 @@
 <translation id="8352772353338965963">Agrega una cuenta para el acceso múltiple. Puedes acceder a todas las cuentas abiertas sin una contraseña, por lo que esta función solo debe utilizarse con cuentas de confianza.</translation>
 <translation id="8364946094152050673">los servidores de nombres están vacíos</translation>
 <translation id="8372477600026034341">Hosts adicionales</translation>
+<translation id="8373046809163484087">Usa combinaciones de colores que combinen con tu fondo de pantalla</translation>
 <translation id="8380114448424469341">Anclar la ventana en la mitad <ph name="DIRECTION" /> de la pantalla</translation>
 <translation id="8395584934117017006">Una empresa administra el dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">La tasa a la que el dispositivo se está cargando o descargando</translation>
@@ -859,6 +867,7 @@
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más…</translation>
 <translation id="8508640263392900755">Detalles del APN</translation>
+<translation id="8522687886059337719">Ahora tienes acceso a <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> y <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> nuevos</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Es posible que tu proveedor necesite que esta opción esté habilitada para que puedas conectarte a su red. Comunícate con el proveedor para obtener más detalles.</translation>

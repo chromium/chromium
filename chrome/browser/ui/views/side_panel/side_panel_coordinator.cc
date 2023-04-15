@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -345,6 +347,9 @@ void SidePanelCoordinator::UpdatePinState() {
         prefs::kSidePanelCompanionEntryPinnedToToolbar);
     pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
                              !current_state);
+    base::RecordComputedAction(base::StrCat(
+        {"SidePanel.Companion.", !current_state ? "Pinned" : "Unpinned",
+         ".BySidePanelHeaderButton"}));
   }
 }
 
@@ -378,6 +383,11 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 void SidePanelCoordinator::Show(
     SidePanelEntry* entry,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+  // Side panel is not supported for non-normal browsers.
+  if (!browser_view_->browser()->is_type_normal()) {
+    return;
+  }
+
   if (!entry) {
     return;
   }
@@ -627,7 +637,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   header_combobox_->SetProperty(views::kElementIdentifierKey,
                                 kSidePanelComboboxElementId);
 
-  // TODO(corising): Update icon and tooltip once provided by UX.
   header_pin_button_ =
       header->AddChildView(CreatePinToggleButton(base::BindRepeating(
           &SidePanelCoordinator::UpdatePinState, base::Unretained(this))));

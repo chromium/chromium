@@ -37,6 +37,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
@@ -111,6 +112,8 @@ public class AddressEditorTest {
     @Mock
     private IdentityManager mIdentityManager;
     @Mock
+    private PersonalDataManager mPersonalDataManager;
+    @Mock
     private Profile mProfile;
 
     @Captor
@@ -120,7 +123,12 @@ public class AddressEditorTest {
             CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
     // Note: can't initialize this list statically because of how Robolectric
     // initializes Android library dependencies.
-    private final List<DropdownKeyValue> mSupportedCountries = List.of(
+    private final List<DropdownKeyValue> mSupportedCountries =
+            List.of(new DropdownKeyValue("US", "United States"),
+                    new DropdownKeyValue("DE", "Germany"), new DropdownKeyValue("CU", "Cuba"),
+                    new DropdownKeyValue("IR", "Iran"), new DropdownKeyValue("KP", "North Korea"),
+                    new DropdownKeyValue("SD", "Sudan"), new DropdownKeyValue("SY", "Syria"));
+    private final List<DropdownKeyValue> mNonSactionedCountries = List.of(
             new DropdownKeyValue("US", "United States"), new DropdownKeyValue("DE", "Germany"));
 
     private Callback<AutofillAddress> mDoneCallback;
@@ -158,6 +166,8 @@ public class AddressEditorTest {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
         SyncService.overrideForTests(mSyncService);
+
+        PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
 
         setUpSupportedCountries(mSupportedCountries);
 
@@ -235,6 +245,13 @@ public class AddressEditorTest {
 
     private void validateShownFields(
             EditorModel editorModel, AutofillProfile profile, boolean shouldMarkFieldsRequired) {
+        validateShownFields(editorModel, profile, shouldMarkFieldsRequired,
+                /*shouldMarkFieldsRequiredWhenAddressFieldEmpty=*/false);
+    }
+
+    private void validateShownFields(EditorModel editorModel, AutofillProfile profile,
+            boolean shouldMarkFieldsRequired,
+            boolean shouldMarkFieldsRequiredWhenAddressFieldEmpty) {
         Assert.assertNotNull(editorModel);
         List<EditorFieldModel> editorFields = editorModel.getFields();
         // editorFields[0] - country dropdown.
@@ -270,10 +287,11 @@ public class AddressEditorTest {
 
         // Note: dependent locality is a required field for address profiles stored in Google
         // account, but it's still marked as optional by the editor when the corresponding field in
-        // the address profile is empty.
+        // the existing address profile is empty. It is considered required for new address
+        // profiles.
         validateTextField(editorFields.get(5), profile.getDependentLocality(),
-                EditorFieldModel.INPUT_TYPE_HINT_NONE, "dependent locality label", false, true,
-                false);
+                EditorFieldModel.INPUT_TYPE_HINT_NONE, "dependent locality label",
+                shouldMarkFieldsRequiredWhenAddressFieldEmpty, true, false);
 
         validateTextField(editorFields.get(6), profile.getCompanyName(),
                 EditorFieldModel.INPUT_TYPE_HINT_NONE, "organization label", false, true, false);
@@ -319,6 +337,30 @@ public class AddressEditorTest {
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_source_notice);
         final String sourceNotice = null;
+
+        checkUiStringsHaveExpectedValues(
+                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+    }
+
+    @Test
+    @SmallTest
+    public void validateUIStrings_NewAddressProfile_EligibleForAddressAccountStorage() {
+        when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(new ArrayList());
+        mAddressEditor.edit(null, unused -> {});
+
+        final String deleteTitle =
+                mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
+        final String deleteText =
+                mActivity.getString(R.string.autofill_delete_account_address_source_notice)
+                        .replace("$1", USER_EMAIL);
+        final String sourceNotice =
+                mActivity
+                        .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
+                        .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
                 mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
@@ -427,7 +469,9 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
-                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                mActivity
+                        .getString(
+                                R.string.autofill_address_will_be_migrated_to_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
@@ -449,7 +493,8 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
-                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                mActivity
+                        .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
@@ -471,7 +516,8 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
-                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                mActivity
+                        .getString(R.string.autofill_address_already_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
@@ -555,6 +601,21 @@ public class AddressEditorTest {
         mAddressEditor.edit(null, unused -> {});
         validateShownFields(mEditorModelCapture.getValue(), new AutofillProfile(),
                 /*shouldMarkFieldsRequired=*/false);
+    }
+
+    @Test
+    @SmallTest
+    public void validateShownFields_NewAddressProfile_EligibleForAddressAccountStorage() {
+        when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+
+        mAddressEditor.edit(null, unused -> { return; });
+        validateShownFields(mEditorModelCapture.getValue(), new AutofillProfile(),
+                /*shouldMarkFieldsRequired=*/true,
+                /*shouldMarkFieldsRequiredWhenAddressFieldEmpty=*/true);
     }
 
     @Test
@@ -674,7 +735,34 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AlterProfile_Cancel() {
+    public void edit_NewAddressProfile_EligibleForAddressAccountStorage() {
+        when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        mAddressEditor.edit(null, mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        // Set values of the required fields.
+        editorFields.get(2).setValue("New Name");
+        editorFields.get(4).setValue("Locality");
+        editorFields.get(5).setValue("Dependent locality");
+        editorFields.get(8).setValue("Postal code");
+        editorFields.get(9).setValue("Street address");
+        editorModel.done();
+
+        Assert.assertNotNull(mEditedAutofillAddress);
+        Assert.assertEquals(Source.ACCOUNT, mEditedAutofillAddress.getProfile().getSource());
+    }
+
+    @Test
+    @SmallTest
+    public void edit_AlterAddressProfile_Cancel() {
         mAddressEditor = new AddressEditor(
                 /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -704,7 +792,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AlterProfile_CommitChanges() {
+    public void edit_AlterAddressProfile_CommitChanges() {
         mAddressEditor = new AddressEditor(
                 /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -729,5 +817,91 @@ public class AddressEditorTest {
                 mEditedAutofillAddress.getProfile().getDependentLocality());
         Assert.assertEquals(
                 "New organization", mEditedAutofillAddress.getProfile().getCompanyName());
+    }
+
+    @Test
+    @SmallTest
+    public void accountSavingDisallowedForSanctionedCountry() {
+        when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields, "US");
+        setUpAddressUiComponents(sSupportedAddressFields, "SY");
+        mAddressEditor.edit(null, mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        EditorFieldModel countryDropdown = editorFields.get(0);
+        countryDropdown.setDropdownKey("SY", () -> {});
+
+        // Set values of the required fields.
+        editorFields.get(2).setValue("New Name");
+        editorFields.get(4).setValue("Locality");
+        editorFields.get(5).setValue("Dependent locality");
+        editorFields.get(8).setValue("Postal code");
+        editorFields.get(9).setValue("Street address");
+        editorModel.done();
+
+        Assert.assertNotNull(mEditedAutofillAddress);
+        Assert.assertEquals(
+                Source.LOCAL_OR_SYNCABLE, mEditedAutofillAddress.getProfile().getSource());
+    }
+
+    @Test
+    @SmallTest
+    public void countryDropDownExcludesSanctionedCountries_saveInAccountFlow() {
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        AutofillProfile toEdit = new AutofillProfile(sAccountProfile);
+        mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
+    }
+
+    @Test
+    @SmallTest
+    public void countryDropDownExcludesSanctionedCountries_MigrationFlow() {
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/true);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        AutofillProfile toEdit = new AutofillProfile(sLocalProfile);
+        mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
+    }
+
+    @Test
+    @SmallTest
+    public void countryDropDownExcludesSanctionedCountries_editExistingAccountProfile() {
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/true, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        AutofillProfile toEdit = new AutofillProfile(sAccountProfile);
+        mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -247,7 +249,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
         ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
         ReadingListUtils.setReadingListSupportedForTesting(null);
-        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(null);
         ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
@@ -255,7 +256,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         setBookmarkItemRowEnabled(false);
         setShoppingListItemRowEnabled(false);
         setDesktopSiteExceptionsEnabled(false);
-        setTabSelectionEditorV2Enabled(false);
         setWebApkUniqueIdEnabled(false);
         FeatureList.setTestValues(mTestValues);
     }
@@ -277,11 +277,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void setDesktopSiteExceptionsEnabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(
                 ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, enabled);
-    }
-
-    private void setTabSelectionEditorV2Enabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, enabled);
-        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(enabled);
     }
 
     private void setWebApkUniqueIdEnabled(boolean enabled) {
@@ -535,14 +530,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    public void testOverviewMenuItems_Phone_GroupTabs() {
-        checkOverviewMenuItemsPhone(R.id.menu_group_tabs);
-    }
-
-    @Test
-    @Config(qualifiers = "sw320dp")
     public void testOverviewMenuItems_Phone_SelectTabs() {
-        setTabSelectionEditorV2Enabled(true);
         checkOverviewMenuItemsPhone(R.id.menu_select_tabs);
     }
 
@@ -902,24 +890,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @SmallTest
-    public void testGroupTabsOption_IsEnabled_InIncognitoMode_When_IncognitoReauthIsNotShowing() {
-        Menu menu = setUpMenuWithIncognitoReauthPage(/*isShowing=*/false);
-        MenuItem item = menu.findItem(R.id.menu_group_tabs);
-        assertTrue(item.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testGroupTabsOption_IsDisabled_InIncognitoMode_When_IncognitoReauthIsShowing() {
-        Menu menu = setUpMenuWithIncognitoReauthPage(/*isShowing=*/true);
-        MenuItem item = menu.findItem(R.id.menu_group_tabs);
-        assertFalse(item.isEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testSelectTabsOption_IsEnabled_InIncognitoMode_When_IncognitoReauthIsNotShowing() {
-        setTabSelectionEditorV2Enabled(true);
         Menu menu = setUpMenuWithIncognitoReauthPage(/*isShowing=*/false);
         MenuItem item = menu.findItem(R.id.menu_select_tabs);
         assertTrue(item.isEnabled());
@@ -928,7 +899,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @SmallTest
     public void testSelectTabsOption_IsDisabled_InIncognitoMode_When_IncognitoReauthIsShowing() {
-        setTabSelectionEditorV2Enabled(true);
         Menu menu = setUpMenuWithIncognitoReauthPage(/*isShowing=*/true);
         MenuItem item = menu.findItem(R.id.menu_select_tabs);
         assertFalse(item.isEnabled());
@@ -936,39 +906,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @SmallTest
-    public void testGroupTabsOption_IsEnabled_InRegularMode_IndependentOfIncognitoReauth() {
-        setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        prepareMocksForGroupTabsOnTabModel(mTabModel);
-
-        Menu menu = createTestMenu();
-        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-        // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
-        verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
-
-        MenuItem item = menu.findItem(R.id.menu_group_tabs);
-        assertTrue(item.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testGroupTabsOption_IsDisabled_InRegularMode_IndependentOfIncognitoReauth() {
-        setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-
-        Menu menu = createTestMenu();
-        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-        // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
-        verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
-
-        MenuItem item = menu.findItem(R.id.menu_group_tabs);
-        assertFalse(item.isEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testSelectTabsOption_IsEnabled_InRegularMode_IndependentOfIncognitoReauth() {
-        setTabSelectionEditorV2Enabled(true);
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         prepareMocksForGroupTabsOnTabModel(mTabModel);
@@ -985,7 +923,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @SmallTest
     public void testSelectTabsOption_IsEnabledOneTab_InRegularMode_IndependentOfIncognitoReauth() {
-        setTabSelectionEditorV2Enabled(true);
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -1006,7 +943,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @SmallTest
     public void testSelectTabsOption_IsDisabled_InRegularMode_IndependentOfIncognitoReauth() {
-        setTabSelectionEditorV2Enabled(true);
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
@@ -1264,7 +1200,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        Assert.assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
+        assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 
@@ -1291,8 +1227,8 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        Assert.assertThat("Populated action bar items were:" + getMenuTitles(actionBar),
-                actualItems, Matchers.containsInAnyOrder(expectedItems));
+        assertThat("Populated action bar items were:" + getMenuTitles(actionBar), actualItems,
+                Matchers.containsInAnyOrder(expectedItems));
     }
 
     private void assertMenuItemsHaveIcons(Menu menu, Integer... expectedItems) {
@@ -1303,7 +1239,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        Assert.assertThat("menu items with icons were:" + getMenuTitles(menu), actualItems,
+        assertThat("menu items with icons were:" + getMenuTitles(menu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 

@@ -18,6 +18,7 @@ Local Modifications:
    - mathutil.h mathutil.cc
    - vector.h
      - Change comparison operator implementations to be C++20-compliant
+     - add missing cstdint include
  - _fpcontractoff.h
  - r1interval.h
  - r2.h

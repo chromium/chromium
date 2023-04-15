@@ -30,7 +30,7 @@ import org.chromium.webengine.Tab;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebEngineParams;
 import org.chromium.webengine.WebSandbox;
-import org.chromium.webengine.shell.InstrumentationActivity;
+import org.chromium.webengine.test.instrumentation_test_apk.InstrumentationActivity;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

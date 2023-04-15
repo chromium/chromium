@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 
@@ -412,13 +414,12 @@ public class CustomTabActivityAppMenuTest {
 
         onFinished.waitForCallback("Pending Intent was not sent.");
         Intent callbackIntent = onFinished.getCallbackIntent();
-        Assert.assertThat(callbackIntent.getDataString(), equalTo(mTestPage));
+        assertThat(callbackIntent.getDataString(), equalTo(mTestPage));
 
         // Verify that the callback intent has the page title as the subject, but other extras are
         // kept intact.
-        Assert.assertThat(
-                callbackIntent.getStringExtra(Intent.EXTRA_SUBJECT), equalTo("The Google"));
-        Assert.assertThat(callbackIntent.getIntExtra("FOO", 0), equalTo(42));
+        assertThat(callbackIntent.getStringExtra(Intent.EXTRA_SUBJECT), equalTo("The Google"));
+        assertThat(callbackIntent.getIntExtra("FOO", 0), equalTo(42));
     }
 
     /**

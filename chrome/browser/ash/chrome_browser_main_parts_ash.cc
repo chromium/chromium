@@ -127,6 +127,7 @@
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
+#include "chrome/browser/ash/notifications/multi_capture_login_notification.h"
 #include "chrome/browser/ash/notifications/multi_capture_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
@@ -173,7 +174,6 @@
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
@@ -275,7 +275,7 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/pref_names.h"
 #include "ui/events/event_utils.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
@@ -1021,6 +1021,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Needs to be initialized after crosapi_manager_.
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 
+  multi_capture_login_notification_ =
+      std::make_unique<MultiCaptureLoginNotification>();
+
   if (immediate_login) {
     const user_manager::CryptohomeId cryptohome_id(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -1570,12 +1573,18 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Must occur before BrowserProcessImpl::StartTearDown() destroys the
   // ProfileManager.
   if (pre_profile_init_called_) {
-    Profile* primary_user = ProfileManager::GetPrimaryUserProfile();
+    auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
     if (primary_user) {
-      // See startup_settings_cache::ReadAppLocale() comment for why we do this.
-      startup_settings_cache::WriteAppLocale(
-          primary_user->GetPrefs()->GetString(
-              language::prefs::kApplicationLocale));
+      // During a login restart-to-apply-flags the primary profile may not be
+      // loaded yet. See http://crbug.com/1432237
+      auto* primary_profile = Profile::FromBrowserContext(
+          BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+      if (primary_profile) {
+        // See startup_settings_cache::ReadAppLocale() comment.
+        startup_settings_cache::WriteAppLocale(
+            primary_profile->GetPrefs()->GetString(
+                language::prefs::kApplicationLocale));
+      }
     }
   }
 
@@ -1596,6 +1605,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   lacros_data_backward_migration_mode_policy_observer_.reset();
 
   multi_capture_notification_.reset();
+  multi_capture_login_notification_.reset();
 
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();

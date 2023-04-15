@@ -89,7 +89,7 @@ export class IncompatibleApplicationItemElement extends
    * Executes the action for this incompatible application, depending on
    * actionType.
    */
-  private onActionTap_() {
+  private onActionClick_() {
     if (this.actionType === ActionTypes.UNINSTALL) {
       this.browserProxy_.startApplicationUninstallation(this.applicationName);
     } else if (

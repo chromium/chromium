@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol ApplicationCommands;
 @class PasswordCheckupCoordinator;
 @class ReauthenticationModule;
 
@@ -33,6 +34,8 @@
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PasswordCheckupCoordinatorDelegate> delegate;
+
+@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
 
 @end
 

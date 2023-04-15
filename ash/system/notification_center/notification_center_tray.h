@@ -28,7 +28,8 @@ class TrayBubbleView;
 // A button in the tray which displays the number of currently available
 // notifications along with icons for pinned notifications. Clicking this button
 // opens a bubble with a scrollable list of all current notifications.
-class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView {
+class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
+                                          public TrayItemView::Observer {
  public:
   METADATA_HEADER(NotificationCenterTray);
 
@@ -63,6 +64,9 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView {
   views::Widget* GetBubbleWidget() const override;
   void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
                                     bool visible) override;
+
+  // ash::TrayItemView::Observer:
+  void OnTrayItemVisibilityAboutToChange(bool target_visibility) override;
 
   PrivacyIndicatorsTrayItemView* privacy_indicators_view() {
     return privacy_indicators_view_;

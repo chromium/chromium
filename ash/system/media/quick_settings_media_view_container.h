@@ -9,11 +9,14 @@
 
 namespace ash {
 
+class UnifiedSystemTrayController;
+
 // Container view of QuickSettingsMediaView which manages the visibility of the
 // entire quick settings media view.
 class QuickSettingsMediaViewContainer : public views::View {
  public:
-  QuickSettingsMediaViewContainer();
+  explicit QuickSettingsMediaViewContainer(
+      UnifiedSystemTrayController* controller);
   QuickSettingsMediaViewContainer(const QuickSettingsMediaViewContainer&) =
       delete;
   QuickSettingsMediaViewContainer& operator=(
@@ -34,6 +37,8 @@ class QuickSettingsMediaViewContainer : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
+  UnifiedSystemTrayController* const controller_;
+
   bool show_media_view_ = false;
 };
 

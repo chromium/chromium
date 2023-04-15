@@ -48,12 +48,12 @@
         <!-- Does not use <cr-link-row> due to custom aria label. -->
         <div id="profile-icon"
             style="background-image: [[getIconImageSet_(profileIconUrl_)]]"
-            on-click="onAccountManagerTap_"
+            on-click="onAccountManagerClick_"
             actionable$="[[isAccountManagerEnabled_]]">
         </div>
         <div class="middle two-line no-min-width"
             id="profile-row"
-            on-click="onAccountManagerTap_"
+            on-click="onAccountManagerClick_"
             actionable$="[[isAccountManagerEnabled_]]">
           <div class="flex text-elide settings-box-text">
             <span id="profile-name" aria-hidden="true">
@@ -78,7 +78,7 @@
         start-icon="cr:sync"
         label="$i18n{syncAndNonPersonalizedServices}"
         sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
-        on-click="onSyncTap_"
+        on-click="onSyncClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <template is="dom-if" if="[[showParentalControls_]]">

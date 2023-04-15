@@ -53,7 +53,6 @@ class VIEWS_EXPORT AXTreeSourceViews
   AXAuraObjWrapper* ChildAt(AXAuraObjWrapper* node, size_t) const override;
   AXAuraObjWrapper* GetParent(AXAuraObjWrapper* node) const override;
   bool IsIgnored(AXAuraObjWrapper* node) const override;
-  bool IsValid(AXAuraObjWrapper* node) const override;
   bool IsEqual(AXAuraObjWrapper* node1, AXAuraObjWrapper* node2) const override;
   AXAuraObjWrapper* GetNull() const override;
   std::string GetDebugString(AXAuraObjWrapper* node) const override;

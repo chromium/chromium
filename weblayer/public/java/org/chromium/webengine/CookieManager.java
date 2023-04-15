@@ -24,14 +24,18 @@ import java.util.HashSet;
  * profile.
  */
 public class CookieManager {
+    @NonNull
     private ICookieManagerDelegate mDelegate;
 
+    @NonNull
     private HashSet<CallbackToFutureAdapter.Completer<Void>> mPendingSetCompleters =
             new HashSet<>();
+
+    @NonNull
     private HashSet<CallbackToFutureAdapter.Completer<String>> mPendingGetCompleters =
             new HashSet<>();
 
-    CookieManager(ICookieManagerDelegate delegate) {
+    CookieManager(@NonNull ICookieManagerDelegate delegate) {
         mDelegate = delegate;
     }
 
@@ -43,6 +47,8 @@ public class CookieManager {
      */
     @NonNull
     public ListenableFuture<Void> setCookie(@NonNull String uri, @NonNull String value) {
+        ThreadCheck.ensureOnUiThread();
+
         if (mDelegate == null) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox has been destroyed"));

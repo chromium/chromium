@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
@@ -63,7 +62,6 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkItemRow;
-import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -96,6 +94,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
@@ -905,9 +904,7 @@ public class BookmarkTest {
         toggleSelectionAndEndAnimation(fooId, foo);
 
         // Starts as last bookmark (2nd index) and ends as 0th bookmark (promo header not included).
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((BookmarkItemsAdapter) mItemsContainer.getAdapter()).simulateDragForTests(3, 1);
-        });
+        simulateDragForTestsOnUiThread(3, 1);
 
         modelReorderHelper.waitForCallback(0, 1);
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
@@ -973,9 +970,7 @@ public class BookmarkTest {
         toggleSelectionAndEndAnimation(testId, test);
 
         // Starts as 0th bookmark (not counting promo header) and ends as last (index 3).
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((BookmarkItemsAdapter) mItemsContainer.getAdapter()).simulateDragForTests(1, 4);
-        });
+        simulateDragForTestsOnUiThread(1, 4);
 
         modelReorderHelper.waitForCallback(0, 1);
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
@@ -1037,9 +1032,7 @@ public class BookmarkTest {
         toggleSelectionAndEndAnimation(testId, test);
 
         // Starts as 0th bookmark (not counting promo header) and ends at the 1st index.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((BookmarkItemsAdapter) mItemsContainer.getAdapter()).simulateDragForTests(1, 2);
-        });
+        simulateDragForTestsOnUiThread(1, 2);
 
         modelReorderHelper.waitForCallback(0, 1);
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
@@ -1069,11 +1062,10 @@ public class BookmarkTest {
         toggleSelectionAndEndAnimation(
                 testId, (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView);
 
-        BookmarkItemsAdapter adapter = ((BookmarkItemsAdapter) mItemsContainer.getAdapter());
         Assert.assertFalse("Promo header should not be passively draggable",
-                adapter.isPassivelyDraggable(promo));
+                isViewHolderPassivelyDraggable(promo));
         Assert.assertFalse("Promo header should not be actively draggable",
-                adapter.isActivelyDraggable(promo));
+                isViewHoldersActivelyDraggable(promo));
     }
 
     @Test
@@ -1091,11 +1083,10 @@ public class BookmarkTest {
         toggleSelectionAndEndAnimation(
                 testId, (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView);
 
-        BookmarkItemsAdapter adapter = ((BookmarkItemsAdapter) mItemsContainer.getAdapter());
         Assert.assertFalse("Partner bookmarks folder should not be passively draggable",
-                adapter.isPassivelyDraggable(partner));
+                isViewHolderPassivelyDraggable(partner));
         Assert.assertFalse("Partner bookmarks folder should not be actively draggable",
-                adapter.isActivelyDraggable(partner));
+                isViewHoldersActivelyDraggable(partner));
     }
 
     @Test
@@ -1117,11 +1108,10 @@ public class BookmarkTest {
         toggleSelectionAndEndAnimation(
                 aId, (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(2).itemView);
 
-        BookmarkItemsAdapter adapter = ((BookmarkItemsAdapter) mItemsContainer.getAdapter());
         Assert.assertTrue("Unselected rows should be passively draggable",
-                adapter.isPassivelyDraggable(test));
+                isViewHolderPassivelyDraggable(test));
         Assert.assertFalse("Unselected rows should not be actively draggable",
-                adapter.isActivelyDraggable(test));
+                isViewHoldersActivelyDraggable(test));
     }
 
     @Test
@@ -1365,7 +1355,6 @@ public class BookmarkTest {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         openBookmarkManager();
-        BookmarkItemsAdapter adapter = getReorderAdapter();
 
         // Add a bookmark to the Other Bookmarks folder.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -1376,7 +1365,7 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(getTestingDelegate()::simulateSignInForTesting);
         Assert.assertEquals(
                 "Expected promo, \"Reading List\", \"Mobile Bookmarks\" and \"Other Bookmarks\" folder to appear!",
-                4, adapter.getItemCount());
+                4, getAdapter().getItemCount());
     }
 
     @Test
@@ -1518,19 +1507,11 @@ public class BookmarkTest {
         BookmarkRow row =
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
         toggleSelectionAndEndAnimation(id, row);
-        CallbackHelper helper = new CallbackHelper();
-        getAdapter().registerAdapterDataObserver(new AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                helper.notifyCalled();
-            }
-        });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addBookmark(folder, 1, TEST_PAGE_TITLE_GOOGLE, mTestPage);
         });
 
-        helper.waitForCallback(0, 1);
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(isItemPresentInBookmarkList(TEST_PAGE_TITLE_FOO));
@@ -1571,7 +1552,7 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(
                     "Item is not deleted", isItemPresentInBookmarkList(TEST_PAGE_TITLE_GOOGLE));
-            Assert.assertEquals(2, getReorderAdapter().getItemCount());
+            Assert.assertEquals(2, getAdapter().getItemCount());
             Assert.assertEquals("Bookmark View should be back to normal view",
                     mBookmarkManagerCoordinator.getToolbarForTesting().getCurrentViewType(),
                     ViewType.NORMAL_VIEW);
@@ -1613,7 +1594,7 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(
                     "Item is not deleted", isItemPresentInBookmarkList(TEST_PAGE_TITLE_GOOGLE));
-            Assert.assertEquals(2, getReorderAdapter().getItemCount());
+            Assert.assertEquals(2, getAdapter().getItemCount());
             Assert.assertTrue("Item selected should not be cleared", aRow.isItemSelected());
             Assert.assertEquals("Should stay in selection mode because there is one selected",
                     mBookmarkManagerCoordinator.getToolbarForTesting().getCurrentViewType(),
@@ -1887,8 +1868,30 @@ public class BookmarkTest {
                 () -> mBookmarkModel.addFolder(mBookmarkModel.getDefaultFolder(), 0, title));
     }
 
-    private BookmarkItemsAdapter getReorderAdapter() {
-        return (BookmarkItemsAdapter) getAdapter();
+    private void simulateDragForTestsOnUiThread(int start, int end) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
+                    getDragReorderableRecyclerViewAdapter();
+            dragReorderableRecyclerViewAdapter.simulateDragForTests(start, end);
+        });
+    }
+
+    private boolean isViewHolderPassivelyDraggable(ViewHolder viewHolder) {
+        DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
+                getDragReorderableRecyclerViewAdapter();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> dragReorderableRecyclerViewAdapter.isPassivelyDraggable(viewHolder));
+    }
+
+    private boolean isViewHoldersActivelyDraggable(ViewHolder viewHolder) {
+        DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
+                getDragReorderableRecyclerViewAdapter();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> dragReorderableRecyclerViewAdapter.isActivelyDraggable(viewHolder));
+    }
+
+    private DragReorderableRecyclerViewAdapter getDragReorderableRecyclerViewAdapter() {
+        return ((DragReorderableRecyclerViewAdapter) mItemsContainer.getAdapter());
     }
 
     private TestingDelegate getTestingDelegate() {

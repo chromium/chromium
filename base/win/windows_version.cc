@@ -124,6 +124,36 @@ OSInfo::WindowsArchitecture OSInfo::GetArchitecture() {
   }
 }
 
+// Returns true if this is an x86/x64 process running on ARM64 through
+// emulation.
+// static
+bool OSInfo::IsRunningEmulatedOnArm64() {
+#if defined(ARCH_CPU_ARM64)
+  // If we're running native ARM64 then we aren't running emulated.
+  return false;
+#else
+  using IsWow64Process2Function = decltype(&IsWow64Process2);
+
+  IsWow64Process2Function is_wow64_process2 =
+      reinterpret_cast<IsWow64Process2Function>(::GetProcAddress(
+          ::GetModuleHandleA("kernel32.dll"), "IsWow64Process2"));
+  if (!is_wow64_process2) {
+    return false;
+  }
+  USHORT process_machine;
+  USHORT native_machine;
+  bool retval = is_wow64_process2(::GetCurrentProcess(), &process_machine,
+                                  &native_machine);
+  if (!retval) {
+    return false;
+  }
+  if (native_machine == IMAGE_FILE_MACHINE_ARM64) {
+    return true;
+  }
+  return false;
+#endif
+}
+
 OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
                const _SYSTEM_INFO& system_info,
                DWORD os_type)

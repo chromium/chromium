@@ -1194,13 +1194,9 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
 
-  std::string body;
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        tab,
-        "window.domAutomationController.send(document.body.textContent)",
-        &body));
-  EXPECT_EQ(expected_content_regular_window, body);
+  EXPECT_EQ(expected_content_regular_window,
+            content::EvalJs(tab, "document.body.textContent"));
 
   // Test that navigation in OTR window is properly redirected.
   Browser* otr_browser =
@@ -1215,13 +1211,9 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
       otr_browser,
       embedded_test_server()->GetURL("/extensions/test_file.html")));
 
-  body.clear();
   WebContents* otr_tab = otr_browser->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      otr_tab,
-      "window.domAutomationController.send(document.body.textContent)",
-      &body));
-  EXPECT_EQ(exptected_content_incognito_window, body);
+  EXPECT_EQ(exptected_content_incognito_window,
+            content::EvalJs(otr_tab, "document.body.textContent"));
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
@@ -2066,15 +2058,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
   EXPECT_EQ(google_url, web_contents->GetLastCommittedURL());
-  {
-    // google.com should succeed.
-    std::string content;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents,
-        "domAutomationController.send(document.body.textContent.trim());",
-        &content));
-    EXPECT_EQ(kGoogleBodyContent, content);
-  }
+
+  // google.com should succeed.
+  EXPECT_EQ(kGoogleBodyContent,
+            content::EvalJs(web_contents, "document.body.textContent.trim();"));
 
   GURL example_url =
       embedded_test_server()->GetURL("example.com", "/extensions/body2.html");
@@ -2086,12 +2073,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
         web_contents->GetController().GetLastCommittedEntry();
     ASSERT_TRUE(nav_entry);
     EXPECT_EQ(content::PAGE_TYPE_ERROR, nav_entry->GetPageType());
-    std::string content;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents,
-        "domAutomationController.send(document.body.textContent.trim());",
-        &content));
-    EXPECT_NE(kExampleBodyContent, content);
+    EXPECT_NE(
+        kExampleBodyContent,
+        content::EvalJs(web_contents, "document.body.textContent.trim();"));
   }
 
   // A callback allow waiting for responses to complete with an expected status
@@ -3789,11 +3773,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       "webrequest", {.extension_url = "test_simple_cancel_navigation.html"}))
       << message_;
 
-  std::string body;
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(document.body.textContent)",
-      &body));
+  std::string body =
+      content::EvalJs(tab, "document.body.textContent").ExtractString();
 
   EXPECT_TRUE(
       base::Contains(body, "This page has been blocked by an extension"));

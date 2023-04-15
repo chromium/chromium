@@ -11,12 +11,22 @@ package org.chromium.webengine;
  */
 public interface FullscreenCallback {
     /**
-     * Called when the WebEngine Tab enters fullscreen mode.
+     /**
+     * Called when the page has requested to go fullscreen. The embedder is responsible for
+     * putting the system into fullscreen mode. The embedder can exit out of fullscreen by
+     * running the supplied FullscreenClient by calling fullscreenClient.exitFullscreen().
+     *
+     * NOTE: we expect the WebEngine Fragment to be covering the whole display without any other UI
+     elements from
+     * the embedder or Android on screen. Otherwise some web features (e.g. WebXR) might experience
+     * clipped or misaligned UI elements.
      *
      * @param webEngine the {@code WebEngine} associated with this event.
      * @param tab the {@code Tab} associated with this Event
+     * @param fullscreenClient the {@code FullscreenClient} used to programmatically exit fullscreen
+     mode.
      */
-    public void onEnterFullscreen(WebEngine webEngine, Tab tab);
+    public void onEnterFullscreen(WebEngine webEngine, Tab tab, FullscreenClient fullscreenClient);
 
     /**
      * Called when the WebEngine Tab exits fullscreen mode.

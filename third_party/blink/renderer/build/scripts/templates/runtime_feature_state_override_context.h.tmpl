@@ -11,9 +11,10 @@
 #include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -26,13 +27,18 @@ namespace blink {
 class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
     : public GarbageCollected<RuntimeFeatureStateOverrideContext> {
  public:
-  RuntimeFeatureStateOverrideContext(ExecutionContext* context)
-    : execution_context_(context),
-      runtime_feature_state_controller_remote_(context) {
-    DCHECK(execution_context_);
-    override_values_.reserve({{overridable_features|length()}});
-    origin_trial_overrides_.reserve({{overridable_features|length()}});
-  }
+  RuntimeFeatureStateOverrideContext(MojoBindingContext* binding_context,
+                                   UseCounter* use_counter,
+                                   bool send_runtime_features_to_browser)
+    : binding_context_(binding_context),
+      use_counter_(use_counter),
+      runtime_feature_state_controller_remote_(binding_context),
+      send_runtime_features_to_browser_(send_runtime_features_to_browser) {
+  DCHECK(binding_context);
+  DCHECK(use_counter);
+  override_values_.reserve({{overridable_features|length()}});
+  origin_trial_overrides_.reserve({{overridable_features|length()}});
+}
 
   void ApplyOverrideValuesFromParams(
       const base::flat_map<mojom::RuntimeFeatureState, bool>&
@@ -56,22 +62,32 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
   {% endfor %}
 
   void EnablePersistentTrial(
-    const WTF::String& raw_token,
-    const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>& script_origins);
+      const WTF::String& raw_token,
+      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+          script_origins);
 
-  const base::flat_map<mojom::RuntimeFeatureState, bool>& GetOverrideValuesForTesting() const {
+  const base::flat_map<mojom::RuntimeFeatureState, bool>&
+  GetOverrideValuesForTesting() const {
     return override_values_;
   }
 
   void Trace(Visitor*) const;
 
  private:
-  mojom::blink::RuntimeFeatureStateController* GetOrBindRuntimeFeatureStateController();
+  mojom::blink::RuntimeFeatureStateController*
+  GetOrBindRuntimeFeatureStateController();
 
   base::flat_map<mojom::RuntimeFeatureState, bool> override_values_;
-  base::flat_map<mojom::RuntimeFeatureState, mojom::blink::FeatureValuePtr> origin_trial_overrides_;
-  Member<ExecutionContext> execution_context_;
-  blink::HeapMojoRemote<mojom::blink::RuntimeFeatureStateController> runtime_feature_state_controller_remote_;
+  base::flat_map<mojom::RuntimeFeatureState, mojom::blink::FeatureValuePtr>
+      origin_trial_overrides_;
+  Member<MojoBindingContext> binding_context_;
+  Member<UseCounter> use_counter_;
+  blink::HeapMojoRemote<mojom::blink::RuntimeFeatureStateController>
+      runtime_feature_state_controller_remote_;
+
+  // TODO(https://crbug.com/1410817): add support for workers/non-frames that
+  // are enabling origin trials to send their information to the browser too.
+  bool send_runtime_features_to_browser_ = false;
 };
 
 }  // namespace blink

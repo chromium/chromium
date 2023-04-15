@@ -25,8 +25,8 @@ Readiness EnumTraits<Readiness, apps::Readiness>::ToMojom(
       return Readiness::kUninstalledByUser;
     case apps::Readiness::kRemoved:
       return Readiness::kRemoved;
-    case apps::Readiness::kUninstalledByMigration:
-      return Readiness::kUninstalledByMigration;
+    case apps::Readiness::kUninstalledByNonUser:
+      return Readiness::kUninstalledByNonUser;
   }
 }
 
@@ -58,8 +58,8 @@ bool EnumTraits<Readiness, apps::Readiness>::FromMojom(
     case Readiness::kRemoved:
       *output = apps::Readiness::kRemoved;
       return true;
-    case Readiness::kUninstalledByMigration:
-      *output = apps::Readiness::kUninstalledByMigration;
+    case Readiness::kUninstalledByNonUser:
+      *output = apps::Readiness::kUninstalledByNonUser;
       return true;
   }
 }

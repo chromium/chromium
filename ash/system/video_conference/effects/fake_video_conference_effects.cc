@@ -42,6 +42,7 @@ SimpleToggleEffect::SimpleToggleEffect(
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kTestEffect,
                           /*value=*/absl::nullopt));
+  state->set_disabled_icon(&kVideoConferenceBackgroundBlurOffIcon);
   effect->AddState(std::move(state));
   AddEffect(std::move(effect));
 }

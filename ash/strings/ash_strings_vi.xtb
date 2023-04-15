@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">Thiết bị USB-C (cổng phía trước)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> đã đổi thành <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="1013923882670373915">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Vui lòng nhập mã PIN này trên thiết bị đó: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Việc này cho phép <ph name="APP_NAME" /> và mọi ứng dụng cũng như trang web có quyền truy cập vào thông tin vị trí và ChromeOS sử dụng thông tin vị trí của Wi-Fi và mạng di động.</translation>
+<translation id="1017556409696559990">Thu nhỏ cửa sổ trên cùng khi không có nhật ký nội dung quay lại trong Chrome</translation>
 <translation id="1024364763893396229">Lưu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pin của bút cảm ứng ở mức thấp</translation>
 <translation id="1036073649888683237">Để quản lý thông báo, hãy chuyển đến phần Cài đặt</translation>
@@ -146,6 +148,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1651914502370159744">Mở trang Nhật ký</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
+<translation id="1675844249244994876">Cập nhật cửa sổ bên phải</translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> chưa kết nối.</translation>
 <translation id="1677582821739292812">Có người đang nhìn vào màn hình của bạn</translation>
@@ -190,6 +193,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Bật quyền truy cập thông tin vị trí</translation>
 <translation id="1830308660060964064">Đã bỏ ghim <ph name="ITEM_TITLE" /></translation>
 <translation id="1838895407229022812">Chế độ Ánh sáng đêm đang tắt.</translation>
 <translation id="1854180393107901205">Dừng truyền</translation>
@@ -343,6 +347,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="263399434338050016">"Chọn tất cả"</translation>
+<translation id="2644422758626431000">Ghim cửa sổ sang bên trái</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> trong số <ph name="TOTAL_MEMORY" /> sẵn có</translation>
 <translation id="2653019840645008922">Chụp/ghi cửa sổ</translation>
@@ -363,7 +368,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2726420622004325180">Điện thoại của bạn phải có dữ liệu di động thì mới dùng làm điểm phát sóng được</translation>
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
-<translation id="2740531572673183784">Ok</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Xoá"</translation>
 <translation id="2750941250130734256">Đã gỡ cửa sổ đang hoạt động.</translation>
@@ -466,6 +470,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3255483164551725916">Bạn có thể làm gì?</translation>
 <translation id="3256109297135787951">Xóa mục đã đánh dấu trên giá</translation>
 <translation id="3260969790895726815">Lời nói được xử lý trên thiết bị còn tính năng nhập bằng giọng nói hoạt động khi không có mạng, nhưng một số lệnh thoại sẽ không hoạt động.</translation>
+<translation id="3265032511221679826">Bật quyền truy cập vào thông tin vị trí chính xác?</translation>
 <translation id="3269597722229482060">Nhấp chuột phải</translation>
 <translation id="3289364673986435196">Trình đơn nguồn</translation>
 <translation id="3289544412142055976">Hiện không hỗ trợ ứng dụng Linux</translation>
@@ -496,7 +501,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3378442621503952303">Đang kết nối với hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="3386978599540877378">tính năng phóng to toàn màn hình</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
-<translation id="3400357268283240774">Tùy chọn cài đặt bổ sung</translation>
+<translation id="3400357268283240774">Chế độ cài đặt bổ sung</translation>
 <translation id="3405101454990027959">Cho phép truy cập micrô</translation>
 <translation id="3409584356742878290">Hiển thị hoặc ẩn trình kiểm tra Công cụ cho nhà phát triển</translation>
 <translation id="3410336247007142655">Hiển thị các tùy chọn cài đặt giao diện tối</translation>
@@ -576,6 +581,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Người dùng được quản lý</translation>
 <translation id="3666266999138159418">Vuốt để ẩn cửa sổ nổi</translation>
 <translation id="367531336287639526">Chọn biểu tượng đầu tiên ở bên trái thanh địa chỉ</translation>
+<translation id="3677931086890821290">Chế độ này cho phép tất cả ứng dụng và trang web có quyền truy cập thông tin vị trí và ChromeOS dùng thông tin vị trí của Wi-Fi và mạng di động.</translation>
 <translation id="3679827876008292680">Chuyển đến thẻ cuối cùng trong cửa sổ</translation>
 <translation id="36813544980941320">Điện thoại và <ph name="DEVICE_NAME" /> của bạn sẽ dùng chung mạng Wi-Fi</translation>
 <translation id="3694122362646626770">Trang web</translation>
@@ -842,6 +848,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="493076006037866439">Thu nhỏ màn hình</translation>
 <translation id="4936329710968938986">Mọi người, đang tắt</translation>
 <translation id="4938176435186993759">Ẩn tất cả đề xuất</translation>
+<translation id="4943007472417128747">Điểm phát sóng đã bị tắt để sử dụng Wi-Fi. Để sử dụng Điểm phát sóng, hãy tắt Wi-Fi.</translation>
 <translation id="4945196315133970626">Tắt thông báo</translation>
 <translation id="4946376291507881335">Chụp</translation>
 <translation id="495046168593986294">Cuộn lên</translation>
@@ -1054,6 +1061,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
+<translation id="5922962980596822074">Di chuyển qua các cửa sổ từ cửa sổ được sử dụng gần đây nhất</translation>
 <translation id="5924855612669061715">Điểm phát sóng đang bật</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> đang bật.</translation>
 <translation id="5947494881799873997">Hoàn nguyên</translation>
@@ -1064,6 +1072,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5976112937189445008">Nhấn phím Enter để ghi màn hình trong cửa sổ</translation>
 <translation id="5978382165065462689">Chia sẻ quyền kiểm soát màn hình của bạn qua Trợ giúp từ xa.</translation>
 <translation id="5980301590375426705">Thoát phiên khách</translation>
+<translation id="5983567367406220847">Điểm phát sóng đã tắt do không hoạt động.</translation>
 <translation id="598407983968395253">Sử dụng mẫu</translation>
 <translation id="598882571027504733">Để cập nhật, hãy khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="6002179289567220515">Bạn đã dùng công tắc vật lý để tắt 1 máy ảnh. Bạn cũng có thể tắt quyền truy cập vào mọi máy ảnh.</translation>
@@ -1143,6 +1152,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6352082849089527770">Mạng không xác định</translation>
 <translation id="6359587239691116345">Nhận các tính năng mới nhất và mức độ bảo mật cao hơn. Nếu bạn từ chối bản cập nhật này, thiết bị của bạn có thể sẽ không còn hoạt động bình thường. Đồng thời, bạn có thể gặp các vấn đề về hiệu suất và bảo mật.</translation>
 <translation id="6376931439017688372">Bluetooth đang bật</translation>
+<translation id="6378515133128829137">Ghim cửa sổ sang bên phải</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
 <translation id="638716340450135524">Bật quyền truy cập vào máy ảnh</translation>
 <translation id="639644700271529076">CAPS LOCK tắt</translation>
@@ -1162,6 +1172,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6459472438155181876">Đang mở rộng màn hình tới <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Không tải được tệp xuống</translation>
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
+<translation id="6483727822843292440">Di chuyển qua các cửa sổ từ cửa sổ ít được sử dụng nhất</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
 <translation id="6491071886865974820">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình trước thời hạn</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
@@ -1364,6 +1375,7 @@ Mới cài đặt</translation>
 <translation id="7452560014878697800">Một ứng dụng đang sử dụng máy ảnh của bạn</translation>
 <translation id="7453330308669753048">Đã xoá kết quả khỏi nhật ký tìm kiếm</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | còn <ph name="TIME" /> cho đến khi pin đầy</translation>
+<translation id="7459485586006128091">Điểm phát sóng đã tắt do lỗi nội bộ. Hãy thử kết nối lại sau vài phút.</translation>
 <translation id="7461924472993315131">Ghim</translation>
 <translation id="746232733191930409">Chế độ ghi màn hình</translation>
 <translation id="7466449121337984263">Vui lòng chạm vào cảm biến</translation>
@@ -1383,6 +1395,7 @@ Mới cài đặt</translation>
 Để tắt thiết bị, hãy nhấn và giữ lại nguồn trên thiết bị một lần nữa.</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Cập nhật cửa sổ bên trái</translation>
 <translation id="7543399541175347147">Hiện không hỗ trợ ứng dụng Linux và cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="7544300628205093162">Đèn nền bàn phím đang bật</translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
@@ -1436,6 +1449,7 @@ Mới cài đặt</translation>
 <translation id="776344839111254542">Nhấp để xem chi tiết cập nhật</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7769299611924763557">Ảnh GIF của bạn sẽ sớm sẵn sàng</translation>
+<translation id="7773536009433685931">Bật Wi-Fi</translation>
 <translation id="7780094051999721182">lối tắt</translation>
 <translation id="7780159184141939021">Xoay màn hình</translation>
 <translation id="7796735576426975947">Đã ẩn thông báo mới</translation>
@@ -1463,6 +1477,7 @@ Mới cài đặt</translation>
 <translation id="7893503627044934815">Không muốn hiện tệp này</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Bạn đã nhấn phím tắt để xoay màn hình. Bạn có muốn xoay màn hình không?</translation>
+<translation id="7901190436359881020">Hoán đổi cửa sổ</translation>
 <translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
@@ -1738,6 +1753,7 @@ Mới cài đặt</translation>
 <translation id="9198992156681343238">Độ phân giải của <ph name="DISPLAY_NAME" /> đã được thay đổi thành <ph name="RESOLUTION" />. Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="9201044636667689546">Kết nối <ph name="NAME" /> với Chromebook này</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Do quản trị viên của bạn quản lý</translation>
+<translation id="9207682216934703221">Việc này cho phép <ph name="APP_NAME" />, <ph name="APP2_NAME" /> và mọi ứng dụng cũng như trang web có quyền truy cập vào thông tin vị trí và ChromeOS sử dụng thông tin vị trí của Wi-Fi và mạng di động.</translation>
 <translation id="9210037371811586452">Đang thoát chế độ màn hình hợp nhất</translation>
 <translation id="9211490828691860325">Tất cả các không gian làm việc</translation>
 <translation id="9211681782751733685">Còn <ph name="TIME_REMAINING" /> nữa là sạc đầy pin.</translation>

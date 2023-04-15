@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -207,7 +208,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private void setupItemTouchHelperCallback(boolean isDialog) {
         mItemTouchHelperCallback = new TabGridItemTouchHelperCallback(
                 ContextUtils.getApplicationContext(), mModel, mTabModelSelector, mTabClosedListener,
-                isDialog ? mTabGridDialogHandler : null, "", !isDialog, TabListMode.GRID,
+                isDialog ? mTabGridDialogHandler : null, "", !isDialog, TabListMode.GRID);
+        mItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 mOnLongPressTabItemEventListener);
         mItemTouchHelperCallback.setupCallback(THRESHOLD, THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
@@ -828,9 +830,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void onLongPress_triggerTabSelectionEditor() {
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         initAndAssertAllProperties();
 
@@ -842,13 +843,13 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         verify(mOnLongPressTabItemEventListener).onLongPressEvent(TAB1_ID);
         assertTrue(mItemTouchHelperCallback.shouldBlockAction());
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
+
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void onLongPress_preventTriggerTabSelectionEditor() {
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         initAndAssertAllProperties();
 
@@ -863,7 +864,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(TAB1_ID);
         assertFalse(mItemTouchHelperCallback.shouldBlockAction());
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
+
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     private void verifyDrag(

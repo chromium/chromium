@@ -6,6 +6,9 @@
   {
     "namespace":"management",
     "description": "The <code>chrome.management</code> API provides ways to manage the list of extensions/apps that are installed and running. It is particularly useful for extensions that <a href='override'>override</a> the built-in New Tab page.",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "types": [
       {
         "id": "IconInfo",

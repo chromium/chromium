@@ -4,8 +4,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(http://b/259525182): Implement logic for dynamic sub-labels. -->
-<!-- TODO(http://b/254414138): Add correct links to the Preference fragments. -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.components.browser_ui.settings.ChromeBasePreference

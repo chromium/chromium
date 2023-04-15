@@ -16,6 +16,7 @@ Neither has a leading slash.
 
 import json
 import logging
+from typing import Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
@@ -184,17 +185,14 @@ class WPTManifest(object):
         assert not path_in_wpt.startswith('/')
         return self._items_for_file_path(path_in_wpt) is not None
 
-    def get_test_type(self, url):
+    def get_test_type(self, test_path: str) -> Optional[str]:
         """Returns the test type of the given test url."""
-        assert not url.startswith('/')
+        assert not test_path.startswith('/')
         items = self.raw_dict.get('items', {})
-
         for test_type in self.test_types:
             type_items = items.get(test_type, {})
-
-            if url in type_items:
+            if test_path in type_items:
                 return test_type
-
         return None
 
     def is_test_url(self, url):

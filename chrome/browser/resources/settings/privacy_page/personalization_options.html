@@ -44,7 +44,7 @@
         sub-label="$i18n{enablePersonalizationLoggingDesc}" no-set-pref
         on-settings-boolean-control-change="onMetricsReportingChange_">
       <template is="dom-if" if="[[showRestart_]]" restamp>
-        <cr-button on-click="onRestartTap_" id="restart"
+        <cr-button on-click="onRestartClick_" id="restart"
             slot="more-actions">
           $i18n{restart}
         </cr-button>
@@ -118,7 +118,7 @@
 <if expr="not chromeos_ash">
     <cr-toast id="toast">
       <div>$i18n{restartToApplyChanges}</div>
-      <cr-button on-click="onRestartTap_">$i18n{restart}</cr-button>
+      <cr-button on-click="onRestartClick_">$i18n{restart}</cr-button>
     </cr-toast>
 
     <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>

@@ -871,8 +871,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Override
     public void destroy() {
         assert !mIsDestroyed;
-        assert !ViewCompat
-                .isAttachedToWindow(getView()) : "Destroy called before removed from window";
+        assert !ViewCompat.isAttachedToWindow(getView())
+            : "Destroy called before removed from window";
         if (mIsLoaded && !mTab.isHidden()) recordNTPHidden();
 
         mNewTabPageManager.onDestroy();
@@ -1056,6 +1056,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     public void showHomeSurfaceUi() {
         if (mSingleTabSwitcherCoordinator == null) {
             initializeSingleTabCard();
+        } else {
+            Tab mostRecentTab =
+                    TabModelUtils.getMostRecentTab(mTabModelSelector.getModel(false), mTab.getId());
+            mSingleTabSwitcherCoordinator.updateTrackingTab(mostRecentTab);
+            setSingleTabCardVisibility(true);
         }
     }
 
@@ -1083,7 +1088,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private void initializeSingleTabCardImpl() {
         Tab mostRecentTab =
                 TabModelUtils.getMostRecentTab(mTabModelSelector.getModel(false), mTab.getId());
-        if (mostRecentTab == null) {
+        if (mostRecentTab == null || UrlUtilities.isNTPUrl(mostRecentTab.getUrl())) {
             return;
         }
         mSingleTabCardContainer = (FrameLayout) ((ViewStub) mNewTabPageLayout.findViewById(

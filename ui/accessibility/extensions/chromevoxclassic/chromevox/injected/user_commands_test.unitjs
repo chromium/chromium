@@ -54,7 +54,7 @@ TEST_F('ChromeVoxUserCommandsUnitTest', 'TabHandling', function() {
   this.waitForCalm(this.userCommand, 'forward');
   this.waitForCalm(this.userCommand, 'handleTab');
   this.waitForCalm(function() {
-    // handleTab should place focus on a dummy node immediately in front of
+    // handleTab should place focus on a test node immediately in front of
     // current position so that tab will jump reasonably.
     var id = document.activeElement.nextSibling.id;
     assertEquals('foo', id);

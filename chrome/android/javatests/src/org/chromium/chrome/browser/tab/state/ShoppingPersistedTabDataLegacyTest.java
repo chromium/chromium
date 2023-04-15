@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -67,6 +68,7 @@ public class ShoppingPersistedTabDataLegacyTest {
                 mOptimizationGuideBridgeJniMock,
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.onDeferredStartup();
             PersistedTabDataConfiguration.setUseTestConfig(true);

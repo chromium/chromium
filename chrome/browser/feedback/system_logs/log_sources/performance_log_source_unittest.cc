@@ -59,12 +59,6 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
   ~PerformanceLogSourceTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {performance_manager::features::kBatterySaverModeAvailable, {}},
-            {performance_manager::features::kHighEfficiencyModeAvailable, {}},
-        },
-        {});
     environment_.SetUp(local_state_);
     tuning_manager_ = performance_manager::user_tuning::
         UserPerformanceTuningManager::GetInstance();
@@ -115,7 +109,6 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
     tuning_manager_->RemoveObserver(observer.get());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   ScopedTestingLocalState testing_local_state_;
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;

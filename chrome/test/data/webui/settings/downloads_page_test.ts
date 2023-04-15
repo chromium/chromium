@@ -5,11 +5,13 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl, SettingsDownloadsPageElement} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
+import {CrSettingsPrefs, SettingsPrefsElement} from 'chrome://settings/settings.js';
 // <if expr="chromeos_ash">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
@@ -56,22 +58,25 @@ class TestDownloadsBrowserProxy extends TestBrowserProxy implements
 suite('DownloadsHandler', function() {
   let downloadsBrowserProxy: TestDownloadsBrowserProxy;
   let downloadsPage: SettingsDownloadsPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     downloadsBrowserProxy = new TestDownloadsBrowserProxy();
     DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
+    document.body.appendChild(settingsPrefs);
     downloadsPage = document.createElement('settings-downloads-page');
+    downloadsPage.prefs = settingsPrefs.prefs;
     document.body.appendChild(downloadsPage);
 
     // Page element must call 'initializeDownloads' upon attachment to the DOM.
     return downloadsBrowserProxy.whenCalled('initializeDownloads');
-  });
-
-  teardown(function() {
-    downloadsPage.remove();
   });
 
   test('select downloads location', function() {
@@ -107,15 +112,7 @@ suite('DownloadsHandler', function() {
 
   // <if expr="chromeos_ash">
   function setDefaultDownloadPathPref(downloadPath: string) {
-    downloadsPage.prefs = {
-      download: {
-        default_directory: {
-          key: 'download.default_directory',
-          type: chrome.settingsPrivate.PrefType.STRING,
-          value: downloadPath,
-        },
-      },
-    };
+    downloadsPage.setPrefValue('download.default_directory', downloadPath);
   }
 
   function getDefaultDownloadPathString() {
@@ -126,6 +123,7 @@ suite('DownloadsHandler', function() {
   }
 
   test('rewrite default download paths', async function() {
+    downloadsBrowserProxy.resetResolver('getDownloadLocationText');
     setDefaultDownloadPathPref('downloads-path');
     const path =
         await downloadsBrowserProxy.whenCalled('getDownloadLocationText');
@@ -134,4 +132,60 @@ suite('DownloadsHandler', function() {
     assertEquals('downloads-text', getDefaultDownloadPathString());
   });
   // </if>
+
+  test('showDownloadsToggleHidden', function() {
+    const button =
+        downloadsPage.querySelector<HTMLElement>('#showDownloadsToggle');
+    assertFalse(!!button);
+  });
+});
+
+suite('DownloadsHandlerWithBubble', function() {
+  let downloadsBrowserProxy: TestDownloadsBrowserProxy;
+  let downloadsPage: SettingsDownloadsPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      downloadBubbleEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    downloadsBrowserProxy = new TestDownloadsBrowserProxy();
+    DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    downloadsPage = document.createElement('settings-downloads-page');
+    downloadsPage.prefs = settingsPrefs.prefs;
+    document.body.appendChild(downloadsPage);
+
+    // Page element must call 'initializeDownloads' upon attachment to the DOM.
+    return downloadsBrowserProxy.whenCalled('initializeDownloads');
+  });
+
+  test('showDownloadsToggleShown', function() {
+    const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#showDownloadsToggle');
+    assertTrue(!!button);
+  });
+
+  test('showDownloadsToggleChangesPref', async function() {
+    downloadsPage.setPrefValue('download_bubble.partial_view_enabled', false);
+    await flushTasks();
+    assertFalse(
+        downloadsPage.getPref('download_bubble.partial_view_enabled').value);
+
+    const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#showDownloadsToggle');
+    assertTrue(!!button);
+
+    button.click();
+    await flushTasks();
+    assertTrue(
+        downloadsPage.getPref('download_bubble.partial_view_enabled').value);
+  });
 });

@@ -47,7 +47,7 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
   void StartAudioHashForTesting();
 
   // Returns the hash of all audio frames seen since construction.
-  std::string GetAudioHashForTesting();
+  const AudioHash& GetAudioHashForTesting() const;
 
  protected:
   ~NullAudioSink() override;

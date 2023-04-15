@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   // |Pairing| is reported by the tunnel server to be invalid (which can happen
   // if the user opts to unlink all devices) then |pairing_is_invalid| is
   // run.
-  FidoTunnelDevice(CableRequestType request_type,
+  FidoTunnelDevice(FidoRequestType request_type,
                    network::mojom::NetworkContext* network_context,
                    std::unique_ptr<Pairing> pairing,
                    base::OnceClosure pairing_is_invalid);

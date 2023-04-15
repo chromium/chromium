@@ -65,12 +65,11 @@ using base::SysNSStringToUTF16;
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
-  // YES when move to account option is supported in password details page, NO
-  // otherwise.
-  BOOL _supportMoveToAccount;
+  // The context in which the password details are accessed.
+  DetailsContext _context;
 
-  // Password manager client.
-  raw_ptr<password_manager::PasswordManagerClient> _passwordManagerClient;
+  // Password manager client provider.
+  raw_ptr<PasswordManagerClientProvider> _passwordManagerClientProvider;
 
   // The BrowserState pref service.
   raw_ptr<PrefService> _prefService;
@@ -92,18 +91,18 @@ using base::SysNSStringToUTF16;
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)
-        initWithPasswords:
-            (const std::vector<password_manager::CredentialUIEntry>&)credentials
-              displayName:(NSString*)displayName
-     passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-              prefService:(PrefService*)prefService
-              syncService:(syncer::SyncService*)syncService
-     supportMoveToAccount:(BOOL)supportMoveToAccount
-    passwordManagerClient:
-        (password_manager::PasswordManagerClient*)passwordManagerClient {
+- (instancetype)initWithPasswords:
+                    (const std::vector<password_manager::CredentialUIEntry>&)
+                        credentials
+                      displayName:(NSString*)displayName
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+                          context:(DetailsContext)context
+    passwordManagerClientProvider:
+        (PasswordManagerClientProvider*)passwordManagerClientProvider {
   DCHECK(manager);
-  DCHECK(passwordManagerClient);
+  DCHECK(passwordManagerClientProvider);
   DCHECK(!credentials.empty());
 
   self = [super init];
@@ -116,8 +115,8 @@ using base::SysNSStringToUTF16;
   _displayName = displayName;
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, manager);
-  _supportMoveToAccount = supportMoveToAccount;
-  _passwordManagerClient = passwordManagerClient;
+  _context = context;
+  _passwordManagerClientProvider = passwordManagerClientProvider;
   _prefService = prefService;
   _syncService = syncService;
 
@@ -225,7 +224,7 @@ using base::SysNSStringToUTF16;
   MovePasswordsToAccountStore(
       _manager->GetSavedPasswordsPresenter()->GetCorrespondingPasswordForms(
           *it),
-      _passwordManagerClient,
+      _passwordManagerClientProvider->GetAny(),
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
@@ -371,19 +370,18 @@ using base::SysNSStringToUTF16;
 // Pushes password details to the consumer.
 - (void)providePasswordsToConsumer {
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      _manager->GetInsecureCredentials();
   for (const password_manager::CredentialUIEntry& credential : _credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
-    password.compromised = base::Contains(insecureCredentials, credential);
+    password.context = _context;
+    password.compromised = IsCompromised(credential);
     // Only offer moving to the account if all of these hold.
     // - The embedder of this page wants to support it.
     // - The entry was flagged as local only in the top-level view.
     // - The user is interested in saving passwords to the account, i.e. they
     // are opted in to account storage.
     password.shouldOfferToMoveToAccount =
-        _supportMoveToAccount &&
+        _context == DetailsContext::kGeneral &&
         password_manager::features_util::IsOptedInForAccountStorage(
             _prefService, _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
@@ -408,8 +406,13 @@ using base::SysNSStringToUTF16;
   }
 }
 
+// Returns a credential that a) is saved in the user account, and b) has the
+// same website/username as `password`, but a different password value.
 - (absl::optional<password_manager::CredentialUIEntry>)
     conflictingAccountPassword:(PasswordDetails*)password {
+  // All credentials for the same website are in `_credentials` due to password
+  // grouping. So it's enough to search that reduced list and not all saved
+  // passwords.
   auto it = base::ranges::find_if(
       _credentials,
       [password](const password_manager::CredentialUIEntry& credential) {

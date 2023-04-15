@@ -28,6 +28,7 @@
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/test/request_matcher.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/update_service.h"
@@ -63,24 +64,22 @@ namespace {
 
 void ExpectNoUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id) {
-  test_server->ExpectOnce(
-      {base::BindRepeating(
-          RequestMatcherRegex,
-          base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str()))},
-      base::StringPrintf(")]}'\n"
-                         R"({"response":{)"
-                         R"(  "protocol":"3.1",)"
-                         R"(  "app":[)"
-                         R"(    {)"
-                         R"(      "appid":"%s",)"
-                         R"(      "status":"ok",)"
-                         R"(      "updatecheck":{)"
-                         R"(        "status":"noupdate")"
-                         R"(      })"
-                         R"(    })"
-                         R"(  ])"
-                         R"(}})",
-                         app_id.c_str()));
+  test_server->ExpectOnce({request::GetContentMatcher(base::StringPrintf(
+                              R"(.*"appid":"%s".*)", app_id.c_str()))},
+                          base::StringPrintf(")]}'\n"
+                                             R"({"response":{)"
+                                             R"(  "protocol":"3.1",)"
+                                             R"(  "app":[)"
+                                             R"(    {)"
+                                             R"(      "appid":"%s",)"
+                                             R"(      "status":"ok",)"
+                                             R"(      "updatecheck":{)"
+                                             R"(        "status":"noupdate")"
+                                             R"(      })"
+                                             R"(    })"
+                                             R"(  ])"
+                                             R"(}})",
+                                             app_id.c_str()));
 }
 
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
@@ -532,8 +531,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   // This instance is now qualified and should activate itself and check itself
   // for updates on the next check.
   test_server.ExpectOnce(
-      {base::BindRepeating(RequestMatcherRegex,
-                           base::StringPrintf(".*%s.*", kUpdaterAppId))},
+      {request::GetContentMatcher(base::StringPrintf(".*%s.*", kUpdaterAppId))},
       ")]}'\n");
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -599,8 +597,7 @@ TEST_F(IntegrationTest, ReportsActive) {
   ASSERT_NO_FATAL_FAILURE(ExpectActive("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectNotActive("test2"));
   test_server.ExpectOnce(
-      {base::BindRepeating(
-          RequestMatcherRegex,
+      {request::GetContentMatcher(
           R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)")},
       R"()]}')"
       "\n"
@@ -1044,16 +1041,14 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
       R"(}})",
       app_id.c_str());
   test_server.ExpectOnce(
-      {base::BindRepeating(
-          RequestMatcherRegex,
+      {request::GetContentMatcher(
           R"(.*"updatecheck":{"sameversionupdate":true},"version":"0.1"}.*)")},
       response);
   ASSERT_NO_FATAL_FAILURE(CallServiceUpdate(
       app_id, "", UpdateService::PolicySameVersionUpdate::kAllowed));
 
   test_server.ExpectOnce(
-      {base::BindRepeating(RequestMatcherRegex,
-                           R"(.*"updatecheck":{},"version":"0.1"}.*)")},
+      {request::GetContentMatcher(R"(.*"updatecheck":{},"version":"0.1"}.*)")},
       response);
   ASSERT_NO_FATAL_FAILURE(CallServiceUpdate(
       app_id, "", UpdateService::PolicySameVersionUpdate::kNotAllowed));
@@ -1088,11 +1083,9 @@ TEST_F(IntegrationTest, InstallDataIndex) {
       app_id.c_str());
 
   test_server.ExpectOnce(
-      {base::BindRepeating(
-          RequestMatcherRegex,
-          base::StringPrintf(
-              R"(.*"data":\[{"index":"%s","name":"install"}],.*)",
-              install_data_index.c_str()))},
+      {request::GetContentMatcher(base::StringPrintf(
+          R"(.*"data":\[{"index":"%s","name":"install"}],.*)",
+          install_data_index.c_str()))},
       response);
 
   ASSERT_NO_FATAL_FAILURE(
@@ -1160,15 +1153,15 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 
   const std::string response;
 
-  // TODO(crbug.com/1430233): Add a predicate to verify the crash report
+  // TODO(crbug.com/1430233): Add a matcher to verify the crash report
   // contents. This is blocked by crbug.com/1430878.
   test_server.ExpectOnce(
-      {GetRequestPathPredicate(
+      {request::GetPathMatcher(
            base::StringPrintf(R"(%s\?product=%s&version=%s&guid=.*)",
                               test_server.crash_report_path().c_str(),
                               CRASH_PRODUCT_NAME, kUpdaterVersion)),
-       GetRequestHeaderPredicate("User-Agent", R"(Crashpad/.*)"),
-       GetRequestHeaderPredicate(
+       request::GetHeaderMatcher("User-Agent", R"(Crashpad/.*)"),
+       request::GetHeaderMatcher(
            "Content-Type",
            R"(multipart/form-data; boundary=---MultipartBoundary.*---)")},
       response);

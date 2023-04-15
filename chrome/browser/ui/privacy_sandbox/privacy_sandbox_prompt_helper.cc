@@ -30,12 +30,13 @@ PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
   if (!profile || !profile->IsRegularProfile())
     return PrivacySandboxService::PromptType::kNone;
 
-  auto* privacy_sandbox_serivce =
+  auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
-  if (!privacy_sandbox_serivce)
+  if (!privacy_sandbox_service) {
     return PrivacySandboxService::PromptType::kNone;
+  }
 
-  return privacy_sandbox_serivce->GetRequiredPromptType();
+  return privacy_sandbox_service->GetRequiredPromptType();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -126,10 +127,11 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 
   // If a Privacy Sandbox prompt already exists for this browser, do not attempt
   // to open another one.
-  if (auto* privacy_sandbox_serivce =
+  if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(profile())) {
-    if (privacy_sandbox_serivce->IsPromptOpenForBrowser(browser))
+    if (privacy_sandbox_service->IsPromptOpenForBrowser(browser)) {
       return;
+    }
   }
 
   const bool is_window_too_small = !CanWindowFitPrivacySandboxPrompt(browser);

@@ -273,6 +273,7 @@ enum APIPermissionID {
   kSystemLog = 246,
   kSmartCardProviderPrivate = 247,
   kChromeOSEvents = 248,
+  kChromeOSAttachedDeviceInfo = 249,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

@@ -91,7 +91,8 @@ void WebAppInstallManagerObserverAdapter::OnWebAppWillBeUninstalled(
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppUninstalled(
-    const AppId& app_id) {
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   if (app_uninstalled_delegate_)
     app_uninstalled_delegate_.Run(app_id);
 }

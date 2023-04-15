@@ -42,8 +42,6 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -100,26 +98,6 @@ void TearDownFakeSyncServer() {
   delete gSyncFakeServer;
   gSyncFakeServer = nullptr;
   OverrideSyncNetwork(syncer::CreateHttpPostProviderFactory());
-}
-
-void StartSync() {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
-  SyncSetupService* sync_setup_service =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state);
-  DCHECK(!sync_setup_service->IsSyncRequested());
-  sync_setup_service->SetSyncEnabled(true);
-  sync_setup_service->CommitSyncChanges();
-}
-
-void StopSync() {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
-  SyncSetupService* sync_setup_service =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state);
-  DCHECK(sync_setup_service->IsSyncRequested());
-  sync_setup_service->SetSyncEnabled(false);
-  sync_setup_service->CommitSyncChanges();
 }
 
 void TriggerSyncCycle(syncer::ModelType type) {

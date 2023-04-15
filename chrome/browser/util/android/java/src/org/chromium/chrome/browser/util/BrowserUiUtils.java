@@ -20,6 +20,7 @@ public class BrowserUiUtils {
     @IntDef({ModuleTypeOnStartAndNTP.MOST_VISITED_TILES, ModuleTypeOnStartAndNTP.OMNIBOX,
             ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD, ModuleTypeOnStartAndNTP.FEED,
             ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON, ModuleTypeOnStartAndNTP.HOME_BUTTON,
+            ModuleTypeOnStartAndNTP.PROFILE_BUTTON, ModuleTypeOnStartAndNTP.DOODLE,
             ModuleTypeOnStartAndNTP.NUM_ENTRIES})
     public @interface ModuleTypeOnStartAndNTP {
         int MOST_VISITED_TILES = 0;
@@ -28,9 +29,11 @@ public class BrowserUiUtils {
         int FEED = 3;
         int TAB_SWITCHER_BUTTON = 4;
         int HOME_BUTTON = 5;
+        int PROFILE_BUTTON = 6;
+        int DOODLE = 7;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 8;
     }
 
     /**
@@ -88,5 +91,22 @@ public class BrowserUiUtils {
             @HostSurface int hostSurface, @ModuleTypeOnStartAndNTP int sample) {
         RecordHistogram.recordEnumeratedHistogram(getHostName(hostSurface) + ".Module.LongClick",
                 sample, ModuleTypeOnStartAndNTP.NUM_ENTRIES);
+    }
+
+    /**
+     * Records user clicking on the profile icon in New tab page or Start surface.
+     * @param isStartSurface Whether the clicking action happens on the Start surface.
+     * @param isTabNtp Whether the current tab is a new tab page.
+     */
+    public static void recordIdentityDiscClicked(boolean isStartSurface, boolean isTabNtp) {
+        // In this function, both parameters (isTabNtp and isStartSurface) can be true.
+        // Initially, we differentiate based on the value of isStartSurface.
+        if (isStartSurface) {
+            recordModuleClickHistogram(
+                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+        } else if (isTabNtp) {
+            recordModuleClickHistogram(
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+        }
     }
 }

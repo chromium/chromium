@@ -166,8 +166,9 @@ void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
 
   {
     base::AutoLock lock(lock_);
-    DCHECK_NE(mailboxes_.count(mailbox), 0u);
-    mailboxes_.erase(mailbox);
+    auto it = mailboxes_.find(mailbox);
+    CHECK(it != mailboxes_.end());
+    mailboxes_.erase(it);
   }
   proxy_->DestroySharedImage(sync_token, mailbox);
 }
@@ -196,7 +197,6 @@ Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {
     return mailbox;
 
   base::AutoLock lock(lock_);
-  DCHECK_EQ(mailboxes_.count(mailbox), 0u);
   mailboxes_.insert(mailbox);
   return mailbox;
 }

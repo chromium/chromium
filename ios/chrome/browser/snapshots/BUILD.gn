@@ -76,7 +76,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/shared/ui/util/image",
     "//ios/web",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes:fakes",

@@ -9,9 +9,9 @@
 
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 
-namespace ash {
+namespace chromeos {
 class FirewallHole;
-}
+}  // namespace chromeos
 
 // An implementation of the mojo interface representing a firewall hole for
 // Nearby Connections WifiLan TCP sockets. This implementation is essentially a
@@ -19,14 +19,14 @@ class FirewallHole;
 class NearbyConnectionsFirewallHole : public sharing::mojom::FirewallHole {
  public:
   explicit NearbyConnectionsFirewallHole(
-      std::unique_ptr<ash::FirewallHole> firewall_hole);
+      std::unique_ptr<chromeos::FirewallHole> firewall_hole);
   NearbyConnectionsFirewallHole(const NearbyConnectionsFirewallHole&) = delete;
   NearbyConnectionsFirewallHole& operator=(
       const NearbyConnectionsFirewallHole&) = delete;
   ~NearbyConnectionsFirewallHole() override;
 
  private:
-  std::unique_ptr<ash::FirewallHole> firewall_hole_;
+  std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_FIREWALL_HOLE_NEARBY_CONNECTIONS_FIREWALL_HOLE_H_

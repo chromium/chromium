@@ -29,7 +29,6 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -950,7 +949,7 @@ void TabletModeController::HandleHingeRotation(
   // accuracy.
   float largest_hinge_acceleration =
       std::max(std::abs(base_reading.x()), std::abs(lid_reading.x()));
-  float smoothing_ratio = base::clamp(
+  float smoothing_ratio = std::clamp(
       (largest_hinge_acceleration - kHingeVerticalSmoothingStart) /
           (kHingeVerticalSmoothingMaximum - kHingeVerticalSmoothingStart),
       0.0f, 1.0f);

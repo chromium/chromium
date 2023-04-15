@@ -4,7 +4,7 @@
 
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/offline_items_collection/core/test_support/mock_filtered_offline_item_observer.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,10 +17,10 @@ namespace offline_items_collection {
 namespace {
 
 TEST(FilteredOfflineItemObserverTest, TestBasicUsage) {
-  ContentId id1("test", base::GenerateGUID());
-  ContentId id2("test", base::GenerateGUID());
+  ContentId id1("test", base::Uuid::GenerateRandomV4().AsLowercaseString());
+  ContentId id2("test", base::Uuid::GenerateRandomV4().AsLowercaseString());
   ContentId id3("test2", id1.id);
-  ContentId id4("test", base::GenerateGUID());
+  ContentId id4("test", base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   OfflineItem item1(id1);
   OfflineItem item2(id2);
@@ -42,7 +42,7 @@ TEST(FilteredOfflineItemObserverTest, TestBasicUsage) {
 }
 
 TEST(FilteredOfflineItemObserverTest, AddRemoveObservers) {
-  ContentId id1("test", base::GenerateGUID());
+  ContentId id1("test", base::Uuid::GenerateRandomV4().AsLowercaseString());
   OfflineItem item1(id1);
 
   MockOfflineContentProvider provider;

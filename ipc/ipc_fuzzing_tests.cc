@@ -223,10 +223,10 @@ class FuzzerServerListener : public SimpleListener {
 
 class FuzzerClientListener : public SimpleListener {
  public:
-  FuzzerClientListener() : last_msg_(nullptr) {}
+  FuzzerClientListener() = default;
 
   bool OnMessageReceived(const IPC::Message& msg) override {
-    last_msg_ = new IPC::Message(msg);
+    last_msg_ = std::make_unique<IPC::Message>(msg);
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
     return true;
   }
@@ -245,9 +245,7 @@ class FuzzerClientListener : public SimpleListener {
       return false;
     if (msg_value2 != value)
       return false;
-
-    delete last_msg_;
-    last_msg_ = nullptr;
+    last_msg_.reset();
     return true;
   }
 
@@ -265,7 +263,7 @@ class FuzzerClientListener : public SimpleListener {
     return (type_id == last_msg_->type());
   }
 
-  raw_ptr<IPC::Message> last_msg_;
+  std::unique_ptr<IPC::Message> last_msg_;
 };
 
 // Runs the fuzzing server child mode. Returns when the preset number of

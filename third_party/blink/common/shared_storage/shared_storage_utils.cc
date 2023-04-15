@@ -33,4 +33,10 @@ void LogSharedStorageWorkletError(SharedStorageWorkletErrorType error_type) {
                                 error_type);
 }
 
+bool ShouldDefinePrivateAggregationInSharedStorage() {
+  return base::FeatureList::IsEnabled(
+             blink::features::kPrivateAggregationApi) &&
+         blink::features::kPrivateAggregationApiEnabledInSharedStorage.Get();
+}
+
 }  // namespace blink

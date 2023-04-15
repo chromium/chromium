@@ -128,6 +128,15 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kFast,
   };
 
+  // Two ways that triggers the window(s) in the split view to be swapped to the
+  // other side. Note that these values are persisted to histograms so existing
+  // values should remain unchanged and new values should be added to the end.
+  enum class SwapWindowsSource {
+    kDoubleTap,
+    kSnapGroupSwapWindowsButton,
+    kMaxValue = kSnapGroupSwapWindowsButton,
+  };
+
   // Gets the |SplitViewController| for the root window of |window|. |window| is
   // important in clamshell mode. In tablet mode, the working assumption for now
   // is mirror mode (or just one display), and so |window| can be almost any
@@ -167,6 +176,20 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewController& operator=(const SplitViewController&) = delete;
 
   ~SplitViewController() override;
+
+  aura::Window* root_window() { return root_window_; }
+  aura::Window* primary_window() { return primary_window_; }
+  aura::Window* secondary_window() { return secondary_window_; }
+  int divider_position() const { return divider_position_; }
+  State state() const { return state_; }
+  SnapPosition default_snap_position() const { return default_snap_position_; }
+  SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
+  bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
+  EndReason end_reason() const { return end_reason_; }
+  SplitViewMetricsController* split_view_metrics_controller() {
+    return split_view_metrics_controller_.get();
+  }
+  aura::Window* to_be_activated_window() { return to_be_activated_window_; }
 
   // Returns true if split view mode is active. Please see SplitViewType above
   // to see the difference between tablet mode and clamshell mode splitview
@@ -217,9 +240,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // active, and if |window| is not minimized and has an non-identity transform.
   void AttachSnappingWindow(aura::Window* window, SnapPosition snap_position);
 
-  // Swaps the left and right windows. This will do nothing if one of the
-  // windows is not snapped.
-  void SwapWindows();
+  // Swaps the window(s). If the it is triggered by `kDoubleTap` with only one
+  // window snapped, the window will be snapped to the other position. For all
+  // other cases with `primary_window_` and `secondary_widnow_` available, the
+  // two windows will be swapped together with their bounds.
+  void SwapWindows(SwapWindowsSource swap_windows_source);
 
   // |window| should be |primary_window_| or |secondary_window_|, and this
   // function returns |LEFT| or |RIGHT| accordingly.
@@ -343,6 +368,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // a snap group is dragged without using the `split_view_divider_`.
   void MaybeDetachWindow(aura::Window* dragged_window);
 
+  void OpenOverviewOnTheOtherSideOfTheScreen(SnapPosition snap_position);
+
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -389,22 +416,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
-
-  aura::Window* root_window() const { return root_window_; }
-  aura::Window* primary_window() { return primary_window_; }
-  aura::Window* secondary_window() { return secondary_window_; }
-  int divider_position() const { return divider_position_; }
-  State state() const { return state_; }
-  SnapPosition default_snap_position() const { return default_snap_position_; }
-  SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
-  bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
-  EndReason end_reason() const { return end_reason_; }
-  SplitViewMetricsController* split_view_metrics_controller() {
-    return split_view_metrics_controller_.get();
-  }
-  aura::Window* to_be_activated_window() const {
-    return to_be_activated_window_;
-  }
 
  private:
   friend class SplitViewControllerTest;
@@ -594,6 +605,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // two windows snapped when the feature flag `kSnapGroup` is enabled and the
   // feature param `kAutomaticallyLockGroup` is true.
   bool ShouldShowDividerWidgetInClamshell() const;
+
+  // Called by `SwapWindows()` to swap the window(s) if exist that occupy the
+  // `SnapPosition::kPrimary` and `SnapPosition::kSecondary`. The bounds of the
+  // window(s) will also be updated.
+  void SwapWindowsAndUpdateBounds();
 
   // Root window the split view is in.
   aura::Window* root_window_;

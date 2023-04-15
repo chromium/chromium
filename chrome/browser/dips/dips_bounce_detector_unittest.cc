@@ -493,16 +493,17 @@ TEST_F(DIPSBounceDetectorTest,
   StartNavigation("http://b.test", kWithUserGesture)
       .RedirectTo("http://c.test")
       .Finish(true);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to d.test
   NavigateTo("http://d.test", kNoUserGesture);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "c.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
   // S-redirects to f.test
   StartNavigation("http://e.test", kNoUserGesture)
       .RedirectTo("http://f.test")
       .Finish(true);
-
   EXPECT_THAT(GetReportedSites(),
               testing::ElementsAre("b.test", "c.test", "d.test, e.test"));
 }
@@ -517,13 +518,13 @@ TEST_F(DIPSBounceDetectorTest,
       .RedirectTo("http://c.test")
       .RedirectTo("http://d.test")
       .Finish(false);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test, c.test"));
 
   // Because the previous navigation didn't commit, the following chain still
   // starts from http://a.test/.
   StartNavigation("http://e.test", kWithUserGesture)
       .RedirectTo("http://f.test")
       .Finish(true);
-
   EXPECT_THAT(GetReportedSites(),
               testing::ElementsAre("b.test, c.test", "e.test"));
 }
@@ -542,9 +543,11 @@ TEST_F(DIPSBounceDetectorTest,
       .RedirectTo("http://a.test")
       .RedirectTo("http://c.test")
       .Finish(true);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to a.test.
   NavigateTo("http://a.test", kNoUserGesture);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "c.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to d.test, which
   // S-redirects to e.test, which S-redirects to f.test.
@@ -552,9 +555,57 @@ TEST_F(DIPSBounceDetectorTest,
       .RedirectTo("http://e.test")
       .RedirectTo("http://f.test")
       .Finish(true);
-
   EXPECT_THAT(GetReportedSites(),
               testing::ElementsAre("b.test", "c.test", "d.test, e.test"));
+}
+
+// This test verifies that sites in a (server) redirect chain that are the same
+// as the ending site of a navigation are not reported.
+TEST_F(DIPSBounceDetectorTest,
+       ReportRedirectorsInChain_OmitSitesMatchingEndSite) {
+  // Visit initial page on a.test.
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test, which S-redirects to c.test.
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://c.test")
+      .RedirectTo("http://c.test")
+      .Finish(true);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test.
+  NavigateTo("http://d.test", kNoUserGesture);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "c.test"));
+
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test, which S-redirects to e.test.
+  StartNavigation("http://e.test", kNoUserGesture)
+      .RedirectTo("http://f.test")
+      .RedirectTo("http://e.test")
+      .Finish(true);
+  EXPECT_THAT(GetReportedSites(),
+              testing::ElementsAre("b.test", "c.test", "d.test, f.test"));
+}
+
+TEST_F(DIPSBounceDetectorTest,
+       ReportRedirectorsInChain_OmitSitesMatchingEndSite_Uncommitted) {
+  // Visit initial page on a.test.
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test, which S-redirects to c.test.
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://c.test")
+      .RedirectTo("http://c.test")
+      .Finish(false);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test.
+  // NOTE: Because the previous navigation didn't commit, the chain still
+  // starts from http://a.test/.
+  NavigateTo("http://d.test", kNoUserGesture);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "a.test"));
 }
 
 TEST_F(DIPSBounceDetectorTest, InteractionRecording_Throttled) {

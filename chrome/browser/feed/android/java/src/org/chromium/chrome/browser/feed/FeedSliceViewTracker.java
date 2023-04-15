@@ -45,15 +45,19 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     }
 
     private final Activity mActivity;
+    // Whether to watch a slice view to get notified for barely visible change.
+    private final boolean mWatchForBarelyVisibleChange;
     @Nullable
     private RecyclerView mRootView;
     @Nullable
     private FeedListContentManager mContentManager;
     private ListLayoutHelper mLayoutHelper;
-    // The set of content keys already reported as visible.
-    private HashSet<String> mContentKeysVisible = new HashSet<String>();
-    // Map from content key to the runnable that is used to notify the completion of the rendering.
-    private HashMap<String, Runnable> mVisibleChangeMap = new HashMap<>();
+    // The set of content keys already reported as mostly visible (66% threshold), which is used to
+    // determine if a slice has been viewed by the user.
+    private HashSet<String> mContentKeysMostlyVisible = new HashSet<String>();
+    // The set of content keys already reported as barely visible (5% threshold), which is used to
+    // determine if a slice has entered the view port.
+    private HashSet<String> mContentKeysBarelyVisible = new HashSet<>();
     private boolean mFeedContentVisible;
     @Nullable
     private Observer mObserver;
@@ -78,18 +82,19 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         // For reporting to feed user interaction reliability log.
         //
         // Called the first time a slice view is 5% visible.
-        void reportViewFirstVisible(View view);
+        void reportViewFirstBarelyVisible(View view);
         // Called the first time a slice view is rendered.
         void reportViewFirstRendered(View view);
     }
 
     public FeedSliceViewTracker(@NonNull RecyclerView rootView, @NonNull Activity activity,
             @NonNull FeedListContentManager contentManager, @Nullable ListLayoutHelper layoutHelper,
-            @NonNull Observer observer) {
+            boolean watchForBarelyVisibleChange, @NonNull Observer observer) {
         mActivity = activity;
         mRootView = rootView;
         mContentManager = contentManager;
         mLayoutHelper = layoutHelper;
+        mWatchForBarelyVisibleChange = watchForBarelyVisibleChange;
         mObserver = observer;
     }
 
@@ -121,12 +126,12 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
      * Clear tracking so that slices already seen can be reported as viewed again.
      */
     public void clear() {
-        mContentKeysVisible.clear();
+        mContentKeysMostlyVisible.clear();
         mFeedContentVisible = false;
         if (mWatchedSliceMap != null) {
             mWatchedSliceMap.clear();
         }
-        mVisibleChangeMap.clear();
+        mContentKeysBarelyVisible.clear();
     }
 
     /**
@@ -223,23 +228,25 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
                     || isViewVisible(childView, GOOD_VISITS_EXPOSURE_THRESHOLD)
                     || isViewCoveringViewport(childView, GOOD_VISITS_COVERAGE_THRESHOLD);
 
-            if (!mContentKeysVisible.contains(contentKey)
+            if (!mContentKeysMostlyVisible.contains(contentKey)
                     && isViewVisible(childView, DEFAULT_VIEW_LOG_THRESHOLD)) {
-                mContentKeysVisible.add(contentKey);
+                mContentKeysMostlyVisible.add(contentKey);
                 mObserver.sliceVisible(contentKey);
             }
 
-            if (mVisibleChangeMap.get(contentKey) == null
+            if (mWatchForBarelyVisibleChange && !mContentKeysBarelyVisible.contains(contentKey)
                     && isViewVisible(childView, VISIBLE_CHANGE_LOG_THRESHOLD)) {
-                mObserver.reportViewFirstVisible(childView);
+                mObserver.reportViewFirstBarelyVisible(childView);
                 // There is not a system way to measure the render latency. Here we mimic how
                 // Time To First Draw Done is measured, which is done by posting a runnable after
                 // onPreDraw.
                 Runnable renderedRunnable = () -> {
-                    mObserver.reportViewFirstRendered(childView);
+                    if (mObserver != null) {
+                        mObserver.reportViewFirstRendered(childView);
+                    }
                 };
                 PostTask.postTask(TaskTraits.UI_DEFAULT, renderedRunnable);
-                mVisibleChangeMap.put(contentKey, renderedRunnable);
+                mContentKeysBarelyVisible.add(contentKey);
             }
         }
 

@@ -129,6 +129,12 @@ const char kIosDiscoverFeedLastRefreshTime[] =
 const char kIosDiscoverFeedLastUnseenRefreshTime[] =
     "ios.discover_feed.last_unseen_refresh_time";
 
+// The number of consecutive times the user dismissed the password bottom sheet.
+// This gets reset to 0 whenever the user selects a password from the bottom
+// sheet or from the keyboard accessory.
+const char kIosPasswordBottomSheetDismissCount[] =
+    "ios.password_bottom_sheet_dismiss_count";
+
 // The user's account info from before a device restore.
 const char kIosPreRestoreAccountInfo[] = "ios.pre_restore_account_info";
 

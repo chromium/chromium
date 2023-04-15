@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_group_style.h"
-#include <string>
+
+#include "base/feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -24,8 +26,12 @@ namespace {
 constexpr int kHeaderChipVerticalInset = 1;
 constexpr int kTitleAdjustmentForEmptyHeader = 2;
 constexpr int kTitleAdjustmentForNonEmptyHeader = -2;
+// The default size of an empty chip in the tab group header.
 constexpr int kEmptyChipSize = 14;
-constexpr int kSyncIconWidth = 12;
+// The width of the sync icon when a tab group is saved.
+constexpr int kSyncIconWidth = 16;
+// The size of the empty chips when the #tab-groups-save flag is on.
+constexpr int kSavedEmptyChipSize = 22;
 
 constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
 constexpr int kChromeRefreshEmptyChipSize = 20;
@@ -99,7 +105,9 @@ int TabGroupStyle::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
 }
 
 float TabGroupStyle::GetEmptyChipSize() const {
-  return kEmptyChipSize;
+  return base::FeatureList::IsEnabled(features::kTabGroupsSave)
+             ? kSavedEmptyChipSize
+             : kEmptyChipSize;
 }
 
 float TabGroupStyle::GetSyncIconWidth() const {
@@ -107,12 +115,13 @@ float TabGroupStyle::GetSyncIconWidth() const {
 }
 
 float TabGroupStyle::GetSelectedTabOpacity() const {
-  return TabStyle::kDefaultSelectedTabOpacity;
+  return TabStyle::Get()->GetSelectedTabOpacity();
 }
 
 // static
 int TabGroupStyle::GetChipCornerRadius() {
-  return TabStyle::GetCornerRadius() - TabGroupUnderline::kStrokeThickness;
+  return TabStyle::Get()->GetCornerRadius() -
+         TabGroupUnderline::kStrokeThickness;
 }
 
 ChromeRefresh2023TabGroupStyle::ChromeRefresh2023TabGroupStyle(

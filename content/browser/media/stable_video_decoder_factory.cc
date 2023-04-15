@@ -117,6 +117,12 @@ class StableVideoDecoderFactoryProcessLauncher final
           receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
+    if (gpu_feature_info_
+            ->status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
+        gpu::kGpuFeatureStatusEnabled) {
+      return;
+    }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const bool enable_direct_video_decoder =
         gpu_preferences_.enable_chromeos_direct_video_decoder;

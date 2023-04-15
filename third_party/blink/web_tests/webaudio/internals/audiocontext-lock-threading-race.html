@@ -13,6 +13,7 @@
       let jsTestAsync = true;
       let ac = new window.AudioContext();
       ac.createMediaStreamDestination();
+      ac.close();
       setTimeout(function() {
         gc();
         finishJSTest();

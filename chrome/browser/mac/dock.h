@@ -7,8 +7,6 @@
 
 #if defined(__OBJC__)
 @class NSString;
-#else
-class NSString;
 #endif
 
 namespace dock {
@@ -27,6 +25,8 @@ enum AddIconStatus {
 
 // Returns info about Chrome's presence in the Dock.
 ChromeInDockStatus ChromeIsInTheDock();
+
+#if defined(__OBJC__)
 
 // Adds an icon to the Dock pointing to |installed_path| if one is not already
 // present. |dmg_app_path| is the path to the install source. Its tile will be
@@ -65,6 +65,8 @@ ChromeInDockStatus ChromeIsInTheDock();
 // is not done. Upon relaunch, Dock.app will determine the correct values for
 // the properties it requires and add them to its configuration.
 AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path);
+
+#endif  // __OBJC__
 
 }  // namespace dock
 

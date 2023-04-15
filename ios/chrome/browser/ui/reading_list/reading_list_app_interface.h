@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include "base/compiler_specific.h"
-
 // ReadingListAppInterface contains the app-side
 // implementation for helpers. These helpers are compiled into
 // the app binary and can be called from either app or test code.

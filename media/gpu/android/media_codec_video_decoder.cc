@@ -112,6 +112,78 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   return supported_configs;
 }
 
+// Return the name of the decoder that will be used to create MediaCodec.
+std::string SelectMediaCodec(const VideoDecoderConfig& config,
+                             bool requires_secure_codec) {
+  std::string software_decoder;
+  for (const auto& info : GetDecoderInfoCache()) {
+    VideoCodec codec = VideoCodecProfileToVideoCodec(info.profile);
+    if (config.codec() != codec) {
+      continue;
+    }
+
+    if (config.profile() != VIDEO_CODEC_PROFILE_UNKNOWN &&
+        config.profile() != info.profile) {
+      continue;
+    }
+
+    if (config.level() != kNoVideoCodecLevel && config.level() > info.level) {
+      continue;
+    }
+
+    if (config.coded_size().width() < info.coded_size_min.width() ||
+        config.coded_size().height() < info.coded_size_min.height() ||
+        config.coded_size().width() > info.coded_size_max.width() ||
+        config.coded_size().height() > info.coded_size_max.width()) {
+      continue;
+    }
+
+    if (!requires_secure_codec &&
+        info.secure_codec_capability == SecureCodecCapability::kEncrypted) {
+      continue;
+    }
+
+    if (requires_secure_codec &&
+        info.secure_codec_capability == SecureCodecCapability::kClear) {
+      continue;
+    }
+
+    // Prioritize hardware decoder. Software decoder will be selected as a
+    // fallback option.
+    if (info.is_software_codec) {
+      if (software_decoder.empty()) {
+        software_decoder = info.name;
+      }
+      continue;
+    }
+
+    return info.name;
+  }
+
+  // Allow software decoder if either:
+  // 1. the stream is encrypted.
+  // 2. No software decoder is bundled into Chromium.
+  if (!(config.is_encrypted()
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+        || config.codec() == VideoCodec::kH264
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+        || (config.codec() == VideoCodec::kHEVC &&
+            base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport))
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+        || config.codec() == VideoCodec::kDolbyVision
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+        )) {
+    software_decoder = "";
+  }
+
+  DVLOG_IF(2, software_decoder.empty())
+      << "Can't find proper video decoder from decoder info cache, "
+         "fallback to the default decoder selection path.";
+  return software_decoder;
+}
+
 }  // namespace
 
 // When re-initializing the codec changes the resolution to be more than
@@ -605,6 +677,7 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->initial_expected_coded_size = decoder_config_.coded_size();
   config->container_color_space = decoder_config_.color_space_info();
   config->hdr_metadata = decoder_config_.hdr_metadata();
+  config->name = SelectMediaCodec(decoder_config_, requires_secure_codec_);
 
   // Use the asynchronous API if we can.
   if (device_info_->IsAsyncApiSupported()) {
@@ -702,6 +775,12 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
+
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   pending_decodes_.emplace_back(std::move(buffer), std::move(decode_cb));
 
   if (state_ == State::kInitializing) {

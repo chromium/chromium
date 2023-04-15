@@ -212,11 +212,11 @@ bool IsCacheOlderThanUpperBound(int cache_creation_time) {
 }
 
 template <class T>
-size_t RemoveExpiredEntries(base::Value* verdict_dictionary,
+size_t RemoveExpiredEntries(base::Value::Dict& verdict_dictionary,
                             const char* proto_name) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
   std::vector<std::string> expired_keys;
-  for (auto item : verdict_dictionary->GetDict()) {
+  for (auto item : verdict_dictionary) {
     int verdict_received_time;
     T verdict;
     if (!ParseVerdictEntry<T>(&item.second, &verdict_received_time, &verdict,
@@ -228,7 +228,7 @@ size_t RemoveExpiredEntries(base::Value* verdict_dictionary,
   }
 
   for (const std::string& key : expired_keys) {
-    verdict_dictionary->RemoveKey(key);
+    verdict_dictionary.Remove(key);
   }
 
   return expired_keys.size();
@@ -577,9 +577,10 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
     for (auto item : source.setting_value.GetDict()) {
       if (item.first == base::StringPiece(kPasswordOnFocusCacheKey)) {
         stored_verdict_count_password_on_focus_.value() +=
-            item.second.DictSize();
+            item.second.GetDict().size();
       } else {
-        stored_verdict_count_password_entry_.value() += item.second.DictSize();
+        stored_verdict_count_password_entry_.value() +=
+            item.second.GetDict().size();
       }
     }
   }
@@ -767,8 +768,9 @@ void VerdictCacheManager::CacheHashPrefixRealTimeLookupResults(
 
 std::unordered_map<std::string, std::vector<V5::FullHash>>
 VerdictCacheManager::GetCachedHashPrefixRealTimeLookupResults(
-    const std::set<std::string>& hash_prefixes) {
-  return hash_realtime_cache_->SearchCache(hash_prefixes);
+    const std::set<std::string>& hash_prefixes,
+    bool skip_logging) {
+  return hash_realtime_cache_->SearchCache(hash_prefixes, skip_logging);
 }
 
 void VerdictCacheManager::ScheduleNextCleanUpAfterInterval(
@@ -925,14 +927,14 @@ bool VerdictCacheManager::RemoveExpiredPhishGuardVerdicts(
     if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE &&
         key == std::string(kPasswordOnFocusCacheKey)) {
       size_t removed_cnt = RemoveExpiredEntries<LoginReputationClientResponse>(
-          &value, kVerdictProto);
+          value.GetDict(), kVerdictProto);
       verdicts_removed += removed_cnt;
       if (stored_verdict_count_password_on_focus_.has_value()) {
         stored_verdict_count_password_on_focus_.value() -= removed_cnt;
       }
     } else {
       size_t removed_cnt = RemoveExpiredEntries<LoginReputationClientResponse>(
-          &value, kVerdictProto);
+          value.GetDict(), kVerdictProto);
       verdicts_removed += removed_cnt;
       if (stored_verdict_count_password_entry_.has_value()) {
         stored_verdict_count_password_entry_.value() -= removed_cnt;
@@ -956,7 +958,7 @@ bool VerdictCacheManager::RemoveExpiredRealTimeUrlCheckVerdicts(
   std::vector<std::string> empty_keys;
   for (auto [key, value] : cache_dictionary) {
     size_t removed_cnt = RemoveExpiredEntries<RTLookupResponse::ThreatInfo>(
-        &value, kRealTimeThreatInfoProto);
+        value.GetDict(), kRealTimeThreatInfoProto);
     verdicts_removed += removed_cnt;
     if (stored_verdict_count_real_time_url_check_.has_value()) {
       stored_verdict_count_real_time_url_check_.value() -= removed_cnt;

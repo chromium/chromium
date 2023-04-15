@@ -25,7 +25,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
@@ -583,7 +582,7 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   const int max_width = std::max(preview_bounds.width() - focus_ring_length,
                                  kMinDeskNameViewWidth);
   const int text_width =
-      base::clamp(desk_name_view_size.width(), min_width, max_width);
+      std::clamp(desk_name_view_size.width(), min_width, max_width);
   const int desk_name_view_x =
       preview_bounds.x() + (preview_bounds.width() - text_width) / 2;
   gfx::Rect desk_name_view_bounds{desk_name_view_x,

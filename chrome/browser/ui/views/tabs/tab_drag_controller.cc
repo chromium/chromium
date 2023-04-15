@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 
+#include <algorithm>
 #include <limits>
 #include <set>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -192,7 +194,7 @@ void UpdateSystemDnDDragImage(TabDragContext* attached_context,
       attached_context->GetWidget()->GetNativeWindow()->GetRootWindow();
   if (aura::client::GetDragDropClient(root_window)) {
     aura::client::GetDragDropClient(root_window)
-        ->UpdateDragImage(image, {-image.height() / 2, -image.width() / 2});
+        ->UpdateDragImage(image, {image.height() / 2, image.width() / 2});
   }
 #endif  // BUILDFLAG(IS_LINUX)
 }
@@ -1009,12 +1011,8 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
 
 gfx::ImageSkia TabDragController::GetDragImageForSystemDnD() {
   // The width has the same value, as the logo image is square-shaped.
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
-      GetAttachedBrowserWidget()->GetNativeWindow());
-  int unscaled_drag_image_height = 50;
-  auto drag_image_height = static_cast<int>(unscaled_drag_image_height *
-                                            display.device_scale_factor());
-  gfx::Size drag_image_size(drag_image_height, drag_image_height);
+  const int drag_image_height = 50;
+  const gfx::Size drag_image_size(drag_image_height, drag_image_height);
   gfx::ImageSkia drag_image =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PRODUCT_LOGO_256);
@@ -1049,7 +1047,7 @@ TabDragController::StartSystemDragAndDropSessionIfNecessary(
   gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
   data_provider->SetDragImage(
       drag_image,
-      gfx::Vector2d(-drag_image.height() / 2, -drag_image.width() / 2));
+      gfx::Vector2d(drag_image.height() / 2, drag_image.width() / 2));
 
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   GetAttachedBrowserWidget()->RunShellDrag(
@@ -1333,6 +1331,21 @@ void TabDragController::Attach(TabDragContext* attached_context,
     }
 
     views = GetViewsMatchingDraggedContents(attached_context_);
+
+    // If we're dragging a saved group, resume tracking now that the group is
+    // re-attached.
+    if (header_drag_ &&
+        base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+        paused_saved_group_id_.has_value()) {
+      Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
+                             GetAttachedBrowserWidget()->GetNativeWindow())
+                             ->browser();
+      SavedTabGroupKeyedService* const saved_tab_group_service =
+          SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+      saved_tab_group_service->ResumeTrackingLocalTabGroup(
+          paused_saved_group_id_.value(), group_.value());
+      paused_saved_group_id_ = absl::nullopt;
+    }
   }
   DCHECK_EQ(views.size(), drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i) {
@@ -1392,6 +1405,21 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
     attached_context_->GetWidget()->ReleaseCapture();
 
   TabStripModel* attached_model = attached_context_->GetTabStripModel();
+
+  // If we're dragging a saved tab group, suspend tracking between Detach and
+  // Attach. Otherwise, the group will get emptied out as we close all the tabs.
+  if (header_drag_ && base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
+                           GetAttachedBrowserWidget()->GetNativeWindow())
+                           ->browser();
+    SavedTabGroupKeyedService* const saved_tab_group_service =
+        SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+    if (saved_tab_group_service->model()->Contains(group_.value())) {
+      paused_saved_group_id_ =
+          saved_tab_group_service->model()->Get(group_.value())->saved_guid();
+      saved_tab_group_service->PauseTrackingLocalTabGroup(group_.value());
+    }
+  }
 
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     int index = attached_model->GetIndexOfWebContents(drag_data_[i].contents);
@@ -1657,7 +1685,7 @@ gfx::Point TabDragController::GetAttachedDragPoint(
   const int max_x =
       std::max(0, attached_context_->GetTabDragAreaWidth() -
                       TabStrip::GetSizeNeededForViews(attached_views_));
-  return gfx::Point(base::clamp(x, 0, max_x), 0);
+  return gfx::Point(std::clamp(x, 0, max_x), 0);
 }
 
 std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
@@ -2455,7 +2483,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // space for the rounded feet. Adding {tab_left_inset} to the horizontal
   // bounds of the tab results in the x position that would be drawn when there
   // are no feet showing.
-  const int tab_left_inset = TabStyle::GetTabOverlap() / 2;
+  const int tab_left_inset = TabStyle::Get()->GetTabOverlap() / 2;
 
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
     const Tab* const tab = attached_context_->GetTabAt(model_index);

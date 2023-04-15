@@ -2143,7 +2143,8 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   allocator_.root()->Free(smart_ptr);
   // Access the allocation through the native pointer to avoid triggering
   // dereference checks in debug builds.
-  EXPECT_EQ(*native_ptr, kCustomQuarantineByte);
+  EXPECT_EQ(*partition_alloc::internal::TagPtr(native_ptr),
+            kCustomQuarantineByte);
 
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }

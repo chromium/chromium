@@ -92,6 +92,9 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
 
   bool IsMerchantViewerEnabled(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
+  bool IsCommercePriceTrackingEnabled(JNIEnv* env,
+                                      const JavaParamRef<jobject>& obj);
+
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:

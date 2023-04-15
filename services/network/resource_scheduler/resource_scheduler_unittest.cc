@@ -81,12 +81,9 @@ void ExpectSampleIsAtLeastSpecifiedValue(
 
 class TestRequestFactory;
 
-const size_t kNumResourceSchedulerClients = 20;
-
 using ClientId = ResourceScheduler::ClientId;
 constexpr ClientId kClientId1(30);
 constexpr ClientId kClientId2(60);
-constexpr ClientId kClientId3(90);
 constexpr ClientId kTrustedClientId(120);
 constexpr ClientId kBackgroundClientId(150);
 
@@ -916,7 +913,6 @@ TEST_F(ResourceSchedulerTest, P2PConnectionWentAway) {
 
   for (const auto& test : tests) {
     base::test::ScopedFeatureList scoped_feature_list;
-    base::HistogramTester histogram_tester;
     base::FieldTrialParams field_trial_params;
     field_trial_params["throttled_traffic_annotation_tags"] = "727528";
     field_trial_params
@@ -953,10 +949,6 @@ TEST_F(ResourceSchedulerTest, P2PConnectionWentAway) {
 
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(test.expect_lows_started, lows->started());
-
-    histogram_tester.ExpectTotalCount(
-        "ResourceScheduler.BrowserInitiatedHeavyRequest.QueuingDuration",
-        test.expect_lows_started ? 1u : 0u);
   }
 }
 
@@ -964,7 +956,6 @@ TEST_F(ResourceSchedulerTest, P2PConnectionWentAway) {
 // network when the network quality becomes faster.
 TEST_F(ResourceSchedulerTest,
        RequestThrottleOnlyOnSlowConnectionsWithP2PRequests) {
-  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams field_trial_params;
   field_trial_params["throttled_traffic_annotation_tags"] = "727528";
@@ -996,8 +987,6 @@ TEST_F(ResourceSchedulerTest,
       net::EFFECTIVE_CONNECTION_TYPE_4G);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(lows->started());
-  histogram_tester.ExpectTotalCount(
-      "ResourceScheduler.BrowserInitiatedHeavyRequest.QueuingDuration", 1u);
 }
 
 TEST_F(ResourceSchedulerTest, ReprioritizedRequestGoesToBackOfQueue) {
@@ -1525,71 +1514,6 @@ TEST_F(ResourceSchedulerTest, NonDelayableThrottlesDelayableVaryNonDelayable) {
   }
 }
 
-// Test that UMA counts are correctly recorded for the number of active resource
-// scheduler clients.
-TEST_F(ResourceSchedulerTest, NumActiveResourceSchedulerClientsUMA) {
-  std::unique_ptr<base::HistogramTester> histogram_tester(
-      new base::HistogramTester);
-  // Check that 0 is recorded when a new client is created and there are no
-  // active scheduler clients in the background.
-  scheduler_->OnClientCreated(kClientId2, IsBrowserInitiated(false),
-                              &network_quality_estimator_);
-  histogram_tester->ExpectTotalCount(
-      "ResourceScheduler.ActiveSchedulerClientsCount", 1);
-  histogram_tester->ExpectUniqueSample(
-      "ResourceScheduler.ActiveSchedulerClientsCount", 0, 1);
-
-  // Test that UMA data remains the same even when a new request starts and a
-  // scheduler client becomes active.
-  std::unique_ptr<TestRequest> high1(
-      NewRequest("http://host/high", net::HIGHEST));
-  EXPECT_TRUE(high1->started());
-  histogram_tester->ExpectUniqueSample(
-      "ResourceScheduler.ActiveSchedulerClientsCount", 0, 1);
-
-  // Test that UMA data is recorded when a new client starts. Check that the
-  // total number of samples is 2. Also, check that 1 active resource scheduler
-  // client is recorded.
-  scheduler_->OnClientCreated(kClientId3, IsBrowserInitiated(false),
-                              &network_quality_estimator_);
-  histogram_tester->ExpectTotalCount(
-      "ResourceScheduler.ActiveSchedulerClientsCount", 2);
-  histogram_tester->ExpectBucketCount(
-      "ResourceScheduler.ActiveSchedulerClientsCount", 1, 1);
-  scheduler_->OnClientDeleted(kClientId3);
-  scheduler_->OnClientDeleted(kClientId2);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  // Test that UMA counts are recorded correctly when multiple scheduler clients
-  // are created in sequence. There are at most 20 active clients.
-  std::vector<std::unique_ptr<TestRequest>> requests;
-  for (size_t i = 0; i < kNumResourceSchedulerClients; ++i) {
-    scheduler_->OnClientCreated(kClientId3.AddForTesting(i),
-                                IsBrowserInitiated(false),
-                                &network_quality_estimator_);
-    requests.push_back(NewRequestWithClientId("http://host/medium", net::LOWEST,
-                                              kClientId3.AddForTesting(i)));
-    EXPECT_TRUE(requests[i]->started());
-    histogram_tester->ExpectTotalCount(
-        "ResourceScheduler.ActiveSchedulerClientsCount", 1 + i);
-    histogram_tester->ExpectBucketCount(
-        "ResourceScheduler.ActiveSchedulerClientsCount", 1 + i, 1);
-  }
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  // Test that UMA counts are recorded correctly when a sequence of resource
-  // scheduler clients are deleted in sequence. Note: Create a new client
-  // each time in order to update the UMA counts.
-  for (size_t i = 0; i < kNumResourceSchedulerClients; ++i) {
-    scheduler_->OnClientDeleted(kClientId3.AddForTesting(19 - i));
-    scheduler_->OnClientCreated(kClientId2, IsBrowserInitiated(false),
-                                &network_quality_estimator_);
-    histogram_tester->ExpectBucketCount(
-        "ResourceScheduler.ActiveSchedulerClientsCount", 20 - i, 1);
-    scheduler_->OnClientDeleted(kClientId2);
-  }
-}
-
 // Test that each non-delayable request in-flight results in the reduction of
 // one in the limit of delayable requests in-flight when the non-delayable
 // request weight is 1.
@@ -1602,42 +1526,6 @@ TEST_F(ResourceSchedulerTest, NonDelayableThrottlesDelayableWeight1) {
 // request weight is 3.
 TEST_F(ResourceSchedulerTest, NonDelayableThrottlesDelayableWeight3) {
   NonDelayableThrottlesDelayableHelper(3.0);
-}
-
-// Test that UMA counts are recorded for the number of delayable requests
-// in-flight when a non-delayable request starts.
-TEST_F(ResourceSchedulerTest, NumDelayableAtStartOfNonDelayableUMA) {
-  std::unique_ptr<base::HistogramTester> histogram_tester(
-      new base::HistogramTester);
-  // Check that 0 is recorded when a non-delayable request starts and there are
-  // no delayable requests in-flight.
-  std::unique_ptr<TestRequest> high(
-      NewRequest("http://host/high", net::HIGHEST));
-  EXPECT_TRUE(high->started());
-  histogram_tester->ExpectUniqueSample(
-      "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable", 0,
-      1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-  // Check that nothing is recorded when delayable request is started in the
-  // presence of a non-delayable request.
-  std::unique_ptr<TestRequest> low1(
-      NewRequest("http://host/low1", net::LOWEST));
-  EXPECT_TRUE(low1->started());
-  histogram_tester->ExpectTotalCount(
-      "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable", 0);
-  // Check that nothing is recorded when a delayable request is started in the
-  // presence of another delayable request.
-  std::unique_ptr<TestRequest> low2(
-      NewRequest("http://host/low2", net::LOWEST));
-  histogram_tester->ExpectTotalCount(
-      "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable", 0);
-  // Check that UMA is recorded when a non-delayable startes in the presence of
-  // delayable requests and that the correct value is recorded.
-  std::unique_ptr<TestRequest> high2(
-      NewRequest("http://host/high2", net::HIGHEST));
-  histogram_tester->ExpectUniqueSample(
-      "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable", 2,
-      1);
 }
 
 TEST_F(ResourceSchedulerTest, Simple) {
@@ -2246,23 +2134,9 @@ TEST_F(ResourceSchedulerTest, NonDelayableToNonDelayableMetrics) {
 
   ExpectSampleIsAtLeastSpecifiedValue(
       histogram_tester_1,
-      "ResourceScheduler.NonDelayableLastStartToNonDelayableStart",
-      high1_start_to_high2_start.InMilliseconds());
-
-  ExpectSampleIsAtLeastSpecifiedValue(
-      histogram_tester_1,
       "ResourceScheduler.NonDelayableLastStartToNonDelayableStart."
       "NonDelayableInFlight",
       high1_start_to_high2_start.InMilliseconds());
-
-  ExpectSampleIsAtLeastSpecifiedValue(
-      histogram_tester_1,
-      "ResourceScheduler.NonDelayableLastStartOrEndToNonDelayableStart",
-      high1_start_to_high2_start.InMilliseconds());
-
-  // No non-delayable request has ended yet.
-  histogram_tester_1.ExpectTotalCount(
-      "ResourceScheduler.NonDelayableLastEndToNonDelayableStart", 0);
 
   const base::TimeDelta high2_start_to_high2_end = base::Seconds(7);
   tick_clock_.Advance(high2_start_to_high2_end);
@@ -2278,25 +2152,11 @@ TEST_F(ResourceSchedulerTest, NonDelayableToNonDelayableMetrics) {
   std::unique_ptr<TestRequest> high_3(
       NewRequest("http://host/high_3", net::HIGHEST));
   EXPECT_TRUE(high_3->started());
-  ExpectSampleIsAtLeastSpecifiedValue(
-      histogram_tester_2,
-      "ResourceScheduler.NonDelayableLastStartToNonDelayableStart",
-      (high2_start_to_high2_end + high2_end_to_high3_start).InMilliseconds());
-
-  ExpectSampleIsAtLeastSpecifiedValue(
-      histogram_tester_2,
-      "ResourceScheduler.NonDelayableLastEndToNonDelayableStart",
-      high2_end_to_high3_start.InMilliseconds());
 
   ExpectSampleIsAtLeastSpecifiedValue(
       histogram_tester_2,
       "ResourceScheduler.NonDelayableLastEndToNonDelayableStart."
       "NonDelayableNotInFlight",
-      high2_end_to_high3_start.InMilliseconds());
-
-  ExpectSampleIsAtLeastSpecifiedValue(
-      histogram_tester_2,
-      "ResourceScheduler.NonDelayableLastStartOrEndToNonDelayableStart",
       high2_end_to_high3_start.InMilliseconds());
 }
 

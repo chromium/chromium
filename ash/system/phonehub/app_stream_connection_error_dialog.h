@@ -30,7 +30,9 @@ class ASH_EXPORT AppStreamConnectionErrorDialog : public views::WidgetObserver,
   AppStreamConnectionErrorDialog(
       views::View* host_view,
       base::OnceClosure on_close_callback,
-      StartTetheringCallback start_tethering_callback);
+      StartTetheringCallback start_tethering_callback,
+      bool is_different_network,
+      bool is_phone_on_cellular);
   AppStreamConnectionErrorDialog(const AppStreamConnectionErrorDialog& other) =
       delete;
   AppStreamConnectionErrorDialog& operator=(

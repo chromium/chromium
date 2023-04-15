@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 
 /**
  * A factory interface for building a RestoreTabsController instance.
@@ -23,8 +24,9 @@ public class RestoreTabsControllerFactory {
     /**
      * @return An instance of RestoreTabsControllerImpl.
      */
-    public static RestoreTabsControllerImpl createInstance(
-            Profile profile, RestoreTabsControllerFactory.ControllerListener listener) {
-        return new RestoreTabsControllerImpl(profile, listener);
+    public static RestoreTabsControllerImpl createInstance(Profile profile,
+            RestoreTabsControllerFactory.ControllerListener listener,
+            TabCreatorManager tabCreatorManager) {
+        return new RestoreTabsControllerImpl(profile, listener, tabCreatorManager);
     }
 }

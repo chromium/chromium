@@ -720,7 +720,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+              "revision": "git_revision:a598cd77abc01089647a79e3cfa3cc8e8ecb5118"
             }
           ],
           "dimension_sets": [
@@ -771,7 +771,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+              "revision": "git_revision:a598cd77abc01089647a79e3cfa3cc8e8ecb5118"
             }
           ],
           "dimension_sets": [

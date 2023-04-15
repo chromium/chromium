@@ -347,7 +347,7 @@ std::string GetDNRNewRequestHeaderValue(net::HttpRequestHeaders* headers,
   std::string existing_value;
   bool has_header = headers->GetHeader(header_name, &existing_value);
 
-  if (has_header && operation == dnr_api::HEADER_OPERATION_APPEND) {
+  if (has_header && operation == dnr_api::HeaderOperation::kAppend) {
     const auto* it = dnr::kDNRRequestHeaderAppendAllowList.find(header_name);
     DCHECK(it != dnr::kDNRRequestHeaderAppendAllowList.end());
     return base::StrCat({existing_value, it->second, header_value});
@@ -368,16 +368,16 @@ struct DNRHeaderAction {
     DCHECK_EQ(header_info->header, next_action.header_info->header);
 
     switch (header_info->operation) {
-      case dnr_api::HEADER_OPERATION_APPEND:
+      case dnr_api::HeaderOperation::kAppend:
         return next_action.header_info->operation !=
-               dnr_api::HEADER_OPERATION_APPEND;
-      case dnr_api::HEADER_OPERATION_SET:
+               dnr_api::HeaderOperation::kAppend;
+      case dnr_api::HeaderOperation::kSet:
         return *extension_id != *next_action.extension_id ||
                next_action.header_info->operation !=
-                   dnr_api::HEADER_OPERATION_APPEND;
-      case dnr_api::HEADER_OPERATION_REMOVE:
+                   dnr_api::HeaderOperation::kAppend;
+      case dnr_api::HeaderOperation::kRemove:
         return true;
-      case dnr_api::HEADER_OPERATION_NONE:
+      case dnr_api::HeaderOperation::kNone:
         NOTREACHED();
         return true;
     }
@@ -424,8 +424,8 @@ bool ModifyRequestHeadersForAction(
     actions_for_header.push_back(header_action);
 
     switch (header_info.operation) {
-      case dnr_api::HEADER_OPERATION_APPEND:
-      case dnr_api::HEADER_OPERATION_SET: {
+      case dnr_api::HeaderOperation::kAppend:
+      case dnr_api::HeaderOperation::kSet: {
         DCHECK(header_info.value.has_value());
         bool has_header = headers->HasHeader(header);
         headers->SetHeader(header, GetDNRNewRequestHeaderValue(
@@ -447,7 +447,7 @@ bool ModifyRequestHeadersForAction(
         }
         break;
       }
-      case dnr_api::HEADER_OPERATION_REMOVE: {
+      case dnr_api::HeaderOperation::kRemove: {
         while (headers->HasHeader(header)) {
           header_modified = true;
           headers->RemoveHeader(header);
@@ -459,7 +459,7 @@ bool ModifyRequestHeadersForAction(
         }
         break;
       }
-      case dnr_api::HEADER_OPERATION_NONE:
+      case dnr_api::HeaderOperation::kNone:
         NOTREACHED();
     }
 
@@ -525,7 +525,7 @@ bool ModifyResponseHeadersForAction(
     actions_for_header.push_back(header_action);
 
     switch (header_info.operation) {
-      case dnr_api::HEADER_OPERATION_REMOVE: {
+      case dnr_api::HeaderOperation::kRemove: {
         if (has_header(header)) {
           header_modified = true;
           create_override_headers_if_needed(override_response_headers);
@@ -535,7 +535,7 @@ bool ModifyResponseHeadersForAction(
 
         break;
       }
-      case dnr_api::HEADER_OPERATION_APPEND: {
+      case dnr_api::HeaderOperation::kAppend: {
         header_modified = true;
         create_override_headers_if_needed(override_response_headers);
         override_response_headers->get()->AddHeader(header, *header_info.value);
@@ -548,7 +548,7 @@ bool ModifyResponseHeadersForAction(
 
         break;
       }
-      case dnr_api::HEADER_OPERATION_SET: {
+      case dnr_api::HeaderOperation::kSet: {
         header_modified = true;
         create_override_headers_if_needed(override_response_headers);
         override_response_headers->get()->RemoveHeader(header);
@@ -556,7 +556,7 @@ bool ModifyResponseHeadersForAction(
         RecordResponseHeader(header, &RecordDNRResponseHeaderChanged);
         break;
       }
-      case dnr_api::HEADER_OPERATION_NONE:
+      case dnr_api::HeaderOperation::kNone:
         NOTREACHED();
     }
 
@@ -948,7 +948,7 @@ static bool MergeRedirectUrlOfResponsesHelper(
       redirected = true;
     } else {
       ignored_actions->emplace_back(delta.extension_id,
-                                    web_request::IGNORED_ACTION_TYPE_REDIRECT);
+                                    web_request::IgnoredActionType::kRedirect);
     }
   }
   return redirected;
@@ -1199,7 +1199,7 @@ void MergeOnBeforeSendHeadersResponses(
         auto iter = dnr_header_actions.find(key);
         if (iter != dnr_header_actions.end() &&
             iter->second[0].header_info->operation ==
-                dnr_api::HEADER_OPERATION_REMOVE) {
+                dnr_api::HeaderOperation::kRemove) {
           extension_conflicts = true;
           break;
         }
@@ -1268,7 +1268,7 @@ void MergeOnBeforeSendHeadersResponses(
       *request_headers_modified = true;
     } else {
       ignored_actions->emplace_back(
-          delta.extension_id, web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS);
+          delta.extension_id, web_request::IgnoredActionType::kRequestHeaders);
     }
   }
 
@@ -1605,7 +1605,7 @@ void MergeOnHeadersReceivedResponses(
 
         // Multiple appends are allowed.
         if (it->second[0].header_info->operation !=
-            dnr_api::HEADER_OPERATION_APPEND) {
+            dnr_api::HeaderOperation::kAppend) {
           extension_conflicts = true;
           break;
         }
@@ -1636,8 +1636,7 @@ void MergeOnHeadersReceivedResponses(
       *response_headers_modified = true;
     } else {
       ignored_actions->emplace_back(
-          delta.extension_id,
-          web_request::IGNORED_ACTION_TYPE_RESPONSE_HEADERS);
+          delta.extension_id, web_request::IgnoredActionType::kResponseHeaders);
     }
   }
 
@@ -1723,8 +1722,7 @@ bool MergeOnAuthRequiredResponses(const EventResponseDeltas& deltas,
         auth_credentials->password() != delta.auth_credentials->password();
     if (credentials_set && different) {
       ignored_actions->emplace_back(
-          delta.extension_id,
-          web_request::IGNORED_ACTION_TYPE_AUTH_CREDENTIALS);
+          delta.extension_id, web_request::IgnoredActionType::kAuthCredentials);
     } else {
       *auth_credentials = *delta.auth_credentials;
       credentials_set = true;

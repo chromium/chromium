@@ -76,9 +76,9 @@ void SmartCardReaderTracker::ObserverList::NotifyReaderRemoved(
 }
 
 void SmartCardReaderTracker::ObserverList::NotifyError(
-    blink::mojom::SmartCardResponseCode response_code) {
+    device::mojom::SmartCardError error) {
   for (Observer& obs : observers_) {
-    obs.OnError(response_code);
+    obs.OnError(error);
   }
 }
 }  // namespace content

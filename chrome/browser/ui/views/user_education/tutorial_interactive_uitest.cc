@@ -192,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
         service->StartTutorial(kTestTutorialId,
                                browser()->window()->GetElementContext());
       }),
-      WaitForStateChange(kNewTabPageId, std::move(help_bubble_shown)),
-      FlushEvents(),
+      WaitForStateChange(kNewTabPageId, help_bubble_shown), FlushEvents(),
       NameViewRelative(kTabStripElementId, kTabCloseButtonId,
                        [](TabStrip* tab_strip) {
                          return tab_strip->tab_at(1)->close_button().get();

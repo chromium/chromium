@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -71,7 +70,7 @@ GCMKeyStore::GCMKeyStore(
   DCHECK(blocking_task_runner);
 }
 
-GCMKeyStore::~GCMKeyStore() {}
+GCMKeyStore::~GCMKeyStore() = default;
 
 void GCMKeyStore::GetKeys(const std::string& app_id,
                           const std::string& authorized_entity,
@@ -106,7 +105,6 @@ void GCMKeyStore::GetKeysAfterInitialize(
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.GetKeySuccessRate", success);
   if (!success)
     std::move(callback).Run(nullptr /* key */, std::string() /* auth_secret */);
 }
@@ -261,8 +259,6 @@ void GCMKeyStore::RemoveKeysAfterInitialize(
 }
 
 void GCMKeyStore::DidRemoveKeys(base::OnceClosure callback, bool success) {
-  UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.RemoveKeySuccessRate", success);
-
   if (!success) {
     DVLOG(1) << "Unable to delete a key from the GCM Key Store.";
 
@@ -274,7 +270,6 @@ void GCMKeyStore::DidRemoveKeys(base::OnceClosure callback, bool success) {
 }
 
 void GCMKeyStore::DidUpgradeDatabase(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.GCMDatabaseUpgradeResult", success);
   if (!success) {
     DVLOG(1) << "Unable to upgrade the GCM Key Store database.";
     // Our cache is now inconsistent. Reject requests until restarted.
@@ -310,7 +305,6 @@ void GCMKeyStore::LazyInitialize(base::OnceClosure done_closure) {
 
 void GCMKeyStore::DidInitialize(leveldb_proto::Enums::InitStatus status) {
   bool success = status == leveldb_proto::Enums::kOK;
-  UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.InitKeyStoreSuccessRate", success);
   if (!success) {
     DVLOG(1) << "Unable to initialize the GCM Key Store.";
     state_ = State::FAILED;
@@ -341,8 +335,6 @@ void GCMKeyStore::UpgradeDatabase(
                << entry.keys(0).private_key();
       state_ = State::FAILED;
       delayed_task_controller_.SetReady();
-      UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.GCMDatabaseUpgradeResult",
-                            false /* sucess */);
       return;
     }
 
@@ -361,7 +353,6 @@ void GCMKeyStore::UpgradeDatabase(
 void GCMKeyStore::DidLoadKeys(
     bool success,
     std::unique_ptr<std::vector<EncryptionData>> entries) {
-  UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.LoadKeyStoreSuccessRate", success);
   if (!success) {
     DVLOG(1) << "Unable to load entries into the GCM Key Store.";
     state_ = State::FAILED;

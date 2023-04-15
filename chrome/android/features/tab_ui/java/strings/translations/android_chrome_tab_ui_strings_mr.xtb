@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
-<translation id="1181037720776840403">काढून टाका</translation>
 <translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
 <translation id="1403228085774130835">Chrome च्या मुख्य मेनू अंतर्गत अलीकडील टॅबमध्ये तुम्ही तुमचे बंद केलेले टॅब पाहू शकता</translation>
 <translation id="1455506303394048917">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून साफ केली जाईल</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">आता <ph name="SOURCE_WEBSITE" /> वर <ph name="CURRENT_PRICE" /> मध्ये आहे</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टॅब गटामधून काढून टाका}other{टॅब गटामधून काढून टाका}}</translation>
 <translation id="2277224997687551299">गटाचे नाव संपादित करा</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{गटामधून निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब काढून टाका.}other{गटामधून निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब काढून टाका.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{टॅब बुकमार्क करा}other{टॅब बुकमार्क करा}}</translation>
-<translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
-<translation id="257674075312929031">गट</translation>
 <translation id="2613747923081026172">गट तयार करा</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइटवर भेट द्या</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">त्यांचा गट बनवण्यासाठी टॅबना ड्रॅग करा</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> टॅब असलेला <ph name="TITLE_OF_GROUP" /> गट बंद करा</translation>
 <translation id="5972844218283131174">सर्व निवड रद्द करा</translation>
-<translation id="6040143037577758943">बंद करा</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">एकाहून अधिक निवड मोड लपवा</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टॅब शेअर करा}other{टॅब शेअर करा}}</translation>
 <translation id="7129458170538955174">या स्टोअरविषयी माहिती अर्ध्या उंचीवर उघडली आहे</translation>
-<translation id="7151209024774799310">गटामधून टॅब काढून टाका</translation>
 <translation id="7204204600596740190">एकाहून अधिक निवड मोड</translation>
 <translation id="7326879924029668159">रिटर्न धोरण आणि आणखी बरेच काही पहा</translation>
 <translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पहा</translation>

@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
+
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "content/public/browser/navigation_details.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+
+ChromeSupervisedUserWebContentHandlerBase::
+    ChromeSupervisedUserWebContentHandlerBase(
+        content::WebContents* web_contents,
+        int frame_id)
+    : web_contents_(web_contents), frame_id_(frame_id) {
+  CHECK(web_contents_);
+}
+
+ChromeSupervisedUserWebContentHandlerBase::
+    ~ChromeSupervisedUserWebContentHandlerBase() = default;
+
+bool ChromeSupervisedUserWebContentHandlerBase::IsMainFrame() const {
+  return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() ==
+         frame_id_;
+}
+
+void ChromeSupervisedUserWebContentHandlerBase::CleanUpInfoBarOnMainFrame() {
+  if (!IsMainFrame()) {
+    return;
+  }
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents_);
+  if (!manager) {
+    return;
+  }
+  content::LoadCommittedDetails details;
+  // |details.is_same_document| is default false, and |details.is_main_frame|
+  // is default true. This results in is_navigation_to_different_page()
+  // returning true.
+  CHECK(details.is_navigation_to_different_page());
+  content::NavigationController& controller = web_contents_->GetController();
+  details.entry = controller.GetVisibleEntry();
+  if (controller.GetLastCommittedEntry()) {
+    details.previous_entry_index = controller.GetLastCommittedEntryIndex();
+    details.previous_main_frame_url =
+        controller.GetLastCommittedEntry()->GetURL();
+  }
+  for (int i = manager->infobar_count() - 1; i >= 0; --i) {
+    infobars::InfoBar* infobar = manager->infobar_at(i);
+
+    if (infobar->delegate()->ShouldExpire(
+            infobars::ContentInfoBarManager::
+                NavigationDetailsFromLoadCommittedDetails(details))) {
+      manager->RemoveInfoBar(infobar);
+    }
+  }
+}

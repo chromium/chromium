@@ -265,7 +265,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     this.dispatchEvent(selectDisplayEvent);
   }
 
-  private onSelectDisplayTap_(e: DisplaySelectEvent) {
+  private onSelectDisplayClick_(e: DisplaySelectEvent) {
     this.dispatchSelectDisplayEvent_(e.model.item.id);
     // Keep focused display in-sync with clicked display
     e.target.focus();

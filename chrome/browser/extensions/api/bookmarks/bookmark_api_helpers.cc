@@ -71,6 +71,10 @@ void PopulateBookmarkTreeNode(
 
   if (!node->is_folder()) {
     out_bookmark_tree_node->url = node->url().spec();
+    base::Time t = node->date_last_used();
+    if (!t.is_null()) {
+      out_bookmark_tree_node->date_last_used = floor(t.ToDoubleT() * 1000);
+    }
   } else {
     // Javascript Date wants milliseconds since the epoch, ToDoubleT is seconds.
     base::Time t = node->date_folder_modified();

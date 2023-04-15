@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
+#include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 
 namespace arc {
@@ -17,6 +18,9 @@ ArcSystemStateObservation::ArcSystemStateObservation(
 
   // Observe background service in ARC side.
   AddObserver(std::make_unique<ArcBackgroundServiceObserver>());
+
+  // Observe ARC window in ash.
+  AddObserver(std::make_unique<ArcWindowObserver>());
 }
 
 ArcSystemStateObservation::~ArcSystemStateObservation() = default;

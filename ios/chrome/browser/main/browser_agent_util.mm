@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
@@ -90,7 +93,7 @@ void AttachBrowserAgents(Browser* browser) {
 
   // SessionRestorartionAgent requires WebUsageEnablerBrowserAgent.
   SessionRestorationBrowserAgent::CreateForBrowser(
-      browser, [SessionServiceIOS sharedService]);
+      browser, [SessionServiceIOS sharedService], IsPinnedTabsEnabled());
 
   // TabUsageRecorderBrowserAgent and WebStateListMetricsBrowserAgent observe
   // the SessionRestorationBrowserAgent, so they should be created after the the
@@ -111,10 +114,13 @@ void AttachBrowserAgents(Browser* browser) {
 
   UpgradeCenterBrowserAgent::CreateForBrowser(browser,
                                               [UpgradeCenter sharedInstance]);
+  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
+  ReadingListBrowserAgent::CreateForBrowser(browser);
+
+  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
+  PagePlaceholderBrowserAgent::CreateForBrowser(browser);
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
   ios::provider::AttachBrowserAgents(browser);
-
-  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
 }

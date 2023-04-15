@@ -121,9 +121,11 @@ void WebAppInstallManager::NotifyWebAppInstalled(const AppId& app_id) {
   // the webapps::WebappInstallSource in this event.
 }
 
-void WebAppInstallManager::NotifyWebAppUninstalled(const AppId& app_id) {
+void WebAppInstallManager::NotifyWebAppUninstalled(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   for (WebAppInstallManagerObserver& observer : observers_) {
-    observer.OnWebAppUninstalled(app_id);
+    observer.OnWebAppUninstalled(app_id, uninstall_source);
   }
 }
 

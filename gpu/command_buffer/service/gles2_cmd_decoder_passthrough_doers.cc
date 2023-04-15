@@ -2492,6 +2492,23 @@ error::Error GLES2DecoderPassthroughImpl::DoReadBuffer(GLenum src) {
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoWritePixelsINTERNAL(
+    GLint x_offset,
+    GLint y_offset,
+    GLint plane_index,
+    GLuint src_width,
+    GLuint src_height,
+    GLuint src_row_bytes,
+    GLuint src_sk_color_type,
+    GLuint src_sk_alpha_type,
+    GLint shm_id,
+    GLuint shm_offset,
+    GLuint pixels_offset,
+    GLuint mailbox_offset) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
     GLint src_x,
     GLint src_y,
@@ -2550,13 +2567,13 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
   viz::SharedImageFormat source_format = source_shared_image->format();
 
   // If present, the color space is serialized into shared memory after the
-  // mailbox and before the pixel data.
-  if (mailbox_offset > pixels_offset) {
+  // Result and before the mailbox.
+  if (color_space_offset > mailbox_offset) {
     InsertError(GL_INVALID_VALUE,
-                "|pixels_offset| must be >= |mailbox_offset|");
+                "|mailbox_offset| must be >= |color_space_offset|");
     return error::kOutOfBounds;
   }
-  unsigned int color_space_size = pixels_offset - mailbox_offset;
+  unsigned int color_space_size = mailbox_offset - color_space_offset;
 
   sk_sp<SkColorSpace> dst_color_space;
   if (color_space_size) {

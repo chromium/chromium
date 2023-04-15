@@ -67,13 +67,8 @@ constexpr auto kFKeyOrder =
                                                     {KEY_F14, kFKey14},
                                                     {KEY_F15, kFKey15}});
 
-// `kCustomMaxFKey` represents the max FKey defined in `EventRewriterChromeOS`.
-// This is the highest FKey allowed on vivaldi keyboard devices.
-constexpr ui::KeyboardCode kCustomMaxFKey = ui::VKEY_F15;
-constexpr size_t kCustomMaxNumberOfFKeys = (kCustomMaxFKey - ui::VKEY_F1) + 1;
-
 // Represents scancode value seen in scan code mapping received from
-// `EventRewriterChromeOS` which denotes that the FKey is missing on the
+// `EventRewriterAsh` which denotes that the FKey is missing on the
 // physical device.
 constexpr uint32_t kCustomScanCodeFKeyMissing = 0x00;
 
@@ -134,7 +129,7 @@ constexpr auto kCustomScancodeMapping =
     });
 
 // Hard-coded top-row key mappings. These are intended to match the behaviour of
-// EventRewriterChromeOS::RewriteFunctionKeys for historical keyboards. No
+// EventRewriterAsh::RewriteFunctionKeys for historical keyboards. No
 // updates should be needed, as all new keyboards are expected to be using
 // customizable top row keys (vivaldi).
 
@@ -275,8 +270,7 @@ InputDataProviderKeyboard::AuxData::~AuxData() = default;
 void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
     const InputDeviceInformation* device_info,
     ui::KeyboardCapability::KeyboardTopRowLayout top_row_layout,
-    const base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>&
-        scan_code_map,
+    const std::vector<uint32_t>& top_row_scan_codes,
     std::vector<mojom::TopRowKey>* out_top_row_keys,
     AuxData* out_aux_data) {
   // Simple array in physical order from left to right
@@ -319,36 +313,9 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
       break;
 
     case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom: {
-      // Process scan-code map generated from custom top-row key layout: it maps
-      // from physical scan codes to several things, including VKEY key-codes,
-      // which we will use to derive a linear index.
-
-      size_t scan_code_array_size = 0;
-      for (const auto& [_, fkey] : scan_code_map) {
-        // `EventRewriterChromeOS::ParseCustomTopRowLayoutMap` should have
-        // already prevented out of bounds keycodes.
-        DCHECK_LE(ui::VKEY_F1, fkey.key_code);
-        DCHECK_GE(kCustomMaxFKey, fkey.key_code);
-
-        // Calculate new size needed based on distance from the given key_code
-        // to `ui::VKEY_F1`.
-        const size_t new_size = (fkey.key_code - ui::VKEY_F1) + 1u;
-        scan_code_array_size = std::max(scan_code_array_size, new_size);
-      }
-      DCHECK_GE(kCustomMaxNumberOfFKeys, scan_code_array_size);
-
-      // Create array where index is the FKey value and the value is the
-      // expected scan code.
-      std::vector<uint32_t> scan_code_array(scan_code_array_size,
-                                            kCustomScanCodeFKeyMissing);
-      for (const auto& [scancode, fkey] : scan_code_map) {
-        const size_t index = fkey.key_code - ui::VKEY_F1;
-        scan_code_array[index] = scancode;
-      }
-
-      top_row_keys.reserve(scan_code_array.size());
+      top_row_keys.reserve(top_row_scan_codes.size());
       size_t index = 0;
-      for (const auto& scancode : scan_code_array) {
+      for (const auto& scancode : top_row_scan_codes) {
         // Skip all scancodes which map to kNone keys. This is most likely a
         // result of an absent FKey (ex: Skipped FKeys on top row).
         if (kCustomScancodeMapping.contains(scancode)) {
@@ -403,7 +370,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   // keyboards, and Dell KM713 Chrome keyboard.
 
   ProcessKeyboardTopRowLayout(device_info, device_info->keyboard_top_row_layout,
-                              device_info->keyboard_scan_code_map,
+                              device_info->keyboard_scan_codes,
                               &result->top_row_keys, out_aux_data);
 
   // Work out the physical layout.

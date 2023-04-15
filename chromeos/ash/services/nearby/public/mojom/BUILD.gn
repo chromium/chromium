@@ -29,6 +29,7 @@ mojom("mojom") {
     "nearby_connections_types.mojom",
     "nearby_decoder.mojom",
     "nearby_decoder_types.mojom",
+    "nearby_presence.mojom",
     "quick_start_decoder.mojom",
     "quick_start_decoder_types.mojom",
     "sharing.mojom",

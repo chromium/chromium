@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
@@ -55,7 +53,6 @@ class TabSelectionEditorMediator
     private final boolean mActionOnRelatedTabs;
     private final TabModelSelectorTabModelObserver mTabModelObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
-    private TabSelectionEditorActionProvider mActionProvider;
     private TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider mNavigationProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
@@ -71,21 +68,6 @@ class TabSelectionEditorMediator
         @Override
         public void onClick(View v) {
             mNavigationProvider.goBack();
-        }
-    };
-
-    private final View.OnClickListener mActionButtonOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            List<Tab> selectedTabs = new ArrayList<>();
-
-            for (int tabId : mSelectionDelegate.getSelectedItems()) {
-                selectedTabs.add(
-                        TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId));
-            }
-
-            if (mActionProvider == null) return;
-            mActionProvider.processSelectedTabs(selectedTabs, mTabModelSelector);
         }
     };
 
@@ -108,8 +90,6 @@ class TabSelectionEditorMediator
 
         mModel.set(
                 TabSelectionEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
-        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_LISTENER,
-                mActionButtonOnClickListener);
         if (mActionOnRelatedTabs) {
             mModel.set(TabSelectionEditorProperties.RELATED_TAB_COUNT_PROVIDER, (tabIdList) -> {
                 return TabSelectionEditorAction.getTabCountIncludingRelatedTabs(
@@ -147,10 +127,6 @@ class TabSelectionEditorMediator
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         updateColors(mTabModelSelector.isIncognitoSelected());
 
-        // Default action for action button is to group selected tabs.
-        mActionProvider = new TabSelectionEditorActionProvider(
-                this, TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP);
-
         mNavigationProvider =
                 new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(
                         context, this);
@@ -177,8 +153,8 @@ class TabSelectionEditorMediator
 
         mModel.set(TabSelectionEditorProperties.PRIMARY_COLOR, primaryColor);
         mModel.set(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
-        mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT, toolbarTintColorList);
-        mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT, toolbarTintColorList);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_TEXT_TINT, toolbarTintColorList);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_BUTTON_TINT, toolbarTintColorList);
 
         if (mActionListModel == null) return;
 
@@ -225,42 +201,9 @@ class TabSelectionEditorMediator
     }
 
     @Override
-    public void configureToolbar(@Nullable String actionButtonText,
-            @Nullable Integer actionButtonDescriptionResourceId,
-            @Nullable TabSelectionEditorActionProvider actionProvider,
-            int actionButtonEnablingThreshold,
-            @Nullable TabSelectionEditorNavigationProvider navigationProvider) {
-        if (mActionListModel != null) {
-            mActionListModel.clear();
-        }
-        if (actionButtonText != null) {
-            mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT, actionButtonText);
-        }
-        if (actionProvider != null) {
-            mActionProvider = actionProvider;
-        }
-        if (actionButtonEnablingThreshold != -1) {
-            mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_ENABLING_THRESHOLD,
-                    actionButtonEnablingThreshold);
-        }
-        if (navigationProvider != null) {
-            mNavigationProvider = navigationProvider;
-        }
-        if (actionButtonDescriptionResourceId != null) {
-            mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID,
-                    actionButtonDescriptionResourceId);
-        }
-        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_VISIBILITY, View.VISIBLE);
-        updateColors(mTabModelSelector.isIncognitoSelected());
-    }
-
-    @Override
     public void configureToolbarWithMenuItems(List<TabSelectionEditorAction> actions,
             @Nullable TabSelectionEditorNavigationProvider navigationProvider) {
         // Deferred initialization.
-        // TODO(ckitagawa): Move this to TabSelectionEditorCoordinator once it is lazily
-        // initialized.
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_SELECTION_EDITOR_V2);
         if (mActionListModel == null) {
             mActionListModel = new PropertyListModel<>();
             mTabSelectionEditorMenu = new TabSelectionEditorMenu(
@@ -279,7 +222,6 @@ class TabSelectionEditorMediator
         if (navigationProvider != null) {
             mNavigationProvider = navigationProvider;
         }
-        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_VISIBILITY, View.GONE);
         updateColors(mTabModelSelector.isIncognitoSelected());
     }
 

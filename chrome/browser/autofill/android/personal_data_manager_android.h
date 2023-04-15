@@ -67,6 +67,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
+  // Determines whether the logged in user (if any) is eligible to store
+  // Autofill address profiles to their account.
+  jboolean IsEligibleForAddressAccountStorage(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj);
+
   // Adds or modifies a profile.  If |jguid| is an empty string, we are creating
   // a new profile.  Else we are updating an existing profile.  Always returns
   // the GUID for this profile; the GUID it may have just been created.

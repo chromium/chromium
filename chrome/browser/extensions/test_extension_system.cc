@@ -28,7 +28,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/state_store.h"
@@ -51,7 +50,6 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
                                   store_factory_,
                                   StateStore::BackendType::RULES,
                                   false)),
-      info_map_(new InfoMap()),
       quota_service_(new QuotaService()),
       app_sorting_(new ChromeAppSorting(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -145,8 +143,6 @@ TestExtensionSystem::store_factory() {
   return store_factory_;
 }
 
-InfoMap* TestExtensionSystem::info_map() { return info_map_.get(); }
-
 QuotaService* TestExtensionSystem::quota_service() {
   return quota_service_.get();
 }
@@ -164,7 +160,7 @@ bool TestExtensionSystem::is_ready() const {
 }
 
 ContentVerifier* TestExtensionSystem::content_verifier() {
-  return nullptr;
+  return content_verifier_.get();
 }
 
 std::unique_ptr<ExtensionSet> TestExtensionSystem::GetDependentExtensions(

@@ -1533,7 +1533,13 @@ util.isNullOrUndefined = (value) => value === null || value === undefined;
  * @return {boolean}
  */
 util.isOneDrive = (volumeInfo) => {
-  if (volumeInfo?.providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg') {
+  if (
+      // App built manually from internal git, used for the early dogfood.
+      volumeInfo?.providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg' ||
+      // App built manually from internal repo.
+      volumeInfo?.providerId === 'gcpjnalmmghdoadafjgomdlghfnllceo' ||
+      // App from official internal repo.
+      volumeInfo?.providerId === 'gnnndjlaomemikopnjhhnoombakkkkdg') {
     return true;
   }
   return false;

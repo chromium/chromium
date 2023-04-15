@@ -65,6 +65,8 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   ScrollAxis axis =
       options->hasAxis() ? options->axis().AsEnum() : ScrollAxis::kBlock;
 
+  TimelineAttachment attachment = TimelineAttachment::kLocal;
+
   // The scrollingElement depends on style/layout-tree in quirks mode. Update
   // such that subsequent calls to ScrollingElementNoLayout returns up-to-date
   // information.
@@ -72,37 +74,43 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
     document.UpdateStyleAndLayoutTree();
 
   return Create(&document, source.value_or(document.ScrollingElementNoLayout()),
-                axis);
+                axis, attachment);
 }
 
 ScrollTimeline* ScrollTimeline::Create(Document* document,
                                        Element* source,
-                                       ScrollAxis axis) {
+                                       ScrollAxis axis,
+                                       TimelineAttachment attachment) {
   ScrollTimeline* scroll_timeline = MakeGarbageCollected<ScrollTimeline>(
-      document, ReferenceType::kSource, source, axis);
+      document, attachment, ReferenceType::kSource, source, axis);
   scroll_timeline->UpdateSnapshot();
 
   return scroll_timeline;
 }
 
 ScrollTimeline::ScrollTimeline(Document* document,
+                               TimelineAttachment attachment,
                                ReferenceType reference_type,
                                Element* reference,
                                ScrollAxis axis)
     : ScrollTimeline(
           document,
-          TimelineAttachmentType::kLocal,
-          MakeGarbageCollected<ScrollTimelineAttachment>(reference_type,
-                                                         reference,
-                                                         axis)) {}
+          attachment,
+          attachment == TimelineAttachment::kDefer
+              ? nullptr
+              : MakeGarbageCollected<ScrollTimelineAttachment>(reference_type,
+                                                               reference,
+                                                               axis)) {}
 
 ScrollTimeline::ScrollTimeline(Document* document,
-                               TimelineAttachmentType attachment_type,
+                               TimelineAttachment attachment_type,
                                ScrollTimelineAttachment* attachment)
     : AnimationTimeline(document),
       ScrollSnapshotClient(document->GetFrame()),
-      attachment_type_(attachment_type),
-      attachments_(1u, attachment) {
+      attachment_type_(attachment_type) {
+  if (attachment) {
+    attachments_.push_back(attachment);
+  }
   UpdateResolvedSource();
 }
 
@@ -344,24 +352,26 @@ void ScrollTimeline::Trace(Visitor* visitor) const {
   ScrollSnapshotClient::Trace(visitor);
 }
 
-bool ScrollTimeline::Matches(ReferenceType reference_type,
+bool ScrollTimeline::Matches(TimelineAttachment attachment_type,
+                             ReferenceType reference_type,
                              Element* reference_element,
                              ScrollAxis axis) const {
+  if (attachment_type_ == TimelineAttachment::kDefer) {
+    return attachment_type == TimelineAttachment::kDefer;
+  }
   const ScrollTimelineAttachment* attachment = CurrentAttachment();
-  // TODO(crbug.com/1425939): When attachments other than kLocal
-  // are supported, attachment may be nullptr.
   DCHECK(attachment);
-  return (attachment->GetReferenceType() == reference_type) &&
+  return (attachment_type_ == attachment_type) &&
+         (attachment->GetReferenceType() == reference_type) &&
          (attachment->GetReferenceElement() == reference_element) &&
          (attachment->GetAxis() == axis);
 }
 
 ScrollAxis ScrollTimeline::GetAxis() const {
-  const ScrollTimelineAttachment* attachment = CurrentAttachment();
-  // TODO(crbug.com/1425939): When attachments other than kLocal
-  // are supported, attachment may be nullptr.
-  DCHECK(attachment);
-  return attachment->GetAxis();
+  if (const ScrollTimelineAttachment* attachment = CurrentAttachment()) {
+    return attachment->GetAxis();
+  }
+  return ScrollAxis::kBlock;
 }
 
 void ScrollTimeline::InvalidateEffectTargetStyle() {
@@ -395,6 +405,19 @@ void ScrollTimeline::FlushStyleUpdate() {
   auto physical_orientation =
       ToPhysicalScrollOrientation(GetAxis(), *layout_box);
   CalculateOffsets(scrollable_area, physical_orientation);
+}
+
+void ScrollTimeline::AddAttachment(ScrollTimelineAttachment* attachment) {
+  DCHECK_EQ(attachment_type_, TimelineAttachment::kDefer);
+  attachments_.push_back(attachment);
+}
+
+void ScrollTimeline::RemoveAttachment(ScrollTimelineAttachment* attachment) {
+  DCHECK_EQ(attachment_type_, TimelineAttachment::kDefer);
+  wtf_size_t i = attachments_.Find(attachment);
+  if (i != kNotFound) {
+    attachments_.EraseAt(i);
+  }
 }
 
 cc::AnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {

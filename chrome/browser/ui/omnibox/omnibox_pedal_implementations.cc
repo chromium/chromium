@@ -22,7 +22,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1948,17 +1947,21 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
 
 const gfx::VectorIcon& GetSharingHubVectorIcon() {
 #if BUILDFLAG(IS_MAC)
-  return features::IsChromeRefresh2023() ? omnibox::kShareMacChromeRefreshIcon
-                                         : omnibox::kShareMacIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? omnibox::kShareMacChromeRefreshIcon
+             : omnibox::kShareMacIcon;
 #elif BUILDFLAG(IS_WIN)
-  return features::IsChromeRefresh2023() ? omnibox::kShareWinChromeRefreshIcon
-                                         : omnibox::kShareWinIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? omnibox::kShareWinChromeRefreshIcon
+             : omnibox::kShareWinIcon;
 #elif BUILDFLAG(IS_LINUX)
-  return features::IsChromeRefresh2023() ? omnibox::kShareLinuxChromeRefreshIcon
-                                         : omnibox::kShareIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? omnibox::kShareLinuxChromeRefreshIcon
+             : omnibox::kShareIcon;
 #else
-  return features::IsChromeRefresh2023() ? omnibox::kShareChromeRefreshIcon
-                                         : omnibox::kShareIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? omnibox::kShareChromeRefreshIcon
+             : omnibox::kShareIcon;
 #endif
 }
 

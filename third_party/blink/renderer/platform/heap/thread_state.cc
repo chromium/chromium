@@ -32,9 +32,6 @@ namespace {
 // lazily.
 class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
  public:
-  explicit BlinkRootsHandler(v8::CppHeap& cpp_heap) : cpp_heap_(cpp_heap) {}
-  ~BlinkRootsHandler() final = default;
-
   bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
     const uint16_t class_id = handle.WrapperClassId();
     // Stand-alone reference or kCustomWrappableId. Keep as root as
@@ -42,13 +39,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
     if (class_id != WrapperTypeInfo::kNodeClassId &&
         class_id != WrapperTypeInfo::kObjectClassId)
       return true;
-
-    const v8::TracedReference<v8::Object>& traced =
-        handle.template As<v8::Object>();
-    if (ToWrapperTypeInfo(traced)->IsActiveScriptWrappable() &&
-        ToScriptWrappable(traced)->HasPendingActivity()) {
-      return true;
-    }
 
     return false;
   }
@@ -59,11 +49,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
            handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
-    // Clearing the wrapper below adjusts the DOM wrapper store which may
-    // re-allocate its backing. NoGarbageCollectionScope is required to avoid
-    // triggering a GC from such re-allocating calls as ResetRoot() is itself
-    // called from GC.
-    cppgc::subtle::NoGarbageCollectionScope no_gc(cpp_heap_.GetHeapHandle());
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
     bool success = DOMWrapperWorld::UnsetSpecificWrapperIfSet(
         ToScriptWrappable(traced), traced);
@@ -71,9 +56,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
     // remove it.
     CHECK(success);
   }
-
- private:
-  v8::CppHeap& cpp_heap_;
 };
 
 }  // namespace
@@ -129,7 +111,7 @@ void ThreadState::AttachToIsolate(v8::Isolate* isolate,
   isolate->AttachCppHeap(cpp_heap_.get());
   CHECK_EQ(cpp_heap_.get(), isolate->GetCppHeap());
   isolate_ = isolate;
-  embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>(cpp_heap());
+  embedder_roots_handler_ = std::make_unique<BlinkRootsHandler>();
   isolate_->SetEmbedderRootsHandler(embedder_roots_handler_.get());
 }
 

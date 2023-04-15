@@ -4,12 +4,8 @@
 
 import("//build/config/rust.gni")
 import("//build/rust/rust_static_library.gni")
-import("//build/rust/rust_unit_test.gni")
-import("//build/rust/rust_unit_tests_group.gni")
 
-assert(can_build_rust_unit_tests)
-
-rust_unit_test("mojo_rust_system_tests") {
+rust_static_library("mojo_rust_system_tests") {
   testonly = true
   allow_unsafe = true
   crate_root = "system/lib.rs"
@@ -21,12 +17,14 @@ rust_unit_test("mojo_rust_system_tests") {
     ":c_test_support",
     ":test_util",
     "//mojo/public/rust:mojo_rust",
+    "//testing/rust_gtest_interop",
     "//third_party/rust/lazy_static/v1:test_support",
   ]
 }
 
-rust_unit_test("mojo_rust_encoding_tests") {
+rust_static_library("mojo_rust_encoding_tests") {
   testonly = true
+  allow_unsafe = true
   crate_root = "encoding/lib.rs"
   sources = [
     "encoding/encoding.rs",
@@ -41,10 +39,11 @@ rust_unit_test("mojo_rust_encoding_tests") {
     "//mojo/public/c/system",
     "//mojo/public/rust:mojo_rust",
     "//mojo/public/rust:mojo_rust_system_test_support",
+    "//testing/rust_gtest_interop",
   ]
 }
 
-rust_unit_test("mojo_rust_integration_tests") {
+rust_static_library("mojo_rust_integration_tests") {
   testonly = true
   allow_unsafe = true
   crate_root = "integration/lib.rs"
@@ -53,6 +52,7 @@ rust_unit_test("mojo_rust_integration_tests") {
     ":c_test_support",
     ":test_util",
     "//mojo/public/rust:mojo_rust",
+    "//testing/rust_gtest_interop",
   ]
 }
 
@@ -62,6 +62,7 @@ rust_static_library("test_util") {
   crate_root = "util/lib.rs"
   edition = "2021"
   sources = [ "util/lib.rs" ]
+  deps = [ "//testing/rust_gtest_interop" ]
 }
 
 static_library("c_test_support") {

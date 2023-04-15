@@ -16,6 +16,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -75,6 +76,11 @@ using ::chromeos::Uri;
 using ::printing::PrinterQueryResult;
 
 constexpr int kPpdMaxLineLength = 255;
+
+constexpr char kNearbyAutomaticPrintersHistogramName[] =
+    "Printing.CUPS.NearbyNetworkAutomaticPrintersCount";
+constexpr char kNearbyDiscoveredPrintersHistogramName[] =
+    "Printing.CUPS.NearbyNetworkDiscoveredPrintersCount";
 
 void OnRemovedPrinter(const Printer::PrinterProtocol& protocol, bool success) {
   if (success) {
@@ -1137,6 +1143,11 @@ void CupsPrintersHandler::HandleStartDiscovery(const base::Value::List& args) {
                     printers_manager_->GetPrinters(PrinterClass::kAutomatic));
   OnPrintersChanged(PrinterClass::kDiscovered,
                     printers_manager_->GetPrinters(PrinterClass::kDiscovered));
+
+  base::UmaHistogramCounts100(kNearbyAutomaticPrintersHistogramName,
+                              automatic_printers_.size());
+  base::UmaHistogramCounts100(kNearbyDiscoveredPrintersHistogramName,
+                              discovered_printers_.size());
   UMA_HISTOGRAM_COUNTS_100(
       "Printing.CUPS.PrintersDiscovered",
       discovered_printers_.size() + automatic_printers_.size());

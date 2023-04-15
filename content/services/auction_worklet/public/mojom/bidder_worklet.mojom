@@ -250,6 +250,7 @@ interface GenerateBidClient {
       bool has_set_priority,
       map<string, PrioritySignalsDouble?> update_priority_signals_overrides,
       array<PrivateAggregationRequest> pa_requests,
+      array<PrivateAggregationRequest> non_kanon_pa_requests,
       mojo_base.mojom.TimeDelta bidding_latency,
       array<string> errors);
 };

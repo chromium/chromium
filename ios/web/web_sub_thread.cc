@@ -4,7 +4,6 @@
 
 #include "ios/web/web_sub_thread.h"
 
-#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"

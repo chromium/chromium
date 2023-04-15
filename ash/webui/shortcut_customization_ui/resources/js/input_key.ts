@@ -57,7 +57,7 @@ export const keyToIconNameMap: {[key: string]: string} = {
   'MediaTrackPrevious': 'last-track',
   'Menu': 'menu',
   'MicrophoneMuteToggle': 'microphone-mute',
-  'ModeChange': 'space-bar',
+  'ModeChange': 'globe',
   'OpenLauncher': 'open-launcher',
   'Power': 'power',
   'PrintScreen': 'screenshot',

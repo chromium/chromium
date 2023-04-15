@@ -6,8 +6,10 @@
 
 #include <fcntl.h>
 
+#include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -49,9 +51,15 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
       info->event_device_info.version());
 
   if (info->event_device_info.HasKeyboard()) {
-    ui::EventRewriterChromeOS::IdentifyKeyboard(
-        info->input_device, &info->keyboard_type,
-        &info->keyboard_top_row_layout, &info->keyboard_scan_code_map);
+    const auto* keyboard_capability = Shell::Get()->keyboard_capability();
+    info->keyboard_type =
+        keyboard_capability->GetDeviceType(info->input_device);
+    info->keyboard_top_row_layout =
+        keyboard_capability->GetTopRowLayout(info->input_device);
+    const auto* keyboard_scan_codes =
+        keyboard_capability->GetTopRowScanCodes(info->input_device);
+    info->keyboard_scan_codes =
+        keyboard_scan_codes ? *keyboard_scan_codes : std::vector<uint32_t>();
   }
 
   return info;

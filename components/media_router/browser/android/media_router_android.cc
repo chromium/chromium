@@ -267,6 +267,21 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
   }
 }
 
+void MediaRouterAndroid::OnRouteMediaSourceUpdated(
+    const MediaRoute::Id& route_id,
+    const MediaSource::Id& source_id) {
+  for (auto& route : active_routes_) {
+    if (route.media_route_id() == route_id) {
+      route.set_media_source(MediaSource(source_id));
+      break;
+    }
+  }
+
+  for (auto& observer : routes_observers_) {
+    observer.OnRoutesUpdated(active_routes_);
+  }
+}
+
 void MediaRouterAndroid::OnCreateRouteRequestError(
     const std::string& error_text,
     int route_request_id) {

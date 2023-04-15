@@ -97,7 +97,7 @@ cvox.ChromeVoxUserCommands.enableCommandDispatchingToPage = true;
 
 /**
  * Handles any tab navigation by putting focus at the user's position.
- * This function will create dummy nodes if there is nothing that is focusable
+ * This function will create empty nodes if there is nothing that is focusable
  * at the current position.
  * TODO (adu): This function is too long. We need to break it up into smaller
  * helper functions.
@@ -142,7 +142,7 @@ cvox.ChromeVoxUserCommands.handleTabAction_ = function() {
   }
 
   // See if we can set focus to either anchorNode or focusNode.
-  // If not, try the parents. Otherwise give up and create a dummy span.
+  // If not, try the parents. Otherwise give up and create an empty span.
   if (anchorNode == null || focusNode == null) {
     return true;
   }
@@ -163,39 +163,38 @@ cvox.ChromeVoxUserCommands.handleTabAction_ = function() {
     return true;
   }
 
-  // Insert and focus a dummy span immediately before the current position
+  // Insert and focus an empty span immediately before the current position
   // so that the default tab action will start off as close to the user's
   // current position as possible.
   var bestGuess = anchorNode;
-  var dummySpan = cvox.ChromeVoxUserCommands.createTabDummySpan_();
-  bestGuess.parentNode.insertBefore(dummySpan, bestGuess);
-  dummySpan.focus();
+  var emptySpan = cvox.ChromeVoxUserCommands.createTabEmptySpan_();
+  bestGuess.parentNode.insertBefore(emptySpan, bestGuess);
+  emptySpan.focus();
   return true;
 };
 
 
 /**
- * If a lingering tab dummy span exists, remove it.
+ * If a lingering tab empty span exists, remove it.
  */
-cvox.ChromeVoxUserCommands.removeTabDummySpan = function() {
+cvox.ChromeVoxUserCommands.removeTabEmptySpan = function() {
   // Break the following line to get around a Chromium js linter warning.
   // TODO(plundblad): Find a better solution.
-  var previousDummySpan = document.
-      getElementById('ChromeVoxTabDummySpan');
-  if (previousDummySpan && document.activeElement != previousDummySpan) {
-    previousDummySpan.parentNode.removeChild(previousDummySpan);
+  var previousEmptySpan = document.getElementById('ChromeVoxTabEmptySpan');
+  if (previousEmptySpan && document.activeElement != previousEmptySpan) {
+    previousEmptySpan.parentNode.removeChild(previousEmptySpan);
   }
 };
 
 
 /**
- * Create a new tab dummy span.
- * @return {Element} The dummy span element to be inserted.
+ * Create a new tab empty span.
+ * @return {Element} The empty span element to be inserted.
  * @private
  */
-cvox.ChromeVoxUserCommands.createTabDummySpan_ = function() {
+cvox.ChromeVoxUserCommands.createTabEmptySpan_ = function() {
   var span = document.createElement('span');
-  span.id = 'ChromeVoxTabDummySpan';
+  span.id = 'ChromeVoxTabEmptySpan';
   span.tabIndex = -1;
   return span;
 };

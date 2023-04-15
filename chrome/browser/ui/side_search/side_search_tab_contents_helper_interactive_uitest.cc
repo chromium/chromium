@@ -52,6 +52,7 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kSideSearch}, {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }

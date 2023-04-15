@@ -200,13 +200,15 @@
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="displaySubpageButton" class="hr"
-      label="$i18n{displaySettingsTitle}" on-click="onDisplayTap_"
+      label="$i18n{displaySettingsTitle}" on-click="onDisplayClick_"
       sub-label="$i18n{displaySettingsDescription}"
       role-description="$i18n{subpageArrowRoleDescription}" embedded>
   </cr-link-row>
   <cr-link-row id="appearanceSubpageButton" class="hr"
-      label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceTap_"
-      sub-label="$i18n{appearanceSettingsDescription}" external
+      label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceClick_"
+      sub-label="$i18n{appearanceSettingsDescription}"
+      external
+      button-aria-description="$i18n{opensInNewTab}"
       embedded>
   </cr-link-row>
 </template>

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/test/mock_mdoc_provider.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -34,6 +35,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,6 +46,8 @@ using net::test_server::BasicHttpResponse;
 using net::test_server::HttpMethod;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using ::testing::_;
+using ::testing::WithArg;
 
 namespace content {
 
@@ -86,6 +91,10 @@ class IdpTestServer {
     std::string accounts_endpoint_url;
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
+    std::map<std::string,
+             base::RepeatingCallback<std::unique_ptr<HttpResponse>(
+                 const HttpRequest&)>>
+        servlets;
   };
 
   IdpTestServer() = default;
@@ -116,6 +125,10 @@ class IdpTestServer {
     if (IsGetRequestWithPath(request, kExpectedWellKnownPath)) {
       BuildWellKnownResponse(*response.get());
       return response;
+    }
+
+    if (config_details_.servlets[request.relative_url]) {
+      return config_details_.servlets[request.relative_url].Run(request);
     }
 
     return nullptr;
@@ -202,6 +215,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
+    SetTestMDocProvider();
   }
 
   void TearDown() override { ContentBrowserTest::TearDown(); }
@@ -263,13 +277,18 @@ class WebIdBrowserTest : public ContentBrowserTest {
         std::move(controller));
   }
 
+  void SetTestMDocProvider() {
+    auto provider = std::make_unique<MockMDocProvider>();
+    test_browser_client_->SetMDocProvider(std::move(provider));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
 
  private:
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<IdpTestServer> idp_server_;
-  std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
 };
 
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
@@ -295,24 +314,6 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kFedCm);
     features.push_back(features::kFedCmIdPRegistration);
-    scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  ShellFederatedPermissionContext* sharing_context() {
-    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
-        context->GetFederatedIdentityPermissionContext());
-  }
-};
-
-class WebIdMDocsBrowserTest : public WebIdBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> features;
-    features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    features.push_back(features::kWebIdentityMDocs);
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
@@ -512,25 +513,54 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
   EXPECT_FALSE(*value);
 }
 
+class WebIdMDocsBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
+    features.push_back(features::kWebIdentityMDocs);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  ShellFederatedPermissionContext* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return static_cast<ShellFederatedPermissionContext*>(
+        context->GetFederatedIdentityPermissionContext());
+  }
+};
+
 // Test that an mdoc can be requested via a JS API.
-IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
-  GURL configURL = GURL(BaseIdpUrl());
+IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, RequestMDoc) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockMDocProvider* mdoc_provider = static_cast<MockMDocProvider*>(
+      test_browser_client_->GetMDocProviderForTests());
+
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _, _))
+      .WillOnce(WithArg<4>([](MDocProvider::MDocCallback callback) {
+        std::move(callback).Run("test-mdoc");
+      }));
 
   std::string script = R"(
         (async () => {
           const {token} = await navigator.credentials.get({
             identity: {
               providers: [{
-                configURL: "",
-                clientId: "",
+                configURL: '',
+                clientId: '',
                 mdoc: {
-                  documentType: "",
-                  readerPublicKey: "",
-                  requestedElements: []
-                }
-              }]
-            }
+                  documentType: 'test_document_type',
+                  readerPublicKey: 'test_reader_public_key',
+                  requestedElements: [
+                    {
+                      namespace: 'test_namespace',
+                      name: 'test_name'
+                    }
+                  ],
+                },
+              }],
+            },
           });
           return token;
         }) ()
@@ -539,9 +569,90 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
   EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
 }
 
-// Verify a standard login flow with IdP sign-in page.
-IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
+// Test that when there's a pending mdoc request, a second `get` call should be
+// rejected.
+IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest,
+                       OnlyOneInFlightMDocRequestIsAllowed) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockMDocProvider* mdoc_provider = static_cast<MockMDocProvider*>(
+      test_browser_client_->GetMDocProviderForTests());
+
+  std::string script = R"(
+        (async () => {
+          const {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: '',
+                clientId: '',
+                mdoc: {
+                  documentType: 'test_document_type',
+                  readerPublicKey: 'test_reader_public_key',
+                  requestedElements: [
+                    {
+                      namespace: 'test_namespace',
+                      name: 'test_name'
+                    }
+                  ],
+                },
+              }],
+            },
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _, _))
+      .WillOnce(WithArg<4>([&](MDocProvider::MDocCallback callback) {
+        EXPECT_EQ(
+            "a JavaScript error: \"AbortError: Only one "
+            "navigator.credentials.get request may be outstanding at one "
+            "time.\"\n",
+            EvalJs(shell(), script).error);
+        std::move(callback).Run("test-mdoc");
+      }));
+
+  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+}
+
+// Verify that the Authz parameters are passed to the id assertion endpoint.
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  // Add a servlet to serve a response for the id assertoin endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            EXPECT_EQ(request.method, HttpMethod::METHOD_POST);
+            EXPECT_EQ(request.has_content, true);
+
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "nonce=12345&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            // Asserts that the scope, response_type and params parameters
+            // were passed correctly to the id assertion endpoint.
+            content += "scope=name+email+picture&";
+            content += "response_type=id_token+code&";
+            content += "%3F+gets+://=%26+escaped+!&";
+            content += "foo=bar&";
+            content += "hello=world";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            // Standard scopes were used, so no extra permission needed.
+            // Return a token immediately.
+            response->set_content(R"({"token": "[request lgtm!]"})");
+            return response;
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
 
   std::string script = R"(
         (async () => {
@@ -552,10 +663,19 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
                        BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
                 nonce: '12345',
-                scope: ['name', 'email', 'calendar.readonly'],
-                responseType: ['id_token', 'code'],
+                scope: [
+                  'name',
+                  'email',
+                  'picture',
+                ],
+                responseType: [
+                  'id_token',
+                  'code'
+                ],
                 params: {
                   'foo': 'bar',
+                  'hello': 'world',
+                  '? gets ://': '& escaped !',
                 }
               }]
             }
@@ -564,7 +684,64 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
         }) ()
     )";
 
-  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
+  EXPECT_EQ(std::string("[request lgtm!]"), EvalJs(shell(), script));
+}
+
+// Verify that the id assertion endpoint can request a pop-up window.
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  // Add a servlet to serve a response for the id assertoin endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "nonce=12345&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            content += "scope=calendar.readonly";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            // scope=calendar.readonly was requested, so need to
+            // return a continuation url instead of a token.
+            response->set_content(
+                R"({"continue_on": "https://idp.example/continue.php"})");
+            return response;
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+                scope: [
+                  'calendar.readonly'
+                ],
+              }]
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  // Assert that a fake token was returned from the pop-up window,
+  // as opposed to directly from the id assertion endpoint.
+  EXPECT_EQ(std::string("--fake-token-from-pop-up-window--"),
+            EvalJs(shell(), script));
 }
 
 }  // namespace content

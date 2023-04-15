@@ -6,7 +6,9 @@
 
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -36,13 +38,15 @@ BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
 
 SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     Browser* browser,
-    SessionServiceIOS* session_service)
+    SessionServiceIOS* session_service,
+    bool enable_pinned_web_states)
     : session_service_(session_service),
       web_state_list_(browser->GetWebStateList()),
       web_enabler_(WebUsageEnablerBrowserAgent::FromBrowser(browser)),
       browser_state_(browser->GetBrowserState()),
       session_ios_factory_(
           [[SessionIOSFactory alloc] initWithWebStateList:web_state_list_]),
+      enable_pinned_web_states_(enable_pinned_web_states),
       all_web_state_observer_(
           std::make_unique<AllWebStateObservationForwarder>(web_state_list_,
                                                             this)) {
@@ -81,9 +85,6 @@ void SessionRestorationBrowserAgent::RemoveObserver(
 bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     SessionWindowIOS* window,
     SessionRestorationScope scope) {
-  if (!window.sessions.count)
-    return false;
-
   // Start the session restoration.
   restoring_session_ = true;
 
@@ -100,12 +101,12 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
       base::BindOnce(^(WebStateList* web_state_list) {
         web::WebState::CreateParams create_params(browser_state_);
         DeserializeWebStateList(
-            web_state_list, window, scope,
+            web_state_list, window, scope, enable_pinned_web_states_,
             base::BindRepeating(&web::WebState::CreateWithStorageSession,
                                 create_params));
       }));
 
-  DCHECK_GT(web_state_list_->count(), old_count);
+  DCHECK_GE(web_state_list_->count(), old_count);
   int restored_count = web_state_list_->count() - old_count;
   int restored_pinned_count =
       web_state_list_->GetIndexOfFirstNonPinnedWebState() -
@@ -192,11 +193,11 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     // An "unrealized" WebState has no pending load. Checking for realization
     // before accessing the NavigationManager prevents accidental realization
     // of the WebState.
-    const bool hasPendingLoad =
+    const bool has_pending_load =
         web_state->IsRealized() &&
         web_state->GetNavigationManager()->GetPendingItem() != nullptr;
 
-    if (!hasPendingLoad &&
+    if (!has_pending_load &&
         (web_state->GetLastCommittedURL() == kChromeUINewTabURL)) {
       web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
       closed_ntp_tab = true;
@@ -219,6 +220,8 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
 bool SessionRestorationBrowserAgent::RestoreSession() {
   DCHECK(session_identifier_.length != 0);
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
   base::ScopedClosureRunner scoped_restore =
       [session_info startSessionRestoration];
@@ -233,7 +236,13 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
     session_window = session.sessionWindows[0];
   }
 
-  return RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
+  const bool closed_ntp_tab =
+      RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
+
+  base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
+                          base::TimeTicks::Now() - start_time);
+
+  return closed_ntp_tab;
 }
 
 bool SessionRestorationBrowserAgent::IsRestoringSession() {

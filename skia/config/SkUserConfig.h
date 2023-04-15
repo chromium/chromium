@@ -197,7 +197,15 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #endif
 
+#if defined(__has_attribute)
+#if __has_attribute(trivial_abi)
 #define SK_TRIVIAL_ABI [[clang::trivial_abi]]
+#else
+#define SK_TRIVIAL_ABI
+#endif
+#else
+#define SK_TRIVIAL_ABI
+#endif
 
 // These flags are no longer defined in Skia, but we have them (temporarily)
 // until we update our call-sites (typically these are for API changes).

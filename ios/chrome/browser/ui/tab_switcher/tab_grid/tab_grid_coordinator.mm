@@ -24,9 +24,12 @@
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
@@ -58,8 +61,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
-#import "ios/chrome/browser/ui/main/layout_guide_util.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
@@ -71,6 +72,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
@@ -407,6 +409,23 @@
   // incognito (crbug.com/1136882).
   TabGridPage currentActivePage = self.baseViewController.activePage;
 
+  // Show "Bring Android Tabs" prompt if the user is an Android switcher and has
+  // open tabs from their previous Android device.
+  // Note: if the coordinator is already created, the prompt should have already
+  // been displayed, therefore we should not need to display it again.
+  BOOL shouldDisplayBringAndroidTabsPrompt = NO;
+  if (currentActivePage == TabGridPageRegularTabs &&
+      !_bringAndroidTabsPromptCoordinator) {
+    BringAndroidTabsToIOSService* bringAndroidTabsService =
+        BringAndroidTabsToIOSServiceFactory::GetForBrowserState(
+            self.regularBrowser->GetBrowserState());
+    if (bringAndroidTabsService != nil) {
+      bringAndroidTabsService->LoadTabs();
+      shouldDisplayBringAndroidTabsPrompt =
+          bringAndroidTabsService->GetNumberOfAndroidTabs() > 0;
+    }
+  }
+
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
   if (self.bvcContainer) {
@@ -425,6 +444,9 @@
                  withCompletion:^{
                    self.bvcContainer = nil;
                    [self.baseViewController contentDidAppear];
+                   if (shouldDisplayBringAndroidTabsPrompt) {
+                     [self displayBringAndroidTabsPrompt];
+                   }
                  }];
 
       // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
@@ -434,23 +456,8 @@
       // updating the status bar style afterwards.
       self.baseViewController.childViewControllerForStatusBarStyle = nil;
     });
-  }
-
-  // Show "Bring Android Tabs" prompt if the user is an Android switcher and has
-  // open tabs from their previous Android device.
-  // Note: if the coordinator is already created, the prompt should have already
-  // been displayed, therefore we should not need to display it again.
-  if (currentActivePage == TabGridPageRegularTabs &&
-      !_bringAndroidTabsPromptCoordinator) {
-    BringAndroidTabsToIOSService* bringAndroidTabsService =
-        BringAndroidTabsToIOSServiceFactory::GetForBrowserState(
-            self.regularBrowser->GetBrowserState());
-    if (bringAndroidTabsService != nil) {
-      bringAndroidTabsService->LoadTabs();
-      if (bringAndroidTabsService->GetNumberOfAndroidTabs() > 0) {
-        [self displayBringAndroidTabsPrompt];
-      }
-    }
+  } else if (shouldDisplayBringAndroidTabsPrompt) {
+    [self displayBringAndroidTabsPrompt];
   }
 
   // Record when the tab switcher is presented.
@@ -584,6 +591,33 @@
     _bookmarksCoordinator.baseViewController = self.baseViewController;
   }
   return _bookmarksCoordinator;
+}
+
+- (void)displayBringAndroidTabsPrompt {
+  if (!_bringAndroidTabsPromptCoordinator) {
+    _bringAndroidTabsPromptCoordinator =
+        [[BringAndroidTabsPromptCoordinator alloc]
+            initWithBaseViewController:self.baseViewController
+                               browser:self.regularBrowser];
+    _bringAndroidTabsPromptCoordinator.commandHandler = self;
+  }
+  [_bringAndroidTabsPromptCoordinator start];
+  switch (GetBringYourOwnTabsPromptType()) {
+    case BringYourOwnTabsPromptType::kHalfSheet:
+      [self.baseViewController
+          presentViewController:_bringAndroidTabsPromptCoordinator
+                                    .viewController
+                       animated:YES
+                     completion:nil];
+      break;
+    case BringYourOwnTabsPromptType::kBottomMessage:
+      self.baseViewController.regularTabsBottomMessage =
+          _bringAndroidTabsPromptCoordinator.viewController;
+      break;
+    case BringYourOwnTabsPromptType::kDisabled:
+      NOTREACHED();
+      break;
+  }
 }
 
 #pragma mark - Private (Thumb Strip)
@@ -774,6 +808,18 @@
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;
 
+  if (IsInactiveTabsEnabled()) {
+    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:_inactiveBrowser
+                          delegate:self
+                      menuProvider:self.regularTabContextMenuHelper];
+    [self.inactiveTabsCoordinator start];
+
+    baseViewController.inactiveTabsDelegate =
+        self.inactiveTabsCoordinator.gridCommandsHandler;
+  }
+
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
   baseViewController.remoteTabsViewController.browser = self.regularBrowser;
@@ -880,7 +926,7 @@
   [self.incognitoSnackbarCoordinator stop];
   self.incognitoSnackbarCoordinator = nil;
 
-  self.baseViewController.bottomMessage = nil;
+  self.baseViewController.regularTabsBottomMessage = nil;
   [_bringAndroidTabsPromptCoordinator stop];
   _bringAndroidTabsPromptCoordinator = nil;
   [_tabListFromAndroidCoordinator stop];
@@ -1086,17 +1132,6 @@
 
 - (void)showInactiveTabs {
   DCHECK(IsInactiveTabsEnabled());
-
-  if (!self.inactiveTabsCoordinator) {
-    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:_inactiveBrowser];
-    self.inactiveTabsCoordinator.delegate = self;
-    self.inactiveTabsCoordinator.menuProvider =
-        self.regularTabContextMenuHelper;
-    [self.inactiveTabsCoordinator start];
-  }
-
   [self.inactiveTabsCoordinator show];
 }
 
@@ -1197,11 +1232,9 @@
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:URL title:title];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
-  // protocol clean up.
-  id<BrowserCommands> readingListAdder = static_cast<id<BrowserCommands>>(
-      self.regularBrowser->GetCommandDispatcher());
-  [readingListAdder addToReadingList:command];
+  ReadingListBrowserAgent* readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.regularBrowser);
+  readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
@@ -1321,33 +1354,6 @@
 
 #pragma mark - BringAndroidTabsCommands
 
-- (void)displayBringAndroidTabsPrompt {
-  if (!_bringAndroidTabsPromptCoordinator) {
-    _bringAndroidTabsPromptCoordinator =
-        [[BringAndroidTabsPromptCoordinator alloc]
-            initWithBaseViewController:self.baseViewController
-                               browser:self.regularBrowser];
-    _bringAndroidTabsPromptCoordinator.commandHandler = self;
-  }
-  [_bringAndroidTabsPromptCoordinator start];
-  switch (GetBringYourOwnTabsPromptType()) {
-    case BringYourOwnTabsPromptType::kHalfSheet:
-      [self.baseViewController
-          presentViewController:_bringAndroidTabsPromptCoordinator
-                                    .viewController
-                       animated:YES
-                     completion:nil];
-      break;
-    case BringYourOwnTabsPromptType::kBottomMessage:
-      self.baseViewController.bottomMessage =
-          _bringAndroidTabsPromptCoordinator.viewController;
-      break;
-    case BringYourOwnTabsPromptType::kDisabled:
-      NOTREACHED();
-      break;
-  }
-}
-
 - (void)reviewAllBringAndroidTabs {
   [self onUserInteractionWithBringAndroidTabsPrompt:YES];
 }
@@ -1365,9 +1371,9 @@
                                                   completion:nil];
       break;
     case BringYourOwnTabsPromptType::kBottomMessage:
-      DCHECK_EQ(self.baseViewController.bottomMessage,
+      DCHECK_EQ(self.baseViewController.regularTabsBottomMessage,
                 _bringAndroidTabsPromptCoordinator.viewController);
-      self.baseViewController.bottomMessage = nil;
+      self.baseViewController.regularTabsBottomMessage = nil;
       break;
     case BringYourOwnTabsPromptType::kDisabled:
       NOTREACHED();

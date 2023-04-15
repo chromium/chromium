@@ -179,18 +179,18 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
     }
   }
   // run_at:
-  if (script_value.run_at) {
+  if (script_value.run_at != extensions::api::extension_types::RunAt::kNone) {
     extensions::mojom::RunLocation run_at =
         extensions::mojom::RunLocation::kUndefined;
     switch (script_value.run_at) {
-      case extensions::api::extension_types::RUN_AT_NONE:
-      case extensions::api::extension_types::RUN_AT_DOCUMENT_IDLE:
+      case extensions::api::extension_types::RunAt::kNone:
+      case extensions::api::extension_types::RunAt::kDocumentIdle:
         run_at = extensions::mojom::RunLocation::kDocumentIdle;
         break;
-      case extensions::api::extension_types::RUN_AT_DOCUMENT_START:
+      case extensions::api::extension_types::RunAt::kDocumentStart:
         run_at = extensions::mojom::RunLocation::kDocumentStart;
         break;
-      case extensions::api::extension_types::RUN_AT_DOCUMENT_END:
+      case extensions::api::extension_types::RunAt::kDocumentEnd:
         run_at = extensions::mojom::RunLocation::kDocumentEnd;
         break;
     }
@@ -730,13 +730,13 @@ ExtensionFunction::ResponseAction WebViewInternalSetZoomModeFunction::Run() {
 
   ZoomController::ZoomMode zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
   switch (params->zoom_mode) {
-    case web_view_internal::ZOOM_MODE_PER_ORIGIN:
+    case web_view_internal::ZoomMode::kPerOrigin:
       zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
       break;
-    case web_view_internal::ZOOM_MODE_PER_VIEW:
+    case web_view_internal::ZoomMode::kPerView:
       zoom_mode = ZoomController::ZOOM_MODE_ISOLATED;
       break;
-    case web_view_internal::ZOOM_MODE_DISABLED:
+    case web_view_internal::ZoomMode::kDisabled:
       zoom_mode = ZoomController::ZOOM_MODE_DISABLED;
       break;
     default:
@@ -758,16 +758,16 @@ ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
       web_view_internal::GetZoomMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  web_view_internal::ZoomMode zoom_mode = web_view_internal::ZOOM_MODE_NONE;
+  web_view_internal::ZoomMode zoom_mode = web_view_internal::ZoomMode::kNone;
   switch (guest_->GetZoomMode()) {
     case ZoomController::ZOOM_MODE_DEFAULT:
-      zoom_mode = web_view_internal::ZOOM_MODE_PER_ORIGIN;
+      zoom_mode = web_view_internal::ZoomMode::kPerOrigin;
       break;
     case ZoomController::ZOOM_MODE_ISOLATED:
-      zoom_mode = web_view_internal::ZOOM_MODE_PER_VIEW;
+      zoom_mode = web_view_internal::ZoomMode::kPerView;
       break;
     case ZoomController::ZOOM_MODE_DISABLED:
-      zoom_mode = web_view_internal::ZOOM_MODE_DISABLED;
+      zoom_mode = web_view_internal::ZoomMode::kDisabled;
       break;
     default:
       NOTREACHED();
@@ -824,13 +824,13 @@ ExtensionFunction::ResponseAction WebViewInternalStopFindingFunction::Run() {
   // Set the StopFindAction.
   content::StopFindAction action;
   switch (params->action) {
-    case web_view_internal::STOP_FINDING_ACTION_CLEAR:
+    case web_view_internal::StopFindingAction::kClear:
       action = content::STOP_FIND_ACTION_CLEAR_SELECTION;
       break;
-    case web_view_internal::STOP_FINDING_ACTION_KEEP:
+    case web_view_internal::StopFindingAction::kKeep:
       action = content::STOP_FIND_ACTION_KEEP_SELECTION;
       break;
-    case web_view_internal::STOP_FINDING_ACTION_ACTIVATE:
+    case web_view_internal::StopFindingAction::kActivate:
       action = content::STOP_FIND_ACTION_ACTIVATE_SELECTION;
       break;
     default:
@@ -909,13 +909,13 @@ ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
   WebViewPermissionHelper::PermissionResponseAction action =
       WebViewPermissionHelper::DEFAULT;
   switch (params->action) {
-    case api::web_view_internal::SET_PERMISSION_ACTION_ALLOW:
+    case api::web_view_internal::SetPermissionAction::kAllow:
       action = WebViewPermissionHelper::ALLOW;
       break;
-    case api::web_view_internal::SET_PERMISSION_ACTION_DENY:
+    case api::web_view_internal::SetPermissionAction::kDeny:
       action = WebViewPermissionHelper::DENY;
       break;
-    case api::web_view_internal::SET_PERMISSION_ACTION_DEFAULT:
+    case api::web_view_internal::SetPermissionAction::kDefault:
       break;
     default:
       NOTREACHED();

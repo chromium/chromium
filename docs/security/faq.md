@@ -371,11 +371,13 @@ but users are otherwise free to invoke script against pages using either the URL
 bar or the DevTools console.
 
 <a name="TOC-Does-executing-JavaScript-from-a-bookmark-mean-there-s-an-XSS-vulnerability-"></a>
-### Does executing JavaScript from a bookmark mean there's an XSS vulnerability?
+### Does executing JavaScript from a bookmark or the Home button mean there's an XSS vulnerability?
 
 No. Chromium allows users to create bookmarks to JavaScript URLs that will run
 on the currently-loaded page when the user clicks the bookmark; these are called
 [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
+
+Similarly, the Home button may be configured to invoke a JavaScript URL when clicked.
 
 <a name="TOC-Does-executing-JavaScript-in-a-PDF-file-mean-there-s-an-XSS-vulnerability-"></a>
 ### Does executing JavaScript in a PDF file mean there's an XSS vulnerability?
@@ -418,6 +420,15 @@ Null pointer dereferences with consistent, small, fixed offsets are not consider
 security bugs. A read or write to the NULL page results in a non-exploitable crash.
 If the offset is larger than a page, or if there's uncertainty about whether the
 offset is controllable, it is considered a security bug.
+
+<a name="TOC-Indexing-a-container-out-of-bounds-hits-a-libcpp-verbose-abort--is-this-a-security-bug-"></a>
+### Indexing a container out of bounds hits a __libcpp_verbose_abort, is this a security bug?
+
+`std::vector` and other containers are now protected by libc++ hardening on all
+platforms [crbug.com/1335422](https://crbug.com/1335422). Indexing these
+containers out of bounds is now a safe crash - if a proof-of-concept reliably
+causes a crash in production builds we consider these to be functional rather than
+security issues.
 
 <a name="TOC-Are-stack-overflows-considered-security-bugs-"></a>
 ### Are stack overflows considered security bugs?

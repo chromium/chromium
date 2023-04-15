@@ -16,7 +16,8 @@ class CertNetFetcher;
 // TrustManager through JNI.
 class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
  public:
-  explicit CertVerifyProcAndroid(scoped_refptr<CertNetFetcher> net_fetcher);
+  explicit CertVerifyProcAndroid(scoped_refptr<CertNetFetcher> net_fetcher,
+                                 scoped_refptr<CRLSet> crl_set);
 
   CertVerifyProcAndroid(const CertVerifyProcAndroid&) = delete;
   CertVerifyProcAndroid& operator=(const CertVerifyProcAndroid&) = delete;
@@ -32,7 +33,6 @@ class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     CRLSet* crl_set,
                      const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;

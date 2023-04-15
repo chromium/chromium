@@ -94,21 +94,6 @@ int ProximityAuthProfilePrefManager::GetPromotionShownCount() const {
   return pref_service_->GetInteger(prefs::kProximityAuthPromotionShownCount);
 }
 
-bool ProximityAuthProfilePrefManager::IsChromeOSLoginAllowed() const {
-  return pref_service_->GetBoolean(
-      ash::multidevice_setup::kSmartLockSigninAllowedPrefName);
-}
-
-void ProximityAuthProfilePrefManager::SetIsChromeOSLoginEnabled(
-    bool is_enabled) {
-  return pref_service_->SetBoolean(prefs::kProximityAuthIsChromeOSLoginEnabled,
-                                   is_enabled);
-}
-
-bool ProximityAuthProfilePrefManager::IsChromeOSLoginEnabled() const {
-  return pref_service_->GetBoolean(prefs::kProximityAuthIsChromeOSLoginEnabled);
-}
-
 void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
   // This is persisted within SyncPrefsToLocalState() instead, since the local

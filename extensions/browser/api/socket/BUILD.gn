@@ -40,7 +40,10 @@ source_set("socket") {
       "app_firewall_hole_manager.h",
     ]
 
-    deps += [ "//components/keyed_service/content" ]
+    deps += [
+      "//chromeos/components/firewall_hole",
+      "//components/keyed_service/content",
+    ]
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

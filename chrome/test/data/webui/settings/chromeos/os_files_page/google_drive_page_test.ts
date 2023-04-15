@@ -4,20 +4,42 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SettingsGoogleDriveSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {CrSettingsPrefs, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {assertAsync, querySelectorShadow} from '../utils.js';
+
+/**
+ * A fake BrowserProxy implementation that enables switching out the real one to
+ * mock various mojo responses.
+ */
+class GoogleDriveTestBrowserProxy extends TestBrowserProxy implements
+    GoogleDriveBrowserProxy {
+  handler: TestMock<GoogleDrivePageHandlerRemote>&GoogleDrivePageHandlerRemote;
+
+  observer: GoogleDrivePageCallbackRouter;
+
+  constructor() {
+    super(['calculateRequiredSpace']);
+    this.handler = TestMock.fromClass(GoogleDrivePageHandlerRemote);
+    this.observer = new GoogleDrivePageCallbackRouter();
+  }
+}
 
 suite('<settings-google-drive-subpage>', function() {
   let page: SettingsGoogleDriveSubpageElement;
   let prefElement: SettingsPrefsElement;
   let connectDisconnectButton: CrButtonElement;
+  let testBrowserProxy: GoogleDriveTestBrowserProxy;
 
   setup(async function() {
+    testBrowserProxy = new GoogleDriveTestBrowserProxy();
+    GoogleDriveBrowserProxy.setInstance(testBrowserProxy);
+
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
 

@@ -407,6 +407,7 @@ component("gfx") {
 
   if (is_apple) {
     frameworks = [ "IOSurface.framework" ]
+    deps += [ "//ui/base:features" ]
   }
   if (is_mac) {
     frameworks += [

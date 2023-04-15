@@ -76,6 +76,9 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // version of the snapshot already exists in memory or on disk.
   void SaveGreyInBackground();
 
+  // Returns the identifier to use for the snapshot.
+  NSString* GetSnapshotIdentifier() const;
+
  private:
   friend class web::WebStateUserData<SnapshotTabHelper>;
 
@@ -103,7 +106,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Used to ensure `UpdateSnapshotWithCallback()` is not run when this object
   // is destroyed.
-  base::WeakPtrFactory<SnapshotTabHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<SnapshotTabHelper> weak_ptr_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

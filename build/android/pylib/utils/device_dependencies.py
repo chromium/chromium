@@ -8,7 +8,10 @@ import re
 from pylib import constants
 
 _EXCLUSIONS = [
-    re.compile(r'.*OWNERS'),  # Should never be included.
+    # Misc files that exist to document directories
+    re.compile(r'.*METADATA'),
+    re.compile(r'.*OWNERS'),
+    re.compile(r'.*\.md'),
     re.compile(r'.*\.crx'),  # Chrome extension zip files.
     re.compile(r'.*/\.git.*'),  # Any '.git*' directories/files.
     re.compile(r'.*\.so'),  # Libraries packed into .apk.
@@ -16,6 +19,7 @@ _EXCLUSIONS = [
     re.compile(r'.*\.py'),  # Some test_support targets include python deps.
     re.compile(r'.*\.apk'),  # Should be installed separately.
     re.compile(r'.*\.jar'),  # Never need java intermediates.
+    re.compile(r'.*\.crx'),  # Used by download_from_google_storage.
     re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
 
     # Test filter files:

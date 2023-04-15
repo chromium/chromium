@@ -14,6 +14,10 @@
 
 #include "absl/synchronization/internal/kernel_timeout.h"
 
+#ifndef _WIN32
+#include <sys/types.h>
+#endif
+
 #include <algorithm>
 #include <chrono>  // NOLINT(build/c++11)
 #include <cstdint>
@@ -101,7 +105,7 @@ int64_t KernelTimeout::MakeAbsNanos() const {
     return kMaxNanos;
   }
 
-  int64_t nanos = RawNanos();
+  int64_t nanos = RawAbsNanos();
 
   if (is_relative_timeout()) {
     // We need to change epochs, because the relative timeout might be
@@ -128,7 +132,7 @@ int64_t KernelTimeout::InNanosecondsFromNow() const {
     return kMaxNanos;
   }
 
-  int64_t nanos = RawNanos();
+  int64_t nanos = RawAbsNanos();
   if (is_absolute_timeout()) {
     return std::max<int64_t>(nanos - absl::GetCurrentTimeNanos(), 0);
   }
@@ -142,6 +146,33 @@ struct timespec KernelTimeout::MakeAbsTimespec() const {
 struct timespec KernelTimeout::MakeRelativeTimespec() const {
   return absl::ToTimespec(absl::Nanoseconds(InNanosecondsFromNow()));
 }
+
+#ifndef _WIN32
+struct timespec KernelTimeout::MakeClockAbsoluteTimespec(clockid_t c) const {
+  if (!has_timeout()) {
+    return absl::ToTimespec(absl::Nanoseconds(kMaxNanos));
+  }
+
+  int64_t nanos = RawAbsNanos();
+  if (is_absolute_timeout()) {
+    nanos -= absl::GetCurrentTimeNanos();
+  } else {
+    nanos -= SteadyClockNow();
+  }
+
+  struct timespec now;
+  ABSL_RAW_CHECK(clock_gettime(c, &now) == 0, "clock_gettime() failed");
+  absl::Duration from_clock_epoch =
+      absl::DurationFromTimespec(now) + absl::Nanoseconds(nanos);
+  if (from_clock_epoch <= absl::ZeroDuration()) {
+    // Some callers have assumed that 0 means no timeout, so instead we return a
+    // time of 1 nanosecond after the epoch. For safety we also do not return
+    // negative values.
+    return absl::ToTimespec(absl::Nanoseconds(1));
+  }
+  return absl::ToTimespec(from_clock_epoch);
+}
+#endif
 
 KernelTimeout::DWord KernelTimeout::InMillisecondsFromNow() const {
   constexpr DWord kInfinite = std::numeric_limits<DWord>::max();

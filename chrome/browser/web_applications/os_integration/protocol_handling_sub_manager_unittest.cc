@@ -14,12 +14,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -60,7 +60,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -119,7 +119,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
 
  private:
   raw_ptr<FakeWebAppProvider> provider_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
@@ -318,7 +318,7 @@ TEST_P(ProtocolHandlingExecuteTest, Register) {
     if (AreProtocolsRegisteredWithOs()) {
       // Installation registers the protocol handlers.
       EXPECT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
+          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::ElementsAre(std::make_tuple(
               app_id, std::vector({protocol_handler.protocol}))));
     }
@@ -348,10 +348,11 @@ TEST_P(ProtocolHandlingExecuteTest, Unregister) {
     // TODO(crbug.com/1404819): Update tests to verify protocol handling
     // unregistration as part of update.
     // There should only be a single value for registration, as unregistration
-    // is a no-op for GetOsIntegrationTestOverride().
-    ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
-                testing::ElementsAre(std::make_tuple(
-                    app_id, std::vector({protocol_handler.protocol}))));
+    // is a no-op for OsIntegrationTestOverrideImpl::Get().
+    ASSERT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
+        testing::ElementsAre(
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
   }
 }
 
@@ -402,7 +403,7 @@ TEST_P(ProtocolHandlingExecuteTest, UpdateHandlers) {
       // TODO(crbug.com/1404819): Update tests to verify protocol handling
       // unregistration as part of update.
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
+          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::ElementsAre(
               std::make_tuple(
                   app_id, std::vector({protocol_handler_approved.protocol,
@@ -453,7 +454,7 @@ TEST_P(ProtocolHandlingExecuteTest, DataEqualNoOp) {
 #endif
     if (AreProtocolsRegisteredWithOs()) {
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
+          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::ElementsAre(std::make_tuple(
               app_id, std::vector({protocol_handler.protocol}))));
     }
@@ -487,11 +488,11 @@ TEST_P(ProtocolHandlingExecuteTest, MultipleSynchronizeEmptyData) {
       // These values are set by the ShortcutHandlingSubManager.
 #if BUILDFLAG(IS_WIN)
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
+          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::IsEmpty());
 #else
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
+          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
           testing::ElementsAre(
               std::make_tuple(app_id1, std::vector<std::string>()),
               std::make_tuple(app_id1, std::vector<std::string>())));

@@ -61,7 +61,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     private final @TabListMode int mMode;
-    private final OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+    @Nullable
+    private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
     private final int mLongPressDpThreshold;
     private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
@@ -87,8 +88,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     public TabGridItemTouchHelperCallback(Context context, TabListModel tabListModel,
             TabModelSelector tabModelSelector, TabActionListener tabClosedListener,
             TabGridDialogHandler tabGridDialogHandler, String componentName,
-            boolean actionsOnAllRelatedTabs, @TabListMode int mode,
-            @Nullable OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
+            boolean actionsOnAllRelatedTabs, @TabListMode int mode) {
         super(0, 0);
         mModel = tabListModel;
         mTabModelSelector = tabModelSelector;
@@ -98,9 +98,15 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mTabGridDialogHandler = tabGridDialogHandler;
         mContext = context;
         mMode = mode;
-        mOnLongPressTabItemEventListener = onLongPressTabItemEventListener;
         mLongPressDpThreshold = context.getResources().getDimensionPixelSize(
                 R.dimen.tab_selection_editor_longpress_entry_threshold);
+    }
+
+    /**
+     * @param listener the handler for longpress actions.
+     */
+    void setOnLongPressTabItemEventListener(OnLongPressTabItemEventListener listener) {
+        mOnLongPressTabItemEventListener = listener;
     }
 
     /**
@@ -301,11 +307,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     mShouldBlockAction = true;
                 }
 
-                // The following is the entry point for the longpress action for
-                // TabSelectionEditorV2.
                 if (mOnLongPressTabItemEventListener != null
-                        && TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY
-                                   .getValue()) {
+                        && TabUiFeatureUtilities.isTabSelectionEditorLongPressEntryEnabled()) {
                     int tabId = mModel.get(mSelectedTabIndex).model.get(TabProperties.TAB_ID);
                     mOnLongPressTabItemEventListener.onLongPressEvent(tabId);
                 }

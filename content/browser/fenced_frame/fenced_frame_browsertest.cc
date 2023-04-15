@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -4597,7 +4596,7 @@ class FencedFrameReportEventBrowserTest
   FencedFrameReportEventBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kAllowURNsInIframes, {}},
-         {kAttributionFencedFrameReportingBeacon, {}}},
+         {features::kAttributionFencedFrameReportingBeacon, {}}},
         {/* disabled_features */});
   }
 
@@ -5598,10 +5597,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 // response, the request is changed to a GET request. In this test case, the
 // reporting url is cross-origin.  There are preflight requests.
 // 1. A preflight request is sent to the reporting destination.
-// 2. A response with 302 redirect is sent back to the requester.
-// 3. A preflight request is sent to the redirected destination.
-// 4. A response with 200 OK is sent back to the requester.
-// 5. A GET request is sent to the redirected destination.
+// 2. A response with 200 OK is sent back to the requester.
+// 3. A POST request is sent to the reporting destination.
+// 4. A response with 302 redirect is sent back to the requester.
+// 5. A preflight request is sent to the redirected destination.
+// 6. A response with 200 OK is sent back to the requester.
+// 7. A GET request is sent to the redirected destination.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        CrossOriginReportEventPost302RedirectGet) {
   net::test_server::ControllableHttpResponse preflight_response(https_server(),
@@ -6129,7 +6130,7 @@ class FencedFrameAutomaticBeaconBrowserTest
   FencedFrameAutomaticBeaconBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAllowURNsInIframes,
-                              kAttributionFencedFrameReportingBeacon},
+                              features::kAttributionFencedFrameReportingBeacon},
         /*disabled_features=*/{});
   }
 

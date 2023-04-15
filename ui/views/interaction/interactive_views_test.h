@@ -197,6 +197,11 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
                                                      R (V::*property)() const,
                                                      M&& matcher);
 
+  // Scrolls `view` into the visible viewport if it is currently scrolled
+  // outside its container. The view must be otherwise present and visible.
+  // Has no effect if the view is not in a scroll container.
+  [[nodiscard]] static StepBuilder ScrollIntoView(ElementSpecifier view);
+
   // Indicates that the center point of the target element should be used for a
   // mouse move.
   struct CenterPoint {};

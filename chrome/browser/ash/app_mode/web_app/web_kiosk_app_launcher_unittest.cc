@@ -315,7 +315,8 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
         fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kWebKioskEnableLacros);
   }
 
   void LoginWebKioskUser() {

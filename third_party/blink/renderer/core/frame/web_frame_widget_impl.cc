@@ -149,6 +149,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/foundation_util.h"
 #include "third_party/blink/renderer/core/editing/substring_util.h"
 #include "third_party/blink/renderer/platform/fonts/mac/attributed_string_type_converter.h"
 #include "ui/base/mojom/attributed_string.mojom-blink.h"
@@ -661,8 +662,10 @@ void WebFrameWidgetImpl::GetStringAtPoint(const gfx::Point& point_in_local_root,
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
   NSAttributedString* string = SubstringUtil::AttributedWordAtPoint(
       this, point_in_local_root, baseline_point);
-  if (string)
-    attributed_string = ui::mojom::blink::AttributedString::From(string);
+  if (string) {
+    attributed_string =
+        ui::mojom::blink::AttributedString::From(base::mac::NSToCFCast(string));
+  }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);
 }
@@ -3532,7 +3535,10 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
           scrollable_area_element_id.GetInternalValue();
-      gesture_event->data.scroll_begin.main_thread_hit_tested = true;
+      gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
+          device == WebGestureDevice::kScrollbar
+              ? cc::MainThreadScrollingReason::kScrollbarScrolling
+              : cc::MainThreadScrollingReason::kFailedHitTest;
     }
 
     // Notifies TestWebFrameWidget of the injected event. Does nothing outside

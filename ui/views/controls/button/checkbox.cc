@@ -24,6 +24,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/animation/ink_drop_ripple.h"
@@ -39,6 +40,10 @@
 #include "ui/views/vector_icons.h"
 
 namespace views {
+
+namespace {
+constexpr gfx::Size kCheckboxInkDropSize = gfx::Size(24, 24);
+}
 
 class Checkbox::FocusRingHighlightPathGenerator
     : public views::HighlightPathGenerator {
@@ -109,20 +114,19 @@ Checkbox::Checkbox(const std::u16string& label,
 
     InkDrop::Get(image())->SetCreateHighlightCallback(base::BindRepeating(
         [](ImageView* host) {
-          // Highlight radius is set to match the size of the ripple, calculated
-          // by min(large_size_.width(), large_size_.height()) / 2) = 14
+          int radius =
+              InkDropHost::GetLargeSize(kCheckboxInkDropSize).width() / 2;
           return std::make_unique<views::InkDropHighlight>(
               gfx::PointF(host->GetContentsBounds().CenterPoint()),
               std::make_unique<CircleLayerDelegate>(
-                  views::InkDrop::Get(host)->GetBaseColor(), 14));
+                  views::InkDrop::Get(host)->GetBaseColor(), radius));
         },
         image()));
 
     InkDrop::Get(image())->SetCreateRippleCallback(base::BindRepeating(
         [](ImageView* host) {
-          // The "small" size is 21dp, the large size is 1.33 * 21dp = 28dp.
           return InkDrop::Get(host)->CreateSquareRipple(
-              host->GetContentsBounds().CenterPoint(), gfx::Size(21, 21));
+              host->GetContentsBounds().CenterPoint(), kCheckboxInkDropSize);
         },
         image()));
 

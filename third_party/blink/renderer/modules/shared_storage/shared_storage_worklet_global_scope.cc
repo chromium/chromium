@@ -4,14 +4,21 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -19,13 +26,21 @@
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_run_operation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_select_url_operation.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
+#include "third_party/blink/renderer/modules/crypto/crypto.h"
+#include "third_party/blink/renderer/modules/shared_storage/private_aggregation.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_operation_definition.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_thread.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
 
@@ -225,7 +240,12 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
                          thread,
-                         /*create_microtask_queue=*/true) {}
+                         /*create_microtask_queue=*/true) {
+  ContextFeatureSettings::From(
+      this, ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnablePrivateAggregationInSharedStorage(
+          ShouldDefinePrivateAggregationInSharedStorage());
+}
 
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 
@@ -286,12 +306,39 @@ void SharedStorageWorkletGlobalScope::OnConsoleApiMessage(
   WorkerOrWorkletGlobalScope::OnConsoleApiMessage(level, message, location);
 }
 
+void SharedStorageWorkletGlobalScope::NotifyContextDestroyed() {
+  if (private_aggregation_) {
+    CHECK(ShouldDefinePrivateAggregationInSharedStorage());
+    private_aggregation_->OnWorkletDestroyed();
+  }
+
+  WorkletGlobalScope::NotifyContextDestroyed();
+}
+
+bool SharedStorageWorkletGlobalScope::FeatureEnabled(
+    OriginTrialFeature feature) const {
+  // The shared storage worklet infrastructure doesn't yet support checking the
+  // origin trial features. We'll go over each feature that can potentially be
+  // checked (e.g. IDL attribute/interface exposures conditioned on
+  // RuntimeEnabled=XXX), and replicate their status manually.
+
+  // The worklet must have been created from a context eligible for shared
+  // storage. It's okay to treat `kSharedStorageAPI` as enabled.
+  if (feature == OriginTrialFeature::kSharedStorageAPI) {
+    return true;
+  }
+
+  NOTREACHED_NORETURN() << "Attempted to check OriginTrialFeature: "
+                        << static_cast<int32_t>(feature);
+}
+
 void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(shared_storage_);
+  visitor->Trace(private_aggregation_);
+  visitor->Trace(crypto_);
   visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
-  visitor->Trace(private_aggregation_host_);
   WorkletGlobalScope::Trace(visitor);
   Supplementable<SharedStorageWorkletGlobalScope>::Trace(visitor);
 }
@@ -300,7 +347,6 @@ void SharedStorageWorkletGlobalScope::Initialize(
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
         client,
     bool private_aggregation_permissions_policy_allowed,
-    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     const absl::optional<std::u16string>& embedder_context) {
   client_.Bind(
       CrossVariantMojoAssociatedRemote<
@@ -309,11 +355,6 @@ void SharedStorageWorkletGlobalScope::Initialize(
       GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
-  if (private_aggregation_host) {
-    private_aggregation_host_.Bind(
-        std::move(private_aggregation_host),
-        GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
-  }
 
   if (embedder_context) {
     embedder_context_ = WTF::String(embedder_context->c_str());
@@ -339,6 +380,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     RunURLSelectionOperationCallback callback) {
   std::string error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
@@ -349,6 +391,12 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
         /*length=*/0);
     return;
   }
+
+  base::OnceClosure operation_completion_cb =
+      StartOperation(std::move(private_aggregation_host));
+  mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+      combined_operation_completion_cb =
+          std::move(callback).Then(std::move(operation_completion_cb));
 
   DCHECK(operation_definition);
 
@@ -376,20 +424,21 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Value> exception = try_catch.Exception();
-    std::move(callback).Run(/*success=*/false,
-                            ExceptionToString(script_state, exception),
-                            /*index=*/0);
+    std::move(combined_operation_completion_cb)
+        .Run(/*success=*/false, ExceptionToString(script_state, exception),
+             /*index=*/0);
     return;
   }
 
   if (result.IsNothing()) {
-    std::move(callback).Run(/*success=*/false, "Internal error.",
-                            /*index=*/0);
+    std::move(combined_operation_completion_cb)
+        .Run(/*success=*/false, "Internal error.",
+             /*index=*/0);
     return;
   }
 
   auto* unresolved_request = MakeGarbageCollected<UnresolvedSelectURLRequest>(
-      urls.size(), std::move(callback));
+      urls.size(), std::move(combined_operation_completion_cb));
 
   ScriptPromise promise = result.FromJust();
 
@@ -406,6 +455,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 void SharedStorageWorkletGlobalScope::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     RunOperationCallback callback) {
   std::string error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
@@ -415,6 +465,12 @@ void SharedStorageWorkletGlobalScope::RunOperation(
         /*success=*/false, error_message);
     return;
   }
+
+  base::OnceClosure operation_completion_cb =
+      StartOperation(std::move(private_aggregation_host));
+  mojom::SharedStorageWorkletService::RunOperationCallback
+      combined_operation_completion_cb =
+          std::move(callback).Then(std::move(operation_completion_cb));
 
   DCHECK(operation_definition);
 
@@ -437,18 +493,19 @@ void SharedStorageWorkletGlobalScope::RunOperation(
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Value> exception = try_catch.Exception();
-    std::move(callback).Run(/*success=*/false,
-                            ExceptionToString(script_state, exception));
+    std::move(combined_operation_completion_cb)
+        .Run(/*success=*/false, ExceptionToString(script_state, exception));
     return;
   }
 
   if (result.IsNothing()) {
-    std::move(callback).Run(/*success=*/false, "Internal error.");
+    std::move(combined_operation_completion_cb)
+        .Run(/*success=*/false, "Internal error.");
     return;
   }
 
-  auto* unresolved_request =
-      MakeGarbageCollected<UnresolvedRunRequest>(std::move(callback));
+  auto* unresolved_request = MakeGarbageCollected<UnresolvedRunRequest>(
+      std::move(combined_operation_completion_cb));
 
   ScriptPromise promise = result.FromJust();
 
@@ -479,13 +536,50 @@ SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(
   // `sharedStorage`: on the browser side, we already enforce that `addModule()`
   // can only be called once, so there's no way to expose the storage data to
   // the associated `Document`.
-  if (shared_storage_) {
-    return shared_storage_.Get();
+  if (!shared_storage_) {
+    shared_storage_ = MakeGarbageCollected<SharedStorage>();
   }
 
-  shared_storage_ = MakeGarbageCollected<SharedStorage>();
-
   return shared_storage_.Get();
+}
+
+PrivateAggregation* SharedStorageWorkletGlobalScope::privateAggregation(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  CHECK(ShouldDefinePrivateAggregationInSharedStorage());
+
+  if (!add_module_finished_) {
+    CHECK(!private_aggregation_);
+
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "privateAggregation cannot be accessed during addModule().");
+
+    return nullptr;
+  }
+
+  return GetOrCreatePrivateAggregation();
+}
+
+Crypto* SharedStorageWorkletGlobalScope::crypto(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!crypto_) {
+    crypto_ = MakeGarbageCollected<Crypto>();
+  }
+
+  return crypto_.Get();
+}
+
+// Returns the unique ID for the currently running operation.
+int64_t SharedStorageWorkletGlobalScope::GetCurrentOperationId() {
+  ScriptState* script_state = ScriptController()->GetScriptState();
+  DCHECK(script_state);
+
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  v8::Local<v8::Value> data = context->GetContinuationPreservedEmbedderData();
+  return data.As<v8::BigInt>()->Int64Value();
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
@@ -580,6 +674,52 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
   }
 
   return true;
+}
+
+base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
+    mojo::PendingRemote<mojom::PrivateAggregationHost>
+        private_aggregation_host) {
+  CHECK(add_module_finished_);
+  CHECK_EQ(!!private_aggregation_host,
+           ShouldDefinePrivateAggregationInSharedStorage());
+
+  int64_t operation_id = operation_counter_++;
+
+  ScriptState* script_state = ScriptController()->GetScriptState();
+  DCHECK(script_state);
+
+  v8::HandleScope handle_scope(script_state->GetIsolate());
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  context->SetContinuationPreservedEmbedderData(
+      v8::BigInt::New(context->GetIsolate(), operation_id));
+
+  if (ShouldDefinePrivateAggregationInSharedStorage()) {
+    GetOrCreatePrivateAggregation()->OnOperationStarted(
+        operation_id, std::move(private_aggregation_host));
+  }
+
+  return WTF::BindOnce(&SharedStorageWorkletGlobalScope::FinishOperation,
+                       WrapPersistent(this), operation_id);
+}
+
+void SharedStorageWorkletGlobalScope::FinishOperation(int64_t operation_id) {
+  if (ShouldDefinePrivateAggregationInSharedStorage()) {
+    CHECK(private_aggregation_);
+    private_aggregation_->OnOperationFinished(operation_id);
+  }
+}
+
+PrivateAggregation*
+SharedStorageWorkletGlobalScope::GetOrCreatePrivateAggregation() {
+  CHECK(ShouldDefinePrivateAggregationInSharedStorage());
+  CHECK(add_module_finished_);
+
+  if (!private_aggregation_) {
+    private_aggregation_ = MakeGarbageCollected<PrivateAggregation>(this);
+  }
+
+  return private_aggregation_.Get();
 }
 
 }  // namespace blink

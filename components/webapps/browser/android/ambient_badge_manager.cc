@@ -165,6 +165,9 @@ bool AmbientBadgeManager::HasSufficientEngagementForAmbientBadge() {
 }
 
 bool AmbientBadgeManager::ShouldSuppressAmbientBadge() {
+  LOG(ERROR) << "Enabled"
+             << base::FeatureList::IsEnabled(
+                    features::kAmbientBadgeSuppressFirstVisit);
   if (!base::FeatureList::IsEnabled(
           features::kAmbientBadgeSuppressFirstVisit)) {
     return false;

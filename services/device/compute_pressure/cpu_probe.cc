@@ -53,7 +53,7 @@ CpuProbe::CpuProbe(
     base::RepeatingCallback<void(mojom::PressureState)> sampling_callback)
     : sampling_interval_(sampling_interval),
       sampling_callback_(std::move(sampling_callback)) {
-  DCHECK(sampling_callback_);
+  CHECK(sampling_callback_);
 }
 
 CpuProbe::~CpuProbe() {
@@ -67,7 +67,7 @@ void CpuProbe::EnsureStarted() {
     return;
   }
 
-  DCHECK(!got_probe_baseline_) << "got_probe_baseline_ incorrectly reset";
+  CHECK(!got_probe_baseline_) << "got_probe_baseline_ incorrectly reset";
 
   // Schedule the first CpuProbe update right away. This update result will
   // not be reported, thanks to the accounting done by `got_probe_baseline_`.

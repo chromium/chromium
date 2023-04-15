@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   EXPECT_TRUE(error_sheet->AcceleratorPressed(
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,

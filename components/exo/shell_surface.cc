@@ -158,8 +158,11 @@ void ShellSurface::AcknowledgeConfigure(uint32_t serial) {
     // Set the resize direction that will be applied when Commit() is called.
     pending_resize_component_ = config->resize_component;
 
-    if (config->serial == serial)
+    if (config->serial == serial) {
+      // `config` needs to stay alive until the next Commit() call.
+      config_waiting_for_commit_ = std::move(config);
       break;
+    }
   }
 
   for (auto& observer : observers_)
@@ -670,6 +673,8 @@ bool ShellSurface::OnPreWidgetCommit() {
 
   // Update resize direction to reflect acknowledged configure requests.
   resize_component_ = pending_resize_component_;
+
+  config_waiting_for_commit_.reset();
 
   return true;
 }

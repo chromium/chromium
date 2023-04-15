@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+
 // Delegate for the passwords bottom sheet.
 @protocol PasswordSuggestionBottomSheetDelegate
 
@@ -18,6 +20,11 @@
 // after the bottom sheet has been dismissed.
 - (void)refocus;
 
+// Loads the favicon associated with the provided index path.
+// Defaults to the globe symbol if no URL is found.
+- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
+           faviconBlockHandler:(FaviconLoader::FaviconAttributesCompletionBlock)
+                                   faviconLoadedBlock;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_

@@ -383,6 +383,16 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
   StopMirroring();
 }
 
+IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, PauseSession) {
+  EnableAccessCodeCast();
+  StartTabMirroring();
+  GetVideoCaptureHost();
+  StartVideoCapturing();
+  PauseMirroring();
+  ResumeMirroring();
+  StopMirroring();
+}
+
 class CastMirroringServiceHostBrowserTestTabSwitcher
     : public CastMirroringServiceHostBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -439,41 +449,6 @@ IN_PROC_BROWSER_TEST_P(CastMirroringServiceHostBrowserTestTabSwitcher,
   SwitchTabSource();
   GetVideoCaptureHost();
   StartVideoCapturing();
-  StopMirroring();
-}
-
-class CastMirroringServiceHostBrowserTestFreezeSession
-    : public CastMirroringServiceHostBrowserTest {
- public:
-  CastMirroringServiceHostBrowserTestFreezeSession() {
-    feature_list_.InitWithFeatures({features::kAccessCodeCastFreezeUI}, {});
-  }
-
-  CastMirroringServiceHostBrowserTestFreezeSession(
-      const CastMirroringServiceHostBrowserTestFreezeSession&) = delete;
-  CastMirroringServiceHostBrowserTestFreezeSession& operator=(
-      const CastMirroringServiceHostBrowserTestFreezeSession&) = delete;
-
-  ~CastMirroringServiceHostBrowserTestFreezeSession() override = default;
-
-  void VerifyEnabledFeatures() {
-    ASSERT_TRUE(
-        base::FeatureList::IsEnabled(features::kAccessCodeCastFreezeUI));
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTestFreezeSession,
-                       FreezeSession) {
-  VerifyEnabledFeatures();
-  EnableAccessCodeCast();
-  StartTabMirroring();
-  GetVideoCaptureHost();
-  StartVideoCapturing();
-  PauseMirroring();
-  ResumeMirroring();
   StopMirroring();
 }
 

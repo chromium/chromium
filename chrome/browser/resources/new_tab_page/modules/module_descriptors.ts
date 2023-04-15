@@ -72,7 +72,7 @@ export async function counterfactualLoad() {
   // clusters module without rendering it.
   if (!loadTimeData.getBoolean('historyClustersModuleEnabled') &&
       loadTimeData.getBoolean('historyClustersModuleLoadEnabled')) {
-    HistoryClustersProxyImpl.getInstance().handler.getCluster();
+    HistoryClustersProxyImpl.getInstance().handler.getClusters();
   }
 }
 counterfactualLoad();

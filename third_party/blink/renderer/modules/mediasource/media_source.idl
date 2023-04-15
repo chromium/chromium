@@ -37,7 +37,7 @@ enum EndOfStreamError {
 
 [
     ActiveScriptWrappable,
-    Exposed(Window MediaSourceStable, DedicatedWorker MediaSourceInWorkers)
+    Exposed=(Window, DedicatedWorker)
 ] interface MediaSource : EventTarget {
     [CallWith=ExecutionContext] constructor();
     // All the source buffers created by this object.
@@ -76,9 +76,8 @@ enum EndOfStreamError {
     // https://github.com/w3c/media-source/pull/306 and
     // https://github.com/w3c/media-source/pull/317.
     [
-        RuntimeEnabled=MediaSourceInWorkersUsingHandle,
         MeasureAs=MediaSourceGetHandle,
-        Exposed(DedicatedWorker MediaSourceInWorkers),
+        Exposed=DedicatedWorker,
         SameObject
     ] readonly attribute MediaSourceHandle handle;
 
@@ -92,5 +91,5 @@ enum EndOfStreamError {
     // support usage of the MSE API from dedicated worker contexts. See also
     // https://github.com/w3c/media-source/issues/175 and
     // https://crbug.com/878133.
-    [RuntimeEnabled=MediaSourceInWorkers, CallWith=ExecutionContext] static readonly attribute boolean canConstructInDedicatedWorker;
+    [CallWith=ExecutionContext] static readonly attribute boolean canConstructInDedicatedWorker;
 };

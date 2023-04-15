@@ -59,7 +59,6 @@ class EyeDropper final : public ScriptWrappable {
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
   Member<ScriptPromiseResolver> resolver_;
-  Member<AbortSignal> signal_;
 };
 
 }  // namespace blink

@@ -136,7 +136,7 @@ void PlaybackCommandForwardingRenderer::SetPlaybackRate(double playback_rate) {
 void PlaybackCommandForwardingRenderer::SetVolume(float volume) {}
 
 base::TimeDelta PlaybackCommandForwardingRenderer::GetMediaTime() {
-  return real_renderer_->GetMediaTime();
+  return real_renderer_ ? real_renderer_->GetMediaTime() : base::TimeDelta();
 }
 
 media::RendererType PlaybackCommandForwardingRenderer::GetRendererType() {

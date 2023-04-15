@@ -8,3 +8,4 @@
 -SharedStorageRunOperationTest*
 -SharedStorageWorkletGlobalScopeTest*
 -SharedStoragePrivateAggregationTest*
+-SharedStoragePrivateAggregationPermissionsPolicyDisabledTest*

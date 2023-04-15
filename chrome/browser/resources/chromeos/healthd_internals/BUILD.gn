@@ -9,14 +9,15 @@ assert(is_chromeos_ash)
 build_webui("build") {
   grd_prefix = "healthd_internals"
 
-  static_files = [
-    "healthd_internals.html",
-    "healthd_internals.css",
-  ]
+  static_files = [ "healthd_internals.html" ]
 
-  non_web_component_files = [ "healthd_internals.ts" ]
+  css_files = [ "healthd_internals_shared.css" ]
+
+  web_component_files = [ "app.ts" ]
 
   ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

@@ -116,50 +116,22 @@ protocol::Response AssertIDBFactory(LocalDOMWindow* dom_window,
   return protocol::Response::Success();
 }
 
-class GetDatabaseNamesCallback final : public mojom::blink::IDBCallbacks {
- public:
-  explicit GetDatabaseNamesCallback(
-      std::unique_ptr<RequestDatabaseNamesCallback> request_callback)
-      : request_callback_(std::move(request_callback)) {}
-  ~GetDatabaseNamesCallback() override = default;
-
-  void Error(mojom::blink::IDBException code, const String& message) override {
-    request_callback_->sendFailure(
+void OnGotDatabaseNames(
+    std::unique_ptr<RequestDatabaseNamesCallback> request_callback,
+    Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
+    mojom::blink::IDBErrorPtr error) {
+  if (error) {
+    request_callback->sendFailure(
         protocol::Response::ServerError("Could not obtain database names."));
+    return;
   }
 
-  void SuccessNamesAndVersionsList(
-      Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions) override {
-    auto database_names = std::make_unique<protocol::Array<String>>();
-    for (const auto& name_and_version : names_and_versions)
-      database_names->emplace_back(name_and_version->name);
-    request_callback_->sendSuccess(std::move(database_names));
+  auto database_names = std::make_unique<protocol::Array<String>>();
+  for (const auto& name_and_version : names_and_versions) {
+    database_names->emplace_back(name_and_version->name);
   }
-
-  void SuccessDatabase(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_backend,
-      const IDBDatabaseMetadata& metadata) override {
-    NOTREACHED();
-  }
-
-  void SuccessInteger(int64_t value) override { NOTREACHED(); }
-
-  void Success() override { NOTREACHED(); }
-
-  void Blocked(int64_t old_version) override { NOTREACHED(); }
-
-  void UpgradeNeeded(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
-      int64_t old_version,
-      mojom::blink::IDBDataLoss data_loss,
-      const String& data_loss_message,
-      const IDBDatabaseMetadata& metadata) override {
-    NOTREACHED();
-  }
-
- private:
-  std::unique_ptr<RequestDatabaseNamesCallback> request_callback_;
-};
+  request_callback->sendSuccess(std::move(database_names));
+}
 
 class DeleteCallback final : public NativeEventListener {
  public:
@@ -806,9 +778,9 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
     request_callback->sendFailure(protocol::Response::InternalError());
     return;
   }
-  idb_factory->GetDatabaseInfo(
+  idb_factory->GetDatabaseInfoForDevTools(
       script_state,
-      std::make_unique<GetDatabaseNamesCallback>(std::move(request_callback)));
+      WTF::BindOnce(&OnGotDatabaseNames, std::move(request_callback)));
 }
 
 void InspectorIndexedDBAgent::requestDatabase(

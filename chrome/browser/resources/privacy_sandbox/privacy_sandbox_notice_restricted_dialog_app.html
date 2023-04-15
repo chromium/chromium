@@ -1,0 +1,33 @@
+<style include="cr-shared-style shared-style"></style>
+
+<div fill-content role="main">
+  <div class="content-area custom-scrollbar" scrollable tabindex="-1">
+    <div class="header">
+      <img class="logo" alt="">
+      <h1>$i18n{m1NoticeRestrictedTitle}</h1>
+    </div>
+    <div class="section cr-secondary-text">
+      $i18n{m1NoticeRestrictedDescription1}
+    </div>
+    <div class="section cr-secondary-text">
+      $i18n{m1NoticeRestrictedDescription2}
+    </div>
+    <div class="banner">
+      <!-- TODO(b/277180533): finalize images and text. -->
+      <img class="topics-banner" alt="">
+    </div>
+    <div class="section cr-secondary-text">
+      $i18n{m1NoticeRestrictedDescription3}
+    </div>
+    <div class="buttons-container">
+      <!-- TODO(b/277180678): re-evaluate reuse of the settings event. -->
+      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+        $i18n{m1NoticeRestrictedSettingsButton}
+      </cr-button>
+      <!-- TODO(b/277180678): handle acknowledgement event. -->
+      <cr-button id="ackButton" class="action-button">
+        $i18n{m1NoticeRestrictedAckButton}
+      </cr-button>
+    </div>
+  </div>
+</div>

@@ -180,22 +180,21 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
       std::make_unique<base::MockOneShotTimer>();
   demo_session->SetTimerForTesting(std::move(timer));
 
-  EXPECT_EQ(0, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  EXPECT_EQ(0, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
 
   ASSERT_TRUE(FinishResourcesComponentLoad(
       base::FilePath(kTestDemoModeResourcesMountPoint)));
   // Wait for splash screen image to load and timer to be set
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
 
   TestingProfile* profile = LoginDemoUser();
   scoped_refptr<const extensions::Extension> screensaver_app =
@@ -213,13 +212,15 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
       screensaver_app.get());
   demo_session->OnAppWindowActivated(app_window);
   // The splash screen is not removed until active session starts.
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(1,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
   // The timer is cleared after splash screen is removed.
   EXPECT_FALSE(demo_session->GetTimerForTesting());
 
@@ -234,30 +235,30 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
       std::make_unique<base::MockOneShotTimer>();
   demo_session->SetTimerForTesting(std::move(timer));
 
-  EXPECT_EQ(0, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  EXPECT_EQ(0, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
 
   ASSERT_TRUE(FinishResourcesComponentLoad(
       base::FilePath(kTestDemoModeResourcesMountPoint)));
   // Wait for splash screen image to load and timer to be set
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(0,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
 
   base::MockOneShotTimer* timer_ptr =
       static_cast<base::MockOneShotTimer*>(demo_session->GetTimerForTesting());
   ASSERT_TRUE(timer_ptr);
   timer_ptr->Fire();
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(1,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
 
   // Launching the screensaver will not trigger splash screen removal anymore.
   TestingProfile* profile = LoginDemoUser();
@@ -275,14 +276,16 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
       std::make_unique<ChromeAppDelegate>(profile, true /* keep_alive */),
       screensaver_app.get());
   demo_session->OnAppWindowActivated(app_window);
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(1,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
   // Entering active session will not trigger splash screen removal anymore.
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
-  EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
-  EXPECT_EQ(1,
-            test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
 
   app_window->OnNativeClose();
 }

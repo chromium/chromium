@@ -654,14 +654,14 @@ TEST(X509CertificateTest, Cache) {
   bssl::UniquePtr<CRYPTO_BUFFER> thawte_cert_handle;
 
   // Add a single certificate to the certificate cache.
-  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
+  google_cert_handle = x509_util::CreateCryptoBuffer(google_der);
   ASSERT_TRUE(google_cert_handle);
   scoped_refptr<X509Certificate> cert1(
       X509Certificate::CreateFromBuffer(std::move(google_cert_handle), {}));
   ASSERT_TRUE(cert1);
 
   // Add the same certificate, but as a new handle.
-  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
+  google_cert_handle = x509_util::CreateCryptoBuffer(google_der);
   ASSERT_TRUE(google_cert_handle);
   scoped_refptr<X509Certificate> cert2(
       X509Certificate::CreateFromBuffer(std::move(google_cert_handle), {}));
@@ -677,8 +677,8 @@ TEST(X509CertificateTest, Cache) {
   // Add the same certificate, but this time with an intermediate. This
   // should result in the intermediate being cached. Note that this is not
   // a legitimate chain, but is suitable for testing.
-  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
-  thawte_cert_handle = X509Certificate::CreateCertBufferFromBytes(thawte_der);
+  google_cert_handle = x509_util::CreateCryptoBuffer(google_der);
+  thawte_cert_handle = x509_util::CreateCryptoBuffer(thawte_der);
   ASSERT_TRUE(google_cert_handle);
   ASSERT_TRUE(thawte_cert_handle);
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -697,10 +697,10 @@ TEST(X509CertificateTest, Cache) {
 
 TEST(X509CertificateTest, Pickle) {
   bssl::UniquePtr<CRYPTO_BUFFER> google_cert_handle =
-      X509Certificate::CreateCertBufferFromBytes(google_der);
+      x509_util::CreateCryptoBuffer(google_der);
   ASSERT_TRUE(google_cert_handle);
   bssl::UniquePtr<CRYPTO_BUFFER> thawte_cert_handle =
-      X509Certificate::CreateCertBufferFromBytes(thawte_der);
+      x509_util::CreateCryptoBuffer(thawte_der);
   ASSERT_TRUE(thawte_cert_handle);
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -738,7 +738,7 @@ TEST(X509CertificateTest, IntermediateCertificates) {
 
   bssl::UniquePtr<CRYPTO_BUFFER> google_handle;
   // Create object with no intermediates:
-  google_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
+  google_handle = x509_util::CreateCryptoBuffer(google_der);
   scoped_refptr<X509Certificate> cert1;
   cert1 =
       X509Certificate::CreateFromBuffer(bssl::UpRef(google_handle.get()), {});

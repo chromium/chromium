@@ -377,6 +377,26 @@ class MediaCodecUtil {
     }
 
     /**
+     * Create MediaCodec decoder with the given name.
+     * @param mime MIME type of the media.
+     * @param decoderName name of the decoder.
+     * @return CodecCreationInfo object
+     */
+    static CodecCreationInfo createDecoderByName(String mime, String decoderName) {
+        CodecCreationInfo result = new CodecCreationInfo();
+        try {
+            result.mediaCodec = MediaCodec.createByCodecName(decoderName);
+            result.supportsAdaptivePlayback =
+                    codecSupportsAdaptivePlayback(result.mediaCodec, mime);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to create MediaCodec by decoder name %s", decoderName, e);
+            result.mediaCodec = null;
+        }
+
+        return result;
+    }
+
+    /**
      * This is a way to handle misbehaving devices.
      * Some devices cannot decode certain codecs, while other codecs work fine.
      *

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Dyma rai adnoddau defnyddiol eraill:</translation>
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
+<translation id="1923388006036088459">Lliwiau acen</translation>
 <translation id="1947737735496445907">Argraffwyd</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Mae angen APN diofyn</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3969602104473960991">Cyfrinair ChromeOS wedi'i ddiweddaru</translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
+<translation id="3974175076798940554">Mae asedau unigryw Chromebook Plus ar gael nawr</translation>
 <translation id="39823212440917567">Bydd tasgau argraffu sy'n hŷn na <ph name="NUMBER_OF_DAYS" /> o ddyddiau yn cael eu tynnu</translation>
 <translation id="3993704782688964914">Mae eich <ph name="DEVICE_NAME" /> bellach yn gyfredol</translation>
 <translation id="4003384961948020559">Wedi methu - Mae'r allbwn yn llawn</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Ychwanegu cyfrif at fewngofnodi o sawl cyfrif. Gellir cael mynediad at bob cyfrif sydd wedi'i fewngofnodi heb gyfrinair, felly dim ond gyda chyfrifon dibynadwy y dylid defnyddio'r nodwedd hon.</translation>
 <translation id="8364946094152050673">Gweinyddion enw gwag</translation>
 <translation id="8372477600026034341">Gwesteiwyr ychwanegol</translation>
+<translation id="8373046809163484087">Defnyddiwch setiau lliw sy'n cyd-fynd â'ch papur wal</translation>
 <translation id="8380114448424469341">Docio ffenestr ar hanner <ph name="DIRECTION" /> y sgrîn</translation>
 <translation id="8395584934117017006">Mae'r <ph name="DEVICE_TYPE" /> wedi'i reoli gan y sefydliad</translation>
 <translation id="8398927464629426868">Y gyfradd y mae'r ddyfais yn gwefru neu'n dadwefru</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8503836310948963452">Ychydig funudau yn rhagor...</translation>
 <translation id="8508640263392900755">Manylion APN</translation>
+<translation id="8522687886059337719">Mae bellach gennych fynediad at <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bapurau wal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ac <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />arbedwr sgrîn<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mae'n bosib y bydd eich cludwr yn gofyn am gysylltu â'ch rhwydwaith. Cysylltwch â'ch cludwr am fanylion.</translation>

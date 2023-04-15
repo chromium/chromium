@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -21,6 +22,10 @@ namespace {
 // directly in the toolbar next to the omnibox.
 constexpr const char kPrefShowAccessRequestsInToolbar[] =
     "show_access_requests_in_toolbar";
+
+// The blocked actions that require a page refresh to run.
+constexpr int kRefreshRequiredActionsMask =
+    BLOCKED_ACTION_WEB_REQUEST | BLOCKED_ACTION_SCRIPT_AT_START;
 
 }  // namespace
 
@@ -79,19 +84,76 @@ void SitePermissionsHelper::UpdateSiteAccess(
     const Extension& extension,
     content::WebContents* web_contents,
     PermissionsManager::UserSiteAccess new_access) {
-  ExtensionActionRunner* runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!runner) {
-    return;
-  }
-
   auto current_access = PermissionsManager::Get(profile_)->GetUserSiteAccess(
       extension, web_contents->GetLastCommittedURL());
   if (new_access == current_access) {
     return;
   }
 
-  runner->HandlePageAccessModified(&extension, current_access, new_access);
+  const GURL& current_url = web_contents->GetLastCommittedURL();
+  ScriptingPermissionsModifier modifier(profile_, &extension);
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
+  DCHECK(permissions_manager->CanAffectExtension(extension));
+
+  switch (new_access) {
+    case PermissionsManager::UserSiteAccess::kOnClick:
+      if (permissions_manager->HasBroadGrantedHostPermissions(extension)) {
+        modifier.RemoveBroadGrantedHostPermissions();
+      }
+      // Note: SetWithholdHostPermissions() is a no-op if host permissions are
+      // already being withheld.
+      modifier.SetWithholdHostPermissions(true);
+      if (permissions_manager->HasGrantedHostPermission(extension,
+                                                        current_url)) {
+        modifier.RemoveGrantedHostPermission(current_url);
+      }
+      break;
+    case PermissionsManager::UserSiteAccess::kOnSite:
+      if (permissions_manager->HasBroadGrantedHostPermissions(extension)) {
+        modifier.RemoveBroadGrantedHostPermissions();
+      }
+      // Note: SetWithholdHostPermissions() is a no-op if host permissions are
+      // already being withheld.
+      modifier.SetWithholdHostPermissions(true);
+      if (!permissions_manager->HasGrantedHostPermission(extension,
+                                                         current_url)) {
+        modifier.GrantHostPermission(current_url);
+      }
+      break;
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
+      modifier.SetWithholdHostPermissions(false);
+      break;
+  }
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!runner) {
+    return;
+  }
+
+  // This is to determine when to show the reload page dialog if revoking
+  // permissions, or increasing permissions with pending actions that mandate a
+  // page refresh. While revoking permissions doesn't necessarily mandate a page
+  // refresh, it is complicated to determine when an extension has affected the
+  // page. Showing a reload page bubble after the user blocks the extension re
+  // enforces the user confidence on blocking the extension. Also, this
+  // scenario should not be that common and therefore hopefully is not too
+  // noisy.
+  bool revoking_current_site_permissions =
+      new_access == PermissionsManager::UserSiteAccess::kOnClick;
+  int blocked_actions = runner->GetBlockedActions(extension.id());
+  bool reload_needed = revoking_current_site_permissions ||
+                       PageNeedsRefreshToRun(blocked_actions);
+
+  if (reload_needed) {
+    runner->ShowReloadPageBubbleWithReloadPageCallback(extension.id());
+  } else if (blocked_actions != BLOCKED_ACTION_NONE) {
+    runner->RunBlockedActions(&extension);
+  }
+}
+
+bool SitePermissionsHelper::PageNeedsRefreshToRun(int blocked_actions) {
+  return blocked_actions & kRefreshRequiredActionsMask;
 }
 
 void SitePermissionsHelper::UpdateUserSiteSettings(

@@ -265,9 +265,7 @@ class WebRtcVideoDisplayPerfBrowserTest
     test::SleepInJavascript(left_tab, 5000);
 
     const std::string webrtc_internals_stats_json = ExecuteJavascript(
-        "window.domAutomationController.send("
-        "    JSON.stringify(peerConnectionDataStore));",
-        webrtc_internals_tab);
+        "JSON.stringify(peerConnectionDataStore);", webrtc_internals_tab);
     webrtc_decode_latencies_ =
         ParseGoogMaxDecodeFromWebrtcInternalsTab(webrtc_internals_stats_json);
     chrome::CloseWebContents(browser(), webrtc_internals_tab, false);

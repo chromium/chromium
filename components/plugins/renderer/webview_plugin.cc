@@ -264,7 +264,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
     : plugin_(plugin),
       agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateWebAgentGroupScheduler()) {
+              .CreateWebAgentGroupScheduler()) {
   web_view_ = WebView::Create(
       /*client=*/this,
       /*is_hidden=*/false,

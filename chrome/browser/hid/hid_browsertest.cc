@@ -135,9 +135,6 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
         std::move(fake_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    display_service_for_profile_notification_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
-
 #if BUILDFLAG(IS_CHROMEOS)
     display_service_for_system_notification_ =
         std::make_unique<NotificationDisplayServiceTester>(
@@ -195,33 +192,6 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 
   device::FakeHidManager* hid_manager() { return &hid_manager_; }
 
-  void SimulateClickOnDeviceOpenedNotification(Browser* browser,
-                                               const Extension* extension) {
-    std::string expected_link_destination(chrome::kChromeUIContentSettingsURL);
-    std::string origin_string = extension->origin().Serialize();
-    url::RawCanonOutputT<char> percent_encoded_origin;
-    url::EncodeURIComponent(origin_string.c_str(), origin_string.length(),
-                            &percent_encoded_origin);
-    expected_link_destination = chrome::kChromeUISiteDetailsPrefixURL +
-                                std::string(percent_encoded_origin.data(),
-                                            percent_encoded_origin.length());
-
-    auto* profile = browser->profile();
-    auto expected_notification_id =
-        base::StringPrintf("webhid.opened.%s.%s", profile->UniqueId().c_str(),
-                           extension->origin().host().c_str());
-    auto maybe_notification =
-        display_service_for_profile_notification_->GetNotification(
-            expected_notification_id);
-    EXPECT_TRUE(maybe_notification);
-    display_service_for_profile_notification_->SimulateClick(
-        NotificationHandler::Type::TRANSIENT, expected_notification_id,
-        /*action_index=*/0,
-        /*reply=*/absl::nullopt);
-    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(web_contents->GetURL(), expected_link_destination);
-  }
-
   void SimulateClickOnSystemTrayIconButton(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
     auto expected_pinned_notification_id =
@@ -248,8 +218,6 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<NotificationDisplayServiceTester>
-      display_service_for_profile_notification_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<NotificationDisplayServiceTester>
       display_service_for_system_notification_;
@@ -379,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
       }
     });
   )";
-  const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
-  SimulateClickOnDeviceOpenedNotification(browser(), extension);
+  LoadExtensionAndRunTest(kBackgroundJs);
   SimulateClickOnSystemTrayIconButton(browser());
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -692,8 +692,8 @@ void CompoundTabContainer::Layout() {
       gfx::Rect(pinned_tab_container_->GetPreferredSize()));
 
   // Unpinned container can have whatever is left over.
-  const int unpinned_container_leading_x =
-      std::max(0, pinned_tab_container_->width() - TabStyle::GetTabOverlap());
+  const int unpinned_container_leading_x = std::max(
+      0, pinned_tab_container_->width() - TabStyle::Get()->GetTabOverlap());
   const int available_width = width() - unpinned_container_leading_x;
 
   const gfx::Size pref_size = unpinned_tab_container_->GetPreferredSize();
@@ -1006,7 +1006,7 @@ int CompoundTabContainer::GetUnpinnedContainerIdealLeadingX() const {
   return NumPinnedTabs() > 0
              ? pinned_tab_container_->GetIdealBounds(NumPinnedTabs() - 1)
                        .right() -
-                   TabStyle::GetTabOverlap()
+                   TabStyle::Get()->GetTabOverlap()
              : 0;
 }
 
@@ -1022,8 +1022,8 @@ gfx::Size CompoundTabContainer::GetCombinedSizeForTabContainerSizes(
   gfx::Size largest_container = pinned_size;
   largest_container.SetToMax(unpinned_size);
 
-  const int width_with_overlap =
-      pinned_size.width() + unpinned_size.width() - TabStyle::GetTabOverlap();
+  const int width_with_overlap = pinned_size.width() + unpinned_size.width() -
+                                 TabStyle::Get()->GetTabOverlap();
   return gfx::Size(std::max(width_with_overlap, largest_container.width()),
                    largest_container.height());
 }

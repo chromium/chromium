@@ -27,7 +27,6 @@
 <translation id="199526504800285197">Снимање је заустављено</translation>
 <translation id="1995951722691075581">Снимање је заустављено због недовољно меморијског простора на уређају. Да бисте снимили још видео снимака, треба да ослободите простор на уређају.</translation>
 <translation id="2036868001356139588">Трајање тајмера</translation>
-<translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> је активна</translation>
 <translation id="2128052519899549250">Снимајте убрзани видео</translation>
 <translation id="2134029355740465625">Подешавања видео снимака</translation>
@@ -123,6 +122,7 @@
 <translation id="6888362557094394345">Креће се надоле</translation>
 <translation id="695140971690006676">Ресетуј све</translation>
 <translation id="6965382102122355670">Потврди</translation>
+<translation id="6965830616442491568">Портрет</translation>
 <translation id="698156982839284926">3 секунде</translation>
 <translation id="7134221860976209830">Тајмер за 10 секунди</translation>
 <translation id="7191890674911603392">Тип записа</translation>

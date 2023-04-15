@@ -50,7 +50,8 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
 
   gfx::ImageSkia resized_app_icon =
       gfx::ImageSkiaOperations::CreateResizedImage(
-          app_metadata.icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+          app_metadata.color_icon.AsImageSkia(),
+          skia::ImageOperations::RESIZE_BEST,
           gfx::Size(kEcheAppLIstItemIconSize, kEcheAppLIstItemIconSize));
 
   app_button_->SetImage(views::Button::ButtonState::STATE_NORMAL,

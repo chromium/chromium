@@ -164,11 +164,10 @@ public class ToolbarButtonIphTest {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
 
         // Enables price tracking.
-        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(true));
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
 
         // Enables the price tracking IPH.
+        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                 PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM, String.valueOf(true));
         FeatureList.setTestValues(testValues);

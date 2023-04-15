@@ -391,12 +391,12 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // features::Vulkan is used.
   raw_ptr<viz::VulkanContextProvider> vulkan_context_provider_ = nullptr;
 
-  // If features::Metal, |metal_context_provider_| will be set from
-  // viz::GpuServiceImpl. The raster decoders will use it for rasterization.
+  // If features::SkiaGraphite, |metal_context_provider_| will be set from
+  // viz::GpuServiceImpl. The raster decoders may use it for rasterization.
   raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;
 
-  // With features::SkiaDawn, |dawn_context_provider_| will be set from
-  // viz::GpuServiceImpl. The raster decoders will use it for rasterization.
+  // With features::SkiaGraphite, |dawn_context_provider_| will be set from
+  // viz::GpuServiceImpl. The raster decoders may use it for rasterization.
   raw_ptr<viz::DawnContextProvider> dawn_context_provider_ = nullptr;
 
   GpuPeakMemoryMonitor peak_memory_monitor_;

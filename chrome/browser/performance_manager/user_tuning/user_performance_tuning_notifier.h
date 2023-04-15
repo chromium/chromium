@@ -19,6 +19,11 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
                                       public PageNode::ObserverDefaultImpl,
                                       public SystemNode::ObserverDefaultImpl {
  public:
+  // The tab count and memory % that, when reached, trigger an opt-in bubble for
+  // memory saver.
+  static const int kTabCountThresholdForPromo;
+  static const int kMemoryPercentThresholdForPromo;
+
   // The instance of this delegate will have its different functions invoked on
   // the Performance Manager sequence by the
   // `UserPerformanceTuningNotifier` owning it.

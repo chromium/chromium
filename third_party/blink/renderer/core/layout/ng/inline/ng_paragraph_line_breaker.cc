@@ -56,8 +56,8 @@ struct LineBreakResults {
     const NGLineLayoutOpportunity line_opportunity(available_width);
     NGPositionedFloatVector leading_floats;
     NGExclusionSpace exclusion_space;
+    NGLineInfo line_info;
     for (;;) {
-      NGLineInfo line_info;
       NGLineBreaker line_breaker(
           node_, NGLineBreakerMode::kContent, space_, line_opportunity,
           leading_floats,

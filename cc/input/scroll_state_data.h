@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "cc/cc_export.h"
+#include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/trees/property_tree.h"
 #include "ui/events/types/scroll_types.h"
 
@@ -72,9 +73,10 @@ class CC_EXPORT ScrollStateData {
   void set_current_native_scrolling_element(ElementId element_id);
 
   // Used in scroll unification to specify that a scroll state has been hit
-  // tested on the main thread. If this is true, the hit test result will be
+  // tested on the main thread. If this is nonzero, the hit test result will be
   // placed in the current_native_scrolling_element_.
-  bool is_main_thread_hit_tested;
+  uint32_t main_thread_hit_tested_reasons =
+      MainThreadScrollingReason::kNotScrollingOnMain;
 
  private:
   // The id of the last native element to respond to a scroll, or 0 if none

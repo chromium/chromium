@@ -36,7 +36,7 @@ bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
       return false;
     }
 
-    hevc_config_.reset(new mp4::HEVCDecoderConfigurationRecord());
+    hevc_config_ = std::make_unique<mp4::HEVCDecoderConfigurationRecord>();
 
     if (!hevc_config_->Parse(stream_codec_parameters_->extradata,
                              stream_codec_parameters_->extradata_size)) {

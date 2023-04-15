@@ -49,6 +49,9 @@ import {getTemplate} from './power_bookmarks_list.html.js';
 import {editingDisabledByPolicy, Label, PowerBookmarksService} from './power_bookmarks_service.js';
 import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
+const ADD_FOLDER_ACTION_UMA = 'Bookmarks.FolderAddedFromSidePanel';
+const ADD_URL_ACTION_UMA = 'Bookmarks.AddedFromSidePanel';
+
 function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
   return bookmark.title || bookmark.url || '';
 }
@@ -67,6 +70,7 @@ export enum SearchAction {
 export interface SortOption {
   sortOrder: SortOrder;
   label: string;
+  lowerLabel: string;
 }
 
 export interface PowerBookmarksListElement {
@@ -110,11 +114,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
       labels_: {
         type: Array,
-        value: () => [{
-          label: loadTimeData.getString('priceTrackingLabel'),
-          icon: 'bookmarks:price-tracking',
-          active: false,
-        }],
+        value: () => [],
+        computed: 'computePriceTrackingLabel_(trackedProductInfos_.*)',
       },
 
       activeSortIndex_: {
@@ -128,18 +129,27 @@ export class PowerBookmarksListElement extends PolymerElement {
             [{
               sortOrder: SortOrder.kNewest,
               label: loadTimeData.getString('sortNewest'),
+              lowerLabel: loadTimeData.getString('sortNewestLower'),
             },
              {
                sortOrder: SortOrder.kOldest,
                label: loadTimeData.getString('sortOldest'),
+               lowerLabel: loadTimeData.getString('sortOldestLower'),
+             },
+             {
+               sortOrder: SortOrder.kLastOpened,
+               label: loadTimeData.getString('sortLastOpened'),
+               lowerLabel: loadTimeData.getString('sortLastOpenedLower'),
              },
              {
                sortOrder: SortOrder.kAlphabetical,
                label: loadTimeData.getString('sortAlphabetically'),
+               lowerLabel: loadTimeData.getString('sortAlphabetically'),
              },
              {
                sortOrder: SortOrder.kReverseAlphabetical,
                label: loadTimeData.getString('sortReverseAlphabetically'),
+               lowerLabel: loadTimeData.getString('sortReverseAlphabetically'),
              }],
       },
 
@@ -371,6 +381,23 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.set(`trackedProductInfos_.${bookmarkId}`, null);
   }
 
+  // TODO(emshack): Once there is more than one bookmark power, remove this
+  // logic and always display the price tracking label button.
+  private computePriceTrackingLabel_() {
+    const showLabel =
+        Object.keys(this.trackedProductInfos_)
+            .some(key => this.get(`trackedProductInfos_.${key}`) !== null);
+    if (showLabel) {
+      return [{
+        label: loadTimeData.getString('priceTrackingLabel'),
+        icon: 'bookmarks:price-tracking',
+        active: false,
+      }];
+    } else {
+      return [];
+    }
+  }
+
   /**
    * Returns the index of the given node id in the currently shown bookmarks,
    * or -1 if not shown.
@@ -547,6 +574,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     return loadTimeData.getStringF('sortByType', sortType.label);
   }
 
+  private getSortMenuItemLowerLabel_(sortType: SortOption): string {
+    return loadTimeData.getStringF('sortByType', sortType.lowerLabel);
+  }
+
   private sortMenuItemIsSelected_(sortType: SortOption): boolean {
     return this.sortTypes_[this.activeSortIndex_].sortOrder ===
         sortType.sortOrder;
@@ -607,6 +638,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     let parentId = event.detail.folderId;
     for (const folder of event.detail.newFolders) {
+      chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
       const newFolder =
           await this.bookmarksApi_.createFolder(folder.parentId!, folder.title);
       folder.children!.forEach(child => child.parentId = newFolder.id);
@@ -748,6 +780,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.showDisabledFeatureDialog_();
       return;
     }
+    chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
     this.bookmarksApi_
         .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
         .then((newFolder) => {
@@ -887,6 +920,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.showDisabledFeatureDialog_();
       return;
     }
+    chrome.metricsPrivate.recordUserAction(ADD_URL_ACTION_UMA);
     this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent.id);
   }
 

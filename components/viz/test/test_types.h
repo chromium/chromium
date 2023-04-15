@@ -13,9 +13,7 @@ namespace viz {
 enum class RendererType {
   kSkiaGL,
   kSkiaVk,
-  // SkiaRenderer with the Dawn backend will be used; on Linux this will
-  // initialize Vulkan, and on Windows this will initialize D3D12.
-  kSkiaDawn,
+  kSkiaGraphite,
   kSoftware,
 };
 
@@ -23,12 +21,10 @@ void PrintTo(RendererType type, std::ostream* os);
 
 // Returns a list containing all RendererTypes applicable to the platform.
 std::vector<RendererType> GetRendererTypes();
-std::vector<RendererType> GetRendererTypesNoDawn();
 
 // Returns a list containing all RendererTypes, except SoftwareRenderer,
 // applicable to the platform.
 std::vector<RendererType> GetGpuRendererTypes();
-std::vector<RendererType> GetGpuRendererTypesNoDawn();
 
 // Returns a list containing all Skia RendererTypes applicable to the platform.
 std::vector<RendererType> GetRendererTypesSkiaOnly();

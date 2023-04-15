@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">USB-C მოწყობილობა (წინა პორტი)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-ის გარჩევადობა შეიცვალა <ph name="RESOLUTION" />-ით (<ph name="REFRESH_RATE" /> ჰც). დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩენილია <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ ითხოვს ნებართვას დაწყვილებისთვის. გთხოვთ შეიყვანეთ ეს PIN კოდი, იმ მოწყობილობაზე: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285"><ph name="APP_NAME" />-ს, ასევე, მდებარეობაზე წვდომის ნებართვის მქონე ყველა აპსა თუ ვებსაიტს და ChromeOS-ს საშუალება ექნება, გამოიყენოს Wi-Fi-სა და მობილური ქსელების მდებარეობა.</translation>
+<translation id="1017556409696559990">ზედა ფანჯრის ჩაკეცვა, როცა Chrome-ში უკან გადასვლის ისტორია არ არის</translation>
 <translation id="1024364763893396229">შეინახეთ თქვენი <ph name="NAME" /></translation>
 <translation id="1032891413405719768">სტილუსის ბატარეა იცლება</translation>
 <translation id="1036073649888683237">შეტყობინებების სამართავად გადადით პარამეტრებზე</translation>
@@ -146,6 +148,7 @@
 <translation id="1651914502370159744">ისტორიის გვერდის გახსნა</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
 <translation id="1668469839109562275">ჩაშენებული VPN</translation>
+<translation id="1675844249244994876">მარჯვენა ფანჯრის განახლება</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
 <translation id="1677582821739292812">ვიღაც უყურებს თქვენს ეკრანს</translation>
@@ -190,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">მდებარეობაზე წვდომის ჩართვა</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> აღარ არის ჩამაგრებული</translation>
 <translation id="1838895407229022812">ღამის განათება გამორთულია.</translation>
 <translation id="1854180393107901205">ტრანსლირების შეწყვეტა</translation>
@@ -343,6 +347,7 @@
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="2621713457727696555">დაცული</translation>
 <translation id="263399434338050016">"ყველას არჩევა"</translation>
+<translation id="2644422758626431000">ფანჯრის ჩამაგრება მარცხნივ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" />დან ხელმისაწვდომია <ph name="USED_MEMORY" /></translation>
 <translation id="2653019840645008922">ფანჯრის აღბეჭდვა</translation>
@@ -363,7 +368,6 @@
 <translation id="2726420622004325180">უსადენო ქსელის უზრუნველსაყოფად თქვენს ტელეფონს უნდ ჰქონდეს მობილური ინტერნეტი</translation>
 <translation id="2727175239389218057">პასუხი</translation>
 <translation id="2727977024730340865">შეერთებულია დაბალი სიმძლავრის დამტენთან. ბატარეის დატენვა შეიძლება არ იყოს სანდო.</translation>
-<translation id="2740531572673183784">კარგი</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"წაშლა"</translation>
 <translation id="2750941250130734256">აქტიური ფანჯრის ჩამაგრება მოხსნილია.</translation>
@@ -466,6 +470,7 @@
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3256109297135787951">თაროზე ერთეულის გამოყოფის გაუქმება</translation>
 <translation id="3260969790895726815">მეტყველება მუშავდება ადგილობრივად, ხოლო კარნახი მუშაობს ხაზგარეშე რეჟიმში. ამასთან, ზოგიერთი ხმოვანი ბრძანება არ იმუშავებს.</translation>
+<translation id="3265032511221679826">გსურთ, ზუსტ მდებარეობაზე წვდომის ჩართვა?</translation>
 <translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
 <translation id="3289364673986435196">ჩართვის მენიუ</translation>
 <translation id="3289544412142055976">Linux აპები ამჟამად მხარდაუჭერელია</translation>
@@ -576,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> — მართული მომხმარებელი</translation>
 <translation id="3666266999138159418">გადაფურცლეთ მოლივლივე ფანჯრის დასამალად</translation>
 <translation id="367531336287639526">მისამართთა ზოლის მარცხნივ პირველი ხატულას არჩევა</translation>
+<translation id="3677931086890821290">მდებარეობაზე წვდომის ნებართვის მქონე ყველა აპსა თუ ვებსაიტს და ChromeOS-ს საშუალება ექნება, გამოიყენოს Wi-Fi-სა და მობილური ქსელების მდებარეობა.</translation>
 <translation id="3679827876008292680">ფანჯრის ბოლო ჩანართზე გადასვლა</translation>
 <translation id="36813544980941320">თქვენს ტელეფონსა და <ph name="DEVICE_NAME" />-ს შორის Wi-Fi ქსელები გაზიარდება</translation>
 <translation id="3694122362646626770">ვებსაიტები</translation>
@@ -842,6 +848,7 @@
 <translation id="493076006037866439">ეკრანზე მასშტაბის შემცირება</translation>
 <translation id="4936329710968938986">ყველა, გამორთული</translation>
 <translation id="4938176435186993759">ყველა შემოთავაზების დამალვა</translation>
+<translation id="4943007472417128747">უსადენო ქსელი გამოირთო Wi-Fi ქსელის გამოსაყენებლად. უსადენო ქსელი რომ გამოიყენოთ, გამორთეთ Wi-Fi ქსელი.</translation>
 <translation id="4945196315133970626">შეტყობინებების გამორთვა</translation>
 <translation id="4946376291507881335">აღბეჭდვა</translation>
 <translation id="495046168593986294">ზემოთ გადაადგილება</translation>
@@ -1054,6 +1061,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5920710855273935292">მიკროფონი დადუმებულია.</translation>
+<translation id="5922962980596822074">ფანჯრებს შორის გადაადგილება ყველაზე ბოლოს გამოყენებული ფანჯრიდან</translation>
 <translation id="5924855612669061715">უსადენო ქსელი ჩართულია</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
@@ -1064,6 +1072,7 @@
 <translation id="5976112937189445008">ფანჯრის ჩასაწერად დააჭირეთ Enter-ს</translation>
 <translation id="5978382165065462689">დისტანციური დამხმარეს მეშვეობით თვენი ეკრანის გაზიარების მართვა.</translation>
 <translation id="5980301590375426705">სტუმრის რეჟიმიდან გამოსვლა</translation>
+<translation id="5983567367406220847">უმოქმედობის გამო, უსადენო ქსელი გამოირთო.</translation>
 <translation id="598407983968395253">შაბლონის გამოყენება</translation>
 <translation id="598882571027504733">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook და არ გამოართოთ კლავიატურა.</translation>
 <translation id="6002179289567220515">1 კამერის გამოსართავად ფიზიკური გადამრთველით ისარგებლეთ. წვდომის გამორთვა ყველა კამერისთვისაც შეგიძლიათ.</translation>
@@ -1143,6 +1152,7 @@
 <translation id="6352082849089527770">უცნობი ქსელები</translation>
 <translation id="6359587239691116345">ისარგებლეთ უახლესი ფუნქციებითა და უსაფრთხოების გაუმჯობესებებით. თუ ამ განახლებას უარყოფთ, თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
 <translation id="6376931439017688372">Bluetooth ჩართულია</translation>
+<translation id="6378515133128829137">ფანჯრის ჩამაგრება მარჯვნივ</translation>
 <translation id="6381109794406942707">მოწყობილობის განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
 <translation id="638716340450135524">კამერაზე წვდომის ჩართვა</translation>
 <translation id="639644700271529076">CAPS LOCK გამორთულია</translation>
@@ -1162,6 +1172,7 @@
 <translation id="6459472438155181876">ეკრანის გაგრძელება <ph name="DISPLAY_NAME" />-მდე</translation>
 <translation id="6477681113376365978">ფაილი ვერ ჩამოიტვირთა</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
+<translation id="6483727822843292440">ფანჯრებს შორის გადაადგილება ყველაზე ნაკლებად გამოყენებული ფანჯრიდან</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> ითხოვს, განაახლოთ თქვენი <ph name="DEVICE_TYPE" /> ბოლო ვადამდე</translation>
 <translation id="649452524636452238">სმარტ-ბარათის PIN-კოდი</translation>
@@ -1364,6 +1375,7 @@
 <translation id="7452560014878697800">აპლიკაცია იყენებს თქვენს კამერას</translation>
 <translation id="7453330308669753048">ძიების ისტორიის შედეგი ამოიშალა</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> სრულ დატენამდე</translation>
+<translation id="7459485586006128091">შიდა შეცდომის გამო, უმოქმედობის გამო, უსადენო ქსელი გამოირთო. ცადეთ ხელახლა დაკავშირება რამდენიმე წუთში.</translation>
 <translation id="7461924472993315131">პინი</translation>
 <translation id="746232733191930409">ეკრანის ჩაწერის რეჟიმი</translation>
 <translation id="7466449121337984263">შეეხეთ სენსორს</translation>
@@ -1383,6 +1395,7 @@
 მოწყობილობის გამოსართავად ხელახლა დააჭირეთ ხანგრძლივად ელკვების ღილაკს მოწყობილობაზე.</translation>
 <translation id="7526573455193969409">ქსელზე შესაძლოა ხორციელდებოდეს მონიტორინგი</translation>
 <translation id="7536035074519304529">IP მისამართი: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">მარცხენა ფანჯრის განახლება</translation>
 <translation id="7543399541175347147">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="7544300628205093162">კლავიატურის შენათება ჩართულია</translation>
 <translation id="7548434653388805669">ძილის დროა</translation>
@@ -1436,6 +1449,7 @@
 <translation id="776344839111254542">დააწკაპუნეთ განახლების დეტალების სანახავად</translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
 <translation id="7769299611924763557">თქვენი GIF მალე იქნება მზად</translation>
+<translation id="7773536009433685931">სანაცვლოდ გამოირთოს Wi-Fi</translation>
 <translation id="7780094051999721182">მალსახმობები</translation>
 <translation id="7780159184141939021">ეკრანის ბრუნვა</translation>
 <translation id="7796735576426975947">ახალი შეტყობინება დამალულია</translation>
@@ -1463,6 +1477,7 @@
 <translation id="7893503627044934815">არ მსურს, ეს ფაილი ჩანდეს ხოლმე</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">თქვენ დააჭირეთ ეკრანის ბრუნვის კლავიატურის მალსახმობს. გსურთ ეკრანის შებრუნება?</translation>
+<translation id="7901190436359881020">ფანჯრების ჩანაცვლება</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
@@ -1738,6 +1753,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-ის გარჩევადობა შეიცვალა <ph name="RESOLUTION" />-ზე. დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩა <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">დააკავშირეთ <ph name="NAME" /> ამ Chromebook-ს</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, მართავს თქვენი ადმინისტრატორი</translation>
+<translation id="9207682216934703221"><ph name="APP_NAME" />-ს, <ph name="APP2_NAME" />-ს ასევე, მდებარეობაზე წვდომის ნებართვის მქონე ყველა აპსა თუ ვებსაიტს და ChromeOS-ს საშუალება ექნება, გამოიყენოს Wi-Fi-სა და მობილური ქსელების მდებარეობა.</translation>
 <translation id="9210037371811586452">მიმდინარეობს ერთიანი დესკტოპის რეჟიმიდან გამოსვლა</translation>
 <translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
 <translation id="9211681782751733685">ბატარეის სრულ დატენამდე დარჩენილია <ph name="TIME_REMAINING" />.</translation>

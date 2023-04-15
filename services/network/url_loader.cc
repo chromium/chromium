@@ -644,6 +644,13 @@ URLLoader::URLLoader(
         request.trusted_params->allow_cookies_from_browser;
   }
 
+  // Store any cookies passed from the browser process to later attach them to
+  // the request.
+  if (allow_cookies_from_browser_) {
+    cookies_from_browser_ =
+        GetCookiesFromHeaders(request.headers, request.cors_exempt_headers);
+  }
+
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
       url_request_->net_log().source().id, request.throttling_profile_id);
 
@@ -747,13 +754,6 @@ URLLoader::URLLoader(
   if (request.request_body.get()) {
     OpenFilesForUpload(request);
     return;
-  }
-
-  // Store any cookies passed from the browser process to later attach them to
-  // the request.
-  if (allow_cookies_from_browser_) {
-    cookies_from_browser_ =
-        GetCookiesFromHeaders(request.headers, request.cors_exempt_headers);
   }
 
   BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(request);

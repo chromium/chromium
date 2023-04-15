@@ -36,7 +36,7 @@ namespace ui {
 WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                         base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-      config_(config) {
+      server_(config) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto keyboard_layout_engine =
       std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);
@@ -66,7 +66,7 @@ void WaylandTestBase::SetUp() {
     DeviceDataManager::CreateInstance();
   }
 
-  ASSERT_TRUE(server_.Start(config_));
+  ASSERT_TRUE(server_.Start());
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());
@@ -120,13 +120,6 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure) {
 
   // Sync with the display to ensure server's events are received and processed
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
-}
-
-void WaylandTestBase::SetUseAuraOutputManager(bool use_aura_output_manager) {
-  // Must be called before the test server is started and the global display has
-  // been created.
-  DCHECK(!server_.display());
-  config_.use_aura_output_manager = use_aura_output_manager;
 }
 
 void WaylandTestBase::DisableSyncOnTearDown() {
@@ -276,7 +269,11 @@ bool WaylandTest::IsAuraShellEnabled() {
   return GetParam().enable_aura_shell == wl::EnableAuraShellProtocol::kEnabled;
 }
 
-WaylandTestSimple::WaylandTestSimple() : WaylandTestBase({}) {}
+WaylandTestSimple::WaylandTestSimple()
+    : WaylandTestSimple(wl::ServerConfig{}) {}
+
+WaylandTestSimple::WaylandTestSimple(wl::ServerConfig config)
+    : WaylandTestBase(config) {}
 
 WaylandTestSimple::~WaylandTestSimple() = default;
 

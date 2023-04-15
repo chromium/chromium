@@ -5513,6 +5513,28 @@ should be able to be added at any place in this file.
   <description>Recorded when the user adds a bookmark.</description>
 </action>
 
+<action name="Bookmarks.AddedFromSidePanel">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user adds a bookmark from the side panel.
+  </description>
+</action>
+
+<action name="Bookmarks.FolderAdded">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>Recorded when the user adds a bookmark folder.</description>
+</action>
+
+<action name="Bookmarks.FolderAddedFromSidePanel">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user adds a bookmark folder from the side panel.
+  </description>
+</action>
+
 <action name="Bookmarks.Opened">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
@@ -6999,6 +7021,36 @@ should be able to be added at any place in this file.
   <description>
     The user with one or more device-level identities triggered a sign-in only
     flow from Discover feed.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.SignIn.ShowSignInDisableToastFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed personalization control and triggered a sign-in
+    disabled message to be shown.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.SignIn.ShowSignInOnlyFlowFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed personalization control and triggered a sign-in
+    only flow to be shown.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.SignIn.ShowSyncnHalfSheetFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed personalization control and triggered a sign-in
+    half sheet to be shown.
   </description>
 </action>
 
@@ -16773,6 +16825,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagedUsers_OpenProfile">
+  <obsolete>Deprecated as of 04/2023.</obsolete>
   <owner>pam@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <description>Supervised user profile activated.</description>
@@ -16785,6 +16838,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagedUsers_SwitchProfile">
+  <obsolete>Deprecated as of 04/2023.</obsolete>
   <owner>pam@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <description>Supervised user switched to another profile.</description>
@@ -30407,6 +30461,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Companion.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is pinned via the pin button in
+    the side panel header.
+  </description>
+</action>
+
+<action name="SidePanel.Companion.Shown">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.Companion.Unpinned.ByPinnedButtonContextMenu">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is unpinned via the context
+    menu from the pinned companion button.
+  </description>
+</action>
+
+<action name="SidePanel.Companion.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is unpinned via the pin button
+    in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.Feed.Shown">
   <owner>jianli@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -32869,6 +32958,15 @@ should be able to be added at any place in this file.
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when a window was just snapped in tablet mode on Chrome OS.
+  </description>
+</action>
+
+<action name="SplitView_SwapWindowsButtonSwapWindows">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the swap windows button in the expanded
+    menu shown on the kebab button toggled in Chrome OS.
   </description>
 </action>
 
@@ -36893,6 +36991,8 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="AutoDarkUserEducationMessageOptIn"
       label="For AutoDarkUserEducationMessageOptIn feature."/>
+  <suffix name="AutofillExternalAccountProfileSuggestion"
+      label="For AutofillExternalAccountProfileSuggestion feature."/>
   <suffix name="AutofillVirtualCardSuggestion"
       label="For AutofillVirtualCardSuggestion feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
@@ -37034,6 +37134,8 @@ should be able to be added at any place in this file.
   <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
   <suffix name="iOSPromoCredentialProviderExtension"
       label="For iOSPromoCredentialProviderExtension feature"/>
+  <suffix name="iOSPromoDefaultBrowser"
+      label="For iOSPromoDefaultBrowser feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"

@@ -13,8 +13,21 @@
 #include "base/strings/string_util.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/net/variations_command_line.h"
+#include "components/variations/service/safe_seed_manager.h"
 
 namespace version_ui {
+
+std::string SeedTypeToUiString(variations::SeedType seed_type) {
+  switch (seed_type) {
+    case variations::SeedType::kRegularSeed:
+      // We only display if Safe or Null seed is used.
+      return std::string();
+    case variations::SeedType::kSafeSeed:
+      return "Safe";
+    case variations::SeedType::kNullSeed:
+      return "Null";
+  }
+}
 
 base::Value::List GetVariationsList() {
   std::vector<std::string> variations;

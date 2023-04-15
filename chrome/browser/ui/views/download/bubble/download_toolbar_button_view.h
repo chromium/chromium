@@ -15,6 +15,10 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace gfx {
+class RenderText;
+}
+
 class Browser;
 class BrowserView;
 class DownloadDisplayController;
@@ -95,6 +99,11 @@ class DownloadToolbarButtonView : public ToolbarButton,
                                int progress_download_count,
                                SkColor badge_text_color,
                                SkColor badge_background_color);
+  // Returns an reference to the appropriate RenderText for the number of
+  // downloads, to be used in rendering the badge. |progress_download_count|
+  // should be at least 2.
+  gfx::RenderText& GetBadgeText(int progress_download_count,
+                                SkColor badge_text_color);
 
   void ButtonPressed();
   void CreateBubbleDialogDelegate(std::unique_ptr<View> bubble_contents_view);
@@ -112,9 +121,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // Get the primary view, which may be the full or the partial view.
   std::unique_ptr<View> GetPrimaryView();
-  // Create a scrollable row list view for either the full or the partial view.
-  std::unique_ptr<View> CreateRowListView(
-      std::vector<DownloadUIModel::DownloadUIModelPtr> model_list);
 
   // If |has_pending_download_started_animation_| is true, shows an animation of
   // a download icon moving upwards towards the toolbar icon.

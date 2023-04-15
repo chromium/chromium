@@ -68,16 +68,8 @@ NSSet<NSString*>* GetOriginsFromCredential(
   if (self) {
     _signonRealm = [NSString
         stringWithUTF8String:credential.GetFirstSignonRealm().c_str()];
-    auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-        credential.GetFirstSignonRealm());
-    if (facetUri.IsValidAndroidFacetURI() &&
-        !credential.GetDisplayName().empty()) {
-      _changePasswordURL = password_manager::CreateChangePasswordUrl(
-          GURL(credential.GetAffiliatedWebRealm()));
-    } else {
-      _changePasswordURL =
-          password_manager::CreateChangePasswordUrl(credential.GetURL());
-    }
+    _changePasswordURL = credential.GetChangePasswordURL();
+
     _origins = [GetOriginsFromCredential(credential) allObjects];
     _websites = GetWebsitesFromFacets(credential.facets);
 

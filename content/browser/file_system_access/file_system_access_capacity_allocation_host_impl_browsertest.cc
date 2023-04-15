@@ -157,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   EXPECT_EQ(usage_before_operation, usage_after_operation + 100);
 }
 
-// TODO(crbug.com/1304977): Failing on Mac builders.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1304977): Failing on Mac and Linux builders.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_QuotaUsageOverallocation DISABLED_QuotaUsageOverallocation
 #else
 #define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation
@@ -208,8 +208,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
             4 * 1024 * 1024);
 }
 
-// TODO(crbug.com/1304977): Failing on Mac builders.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1304977): Failing on Mac and Linux builders.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_QuotaUsageShrinks DISABLED_QuotaUsageShrinks
 #else
 #define MAYBE_QuotaUsageShrinks QuotaUsageShrinks

@@ -917,10 +917,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          GPURendererPixelTest,
                          // TODO(crbug.com/1021566): Enable these tests for
                          // SkiaRenderer Dawn once video is supported.
-                         testing::ValuesIn(GetGpuRendererTypesNoDawn()),
+                         testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
-// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GPURendererPixelTest);
 
 TEST_P(RendererPixelTest, SimpleGreenRect) {
@@ -1395,10 +1395,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          IntersectingVideoQuadPixelTest,
                          // TODO(crbug.com/1021566): Enable these tests for
                          // SkiaRenderer Dawn once video is supported.
-                         testing::ValuesIn(GetGpuRendererTypesNoDawn()),
+                         testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
-// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(IntersectingVideoQuadPixelTest);
 
 class IntersectingQuadSoftwareTest : public IntersectingQuadPixelTest {};
@@ -1409,10 +1409,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::PrintToStringParamName());
 
 TEST_P(IntersectingQuadPixelTest, SolidColorQuads) {
-  // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
-  if (renderer_type() == RendererType::kSkiaDawn)
-    return;
-
   this->SetupQuadStateAndRenderPass();
 
   auto* quad = this->template CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -1887,10 +1883,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          VideoRendererPixelTest,
                          // TODO(crbug.com/1021566): Enable these tests for
                          // SkiaRenderer Dawn once video is supported.
-                         testing::ValuesIn(GetGpuRendererTypesNoDawn()),
+                         testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
-// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VideoRendererPixelTest);
 
 TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
@@ -3830,11 +3826,10 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   constexpr bool needs_blending = true;
   constexpr bool nearest_neighbor = true;
   constexpr bool force_anti_aliasing_off = false;
-  constexpr ResourceFormat resource_format = RGBA_8888;
+  constexpr SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
   gfx::Rect viewport(this->device_viewport_size_);
 
-  SkColorType ct = ResourceFormatToClosestSkColorType(!is_software_renderer(),
-                                                      resource_format);
+  SkColorType ct = ToClosestSkColorType(!is_software_renderer(), format);
   SkImageInfo info = SkImageInfo::Make(2, 2, ct, kPremul_SkAlphaType);
   SkBitmap bitmap;
   bitmap.allocPixels(info);
@@ -5117,7 +5112,7 @@ gfx::ColorSpace intermediate_color_spaces[] = {
 INSTANTIATE_TEST_SUITE_P(
     FromColorSpace,
     ColorTransformPixelTest,
-    testing::Combine(testing::ValuesIn(GetGpuRendererTypesNoDawn()),
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn(src_color_spaces),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::Bool()));
@@ -5125,12 +5120,12 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     ToColorSpace,
     ColorTransformPixelTest,
-    testing::Combine(testing::ValuesIn(GetGpuRendererTypesNoDawn()),
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::ValuesIn(dst_color_spaces),
                      testing::Bool()));
 
-// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ColorTransformPixelTest);
 
 class DelegatedInkTest : public VizPixelTestWithParam,
@@ -5272,10 +5267,6 @@ TEST_P(DelegatedInkWithPredictionTest, DrawOneTrailAndErase) {
 
 // Confirm that drawing a second trail completely removes the first trail.
 TEST_P(DelegatedInkWithPredictionTest, DrawTwoTrailsAndErase) {
-  // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
-  if (renderer_type() == RendererType::kSkiaDawn)
-    return;
-
   // Numbers chosen arbitrarily. No points will be predicted, so a trail made of
   // 2 points will be drawn.
   const gfx::PointF kFirstPoint(140, 48);
@@ -5309,10 +5300,6 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTwoTrailsAndErase) {
 
 // Confirm that the trail can't be drawn beyond the presentation area.
 TEST_P(DelegatedInkWithPredictionTest, TrailExtendsBeyondPresentationArea) {
-  // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
-  if (renderer_type() == RendererType::kSkiaDawn)
-    return;
-
   const gfx::PointF kFirstPoint(50.2f, 89.999f);
   const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
 

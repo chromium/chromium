@@ -376,6 +376,7 @@ EditableCombobox::EditableCombobox(
   textfield_->set_controller(this);
   textfield_->SetFontList(GetFontList());
   AddChildView(textfield_.get());
+  views::FocusRing::Get(textfield_)->SetOutsetFocusRingDisabled(true);
 
   control_elements_container_ = AddChildView(std::make_unique<BoxLayoutView>());
   if (features::IsChromeRefresh2023()) {

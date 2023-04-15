@@ -58,7 +58,7 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
     case apps::Readiness::kDisabledByUser:
     case apps::Readiness::kUninstalledByUser:
     case apps::Readiness::kRemoved:
-    case apps::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kUninstalledByNonUser:
       SYSLOG(ERROR) << "Kiosk app should not have readiness "
                     << base::to_underlying(readiness);
       if (app_launched_callback_.has_value()) {

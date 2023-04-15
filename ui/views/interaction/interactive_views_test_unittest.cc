@@ -14,6 +14,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -30,6 +31,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButtonsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButton1Id);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabbedPaneId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kScrollChild1Id);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kScrollChild2Id);
 constexpr char16_t kButton1Caption[] = u"Button 1";
 constexpr char16_t kButton2Caption[] = u"Button 2";
 constexpr char16_t kTab1Title[] = u"Tab 1";
@@ -76,7 +79,25 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
                         Builder<LabelButton>()
                             .CopyAddressTo(&button2_)
                             .SetText(kButton2Caption)
-                            .SetCallback(button2_callback_.Get())));
+                            .SetCallback(button2_callback_.Get())),
+                Builder<ScrollView>()
+                    .CopyAddressTo(&scroll_)
+                    .SetPreferredSize(gfx::Size(100, 90))
+                    .SetVerticalScrollBarMode(
+                        ScrollView::ScrollBarMode::kEnabled)
+                    .SetContents(
+                        Builder<FlexLayoutView>()
+                            .SetOrientation(LayoutOrientation::kVertical)
+                            .SetSize(gfx::Size(100, 200))
+                            .AddChildren(
+                                Builder<View>()
+                                    .SetProperty(kElementIdentifierKey,
+                                                 kScrollChild1Id)
+                                    .SetPreferredSize(gfx::Size(100, 100)),
+                                Builder<View>()
+                                    .SetProperty(kElementIdentifierKey,
+                                                 kScrollChild2Id)
+                                    .SetPreferredSize(gfx::Size(100, 100)))));
 
     // Create and show the test widget.
     widget_ = CreateTestWidget();
@@ -98,6 +119,7 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
     buttons_ = nullptr;
     button1_ = nullptr;
     button2_ = nullptr;
+    scroll_ = nullptr;
     InteractiveViewsTest::TearDown();
   }
 
@@ -111,6 +133,7 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
   base::raw_ptr<FlexLayoutView> buttons_;
   base::raw_ptr<LabelButton> button1_;
   base::raw_ptr<LabelButton> button2_;
+  base::raw_ptr<ScrollView> scroll_;
   ButtonCallbackMock button1_callback_;
   ButtonCallbackMock button2_callback_;
 };
@@ -385,6 +408,21 @@ TEST_F(InteractiveViewsTestTest, BindingMethods) {
           kViewName,
           [this](const TabbedPaneTab* tab) { return tabs_->GetIndexOf(tab); },
           0U, Do(incorrect.Get()), Do(correct.Get())));
+}
+
+TEST_F(InteractiveViewsTestTest, ScrollIntoView) {
+  const auto visible = [this](View* view) {
+    const gfx::Rect bounds = view->GetBoundsInScreen();
+    const gfx::Rect scroll_bounds = scroll_->GetBoundsInScreen();
+    return bounds.Intersects(scroll_bounds);
+  };
+
+  RunTestSequence(CheckView(kScrollChild1Id, visible, true),
+                  CheckView(kScrollChild2Id, visible, false),
+                  ScrollIntoView(kScrollChild2Id),
+                  CheckView(kScrollChild2Id, visible, true),
+                  ScrollIntoView(kScrollChild1Id),
+                  CheckView(kScrollChild1Id, visible, true));
 }
 
 }  // namespace views::test

@@ -480,11 +480,15 @@ void NGLineBreaker::ComputeBaseDirection() {
     ++start_offset;
   }
 
-  wtf_size_t end_offset = text.find(kNewlineCharacter, offset_);
-  base_direction_ = NGBidiParagraph::BaseDirectionForString(
-      end_offset == kNotFound
-          ? StringView(text, start_offset)
-          : StringView(text, start_offset, end_offset - start_offset));
+  // LTR when no strong characters because `plaintext` uses P2 and P3 of UAX#9:
+  // https://w3c.github.io/csswg-drafts/css-writing-modes-3/#valdef-unicode-bidi-plaintext
+  // which sets to LTR if no strong characters.
+  // https://unicode.org/reports/tr9/#P3
+  base_direction_ = NGBidiParagraph::BaseDirectionForStringOrLtr(
+      StringView(text, start_offset),
+      // For CSS processing, line feed (U+000A) is treated as a segment break.
+      // https://w3c.github.io/csswg-drafts/css-text-3/#segment-break
+      Character::IsLineFeed);
 }
 
 void NGLineBreaker::RecalcClonedBoxDecorations() {
@@ -604,8 +608,8 @@ void NGLineBreaker::FinalizeHyphen(NGInlineItemResults* item_results) {
 
 // Initialize internal states for the next line.
 void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
-  // NGLineInfo is not supposed to be re-used because it's not much gain and to
-  // avoid rare code path.
+  line_info->Reset();
+
   const NGInlineItemResults& item_results = line_info->Results();
   DCHECK(item_results.empty());
 

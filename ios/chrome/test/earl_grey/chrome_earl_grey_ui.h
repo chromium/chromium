@@ -6,8 +6,9 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_UI_H_
 
 #import <Foundation/Foundation.h>
+
 #import <string>
-#include "base/compiler_specific.h"
+
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
 @protocol GREYMatcher;

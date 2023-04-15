@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
-<translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="125153950246128346">अर्को ट्याब हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="1403228085774130835">तपाईं Chrome को मुख्य मेनुअन्तर्गत रहेको "हालसालै खोलिएका ट्याब" मा गई आफूले बन्द गरेका ट्याबहरू भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="1455506303394048917">तपाईंले यी इन्कोग्निटो ट्याबबाट गर्नुभएको क्रियाकलापको विवरण यो डिभाइसबाट मेटाइने छ</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{समूहबाट ट्याब हटाउनुहोस्}other{समूहबाट ट्याबहरू हटाउनुहोस्}}</translation>
 <translation id="2277224997687551299">समूहको नाम परिवर्तन गर्नुहोस्</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{समूहबाट चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब हटाउनुहोस्।}other{समूहबाट चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब हटाउनुहोस्।}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ट्याब बुकमार्क गर्नुहोस्}other{ट्याबहरू बुकमार्क गर्नुहोस्}}</translation>
-<translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
-<translation id="257674075312929031">समूह</translation>
 <translation id="2613747923081026172">समूह सिर्जना गर्नुहोस्</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन</translation>
 <translation id="266935134738038806">साइटमा जानुहोस्</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">ट्याबहरूलाई समूहबद्ध गर्न तिनीहरूलाई ड्र्याग गर्नुहोस्</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> समूह बन्द गर्नुहोस्</translation>
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
-<translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">एकभन्दा बढी ट्याब चयन गर्ने मोड लुकाउनुहोस्</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ट्याब सेयर गर्नुहोस्}other{ट्याबहरू सेयर गर्नुहोस्}}</translation>
 <translation id="7129458170538955174">यो स्टोरसम्बन्धी जानकारी स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
-<translation id="7151209024774799310">समूहबाट ट्याबहरू हटाउनुहोस्</translation>
 <translation id="7204204600596740190">एकभन्दा बढी ट्याब चयन गर्ने मोड</translation>
 <translation id="7326879924029668159">सामान फिर्ता गर्नेसम्बन्धी नीतिका साथै थप जानकारी हेर्नुहोस्</translation>
 <translation id="7352298686197644113">तपाईंले खोल्नुभएका ट्याबहरूमा भएको कुन चाहिँ वस्तुको मूल्य कम छ भन्ने कुरा हेर्नुहोस्</translation>

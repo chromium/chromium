@@ -107,6 +107,7 @@ source_set("vaapi") {
     "//media/gpu/chromeos:common",
     "//media/parsers",
     "//mojo/public/cpp/bindings",
+    "//third_party/libaom:libaomrc",
     "//third_party/libvpx:libvpxrc",
     "//third_party/libyuv",
     "//ui/gfx",

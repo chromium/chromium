@@ -419,17 +419,7 @@ std::string IPAddressToPackedString(const IPAddress& address) {
 }
 
 IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
-  // TODO(https://crbug.com/1414007): Remove crash key and use DCHECK() when
-  // the cause is identified.
-  if (!address.IsIPv4()) {
-    static base::debug::CrashKeyString* crash_key =
-        base::debug::AllocateCrashKeyString("ipaddress",
-                                            base::debug::CrashKeySize::Size64);
-    base::debug::ScopedCrashKeyString addr(crash_key, address.ToString());
-    bool is_valid = address.IsValid();
-    base::debug::Alias(&is_valid);
-    LOG(FATAL) << "expected an IPv4 address but got " << address.ToString();
-  }
+  CHECK(address.IsIPv4());
   // IPv4-mapped addresses are formed by:
   // <80 bits of zeros>  + <16 bits of ones> + <32-bit IPv4 address>.
   base::StackVector<uint8_t, 16> bytes;
@@ -454,10 +444,10 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                             size_t prefix_length_in_bits) {
   // Both the input IP address and the prefix IP address should be either IPv4
   // or IPv6.
-  DCHECK(ip_address.IsValid());
-  DCHECK(ip_prefix.IsValid());
+  CHECK(ip_address.IsValid());
+  CHECK(ip_prefix.IsValid());
 
-  DCHECK_LE(prefix_length_in_bits, ip_prefix.size() * 8);
+  CHECK_LE(prefix_length_in_bits, ip_prefix.size() * 8);
 
   // In case we have an IPv6 / IPv4 mismatch, convert the IPv4 addresses to
   // IPv6 addresses in order to do the comparison.

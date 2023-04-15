@@ -1245,7 +1245,7 @@ class XDesktop(Desktop):
     if self.randr_add_sizes:
       refresh_rates = ["60"]
       try:
-        proc_num = subprocess.check_output("nproc", text=True)
+        proc_num = subprocess.check_output("nproc", universal_newlines=True)
 
         # Keep the proc_num logic in sync with desktop_resizer_x11.cc
         if (int(proc_num) > 16):

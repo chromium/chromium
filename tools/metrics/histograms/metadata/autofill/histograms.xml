@@ -97,6 +97,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.OtpAuth.Type">
+  <variant name="EmailOtp" summary="The OTP authentication with an email."/>
   <variant name="SmsOtp" summary="The OTP authentication with a SMS OTP."/>
 </variants>
 
@@ -277,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Autocomplete.DaysSinceLastUse" units="days"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -336,7 +337,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction"
-    enum="Boolean" expires_after="2023-08-08">
+    enum="Boolean" expires_after="2023-10-08">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -662,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
-    expires_after="2023-10-01">
+    expires_after="2023-10-08">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -891,7 +892,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
-    units="ms" expires_after="2023-07-01">
+    units="ms" expires_after="2023-10-08">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -1239,15 +1240,21 @@ chromium-metrics-reviews@google.com.
 
     2. a {CardIssuer} selected from Autofill suggestions did not have metadata
 
-    It is emitted every time Autofill suggestions shown or selected have an
-    issuer id.
+    Histograms without &quot;Once&quot; are logged every time Autofill
+    suggestions that are shown or selected have an issuer id. Histograms with
+    &quot;Once&quot; are logged once per page load.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
   <token key="FormEventWithMetadata">
     <variant name="SelectedWithMetadata"
         summary="A card with issuer id was selected"/>
+    <variant name="SelectedWithMetadataOnce"
+        summary="A card with issuer id was selected, logged once per page
+                 load"/>
     <variant name="ShownWithMetadata"
         summary="A card with issuer id was shown"/>
+    <variant name="ShownWithMetadataOnce"
+        summary="A card with issuer id was shown, logged once per page load"/>
   </token>
 </histogram>
 
@@ -1545,7 +1552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2023-08-08">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2023-10-08">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -1557,7 +1564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType"
     enum="AutofilledFieldUserEditingStatusByFieldType"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -1650,6 +1657,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseAndNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-15">
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The http response code or net error code returned on a query.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ParsingResult"
     enum="FastCheckoutCapabilitiesParsingResult" expires_after="2023-08-15">
   <owner>bwolfgang@google.com</owner>
@@ -1657,6 +1674,16 @@ chromium-metrics-reviews@google.com.
   <owner>vizcay@google.com</owner>
   <summary>
     Parsing result of the response body of a Fast Checkout capabilities fetch.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime"
+    units="ms" expires_after="2023-08-15">
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Response time for fetching FastCheckout capabilities. The time is recorded
+    for both successful and failed fetches.
   </summary>
 </histogram>
 
@@ -2844,7 +2871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.NumericQuantityCollidesWithServerPrediction"
-    enum="Boolean" expires_after="2023-08-08">
+    enum="Boolean" expires_after="2023-10-08">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3318,6 +3345,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.MigrateProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="M120">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs the user's decision for migrating a stored profile with source
+    AutofillProfile::Source::kLocalOrSyncable to the account storage. This
+    metric is emitted at the end of an import process once the user-provided
+    import decision is final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.MigrateProfileEditedType"
+    enum="AutofillSettingsVisibleTypes" expires_after="M120">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs that a specific type was edited in a profile migration prompt. This
+    metric is emitted once the user-provided import decision is final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.MigrateProfileNumberOfEditedFields"
+    units="fields" expires_after="M120">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs the number of fields that have been edited by the user in the process
+    of succesfully migrating a profile after an observed form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.NewProfileDecision"
     enum="AutofillProfileImportDecision" expires_after="2023-09-03">
   <owner>koerber@google.com</owner>
@@ -3786,7 +3848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Sectioning.FieldsPerSection" units="Fields"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>fleimgruber@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -3798,7 +3860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Sectioning.NumberOfSections" units="Sections"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>fleimgruber@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -4390,7 +4452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SuggestionShown.OffTheRecord" units="units"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -4595,7 +4657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2023-10-01">
+    expires_after="2023-10-08">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>

@@ -21,7 +21,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -96,26 +95,7 @@ class TabSelectionEditorCoordinator {
         boolean handleBackPressed();
 
         /**
-         * Configure the Toolbar for TabSelectionEditor. The default button text is "Group".
-         * @param actionButtonText Button text for the action button.
-         * @param actionButtonDescriptionResourceId Content description template resource Id for the
-         *         action button. This should be in a plurals form.
-         * @param actionProvider The {@link TabSelectionEditorActionProvider} that specifies the
-         *         action when action button gets clicked.
-         * @param actionButtonEnablingThreshold The minimum threshold to enable the action button.
-         *         If it's -1 use the default value.
-         * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
-         *         the back action.
-         */
-        void configureToolbar(@Nullable String actionButtonText,
-                @Nullable Integer actionButtonDescriptionResourceId,
-                @Nullable TabSelectionEditorActionProvider actionProvider,
-                int actionButtonEnablingThreshold,
-                @Nullable TabSelectionEditorNavigationProvider navigationProvider);
-
-        /**
-         * Configure the Toolbar for TabSelectionEditor with multiple actions. Requires
-         * {@link ChromeFeatureList.TAB_SELECTION_EDITOR_V2} to be enabled.
+         * Configure the Toolbar for TabSelectionEditor with multiple actions.
          * @param actions The {@link TabSelectionEditorAction} to make available.
          * @param navigationProvider The {@link TabSelectionEditorNavigationProvider} that specifies
          *         the back action.
@@ -178,10 +158,6 @@ class TabSelectionEditorCoordinator {
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
             assert mode == TabListCoordinator.TabListMode.GRID
                     || mode == TabListCoordinator.TabListMode.LIST;
-            assert !displayGroups
-                    || (displayGroups
-                            && ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.TAB_SELECTION_EDITOR_V2));
 
             mTabSelectionEditorLayout =
                     LayoutInflater.from(activity)
@@ -198,7 +174,7 @@ class TabSelectionEditorCoordinator {
             mTabListCoordinator = new TabListCoordinator(mode, activity, mTabModelSelector,
                     thumbnailProvider, titleProvider, displayGroups, null, null,
                     TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
-                    mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView, null, null);
+                    mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView, null);
 
             // Note: The TabSelectionEditorCoordinator is always created after native is
             // initialized.
@@ -248,8 +224,7 @@ class TabSelectionEditorCoordinator {
                         @Nullable RecyclerViewPosition recyclerViewPosition, boolean quickMode) {
                     TabSelectionEditorCoordinator.this.resetWithListOfTabs(
                             tabs, preSelectedCount, quickMode);
-                    if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_SELECTION_EDITOR_V2)
-                            || recyclerViewPosition == null) {
+                    if (recyclerViewPosition == null) {
                         return;
                     }
 
@@ -258,8 +233,7 @@ class TabSelectionEditorCoordinator {
 
                 @Override
                 public void syncRecyclerViewPosition() {
-                    if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_SELECTION_EDITOR_V2)
-                            || mClientTabListRecyclerViewPositionSetter == null) {
+                    if (mClientTabListRecyclerViewPositionSetter == null) {
                         return;
                     }
 

@@ -376,6 +376,12 @@
             "description": "Specifies the line number to scroll to when the resource is loaded."
           },
           {
+            "name": "columnNumber",
+            "type": "integer",
+            "optional": true,
+            "description": "Specifies the column number to scroll to when the resource is loaded."
+          },
+          {
             "name": "callback",
             "type": "function",
             "optional": true,

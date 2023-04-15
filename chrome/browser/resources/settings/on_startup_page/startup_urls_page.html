@@ -30,13 +30,13 @@
       <template is="dom-if" if="[[shouldAllowUrlsEdit_(
           prefs.session.startup_urls.enforcement)]]" restamp>
         <div class="list-item" id="addPage">
-          <a is="action-link" class="list-button" on-click="onAddPageTap_">
+          <a is="action-link" class="list-button" on-click="onAddPageClick_">
             $i18n{onStartupAddNewPage}
           </a>
         </div>
         <div class="list-item" id="useCurrentPages">
           <a is="action-link" class="list-button"
-              on-click="onUseCurrentPagesTap_">
+              on-click="onUseCurrentPagesClick_">
             $i18n{onStartupUseCurrent}
           </a>
         </div>

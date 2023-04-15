@@ -958,10 +958,15 @@ void InstalledLoader::RecordExtensionsMetrics(
 
 int InstalledLoader::GetCreationFlags(const ExtensionInfo* info) {
   int flags = extension_prefs_->GetCreationFlags(info->extension_id);
-  if (!Manifest::IsUnpackedLocation(info->extension_location))
+  if (!Manifest::IsUnpackedLocation(info->extension_location)) {
     flags |= Extension::REQUIRE_KEY;
-  if (extension_prefs_->AllowFileAccess(info->extension_id))
+  }
+  // Use the AllowFileAccess pref as the source of truth for file access,
+  // rather than any previously stored creation flag.
+  flags &= ~Extension::ALLOW_FILE_ACCESS;
+  if (extension_prefs_->AllowFileAccess(info->extension_id)) {
     flags |= Extension::ALLOW_FILE_ACCESS;
+  }
   return flags;
 }
 

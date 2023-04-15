@@ -4,7 +4,11 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/user_education_constants.h"
@@ -15,12 +19,38 @@
 #include "base/check_op.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace ash {
 namespace {
 
 // The singleton instance owned by the `UserEducationController`.
 WelcomeTourController* g_instance = nullptr;
+
+// Helpers ---------------------------------------------------------------------
+
+aura::Window* GetPrimaryRootWindow() {
+  auto* window_tree_host_manager = Shell::Get()->window_tree_host_manager();
+  return window_tree_host_manager
+             ? window_tree_host_manager->GetPrimaryRootWindow()
+             : nullptr;
+}
+
+Shelf* GetPrimaryShelf() {
+  auto* primary_root_window = GetPrimaryRootWindow();
+  return primary_root_window ? Shelf::ForWindow(primary_root_window) : nullptr;
+}
+
+HotseatWidget* GetPrimaryHotseatWidget() {
+  auto* primary_shelf = GetPrimaryShelf();
+  return primary_shelf ? primary_shelf->hotseat_widget() : nullptr;
+}
+
+ShelfView* GetPrimaryShelfView() {
+  auto* primary_hotseat_widget = GetPrimaryHotseatWidget();
+  return primary_hotseat_widget ? primary_hotseat_widget->GetShelfView()
+                                : nullptr;
+}
 
 }  // namespace
 
@@ -52,6 +82,10 @@ void WelcomeTourController::AddObserver(
 void WelcomeTourController::RemoveObserver(
     WelcomeTourControllerObserver* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
+  return views::ElementTrackerViews::GetContextForView(GetPrimaryShelfView());
 }
 
 // TODO(http://b/275616974): Implement tutorial descriptions.
@@ -134,12 +168,11 @@ void WelcomeTourController::MaybeStartTutorial() {
   // the tutorial when the primary user session is activated for the first time.
   session_observation_.Reset();
 
-  // TODO(http://b/275616974): Use production context after registering views.
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
   UserEducationController::Get()->StartTutorial(
       UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1,
-      ui::ElementContext(),
+      GetInitialElementContext(),
       /*completed_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
                      weak_ptr_factory_.GetWeakPtr()),

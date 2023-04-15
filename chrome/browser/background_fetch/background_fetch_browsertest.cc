@@ -360,11 +360,12 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   // Runs the |script| in the current tab and writes the output to |*result|.
   bool RunScript(const std::string& script, std::string* result) {
-    return content::ExecuteScriptAndExtractString(
-        active_browser_->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetPrimaryMainFrame(),
-        script, result);
+    *result = content::EvalJs(active_browser_->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetPrimaryMainFrame(),
+                              script)
+                  .ExtractString();
+    return true;
   }
 
   // Runs the given |function| and asserts that it responds with "ok".
@@ -992,8 +993,8 @@ class BackgroundFetchFencedFrameBrowserTest
   bool RunScript(const std::string& script,
                  std::string* result,
                  content::RenderFrameHost* render_frame_host) {
-    return content::ExecuteScriptAndExtractString(render_frame_host, script,
-                                                  result);
+    *result = content::EvalJs(render_frame_host, script).ExtractString();
+    return true;
   }
 
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;

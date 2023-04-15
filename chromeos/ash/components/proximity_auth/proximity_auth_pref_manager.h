@@ -52,17 +52,6 @@ class ProximityAuthPrefManager {
   virtual void SetPromotionShownCount(int count) = 0;
   virtual int GetPromotionShownCount() const = 0;
 
-  // Getter for whether EasyUnlock is allowed for ChromeOS login (in addition to
-  // screen lock).
-  // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.
-  virtual bool IsChromeOSLoginAllowed() const = 0;
-
-  // Setter and getter for whether EasyUnlock is enabled for ChromeOS login (in
-  // addition to screen lock).
-  // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.
-  virtual void SetIsChromeOSLoginEnabled(bool is_enabled) = 0;
-  virtual bool IsChromeOSLoginEnabled() const = 0;
-
   // Setter and getter for whether the "Signin with Smart Lock is disabled"
   // message on the login screen has been shown.
   // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.

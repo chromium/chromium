@@ -24,12 +24,18 @@ namespace blink {
 
 StorageBucket::StorageBucket(
     NavigatorBase* navigator,
+    const String& name,
     mojo::PendingRemote<mojom::blink::BucketHost> remote)
     : ExecutionContextClient(navigator->GetExecutionContext()),
+      name_(name),
       remote_(GetExecutionContext()),
       navigator_base_(navigator) {
   remote_.Bind(std::move(remote), GetExecutionContext()->GetTaskRunner(
                                       TaskType::kInternalDefault));
+}
+
+const String& StorageBucket::name() {
+  return name_;
 }
 
 ScriptPromise StorageBucket::persist(ScriptState* script_state) {

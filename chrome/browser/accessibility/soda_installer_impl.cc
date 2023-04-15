@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -240,7 +240,7 @@ void SodaInstallerImpl::UpdateAndNotifyOnSodaProgress(
 
   DCHECK_LE(downloaded_bytes, total_bytes);
   int progress =
-      100 * base::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
+      100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
                         0.0, 1.0);
   if (language_code != soda_code)
     language_pack_progress_[language_code] = progress;

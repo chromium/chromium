@@ -78,8 +78,7 @@ void WebAXContext::Thaw() {
   private_->GetAXObjectCache().Thaw();
 }
 
-bool WebAXContext::SerializeEntireTree(bool exclude_offscreen,
-                                       size_t max_node_count,
+bool WebAXContext::SerializeEntireTree(size_t max_node_count,
                                        base::TimeDelta timeout,
                                        ui::AXTreeUpdate* response) {
   if (!HasActiveDocument()) {
@@ -91,8 +90,8 @@ bool WebAXContext::SerializeEntireTree(bool exclude_offscreen,
     return false;
   }
 
-  return private_->GetAXObjectCache().SerializeEntireTree(
-      exclude_offscreen, max_node_count, timeout, response);
+  return private_->GetAXObjectCache().SerializeEntireTree(max_node_count,
+                                                          timeout, response);
 }
 
 void WebAXContext::MarkAllImageAXObjectsDirty() {

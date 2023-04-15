@@ -147,14 +147,11 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
          audioTag.src = '_test_resources/long_audio.ogg';
          document.body.appendChild(audioTag);
          audioTag.play();
-         window.domAutomationController.send('done');)";
+         'done';)";
 
   {
     AudioWaiter audio_waiter(contents);
-    std::string result;
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractString(contents, kPlayAudio, &result));
-    EXPECT_EQ("done", result);
+    EXPECT_EQ("done", content::EvalJs(contents, kPlayAudio));
     audio_waiter.WaitForAudible();
   }
 
@@ -166,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   // Next, prepare to stop the audio.
   static constexpr char kStopAudio[] =
       R"(document.body.getElementsByTagName('audio')[0].pause();
-         window.domAutomationController.send('done');)";
+         'done';)";
 
   // Override the timeout. We can't do this at the top of the test because
   // otherwise, the document would immediately be considered inactive.
@@ -175,10 +172,8 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
 
   {
     // Stop the audio.
-    std::string result;
     AudioWaiter audio_waiter(contents);
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractString(contents, kStopAudio, &result));
+    EXPECT_TRUE(content::ExecJs(contents, kStopAudio));
     audio_waiter.WaitForInaudible();
   }
 

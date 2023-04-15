@@ -6,10 +6,10 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -111,8 +111,9 @@ class SnapshotTabHelperTest : public PlatformTest {
   ~SnapshotTabHelperTest() override { [snapshot_cache_ shutdown]; }
 
   void SetCachedSnapshot(UIImage* image) {
-    [snapshot_cache_ setImage:image
-               withSnapshotID:web_state_.GetStableIdentifier()];
+    NSString* snapshot_identifier =
+        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotIdentifier();
+    [snapshot_cache_ setImage:image withSnapshotID:snapshot_identifier];
   }
 
   UIImage* GetCachedSnapshot() {
@@ -120,7 +121,9 @@ class SnapshotTabHelperTest : public PlatformTest {
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    [snapshot_cache_ retrieveImageForSnapshotID:web_state_.GetStableIdentifier()
+    NSString* snapshot_identifier =
+        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotIdentifier();
+    [snapshot_cache_ retrieveImageForSnapshotID:snapshot_identifier
                                        callback:^(UIImage* cached_snapshot) {
                                          snapshot = cached_snapshot;
                                          run_loop_ptr->Quit();
@@ -351,8 +354,9 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   auto web_state = std::make_unique<web::FakeWebState>();
 
   SnapshotTabHelper::CreateForWebState(web_state.get());
-  [[partialMock reject]
-      removeImageWithSnapshotID:web_state.get()->GetStableIdentifier()];
+  NSString* snapshot_identifier =
+      SnapshotTabHelper::FromWebState(web_state.get())->GetSnapshotIdentifier();
+  [[partialMock reject] removeImageWithSnapshotID:snapshot_identifier];
 
   // Use @try/@catch as -reject raises an exception.
   @try {

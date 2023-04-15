@@ -40,9 +40,10 @@
 
   function runGetDisplayMedia(constraints, frame, expectedError) {
     if (frame == "allowedFrame" || frame == "disallowedFrame") {
-      document.getElementById(frame).contentWindow.postMessage(constraints);
-      // window.domAutomationController.send() called by embedded page.
-      return;
+      return new Promise(resolve => {
+        window.addEventListener('message', resolve, {once: true});
+        document.getElementById(frame).contentWindow.postMessage(constraints);
+      }).then((event) => event.data);
     }
 
     return navigator.mediaDevices.getDisplayMedia(constraints).
@@ -53,91 +54,97 @@
   function resizeVideoForHiDpiCapture(width, height) {
     video.style.width = width + 'px';
     video.style.height = height + 'px';
-    returnToTest("success");
+    return logAndReturn("success");
   }
 
   function hasAudioTrack() {
-    returnToTest(`${!!audio_track}`);
+    return logAndReturn(`${!!audio_track}`);
   }
 
   function getVideoTrackType() {
     if (!video_track) {
-      returnToTest("error-no-video-track");
+      return logAndReturn("error-no-video-track");
     }
-    returnToTest(video_track.constructor.name);
+    return logAndReturn(video_track.constructor.name);
   }
 
   function getVideoCloneTrackType() {
     if (!video_track) {
-      returnToTest("error-no-video-track-to-clone");
+      return logAndReturn("error-no-video-track-to-clone");
     }
-    returnToTest(video_track.clone().constructor.name);
+    return logAndReturn(video_track.clone().constructor.name);
   }
 
   function getAudioTrackType() {
     if (!audio_track) {
-      returnToTest("error-no-audio-track");
+      return logAndReturn("error-no-audio-track");
     }
-    returnToTest(audio_track.constructor.name);
+    return logAndReturn(audio_track.constructor.name);
   }
 
   function getDisplaySurfaceSetting() {
-    returnToTest(settings.displaySurface);
+    return logAndReturn(settings.displaySurface);
   }
 
   function getLogicalSurfaceSetting() {
-    returnToTest(settings.logicalSurface.toString());
+    return logAndReturn(settings.logicalSurface.toString());
   }
 
   function getCursorSetting() {
-    returnToTest(settings.cursor);
+    return logAndReturn(settings.cursor);
   }
 
   function getWidthSetting() {
-    returnToTest(settings.width.toString());
+    return logAndReturn(settings.width.toString());
   }
 
   function getFrameRateSetting() {
-    returnToTest(settings.frameRate.toString());
+    return logAndReturn(settings.frameRate.toString());
   }
 
   function getDevicePixelRatio() {
-    returnToTest(window.devicePixelRatio.toString());
+    return logAndReturn(window.devicePixelRatio.toString());
   }
 
   function getVideoWidth() {
-    returnToTest(video.videoWidth.toString());
+    return logAndReturn(video.videoWidth.toString());
   }
 
   function getVideoHeight() {
-    returnToTest(video.videoHeight.toString());
+    return logAndReturn(video.videoHeight.toString());
   }
 
   function waitVideoMuted() {
     if (video_track.muted) {
-      returnToTest("muted");
+      return logAndReturn("muted");
     }
-    video_track.onmute = function(evt) {
-      returnToTest("muted");
-    }
+    return new Promise(resolve => {
+      video_track.onmute = function(evt) {
+        return resolve(logAndReturn("muted"));
+      };
+    });
   }
 
   function waitVideoUnmuted() {
     if (!video_track.muted) {
-      returnToTest("unmuted");
+      return logAndReturn("unmuted");
     }
-    video_track.onunmute = function(evt) {
-      returnToTest("unmuted");
-    }
+    return new Promise(resolve => {
+      video_track.onunmute = function(evt) {
+        return resolve(logAndReturn("unmuted"));
+      };
+    });
   }
 
   function waitVideoEnded() {
     if (video_track.readyState == "ended") {
-      returnToTest("ended");
+      return logAndReturn("ended");
     }
-    video_track.onended = function(evt) {
-      returnToTest("ended");
-    }
+    return new Promise(resolve => {
+      video_track.onended = function(evt) {
+        return resolve(logAndReturn("ended"));
+      };
+    });
   }
 
   function stopAllTracks() {
@@ -147,7 +154,7 @@
     if (video_track) {
       video_track.stop();
     }
-    returnToTest("stopped");
+    return logAndReturn("stopped");
   }
   </script>
 </head>

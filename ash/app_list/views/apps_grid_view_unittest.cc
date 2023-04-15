@@ -292,20 +292,22 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
     auto enabled_features = std::vector<base::test::FeatureRef>();
+    auto disabled_features = std::vector<base::test::FeatureRef>();
     if (use_drag_drop_refactor_) {
       enabled_features.push_back(app_list_features::kDragAndDropRefactor);
     }
 
     if (folder_icon_refresh_) {
       enabled_features.push_back(features::kAppCollectionFolderRefresh);
+    } else {
+      disabled_features.push_back(features::kAppCollectionFolderRefresh);
     }
 
     if (enable_shelf_party_) {
       enabled_features.push_back(features::kShelfParty);
     }
 
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features*/ {});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.

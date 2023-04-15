@@ -32,8 +32,8 @@ const char16_t kInvalidChars[] = {'\n',   '\r', '\t',
 
 // BookmarkNode ---------------------------------------------------------------
 
-// Below predefined GUIDs for permanent bookmark folders, determined via named
-// GUIDs/UUIDs. Do NOT modify them as they may be exposed via Sync. For
+// Below predefined UUIDs for permanent bookmark folders, determined via named
+// UUIDs/UUIDs. Do NOT modify them as they may be exposed via Sync. For
 // reference, here's the python script to produce them:
 // > import uuid
 // > chromium_namespace = uuid.uuid5(uuid.NAMESPACE_DNS, "chromium.org")
@@ -45,32 +45,32 @@ const char16_t kInvalidChars[] = {'\n',   '\r', '\t',
 // > managed_bookmarks = uuid.uuid5(bookmarks_namespace, "managed_bookmarks")
 
 // static
-const char BookmarkNode::kRootNodeGuid[] =
+const char BookmarkNode::kRootNodeUuid[] =
     "2509a7dc-215d-52f7-a429-8d80431c6c75";
 
 // static
-const char BookmarkNode::kBookmarkBarNodeGuid[] =
+const char BookmarkNode::kBookmarkBarNodeUuid[] =
     "0bc5d13f-2cba-5d74-951f-3f233fe6c908";
 
 // static
-const char BookmarkNode::kOtherBookmarksNodeGuid[] =
+const char BookmarkNode::kOtherBookmarksNodeUuid[] =
     "82b081ec-3dd3-529c-8475-ab6c344590dd";
 
 // static
-const char BookmarkNode::kMobileBookmarksNodeGuid[] =
+const char BookmarkNode::kMobileBookmarksNodeUuid[] =
     "4cf2e351-0e85-532b-bb37-df045d8f8d0f";
 
 // static
-const char BookmarkNode::kManagedNodeGuid[] =
+const char BookmarkNode::kManagedNodeUuid[] =
     "323123f4-9381-5aee-80e6-ea5fca2f7672";
 
 // This value is the result of exercising sync's function
 // syncer::InferGuidForLegacyBookmark() with an empty input.
-const char BookmarkNode::kBannedGuidDueToPastSyncBug[] =
+const char BookmarkNode::kBannedUuidDueToPastSyncBug[] =
     "da39a3ee-5e6b-fb0d-b255-bfef95601890";
 
-BookmarkNode::BookmarkNode(int64_t id, const base::Uuid& guid, const GURL& url)
-    : BookmarkNode(id, guid, url, url.is_empty() ? FOLDER : URL, false) {}
+BookmarkNode::BookmarkNode(int64_t id, const base::Uuid& uuid, const GURL& url)
+    : BookmarkNode(id, uuid, url, url.is_empty() ? FOLDER : URL, false) {}
 
 BookmarkNode::~BookmarkNode() = default;
 
@@ -203,19 +203,19 @@ std::vector<base::StringPiece16> BookmarkNode::GetTitledUrlNodeAncestorTitles()
 }
 
 BookmarkNode::BookmarkNode(int64_t id,
-                           const base::Uuid& guid,
+                           const base::Uuid& uuid,
                            const GURL& url,
                            Type type,
                            bool is_permanent_node)
     : id_(id),
-      guid_(guid),
+      uuid_(uuid),
       url_(url),
       type_(type),
       date_added_(base::Time::Now()),
       is_permanent_node_(is_permanent_node) {
   DCHECK_NE(type == URL, url.is_empty());
-  DCHECK(guid.is_valid());
-  DCHECK_NE(guid.AsLowercaseString(), std::string(kBannedGuidDueToPastSyncBug));
+  DCHECK(uuid.is_valid());
+  DCHECK_NE(uuid.AsLowercaseString(), std::string(kBannedUuidDueToPastSyncBug));
 }
 
 void BookmarkNode::InvalidateFavicon() {
@@ -231,7 +231,7 @@ std::unique_ptr<BookmarkPermanentNode>
 BookmarkPermanentNode::CreateManagedBookmarks(int64_t id) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, FOLDER, base::Uuid::ParseLowercase(kManagedNodeGuid),
+      id, FOLDER, base::Uuid::ParseLowercase(kManagedNodeUuid),
       std::u16string(),
       /*visible_when_empty=*/false));
 }
@@ -248,7 +248,7 @@ std::unique_ptr<BookmarkPermanentNode> BookmarkPermanentNode::CreateBookmarkBar(
     bool visible_when_empty) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, BOOKMARK_BAR, base::Uuid::ParseLowercase(kBookmarkBarNodeGuid),
+      id, BOOKMARK_BAR, base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME),
       visible_when_empty));
 }
@@ -259,7 +259,7 @@ BookmarkPermanentNode::CreateOtherBookmarks(int64_t id,
                                             bool visible_when_empty) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, OTHER_NODE, base::Uuid::ParseLowercase(kOtherBookmarksNodeGuid),
+      id, OTHER_NODE, base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME),
       visible_when_empty));
 }
@@ -270,17 +270,17 @@ BookmarkPermanentNode::CreateMobileBookmarks(int64_t id,
                                              bool visible_when_empty) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
-      id, MOBILE, base::Uuid::ParseLowercase(kMobileBookmarksNodeGuid),
+      id, MOBILE, base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME),
       visible_when_empty));
 }
 
 BookmarkPermanentNode::BookmarkPermanentNode(int64_t id,
                                              Type type,
-                                             const base::Uuid& guid,
+                                             const base::Uuid& uuid,
                                              const std::u16string& title,
                                              bool visible_when_empty)
-    : BookmarkNode(id, guid, GURL(), type, /*is_permanent_node=*/true),
+    : BookmarkNode(id, uuid, GURL(), type, /*is_permanent_node=*/true),
       visible_when_empty_(visible_when_empty) {
   DCHECK(type != URL);
   SetTitle(title);

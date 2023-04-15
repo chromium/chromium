@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 
+#include <algorithm>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -67,7 +69,7 @@ gfx::Size CrOSNextDefaultDeskButton::CalculatePreferredSize() const {
   // tests with extreme abnormal size of display.
   const int min_width = std::min(preview_width, kDefaultDeskButtonMinWidth);
   const int max_width = std::max(preview_width, kDefaultDeskButtonMinWidth);
-  const int width = base::clamp(
+  const int width = std::clamp(
       label_width + 2 * kDefaultButtonHorizontalPadding, min_width, max_width);
   return gfx::Size(width, kDefaultDeskButtonHeight);
 }

@@ -4,6 +4,7 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
+#include <algorithm>
 #include <bit>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -16,7 +17,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
@@ -331,7 +331,7 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
 void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
   const float translation_y = current_y - initial_y_;
   // Stop translating the menu if the drag moves out of bounds.
-  if (down && translation_y >= 0.f) {
+  if ((down && translation_y >= 0.f) || (!down && current_y <= 0.f)) {
     return;
   }
   menu_view_->layer()->SetTransform(
@@ -346,7 +346,7 @@ void TabletModeMultitaskMenu::EndDrag() {
   const float max_translation_y =
       -menu_view_->GetPreferredSize().height() - kVerticalPosition;
   const float translated_ratio =
-      base::clamp(current_translation_y / max_translation_y, 0.f, 1.f);
+      std::clamp(current_translation_y / max_translation_y, 0.f, 1.f);
   Animate(/*show=*/translated_ratio <= 0.5f);
 }
 

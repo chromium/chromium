@@ -157,7 +157,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   /**
    * A handler for selecting a site (by clicking on the origin).
    */
-  private onOriginTap_() {
+  private onOriginClick_() {
     if (!this.allowNavigateToSiteDetail_) {
       return;
     }
@@ -250,7 +250,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         !!this.model.controlledBy;
   }
 
-  private onResetButtonTap_() {
+  private onResetButtonClick_() {
     // Use the appropriate method to reset a chooser exception.
     if (this.chooserType !== ChooserType.NONE && this.chooserObject !== null) {
       this.browserProxy.resetChooserExceptionForSite(
@@ -263,7 +263,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         this.model.incognito);
   }
 
-  private onShowActionMenuTap_() {
+  private onShowActionMenuClick_() {
     // Chooser exceptions do not support the action menu, so do nothing.
     if (this.chooserType !== ChooserType.NONE) {
       return;

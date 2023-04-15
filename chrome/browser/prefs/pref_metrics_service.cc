@@ -32,9 +32,9 @@ PrefMetricsService::~PrefMetricsService() {
 void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
                                                      bool homepage_is_ntp,
                                                      const GURL& homepage_url) {
-  UMA_HISTOGRAM_BOOLEAN("Settings.ShowHomeButton", show_home_button);
+  UMA_HISTOGRAM_BOOLEAN("Settings.ShowHomeButton2", show_home_button);
   if (show_home_button) {
-    UMA_HISTOGRAM_BOOLEAN("Settings.GivenShowHomeButton_HomePageIsNewTabPage",
+    UMA_HISTOGRAM_BOOLEAN("Settings.GivenShowHomeButton_HomePageIsNewTabPage2",
                           homepage_is_ntp);
   }
 
@@ -46,7 +46,7 @@ void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
   // pages, e.g. plus.google.com).
   if (!homepage_is_ntp) {
     if (homepage_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION("Settings.HomePageEngineType",
+      UMA_HISTOGRAM_ENUMERATION("Settings.HomePageEngineType2",
                                 SearchEngineUtils::GetEngineType(homepage_url),
                                 SEARCH_ENGINE_MAX);
     }
@@ -70,7 +70,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
 #if !BUILDFLAG(IS_ANDROID)
   int restore_on_startup = prefs_->GetInteger(prefs::kRestoreOnStartup);
   UMA_HISTOGRAM_ENUMERATION(
-      "Settings.StartupPageLoadSettings", restore_on_startup,
+      "Settings.StartupPageLoadSettings2", restore_on_startup,
       static_cast<int>(SessionStartupPref::kPrefValueMax));
   if (SessionStartupPref(
           SessionStartupPref::PrefValueToType(restore_on_startup))
@@ -83,7 +83,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
       if (url_text) {
         GURL start_url(*url_text);
         if (start_url.is_valid()) {
-          UMA_HISTOGRAM_ENUMERATION("Settings.StartupPageEngineTypes",
+          UMA_HISTOGRAM_ENUMERATION("Settings.StartupPageEngineTypes2",
                                     SearchEngineUtils::GetEngineType(start_url),
                                     SEARCH_ENGINE_MAX);
         }
@@ -108,7 +108,15 @@ PrefMetricsService* PrefMetricsService::Factory::GetForProfile(
 PrefMetricsService::Factory::Factory()
     : ProfileKeyedServiceFactory(
           "PrefMetricsService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // Not needed for any other profile types because these settings
+              // is only configurable by the profile owner for regular
+              // browser profiles.
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
@@ -116,8 +124,9 @@ PrefMetricsService::Factory::~Factory() {
 }
 
 KeyedService* PrefMetricsService::Factory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new PrefMetricsService(static_cast<Profile*>(profile));
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return new PrefMetricsService(profile);
 }
 
 bool PrefMetricsService::Factory::ServiceIsCreatedWithBrowserContext() const {

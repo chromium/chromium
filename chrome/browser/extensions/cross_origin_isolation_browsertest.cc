@@ -198,24 +198,21 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
     constexpr char kScript[] = R"(
       (() => {
         let img = document.createElement('img');
-        img.addEventListener('load', () => {
-          window.domAutomationController.send('Success');
+        return new Promise(resolve => {
+          img.addEventListener('load', () => {
+            resolve('Success');
+          });
+          img.addEventListener('error', (e) => {
+            resolve('Load failed');
+          });
+          img.src = $1;
+          document.body.appendChild(img);
         });
-        img.addEventListener('error', (e) => {
-          window.domAutomationController.send('Load failed');
-        });
-        img.src = $1;
-        document.body.appendChild(img);
       })();
     )";
 
-    std::string result;
-    if (!content::ExecuteScriptAndExtractString(
-            rfh, content::JsReplace(kScript, image_url), &result)) {
-      return "Execution failed";
-    }
-
-    return result;
+    return content::EvalJs(rfh, content::JsReplace(kScript, image_url))
+        .ExtractString();
   };
 
   GURL image_url_with_host_permissions =
@@ -355,15 +352,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
       const char* kScript = R"(
         fetch('%s')
           .then(response => response.text())
-          .then(text => window.domAutomationController.send(text))
-          .catch(err => window.domAutomationController.send(
-            "Fetch error: " + err));
+          .catch(err => "Fetch error: " + err);
       )";
       std::string script = base::StringPrintf(kScript, url.spec().c_str());
-      std::string result;
-      if (!content::ExecuteScriptAndExtractString(host, script, &result))
-        return std::string("Error executing script");
-      return result;
+      return content::EvalJs(host, script).ExtractString();
     };
     // Sanity check that fetching a url the extension doesn't have access to,
     // leads to a fetch error.
@@ -381,15 +373,14 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   // and non-cross-origin-isolated extension contexts are considered "blessed".
   {
     auto verify_is_blessed_context = [](content::RenderFrameHost* host) {
-      std::string result;
       const char* kScript = R"(
-        chrome.browserAction.getTitle({}, title => {
-          window.domAutomationController.send(title);
+        new Promise(resolve => {
+          chrome.browserAction.getTitle({}, title => {
+            resolve(title);
+          });
         });
       )";
-      ASSERT_TRUE(
-          content::ExecuteScriptAndExtractString(host, kScript, &result));
-      EXPECT_EQ("foo", result);
+      EXPECT_EQ("foo", content::EvalJs(host, kScript));
     };
 
     {

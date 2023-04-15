@@ -63,6 +63,15 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
+// When enabled, intermediate asynchronous updates will not be processed or
+// pushed to AutocompleteListeners. Only the first (synchronous) and the last
+// (final) AutocompleteResult will be pushed to listeners.
+// The change is expected to help help improve latency on low-end (Android)
+// devices.
+BASE_FEATURE(kIgnoreIntermediateResults,
+             "OmniboxIgnoreIntermediateResults",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, uses the grouping framework with zero prefix suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
 BASE_FEATURE(kGroupingFrameworkForZPS,
@@ -81,13 +90,6 @@ BASE_FEATURE(kGroupingFrameworkForNonZPS,
 BASE_FEATURE(kOmniboxDemoteByType,
              "OmniboxDemoteByType",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Remove Excessive Clear Calls on RecycledViewPool in Omnibox.
-// The feature improves efficiency of the RecycledViewPool by removing excessive
-// calls to RecycledViewPool#clear().
-BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
-             "OmniboxRemoveExcessiveRecycledViewClearCalls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, deduping prefers non-shortcut provider matches, while still
 // treating fuzzy provider matches as the least preferred.
@@ -198,12 +200,6 @@ BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
              "OmniboxFocusTriggersSRPZeroSuggest",
              enabled_by_default_android_only);
 
-// If enabled, keeps all zero-prefix suggestions in the second column and does
-// not count them toward the overall zero-suggest limit.
-BASE_FEATURE(kKeepSecondaryZeroSuggest,
-             "KeepSecondaryZeroSuggest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
@@ -228,6 +224,13 @@ BASE_FEATURE(kNormalizeSearchSuggestions,
 BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
              "OmniboxOnClobberFocusTypeOnContent",
              enabled_by_default_desktop_android);
+
+// If enabled, allows up to
+// `OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions` zero-prefix
+// suggestions in the 2nd column of realbox.
+BASE_FEATURE(kRealboxSecondaryZeroSuggest,
+             "RealboxSecondaryZeroSuggest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
@@ -354,6 +357,12 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
 
+// If enabled, uses Chrome Refresh 2023 Action Chips in the omnibox suggestion
+// popup.
+BASE_FEATURE(kCr2023ActionChips,
+             "Cr2023ActionChips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, finance ticker answer from omnibox will reverse the color for
 // stock ticker. only colors being swapped are those that represent "growth" and
 // "loss" to represent colors red and green in a way that is appropriate for a
@@ -429,25 +438,31 @@ BASE_FEATURE(kExpandedStateShape,
              "OmniboxExpandedStateShape",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox "expanded state" colors are updated to match CR23
+// guidelines.
+BASE_FEATURE(kExpandedStateColors,
+             "OmniboxExpandedStateColors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox LHS and RHS icons are updated to match GM3
+// If enabled, Omnibox LHS and RHS icons are updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxCR23SteadyStateIcons,
              "kOmniboxCR23SteadyStateIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox "steady state" background color is updated to match GM3
+// If enabled, Omnibox "steady state" background color is updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
              "OmniboxSteadyStateBackgroundColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Specifies the GM3 omnibox background color in Dark Mode.
+// Specifies the CR23 omnibox background color in Dark Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -465,7 +480,7 @@ const base::FeatureParam<std::string> kOmniboxDarkBackgroundColor(
     "OmniboxDarkBackgroundColor",
     "0x2A2A2A");
 
-// Specifies the GM3 omnibox background color in Dark Mode (on-hover).
+// Specifies the CR23 omnibox background color in Dark Mode (on-hover).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -483,7 +498,7 @@ const base::FeatureParam<std::string> kOmniboxDarkBackgroundColorHovered(
     "OmniboxDarkBackgroundColorHovered",
     "0x4C4C4B");
 
-// Specifies the GM3 omnibox background color in Light Mode.
+// Specifies the CR23 omnibox background color in Light Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -501,7 +516,7 @@ const base::FeatureParam<std::string> kOmniboxLightBackgroundColor(
     "OmniboxLightBackgroundColor",
     "0xEBEFF7");
 
-// Specifies the GM3 omnibox background color in Light Mode (on-hover).
+// Specifies the CR23 omnibox background color in Light Mode (on-hover).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -520,24 +535,24 @@ const base::FeatureParam<std::string> kOmniboxLightBackgroundColorHovered(
     "0xE3E7F0");
 
 // If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
-// match GM3 guidelines.
+// match CR23 guidelines.
 BASE_FEATURE(kOmniboxSteadyStateHeight,
              "OmniboxSteadyStateHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox "steady state" text style is updated to match GM3
+// If enabled, Omnibox "steady state" text style is updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateTextStyle,
              "OmniboxSteadyStateTextStyle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox "steady state" text color is updated to match GM3
+// If enabled, Omnibox "steady state" text color is updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Specifies the GM3 omnibox text color in Dark Mode.
+// Specifies the CR23 omnibox text color in Dark Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -553,7 +568,7 @@ const base::FeatureParam<std::string> kOmniboxTextColorDarkMode(
     "OmniboxTextColorDarkMode",
     "0xE3E3E3");
 
-// Specifies the GM3 omnibox text color in Dark Mode (dimmed).
+// Specifies the CR23 omnibox text color in Dark Mode (dimmed).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -569,7 +584,7 @@ const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode(
     "OmniboxTextColorDimmedDarkMode",
     "0xC7C7C7");
 
-// Specifies the GM3 omnibox text color in Light Mode.
+// Specifies the CR23 omnibox text color in Light Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -585,7 +600,7 @@ const base::FeatureParam<std::string> kOmniboxTextColorLightMode(
     "OmniboxTextColorLightMode",
     "0x1F1F1F");
 
-// Specifies the GM3 omnibox text color in Light Mode (dimmed).
+// Specifies the CR23 omnibox text color in Light Mode (dimmed).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -675,18 +690,15 @@ BASE_FEATURE(kReportSearchboxStats,
              "OmniboxReportSearchboxStats",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, logs Omnibox URL scoring signals to OmniboxEventProto in UMA.
+// If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
+// training the ML scoring models.
 BASE_FEATURE(kLogUrlScoringSignals,
              "LogUrlScoringSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, runs the ML scoring model to assign relevance scores to URL
-// suggestions. This enables the autocomplete system related changes to support
-// ML scoring and moves scoring out of the autocomplete providers into
-// autocomplete controller.
-BASE_FEATURE(kMlRelevanceScoring,
-             "MlRelevanceScoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, runs the ML scoring model to assign new relevance scores to the
+// URL suggestions and reranks them.
+BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, creates Omnibox autocompete URL scoring model.
 BASE_FEATURE(kUrlScoringModel,
@@ -697,4 +709,10 @@ BASE_FEATURE(kUrlScoringModel,
 // the suggestion list on the NTP and SRP.
 BASE_FEATURE(kInspireMe, "OmniboxInspireMe", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Actions in Suggest is a data-driven feature; it's considered enabled when the
+// data is available.
+// The feature flag below helps us tune feature behaviors.
+BASE_FEATURE(kActionsInSuggest,
+             "OmniboxActionsInSuggest",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace omnibox

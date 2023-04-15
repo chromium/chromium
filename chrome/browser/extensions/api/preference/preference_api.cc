@@ -70,6 +70,8 @@ constexpr char kPermissionErrorMessage[] =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr char kPrimaryProfileOnlyErrorMessage[] =
     "You may only access the preference '*' in the primary profile.";
+constexpr char kAshDoesNotSupportPreference[] =
+    "The browser preference is not supported.";
 #endif
 constexpr char kIncognitoKey[] = "incognito";
 constexpr char kScopeKey[] = "scope";
@@ -698,6 +700,11 @@ void GetPreferenceFunction::OnLacrosGetSuccess(
     absl::optional<::base::Value> opt_value,
     crosapi::mojom::PrefControlState control_state) {
   if (!browser_context()) {
+    return;
+  }
+
+  if (!opt_value) {
+    Respond(Error(kAshDoesNotSupportPreference));
     return;
   }
 

@@ -135,6 +135,21 @@ class PLATFORM_EXPORT BlinkStorageKey {
     return ancestor_chain_bit_;
   }
 
+  // `IsFirstPartyContext` returns true if the StorageKey is for a context that
+  // is "first-party", i.e. the StorageKey's top-level site and origin have
+  // the same scheme and domain, and all intervening frames in the frame tree
+  // are first-party.
+  //
+  // `IsThirdPartyContext` returns true if the StorageKey is for a context that
+  // is "third-party", i.e. the StorageKey's top-level site and origin have
+  // different schemes and/or domains, or an intervening frame in the frame
+  // tree is third-party. StorageKeys created using a nonce instead of a
+  // top-level site will also be considered third-party.
+  bool IsFirstPartyContext() const {
+    return ancestor_chain_bit_ == mojom::blink::AncestorChainBit::kSameSite;
+  }
+  bool IsThirdPartyContext() const { return !IsFirstPartyContext(); }
+
   // [Block 5 - Shared Utility] - Keep in sync with StorageKey.
 
   // (5A) Serialize to string for use in debugging only.

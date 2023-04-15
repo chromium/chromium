@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -149,8 +149,8 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
 
   // This implementation is based on the equivalent logic in base/guid.cc.
 
-  // Set the GUID to version 4 as described in RFC 4122, section 4.4.
-  // The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
+  // Set the UUID to version 4 as described in RFC 4122, section 4.4.
+  // The format of UUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
   // where y is one of [8, 9, A, B].
 
   // Clear the version bits and set the version to 4:
@@ -172,23 +172,23 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
 // ModelTypeWorker. The reason why this is non-trivial today is that some users
 // are known to contain corrupt data in the sense that several different
 // entities (identified by their server-provided ID) use the same client tag
-// (and GUID). Currently BookmarkModelMerger has logic to prefer folders over
-// regular URLs and reassign GUIDs.
+// (and UUID). Currently BookmarkModelMerger has logic to prefer folders over
+// regular URLs and reassign UUIDs.
 std::string InferGuidForLegacyBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
   DCHECK(
-      !base::GUID::ParseCaseInsensitive(originator_client_item_id).is_valid());
+      !base::Uuid::ParseCaseInsensitive(originator_client_item_id).is_valid());
 
   const std::string unique_tag =
       base::StrCat({originator_cache_guid, originator_client_item_id});
   const base::SHA1Digest hash =
       base::SHA1HashSpan(base::as_bytes(base::make_span(unique_tag)));
 
-  static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer GUID");
+  static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer UUID");
 
   const std::string guid = ComputeGuidFromBytes(base::make_span(hash));
-  DCHECK(base::GUID::ParseLowercase(guid).is_valid());
+  DCHECK(base::Uuid::ParseLowercase(guid).is_valid());
   return guid;
 }
 
@@ -286,12 +286,12 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     bm_specifics->set_url(node->url().spec());
   }
 
-  DCHECK(node->guid().is_valid()) << "Actual: " << node->guid();
-  bm_specifics->set_guid(node->guid().AsLowercaseString());
+  DCHECK(node->uuid().is_valid()) << "Actual: " << node->uuid();
+  bm_specifics->set_guid(node->uuid().AsLowercaseString());
 
-  DCHECK(node->parent()->guid().is_valid())
-      << "Actual: " << node->parent()->guid();
-  bm_specifics->set_parent_guid(node->parent()->guid().AsLowercaseString());
+  DCHECK(node->parent()->uuid().is_valid())
+      << "Actual: " << node->parent()->uuid();
+  bm_specifics->set_parent_guid(node->parent()->uuid().AsLowercaseString());
 
   const std::string node_title = base::UTF16ToUTF8(node->GetTitle());
   bm_specifics->set_legacy_canonicalized_title(
@@ -354,13 +354,13 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   DCHECK(IsValidBookmarkSpecifics(specifics));
   TRACE_EVENT0("sync", "CreateBookmarkNodeFromSpecifics");
 
-  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());
 
-  const base::GUID parent_guid =
-      base::GUID::ParseLowercase(specifics.parent_guid());
+  const base::Uuid parent_guid =
+      base::Uuid::ParseLowercase(specifics.parent_guid());
   DCHECK(parent_guid.is_valid());
-  DCHECK_EQ(parent_guid, parent->guid());
+  DCHECK_EQ(parent_guid, parent->uuid());
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
@@ -409,10 +409,10 @@ void UpdateBookmarkNodeFromSpecifics(
   DCHECK(model);
   DCHECK(favicon_service);
   // We shouldn't try to update the properties of the BookmarkNode before
-  // resolving any conflict in GUID. Either GUIDs are the same, or the GUID in
+  // resolving any conflict in UUID. Either UUIDs are the same, or the UUID in
   // specifics is invalid, and hence we can ignore it.
-  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
-  DCHECK(!guid.is_valid() || guid == node->guid());
+  base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
+  DCHECK(!guid.is_valid() || guid == node->uuid());
 
   model->SetTitle(node, NodeTitleFromSpecifics(specifics),
                   bookmarks::metrics::BookmarkEditSource::kOther);
@@ -451,13 +451,13 @@ sync_pb::BookmarkSpecifics::Type GetProtoTypeFromBookmarkNode(
   }
 }
 
-const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
+const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
     const bookmarks::BookmarkNode* node,
-    const base::GUID& guid,
+    const base::Uuid& guid,
     bookmarks::BookmarkModel* model) {
   DCHECK(guid.is_valid());
 
-  if (node->guid() == guid) {
+  if (node->uuid() == guid) {
     // Nothing to do.
     return node;
   }
@@ -487,23 +487,23 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;
   }
-  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
 
   if (!guid.is_valid()) {
-    DLOG(ERROR) << "Invalid bookmark: invalid GUID in specifics.";
+    DLOG(ERROR) << "Invalid bookmark: invalid UUID in specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
     is_valid = false;
   } else if (guid.AsLowercaseString() ==
-             bookmarks::BookmarkNode::kBannedGuidDueToPastSyncBug) {
-    DLOG(ERROR) << "Invalid bookmark: banned GUID in specifics.";
+             bookmarks::BookmarkNode::kBannedUuidDueToPastSyncBug) {
+    DLOG(ERROR) << "Invalid bookmark: banned UUID in specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
     is_valid = false;
   }
 
-  const base::GUID parent_guid =
-      base::GUID::ParseLowercase(specifics.parent_guid());
+  const base::Uuid parent_guid =
+      base::Uuid::ParseLowercase(specifics.parent_guid());
   if (!parent_guid.is_valid()) {
-    DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
+    DLOG(ERROR) << "Invalid bookmark: invalid parent UUID in specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
     is_valid = false;
   }
@@ -560,17 +560,17 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   return is_valid;
 }
 
-base::GUID InferGuidFromLegacyOriginatorId(
+base::Uuid InferGuidFromLegacyOriginatorId(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
-  // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
+  // Bookmarks created around 2016, between [M44..M52) use an uppercase UUID
   // as originator client item ID, so it requires case-insensitive parsing.
-  base::GUID guid = base::GUID::ParseCaseInsensitive(originator_client_item_id);
+  base::Uuid guid = base::Uuid::ParseCaseInsensitive(originator_client_item_id);
   if (guid.is_valid()) {
     return guid;
   }
 
-  return base::GUID::ParseLowercase(InferGuidForLegacyBookmark(
+  return base::Uuid::ParseLowercase(InferGuidForLegacyBookmark(
       originator_cache_guid, originator_client_item_id));
 }
 
@@ -578,19 +578,19 @@ bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
                              const syncer::ClientTagHash& client_tag_hash,
                              const std::string& originator_cache_guid,
                              const std::string& originator_client_item_id) {
-  DCHECK(base::GUID::ParseLowercase(specifics.guid()).is_valid());
+  DCHECK(base::Uuid::ParseLowercase(specifics.guid()).is_valid());
 
   if (!client_tag_hash.value().empty()) {
     return syncer::ClientTagHash::FromUnhashed(
                syncer::BOOKMARKS, specifics.guid()) == client_tag_hash;
   }
 
-  // Guard against returning true for cases where the GUID cannot be inferred.
+  // Guard against returning true for cases where the UUID cannot be inferred.
   if (originator_cache_guid.empty() && originator_client_item_id.empty()) {
     return false;
   }
 
-  return base::GUID::ParseLowercase(specifics.guid()) ==
+  return base::Uuid::ParseLowercase(specifics.guid()) ==
          InferGuidFromLegacyOriginatorId(originator_cache_guid,
                                          originator_client_item_id);
 }

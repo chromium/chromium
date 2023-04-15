@@ -82,9 +82,6 @@ def main():
         if running_unattended():
             set_ffx_isolate_dir(
                 stack.enter_context(tempfile.TemporaryDirectory()))
-        # crbug.com/1408189: overnet.cso causes flakes in overnet.
-        # Need to restart daemon before we start
-        stack.enter_context(ScopedFfxConfig('overnet.cso', 'disabled'))
         run_ffx_command(('daemon', 'stop'), check=False)
         if running_unattended():
             stack.enter_context(

@@ -61,9 +61,13 @@ class CompanionUrlBuilderTest : public testing::Test {
   void VerifyPageUrlSent(GURL page_url, bool expect_was_sent) {
     GURL companion_url = url_builder_->BuildCompanionURL(page_url);
 
+    std::string companion_query_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "companion_query",
+                                           &companion_query_param));
+
     // Deserialize the query param into protobuf.
     companion::proto::CompanionUrlParams proto =
-        DeserializeCompanionRequest(companion_url);
+        DeserializeCompanionRequest(companion_query_param);
 
     if (expect_was_sent) {
       EXPECT_EQ(proto.page_url(), page_url.spec());
@@ -74,12 +78,10 @@ class CompanionUrlBuilderTest : public testing::Test {
     EXPECT_TRUE(proto.has_msbb_enabled());
   }
   // Deserialize the query param into proto::CompanionUrlParams.
-  proto::CompanionUrlParams DeserializeCompanionRequest(GURL companion_url) {
+  proto::CompanionUrlParams DeserializeCompanionRequest(
+      std::string companion_url_param) {
     companion::proto::CompanionUrlParams proto;
-    std::string url_param;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "companion_query",
-                                           &url_param));
-    auto base64_decoded = base::Base64Decode(url_param);
+    auto base64_decoded = base::Base64Decode(companion_url_param);
     auto serialized_proto = std::string(base64_decoded.value().begin(),
                                         base64_decoded.value().end());
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
@@ -107,9 +109,18 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
   EXPECT_EQ(value, kOrigin);
 
+  std::string companion_url_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "companion_query",
+                                         &companion_url_param));
+
+  // Verify that both helper methods generate the same proto.
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+  EXPECT_EQ(encoded_proto, companion_url_param);
+
   // Deserialize the query param into protobuf.
   companion::proto::CompanionUrlParams proto =
-      DeserializeCompanionRequest(companion_url);
+      DeserializeCompanionRequest(companion_url_param);
 
   // URL shouldn't be sent when MSBB is off.
   EXPECT_EQ(proto.page_url(), std::string());
@@ -130,9 +141,18 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
   EXPECT_EQ(value, kOrigin);
 
+  std::string companion_url_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "companion_query",
+                                         &companion_url_param));
+
+  // Verify that both helper methods generate the same proto.
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+  EXPECT_EQ(encoded_proto, companion_url_param);
+
   // Deserialize the query param into protobuf.
   companion::proto::CompanionUrlParams proto =
-      DeserializeCompanionRequest(companion_url);
+      DeserializeCompanionRequest(companion_url_param);
 
   // Verify fields inside protobuf.
   EXPECT_EQ(proto.page_url(), page_url.spec());
@@ -143,7 +163,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_TRUE(proto.has_promo_state());
   EXPECT_EQ(1, proto.promo_state().signin_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
-  EXPECT_EQ(0, proto.promo_state().labs_promo_denial_count());
+  EXPECT_EQ(0, proto.promo_state().exps_promo_denial_count());
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {

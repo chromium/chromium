@@ -97,9 +97,14 @@ public abstract class CafBaseMediaRouteProvider
             return;
         }
 
-        // No-op, if already monitoring the application for this source.
         String applicationId = source.getApplicationId();
         DiscoveryCallback callback = mDiscoveryCallbacks.get(applicationId);
+
+        if (MediaRouterClient.getInstance().isCastAnotherContentWhileCastingEnabled()) {
+            updateSessionMediaSourceIfNeeded(callback, source);
+        }
+
+        // No-op, if already monitoring the application for this source.
         if (callback != null) {
             callback.addSourceUrn(sourceId);
             return;
@@ -297,7 +302,7 @@ public abstract class CafBaseMediaRouteProvider
         sessionController().onSessionStarted();
 
         MediaSink sink = mPendingCreateRouteRequestInfo.sink;
-        MediaSource source = mPendingCreateRouteRequestInfo.source;
+        MediaSource source = mPendingCreateRouteRequestInfo.getMediaSource();
         MediaRoute route = new MediaRoute(
                 sink.getId(), source.getSourceId(), mPendingCreateRouteRequestInfo.presentationId);
         addRoute(route, mPendingCreateRouteRequestInfo.origin, mPendingCreateRouteRequestInfo.tabId,
@@ -356,6 +361,12 @@ public abstract class CafBaseMediaRouteProvider
         mManager.onRouteCreated(route.id, route.sinkId, nativeRequestId, this, wasLaunched);
     }
 
+    /** Updates the media source for the route identified by @param routeId */
+    public void updateRouteMediaSource(String routeId, String sourceId) {
+        mRoutes.get(routeId).setSourceId(sourceId);
+        mManager.onRouteMediaSourceUpdated(routeId, sourceId);
+    }
+
     /**
      * Removes a route for bookkeeping and notify the reason. This should be called whenever a route
      * is closed.
@@ -411,4 +422,7 @@ public abstract class CafBaseMediaRouteProvider
     public CreateRouteRequestInfo getPendingCreateRouteRequestInfo() {
         return mPendingCreateRouteRequestInfo;
     }
+
+    protected void updateSessionMediaSourceIfNeeded(
+            DiscoveryCallback callback, MediaSource source) {}
 }

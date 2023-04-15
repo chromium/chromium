@@ -250,7 +250,7 @@ absl::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   if (parent->delegate_ && parent->delegate_->HasModalDialog())
     return absl::nullopt;
 
-  NOTREACHED()
+  DCHECK(false)
       << "Unable to find the child in the list of its parent's children.";
   return absl::nullopt;
 }

@@ -4097,6 +4097,20 @@ _FUNCTION_INFO = {
     'result': ['uint32_t'],
     'trace_level': 2,
   },
+  # mailbox_offset refers to the offset in shared memory pointing to shared
+  # image mailbox.
+  'WritePixelsINTERNAL': {
+    'type': 'Custom',
+    'extension': 'CHROMIUM_shared_image',
+    'impl_func': False,
+    'client_test': False,
+    'cmd_args':
+        'GLint x_offset, GLint y_offset, GLint plane_index, GLuint src_width, '
+        'GLuint src_height, GLuint src_row_bytes, GLuint src_sk_color_type, '
+        'GLuint src_sk_alpha_type, GLint shm_id, GLuint shm_offset, '
+        'GLuint pixels_offset, GLuint mailbox_offset',
+    'trace_level': 2,
+  },
   'FramebufferMemorylessPixelLocalStorageANGLE': {
     'extension': 'ANGLE_shader_pixel_local_storage',
     'extension_flag': 'angle_shader_pixel_local_storage',

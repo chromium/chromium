@@ -49,15 +49,14 @@ uint64_t DiskCheck(const base::FilePath& profile_data_dir) {
   using browser_data_migrator_util::TargetItems;
   TargetItems lacros_items =
       GetTargetItems(profile_data_dir, ItemType::kLacros);
-  TargetItems need_copy_items =
-      GetTargetItems(profile_data_dir, ItemType::kNeedCopyForMove);
   TargetItems deletable_items =
       GetTargetItems(profile_data_dir, ItemType::kDeletable);
 
-  int64_t required_size = need_copy_items.total_size;
+  int64_t required_size =
+      browser_data_migrator_util::EstimatedExtraBytesCreated(profile_data_dir) -
+      deletable_items.total_size;
   if (!base::FeatureList::IsEnabled(ash::features::kLacrosMoveProfileMigration))
     required_size += lacros_items.total_size;
-  required_size -= deletable_items.total_size;
 
   return browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
       required_size, profile_data_dir);

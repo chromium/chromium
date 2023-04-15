@@ -192,9 +192,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // uninitialized).
   bool last_initial_merge_remote_updates_exceeded_limit_ = false;
 
-  // GUID string that identifies the sync client and is received from the sync
+  // UUID string that identifies the sync client and is received from the sync
   // engine.
-  std::string cache_guid_;
+  std::string cache_uuid_;
 
   syncer::ModelErrorHandler error_handler_;
 

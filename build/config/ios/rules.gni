@@ -1431,6 +1431,7 @@ template("ios_xctest_bundle") {
                              "xcode_test_application_name",
                              "xcode_test_application_output_name",
                              "xctest_bundle_principal_class",
+                             "bundle_deps_filter",
                            ])
 
     testonly = true
@@ -1486,6 +1487,7 @@ template("ios_xctest_bundle") {
                            [
                              "bundle_id",
                              "data_deps",
+                             "bundle_deps_filter",
                              "enable_code_signing",
                              "product_type",
                              "xcode_test_application_name",
@@ -1623,6 +1625,11 @@ template("ios_xctest_test") {
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
         "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
       ]
+    }
+
+    # XCTestSupport framework is required as of Xcode 14.3 or later.
+    if (xcode_version_int >= 1430) {
+      extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
     }
 
     _xctest_bundle = _xctest_target + "_bundle"
@@ -1765,6 +1772,11 @@ template("ios_xcuitest_test_runner_bundle") {
       ]
     }
 
+    # XCTestSupport framework is required as of Xcode 14.3 or later.
+    if (xcode_version_int >= 1430) {
+      extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
+    }
+
     bundle_deps = []
     if (defined(invoker.bundle_deps)) {
       bundle_deps += invoker.bundle_deps
@@ -1788,6 +1800,12 @@ template("ios_xcuitest_test_runner_bundle") {
 #
 #   xcode_test_application_name:
 #       string, name of the test application for the ui test target.
+#
+#   runner_only_bundle_deps:
+#       list of labels of bundle target to include in the runner and
+#       exclude from the test module (the use case is a framework bundle
+#       that is used by the test module and thus needs to be packaged in
+#       the runner application bundle)
 #
 # This template defines two targets, one named "${target_name}_module" is the
 # xctest dynamic library, and the other named "${target_name}_runner" is the
@@ -1826,6 +1844,10 @@ template("ios_xcuitest_test") {
     output_name = _xcuitest_module_output
 
     deps = invoker.deps
+
+    if (defined(invoker.runner_only_bundle_deps)) {
+      bundle_deps_filter = invoker.runner_only_bundle_deps
+    }
   }
 
   _xcuitest_runner_output = _xcuitest_target + "-Runner"
@@ -1833,6 +1855,13 @@ template("ios_xcuitest_test") {
     output_name = _xcuitest_runner_output
     xctest_bundle = _xcuitest_module_target + "_bundle"
     forward_variables_from(invoker, [ "bundle_deps" ])
+
+    if (defined(invoker.runner_only_bundle_deps)) {
+      if (!defined(bundle_deps)) {
+        bundle_deps = []
+      }
+      bundle_deps += invoker.runner_only_bundle_deps
+    }
   }
 }
 

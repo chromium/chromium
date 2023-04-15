@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -244,14 +243,12 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
         label, image_size.width() - (kDragLabelBorderX * 2.0f), label_font);
   }
 
-  bool has_strong_directionality;
-  TextRun text_run =
-      TextRunWithDirectionality(label, &has_strong_directionality);
+  TextRun text_run(label);
+  text_run.SetDirectionFromText();
   gfx::Point text_pos(
       kDragLabelBorderX,
       kDragLabelBorderY + label_font.GetFontDescription().ComputedPixelSize());
-  if (has_strong_directionality &&
-      text_run.Direction() == TextDirection::kRtl) {
+  if (text_run.Direction() == TextDirection::kRtl) {
     float text_width = label_font.Width(text_run);
     int available_width = image_size.width() - kDragLabelBorderX * 2;
     text_pos.set_x(available_width - ceilf(text_width));

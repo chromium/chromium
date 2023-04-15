@@ -212,3 +212,7 @@ bool IsIndicateSyncErrorInOverflowMenuEnabled() {
 BASE_FEATURE(kBottomOmniboxSteadyState,
              "BottomOmniboxSteadyState",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnlyAccessClipboardAsync,
+             "OnlyAccessClipboardAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);

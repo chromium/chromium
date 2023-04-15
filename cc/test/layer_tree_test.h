@@ -79,8 +79,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
         return "Skia GL";
       case viz::RendererType::kSkiaVk:
         return "Skia Vulkan";
-      case viz::RendererType::kSkiaDawn:
-        return "Skia Dawn";
+      case viz::RendererType::kSkiaGraphite:
+        return "Skia Graphite";
       case viz::RendererType::kSoftware:
         return "Software";
     }
@@ -220,13 +220,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   }
   bool use_skia_vulkan() const {
     return renderer_type_ == viz::RendererType::kSkiaVk;
-  }
-  bool use_d3d12() const {
-#if BUILDFLAG(IS_WIN)
-    return renderer_type_ == viz::RendererType::kSkiaDawn;
-#else
-    return false;
-#endif
   }
 
   const viz::RendererType renderer_type_;

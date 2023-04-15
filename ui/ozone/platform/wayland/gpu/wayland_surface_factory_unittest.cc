@@ -1454,6 +1454,7 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(
     CompositorVersionV3Test,
     WaylandSurfaceFactoryCompositorV3,
-    Values(wl::ServerConfig{.compositor_version = wl::CompositorVersion::kV3}));
+    Values(wl::ServerConfig{
+        .compositor_version = wl::TestCompositor::Version::kV3}));
 
 }  // namespace ui

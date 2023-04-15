@@ -533,15 +533,21 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
   TRACE_EVENT_INSTANT0("cc", "NeedsTickAnimations", TRACE_EVENT_SCOPE_THREAD);
 
   bool animated = false;
+  std::vector<AnimationTimeline*> scroll_timelines;
   for (auto& kv : id_to_timeline_map_.Read(*this)) {
     AnimationTimeline* timeline = kv.second.get();
     if (timeline->IsScrollTimeline()) {
-      animated |= timeline->TickScrollLinkedAnimations(
-          ticking_animations_.Read(*this), scroll_tree, is_active_tree);
+      scroll_timelines.push_back(timeline);
     } else {
       animated |= timeline->TickTimeLinkedAnimations(
           ticking_animations_.Read(*this), monotonic_time);
     }
+  }
+  // Tick the scroll-linked animations last, since a smooth scroll (time-linked)
+  // might update the scroll offset.
+  for (auto* timeline : scroll_timelines) {
+    animated |= timeline->TickScrollLinkedAnimations(
+        ticking_animations_.Read(*this), scroll_tree, is_active_tree);
   }
 
   // TODO(majidvp): At the moment we call this for both active and pending

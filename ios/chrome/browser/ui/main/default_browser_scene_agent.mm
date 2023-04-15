@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 
@@ -46,11 +48,24 @@
 
   // Register default browser promo manager to the promo manager.
   if (IsDefaultBrowserInPromoManagerEnabled()) {
-    if (level == SceneActivationLevelForegroundActive &&
-        ShouldRegisterPromoWithPromoManager()) {
+    if (level == SceneActivationLevelForegroundActive) {
+      DCHECK(sceneState.appState.mainBrowserState);
+      AuthenticationService* authenticationService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              sceneState.appState.mainBrowserState);
+      DCHECK(authenticationService);
+      DCHECK(authenticationService->initialized());
+      BOOL isSignedIn = authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+
       DCHECK(self.promosManager);
-      self.promosManager->RegisterPromoForSingleDisplay(
-          promos_manager::Promo::DefaultBrowser);
+      if (ShouldRegisterPromoWithPromoManager(isSignedIn)) {
+        self.promosManager->RegisterPromoForSingleDisplay(
+            promos_manager::Promo::DefaultBrowser);
+      } else {
+        self.promosManager->DeregisterPromo(
+            promos_manager::Promo::DefaultBrowser);
+      }
     }
     return;
   }

@@ -19,7 +19,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -621,7 +620,7 @@ float ScrollableShelfView::CalculateClampedScrollOffset(
     int available_space_for_icons) const {
   const float scroll_upper_bound =
       CalculateScrollUpperBound(available_space_for_icons);
-  scroll = base::clamp(scroll, 0.0f, scroll_upper_bound);
+  scroll = std::clamp(scroll, 0.0f, scroll_upper_bound);
   return scroll;
 }
 
@@ -1829,11 +1828,11 @@ ScrollableShelfView::CalculateTappableIconIndices(
   // TODO(b/268401797): Rewrite CalculateTappableIconIndices() as a more
   // thorough fix for out of bound indices.
   first_visible_view_index =
-      base::clamp(first_visible_view_index, static_cast<size_t>(0),
-                  visible_views_indices.size() - 1);
+      std::clamp(first_visible_view_index, static_cast<size_t>(0),
+                 visible_views_indices.size() - 1);
   last_visible_view_index =
-      base::clamp(last_visible_view_index, first_visible_view_index,
-                  visible_views_indices.size() - 1);
+      std::clamp(last_visible_view_index, first_visible_view_index,
+                 visible_views_indices.size() - 1);
 
   return {visible_views_indices[first_visible_view_index],
           visible_views_indices[last_visible_view_index]};

@@ -153,7 +153,7 @@ export class SettingsImportDataDialogElement extends
     this.selected_ = this.browserProfiles_[this.$.browserSelect.selectedIndex];
   }
 
-  private onActionButtonTap_() {
+  private onActionButtonClick_() {
     const checkboxes = this.shadowRoot!.querySelectorAll('settings-checkbox');
     if (this.isImportFromFileSelected_()) {
       this.browserProxy_.importFromBookmarksFile();

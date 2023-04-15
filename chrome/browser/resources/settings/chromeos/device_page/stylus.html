@@ -69,10 +69,13 @@
   </select>
 </div>
 
-<cr-link-row id="findMoreAppsLink" class="hr" on-click="onFindAppsTap_"
+<cr-link-row id="findMoreAppsLink" class="hr" on-click="onFindAppsClick_"
     hidden$="[[!prefs.arc.enabled.value]]"
     label="$i18n{stylusFindMoreAppsPrimary}"
-    sub-label="$i18n{stylusFindMoreAppsSecondary}" external></cr-link-row>
+    sub-label="$i18n{stylusFindMoreAppsSecondary}"
+    external
+    button-aria-description="$i18n{opensInNewTab}">
+</cr-link-row>
 
 <template is="dom-if" if="[[supportsLockScreen_(selectedApp_)]]">
   <div id="note-taking-app-lock-screen-settings">

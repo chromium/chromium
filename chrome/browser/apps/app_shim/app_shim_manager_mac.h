@@ -145,6 +145,11 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // finishes launching.
   AppShimHost* GetHostForRemoteCocoaBrowser(Browser* browser);
 
+  // Returns true if the specified `browser` should be using RemoteCocoa. This
+  // is equivalent to `GetHostForRemoteCocoaBrowser` return a non-null value,
+  // except that this method does not cause an AppShimHost to be created.
+  bool BrowserUsesRemoteCocoa(Browser* browser);
+
   // Return true if any non-bookmark app windows open.
   bool HasNonBookmarkAppWindowsOpen();
 
@@ -179,6 +184,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                         const std::vector<GURL>& urls) override;
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                     const GURL& override_url) override;
+  void OnShimWillTerminate(AppShimHost* host) override;
   // AppLifetimeMonitor::Observer overrides:
   void OnAppStart(content::BrowserContext* context,
                   const std::string& app_id) override;
@@ -331,6 +337,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
       const std::vector<base::FilePath>& profile_paths_to_launch,
+      bool first_profile_is_from_bootstrap,
       const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback launch_callback);
   void LoadAndLaunchApp_LaunchIfAppropriate(

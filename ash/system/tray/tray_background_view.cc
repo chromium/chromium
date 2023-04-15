@@ -428,7 +428,9 @@ void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
       layer()->SetOpacity(1.0f);
       layer()->SetTransform(gfx::Transform());
     }
-  } else {
+  } else if (!ShouldUseCustomVisibilityAnimations()) {
+    // We only show default animations when
+    // `ShouldUseCustomVisibilityAnimations()` is false.
     HideAnimation();
   }
 }

@@ -23,7 +23,8 @@ namespace sidePanel {
     // The path to the side panel HTML file to use. This must be a local
     // resource within the extension package.
     DOMString? path;
-    // Whether the side panel should be enabled.
+    // Whether the side panel should be enabled. This is optional. The default
+    // value is true.
     boolean? enabled;
   };
 

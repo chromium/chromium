@@ -107,6 +107,14 @@ void MaybeRecordVisibilityUKM(
 
   int64_t score =
       static_cast<int64_t>(100 * content_annotations->visibility_score);
+
+  if (google_util::IsGoogleSearchUrl(visit.url)) {
+    base::UmaHistogramPercentage(
+        "OptimizationGuide.PageContentAnnotationsService."
+        "VisibilityScoreOfGoogleSRP",
+        score);
+  }
+
   // We want 2^|num_bits| buckets, linearly spaced.
   uint32_t num_buckets =
       std::pow(2, optimization_guide::features::NumBitsForRAPPORMetrics());

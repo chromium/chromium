@@ -8,6 +8,10 @@ proto_library("host_info_proto") {
   sources = [ "host_info.proto" ]
 }
 
+proto_library("chrome_os_enterprise_options") {
+  sources = [ "chrome_os_enterprise_options.proto" ]
+}
+
 proto_library("directory_proto") {
   sources = [ "directory_messages.proto" ]
   deps = [ ":host_info_proto" ]
@@ -31,7 +35,10 @@ proto_library("network_traversal_proto") {
 
 proto_library("remote_support_host_messages") {
   sources = [ "remote_support_host_messages.proto" ]
-  deps = [ ":host_info_proto" ]
+  deps = [
+    ":chrome_os_enterprise_options",
+    ":host_info_proto",
+  ]
 }
 
 proto_library("chromoting_event_proto") {

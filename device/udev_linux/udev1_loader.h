@@ -13,7 +13,7 @@ class LibUdev1Loader;
 
 namespace device {
 
-class Udev1Loader : public UdevLoader {
+class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) Udev1Loader : public UdevLoader {
  public:
   Udev1Loader();
 

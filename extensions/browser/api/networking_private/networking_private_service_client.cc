@@ -339,8 +339,8 @@ void NetworkingPrivateServiceClient::GetDeviceStateList(
   std::unique_ptr<DeviceStateList> device_state_list(new DeviceStateList);
   std::unique_ptr<api::networking_private::DeviceStateProperties> properties(
       new api::networking_private::DeviceStateProperties);
-  properties->type = api::networking_private::NETWORK_TYPE_WIFI;
-  properties->state = api::networking_private::DEVICE_STATE_TYPE_ENABLED;
+  properties->type = api::networking_private::NetworkType::kWiFi;
+  properties->state = api::networking_private::DeviceStateType::kEnabled;
   device_state_list->push_back(std::move(properties));
   std::move(callback).Run(std::move(device_state_list));
 }

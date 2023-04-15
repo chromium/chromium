@@ -271,55 +271,55 @@ class ProtoToJSONRuleConverter {
       if (!(element_type & element_mask))
         continue;
 
-      dnr_api::ResourceType resource_type = dnr_api::RESOURCE_TYPE_NONE;
+      dnr_api::ResourceType resource_type = dnr_api::ResourceType::kNone;
       switch (static_cast<proto::ElementType>(element_type)) {
         case proto::ELEMENT_TYPE_UNSPECIFIED:
           CHECK(false);
           break;
         case proto::ELEMENT_TYPE_OTHER:
-          resource_type = dnr_api::RESOURCE_TYPE_OTHER;
+          resource_type = dnr_api::ResourceType::kOther;
           break;
         case proto::ELEMENT_TYPE_SCRIPT:
-          resource_type = dnr_api::RESOURCE_TYPE_SCRIPT;
+          resource_type = dnr_api::ResourceType::kScript;
           break;
         case proto::ELEMENT_TYPE_IMAGE:
-          resource_type = dnr_api::RESOURCE_TYPE_IMAGE;
+          resource_type = dnr_api::ResourceType::kImage;
           break;
         case proto::ELEMENT_TYPE_STYLESHEET:
-          resource_type = dnr_api::RESOURCE_TYPE_STYLESHEET;
+          resource_type = dnr_api::ResourceType::kStylesheet;
           break;
         case proto::ELEMENT_TYPE_OBJECT:
-          resource_type = dnr_api::RESOURCE_TYPE_OBJECT;
+          resource_type = dnr_api::ResourceType::kObject;
           break;
         case proto::ELEMENT_TYPE_XMLHTTPREQUEST:
-          resource_type = dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST;
+          resource_type = dnr_api::ResourceType::kXmlhttprequest;
           break;
         case proto::ELEMENT_TYPE_OBJECT_SUBREQUEST:
           CHECK(false);
           break;
         case proto::ELEMENT_TYPE_SUBDOCUMENT:
-          resource_type = dnr_api::RESOURCE_TYPE_SUB_FRAME;
+          resource_type = dnr_api::ResourceType::kSubFrame;
           break;
         case proto::ELEMENT_TYPE_PING:
-          resource_type = dnr_api::RESOURCE_TYPE_PING;
+          resource_type = dnr_api::ResourceType::kPing;
           break;
         case proto::ELEMENT_TYPE_MEDIA:
-          resource_type = dnr_api::RESOURCE_TYPE_MEDIA;
+          resource_type = dnr_api::ResourceType::kMedia;
           break;
         case proto::ELEMENT_TYPE_FONT:
-          resource_type = dnr_api::RESOURCE_TYPE_FONT;
+          resource_type = dnr_api::ResourceType::kFont;
           break;
         case proto::ELEMENT_TYPE_POPUP:
           CHECK(false);
           break;
         case proto::ELEMENT_TYPE_WEBSOCKET:
-          resource_type = dnr_api::RESOURCE_TYPE_WEBSOCKET;
+          resource_type = dnr_api::ResourceType::kWebsocket;
           break;
         case proto::ELEMENT_TYPE_WEBTRANSPORT:
-          resource_type = dnr_api::RESOURCE_TYPE_WEBTRANSPORT;
+          resource_type = dnr_api::ResourceType::kWebtransport;
           break;
         case proto::ELEMENT_TYPE_WEBBUNDLE:
-          resource_type = dnr_api::RESOURCE_TYPE_WEBBUNDLE;
+          resource_type = dnr_api::ResourceType::kWebbundle;
           break;
         case proto::ELEMENT_TYPE_ALL:
           CHECK(false);
@@ -378,7 +378,7 @@ class ProtoToJSONRuleConverter {
     base::Value::List resource_types = GetResourceTypeList(element_mask);
     if (is_allow_all_requests_rule_) {
       resource_types.Append(
-          dnr_api::ToString(dnr_api::RESOURCE_TYPE_MAIN_FRAME));
+          dnr_api::ToString(dnr_api::ResourceType::kMainFrame));
     }
 
     CHECK(json_rule_.EnsureDict(kRuleConditionKey)
@@ -393,51 +393,51 @@ class ProtoToJSONRuleConverter {
   }
 
   bool PopulateDomainType() {
-    dnr_api::DomainType domain_type = dnr_api::DOMAIN_TYPE_NONE;
+    dnr_api::DomainType domain_type = dnr_api::DomainType::kNone;
 
     switch (input_rule_.source_type()) {
       case proto::SOURCE_TYPE_ANY:
         // This is the default domain type and can be omitted.
         return true;
       case proto::SOURCE_TYPE_FIRST_PARTY:
-        domain_type = dnr_api::DOMAIN_TYPE_FIRSTPARTY;
+        domain_type = dnr_api::DomainType::kFirstParty;
         break;
       case proto::SOURCE_TYPE_THIRD_PARTY:
-        domain_type = dnr_api::DOMAIN_TYPE_THIRDPARTY;
+        domain_type = dnr_api::DomainType::kThirdParty;
         break;
       case proto::SOURCE_TYPE_UNSPECIFIED:
         CHECK(false);
         break;
     }
 
-    CHECK_NE(dnr_api::DOMAIN_TYPE_NONE, domain_type);
+    CHECK_NE(dnr_api::DomainType::kNone, domain_type);
     CHECK(json_rule_.EnsureDict(kRuleConditionKey)
               ->Set(kDomainTypeKey, dnr_api::ToString(domain_type)));
     return true;
   }
 
   bool PopulateRuleActionType() {
-    dnr_api::RuleActionType action_type = dnr_api::RULE_ACTION_TYPE_NONE;
+    dnr_api::RuleActionType action_type = dnr_api::RuleActionType::kNone;
 
     CHECK(!is_allow_all_requests_rule_ ||
           input_rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST);
 
     switch (input_rule_.semantics()) {
       case proto::RULE_SEMANTICS_BLOCKLIST:
-        action_type = dnr_api::RULE_ACTION_TYPE_BLOCK;
+        action_type = dnr_api::RuleActionType::kBlock;
         break;
       case proto::RULE_SEMANTICS_ALLOWLIST:
         if (is_allow_all_requests_rule_)
-          action_type = dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS;
+          action_type = dnr_api::RuleActionType::kAllowAllRequests;
         else
-          action_type = dnr_api::RULE_ACTION_TYPE_ALLOW;
+          action_type = dnr_api::RuleActionType::kAllow;
         break;
       case proto::RULE_SEMANTICS_UNSPECIFIED:
         CHECK(false);
         break;
     }
 
-    CHECK_NE(dnr_api::RULE_ACTION_TYPE_NONE, action_type);
+    CHECK_NE(dnr_api::RuleActionType::kNone, action_type);
     CHECK(json_rule_.EnsureDict(kRuleActionKey)
               ->Set(kRuleActionTypeKey, dnr_api::ToString(action_type)));
     return true;

@@ -131,6 +131,10 @@
 #include "sandbox/mac/seatbelt_exec.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_IOS)
+#include "base/threading/thread_restrictions.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <signal.h>
 
@@ -1275,6 +1279,19 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 void ContentMainRunnerImpl::Shutdown() {
   DCHECK(is_initialized_);
   DCHECK(!is_shutdown_);
+
+#if BUILDFLAG(IS_IOS)
+  // This would normally be handled by BrowserMainLoop shutdown, but since iOS
+  // (like Android) does not run this shutdown, we also need to ensure that we
+  // permit sync primitives during shutdown. If we don't do this, eg, tearing
+  // down test fixtures will often fail.
+  // TODO(crbug.com/800808): ideally these would both be scoped allowances.
+  // That would be one of the first step to ensure no persistent work is being
+  // done after ThreadPoolInstance::Shutdown() in order to move towards atomic
+  // shutdown.
+  base::PermanentThreadAllowance::AllowBaseSyncPrimitives();
+  base::PermanentThreadAllowance::AllowBlocking();
+#endif
 
   mojo_ipc_support_.reset();
 

@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
+import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -270,8 +271,26 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void openWebFeed(String webFeedName) {
-            mActionDelegate.openWebFeed(webFeedName);
+        public void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {
+            @SingleWebFeedEntryPoint
+            int singleWebFeedEntryPoint;
+
+            switch (entryPoint) {
+                case OpenWebFeedEntryPoint.ATTRIBUTION:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.ATTRIBUTION;
+                    break;
+                case OpenWebFeedEntryPoint.RECOMMENDATION:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.RECOMMENDATION;
+                    break;
+                case OpenWebFeedEntryPoint.GROUP_HEADER:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.GROUP_HEADER;
+                    break;
+
+                default:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.OTHER;
+            }
+
+            mActionDelegate.openWebFeed(webFeedName, singleWebFeedEntryPoint);
         }
 
         private void openSuggestionUrl(
@@ -751,7 +770,8 @@ public class FeedStream implements Stream {
                 FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));
         launchReliabilityLogger.logFeedReloading(System.nanoTime());
         mReliabilityLoggingBridge.setLogger(launchReliabilityLogger);
-        if (FeatureList.isNativeInitialized()
+
+        if (FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)
                 && surfaceScope != null) {
@@ -762,7 +782,9 @@ public class FeedStream implements Stream {
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
         mSliceViewTracker = new FeedSliceViewTracker(rootView, mActivity, manager,
-                renderer.getListLayoutHelper(), new FeedStream.ViewTrackerObserver());
+                renderer.getListLayoutHelper(), /* watchForBarelyVisibleChange= */
+                (mFeedUserInteractionReliabilityLogger != null),
+                new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
@@ -1332,7 +1354,7 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportFeedViewed(mNativeFeedStream, FeedStream.this);
         }
         @Override
-        public void reportViewFirstVisible(View view) {
+        public void reportViewFirstBarelyVisible(View view) {
             if (mFeedUserInteractionReliabilityLogger != null) {
                 mFeedUserInteractionReliabilityLogger.onViewFirstVisible(view);
             }

@@ -183,7 +183,7 @@
       "is_skylab": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-arm-generic-rel": {

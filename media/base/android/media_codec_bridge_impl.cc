@@ -248,6 +248,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
         config.container_color_space, config.hdr_metadata.value());
   }
   auto j_hdr_metadata = jni_hdr_metadata ? jni_hdr_metadata->obj() : nullptr;
+  auto j_decoder_name = ConvertUTF8ToJavaString(env, config.name);
 
   ScopedJavaGlobalRef<jobject> j_bridge(
       Java_MediaCodecBridgeBuilder_createVideoDecoder(
@@ -255,7 +256,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
           config.initial_expected_coded_size.width(),
           config.initial_expected_coded_size.height(), config.surface, j_csd0,
           j_csd1, j_hdr_metadata, true /* allow_adaptive_playback */,
-          !!config.on_buffers_available_cb));
+          !!config.on_buffers_available_cb, j_decoder_name));
   if (j_bridge.is_null())
     return nullptr;
 

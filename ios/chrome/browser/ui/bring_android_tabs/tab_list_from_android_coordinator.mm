@@ -4,14 +4,19 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
 
+#import "components/favicon/core/favicon_service.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_mediator.h"
+#import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,9 +26,8 @@
 @implementation TabListFromAndroidCoordinator {
   // Main mediator for this coordinator.
   TabListFromAndroidMediator* _mediator;
-
-  // Main view controller for this coordinator.
-  ChromeTableViewController* _viewController;
+  // Navigation controller displaying TabListFromAndroidViewController.
+  TableViewNavigationController* _navigationController;
 }
 
 - (void)start {
@@ -38,20 +42,32 @@
                                           GetForBrowserState(
                                               self.browser->GetBrowserState())];
 
-  // TODO(crbug.com/1418120): Create table view controller.
-  /*_viewController = [ChromeTableViewController
-      initWithBringAndroidTabsService:service
-            delegate:_mediator
-      commandHandler:HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                        BringAndroidTabsCommands)];*/
+  TabListFromAndroidViewController* tableViewController =
+      [[TabListFromAndroidViewController alloc] init];
+  tableViewController.delegate = _mediator;
+  tableViewController.faviconDataSource = _mediator;
+  _mediator.consumer = tableViewController;
+
+  _navigationController =
+      [[TableViewNavigationController alloc] initWithTable:tableViewController];
+  [_navigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+  _navigationController.toolbarHidden = YES;
+  _navigationController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  _navigationController.presentationController.delegate = tableViewController;
+
+  [self.baseViewController presentViewController:_navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
   [super stop];
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   _mediator = nil;
-  _viewController = nil;
+  _navigationController = nil;
 }
 
 @end

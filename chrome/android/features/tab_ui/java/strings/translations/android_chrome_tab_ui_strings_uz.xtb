@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
-<translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
 <translation id="1403228085774130835">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlar bandida chiqadi</translation>
 <translation id="1455506303394048917">Bu Inkognito varaqlardagi xatti-harakatlaringiz ushbu qurilmadan tozalanadi</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> saytidagi joriy narxi: <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Varaqni yechish}other{Varaqlar guruhini yechish}}</translation>
 <translation id="2277224997687551299">Guruh nomini tahrirlash</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni guruhdan olib tashlash.}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni guruhdan olib tashlash.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Varaqni bukmarklash}other{Varaqlarni bukmarklash}}</translation>
-<translation id="2479148705183875116">Sozlamalarni ochish</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli guruhni yigʻish.}}</translation>
 <translation id="2569352796411618312">Bildirgi: <ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
-<translation id="257674075312929031">Guruh</translation>
 <translation id="2613747923081026172">Guruh yaratish</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho</translation>
 <translation id="266935134738038806">Saytni ochish</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Varaqlarni guruhlash uchun bir-birining ustiga torting</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>
-<translation id="6040143037577758943">Yopish</translation>
 <translation id="6054741997831917303">Bu mahsulot narxi yaqinda <ph name="PREVIOUS_PRICE" /> dan <ph name="NEW_PRICE" /> ga tushdi</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Bir nechta variant tanlanadigan rejimni yopish</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Varaqni ulashish}other{Varaqlarni ulashish}}</translation>
 <translation id="7129458170538955174">Bu doʻkon haqidagi axborot yarim hajmda ochildi</translation>
-<translation id="7151209024774799310">Varaqlarni guruhdan olib tashlash</translation>
 <translation id="7204204600596740190">Bir nechta elementni tanlash rejimi</translation>
 <translation id="7326879924029668159">Qaytarish siyosati va boshqalar</translation>
 <translation id="7352298686197644113">Ochiq varaqlardagi qaysi narsalar narxi arzonlaganini bilish</translation>

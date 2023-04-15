@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1075622780330595106">Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
-<translation id="1181037720776840403">Dileu</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
 <translation id="1403228085774130835">Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Tabiau diweddar o dan brif ddewislen Chrome</translation>
 <translation id="1455506303394048917">Bydd eich gweithgarwch yn y tabiau Anhysbys hyn yn cael ei glirio o'r ddyfais hon</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Nawr <ph name="CURRENT_PRICE" /> yn <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dadgrwpio tab}zero{Dadgrwpio tabiau}two{Dadgrwpio tabiau}few{Dadgrwpio tabiau}many{Dadgrwpio tabiau}other{Dadgrwpio tabiau}}</translation>
 <translation id="2277224997687551299">Golygu enw'r grŵp</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Tynnu'r <ph name="TABS_COUNT_ONE" /> tab dan sylw o'r grŵp.}zero{Tynnu'r <ph name="TABS_COUNT_MANY" /> tab dan sylw o'r grŵp.}two{Tynnu'r <ph name="TABS_COUNT_MANY" /> dab dan sylw o'r grŵp.}few{Tynnu'r <ph name="TABS_COUNT_MANY" /> thab dan sylw o'r grŵp.}many{Tynnu'r <ph name="TABS_COUNT_MANY" /> thab dan sylw o'r grŵp.}other{Tynnu'r <ph name="TABS_COUNT_MANY" /> tab dan sylw o'r grŵp.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Rhoi nod tudalen ar y tab}zero{Rhoi nod tudalen ar y tabiau}two{Rhoi nod tudalen ar y tabiau}few{Rhoi nod tudalen ar y tabiau}many{Rhoi nod tudalen ar y tabiau}other{Rhoi nod tudalen ar y tabiau}}</translation>
-<translation id="2479148705183875116">Mynd i'r Gosodiadau</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Crebachu <ph name="TABS_COUNT_ONE" /> tab.}zero{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> thab.}many{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> thab.}other{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Awgrym: Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
-<translation id="257674075312929031">Grŵp</translation>
 <translation id="2613747923081026172">Creu grŵp</translation>
 <translation id="2662028055331606429">Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Mynd i'r wefan</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Llusgwch dabiau i'w grwpio</translation>
 <translation id="5846292395804797011">Cau'r grŵp <ph name="TITLE_OF_GROUP" /> sydd â <ph name="NUMBER_OF_TABS" /> o dabiau</translation>
 <translation id="5972844218283131174">Dad-ddewis popeth</translation>
-<translation id="6040143037577758943">Cau</translation>
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Cuddio'r modd dewis mwy nag un</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Rhannu tab}zero{Rhannu tabiau}two{Rhannu tabiau}few{Rhannu tabiau}many{Rhannu tabiau}other{Rhannu tabiau}}</translation>
 <translation id="7129458170538955174">Gwybodaeth am y siop hon wedi'i hagor ar hanner uchder</translation>
-<translation id="7151209024774799310">Tynnu tabiau o'r grŵp</translation>
 <translation id="7204204600596740190">Modd dewis mwy nag un</translation>
 <translation id="7326879924029668159">Gweld y polisi dychwelyd a rhagor</translation>
 <translation id="7352298686197644113">Gweld pa eitem yn eich tabiau sydd ar agor sydd â phris is</translation>

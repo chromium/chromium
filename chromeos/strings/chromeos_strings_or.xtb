@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">ଏଠାରେ ଅନ୍ୟ କିଛି ଉପଯୋଗୀ ରିସୋର୍ସ ଅଛି:</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
+<translation id="1923388006036088459">ଆକ୍ସେଣ୍ଟ ରଙ୍ଗଗୁଡ଼ିକ</translation>
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ଏକ ଡିଫଲ୍ଟ APN ଆବଶ୍ୟକ</translation>
@@ -140,6 +141,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2085089206770112532">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
+<translation id="209751264101900360">ଡନ ଟୁ ଡାର୍କ - କ୍ଲାଉଡ ଫ୍ଲୋ</translation>
 <translation id="2102231663024125441">ଟେକ୍ସଟ ଏଡିଟିଂ</translation>
 <translation id="2105810540595158374">ଡିଭାଇସଟି ଏକ ଗେମ କଣ୍ଟ୍ରୋଲର ଅଟେ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
@@ -331,6 +333,7 @@
 <translation id="3967822245660637423">ଡାଉନ୍‍‍‍ଲୋଡ୍ ଶେଷ ହୋଇଛି</translation>
 <translation id="3969602104473960991">ChromeOSର ପାସୱାର୍ଡ ଅପଡେଟ ହୋଇଛି</translation>
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
+<translation id="3974175076798940554">ଏକ୍ସକ୍ଲୁସିଭ Chromebook Plus ଆସେଟ୍ସ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3993704782688964914">ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ବର୍ତ୍ତମାନ ଅପଟୁଡେଟ ଅଛି</translation>
 <translation id="4003384961948020559">ବିଫଳ ହୋଇଛି - ଆଉଟପୁଟ୍ ଟ୍ରେ ପୂର୍ଣ୍ଣ ଅଛି</translation>
@@ -364,12 +367,13 @@
 <translation id="4238516577297848345">କୌଣସି ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ଚାଲୁ ନାହିଁ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">ମେମୋରୀ ଟେଷ୍ଟ ଚଲାଇବାକୁ ଅତି କମରେ ଆପଣଙ୍କୁ 500 MBର ଖାଲି ସ୍ଥାନ ଆବଶ୍ୟକ। ସ୍ପେସ୍ ଖାଲି କରିବାକୁ, ସେଟିଂସ୍&gt; ଷ୍ଟୋରେଜ୍ ମ୍ୟାନେଜମେଣ୍ଟକୁ ଯାଆନ୍ତୁ।</translation>
-<translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
+<translation id="4250229828105606438">ସ୍କ୍ରିନସଟ</translation>
 <translation id="4258281355379922695">HTTP ଲାଟେନ୍ସି</translation>
 <translation id="4271957103967917607">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଦେଖନ୍ତୁ</translation>
 <translation id="4275663329226226506">ମିଡିଆ</translation>
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
 <translation id="4289849978083912975">ସ୍ଲାଇଡ ଶୋ</translation>
+<translation id="4293621540182258188">ଡନ ଟୁ ଡାର୍କ - ଅର୍ଥ ଫ୍ଲୋ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
 <translation id="4311195029067684288">ସମ୍ପୂର୍ଣ୍ଣ</translation>
@@ -544,6 +548,7 @@
 <translation id="576835345334454681">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
+<translation id="5809090008577139505">ଅରୋରା</translation>
 <translation id="5826644637650799838">ଆର୍ଟ ବିଷୟରେ</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
@@ -562,6 +567,7 @@
 <translation id="5907649332524363701">କୀ'ର ରଙ୍ଗ</translation>
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
+<translation id="5918201491776799918">Chromebook Plusର ଏକ୍ସକ୍ଲୁସିଭ କଳାକୃତି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ଆପଣଙ୍କ ଫାଇଲକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}}</translation>
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
@@ -818,6 +824,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8151185429379586178">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକ</translation>
+<translation id="8153923300383192510">Chromebook Plus ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8183974620058026102">ଆଟାଚ କରନ୍ତୁ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
@@ -840,6 +847,7 @@
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>
 <translation id="8364946094152050673">ନେମ୍ ସର୍ଭର୍ ଖାଲି ଅଛି</translation>
 <translation id="8372477600026034341">ଅତିରିକ୍ତ ହୋଷ୍ଟଗୁଡ଼ିକ</translation>
+<translation id="8373046809163484087">ଆପଣଙ୍କ ୱାଲପେପର ସହ ମେଳ ହେଉଥିବା ରଙ୍ଗ ସେଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8380114448424469341">ସ୍କ୍ରିନର <ph name="DIRECTION" /> ଅଧା ଅଂଶରେ ୱିଣ୍ଡୋକୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="8395584934117017006">ଏହି <ph name="DEVICE_TYPE" /> ଏଣ୍ଟରପ୍ରାଇଜ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
@@ -859,6 +867,7 @@
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8503836310948963452">ଆଉ ଅଳ୍ପ କିଛି ମିନିଟ୍ ଅଛି…</translation>
 <translation id="8508640263392900755">APN ବିବରଣୀ</translation>
+<translation id="8522687886059337719">ବର୍ତ୍ତମାନ ନୂଆ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ୱାଲପେପର<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ଏବଂ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ସ୍କ୍ରିନ ସେଭର<ph name="END_LINK_SCREENSAVER_SUBPAGE" />କୁ ଆପଣଙ୍କର ଆକ୍ସେସ ଅଛି</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>

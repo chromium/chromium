@@ -347,6 +347,9 @@ class TabStripModel : public TabGroupController {
   // Returns true if the tab at |index| is blocked by a tab modal dialog.
   bool IsTabBlocked(int index) const;
 
+  // Returns true if the tab at |index| is allowed to be closed.
+  bool IsTabClosable(int index) const;
+
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
   absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(

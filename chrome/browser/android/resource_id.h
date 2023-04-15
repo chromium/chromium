@@ -122,6 +122,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CREATE, R.drawable.ic_edit_24dp)
 // Icon displayed in the save address message on Android.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ADDRESS,
                     R.drawable.gm_filled_location_on_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS,
+                    R.drawable.ic_cloud_upload_24dp)
 
 // We use PNG files for the following images.
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_BACK, R.drawable.cvc_icon)

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "base/check_is_test.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
@@ -226,7 +227,7 @@ bool AppShimRevealDisabledForTest() {
   // creating Finder windows that are never closed.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kTestType) ||
-         GetOsIntegrationTestOverride();
+         OsIntegrationTestOverride::Get();
 }
 
 base::FilePath GetWritableApplicationsDirectory() {
@@ -412,6 +413,32 @@ base::CommandLine BuildCommandLineForShimLaunch() {
   return command_line;
 }
 
+NSRunningApplication* FindRunningApplicationForBundleIdAndPath(
+    const std::string& bundle_id,
+    const base::FilePath& bundle_path) {
+  NSArray<NSRunningApplication*>* apps = [NSRunningApplication
+      runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
+                                                  bundle_id)];
+  for (NSRunningApplication* app in apps) {
+    if (base::mac::NSURLToFilePath(app.bundleURL) == bundle_path) {
+      return app;
+    }
+  }
+
+  // Sometimes runningApplicationsWithBundleIdentifier incorrectly fails to
+  // return all apps with the provided bundle id. So also scan over the full
+  // list of running applications.
+  apps = [NSWorkspace sharedWorkspace].runningApplications;
+  for (NSRunningApplication* app in apps) {
+    if (base::SysNSStringToUTF8(app.bundleIdentifier) == bundle_id &&
+        base::mac::NSURLToFilePath(app.bundleURL) == bundle_path) {
+      return app;
+    }
+  }
+
+  return nil;
+}
+
 // Wrapper around base::mac::LaunchApplication that attempts to retry the launch
 // once, if the initial launch fails. This helps reduce test flakiness on older
 // Mac OS bots (Mac 11 and Mac 10.16).
@@ -430,6 +457,14 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
              base::mac::LaunchApplicationCallback callback,
              base::expected<NSRunningApplication*, NSError*> result) {
             if (result.has_value()) {
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
+            if (@available(macOS 12.0, *)) {
+              // In newer Mac OS versions this workaround isn't needed, and in
+              // fact can itself cause flaky tests by launching the app twice
+              // when only one launch is expected.
               std::move(callback).Run(std::move(result));
               return;
             }
@@ -475,16 +510,13 @@ void LaunchApplicationWithWorkaround(
             LOG(ERROR) << "Failed to open application with path: "
                        << app_bundle_path;
             if (!options.create_new_instance) {
-              NSArray<NSRunningApplication*>* apps =
-                  [NSRunningApplication runningApplicationsWithBundleIdentifier:
-                                            base::SysUTF8ToNSString(bundle_id)];
-              for (NSRunningApplication* app in apps) {
-                if (base::mac::NSURLToFilePath(app.bundleURL) ==
-                    app_bundle_path) {
-                  LOG(ERROR) << "But found a running application anyway.";
-                  std::move(callback).Run(app);
-                  return;
-                }
+              NSRunningApplication* app =
+                  FindRunningApplicationForBundleIdAndPath(bundle_id,
+                                                           app_bundle_path);
+              if (app) {
+                LOG(ERROR) << "But found a running application anyway.";
+                std::move(callback).Run(app);
+                return;
               }
             }
 
@@ -944,14 +976,16 @@ bool AppShimCreationAndLaunchDisabledForTest() {
   // tests. Unit tests need to set the test override.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kTestType) &&
-         !GetOsIntegrationTestOverride();
+         !OsIntegrationTestOverride::Get();
 }
 
 base::FilePath GetChromeAppsFolder() {
-  auto override = GetOsIntegrationTestOverride();
-  if (override) {
-    if (override->IsChromeAppsValid()) {
-      return override->chrome_apps_folder();
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
+    CHECK_IS_TEST();
+    if (os_override->IsChromeAppsValid()) {
+      return os_override->chrome_apps_folder();
     }
     return base::FilePath();
   }
@@ -980,10 +1014,12 @@ void WebAppAutoLoginUtil::SetInstanceForTesting(
 
 void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
                                           bool hide_on_startup) {
-  auto override = GetOsIntegrationTestOverride();
-  if (override) {
-    override->EnableOrDisablePathOnLogin(app_bundle_path,
-                                         /*enabled_on_start=*/true);
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
+    CHECK_IS_TEST();
+    os_override->EnableOrDisablePathOnLogin(app_bundle_path,
+                                            /*enabled_on_start=*/true);
   } else {
     base::mac::AddToLoginItems(app_bundle_path, hide_on_startup);
   }
@@ -991,10 +1027,12 @@ void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
 
 void WebAppAutoLoginUtil::RemoveFromLoginItems(
     const base::FilePath& app_bundle_path) {
-  auto override = GetOsIntegrationTestOverride();
-  if (override) {
-    override->EnableOrDisablePathOnLogin(app_bundle_path,
-                                         /*enabled_on_start=*/false);
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
+    CHECK_IS_TEST();
+    os_override->EnableOrDisablePathOnLogin(app_bundle_path,
+                                            /*enabled_on_start=*/false);
   } else {
     base::mac::RemoveFromLoginItems(app_bundle_path);
   }
@@ -1466,14 +1504,16 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
       app_mode::kCFBundleURLSchemesKey : handlers
     } ];
   }
-  if (GetOsIntegrationTestOverride()) {  // IN-TEST
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
+    CHECK_IS_TEST();
     std::vector<std::string> protocol_handlers_vec;
     protocol_handlers_vec.insert(protocol_handlers_vec.end(),
                                  protocol_handlers.begin(),
                                  protocol_handlers.end());
-    GetOsIntegrationTestOverride()  // IN-TEST
-        ->RegisterProtocolSchemes(info_->app_id,
-                                  std::move(protocol_handlers_vec));
+    os_override->RegisterProtocolSchemes(info_->app_id,
+                                         std::move(protocol_handlers_vec));
   }
 
   // TODO(crbug.com/1273526): If we decide to rename app bundles on app title
@@ -1695,20 +1735,20 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
 }
 
 void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
-                                 const std::string& app_id) {
+                                 const std::string& app_id,
+                                 bool terminate_shim) {
   std::string bundle_id = GetBundleIdentifier(app_id);
-  NSArray<NSRunningApplication*>* apps = [NSRunningApplication
-      runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
-                                                  bundle_id)];
-  NSRunningApplication* matching_app = nil;
-  for (NSRunningApplication* app in apps) {
-    if (base::mac::NSURLToFilePath(app.bundleURL) == shim_path) {
-      matching_app = app;
-      break;
-    }
-  }
-  if (!matching_app)
+  NSRunningApplication* matching_app =
+      FindRunningApplicationForBundleIdAndPath(bundle_id, shim_path);
+  if (!matching_app) {
+    LOG(ERROR) << "No matching applications found for app_id " << app_id
+               << " and path " << shim_path;
     return;
+  }
+
+  if (terminate_shim) {
+    [matching_app terminate];
+  }
 
   base::RunLoop loop;
   [[TerminationObserver alloc] initWithRunningApplication:matching_app
@@ -1740,7 +1780,7 @@ bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
     return true;
   }
@@ -1757,7 +1797,7 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      web_app::OsIntegrationTestOverride::Get();
   WebAppShortcutCreator shortcut_creator(
       internals::GetShortcutDataDir(shortcut_info), &shortcut_info);
   ShortcutLocations locations;
@@ -1777,7 +1817,7 @@ void DeletePlatformShortcuts(const base::FilePath& app_data_path,
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      web_app::OsIntegrationTestOverride::Get();
   const std::string bundle_id =
       GetBundleIdentifier(shortcut_info.app_id, shortcut_info.profile_path);
   auto bundle_infos = SearchForBundlesById(bundle_id);
@@ -1800,7 +1840,7 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      web_app::OsIntegrationTestOverride::Get();
   const std::string bundle_id = GetBundleIdentifier(app_id);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   for (const auto& bundle_info : bundle_infos) {
@@ -1819,7 +1859,7 @@ Result UpdatePlatformShortcuts(const base::FilePath& app_data_path,
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
     return Result::kOk;
   }
@@ -1839,7 +1879,7 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      web_app::OsIntegrationTestOverride::Get();
   std::list<BundleInfoPlist> bundles_info = BundleInfoPlist::GetAllInPath(
       GetChromeAppsFolder(), true /* recursive */);
   for (const auto& info : bundles_info) {

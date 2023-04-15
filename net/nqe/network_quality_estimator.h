@@ -442,13 +442,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // should discard RTT if it is set to the value returned by |InvalidRTT()|.
   static const base::TimeDelta InvalidRTT();
 
-  // Records UMA on whether the NetworkID was available or not. Called right
-  // after a network change event.
-  void RecordNetworkIDAvailability() const;
-
-  // Records UMA on main frame requests.
-  void RecordMetricsOnMainFrameRequest() const;
-
   // Records a downstream throughput observation to the observation buffer if
   // a valid observation is available. |downstream_kbps| is the downstream
   // throughput in kilobits per second.
@@ -532,11 +525,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // type.
   void ClampKbpsBasedOnEct();
 
-  // Earliest timestamp since when there is at least one active peer to peer
-  // connection count. Set to current timestamp when |p2p_connections_count_|
-  // changes from 0 to 1. Reset to null when |p2p_connections_count_| becomes 0.
-  absl::optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
-
   // Determines if the requests to local host can be used in estimating the
   // network quality. Set to true only for tests.
   bool use_localhost_requests_ = false;
@@ -566,15 +554,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // in milliseconds. Within a buffer, the observations are sorted by timestamp.
   ObservationBuffer
       rtt_ms_observations_[nqe::internal::OBSERVATION_CATEGORY_COUNT];
-
-  // Time when the transaction for the last main frame request was started.
-  base::TimeTicks last_main_frame_request_;
-
-  // Estimated network quality when the transaction for the last main frame
-  // request was started.
-  nqe::internal::NetworkQuality estimated_quality_at_last_main_frame_;
-  EffectiveConnectionType effective_connection_type_at_last_main_frame_ =
-      EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // Observer lists for round trip times and throughput measurements.
   base::ObserverList<RTTObserver>::Unchecked rtt_observer_list_;

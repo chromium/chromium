@@ -76,4 +76,11 @@ public interface MediaRouteManager {
      * @param message The message contents.
      */
     public void onMessage(String mediaRouteId, String message);
+
+    /**
+     * Called when a specified media route updates its media source.
+     * @param mediaRouteId The identifier of the media route.
+     * @param mediaSourceId The media source id.
+     */
+    public void onRouteMediaSourceUpdated(String mediaRouteId, String mediaSourceId);
 }

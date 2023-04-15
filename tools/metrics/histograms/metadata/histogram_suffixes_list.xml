@@ -1094,32 +1094,12 @@ chromium-metrics-reviews@google.com.
   <suffix name="RecentTabs" label="Recent (offline) tabs"/>
   <affected-histogram
       name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.DismissedUnvisited"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.DismissedVisited"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.MenuOpened"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.MenuOpenedAge"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.MenuOpenedScoreNormalized"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.MoreButtonClicked"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.MoreButtonShown"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.OpenDisposition"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.Opened"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.OpenedAge"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.OpenedCategoryIndex"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.OpenedScoreNormalized"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.Shown"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.ShownAge"/>
   <affected-histogram
       name="NewTabPage.ContentSuggestions.ShownScoreNormalized"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.VisitDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ContentSuggestionUndoableActions" separator=".">
-  <suffix name="Commit" label="Action was committed"/>
-  <suffix name="Undo" label="Action was undone"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.DismissedUnvisited"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.DismissedVisited"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContextMenuShoppingDomain" separator=".">
@@ -3186,12 +3166,6 @@ chromium-metrics-reviews@google.com.
       label="Observed metric was greater than 5100 (inclusive) units"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE_SignalStrengthQueried" separator=".">
-  <suffix name="Cellular" label="On cellular network."/>
-  <suffix name="WiFi" label="On WiFi network."/>
-  <affected-histogram name="NQE.SignalStrengthQueried"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="OfflinePagesArchiveDirectoryType" separator=".">
   <suffix name="Persistent" label="Persistent archive directory"/>
   <suffix name="Temporary" label="Temporary archive directory"/>
@@ -3220,29 +3194,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.TimeToStart"/>
   <affected-histogram name="OfflinePages.Background.TimeToStart.Svelte"/>
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
-  <affected-histogram name="OfflinePages.PageLifetime"/>
   <affected-histogram name="OfflinePages.PageSize"/>
   <affected-histogram name="OfflinePages.SavePage.AddPageTime"/>
   <affected-histogram name="OfflinePages.SavePage.ComputeDigestTime"/>
   <affected-histogram name="OfflinePages.SavePage.CreateArchiveTime"/>
   <affected-histogram name="OfflinePages.SavePage.PublishArchiveTime"/>
   <affected-histogram name="OfflinePages.SavePageTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OfflinePrefechItemFinalOutcome" separator=".">
-  <suffix name="Failed"
-      label="For items that failed being prefetched for any reason."/>
-  <suffix name="Successful" label="For items that were completed sucessfully."/>
-  <affected-histogram name="OfflinePages.Prefetching.ItemLifetime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OfflinePrefechRetriableAction" separator=".">
-  <suffix name="DownloadInitiation"
-      label="Action: start downloading an archive."/>
-  <suffix name="GeneratePageBundle"
-      label="Action: GeneratePageBundle request."/>
-  <suffix name="GetOperation" label="Action: GetOperation request."/>
-  <affected-histogram name="OfflinePages.Prefetching.ActionAttempts"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Omnibox_BitmapFetchLatencyCacheSplit" separator=".">
@@ -5101,14 +5058,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SB2.RequestDestination"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Scheduler_DOMScheduler_Priority" separator=".">
-  <suffix name="Background" label=""/>
-  <suffix name="UserBlocking" label=""/>
-  <suffix name="UserVisible" label=""/>
-  <affected-histogram
-      name="Scheduler.DOMScheduler.QueueingDurationPerPriority"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SchedulerDarkMatterMetrics" separator=".">
   <suffix name="Tracked"
       label="Total duration of all tasks managed by the scheduler. This
@@ -6091,17 +6040,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="21_" label="21 or more tabs"/>
   <affected-histogram name="WebUITabStrip.TabCreation"/>
   <affected-histogram name="WebUITabStrip.TabDataReceived"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WeekdayNames" separator="_">
-  <suffix name="Friday" label=""/>
-  <suffix name="Monday" label=""/>
-  <suffix name="Saturday" label=""/>
-  <suffix name="Sunday" label=""/>
-  <suffix name="Thursday" label=""/>
-  <suffix name="Tuesday" label=""/>
-  <suffix name="Wednesday" label=""/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.UsageTimeLocal"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WelcomeWin10Variant" separator="_">

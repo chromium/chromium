@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -100,6 +101,8 @@ public class HistoryClustersProcessorTest {
         mProcessor.populateModel(suggestion, propertyModel, 2);
         assertEquals(new SuggestionSpannable(suggestion.getActions().get(0).hint),
                 propertyModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+        assertTrue(propertyModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
+        assertNull(propertyModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         SuggestionDrawableState sds = propertyModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(sds);
         assertEquals(R.drawable.action_journeys, sds.resourceId);

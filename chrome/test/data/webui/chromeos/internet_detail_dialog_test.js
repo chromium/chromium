@@ -76,7 +76,7 @@ suite('internet-detail-dialog', () => {
   }
 
   async function setupCellularNetwork(
-      isPrimary, isInhibited, connectedApn, customApnList) {
+      isPrimary, isInhibited, connectedApn, customApnList, errorState) {
     await mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
     const cellularNetwork =
@@ -90,6 +90,7 @@ suite('internet-detail-dialog', () => {
     cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
     cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
     cellularNetwork.typeProperties.cellular.customApnList = customApnList;
+    cellularNetwork.errorState = errorState;
 
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
     mojoApi_.setDeviceStateForTest({
@@ -291,8 +292,11 @@ suite('internet-detail-dialog', () => {
       loadTimeData.overrideValues({
         apnRevamp: isApnRevampEnabled,
       });
+      const errorState = 'invalid-apn';
       await setupCellularNetwork(
-          /* isPrimary= */ true, /* isInhibited= */ false);
+          /* isPrimary= */ true, /* isInhibited= */ false,
+          /* connectedApn= */ undefined, /* customApnList= */ undefined,
+          errorState);
 
       await init();
       const legacyApnElement =
@@ -315,6 +319,7 @@ suite('internet-detail-dialog', () => {
             internetDetailDialog.shadowRoot.querySelector('apn-list');
         assertTrue(!!getApnList());
         assertTrue(getApnList().shouldOmitLinks);
+        assertEquals(errorState, getApnList().errorState);
         const isApnListShowing = () =>
             internetDetailDialog.shadowRoot.querySelector('iron-collapse')
                 .opened;
@@ -352,7 +357,7 @@ suite('internet-detail-dialog', () => {
 
   test(
       'Disable and show tooltip for New APN button when custom APNs limit is' +
-          'reached',
+          ' reached',
       async () => {
         loadTimeData.overrideValues({
           apnRevamp: true,
@@ -405,4 +410,25 @@ suite('internet-detail-dialog', () => {
         assertTrue(!!internetDetailDialog.shadowRoot.querySelector('apn-list')
                          .shadowRoot.querySelector('apn-detail-dialog'));
       });
+
+  [false, true].forEach(isJellyEnabled => {
+    test('Dynamic theme CSS is added when isJellyEnabled is set', async () => {
+      loadTimeData.overrideValues({
+        isJellyEnabled: isJellyEnabled,
+      });
+      await setupCellularNetwork(
+          /*isPrimary=*/ true, /*isInhibited=*/ false);
+      await init();
+
+      const linkEl =
+          document.querySelector('link[href*=\'chrome://theme/colors.css\']');
+      if (isJellyEnabled) {
+        assertTrue(!!linkEl);
+        assertTrue(document.body.classList.contains('jelly-enabled'));
+      } else {
+        assertEquals(null, linkEl);
+        assertFalse(document.body.classList.contains('jelly-enabled'));
+      }
+    });
+  });
 });

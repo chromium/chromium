@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
+
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,7 +31,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/wm/core/window_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
@@ -117,10 +122,6 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     app_platform_metrics_service_->Start(proxy->AppRegistryCache(),
                                          proxy->InstanceRegistry());
 #endif
-  }
-
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -311,13 +312,7 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_InsertAndCloseTabs DISABLED_InsertAndCloseTabs
-#else
-#define MAYBE_InsertAndCloseTabs InsertAndCloseTabs
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_InsertAndCloseTabs) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   InstallWebAppOpeningAsTab("https://a.example.org");
 
   Browser* browser = CreateBrowser();
@@ -414,13 +409,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_InsertAndCloseTabs) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ForegroundTabNavigate DISABLED_ForegroundTabNavigate
-#else
-#define MAYBE_ForegroundTabNavigate ForegroundTabNavigate
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_ForegroundTabNavigate) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
@@ -476,14 +465,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_ForegroundTabNavigate) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NavigateToBackgroundTab DISABLED_NavigateToBackgroundTab
-#else
-#define MAYBE_NavigateToBackgroundTab NavigateToBackgroundTab
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_NavigateToBackgroundTab) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
@@ -615,14 +597,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NavigateToUrlWithManifest DISABLED_NavigateToUrlWithManifest
-#else
-#define MAYBE_NavigateToUrlWithManifest NavigateToUrlWithManifest
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_NavigateToUrlWithManifest) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
@@ -685,13 +660,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MultipleBrowser DISABLED_MultipleBrowser
-#else
-#define MAYBE_MultipleBrowser MultipleBrowser
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_MultipleBrowser) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   // Setup: two browsers with two tabs each.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
@@ -811,14 +780,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_MultipleBrowser) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MoveActivatedTabToNewBrowser DISABLED_MoveActivatedTabToNewBrowser
-#else
-#define MAYBE_MoveActivatedTabToNewBrowser MoveActivatedTabToNewBrowser
-#endif
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_MoveActivatedTabToNewBrowser) {
+                       MoveActivatedTabToNewBrowser) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
@@ -948,15 +911,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MoveInActivatedTabToNewBrowser \
-  DISABLED_MoveInActivatedTabToNewBrowser
-#else
-#define MAYBE_MoveInActivatedTabToNewBrowser MoveInActivatedTabToNewBrowser
-#endif
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_MoveInActivatedTabToNewBrowser) {
+                       MoveInActivatedTabToNewBrowser) {
   // Create a browser with two tabs.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
@@ -1077,13 +1033,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OnURLsDeleted DISABLED_OnURLsDeleted
-#else
-#define MAYBE_OnURLsDeleted OnURLsDeleted
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_OnURLsDeleted) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   // Setup: two browsers with one tabs each.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
@@ -1111,13 +1061,52 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_OnURLsDeleted) {
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://b.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
+
+  // Simulate OnURLsDeleted is called for an expiration. Nothing should be
+  // cleared.
+  auto info = history::DeletionInfo(
+      history::DeletionTimeRange(base::Time(), base::Time::Now()),
+      /*is_from_expiration=*/true, {}, {}, absl::optional<std::set<GURL>>());
+  website_metrics()->OnURLsDeleted(nullptr, info);
+  EXPECT_EQ(2u, window_to_web_contents().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window2]));
+  EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
+            GURL("https://a.example.org"));
+  EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
+            GURL("https://b.example.org"));
+  EXPECT_EQ(2u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+  VerifyUrlInfo(GURL("https://a.example.org"),
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"),
+                /*is_activated=*/true, /*promotable=*/false);
+
+  // Persist data to prefs and verify.
   website_metrics()->OnFiveMinutes();
   VerifyUrlInfoInPref(GURL("https://a.example.org"),
                       /*promotable=*/false);
   VerifyUrlInfoInPref(GURL("https://b.example.org"),
                       /*promotable=*/false);
 
-  // Simulate OnURLsDeleted is called.
+  // Simulate OnURLsDeleted again for an expiration. The prefs should not be
+  // affected
+  website_metrics()->OnURLsDeleted(nullptr, info);
+  EXPECT_EQ(2u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(2u, url_infos().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+  VerifyUrlInfoInPref(GURL("https://a.example.org"),
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://b.example.org"),
+                      /*promotable=*/false);
+
+  // Simulate OnURLsDeleted for a non-expiration and ensure prefs and
+  // in-memory usage data is cleared.
   website_metrics()->OnURLsDeleted(nullptr,
                                    history::DeletionInfo::ForAllHistory());
   EXPECT_EQ(2u, window_to_web_contents().size());

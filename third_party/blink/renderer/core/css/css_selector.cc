@@ -110,7 +110,7 @@ unsigned CSSSelector::Specificity() const {
   unsigned temp = 0;
 
   for (const CSSSelector* selector = this; selector;
-       selector = selector->TagHistory()) {
+       selector = selector->NextSimpleSelector()) {
     temp = total + selector->SpecificityForOneSelector();
     // Clamp each component to its max in the case of overflow.
     if ((temp & kIdMask) < (total & kIdMask)) {
@@ -214,7 +214,7 @@ unsigned CSSSelector::SpecificityForPage() const {
   unsigned s = 0;
 
   for (const CSSSelector* component = this; component;
-       component = component->TagHistory()) {
+       component = component->NextSimpleSelector()) {
     switch (component->match_) {
       case kTag:
         s += TagQName().LocalName() == UniversalSelectorAtom() ? 0 : 4;
@@ -674,9 +674,9 @@ void CSSSelector::Show(int indent) const {
   }
   printf("%*sArgument(): %s\n", indent, "", Argument().Ascii().c_str());
   printf("%*sSpecificity(): %u\n", indent, "", Specificity());
-  if (TagHistory()) {
+  if (NextSimpleSelector()) {
     printf("\n%*s--> (Relation() == %d)\n", indent, "", Relation());
-    TagHistory()->Show(indent + 2);
+    NextSimpleSelector()->Show(indent + 2);
   } else {
     printf("\n%*s--> (Relation() == %d)\n", indent, "", Relation());
   }
@@ -1120,7 +1120,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
   }
 
   for (const CSSSelector* simple_selector = this; simple_selector;
-       simple_selector = simple_selector->TagHistory()) {
+       simple_selector = simple_selector->NextSimpleSelector()) {
     if (!simple_selector->SerializeSimpleSelector(builder)) {
       return nullptr;
     }
@@ -1135,7 +1135,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
 String CSSSelector::SelectorText() const {
   String result;
   for (const CSSSelector* compound = this; compound;
-       compound = compound->TagHistory()) {
+       compound = compound->NextSimpleSelector()) {
     StringBuilder builder;
     compound = compound->SerializeCompound(builder);
     if (!compound) {
@@ -1146,13 +1146,13 @@ String CSSSelector::SelectorText() const {
     DCHECK_NE(relation, kSubSelector);
     DCHECK_NE(relation, kScopeActivation);
 
-    const CSSSelector* next_compound = compound->TagHistory();
+    const CSSSelector* next_compound = compound->NextSimpleSelector();
     DCHECK(next_compound);
 
     // Skip leading :true. This internal pseudo-class is not supposed to
     // affect serialization.
     if (next_compound->GetPseudoType() == kPseudoTrue) {
-      next_compound = next_compound->TagHistory();
+      next_compound = next_compound->NextSimpleSelector();
     }
 
     // If we are combining with an implicit & or :scope, it is as if we
@@ -1321,7 +1321,7 @@ bool CSSSelector::IsCompound() const {
   }
 
   const CSSSelector* prev_sub_selector = this;
-  const CSSSelector* sub_selector = TagHistory();
+  const CSSSelector* sub_selector = NextSimpleSelector();
 
   while (sub_selector) {
     if (prev_sub_selector->Relation() != kSubSelector) {
@@ -1332,7 +1332,7 @@ bool CSSSelector::IsCompound() const {
     }
 
     prev_sub_selector = sub_selector;
-    sub_selector = sub_selector->TagHistory();
+    sub_selector = sub_selector->NextSimpleSelector();
   }
 
   return true;
@@ -1340,7 +1340,7 @@ bool CSSSelector::IsCompound() const {
 
 bool CSSSelector::HasLinkOrVisited() const {
   for (const CSSSelector* current = this; current;
-       current = current->TagHistory()) {
+       current = current->NextSimpleSelector()) {
     CSSSelector::PseudoType pseudo = current->GetPseudoType();
     if (pseudo == CSSSelector::kPseudoLink ||
         pseudo == CSSSelector::kPseudoVisited) {
@@ -1372,7 +1372,7 @@ bool CSSSelector::MatchNth(unsigned count) const {
 
 bool CSSSelector::MatchesPseudoElement() const {
   for (const CSSSelector* current = this; current;
-       current = current->TagHistory()) {
+       current = current->NextSimpleSelector()) {
     if (current->Match() == kPseudoElement) {
       return true;
     }
@@ -1416,17 +1416,17 @@ bool CSSSelector::IsAllowedAfterPart() const {
 }
 
 template <typename Functor>
-static bool ForAnyInTagHistory(const Functor& functor,
-                               const CSSSelector& selector) {
+static bool ForAnyInComplexSelector(const Functor& functor,
+                                    const CSSSelector& selector) {
   for (const CSSSelector* current = &selector; current;
-       current = current->TagHistory()) {
+       current = current->NextSimpleSelector()) {
     if (functor(*current)) {
       return true;
     }
     if (const CSSSelectorList* selector_list = current->SelectorList()) {
       for (const CSSSelector* sub_selector = selector_list->First();
            sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
-        if (ForAnyInTagHistory(functor, *sub_selector)) {
+        if (ForAnyInComplexSelector(functor, *sub_selector)) {
           return true;
         }
       }
@@ -1437,7 +1437,7 @@ static bool ForAnyInTagHistory(const Functor& functor,
 }
 
 bool CSSSelector::FollowsPart() const {
-  const CSSSelector* previous = TagHistory();
+  const CSSSelector* previous = NextSimpleSelector();
   if (!previous) {
     return false;
   }
@@ -1445,7 +1445,7 @@ bool CSSSelector::FollowsPart() const {
 }
 
 bool CSSSelector::FollowsSlotted() const {
-  const CSSSelector* previous = TagHistory();
+  const CSSSelector* previous = NextSimpleSelector();
   if (!previous) {
     return false;
   }

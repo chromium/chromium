@@ -51,6 +51,27 @@
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testPriceTrackingIsNotVisibleInIncognito {
+  CGFloat const kMenuScrollDisplacement = 150;
+  id<GREYAction> scrollRight =
+      grey_scrollInDirection(kGREYDirectionRight, kMenuScrollDisplacement);
+  id<GREYAction> scrollDown =
+      grey_scrollInDirection(kGREYDirectionDown, kMenuScrollDisplacement);
+  id<GREYMatcher> interactableSettingsButton =
+      grey_allOf(chrome_test_util::PriceNotificationsDestinationButton(),
+                 grey_interactable(), nil);
+  id<GREYAction> scrollAction =
+      [ChromeEarlGrey isNewOverflowMenuEnabled] ? scrollRight : scrollDown;
+
+  [self signinPriceTrackingUser];
+  [ChromeEarlGreyUI openNewIncognitoTab];
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
+         usingSearchAction:scrollAction
+      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
+      assertWithMatcher:grey_nil()];
+}
+
 #pragma mark - Helpers
 
 // Opens price tracking UI from the overflow menu carousel.

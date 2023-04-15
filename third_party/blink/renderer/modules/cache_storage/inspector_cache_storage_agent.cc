@@ -501,18 +501,23 @@ class CachedResponseFileReaderLoaderClient final
       : loader_(MakeGarbageCollected<FileReaderLoader>(this,
                                                        std::move(task_runner))),
         callback_(std::move(callback)),
-        data_(SharedBuffer::Create()) {
+        data_(SharedBuffer::Create()),
+        keep_alive_(this) {
     loader_->Start(std::move(blob));
   }
 
   ~CachedResponseFileReaderLoaderClient() override = default;
 
  private:
-  void dispose() { loader_ = nullptr; }
+  void dispose() {
+    keep_alive_.Clear();
+    loader_ = nullptr;
+  }
 
   Member<FileReaderLoader> loader_;
   std::unique_ptr<RequestCachedResponseCallback> callback_;
   scoped_refptr<SharedBuffer> data_;
+  SelfKeepAlive<CachedResponseFileReaderLoaderClient> keep_alive_;
 };
 
 }  // namespace

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 function register() {
-  navigator.serviceWorker.register('sw.js')
+  return navigator.serviceWorker.register('sw.js')
     .then(() => navigator.serviceWorker.ready)
-    .then(() => window.domAutomationController.send('ready'));
+    .then(() => 'ready');
 }
 
 async function doFetch(url) {
   const response = await fetch(url);
   const text = await response.text();
-  window.domAutomationController.send(text.trim());
+  return text.trim();
 }

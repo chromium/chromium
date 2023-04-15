@@ -107,8 +107,7 @@ InSessionPasswordChangeManager* g_test_instance = nullptr;
 // Traits for running RecheckPasswordExpiryTask.
 // Runs from the UI thread to show notification.
 const content::BrowserTaskTraits kRecheckUITaskTraits = {
-    base::TaskPriority::BEST_EFFORT,
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
+    base::TaskPriority::BEST_EFFORT};
 
 // A time delta of length one hour.
 const base::TimeDelta kOneHour = base::Hours(1);

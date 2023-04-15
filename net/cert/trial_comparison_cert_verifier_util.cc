@@ -70,8 +70,9 @@ bool CertHasMultipleEVPoliciesAndOneMatchesRoot(const X509Certificate* cert) {
   const EVRootCAMetadata* ev_metadata = EVRootCAMetadata::GetInstance();
   std::set<der::Input> candidate_oids;
   for (const der::Input& oid : leaf->policy_oids()) {
-    if (ev_metadata->IsEVPolicyOIDGivenBytes(oid))
+    if (ev_metadata->IsEVPolicyOID(oid)) {
       candidate_oids.insert(oid);
+    }
   }
 
   if (candidate_oids.size() <= 1)
@@ -83,8 +84,9 @@ bool CertHasMultipleEVPoliciesAndOneMatchesRoot(const X509Certificate* cert) {
                            sizeof(root_fingerprint.data));
 
   for (const der::Input& oid : candidate_oids) {
-    if (ev_metadata->HasEVPolicyOIDGivenBytes(root_fingerprint, oid))
+    if (ev_metadata->HasEVPolicyOID(root_fingerprint, oid)) {
       return true;
+    }
   }
 
   return false;

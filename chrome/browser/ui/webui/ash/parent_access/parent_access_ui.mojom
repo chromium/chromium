@@ -101,6 +101,7 @@ enum ParentAccessResult {
   kApproved,
   kDeclined,
   kCanceled,
+  kDisabled,
   kError,
 };
 

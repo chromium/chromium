@@ -91,6 +91,7 @@ static_library("observers") {
   deps = [
     "//base",
     "//components/history/core/browser",
+    "//components/metrics",
     "//components/sync/base",
     "//components/sync/driver",
     "//google_apis",

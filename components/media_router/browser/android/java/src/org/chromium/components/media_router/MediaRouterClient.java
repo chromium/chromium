@@ -76,4 +76,9 @@ public abstract class MediaRouterClient {
 
     /** @return true if the kCafMRPDeferredDiscovery feature flag is enabled. */
     public abstract boolean isCafMrpDeferredDiscoveryEnabled();
+
+    /**
+     * @return true if the kCastAnotherContentWhileCasting feature flag is enabled.
+     */
+    public abstract boolean isCastAnotherContentWhileCastingEnabled();
 }

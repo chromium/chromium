@@ -459,6 +459,7 @@ InterfaceEndpointClient::InterfaceEndpointClient(
       interface_name_(interface_name),
       method_info_callback_(method_info_callback),
       method_name_callback_(method_name_callback) {
+  DCHECK(interface_name_);
   DCHECK(handle_.is_valid());
   sequence_checker_.DetachFromSequence();
 
@@ -715,11 +716,7 @@ void InterfaceEndpointClient::NotifyError(
     return;
   encountered_error_ = true;
 
-  // TODO(dcheng): interface_name_ *should* never be null, but for the purposes
-  // of not introducing a new crash in code intended to help debug crashes, do a
-  // null check for safety.
-  DEBUG_ALIAS_FOR_CSTR(interface_name, interface_name_ ? interface_name_ : "",
-                       256);
+  DEBUG_ALIAS_FOR_CSTR(interface_name, interface_name_, 256);
 
   // Response callbacks may hold on to resource, and there's no need to keep
   // them alive any longer. Note that it's allowed that a pending response

@@ -128,42 +128,6 @@ TEST_F(WebAppIconDownloaderTest, NoHTTPStatusCode) {
           /*icons_http_results=*/IsEmpty()));
 }
 
-TEST_F(WebAppIconDownloaderTest, DownloadWithUrlsFromWebContentsNotification) {
-  const auto favicon_url = blink::mojom::FaviconURL::New(
-      GURL{"http://www.google.com/favicon.ico"},
-      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>());
-
-  base::test::TestFuture<IconsDownloadedResult, IconsMap,
-                         DownloadedIconsHttpResults>
-      test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
-
-  // Start downloader before favicon URLs are loaded.
-  downloader.Start();
-
-  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
-  favicon_urls.push_back(mojo::Clone(favicon_url));
-
-  web_contents_tester()->TestUpdateFaviconURL(mojo::Clone(favicon_urls));
-
-  std::vector<gfx::Size> sizes(1, gfx::Size(32, 32));
-  web_contents_tester()->TestDidDownloadImage(
-      /*url=*/favicon_url->icon_url,
-      /*http_status_code=*/200,
-      /*bitmaps=*/CreateTestBitmaps(sizes),
-      /*original_bitmap_sizes=*/sizes);
-
-  EXPECT_THAT(
-      test_future.Get(),
-      FieldsAre(
-          /*result=*/IconsDownloadedResult::kCompleted,
-          /*icons_map=*/UnorderedElementsAre(Pair(favicon_url->icon_url, _)),
-          /*icons_http_results=*/
-          UnorderedElementsAre(
-              Pair(favicon_url->icon_url, net::HttpStatusCode::HTTP_OK))));
-}
-
 TEST_F(WebAppIconDownloaderTest, DownloadMultipleUrls) {
   const GURL empty_favicon("http://www.google.com/empty_favicon.ico");
   const GURL favicon_url_1("http://www.google.com/favicon.ico");
@@ -254,9 +218,8 @@ TEST_F(WebAppIconDownloaderTest, SkipPageFavicons) {
                          DownloadedIconsHttpResults>
       test_future;
   WebAppIconDownloader downloader(web_contents(), extra_urls,
-                                  test_future.GetCallback());
-  downloader.SkipPageFavicons();
-
+                                  test_future.GetCallback(),
+                                  {.skip_page_favicons = true});
   downloader.Start();
 
   const std::vector<gfx::Size> sizes_1 = {gfx::Size{16, 16}};
@@ -345,9 +308,8 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesAfterDownload) {
                          DownloadedIconsHttpResults>
       test_future;
   WebAppIconDownloader downloader(web_contents(), std::vector<GURL>{url},
-                                  test_future.GetCallback());
-  downloader.SkipPageFavicons();
-
+                                  test_future.GetCallback(),
+                                  {.skip_page_favicons = true});
   downloader.Start();
 
   std::vector<gfx::Size> sizes = {gfx::Size(32, 32)};

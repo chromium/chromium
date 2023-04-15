@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
-<translation id="1181037720776840403">Ta bort</translation>
 <translation id="125153950246128346">Tryck för att visa en annan flik</translation>
 <translation id="1403228085774130835">Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny</translation>
 <translation id="1455506303394048917">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dela upp flik}other{Dela upp flikar}}</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Ta bort <ph name="TABS_COUNT_ONE" /> markerad flik från gruppen.}other{Ta bort <ph name="TABS_COUNT_MANY" /> markerade flikar från gruppen.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Infoga bokmärke för flik}other{Infoga bokmärken för flikar}}</translation>
-<translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
-<translation id="257674075312929031">Grupp</translation>
 <translation id="2613747923081026172">Skapa grupp</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg</translation>
 <translation id="266935134738038806">Besök webbplatsen</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Gruppera flikar genom att dra dem</translation>
 <translation id="5846292395804797011">Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5972844218283131174">Avmarkera alla</translation>
-<translation id="6040143037577758943">Stäng</translation>
 <translation id="6054741997831917303">Priset på den här varan minskade nyligen från <ph name="PREVIOUS_PRICE" /> till <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Välj flikar</translation>
 <translation id="6228793724645064692">(butikens betyg)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Dölj flervalsläget</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Dela flik}other{Dela flikar}}</translation>
 <translation id="7129458170538955174">Information om den här butiken har öppnats över halva skärmen</translation>
-<translation id="7151209024774799310">Ta bort flikar från gruppen</translation>
 <translation id="7204204600596740190">Flervalsläge</translation>
 <translation id="7326879924029668159">Se returpolicy med mera</translation>
 <translation id="7352298686197644113">Se vilket objekt på dina öppna flikar som har ett lägre pris</translation>

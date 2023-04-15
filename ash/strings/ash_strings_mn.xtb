@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C төхөөрөмж (урд талын порт)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-г <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж өөр төхөөрөмжтэй хослох зөвшөөрөл хүсэж байна. Энэ ПИН кодыг нөгөө төхөөрөмж дээр оруулна уу. ПИН код: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Энэ нь <ph name="APP_NAME" /> болон байршлын зөвшөөрөлтэй бүх апп, вебсайт ба ChromeOS-т Wi-Fi, мобайл сүлжээнүүдийн байршлыг ашиглахыг зөвшөөрнө.</translation>
 <translation id="1017556409696559990">Chrome-д арын түүх байхгүй үед дээд талын цонхыг багасгах</translation>
 <translation id="1024364763893396229">Өөрийн <ph name="NAME" />-г хадгалах уу?</translation>
 <translation id="1032891413405719768">Мэдрэгч үзэгний батарей бага байна</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">Түүхийн хуудсыг нээх</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
+<translation id="1675844249244994876">Баруун талын цонхыг шинэчлэх</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
 <translation id="1677582821739292812">Хэн нэгэн дэлгэц рүү тань харж байна</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Байршлын хандалтыг асаах</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />-г тогтоосныг болиуллаа</translation>
 <translation id="1838895407229022812">Шөнийн гэрэл унтраалттай байна.</translation>
 <translation id="1854180393107901205">Каст хийхийг зогсоох</translation>
@@ -365,7 +368,6 @@
 <translation id="2726420622004325180">Таны утас сүлжээний цэг өгөхийн тулд мобайл дататай байх ёстой</translation>
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Устгах"</translation>
 <translation id="2750941250130734256">Идэвхтэй цонхыг салгасан.</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">Та юу хийх боломжтой вэ?</translation>
 <translation id="3256109297135787951">Тавиур дээрх зүйлээсээ тодруулгыг устгах</translation>
 <translation id="3260969790895726815">Яриаг дотоодод боловсруулдаг ба дуу хоолойгоор бичих офлайн үед ажилладаг хэдий ч зарим дуут тушаал ажиллахгүй.</translation>
+<translation id="3265032511221679826">Нарийвчилсан байршлын хандалтыг асаах уу?</translation>
 <translation id="3269597722229482060">Баруун талыг товших</translation>
 <translation id="3289364673986435196">Асаах/унтраах цэс</translation>
 <translation id="3289544412142055976">Linux аппуудыг одоогоор дэмждэггүй</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Хяналттай хэрэглэгч</translation>
 <translation id="3666266999138159418">Хөвөгч цонхоо нуухын тулд шударна уу</translation>
 <translation id="367531336287639526">Хаяг оруулах хэсгийн зүүн талын эхний дүрс тэмдгийг сонгох</translation>
+<translation id="3677931086890821290">Энэ нь байршлын зөвшөөрөлтэй бүх апп, вебсайт болон ChromeOS-т Wi-Fi, мобайл сүлжээнүүдийн байршлыг ашиглахыг зөвшөөрнө.</translation>
 <translation id="3679827876008292680">Цонхны сүүлийн таб руу очих</translation>
 <translation id="36813544980941320">Wi-Fi сүлжээг таны утас болон <ph name="DEVICE_NAME" />-н хооронд хуваалцана</translation>
 <translation id="3694122362646626770">Вебсайт</translation>
@@ -845,6 +849,7 @@
 <translation id="493076006037866439">Дэлгэцийг жижгэрүүлэх</translation>
 <translation id="4936329710968938986">Бүгд, унтраалттай</translation>
 <translation id="4938176435186993759">Бүх зөвлөмжийг нуух</translation>
+<translation id="4943007472417128747">Wi-Fi-г ашиглахын тулд сүлжээний цэгийг унтраасан. Сүлжээний цэгийг ашиглахын тулд Wi-Fi-г унтраана уу.</translation>
 <translation id="4945196315133970626">Мэдэгдлийг унтраах</translation>
 <translation id="4946376291507881335">Зураг авах</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
@@ -1068,6 +1073,7 @@
 <translation id="5976112937189445008">Цонхыг бичихийн тулд enter дээр дарна уу</translation>
 <translation id="5978382165065462689">Remote Assistance ашиглан өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
 <translation id="5980301590375426705">Зочноос гарах</translation>
+<translation id="5983567367406220847">Идэвхгүй байдлын улмаас сүлжээний цэгийг унтраасан.</translation>
 <translation id="598407983968395253">Загварыг ашиглах</translation>
 <translation id="598882571027504733">Шинэчлэлт авахын тулд Chromebook-ээ хавсаргасан гараар шинэчилнэ үү.</translation>
 <translation id="6002179289567220515">Та 1 камерыг унтраахад биет сэлгүүр ашигласан. Та мөн бүх камерын хандалтыг унтраах боломжтой.</translation>
@@ -1221,6 +1227,7 @@
 <translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
 <translation id="6700713906295497288">IME цэсийн товчлуур</translation>
+<translation id="6705577071209924099">Гэрэлтүүлгийг тохируулах</translation>
 <translation id="6707693040195709527">Төхөөрөмжийг өмнөх хувилбар луу нь өөрчлөх хугацаа хэтэрсэн</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
@@ -1369,6 +1376,7 @@
 <translation id="7452560014878697800">Аппликэйшн таны камерыг ашиглаж байна</translation>
 <translation id="7453330308669753048">Хайлтын түүхийн илэрцийг хассан</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | дүүрэх хүртэл <ph name="TIME" /></translation>
+<translation id="7459485586006128091">Дотоод алдааны улмаас сүлжээний цэгийг унтраасан. Хэдэн минутын дараа дахин холбогдохоор оролдоно уу.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Дэлгэцийн үйлдэл бичих горим</translation>
 <translation id="7466449121337984263">Мэдрэгчид хүрнэ үү</translation>
@@ -1388,6 +1396,7 @@
 Төхөөрөмжийг унтраахын тулд төхөөрөмжийн асаах/унтраах товчийг дахин удаан дарна уу.</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Зүүн талын цонхыг шинэчлэх</translation>
 <translation id="7543399541175347147">Linux аппууд болон Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="7544300628205093162">Гарын арын гэрэл асаалттай байна</translation>
 <translation id="7548434653388805669">Унтах цаг</translation>
@@ -1441,6 +1450,7 @@
 <translation id="776344839111254542">Шинэчлэлтийн дэлгэрэнгүйг харахын тулд товшино уу</translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
 <translation id="7769299611924763557">Таны GIF удахгүй бэлэн болно</translation>
+<translation id="7773536009433685931">Оронд нь Wi-Fi-г асаах</translation>
 <translation id="7780094051999721182">товчлолууд</translation>
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
 <translation id="7796735576426975947">Шинэ мэдэгдлийг нуусан</translation>
@@ -1468,6 +1478,7 @@
 <translation id="7893503627044934815">Энэ файлыг харахыг хүсэхгүй байна</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Та дэлгэц эргүүлэх товчлуурын шууд холбоосыг дарсан байна. Дэлгэцийг эргүүлэх үү?</translation>
+<translation id="7901190436359881020">Цонхнуудыг солих</translation>
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
@@ -1744,6 +1755,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-н нягтралыг <ph name="RESOLUTION" /> болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="9201044636667689546"><ph name="NAME" />-г энэ Chromebook-тэй холбох</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, таны администратор удирддаг</translation>
+<translation id="9207682216934703221">Энэ нь <ph name="APP_NAME" />, <ph name="APP2_NAME" /> болон байршлын зөвшөөрөлтэй бүх апп, вебсайт ба ChromeOS-т Wi-Fi, мобайл сүлжээнүүдийн байршлыг ашиглахыг зөвшөөрнө.</translation>
 <translation id="9210037371811586452">Дэлгэцийн нэгдмэл горимоос гарч байна</translation>
 <translation id="9211490828691860325">Бүх дэлгэц</translation>
 <translation id="9211681782751733685">Батарейг бүрэн цэнэглэхэд <ph name="TIME_REMAINING" /> үлдсэн байна.</translation>

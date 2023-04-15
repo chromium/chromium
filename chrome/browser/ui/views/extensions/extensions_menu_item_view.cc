@@ -32,6 +32,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -62,6 +63,21 @@ void SetButtonIconWithColor(HoverButton* button,
   button->SetImageModel(
       views::Button::STATE_DISABLED,
       ui::ImageModel::FromVectorIcon(icon, disabled_icon_color, icon_size));
+}
+
+std::u16string GetPinButtonTooltip(bool is_force_pinned, bool is_pinned) {
+  int tooltip_id = IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+  if (is_force_pinned) {
+    tooltip_id = IDS_EXTENSIONS_PINNED_BY_ADMIN;
+  } else if (is_pinned) {
+    tooltip_id = IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
+  }
+  return l10n_util::GetStringUTF16(tooltip_id);
+}
+
+std::u16string GetPinButtonPressedAccText(bool is_pinned) {
+  return l10n_util::GetStringUTF16(is_pinned ? IDS_EXTENSION_PINNED
+                                             : IDS_EXTENSION_UNPINNED);
 }
 
 }  // namespace
@@ -216,15 +232,22 @@ void ExtensionMenuItemView::OnThemeChanged() {
   const auto* const color_provider = GetColorProvider();
   const SkColor icon_color = color_provider->GetColor(kColorExtensionMenuIcon);
 
-  if (pin_button_) {
-    views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
+    UpdateContextMenuButton(is_pinned);
+  } else {
+    SetButtonIconWithColor(
+        context_menu_button_, kBrowserToolsIcon, icon_color,
+        color_provider->GetColor(kColorExtensionMenuIconDisabled));
+    if (pin_button_) {
+      views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
+      bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
+      bool is_force_pinned =
+          model_ && model_->IsActionForcePinned(controller_->GetId());
+      UpdatePinButton(is_force_pinned, is_pinned);
+    }
   }
-
-  SetButtonIconWithColor(
-      context_menu_button_, kBrowserToolsIcon, icon_color,
-      color_provider->GetColor(kColorExtensionMenuIconDisabled));
-
-  UpdatePinButton();
 }
 
 void ExtensionMenuItemView::Update(
@@ -241,39 +264,54 @@ void ExtensionMenuItemView::Update(
   view_controller()->UpdateState();
 }
 
-void ExtensionMenuItemView::UpdatePinButton() {
-  if (!pin_button_) {
+void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
+                                            bool is_pinned) {
+  if (!pin_button_ || !GetWidget()) {
     return;
   }
 
-  bool is_force_pinned =
-      model_ && model_->IsActionForcePinned(controller_->GetId());
-  int pin_button_string_id = 0;
-  if (is_force_pinned) {
-    pin_button_string_id = IDS_EXTENSIONS_PINNED_BY_ADMIN;
-  } else if (IsPinned()) {
-    pin_button_string_id = IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
-  } else {
-    pin_button_string_id = IDS_EXTENSIONS_PIN_TO_TOOLBAR;
-  }
-  pin_button_->SetTooltipText(l10n_util::GetStringUTF16(pin_button_string_id));
+  pin_button_->SetTooltipText(GetPinButtonTooltip(is_force_pinned, is_pinned));
   // Extension pinning is not available in Incognito as it leaves a trace of
   // user activity.
   pin_button_->SetEnabled(!is_force_pinned &&
                           !browser_->profile()->IsOffTheRecord());
 
-  if (!GetWidget()) {
-    return;
-  }
   const auto* const color_provider = GetColorProvider();
   const SkColor icon_color = color_provider->GetColor(
-      IsPinned() ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon);
+      is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon);
   const SkColor disabled_icon_color = color_provider->GetColor(
-      IsPinned() ? kColorExtensionMenuPinButtonIconDisabled
-                 : kColorExtensionMenuIconDisabled);
+      is_pinned ? kColorExtensionMenuPinButtonIconDisabled
+                : kColorExtensionMenuIconDisabled);
   SetButtonIconWithColor(pin_button_,
-                         IsPinned() ? views::kUnpinIcon : views::kPinIcon,
+                         is_pinned ? views::kUnpinIcon : views::kPinIcon,
                          icon_color, disabled_icon_color);
+}
+
+void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
+  const auto* const color_provider = GetColorProvider();
+  auto three_dot_icon = ui::ImageModel::FromVectorIcon(
+      kBrowserToolsIcon, color_provider->GetColor(kColorExtensionMenuIcon),
+      icon_size);
+
+  // Show a pin button for the context menu normal state icon when the action is
+  // pinned in the toolbar. All other states should look, and behave, the same.
+  context_menu_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      is_action_pinned
+          ? ui::ImageModel::FromVectorIcon(
+                views::kPinIcon,
+                color_provider->GetColor(kColorExtensionMenuPinButtonIcon),
+                icon_size)
+          : three_dot_icon);
+  context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
+                                      three_dot_icon);
+  context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
+                                      three_dot_icon);
 }
 
 void ExtensionMenuItemView::SetupContextMenuButton() {
@@ -291,11 +329,6 @@ void ExtensionMenuItemView::SetupContextMenuButton() {
               context_menu_button_.get())));
 }
 
-bool ExtensionMenuItemView::IsPinned() const {
-  // |model_| can be null in unit tests.
-  return model_ && model_->IsActionPinned(controller_->GetId());
-}
-
 void ExtensionMenuItemView::OnContextMenuPressed() {
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.MoreActionsButtonPressedFromMenu"));
@@ -306,11 +339,14 @@ void ExtensionMenuItemView::OnContextMenuPressed() {
 }
 
 void ExtensionMenuItemView::OnPinButtonPressed() {
+  CHECK(model_);
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
-  model_->SetActionVisibility(controller_->GetId(), !IsPinned());
-  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-      IsPinned() ? IDS_EXTENSION_PINNED : IDS_EXTENSION_UNPINNED));
+  // Toggle pin visibility.
+  bool is_action_pinned = model_->IsActionPinned(controller_->GetId());
+  model_->SetActionVisibility(controller_->GetId(), !is_action_pinned);
+  GetViewAccessibility().AnnounceText(
+      GetPinButtonPressedAccText(is_action_pinned));
 }
 
 bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {

@@ -26,6 +26,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -62,6 +63,17 @@
 using base::Time;
 
 namespace history {
+
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "PageTransitionForVisitedLinks" in tools/metrics/histograms/enums.xml.
+enum class PageTransitionForVisitedLinks {
+  kOther = 0,           // the catch-all bucket for other transitions.
+  kLink = 1,            // corresponds to PAGE_TRANSITION_LINK.
+  kTyped = 2,           // corresponds to PAGE_TRANSITION_TYPED.
+  kManualSubframe = 3,  // corresponds to PAGE_TRANSITION_MANUAL_SUBFRAME.
+  kMaxValue = kManualSubframe,
+};
 
 // Sends messages from the backend to us on the main thread. This must be a
 // separate class from the history service so that it can hold a reference to
@@ -564,6 +576,7 @@ void HistoryService::AddPage(const HistoryAddPageArgs& add_page_args) {
     } else {
       visit_delegate_->AddURL(add_page_args.url);
     }
+    LogTransitionMetricsForVisit(add_page_args.transition);
   }
 
   // In extremely rare cases an in-flight clear history task posted to the UI
@@ -723,8 +736,12 @@ void HistoryService::AddPageWithDetails(const GURL& url,
     return;
 
   // Inform VisitDelegate of the URL.
-  if (visit_delegate_)
+  if (visit_delegate_) {
     visit_delegate_->AddURL(url);
+    // This visit will always be a LINK PageTransition type. See function
+    // comment for more info.
+    LogTransitionMetricsForVisit(ui::PageTransition::PAGE_TRANSITION_LINK);
+  }
 
   URLRow row(url);
   row.set_title(title);
@@ -754,6 +771,9 @@ void HistoryService::AddPagesWithDetails(const URLRows& info,
     for (const auto& row : info)
       urls.push_back(row.url());
     visit_delegate_->AddURLs(urls);
+    // This visit will always be a LINK PageTransition type. See function
+    // comment for more info.
+    LogTransitionMetricsForVisit(ui::PageTransition::PAGE_TRANSITION_LINK);
   }
 
   ScheduleTask(PRIORITY_NORMAL,
@@ -1672,6 +1692,38 @@ bool HistoryService::CanAddURL(const GURL& url) {
     return true;
   }
   return history_client_->GetThreadSafeCanAddURLCallback().Run(url);
+}
+
+void HistoryService::LogTransitionMetricsForVisit(
+    ui::PageTransition transition) {
+  // A generic measure of whether the visits are coming from the main frame or a
+  // subframe.
+  base::UmaHistogramBoolean("History.VisitedLinks.VisitLoggedFromMainFrame",
+                            ui::PageTransitionIsMainFrame(transition));
+  // A metric which records whether a visit matches one of the
+  // ui::PageTransition types of interest: link, typed, or manual subframe.
+  // Otherwise, it is recorded as "other".
+  switch (ui::PageTransitionStripQualifier(transition)) {
+    case ui::PageTransition::PAGE_TRANSITION_LINK:
+      base::UmaHistogramEnumeration(
+          "History.VisitedLinks.VisitLoggedFromTransition",
+          PageTransitionForVisitedLinks::kLink);
+      break;
+    case ui::PageTransition::PAGE_TRANSITION_TYPED:
+      base::UmaHistogramEnumeration(
+          "History.VisitedLinks.VisitLoggedFromTransition",
+          PageTransitionForVisitedLinks::kTyped);
+      break;
+    case ui::PageTransition::PAGE_TRANSITION_MANUAL_SUBFRAME:
+      base::UmaHistogramEnumeration(
+          "History.VisitedLinks.VisitLoggedFromTransition",
+          PageTransitionForVisitedLinks::kManualSubframe);
+      break;
+    default:
+      base::UmaHistogramEnumeration(
+          "History.VisitedLinks.VisitLoggedFromTransition",
+          PageTransitionForVisitedLinks::kOther);
+  }
 }
 
 }  // namespace history

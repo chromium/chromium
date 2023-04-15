@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 
@@ -17,12 +18,6 @@ namespace network {
 
 // Type-mapped to `network::mojom::CorsErrorStatus`.
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
-  // This constructor is used by generated IPC serialization code.
-  // Should not use this explicitly.
-  // TODO(toyoshim, yhirano): Exploring a way to make this private, and allows
-  // only serialization code for mojo can access.
-  CorsErrorStatus();
-
   // Instances of this type are copyable and efficiently movable.
   CorsErrorStatus(const CorsErrorStatus&);
   CorsErrorStatus& operator=(const CorsErrorStatus&);
@@ -42,6 +37,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
 
   bool operator==(const CorsErrorStatus& rhs) const;
   bool operator!=(const CorsErrorStatus& rhs) const { return !(*this == rhs); }
+
+  // This constructor is used by generated IPC serialization code.
+  explicit CorsErrorStatus(mojo::DefaultConstruct::Tag);
 
   // NOTE: This value is meaningless and should be overridden immediately either
   // by a constructor or by Mojo deserialization code.

@@ -25,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 AutocompleteMatch CreateMatch(std::u16string contents,
@@ -99,11 +100,11 @@ class HistoryClustersProviderTest : public testing::Test,
   }
 
   void VerifyFeatureTriggered(bool expected) {
-    EXPECT_EQ(autocomplete_provider_client_->GetOmniboxTriggeredFeatureService()
-                  ->GetFeatureTriggeredInSession(
-                      OmniboxTriggeredFeatureService::Feature::
-                          kHistoryClusterSuggestion),
-              expected);
+    EXPECT_EQ(
+        autocomplete_provider_client_->GetOmniboxTriggeredFeatureService()
+            ->GetFeatureTriggeredInSession(
+                metrics::OmniboxEventProto_Feature_HISTORY_CLUSTER_SUGGESTION),
+        expected);
   }
 
   // Tracks `OnProviderUpdate()` invocations.
@@ -155,7 +156,8 @@ TEST_F(HistoryClustersProviderTest, SyncSearchMatches) {
   ASSERT_EQ(provider_->matches().size(), 1u);
   EXPECT_EQ(provider_->matches()[0].relevance, 900);
   EXPECT_EQ(provider_->matches()[0].description, u"keyword");
-  EXPECT_EQ(provider_->matches()[0].contents, u"Resume your journey");
+  EXPECT_EQ(provider_->matches()[0].contents,
+            u"chrome://history/journeys?q=keyword");
   EXPECT_EQ(provider_->matches()[0].fill_into_edit, u"keyword");
   EXPECT_EQ(provider_->matches()[0].destination_url,
             GURL("chrome://history/journeys?q=keyword"));

@@ -353,11 +353,6 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   display: none;
 }
 
-/* TODO(b/236800499): Handle pause for time-lapse recording */
-body.record-type-time-lapse #pause-recordvideo {
-  display: none;
-}
-
 #video-snapshot-holder {
   bottom: calc(var(--shutter-vertical-center) + 84px);
   transform: translate(50%, 50%);
@@ -678,10 +673,6 @@ body.mirror #open-mirror-panel {
 
 #toggle-mic {
   background-image: url(/images/camera_button_mic_off.svg);
-}
-
-#open-settings {
-  background-image: url(/images/camera_button_settings.svg);
 }
 
 body.should-handle-intent-result #open-settings {
@@ -1563,4 +1554,8 @@ body:not(.video) #settings-video-resolution {
   background: url(/images/external_link_icon.svg);
   height: 20px;
   width: 20px;
+}
+
+#open-settings {
+  --color: white;
 }

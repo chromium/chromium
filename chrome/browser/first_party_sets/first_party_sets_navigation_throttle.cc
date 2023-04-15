@@ -53,6 +53,9 @@ ThrottleCheckResult FirstPartySetsNavigationThrottle::WillStartRequest() {
         base::BindOnce(&FirstPartySetsNavigationThrottle::OnTimeOut,
                        weak_factory_.GetWeakPtr()));
 
+    CHECK(!throttle_navigation_timer_.has_value());
+    throttle_navigation_timer_ = {base::ElapsedTimer()};
+
     return content::NavigationThrottle::DEFER;
   }
   return content::NavigationThrottle::PROCEED;
@@ -114,6 +117,10 @@ void FirstPartySetsNavigationThrottle::Resume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!resumed_);
   resumed_ = true;
+
+  CHECK(throttle_navigation_timer_.has_value());
+  base::UmaHistogramTimes("FirstPartySets.NavigationThrottle.ResumeDelta",
+                          throttle_navigation_timer_->Elapsed());
   NavigationThrottle::Resume();
 }
 

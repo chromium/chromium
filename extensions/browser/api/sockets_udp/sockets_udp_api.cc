@@ -245,14 +245,14 @@ ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
 
   net::DnsQueryType dns_query_type;
   switch (params_->dns_query_type) {
-    case extensions::api::sockets_udp::DNS_QUERY_TYPE_NONE:
-    case extensions::api::sockets_udp::DNS_QUERY_TYPE_ANY:
+    case extensions::api::sockets_udp::DnsQueryType::kNone:
+    case extensions::api::sockets_udp::DnsQueryType::kAny:
       dns_query_type = net::DnsQueryType::UNSPECIFIED;
       break;
-    case extensions::api::sockets_udp::DNS_QUERY_TYPE_IPV4:
+    case extensions::api::sockets_udp::DnsQueryType::kIpv4:
       dns_query_type = net::DnsQueryType::A;
       break;
-    case extensions::api::sockets_udp::DNS_QUERY_TYPE_IPV6:
+    case extensions::api::sockets_udp::DnsQueryType::kIpv6:
       dns_query_type = net::DnsQueryType::AAAA;
       break;
   }

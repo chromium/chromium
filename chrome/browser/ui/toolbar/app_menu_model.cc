@@ -134,7 +134,15 @@ std::u16string GetUpgradeDialogMenuItemName() {
       UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
     return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
   } else {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+    return l10n_util::GetStringUTF16(
+        base::FeatureList::IsEnabled(features::kUpdateTextOptions)
+            ? IDS_RELAUNCH_TO_UPDATE_ALT
+            : IDS_RELAUNCH_TO_UPDATE);
+#else
     return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
+#endif
   }
 }
 
@@ -208,11 +216,6 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 #endif
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu)) {
-      AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
-      if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenuNewBadge))
-        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS).value(), true);
-    }
     if (base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
       AddItem(IDC_CHROME_WHATS_NEW,
               l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW));
@@ -258,14 +261,9 @@ void ToolsMenuModel::Build(Browser* browser) {
   if (!base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   }
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyModeAvailable) ||
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable)) {
-    AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
-                           kPerformanceMenuItem);
-  }
+  AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                         kPerformanceMenuItem);
   if (chrome::CanOpenTaskManager())
     AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

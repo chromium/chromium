@@ -18,7 +18,7 @@ namespace extensions {
 ScopedWebFrame::ScopedWebFrame()
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateWebAgentGroupScheduler()),
+              .CreateWebAgentGroupScheduler()),
       view_(blink::WebView::Create(
           /*client=*/nullptr,
           /*is_hidden=*/false,

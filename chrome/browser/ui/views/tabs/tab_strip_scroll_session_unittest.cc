@@ -76,13 +76,13 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
     scroll_session_->SetTimerForTesting(mock_timer_);
 
     scroll_view_ = std::make_unique<views::ScrollView>();
-    scroll_view_->SetBounds(0, 0, 5 * TabStyleViews::GetMinimumInactiveWidth(),
-                            5);
+    scroll_view_->SetBounds(
+        0, 0, 5 * TabStyleViews::Create()->GetMinimumInactiveWidth(), 5);
 
     attached_context_ =
         scroll_view_->SetContents(std::make_unique<views::View>());
     attached_context_->SetBounds(
-        0, 0, 10 * TabStyleViews::GetMinimumInactiveWidth(), 5);
+        0, 0, 10 * TabStyleViews::Create()->GetMinimumInactiveWidth(), 5);
   }
 
   void TearDown() override { ChromeViewsTestBase::TearDown(); }

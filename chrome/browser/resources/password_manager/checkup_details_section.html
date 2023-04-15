@@ -133,10 +133,9 @@
   </button>
   <template is="dom-if" if="[[isCompromisedType(insecurityType_)]]">
     <button id="menuMuteUnmuteButton" class="dropdown-item"
-        on-click="onMenuMuteUnmuteClick_"
-        disabled="[[isMutingDisabledByPrefs_(pref)]]">
+        on-click="onMenuMuteUnmuteClick_" disabled="[[isMutingDisabled_]]">
       [[getMuteUnmuteLabel_(activeListItem_)]]
-      <template is="dom-if" if="[[isMutingDisabledByPrefs_(pref)]]" restamp>
+      <template is="dom-if" if="[[isMutingDisabled_]]" restamp>
         <iron-icon icon="cr20:domain" class="policy-disabled">
         </iron-icon>
       </template>

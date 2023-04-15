@@ -23,7 +23,7 @@ struct InterestGroupAd {
 };
 
 // The maximum size of a valid interest group in bytes.
-const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
+const uint32 kMaxInterestGroupSize = 1048576; // 1 * 1024 * 1024
 
 // Permissions granted by an interest group to sellers.
 struct SellerCapabilities {

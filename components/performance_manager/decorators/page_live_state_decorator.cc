@@ -88,11 +88,6 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_dev_tools_open_;
   }
-  bool UpdatedTitleOrFaviconInBackground() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return updated_title_or_favicon_in_background_;
-  }
-
   void SetIsConnectedToUSBDeviceForTesting(bool value) override {
     set_is_connected_to_usb_device(value);
   }
@@ -133,10 +128,6 @@ class PageLiveStateDataImpl
   void SetIsDevToolsOpenForTesting(bool value) override {
     set_is_dev_tools_open(value);
   }
-  void SetUpdatedTitleOrFaviconInBackgroundForTesting(bool value) override {
-    set_updated_title_or_favicon_in_background(value);
-  }
-
   void set_is_connected_to_usb_device(bool is_connected_to_usb_device) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_connected_to_usb_device_ == is_connected_to_usb_device)
@@ -249,10 +240,6 @@ class PageLiveStateDataImpl
       obs.OnIsDevToolsOpenChanged(page_node_);
     }
   }
-  void set_updated_title_or_favicon_in_background(bool updated) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    updated_title_or_favicon_in_background_ = updated;
-  }
 
  private:
   // Make the impl our friend so it can access the constructor and any
@@ -279,8 +266,6 @@ class PageLiveStateDataImpl
   std::map<ContentSettingsType, ContentSetting> content_settings_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_dev_tools_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool updated_title_or_favicon_in_background_
-      GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   const raw_ptr<const PageNode> page_node_;
 };
@@ -448,8 +433,6 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("IsActiveTab", data->IsActiveTab());
   ret.Set("IsPinnedTab", data->IsPinnedTab());
   ret.Set("IsDevToolsOpen", data->IsDevToolsOpen());
-  ret.Set("UpdatedTitleOrFaviconInBackground",
-          data->UpdatedTitleOrFaviconInBackground());
   ret.Set("IsNotificationsAllowed", data->IsContentSettingTypeAllowed(
                                         ContentSettingsType::NOTIFICATIONS));
 
@@ -478,20 +461,6 @@ void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
                     &PageLiveStateDecorator::OnContentSettingsReceived,
                     weak_factory_.GetWeakPtr(), page_node->GetMainFrameUrl()));
 #endif
-}
-
-void PageLiveStateDecorator::OnTitleUpdated(const PageNode* page_node) {
-  if (!page_node->IsVisible()) {
-    PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
-        ->set_updated_title_or_favicon_in_background(true);
-  }
-}
-
-void PageLiveStateDecorator::OnFaviconUpdated(const PageNode* page_node) {
-  if (!page_node->IsVisible()) {
-    PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
-        ->set_updated_title_or_favicon_in_background(true);
-  }
 }
 
 void PageLiveStateDecorator::OnContentSettingsReceived(

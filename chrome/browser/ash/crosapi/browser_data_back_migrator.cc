@@ -1395,7 +1395,7 @@ bool BrowserDataBackMigrator::MaybeRestartToMigrateBack(
 }
 
 // static
-BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
+BrowserDataBackMigratorBase::Result BrowserDataBackMigrator::ToResult(
     TaskResult result) {
   switch (result.status) {
     case TaskStatus::kSucceeded:

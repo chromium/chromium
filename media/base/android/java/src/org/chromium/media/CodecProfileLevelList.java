@@ -174,7 +174,7 @@ class CodecProfileLevelList {
         }
     }
 
-    private static int mediaCodecLevelToChromiumMediaLevel(int codec, int level) {
+    public static int mediaCodecLevelToChromiumMediaLevel(int codec, int level) {
         switch (codec) {
             case VideoCodec.H264:
                 switch (level) {
@@ -256,6 +256,59 @@ class CodecProfileLevelList {
                         return 61;
                     case CodecProfileLevel.VP9Level62:
                         return 62;
+                    default:
+                        throw new UnsupportedCodecProfileException();
+                }
+            case VideoCodec.AV1:
+                switch (level) {
+                    case CodecProfileLevel.AV1Level2:
+                        return 20;
+                    case CodecProfileLevel.AV1Level21:
+                        return 21;
+                    case CodecProfileLevel.AV1Level22:
+                        return 22;
+                    case CodecProfileLevel.AV1Level23:
+                        return 23;
+                    case CodecProfileLevel.AV1Level3:
+                        return 30;
+                    case CodecProfileLevel.AV1Level31:
+                        return 31;
+                    case CodecProfileLevel.AV1Level32:
+                        return 32;
+                    case CodecProfileLevel.AV1Level33:
+                        return 33;
+                    case CodecProfileLevel.AV1Level4:
+                        return 40;
+                    case CodecProfileLevel.AV1Level41:
+                        return 41;
+                    case CodecProfileLevel.AV1Level42:
+                        return 42;
+                    case CodecProfileLevel.AV1Level43:
+                        return 43;
+                    case CodecProfileLevel.AV1Level5:
+                        return 50;
+                    case CodecProfileLevel.AV1Level51:
+                        return 51;
+                    case CodecProfileLevel.AV1Level52:
+                        return 52;
+                    case CodecProfileLevel.AV1Level53:
+                        return 53;
+                    case CodecProfileLevel.AV1Level6:
+                        return 60;
+                    case CodecProfileLevel.AV1Level61:
+                        return 61;
+                    case CodecProfileLevel.AV1Level62:
+                        return 62;
+                    case CodecProfileLevel.AV1Level63:
+                        return 63;
+                    case CodecProfileLevel.AV1Level7:
+                        return 70;
+                    case CodecProfileLevel.AV1Level71:
+                        return 71;
+                    case CodecProfileLevel.AV1Level72:
+                        return 72;
+                    case CodecProfileLevel.AV1Level73:
+                        return 73;
                     default:
                         throw new UnsupportedCodecProfileException();
                 }

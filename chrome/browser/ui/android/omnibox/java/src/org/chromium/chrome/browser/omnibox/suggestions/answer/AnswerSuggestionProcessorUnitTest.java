@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -394,9 +396,9 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertNotEquals(icon2, newIcon2);
         Assert.assertNotEquals(icon3, newIcon3);
 
-        Assert.assertThat(newIcon1, instanceOf(BitmapDrawable.class));
-        Assert.assertThat(newIcon2, instanceOf(BitmapDrawable.class));
-        Assert.assertThat(newIcon3, instanceOf(BitmapDrawable.class));
+        assertThat(newIcon1, instanceOf(BitmapDrawable.class));
+        assertThat(newIcon2, instanceOf(BitmapDrawable.class));
+        assertThat(newIcon3, instanceOf(BitmapDrawable.class));
 
         Assert.assertEquals(mBitmap, ((BitmapDrawable) newIcon1).getBitmap());
         Assert.assertEquals(mBitmap, ((BitmapDrawable) newIcon2).getBitmap());

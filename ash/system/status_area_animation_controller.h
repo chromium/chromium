@@ -42,6 +42,10 @@ class ASH_EXPORT StatusAreaAnimationController
   // animations.
   void EnableNotificationCenterTrayItemAnimations();
 
+  // Updates the notification center tray's `TrayItemView`'s visibilities
+  // without animating any changes.
+  void ImmediatelyUpdateTrayItemVisibilities();
+
   // ash::TrayBackgroundView::Observer:
   void OnVisiblePreferredChanged(bool visible_preferred) override;
 

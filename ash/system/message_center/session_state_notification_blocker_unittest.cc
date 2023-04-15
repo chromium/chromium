@@ -153,7 +153,7 @@ class SessionStateNotificationBlockerTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SessionStateNotificationBlockerTest,
-                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+                         testing::Bool() /* IsQsRevampEnabled() */);
 
 TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
   // OOBE.

@@ -9,11 +9,9 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.PluralsRes;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.tab_ui.R;
@@ -32,13 +30,10 @@ import java.util.List;
 class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
     private Context mContext;
-    private Button mActionButton;
     private ChromeImageButton mMenuButton;
     private TabSelectionEditorActionViewLayout mActionViewLayout;
-    private Integer mActionButtonDescriptionResourceId;
     @ColorInt
     private int mBackgroundColor;
-    private int mActionButtonEnablingThreshold = 2;
     private RelatedTabCountProvider mRelatedTabCountProvider;
 
     public interface RelatedTabCountProvider {
@@ -61,13 +56,10 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         showNavigationButton();
         mActionViewLayout =
                 (TabSelectionEditorActionViewLayout) findViewById(R.id.action_view_layout);
-        mActionButton = (Button) findViewById(R.id.action_button);
         mMenuButton = (ChromeImageButton) findViewById(R.id.list_menu_button);
-        mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
 
-        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-            mNumberRollView.setString(R.plurals.tab_selection_editor_tabs_count);
-        }
+        mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
+        mNumberRollView.setString(R.plurals.tab_selection_editor_tabs_count);
 
         // Move the number roll view into a LinearLayout to manage spacing.
         LinearLayout.LayoutParams params =
@@ -93,16 +85,6 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     public void onSelectionStateChange(List<Integer> selectedItems) {
         super.onSelectionStateChange(selectedItems);
         int selectedItemsSize = selectedItems.size();
-        boolean enabled = selectedItemsSize >= mActionButtonEnablingThreshold;
-        mActionButton.setEnabled(enabled);
-
-        String contentDescription = null;
-        if (enabled && mActionButtonDescriptionResourceId != null) {
-            contentDescription = getContext().getResources().getQuantityString(
-                    mActionButtonDescriptionResourceId, selectedItemsSize, selectedItemsSize);
-        }
-
-        mActionButton.setContentDescription(contentDescription);
 
         if (mRelatedTabCountProvider == null) return;
 
@@ -136,20 +118,10 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     /**
-     * Sets a {@link android.view.View.OnClickListener} to respond to {@code mActionButton} clicking
-     * event.
-     * @param listener The listener to set.
-     */
-    public void setActionButtonOnClickListener(OnClickListener listener) {
-        mActionButton.setOnClickListener(listener);
-    }
-
-    /**
      * Update the tint for buttons, the navigation button and the action button, in the toolbar.
      * @param tint New {@link ColorStateList} to use.
      */
     public void setButtonTint(ColorStateList tint) {
-        mActionButton.setTextColor(tint);
         TintedDrawable navigation = (TintedDrawable) getNavigationIcon();
         navigation.setTint(tint);
         ImageViewCompat.setImageTintList(mMenuButton, tint);
@@ -169,43 +141,6 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
      */
     public void setTextColorStateList(ColorStateList colorStateList) {
         mNumberRollView.setTextColorStateList(colorStateList);
-    }
-
-    /**
-     * Set action button text.
-     * @param text The text to display.
-     */
-    public void setActionButtonText(String text) {
-        mActionButton.setText(text);
-    }
-
-    /**
-     * Set the action button enabling threshold.
-     * @param threshold New threshold.
-     */
-    public void setActionButtonEnablingThreshold(int threshold) {
-        mActionButtonEnablingThreshold = threshold;
-    }
-
-    /**
-     * Set ContentDescription template for action button.
-     * @param template The template to use.
-     */
-    public void setActionButtonDescriptionResourceId(@PluralsRes int template) {
-        String expectedResourceTypeName = "plurals";
-        assert expectedResourceTypeName.equals(
-                getContext().getResources().getResourceTypeName(template))
-            : "Quantity strings (plurals) with one integer format argument is needed";
-
-        mActionButtonDescriptionResourceId = template;
-    }
-
-    /**
-     * Set visibility of the action button.
-     * @param visibility The visibility state.
-     */
-    public void setActionButtonVisibility(int visibility) {
-        mActionButton.setVisibility(visibility);
     }
 
     /**

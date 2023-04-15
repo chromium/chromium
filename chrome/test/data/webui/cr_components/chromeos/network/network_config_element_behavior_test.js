@@ -4,7 +4,7 @@
 
 import {NetworkConfigElementBehavior} from 'chrome://resources/ash/common/network/network_config_element_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CrComponentsNetworkConfigElementBehaviorTest', function() {
   /** @type {!NetworkConfigElementBehavior} */
@@ -27,24 +27,26 @@ suite('CrComponentsNetworkConfigElementBehaviorTest', function() {
     },
   };
 
-  suiteSetup(function() {
-    Polymer({
-      is: 'test-network-config-element',
+  const TestElementBase = mixinBehaviors(
+      [NetworkConfigElementBehavior, TestNetworkPolicyEnforcer],
+      PolymerElement);
 
-      behaviors: [
-        NetworkConfigElementBehavior,
-        TestNetworkPolicyEnforcer,
-      ],
+  class TestNetworkConfigElement extends TestElementBase {
+    static get is() {
+      return 'test-network-config-element';
+    }
 
-      properties: {
+    static get properties() {
+      return {
         showPolicyIndicator: {
           type: Boolean,
           value: false,
           computed: 'getDisabled_(disabled, property)',
         },
-      },
-    });
-  });
+      };
+    }
+  }
+  customElements.define(TestNetworkConfigElement.is, TestNetworkConfigElement);
 
   setup(function() {
     config = document.createElement('test-network-config-element');

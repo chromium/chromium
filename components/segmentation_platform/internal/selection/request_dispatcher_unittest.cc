@@ -24,8 +24,8 @@ namespace segmentation_platform {
 namespace {
 
 // Test clients.
-const char kTestClient1[] = "client_1";
-const char kTestClient2[] = "client_2";
+const char kDeviceSwitcherClient[] = "device_switcher";
+const char kAdaptiveToolbarClient[] = "adaptive_toolbar";
 
 class MockRequestHandler : public RequestHandler {
  public:
@@ -48,21 +48,23 @@ class RequestDispatcherTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
 
     configs_.emplace_back(test_utils::CreateTestConfig(
-        kTestClient1, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+        kDeviceSwitcherClient,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER));
     configs_.emplace_back(test_utils::CreateTestConfig(
-        kTestClient2, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+        kAdaptiveToolbarClient,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
 
     request_dispatcher_ =
         std::make_unique<RequestDispatcher>(configs_, nullptr);
 
     auto handler1 = std::make_unique<MockRequestHandler>();
     request_handler1_ = handler1.get();
-    request_dispatcher_->set_request_handler_for_testing(kTestClient1,
+    request_dispatcher_->set_request_handler_for_testing(kDeviceSwitcherClient,
                                                          std::move(handler1));
 
     auto handler2 = std::make_unique<MockRequestHandler>();
     request_handler2_ = handler2.get();
-    request_dispatcher_->set_request_handler_for_testing(kTestClient2,
+    request_dispatcher_->set_request_handler_for_testing(kAdaptiveToolbarClient,
                                                          std::move(handler2));
   }
 
@@ -93,7 +95,7 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitFailure) {
 
   base::RunLoop loop;
   request_dispatcher_->GetClassificationResult(
-      kTestClient1, options, scoped_refptr<InputContext>(),
+      kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(),
                      ClassificationResult(PredictionStatus::kFailed)));
@@ -128,7 +130,7 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitSuccess) {
       }));
 
   request_dispatcher_->GetClassificationResult(
-      kTestClient1, options, scoped_refptr<InputContext>(),
+      kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result1));
   EXPECT_EQ(1, request_dispatcher_->get_pending_actions_size_for_testing());
@@ -144,7 +146,7 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitSuccess) {
       }));
 
   request_dispatcher_->GetClassificationResult(
-      kTestClient2, options, scoped_refptr<InputContext>(),
+      kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result2));
   EXPECT_EQ(2, request_dispatcher_->get_pending_actions_size_for_testing());
@@ -183,7 +185,7 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
       }));
 
   request_dispatcher_->GetClassificationResult(
-      kTestClient1, options, scoped_refptr<InputContext>(),
+      kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result1));
   EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
@@ -199,7 +201,7 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
       }));
 
   request_dispatcher_->GetClassificationResult(
-      kTestClient2, options, scoped_refptr<InputContext>(),
+      kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result2));
   loop.Run();

@@ -598,13 +598,6 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       base::BindRepeating(&BindEcheConnectionStatusHandler, manager));
 }
 
-template <>
-WebUIController* NewWebUI<ash::OSFeedbackUI>(WebUI* web_ui, const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  return new ash::OSFeedbackUI(
-      web_ui, std::make_unique<ash::ChromeOsFeedbackDelegate>(profile));
-}
-
 void BindScanService(
     Profile* profile,
     mojo::PendingReceiver<ash::scanning::mojom::ScanService> pending_receiver) {
@@ -964,19 +957,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ConflictsUI>;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
-    if (url.host_piece() == ash::kChromeUIOSFeedbackHost)
-      return &NewWebUI<ash::OSFeedbackUI>;
-  }
   if (url.host_piece() == ash::kChromeUIFaceMLAppHost) {
     if (!ash::features::IsFaceMLSwaEnabled()) {
       return nullptr;
     }
     return &NewComponentUI<ash::FaceMLAppUI, ash::ChromeFaceMLUserProvider>;
-  }
-  if (url.host_piece() == chrome::kChromeUIEnterpriseReportingHost &&
-      base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI)) {
-    return &NewWebUI<ash::reporting::EnterpriseReportingUI>;
   }
   if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
     return &NewComponentUI<ash::file_manager::FileManagerUI,
@@ -1495,7 +1480,6 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kChromeUICrostiniUpgraderUrl),
         GURL(chrome::kChromeUICryptohomeURL),
         GURL(chrome::kOsUIDeviceEmulatorURL), GURL(chrome::kOsUIDeviceLogURL),
-        GURL(chrome::kChromeUIDiagnosticsAppURL),
         GURL(chrome::kChromeUIDriveInternalsUrl),
         GURL(chrome::kOsUIDriveInternalsURL),
         GURL(chrome::kChromeUIEmojiPickerURL),

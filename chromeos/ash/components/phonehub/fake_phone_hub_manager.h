@@ -139,6 +139,9 @@ class FakePhoneHubManager : public PhoneHubManager {
   void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler* eche_connection_status_handler)
       override;
+  void SetSystemInfoProvider(
+      eche_app::SystemInfoProvider* system_info_provider) override;
+  eche_app::SystemInfoProvider* GetSystemInfoProvider() override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -161,6 +164,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   AppStreamManager app_stream_manager_;
   eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
       nullptr;
+  eche_app::SystemInfoProvider* system_info_provider_ = nullptr;
   absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
 };
 

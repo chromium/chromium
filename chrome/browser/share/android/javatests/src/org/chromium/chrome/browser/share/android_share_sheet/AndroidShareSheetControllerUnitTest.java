@@ -27,6 +27,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.os.BuildCompat;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -39,6 +40,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
@@ -63,10 +65,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowBuildCompatForU;
-import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowChooserActionHelper;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowShareImageFileUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
+import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -106,11 +107,6 @@ public class AndroidShareSheetControllerUnitTest {
     private static final String KEY_CHOOSER_ACTION_NAME = "name";
     private static final String KEY_CHOOSER_ACTION_ACTION = "action";
     private static final String SELECTOR_FOR_LINK_TO_TEXT = "selector";
-
-    private static final String USER_ACTION_SEND_TAB_TO_SELF_SELECTED =
-            "SharingHubAndroid.SendTabToSelfSelected";
-    private static final String USER_ACTION_QR_CODE_SELECTED = "SharingHubAndroid.QRCodeSelected";
-    private static final String USER_ACTION_PRINT_SELECTED = "SharingHubAndroid.PrintSelected";
 
     private static final Uri TEST_WEB_FAVICON_PREVIEW_URI =
             Uri.parse("content://test.web.favicon.preview");
@@ -192,6 +188,8 @@ public class AndroidShareSheetControllerUnitTest {
 
     @After
     public void tearDown() {
+        ShadowLinkToTextCoordinator.setForceToFail(null);
+        ShadowQrCodeDialog.sLastUrl = null;
         mWindow.destroy();
         TrackerFactory.setTrackerForTests(null);
     }
@@ -214,7 +212,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertNotNull("Custom action is empty.",
                 intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS));
 
-        assertCustomActions(intent, R.string.sharing_long_screenshot,
+        assertCustomActions(intent, R.string.sharing_copy_url, R.string.sharing_long_screenshot,
                 R.string.print_share_activity_title, R.string.send_tab_to_self_share_activity_title,
                 R.string.qr_code_share_icon_label);
     }
@@ -257,27 +255,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        Parcelable[] actions = intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS);
-
-        Assert.assertTrue("More than one action is provided.", actions.length > 0);
-
-        // Find the print callback, since we mocked that out during this test.
-        Bundle printOption = null;
-        for (Parcelable parcelable : actions) {
-            Bundle bundle = (Bundle) parcelable;
-            if (TextUtils.equals(ContextUtils.getApplicationContext().getString(
-                                         R.string.print_share_activity_title),
-                        bundle.getString(KEY_CHOOSER_ACTION_NAME))) {
-                printOption = bundle;
-                break;
-            }
-        }
-
-        Assert.assertNotNull("Print option is null when the callback is provided.", printOption);
-
-        PendingIntent action = printOption.getParcelable(KEY_CHOOSER_ACTION_ACTION);
-        action.send();
-        ShadowLooper.idleMainLooper();
+        chooseCustomAction(intent, R.string.print_share_activity_title);
         Assert.assertEquals("Print callback is not called.", 1, mPrintCallback.getCallCount());
         Assert.assertEquals(
                 "TargetChosenCallback is not called.", 1, callbackHelper.getCallCount());
@@ -424,6 +402,66 @@ public class AndroidShareSheetControllerUnitTest {
                 shareIntent3.getStringExtra(Intent.EXTRA_TEXT));
     }
 
+    @Test
+    @Config(shadows = {ShadowLinkToTextCoordinator.class, ShadowBuildCompatForU.class,
+                    ShadowChooserActionHelper.class})
+    public void
+    shareLinkToHighlightTextFailed() {
+        ShadowLinkToTextCoordinator.setForceToFail(true);
+
+        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setFileContentType("text/plain")
+                                     .setText("highlight")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build();
+        AndroidShareSheetController.showShareSheet(params, chromeShareExtras,
+                mBottomSheetController,
+                () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
+
+        // Since link to share failed, the content being shared is a plain text.
+        Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Intent shareIntent = chooserIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        Assert.assertEquals("Text being shared is different.", "highlight",
+                shareIntent.getStringExtra(Intent.EXTRA_TEXT));
+        Assert.assertNull("Modify action should be null when generating link to text failed.",
+                chooserIntent.getParcelableExtra(INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION));
+
+        assertCustomActions(chooserIntent, R.string.sharing_long_screenshot);
+    }
+
+    @Test
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class,
+                    ShadowQrCodeDialog.class})
+    public void
+    chooseQRCodeAction() throws CanceledException {
+        Uri testImageUri = Uri.parse("content://test.image.uri");
+        ShareParams params = new ShareParams.Builder(mWindow, "", "")
+                                     .setFileContentType("image/png")
+                                     .setSingleImageUri(testImageUri)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
+                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .build();
+
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(intent, R.string.sharing_long_screenshot,
+                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
+        chooseCustomAction(intent, R.string.qr_code_share_icon_label);
+
+        Assert.assertEquals("Last URL does not match content being shared.",
+                JUnitTestGURLs.GOOGLE_URL_DOGS, ShadowQrCodeDialog.sLastUrl);
+    }
+
     private void setFaviconToFetchForTest(Bitmap favicon) {
         doAnswer(invocation -> {
             FaviconHelper.FaviconImageCallback callback = invocation.getArgument(4);
@@ -461,6 +499,31 @@ public class AndroidShareSheetControllerUnitTest {
         String expectedString = expectedStringBuilder.toString();
         Assert.assertEquals(
                 "Actions and/or the order does not match.", expectedString, actualString);
+    }
+
+    private void chooseCustomAction(Intent chooserIntent, @StringRes int iconLabel)
+            throws CanceledException {
+        Parcelable[] actions =
+                chooserIntent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS);
+        Assert.assertTrue("More than one action is provided.", actions.length > 0);
+
+        // Find the print callback, since we mocked that out during this test.
+        Bundle expectAction = null;
+        for (Parcelable parcelable : actions) {
+            Bundle bundle = (Bundle) parcelable;
+            if (TextUtils.equals(
+                        ContextUtils.getApplicationContext().getResources().getString(iconLabel),
+                        bundle.getString(KEY_CHOOSER_ACTION_NAME))) {
+                expectAction = bundle;
+                break;
+            }
+        }
+
+        Assert.assertNotNull("Print option is null when the callback is provided.", expectAction);
+
+        PendingIntent action = expectAction.getParcelable(KEY_CHOOSER_ACTION_ACTION);
+        action.send();
+        ShadowLooper.idleMainLooper();
     }
 
     /**
@@ -519,9 +582,27 @@ public class AndroidShareSheetControllerUnitTest {
 
         public ShadowLinkToTextCoordinator() {}
 
+        static Boolean sForceToFail;
+
+        static void setForceToFail(Boolean forceToFail) {
+            sForceToFail = forceToFail;
+        }
+
         @Implementation
         protected void shareLinkToText() {
-            mRealObj.onSelectorReady(SELECTOR_FOR_LINK_TO_TEXT);
+            boolean fail = sForceToFail != null && sForceToFail;
+            mRealObj.onSelectorReady(fail ? "" : SELECTOR_FOR_LINK_TO_TEXT);
+        }
+    }
+
+    @Implements(QrCodeDialog.class)
+    static class ShadowQrCodeDialog {
+        static @Nullable String sLastUrl;
+
+        @Implementation
+        protected static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
+            sLastUrl = url;
+            return Mockito.mock(QrCodeDialog.class);
         }
     }
 }

@@ -33,6 +33,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/viz/common/features.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
@@ -183,6 +184,27 @@ class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
 };
 
 const int PerProcessRenderViewHostSet::kUserDataKey;
+
+// Finds all viz::SurfaceIds within `node_range` and adds them to `out_ids`.
+void CollectSurfaceIdsForEvictionForFrameTreeNodeRange(
+    FrameTree::NodeRange& node_range,
+    std::vector<viz::SurfaceId>& out_ids) {
+  for (FrameTreeNode* node : node_range) {
+    if (!node->current_frame_host()->is_local_root()) {
+      continue;
+    }
+    RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
+        node->current_frame_host()->GetView());
+    if (!view) {
+      continue;
+    }
+    viz::SurfaceId id = view->GetCurrentSurfaceId();
+    if (id.is_valid()) {
+      out_ids.push_back(id);
+    }
+    view->set_is_evicted();
+  }
+}
 
 }  // namespace
 
@@ -639,37 +661,21 @@ void RenderViewHostImpl::SetIsFrozen(bool frozen) {
 }
 
 void RenderViewHostImpl::OnBackForwardCacheTimeout() {
-  // TODO(yuzus): Implement a method to get a list of RenderFrameHosts
-  // associated with |this|, instead of iterating through all the
-  // RenderFrameHosts in bfcache.
-  const auto& entries =
-      frame_tree_->controller().GetBackForwardCache().GetEntries();
-  for (auto& entry : entries) {
-    for (const auto& rvh : entry->render_view_hosts()) {
-      if (&*rvh == this) {
-        RenderFrameHostImpl* rfh = entry->render_frame_host();
-        rfh->EvictFromBackForwardCacheWithReason(
-            BackForwardCacheMetrics::NotRestoredReason::kTimeoutPuttingInCache);
-        break;
-      }
-    }
+  auto entries = frame_tree_->controller()
+                     .GetBackForwardCache()
+                     .GetEntriesForRenderViewHostImpl(this);
+  for (auto* entry : entries) {
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kTimeoutPuttingInCache);
   }
 }
 
 void RenderViewHostImpl::MaybeEvictFromBackForwardCache() {
-  // TODO(yuzus): Implement a method to get a list of RenderFrameHosts
-  // associated with |this|, instead of iterating through all the
-  // RenderFrameHosts in bfcache.
-  const auto& entries =
-      frame_tree_->controller().GetBackForwardCache().GetEntries();
-  for (auto& entry : entries) {
-    for (const auto& rvh : entry->render_view_hosts()) {
-      if (&*rvh == this) {
-        RenderFrameHostImpl* rfh = entry->render_frame_host();
-        rfh->MaybeEvictFromBackForwardCache();
-        break;
-      }
-    }
+  auto entries = frame_tree_->controller()
+                     .GetBackForwardCache()
+                     .GetEntriesForRenderViewHostImpl(this);
+  for (auto* entry : entries) {
+    entry->render_frame_host()->MaybeEvictFromBackForwardCache();
   }
 }
 
@@ -883,37 +889,63 @@ void RenderViewHostImpl::RenderViewReady() {
 }
 
 std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
-  if (!is_active())
-    return {};
-  RenderFrameHostImpl* rfh = GetMainRenderFrameHost();
-  if (!rfh || !rfh->IsActive())
-    return {};
-
-  FrameTreeNode* root = rfh->frame_tree_node();
-  FrameTree& tree = root->frame_tree();
-
-  // Inner tree nodes are used for several purposes, e.g. fenced frames,
-  // <webview>, portals and PDF. These may have a compositor surface as well, in
-  // which case we need to explore not the outer node only, but the inner ones
-  // as well.
-  FrameTree::NodeRange node_range =
-      base::FeatureList::IsEnabled(
-          features::kInnerFrameCompositorSurfaceEviction)
-          ? tree.NodesIncludingInnerTreeNodes()
-          : tree.SubtreeNodes(root);
-
   std::vector<viz::SurfaceId> ids;
-  for (FrameTreeNode* node : node_range) {
-    if (!node->current_frame_host()->is_local_root())
-      continue;
-    RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
-        node->current_frame_host()->GetView());
-    if (!view)
-      continue;
-    viz::SurfaceId id = view->GetCurrentSurfaceId();
-    if (id.is_valid())
-      ids.push_back(id);
-    view->set_is_evicted();
+  if (is_active()) {
+    RenderFrameHostImpl* rfh = GetMainRenderFrameHost();
+    if (!rfh || !rfh->IsActive()) {
+      return {};
+    }
+
+    FrameTreeNode* root = rfh->frame_tree_node();
+    FrameTree& tree = root->frame_tree();
+
+    // Inner tree nodes are used for several purposes, e.g. fenced frames,
+    // <webview>, portals and PDF. These may have a compositor surface as well,
+    // in which case we need to explore not the outer node only, but the inner
+    // ones as well.
+    FrameTree::NodeRange node_range =
+        base::FeatureList::IsEnabled(
+            features::kInnerFrameCompositorSurfaceEviction)
+            ? tree.NodesIncludingInnerTreeNodes()
+            : tree.SubtreeNodes(root);
+    CollectSurfaceIdsForEvictionForFrameTreeNodeRange(node_range, ids);
+  } else if (is_in_back_forward_cache_ &&
+             base::FeatureList::IsEnabled(features::kEvictSubtree)) {
+    // `FrameTree::SubtreeAndInnerTreeNodes` starts with the children of `rfh`
+    // so we need to add our current viz::SurfaceId to ensure it is evicted.
+    if (render_widget_host_) {
+      auto* view = render_widget_host_->GetView();
+      if (view) {
+        if (view->GetCurrentSurfaceId().is_valid()) {
+          ids.push_back(view->GetCurrentSurfaceId());
+          view->set_is_evicted();
+        }
+      }
+    }
+
+    auto entries = frame_tree_->controller()
+                       .GetBackForwardCache()
+                       .GetEntriesForRenderViewHostImpl(this);
+    for (auto* entry : entries) {
+      auto* rfh = entry->render_frame_host();
+      if (!rfh) {
+        continue;
+      }
+      // While `is_in_back_forward_cache_` there is no `main_frame_routing_id_`
+      // so there is no `GetMainRenderFrameHost`. Furthermore the root of the
+      // `FrameTree` is now associated to the foreground
+      // `RenderWidgetHostView*`. Due to this `NodesIncludingInnerTreeNodes`
+      // does not find the children nodes associated with the BFCache entry.
+      //
+      // Instead we build a `FrameTree::NodeRange` that starts with the children
+      // of `rfh`. This will also be equivalent to
+      // `should_descend_into_inner_trees=true`. Thus finding all the compositor
+      // surfaces in the BFCache.
+      FrameTree::NodeRange node_range = FrameTree::SubtreeAndInnerTreeNodes(
+          rfh,
+          /*include_delegate_nodes_for_inner_frame_trees=*/true);
+      CollectSurfaceIdsForEvictionForFrameTreeNodeRange(node_range, ids);
+    }
   }
 
   return ids;

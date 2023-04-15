@@ -54,7 +54,7 @@ class SettingsBluetoothForgetDeviceDialogElement extends
     return getDeviceName(this.device_);
   }
 
-  private onForgetTap_(event: Event): void {
+  private onForgetClick_(event: Event): void {
     const fireEvent = new CustomEvent(
         'forget-bluetooth-device', {bubbles: true, composed: true});
     this.dispatchEvent(fireEvent);

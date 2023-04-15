@@ -100,13 +100,12 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          CertVerifyResult* verify_result,
                          NetLogSource* out_source) {
   base::ScopedAllowBaseSyncPrimitivesForTesting scoped_allow_blocking;
-  scoped_refptr<CRLSet> crl_set = CRLSet::EmptyCRLSetForTesting();
   NetLogWithSource net_log(NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
   int error =
       verify_proc->Verify(cert.get(), hostname,
                           /*ocsp_response=*/std::string(),
-                          /*sct_list=*/std::string(), flags, crl_set.get(),
+                          /*sct_list=*/std::string(), flags,
                           additional_trust_anchors, verify_result, net_log);
   verify_result->DetachFromSequence();
   *out_source = net_log.source();
@@ -169,7 +168,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
     mock_system_trust_store_ = mock_system_trust_store.get();
     verify_proc_ = CreateCertVerifyProcBuiltin(
-        cert_net_fetcher_, std::move(mock_system_trust_store));
+        cert_net_fetcher_, CRLSet::EmptyCRLSetForTesting(),
+        std::move(mock_system_trust_store));
 
     context_ = CreateTestURLRequestContextBuilder()->Build();
 

@@ -578,7 +578,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleAndLayoutTreeForContainer(Element& container,
                                             const LogicalSize&,
                                             LogicalAxes contained_axes);
-  void RecalcStyleForNonLayoutNGContainerDescendants(Element& container);
+  // To be called from layout-tree building for subtree skipped for style
+  // recalcs when we found out the container is eligible for size containment
+  // after all.
+  void UpdateStyleForNonEligibleContainer(Element& container);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);

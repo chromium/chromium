@@ -53,9 +53,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // updates the pending list in Projector SWA.
   void OnScreencastsPendingStatusChanged(
       const PendingScreencastSet& pending_screencast) override;
-  void OnSodaProgress(int percentage) override;
-  void OnSodaError() override;
-  void OnSodaInstalled() override;
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
@@ -83,13 +80,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
 
   // Requested by the Projector SWA to send XHR request.
   void SendXhr(const base::Value::List& args);
-
-  // Requested by the Projector SWA to check if SODA is not available and should
-  // be downloaded. Returns false if the device doesn't support SODA.
-  void ShouldDownloadSoda(const base::Value::List& args);
-
-  // Requested by the Projector SWA to trigger SODA installation.
-  void InstallSoda(const base::Value::List& args);
 
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::Value::List& args);

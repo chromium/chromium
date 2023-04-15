@@ -25,10 +25,10 @@ class WebAppIconManager;
 
 class RunOnOsLoginSubManager : public OsIntegrationSubManager {
  public:
-  explicit RunOnOsLoginSubManager(Profile& profile,
-                                  WebAppRegistrar& registrar,
-                                  WebAppSyncBridge& sync_bridge,
-                                  WebAppIconManager& icon_manager);
+  RunOnOsLoginSubManager(Profile& profile,
+                         WebAppRegistrar& registrar,
+                         WebAppSyncBridge& sync_bridge,
+                         WebAppIconManager& icon_manager);
   ~RunOnOsLoginSubManager() override;
 
   void Configure(const AppId& app_id,

@@ -12,8 +12,12 @@ const char kMsbbPromoDeclinedCountPref[] =
     "Companion.Promo.MSBB.Declined.Count";
 const char kSigninPromoDeclinedCountPref[] =
     "Companion.Promo.Signin.Declined.Count";
-const char kLabsPromoDeclinedCountPref[] =
-    "Companion.Promo.Labs.Declined.Count";
+const char kExpsPromoDeclinedCountPref[] =
+    "Companion.Promo.Exps.Declined.Count";
+
+// Pref name for storing experience opt-in status.
+const char kExpsOptInStatusGrantedPref[] =
+    "Companion.Exps.OptIn.Status.Granted";
 
 }  // namespace companion
 

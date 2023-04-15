@@ -1019,11 +1019,11 @@ void CaptionBubble::SetBackgroundColor() {
   set_color(background_color);
 }
 
-void CaptionBubble::RepositionInContextRect(const CaptionBubbleModel* model,
+void CaptionBubble::RepositionInContextRect(CaptionBubbleModel::Id model_id,
                                             const gfx::Rect& context_rect) {
   // We shouldn't reposition ourselves into the context rect of a model that is
   // no longer active.
-  if (model_ != model) {
+  if (model_ == nullptr || model_->unique_id() != model_id) {
     return;
   }
 
@@ -1097,9 +1097,9 @@ void CaptionBubble::ShowInactive() {
 
   // The first time that the caption bubble is shown, reposition it to the
   // bottom center of the context widget for the currently set model.
-  model_->GetContext()->GetBounds(base::BindOnce(
-      &CaptionBubble::RepositionInContextRect, weak_ptr_factory_.GetWeakPtr(),
-      base::UnsafeDanglingUntriaged(model_)));
+  model_->GetContext()->GetBounds(
+      base::BindOnce(&CaptionBubble::RepositionInContextRect,
+                     weak_ptr_factory_.GetWeakPtr(), model_->unique_id()));
 }
 
 void CaptionBubble::Hide() {

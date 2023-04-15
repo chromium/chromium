@@ -47,11 +47,14 @@ struct ReplyMessageContext;
 }
 }  // namespace ppapi
 
+namespace chromeos {
+class FirewallHole;
+}  // namespace chromeos
+
 namespace content {
 
 class BrowserPpapiHostImpl;
 class ContentBrowserPepperHostFactory;
-class FirewallHoleProxy;
 
 // Handles communication between Pepper and TCP socket Mojo interfaces. The Mojo
 // interfaces and all class variables live on the UI thread, while the class is
@@ -230,7 +233,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
 #if BUILDFLAG(IS_CHROMEOS)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
-                            std::unique_ptr<FirewallHoleProxy> hole);
+                            std::unique_ptr<chromeos::FirewallHole> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SendBindReply(const ppapi::host::ReplyMessageContext& context,
@@ -315,7 +318,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   net::IPEndPoint bind_output_ip_endpoint_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<FirewallHoleProxy> firewall_hole_;
+  std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Bitwise-or of SocketOption flags. This stores the state about whether

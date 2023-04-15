@@ -8,7 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/canonical_url_retriever.h"
 #import "ios/web/public/web_state.h"
@@ -21,15 +21,9 @@
 namespace reading_list {
 namespace {
 
-// Helper struct to weakly capture the handler (as base::Bind cannot express
-// Objective-C weak pointers).
-struct WeakHandler {
-  __weak id<BrowserCommands> value;
-};
-
 // Helper function invoked to add an entry to reading list once the canonical
 // URL for the page has been fetched asynchronously.
-void OnCanonicalUrlFetched(WeakHandler weak_handler,
+void OnCanonicalUrlFetched(ReadingListBrowserAgent* readingListBrowserAgent,
                            NSString* title,
                            const GURL& visible_url,
                            const GURL& canonical_url) {
@@ -39,8 +33,7 @@ void OnCanonicalUrlFetched(WeakHandler weak_handler,
 
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:url title:title];
-
-  [weak_handler.value addToReadingList:command];
+  readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 }  // namespace
@@ -59,11 +52,12 @@ ReadingListUIDistillationStatus UIStatusFromModelStatus(
   }
 }
 
-void AddToReadingListUsingCanonicalUrl(id<BrowserCommands> handler,
-                                       web::WebState* web_state) {
+void AddToReadingListUsingCanonicalUrl(
+    ReadingListBrowserAgent* readingListBrowserAgent,
+    web::WebState* web_state) {
   DCHECK(web_state);
   activity_services::RetrieveCanonicalUrl(
-      web_state, base::BindOnce(&OnCanonicalUrlFetched, WeakHandler{handler},
+      web_state, base::BindOnce(&OnCanonicalUrlFetched, readingListBrowserAgent,
                                 base::SysUTF16ToNSString(web_state->GetTitle()),
                                 web_state->GetVisibleURL()));
 }

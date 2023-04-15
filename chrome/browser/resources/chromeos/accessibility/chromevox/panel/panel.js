@@ -847,7 +847,7 @@ export class Panel extends PanelInterface {
    * @private
    */
   onOptions_() {
-    chrome.runtime.openOptionsPage();
+    BackgroundBridge.CommandHandler.onCommand(Command.SHOW_OPTIONS_PAGE);
     this.setMode_(PanelMode.COLLAPSED);
   }
 

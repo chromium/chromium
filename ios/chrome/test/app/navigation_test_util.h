@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_TEST_APP_NAVIGATION_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_NAVIGATION_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #include "url/gurl.h"
 
 namespace chrome_test_util {

@@ -1650,7 +1650,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
             // TODO(crbug.com/1349060) once Puffin patches are fully
             // implemented, we should remove this #if.
-            "80811cc3ad9926d4274933ad3cb8e3c0481b8b5ecda756d47f5faf0e4f93d7b9";
+            "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2";
 #else
             "0fd48a5dd87006a709756cfc47198cbc4c4928f33ac4277d79573c15164a33eb";
 #endif

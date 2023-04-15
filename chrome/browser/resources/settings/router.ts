@@ -29,6 +29,9 @@ export interface SettingsRoutes {
   DOWNLOADS: Route;
   EDIT_DICTIONARY: Route;
   FONTS: Route;
+  // <if expr="_google_chrome">
+  GET_MOST_CHROME: Route;
+  // </if>
   IMPORT_DATA: Route;
   INCOMPATIBLE_APPLICATIONS: Route;
   LANGUAGES: Route;

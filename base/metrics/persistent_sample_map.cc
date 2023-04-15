@@ -7,6 +7,7 @@
 #include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/notreached.h"
@@ -193,6 +194,13 @@ PersistentSampleMap::CreatePersistentRecord(
     Sample value) {
   SampleRecord* record = allocator->New<SampleRecord>();
   if (!record) {
+#if !BUILDFLAG(IS_NACL)
+    // TODO(crbug/1432981): Remove these. They are used to investigate
+    // unexpected failures.
+    SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "full", allocator->IsFull());
+    SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted",
+                          allocator->IsCorrupt());
+#endif  // !BUILDFLAG(IS_NACL)
     NOTREACHED() << "full=" << allocator->IsFull()
                  << ", corrupt=" << allocator->IsCorrupt();
     return 0;

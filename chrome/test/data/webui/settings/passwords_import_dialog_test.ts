@@ -57,6 +57,28 @@ async function skipConflictsHelper(
   assertEquals(0, selectedIds.length);
 }
 
+async function continueImportWithConflictsHelper(
+    importDialog: PasswordsImportDialogElement,
+    passwordManager: TestPasswordManagerProxy,
+    expectedSelectedIdsCount: number) {
+  assertTrue(isVisible(importDialog.$.replace));
+  assertFalse(importDialog.$.replace.disabled);
+  importDialog.$.replace.click();
+  flush();
+
+  // In progress state after the click.
+  const spinner = importDialog.shadowRoot!.querySelector('paper-spinner-lite');
+  assertTrue(!!spinner);
+  assertTrue(spinner.active);
+  assertTrue(importDialog.$.skip.disabled);
+  assertTrue(importDialog.$.close.disabled);
+  assertTrue(importDialog.$.replace.disabled);
+
+  // Import flow should have been triggered.
+  const selectedIds = await passwordManager.whenCalled('continueImport');
+  assertEquals(expectedSelectedIdsCount, selectedIds.length);
+}
+
 function assertIntialStatePartsAndClose(
     importDialog: PasswordsImportDialogElement, expectedDescription: string) {
   assertEquals(ImportDialogState.START, importDialog.dialogState);
@@ -321,6 +343,59 @@ suite('PasswordsImportDialog', function() {
     await eventToPromise('close', importDialog);
   });
 
+  test('canContinueImportWithConflicts', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS,
+      numberImported: 0,
+      displayedEntries: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://google.com',
+          password: 'pwd',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://test.com',
+          password: 'pwd',
+          id: 1,
+        },
+      ],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importDialog, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    flush();
+    // After the import attempt, the dialog should switch to CONFLICTS state.
+    assertEquals(ImportDialogState.CONFLICTS, importDialog.dialogState);
+
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+
+    importDialog.$.conflictsList.querySelectorAll('cr-checkbox')
+        .forEach(checkbox => {
+          checkbox.click();
+          flush();
+        });
+
+    await continueImportWithConflictsHelper(
+        importDialog, passwordManager, /*expectedSelectedIdsCount=*/ 2);
+    await pluralString.whenCalled('getPluralString');
+    flush();
+    // After the import, the dialog should switch to SUCCESS state.
+    assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
+  });
+
   test('canSkipConflicts', async function() {
     loadTimeData.overrideValues({enablePasswordsImportM2: true});
     const importDialog = elementFactory.createPasswordsImportDialog();
@@ -346,8 +421,6 @@ suite('PasswordsImportDialog', function() {
       ],
       fileName: 'test.csv',
     });
-    const expectedTitle = '2 existing passwords found';
-    pluralString.text = expectedTitle;
 
     await triggerImportHelper(importDialog, passwordManager);
     await pluralString.whenCalled('getPluralString');

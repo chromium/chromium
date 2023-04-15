@@ -203,8 +203,8 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   ASSERT_TRUE(compositor()->IsVisible());
 
   // Set a non-identity color matrix, color space, sdr white level, vsync
-  // timebase and vsync interval, and expect it to be set on the context
-  // factory.
+  // timebase, vsync interval, and max interval, and expect it to be set on the
+  // context factory.
   SkM44 color_matrix;
   color_matrix.setRC(1, 1, 0.7f);
   color_matrix.setRC(2, 2, 0.4f);
@@ -213,9 +213,11 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   display_color_spaces.SetSDRMaxLuminanceNits(1.f);
   base::TimeTicks vsync_timebase(base::TimeTicks::Now());
   base::TimeDelta vsync_interval(base::Milliseconds(250));
+  base::TimeDelta max_vrr_interval(base::Milliseconds(500));
   compositor()->SetDisplayColorMatrix(color_matrix);
   compositor()->SetDisplayColorSpaces(display_color_spaces);
   compositor()->SetDisplayVSyncParameters(vsync_timebase, vsync_interval);
+  compositor()->SetMaxVrrInterval(max_vrr_interval);
 
   InProcessContextFactory* context_factory =
       static_cast<InProcessContextFactory*>(compositor()->context_factory());
@@ -228,11 +230,12 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
             context_factory->GetDisplayVSyncTimeBase(compositor()));
   EXPECT_EQ(vsync_interval,
             context_factory->GetDisplayVSyncTimeInterval(compositor()));
+  EXPECT_EQ(max_vrr_interval, context_factory->GetMaxVrrInterval(compositor()));
 
   // Simulate a lost context by releasing the output surface and setting it on
   // the compositor again. Expect that the same color matrix, color space, sdr
-  // white level, vsync timebase and vsync interval will be set again on the
-  // context factory.
+  // white level, vsync timebase, vsync interval, and max interval will be set
+  // again on the context factory.
   context_factory->ResetDisplayOutputParameters(compositor());
   compositor()->SetVisible(false);
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -248,6 +251,7 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
             context_factory->GetDisplayVSyncTimeBase(compositor()));
   EXPECT_EQ(vsync_interval,
             context_factory->GetDisplayVSyncTimeInterval(compositor()));
+  EXPECT_EQ(max_vrr_interval, context_factory->GetMaxVrrInterval(compositor()));
   compositor()->SetRootLayer(nullptr);
 }
 

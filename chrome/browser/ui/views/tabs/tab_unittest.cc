@@ -349,11 +349,12 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         // Test layout for every width from standard to minimum.
         int width, min_width;
         if (is_pinned_tab) {
-          width = min_width = TabStyle::GetPinnedWidth();
+          width = min_width = tab->tab_style()->GetPinnedWidth();
         } else {
-          width = TabStyle::GetStandardWidth();
-          min_width = is_active_tab ? TabStyleViews::GetMinimumActiveWidth()
-                                    : TabStyleViews::GetMinimumInactiveWidth();
+          width = tab->tab_style()->GetStandardWidth();
+          min_width = is_active_tab
+                          ? tab->tab_style_views()->GetMinimumActiveWidth()
+                          : tab->tab_style_views()->GetMinimumInactiveWidth();
         }
         const int height = GetLayoutConstant(TAB_HEIGHT);
         for (; width >= min_width; --width) {
@@ -533,7 +534,7 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
-  const int width = tab->tab_style()->GetContentsInsets().width() +
+  const int width = tab->tab_style_views()->GetContentsInsets().width() +
                     Tab::kMinimumContentsWidthForCloseButtons;
   tab->SetBounds(0, 0, width, 50);
   const views::View* close = GetCloseButton(tab);

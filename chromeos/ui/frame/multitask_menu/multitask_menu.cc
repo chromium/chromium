@@ -122,6 +122,14 @@ void MultitaskMenu::OnWindowBoundsChanged(aura::Window* window,
   HideBubble();
 }
 
+void MultitaskMenu::OnWindowVisibilityChanging(aura::Window* window,
+                                               bool visible) {
+  DCHECK(parent_window_observation_.IsObservingSource(window));
+  if (!visible) {
+    HideBubble();
+  }
+}
+
 void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {
   if (state == display::TabletState::kEnteringTabletMode)
     HideBubble();

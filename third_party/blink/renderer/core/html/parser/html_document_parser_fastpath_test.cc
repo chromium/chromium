@@ -256,5 +256,22 @@ TEST(HTMLDocumentParserFastpathTest, CharacterReferenceCases) {
   div->setInnerHTML("&nbsp-");
 }
 
+TEST(HTMLDocumentParserFastpathTest, HandlesCompleteCharacterReference) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write("<body></body>");
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+
+  base::HistogramTester histogram_tester;
+  div->setInnerHTML("&cent;");
+  Text* text_node = To<Text>(div->firstChild());
+  ASSERT_TRUE(text_node);
+  EXPECT_EQ(text_node->data(), String(u"\u00A2"));
+  histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
+  histogram_tester.ExpectUniqueSample("Blink.HTMLFastPathParser.ParseResult",
+                                      HtmlFastPathResult::kSucceeded, 1);
+}
+
 }  // namespace
 }  // namespace blink

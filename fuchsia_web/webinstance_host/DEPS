@@ -17,7 +17,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "web_instance_host_(internal|v1)\.cc": [
+  "web_instance_host_internal\.cc": [
     # Some functionality depends on ENABLE_CAST_RECEIVER.
     "+build/chromecast_buildflags.h",
 

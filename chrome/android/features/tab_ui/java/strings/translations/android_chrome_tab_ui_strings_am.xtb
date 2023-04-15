@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ትሮችዎ በቅርቡ ስራ ላይ አልዋሉም። ይዘጉ?</translation>
-<translation id="1181037720776840403">አስወግድ</translation>
 <translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1403228085774130835">የተዘጉ ትሮችን በChrome ዋና ምናሌ ስር ባሉ በቅርብ ጊዜ ትሮች ውስጥ ማግኘት ይችላሉ</translation>
 <translation id="1455506303394048917">በእነዚህ ማንነት የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይጸዳል።</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">አሁን <ph name="CURRENT_PRICE" /> <ph name="SOURCE_WEBSITE" /> ላይ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ትርን ነጥል}one{ትርን ነጥል}other{ትሮችን ነጥል}}</translation>
 <translation id="2277224997687551299">የቡድን ስም ያርትዑ</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{ከቡድን <ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ያስወግዱ።}one{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}other{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{የዕልባት ትር}one{የዕልባት ትር}other{የዕልባት ትሮች}}</translation>
-<translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}other{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}}</translation>
 <translation id="2569352796411618312">ጥቆማ ሐሳብ፦ ከእርስዎ ትሮች <ph name="NUMBER_OF_TABS" /> ያክሉ በቅርቡ ጥቅም ላይ አልዋሉም። ይዘጉ?</translation>
-<translation id="257674075312929031">ቡድን</translation>
 <translation id="2613747923081026172">ቡድን ይፍጠሩ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ</translation>
 <translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">ለመቦደን ትሮችን ይጎትቱ</translation>
 <translation id="5846292395804797011">የ<ph name="TITLE_OF_GROUP" /> ቡድንን ከ<ph name="NUMBER_OF_TABS" /> ትሮች ጋር ይዝጉ</translation>
 <translation id="5972844218283131174">ሁሉንም አትምረጥ</translation>
-<translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">ባለብዙ ምርጫ ሁነታን ደብቅ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ትርን አጋራ}one{ትርን አጋራ}other{ትሮችን አጋራ}}</translation>
 <translation id="7129458170538955174">ስለዚህ መደብር መረጃ በግማሽ ቁመት ተከፍቷል</translation>
-<translation id="7151209024774799310">ትሮችን ከቡድን ያስወግዱ</translation>
 <translation id="7204204600596740190">ባለብዙ ምርጫ ሁነታ</translation>
 <translation id="7326879924029668159">የመመለሻ መመሪያን እና ሌሎችንም ይመልከቱ</translation>
 <translation id="7352298686197644113">በክፍት ትሮችዎ ውስጥ የትኛው ንጥል የተሻለ ዋጋ እንዳለው ይመልከቱ</translation>

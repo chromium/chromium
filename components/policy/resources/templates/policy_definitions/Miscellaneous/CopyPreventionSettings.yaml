@@ -1,17 +1,12 @@
 caption: Allows blocking copying to the clipboard on specified URLs
-desc: "This policy blocks copying data to the clipboard on specific URLs.\n\n    \
-  \  The <ph name=\"ENTERPRISE_CONNECTOR_ENABLE_FIELD\">enable</ph> and <ph name=\"\
-  ENTERPRISE_CONNECTOR_DISABLE_FIELD\">disable</ph> URL lists control which sites\
-  \ are allowed to write to the clipboard. A clipboard write is blocked if the URL\
-  \ matches a pattern in 'enable' and doesn't match a pattern in 'disable'. A copy\
-  \ is not blocked if the URL does not match any pattern.\n\n      The origin matching\
-  \ patterns use a similar format to those for the '<ph name=\"URL_BLOCKLIST_POLICY_NAME\"\
-  >URLBlocklist</ph>' policy, which are documented at http://www.chromium.org/administrators/url-blocklist-filter-format.\n\
-  \n      The <ph name=\"ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE\">minimum_data_size</ph>\
-  \ indicates the minimum amount of data in bytes that triggers the pattern check.\
-  \ This means that a clipboard write from a blocked URL would be allowed if the size\
-  \ of the copied data is smaller than the value specified in this field. The default\
-  \ value is 100 bytes if the field is unset.\n      "
+desc: |-
+  This policy blocks copying data to the clipboard on specific URLs.
+
+  The <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> URL lists control which sites are allowed to write to the clipboard. A clipboard write is blocked if the URL matches a pattern in 'enable' and doesn't match a pattern in 'disable'. A copy is not blocked if the URL does not match any pattern.
+
+  The origin matching patterns use a similar format to those for the '<ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>' policy, which are documented at https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+  The <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE">minimum_data_size</ph> indicates the minimum amount of data in bytes that triggers the pattern check. This means that a clipboard write from a blocked URL would be allowed if the size of the copied data is smaller than the value specified in this field. The default value is 100 bytes if the field is unset.
 example_value:
   disable:
   - not-sensitive.example.com

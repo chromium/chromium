@@ -35,7 +35,7 @@ static_library("backend") {
     "//chromeos/strings",
     "//components/prefs:prefs",
     "//ui/base/ime/ash",
-    "//ui/chromeos/events",
+    "//ui/events/ash",
     "//ui/events/devices",
   ]
 }

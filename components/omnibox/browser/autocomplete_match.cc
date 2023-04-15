@@ -1175,6 +1175,30 @@ bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
   return from_on_device_provider && subtypes.contains(271);
 }
 
+void AutocompleteMatch::FilterOmniboxActions(
+    const std::vector<OmniboxActionId>& allowed_action_ids) {
+  // Short circuit if there's nothing to do.
+  if (actions.empty()) {
+    return;
+  }
+
+  // Find the type of object we can keep.
+  auto allowed_action_id_iter =
+      base::ranges::find_if(allowed_action_ids, [this](auto allowed_action_id) {
+        return GetActionWhere([allowed_action_id](const auto& action) {
+                 return action->ActionId() == allowed_action_id;
+               }) != nullptr;
+      });
+
+  auto allowed_action_id = allowed_action_id_iter != allowed_action_ids.end()
+                               ? *allowed_action_id_iter
+                               : OmniboxActionId::LAST;
+
+  std::erase_if(actions, [&](const auto& action) {
+    return action->ActionId() != allowed_action_id;
+  });
+}
+
 bool AutocompleteMatch::IsTrivialAutocompletion() const {
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||

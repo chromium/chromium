@@ -80,7 +80,7 @@ bool IsPendingDeepScanning(const DownloadUIModel* model) {
 }
 
 bool IsItemInProgress(const download::DownloadItem* item) {
-  if (item->IsDangerous() && !IsPendingDeepScanning(item)) {
+  if (item->IsDangerous() || IsPendingDeepScanning(item)) {
     return false;
   }
   return item->GetState() == download::DownloadItem::IN_PROGRESS;
@@ -97,7 +97,7 @@ bool IsItemInProgress(const offline_items_collection::OfflineItem& item) {
 }
 
 bool IsModelInProgress(const DownloadUIModel* model) {
-  if (model->IsDangerous() && !IsPendingDeepScanning(model)) {
+  if (model->IsDangerous() || IsPendingDeepScanning(model)) {
     return false;
   }
   return model->GetState() == download::DownloadItem::IN_PROGRESS;

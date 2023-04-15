@@ -144,7 +144,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
  private:
   base::FilePath GetMyFilesFolder();
   base::FilePath GetFilePathByName(const std::string& name);
-  void InitFileMonitorOnFileThread();
+  void OnFileMonitorInitialized(std::unique_ptr<FileMonitor> file_monitor);
   void MonitorFileDeletionOnFileThread(
       FileMonitor* file_monitor,
       const base::FilePath& file_path,

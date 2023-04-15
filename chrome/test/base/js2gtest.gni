@@ -90,12 +90,6 @@ template("js2gtest") {
       ]
     }
 
-    if (v8_use_external_startup_data) {
-      args += [ "--external=y" ]
-    } else {
-      args += [ "--external=n" ]
-    }
-
     args += [
       # Need "./" for script to find binary (cur dir is not on path).
       "./" + rebase_path(v8_shell_path, root_build_dir),

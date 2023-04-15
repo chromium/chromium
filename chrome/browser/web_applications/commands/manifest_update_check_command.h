@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -54,6 +55,7 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock> {
   ManifestUpdateCheckCommand(
       const GURL& url,
       const AppId& app_id,
+      base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents,
       CompletedCallback callback,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
@@ -129,6 +131,7 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock> {
   // Manifest update check request parameters.
   const GURL url_;
   const AppId app_id_;
+  base::Time check_time_;
   CompletedCallback completed_callback_;
 
   // Resources and helpers used to fetch manifest data.

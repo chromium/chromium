@@ -3321,6 +3321,55 @@ TEST(CanonicalCookieTest, TestPrefixHistograms) {
   histograms.ExpectBucketCount(kVariantValidHistogram, false, 2);
 }
 
+TEST(CanonicalCookieTest, TestHasNonASCIIHistograms) {
+  base::HistogramTester histograms;
+  const char kCookieNonASCIINameHistogram[] = "Cookie.HasNonASCII.Name";
+  const char kCookieNonASCIIValueHistogram[] = "Cookie.HasNonASCII.Value";
+  const GURL test_url("https://www.example.test");
+  int expected_name_true = 0;
+  int expected_name_false = 0;
+  int expected_value_true = 0;
+  int expected_value_false = 0;
+
+  auto create_for_test = [&](const std::string& name,
+                             const std::string& value) {
+    return CanonicalCookie::Create(
+        test_url, name + "=" + value, /*creation_time=*/base::Time::Now(),
+        /*server_time=*/absl::nullopt, /*cookie_partition_key=*/absl::nullopt);
+  };
+
+  auto check_histograms = [&]() {
+    histograms.ExpectBucketCount(kCookieNonASCIINameHistogram, true,
+                                 expected_name_true);
+    histograms.ExpectBucketCount(kCookieNonASCIINameHistogram, false,
+                                 expected_name_false);
+    histograms.ExpectBucketCount(kCookieNonASCIIValueHistogram, true,
+                                 expected_value_true);
+    histograms.ExpectBucketCount(kCookieNonASCIIValueHistogram, false,
+                                 expected_value_false);
+  };
+
+  EXPECT_TRUE(create_for_test("foo", "bar"));
+  expected_name_false++;
+  expected_value_false++;
+  check_histograms();
+
+  EXPECT_TRUE(create_for_test("Uni\xf0\x9f\x8d\xaa", "bar"));
+  expected_name_true++;
+  expected_value_false++;
+  check_histograms();
+
+  EXPECT_TRUE(create_for_test("foo", "Uni\xf0\x9f\x8d\xaa"));
+  expected_name_false++;
+  expected_value_true++;
+  check_histograms();
+
+  EXPECT_TRUE(create_for_test("Uni\xf0\x9f\x8d\xaa", "Uni\xf0\x9f\x8d\xaa"));
+  expected_name_true++;
+  expected_value_true++;
+  check_histograms();
+}
+
 TEST(CanonicalCookieTest, BuildCookieLine) {
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
   GURL url("https://example.com/");

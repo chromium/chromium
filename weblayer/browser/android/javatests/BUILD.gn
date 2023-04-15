@@ -24,6 +24,7 @@ android_library("webengine_java_tests") {
     "src/org/chromium/webengine/test/WebSandboxTest.java",
   ]
   deps = [
+    ":webengine_instrumentation_test_java",
     ":webengine_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -47,8 +48,68 @@ android_library("webengine_java_tests") {
     "//third_party/junit:junit",
     "//weblayer/public/java:webengine_java",
     "//weblayer/public/javatests:weblayer_public_javatests",
-    "//weblayer/shell/android:webengine_shell_java",
   ]
+}
+
+_webengine_instrumentation_test_strings =
+    "$target_gen_dir/instrumentation_test_apk/res/values/strings.xml"
+
+jinja_template("webengine_instrumentation_test_strings") {
+  input = "instrumentation_test_apk/res_template/values/strings.xml"
+  output = _webengine_instrumentation_test_strings
+}
+
+android_resources("webengine_instrumentation_resources") {
+  sources = [
+    "instrumentation_test_apk/res/layout/main.xml",
+    "instrumentation_test_apk/res/values/styles.xml",
+    _webengine_instrumentation_test_strings,
+  ]
+  deps = [ ":webengine_instrumentation_test_strings" ]
+}
+
+android_library("webengine_instrumentation_test_java") {
+  testonly = true
+  resources_package = "org.chromium.webengine.test.instrumentation_test_apk"
+
+  sources = [ "instrumentation_test_apk/src/org/chromium/webengine/test/instrumentation_test_apk/InstrumentationActivity.java" ]
+
+  deps = [
+    ":webengine_instrumentation_resources",
+    "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//weblayer/public/java:webengine_java",
+  ]
+}
+
+_webengine_instrumentation_apk_android_manifest =
+    "$target_gen_dir/instrumentation_test_apk/AndroidManifest.xml"
+
+jinja_template("webengine_instrumentation_apk_manifest") {
+  input = "instrumentation_test_apk/AndroidManifest.xml"
+  output = _webengine_instrumentation_apk_android_manifest
+
+  variables = [ "browser_process_mode=local" ]
+}
+
+android_apk("webengine_instrumentation_test_apk") {
+  testonly = true
+
+  apk_name = "WebengineInstrumentationTest"
+  android_manifest = _webengine_instrumentation_apk_android_manifest
+  android_manifest_dep = ":webengine_instrumentation_apk_manifest"
+
+  deps = [
+    ":webengine_instrumentation_test_java",
+    "//weblayer/public/java:service_provider_java",
+    "//weblayer/shell/android:webengine_service_provider_resources",
+  ]
+
+  # Test runner does not support having "additional apks" that are incremental.
+  never_incremental = true
+
+  target_sdk_version = 28
 }
 
 android_library("webengine_java_test_support") {
@@ -60,6 +121,7 @@ android_library("webengine_java_test_support") {
     "src/org/chromium/webengine/test/WebEngineJUnit4ClassRunner.java",
   ]
   deps = [
+    ":webengine_instrumentation_test_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
@@ -71,7 +133,6 @@ android_library("webengine_java_test_support") {
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",
     "//weblayer/public/java:webengine_java",
-    "//weblayer/shell/android:webengine_shell_java",
   ]
 }
 
@@ -113,7 +174,7 @@ template("webengine_instrumentation") {
 # support library.
 webengine_instrumentation("webengine_support_instrumentation_test_apk") {
   apk_name = "WebEngineSupportInstrumentationTest"
-  apk_under_test = "//weblayer/shell/android:webengine_shell_local_apk"
+  apk_under_test = ":webengine_instrumentation_test_apk"
   additional_apks = [
     "//weblayer/shell/android:weblayer_support_apk",
     ":external_intents_apk",

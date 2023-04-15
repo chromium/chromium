@@ -23,6 +23,7 @@
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
+class HttpResponseHeaders;
 }
 
 namespace network {
@@ -106,6 +107,8 @@ class HashRealTimeService : public KeyedService {
                            TestBackoffModeRespected_FullyCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_NotCached);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLogSearchCacheWithNoQueryParamsMetric);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
   using PendingHPRTLookupRequests =
@@ -163,8 +166,8 @@ class HashRealTimeService : public KeyedService {
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
-  // details. |response_body|, |net_error| and |response_code| are returned from
-  // the OHTTP client.
+  // details. |response_body|, |net_error|, |response_code| and |headers| are
+  // returned from the OHTTP client. |ohttp_key| is sent to the key service.
   void OnOhttpComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
@@ -173,9 +176,11 @@ class HashRealTimeService : public KeyedService {
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
       HPRTLookupResponseCallback response_callback,
       SBThreatType locally_cached_results_threat_type,
+      std::string ohttp_key,
       const absl::optional<std::string>& response_body,
       int net_error,
-      int response_code);
+      int response_code,
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Callback for requests sent directly to the Safe Browsing server. Most
   // parameters are used by |OnURLLoaderComplete|, see the description above
@@ -277,6 +282,11 @@ class HashRealTimeService : public KeyedService {
       std::unique_ptr<V5::SearchHashesResponse>& response,
       const std::vector<std::string>& requested_hash_prefixes) const;
 
+  // Log temporary debugging info for crbug.com/1430928.
+  void LogTemporaryUnmatchedFullHashesDebugInfo(
+      const std::unique_ptr<V5::SearchHashesResponse>& response,
+      const std::set<std::string>& requested_hash_prefixes_set) const;
+
   // Removes any |FullHashDetail| within the |response| that has invalid
   // |ThreatType| or |ThreatAttribute| enums. This is for forward compatibility,
   // for when the API starts returning new threat types or attributes that the
@@ -288,13 +298,24 @@ class HashRealTimeService : public KeyedService {
   std::set<std::string> GetHashPrefixesSet(const GURL& url) const;
 
   // Searches the local cache for the input |hash_prefixes|.
+  //  - |skip_logging| specifies whether metric logging should be skipped when
+  //    this function is called.
   //  - |out_missing_hash_prefixes| is an output parameter with a list of which
   //    hash prefixes were not found in the cache and need to be requested.
   //  - |out_cached_full_hashes| is an output parameter with a list of unsafe
   //    full hashes that were found in the cache for any of the |hash_prefixes|.
+  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove |skip_logging|
+  // parameter after investigation is complete.
   void SearchCache(std::set<std::string> hash_prefixes,
+                   bool skip_logging,
                    std::vector<std::string>* out_missing_hash_prefixes,
                    std::vector<V5::FullHash>* out_cached_full_hashes) const;
+
+  // Used for logging only. Records whether there would be a cache hit for all
+  // requested prefixes if the URL's query parameters were excluded.
+  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove function after
+  // investigation is complete.
+  void LogSearchCacheWithNoQueryParamsMetric(const GURL& url) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

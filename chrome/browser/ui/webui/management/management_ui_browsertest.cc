@@ -71,13 +71,12 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
       "window.ManagementBrowserProxyImpl.getInstance()"
       "  .getContextualManagedData()"
       "  .then(managed_result => "
-      "    domAutomationController.send(JSON.stringify(managed_result)));";
+      "    JSON.stringify(managed_result));";
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::string unmanaged_json;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, javascript,
-                                                     &unmanaged_json));
+  std::string unmanaged_json =
+      content::EvalJs(contents, javascript).ExtractString();
 
   absl::optional<base::Value> unmanaged_value_ptr =
       base::JSONReader::Read(unmanaged_json);
@@ -109,10 +108,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
                                     kOnPremReportingExtensionBetaId);
 
   contents = browser()->tab_strip_model()->GetActiveWebContents();
-  std::string managed_json;
-
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, javascript,
-                                                     &managed_json));
+  std::string managed_json =
+      content::EvalJs(contents, javascript).ExtractString();
 
   absl::optional<base::Value> managed_value_ptr =
       base::JSONReader::Read(managed_json);

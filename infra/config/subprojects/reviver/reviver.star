@@ -71,6 +71,28 @@ polymorphic.launcher(
 )
 
 polymorphic.launcher(
+    name = "android-x64-launcher",
+    # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
+    schedule = "0 2,5,8,11,14 * * *",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    runner = "reviver/runner",
+    target_builders = [
+        polymorphic.target_builder(
+            builder = "ci/Android x64 Builder (dbg)",
+            dimensions = dimensions.dimensions(
+                os = os.LINUX_DEFAULT,
+                cpu = cpu.X86_64,
+            ),
+            testers = [
+                "ci/android-12l-x64-dbg-tests",
+            ],
+        ),
+    ],
+)
+
+polymorphic.launcher(
     name = "linux-launcher",
     # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
     schedule = "0 5-11/3 * * *",

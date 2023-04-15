@@ -134,8 +134,7 @@ PasswordCheckupPromo::PasswordCheckupPromo(
     extensions::PasswordsPrivateDelegate* delegate)
     : PromoCardInterface(kCheckupPromoId, prefs) {
   CHECK(delegate);
-  delegate->GetSavedPasswordsList(base::BindOnce(
-      &PasswordCheckupPromo::OnPasswordsReceived, weak_factory_.GetWeakPtr()));
+  delegate_ = delegate;
 }
 
 PasswordCheckupPromo::~PasswordCheckupPromo() = default;
@@ -145,7 +144,7 @@ std::string PasswordCheckupPromo::GetPromoID() const {
 }
 
 bool PasswordCheckupPromo::ShouldShowPromo() const {
-  if (!has_saved_passwords_) {
+  if (delegate_->GetCredentialGroups().empty()) {
     return false;
   }
   // If promo card was dismissed or shown already for kPromoDisplayLimit times,
@@ -169,12 +168,6 @@ std::u16string PasswordCheckupPromo::GetDescription() const {
 std::u16string PasswordCheckupPromo::GetActionButtonText() const {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_CHECKUP_PROMO_CARD_ACTION);
-}
-
-void PasswordCheckupPromo::OnPasswordsReceived(
-    const std::vector<extensions::api::passwords_private::PasswordUiEntry>&
-        passwords) {
-  has_saved_passwords_ = !passwords.empty();
 }
 
 WebPasswordManagerPromo::WebPasswordManagerPromo(

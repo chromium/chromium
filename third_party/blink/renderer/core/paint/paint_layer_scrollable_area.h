@@ -448,6 +448,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 #endif
 
+  // TODO(crbug.com/1414885): Move this function into
+  // paint_property_tree_builder.cc as a local function.
+  bool PrefersNonCompositedScrolling() const;
+
   gfx::Rect ResizerCornerRect(ResizerHitTestType) const;
 
   PaintLayer* Layer() const override;
@@ -510,6 +514,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
   uint32_t GetNonCompositedMainThreadScrollingReasons() const {
     return non_composited_main_thread_scrolling_reasons_;
   }
+
+  // This function doesn't check background-attachment:fixed backgrounds
+  // because it's not enough to invalidate all affected fixed backgrounds.
+  // See LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll.
+  bool BackgroundNeedsRepaintOnScroll() const;
 
   ScrollbarTheme& GetPageScrollbarTheme() const override;
 
@@ -722,12 +731,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // resizing to start and stop.
   unsigned in_resize_mode_ : 1;
   unsigned scrolls_overflow_ : 1;
-
-  // True if we are in an overflow scrollbar relayout.
-  unsigned in_overflow_relayout_ : 1;
-
-  // True if a second overflow scrollbar relayout is permitted.
-  unsigned allow_second_overflow_relayout_ : 1;
 
   // FIXME: once cc can handle composited scrolling with clip paths, we will
   // no longer need this bit.

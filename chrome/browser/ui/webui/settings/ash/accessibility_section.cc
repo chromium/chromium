@@ -43,7 +43,7 @@
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/events/ash/keyboard_layout_util.h"
 
 namespace ash::settings {
 
@@ -602,6 +602,18 @@ void AccessibilitySection::AddLoadTimeData(
       {"chromeVoxBrailleWordWrap", IDS_SETTINGS_CHROMEVOX_BRAILLE_WORD_WRAP},
       {"chromeVoxMenuBrailleCommands",
        IDS_SETTINGS_CHROMEVOX_MENU_BRAILLE_COMMANDS},
+      {"chromeVoxBluetoothBrailleDisplayConnect",
+       IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_CONNECT},
+      {"chromeVoxBluetoothBrailleDisplayDisconnect",
+       IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_DISCONNECT},
+      {"chromeVoxBluetoothBrailleDisplayConnecting",
+       IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_CONNECTING},
+      {"chromeVoxBluetoothBrailleDisplayForget",
+       IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_FORGET},
+      {"chromeVoxBluetoothBrailleDisplayPincodeLabel",
+       IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_PINCODE_LABEL},
+      {"chromeVoxBluetoothBrailleDisplaySelectLabel",
+       IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_SELECT_LABEL},
       {"chromeVoxVirtualBrailleDisplay",
        IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY},
       {"chromeVoxVirtualBrailleDisplayDetails",
@@ -610,6 +622,12 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_ROWS},
       {"chromeVoxVirtualBrailleDisplayColumns",
        IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_COLUMNS},
+      {"chromeVoxVirtualBrailleDisplayStyleLabel",
+       IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_LABEL},
+      {"chromeVoxVirtualBrailleDisplayStyleInterleave",
+       IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_INTERLEAVE},
+      {"chromeVoxVirtualBrailleDisplayStyleSideBySide",
+       IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_SIDE_BY_SIDE},
       {"chromeVoxEventLogLink", IDS_SETTINGS_CHROMEVOX_EVENT_LOG_LINK},
       {"chromeVoxEventLogDescription",
        IDS_SETTINGS_CHROMEVOX_EVENT_LOG_DESCRIPTION},
@@ -621,6 +639,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_BRAILLE_LOGGING},
       {"chromeVoxEnableEventStreamLogging",
        IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_EVENT_STREAM_LOGGING},
+      {"chromeVoxBrailleTableDescription",
+       IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_DESCRIPTION},
+      {"chromeVoxBrailleTable6Dot", IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_6_DOT},
+      {"chromeVoxBrailleTable8Dot", IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_8_DOT},
       {"chromeVoxTutorialLabel", IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL},
       {"clickOnStopDescription", IDS_SETTINGS_CLICK_ON_STOP_DESCRIPTION},
       {"clickOnStopLabel", IDS_SETTINGS_CLICK_ON_STOP_LABEL},

@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_observer_bridge.h"
 #import "ios/chrome/browser/policy/cloud_policy_client_observer_bridge.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

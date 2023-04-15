@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_COMMON_AW_MEDIA_DRM_BRIDGE_CLIENT_H_
 #define ANDROID_WEBVIEW_COMMON_AW_MEDIA_DRM_BRIDGE_CLIENT_H_
 
+#include "components/cdm/common/clearkey_drm_delegate_android.h"
 #include "components/cdm/common/widevine_drm_delegate_android.h"
 #include "media/base/android/media_drm_bridge_client.h"
 
@@ -30,6 +31,7 @@ class AwMediaDrmBridgeClient : public media::MediaDrmBridgeClient {
 
   std::vector<std::string> key_system_uuid_mappings_;
   cdm::WidevineDrmDelegateAndroid widevine_delegate_;
+  cdm::ClearKeyDrmDelegateAndroid clearkey_delegate_;
 };
 
 }  // namespace android_webview

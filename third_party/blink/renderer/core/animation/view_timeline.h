@@ -30,7 +30,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
  public:
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  ViewTimeline(Document*, Element* subject, ScrollAxis axis, TimelineInset);
+  ViewTimeline(Document*,
+               TimelineAttachment attachment,
+               Element* subject,
+               ScrollAxis axis,
+               TimelineInset);
 
   bool IsViewTimeline() const override { return true; }
 
@@ -43,7 +47,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   // IDL API implementation.
   Element* subject() const;
 
-  bool Matches(Element* subject, ScrollAxis, const TimelineInset&) const;
+  bool Matches(TimelineAttachment,
+               Element* subject,
+               ScrollAxis,
+               const TimelineInset&) const;
 
   const TimelineInset& GetInset() const;
 

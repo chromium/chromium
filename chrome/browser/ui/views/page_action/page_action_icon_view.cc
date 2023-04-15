@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -46,7 +47,7 @@ int PageActionIconView::Delegate::GetPageActionIconSize() const {
 
 gfx::Insets PageActionIconView::Delegate::GetPageActionIconInsets(
     const PageActionIconView* icon_view) const {
-  return features::IsChromeRefresh2023()
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING)
              : GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING);
 }
@@ -80,15 +81,15 @@ PageActionIconView::PageActionIconView(
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
     // you do not need to hardcode color values.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
     views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
-          const SkColor pressed_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateRippleNeutralOnSubtle);
+          const SkColor pressed_color =
+              host->GetColorProvider()->GetColor(kColorPageActionIconPressed);
           const float pressed_alpha = SkColorGetA(pressed_color);
           return std::make_unique<views::FloodFillInkDropRipple>(
               views::InkDrop::Get(host), host->size(),
@@ -100,8 +101,8 @@ PageActionIconView::PageActionIconView(
 
     views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](views::View* host) {
-          const SkColor hover_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateHoverOnSubtle);
+          const SkColor hover_color =
+              host->GetColorProvider()->GetColor(kColorPageActionIconHover);
           const float hover_alpha = SkColorGetA(hover_color);
           auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
               host->size(), host->height() / 2,
@@ -112,7 +113,7 @@ PageActionIconView::PageActionIconView(
         },
         this));
     if (auto* focus_ring = views::FocusRing::Get(this); focus_ring) {
-      focus_ring->SetOutsetFocusRingDisabled();
+      focus_ring->SetOutsetFocusRingDisabled(true);
     }
   }
   // Only shows bubble after mouse is released.

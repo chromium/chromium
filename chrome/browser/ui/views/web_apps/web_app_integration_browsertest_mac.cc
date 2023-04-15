@@ -63,6 +63,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CorruptAppShim) {
   helper_.CheckWindowCreated();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, QuitAppShim) {
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckWindowCreated();
+  helper_.QuitAppShim(Site::kStandalone);
+  helper_.CheckWindowClosed();
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

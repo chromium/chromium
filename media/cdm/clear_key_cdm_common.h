@@ -14,6 +14,13 @@ namespace media {
 // Clear Key key system defined in the EME spec.
 inline constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
 
+#if BUILDFLAG(IS_ANDROID)
+inline const uint8_t kClearKeyUuid[16] = {
+    0xE2, 0x71, 0x9D, 0x58, 0xA9, 0x85, 0xB3, 0xC9,  //
+    0x78, 0x1A, 0xB0, 0X30, 0xAF, 0x78, 0xD3, 0x0E   //
+};
+#endif
+
 // External Clear Key key system ("org.chromium.externalclearkey" and variants)
 // only for testing.
 inline constexpr char kExternalClearKeyKeySystem[] =

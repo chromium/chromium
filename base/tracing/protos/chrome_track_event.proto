@@ -1031,11 +1031,25 @@ message BlinkExecutionContext {
     SERVICE_WORKER = 5;
   }
 
+  // Definition of world type.
+  enum WorldType {
+    WORLD_UNKNOWN = 0;
+    WORLD_MAIN = 1;
+    WORLD_ISOLATED = 2;
+    WORLD_INSPECTOR_ISOLATED = 3;
+    WORLD_REG_EXP = 4;
+    WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN = 5;
+    WORLD_WORKER = 6;
+    WORLD_SHADOW_REALM = 7;
+  }
+
   optional ContextType type = 1;
   // Contains url of frame or worker.
   optional string url = 2;
   // The origin of the execution context.
   optional string origin = 3;
+  // The world type of the execution context.
+  optional WorldType world_type = 4;
 }
 
 // Serializes the blink::SourceLocation object.
@@ -1079,10 +1093,28 @@ message BlinkHighEntropyAPI {
     // similar to "Navigator.languages.get".
     optional string identifier = 1;
     repeated JSFunctionArgument func_arguments = 2;
+
+    // Deprecated in favour of outer source_location.
     optional BlinkSourceLocation source_location = 3;
   }
   optional BlinkExecutionContext execution_context = 1;
   optional CalledJsApi called_api = 2;
+  optional BlinkSourceLocation source_location = 3;
+
+  // Describes lookup of a font.
+  message FontLookup {
+    enum FontLookupType {
+      FONT_LOOKUP_UNKNOWN_TYPE = 0;
+      FONT_LOOKUP_UNIQUE_OR_FAMILY_NAME = 1;
+      FONT_LOOKUP_UNIQUE_NAME_ONLY = 2;
+    }
+    optional FontLookupType type = 1;
+    optional string name = 2;
+    optional uint64 weight = 3;
+    optional uint64 width = 4;
+    optional uint64 slope = 5;
+  }
+  optional FontLookup font_lookup = 4;
 }
 
 // Contains information about a tab switch measurement.

@@ -27,7 +27,6 @@
 <translation id="199526504800285197">Nagrywanie zostało zatrzymane</translation>
 <translation id="1995951722691075581">Nagrywanie zostało zatrzymane z powodu zbyt małej ilości miejsca na urządzeniu. Aby nagrać więcej filmów, musisz zwolnić miejsce.</translation>
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
-<translation id="2050339315714019657">Pionowo</translation>
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
 <translation id="2128052519899549250">Nagrywanie filmów poklatkowych</translation>
 <translation id="2134029355740465625">Ustawienia wideo</translation>
@@ -123,6 +122,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="6888362557094394345">Przesuwam w dół</translation>
 <translation id="695140971690006676">Zresetuj wszystko</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965830616442491568">Pionowo</translation>
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
 <translation id="7191890674911603392">Typ rekordu</translation>

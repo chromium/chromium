@@ -39,6 +39,9 @@ BASE_FEATURE(kContentSuggestionsUIModuleRefreshNewUser,
              "ContentSuggestionsUIModuleRefreshNewUser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature disabled by default.
+BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kContentSuggestionsUIModuleRefreshFlagOverrideFieldTrialName[] =
     "ContentSuggestionsUIModuleRefreshFlagOverrideFieldTria";
 
@@ -98,6 +101,10 @@ bool IsContentSuggestionsUIModuleRefreshEnabled() {
         kContentSuggestionsUIModuleRefreshNewUser);
   }
   return base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh);
+}
+
+bool IsMagicStackEnabled() {
+  return base::FeatureList::IsEnabled(kMagicStack);
 }
 
 bool IsTrendingQueriesModuleEnabled() {

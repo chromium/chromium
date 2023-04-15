@@ -7,7 +7,11 @@
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
 
@@ -48,7 +52,10 @@ void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
     return;
   }
 
-  [[UIPasteboard generalPasteboard] setItems:pasteboard_items];
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         [pasteboard setItems:pasteboard_items];
+                       }));
 }
 
 void StoreInPasteboard(NSString* text, const GURL& URL) {
@@ -71,9 +78,51 @@ void StoreInPasteboard(NSString* text, const GURL& URL) {
     identifier : [text dataUsingEncoding:NSUTF8StringEncoding],
   };
 
-  UIPasteboard.generalPasteboard.items = @[ copiedURL, copiedText ];
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         pasteboard.items = @[ copiedURL, copiedText ];
+                       }));
+}
+
+void StoreTextInPasteboard(NSString* text) {
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         pasteboard.string = text;
+                       }));
+}
+
+ImageCopyResult StoreImageInPasteboard(NSData* data, NSURL* url) {
+  // Copy image data to pasteboard. Don't copy the URL otherwise some apps
+  // will paste the text and not the image. See crbug.com/1270239.
+  NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:1];
+  NSString* uti = GetImageUTIFromData(data);
+  ImageCopyResult result;
+  if (uti) {
+    [item setValue:data forKey:uti];
+    result = ImageCopyResult::kImage;
+  } else {
+    [item setValue:url forKey:UTTypeURL.identifier];
+
+    result = ImageCopyResult::kURL;
+  }
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         pasteboard.items =
+                             [NSMutableArray arrayWithObject:item];
+                       }));
+  return result;
+}
+
+void StoreItemInPasteboard(NSDictionary* item) {
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         pasteboard.items = [NSArray arrayWithObject:item];
+                       }));
 }
 
 void ClearPasteboard() {
-  UIPasteboard.generalPasteboard.items = @[];
+  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
+                       base::BindOnce(^(UIPasteboard* pasteboard) {
+                         pasteboard.items = @[];
+                       }));
 }

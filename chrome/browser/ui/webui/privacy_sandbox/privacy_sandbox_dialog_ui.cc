@@ -40,6 +40,9 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogNoticePath,
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_DIALOG_HTML);
+  source->AddResourcePath(
+      chrome::kChromeUIPrivacySandboxDialogNoticeRestrictedPath,
+      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_RESTRICTED_DIALOG_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"privacySandboxTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TITLE},
@@ -168,6 +171,19 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_4},
       {"m1NoticeRowLearnMoreDescription5",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5},
+      // Strings for the restricted notice dialog (kM1NoticeRestricted).
+      {"m1NoticeRestrictedTitle",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1},
+      {"m1NoticeRestrictedDescription1",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1},
+      {"m1NoticeRestrictedDescription2",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2},
+      {"m1NoticeRestrictedDescription3",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_3},
+      {"m1NoticeRestrictedAckButton",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_ACK_BUTTON},
+      {"m1NoticeRestrictedSettingsButton",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SETTINGS_BUTTON},
       // Shared for all dialogs.
       {"m1DialogMoreButton", IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON}};
 
@@ -195,7 +211,6 @@ void PrivacySandboxDialogUI::Initialize(
              prompt_type == PrivacySandboxService::PromptType::kConsent);
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
-
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
       std::move(close_callback), std::move(resize_callback),
       std::move(show_dialog_callback), std::move(open_settings_callback),

@@ -4,6 +4,8 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_affordance.h"
 
+#include <algorithm>
+
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
@@ -15,7 +17,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_util.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -323,7 +324,7 @@ void BackGestureAffordance::Update(int x_drag_amount,
                    kBackgroundRadius;
 
   float y_progress = y_drag_amount / kDistanceForFullYProgress;
-  y_drag_progress_ = base::clamp(y_progress, -1.0f, 1.0f);
+  y_drag_progress_ = std::clamp(y_progress, -1.0f, 1.0f);
 
   during_reverse_dragging_ = during_reverse_dragging;
 

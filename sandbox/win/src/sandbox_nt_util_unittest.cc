@@ -41,8 +41,10 @@ TEST(SandboxNtUtil, IsSameProcessNonPseudoHandle) {
 TEST(SandboxNtUtil, IsSameProcessDifferentProcess) {
   STARTUPINFO si = {sizeof(si)};
   PROCESS_INFORMATION pi = {};
-  wchar_t notepad[] = L"notepad";
-  ASSERT_TRUE(CreateProcessW(nullptr, notepad, nullptr, nullptr, false, 0,
+  // Calc is preferred over notepad because notepad will fail to launch on
+  // Windows if the store version is not installed.
+  wchar_t command_line[] = L"calc";
+  ASSERT_TRUE(CreateProcessW(nullptr, command_line, nullptr, nullptr, false, 0,
                              nullptr, nullptr, &si, &pi));
   base::win::ScopedProcessInformation process_info(pi);
 

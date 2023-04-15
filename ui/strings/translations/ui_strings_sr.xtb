@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Пре 1 дан}one{Пре # дан}few{Пре # дана}other{Пре # дана}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Пре 1 минут}one{Пре # минут}few{Пре # минута}other{Пре # минута}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 м}one{# м}few{# м}other{# м}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Пре 1 дан}one{Пре # дан}few{Пре # данa}other{Пре # данa}}</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1243314992276662751">Отпреми</translation>
 <translation id="1266864766717917324">Није успело дељење: <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Слева надесно</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1398853756734560583">Увећај</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Пре 1 минут}one{Пре # минут}few{Пре # минутa}other{Пре # минутa}}</translation>
 <translation id="1450753235335490080">Није успело дељење: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Пре 1 месец}one{Пре # месец}few{Пре # месеца}other{Пре # месеци}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут и }one{# минут и }few{# минута и }other{# минута и }}</translation>
 <translation id="1643823602425662293">Обавештење</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Слика</translation>
 <translation id="4565377596337484307">Сакриј лозинку</translation>
 <translation id="4588090240171750605">Помери надесно</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Пре годину дана}one{Пре # годину}few{Пре # године}other{Пре # година}}</translation>
 <translation id="4724120544754982507">Центар за обавештења, непрочитаних обавештења: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">број</translation>
 <translation id="4746179598275229723">Додатак је откачен</translation>
@@ -201,6 +205,7 @@
 <translation id="8393700583063109961">Пошаљите поруку</translation>
 <translation id="8394908167088220973">Пуштање/паузирање медија</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 г}one{# г}few{# г}other{# г}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> датотека (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">и још <ph name="NUMBER" /></translation>
@@ -211,10 +216,12 @@
 <translation id="8867568208303837180">Слање...</translation>
 <translation id="8876215549894133151">Формат:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Пре 1 сат}one{Пре # сат}few{Пре # сата}other{Пре # сати}}</translation>
 <translation id="8996630695507351249">Уверите се да је <ph name="TARGET_DEVICE_NAME" /> повезан на интернет.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек}one{# сек}few{# сек}other{# сек}}</translation>
 <translation id="9059834730836941392">Скупи обавештење</translation>
 <translation id="9170848237812810038">&amp;Опозови</translation>
 <translation id="932327136139879170">Почетна</translation>
 <translation id="944069440740578670">Непрочитана обавештења</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Пре 1 секунде}one{Пре # секунде}few{Пре # секунде}other{Пре # секунди}}</translation>
 </translationbundle>

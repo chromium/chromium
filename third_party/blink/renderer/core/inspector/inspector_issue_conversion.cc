@@ -64,6 +64,8 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kFederatedAuthRequestIssue:
       CHECK(false);
       return "";
+    case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
+      NOTREACHED_NORETURN();
     case mojom::blink::InspectorIssueCode::kGenericIssue:
       NOTREACHED();
       return "";

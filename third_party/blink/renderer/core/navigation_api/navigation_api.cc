@@ -711,9 +711,9 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
           destination_state);
   if (params->frame_load_type == WebFrameLoadType::kBackForward) {
     auto iter = keys_to_indices_.find(key);
-    int index = iter == keys_to_indices_.end() ? 0 : iter->value;
-    destination->SetTraverseProperties(
-        key, params->destination_item->GetNavigationApiId(), index);
+    if (iter != keys_to_indices_.end()) {
+      destination->SetDestinationEntry(entries_[iter->value]);
+    }
   }
   init->setDestination(destination);
 

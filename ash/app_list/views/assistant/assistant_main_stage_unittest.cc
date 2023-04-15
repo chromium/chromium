@@ -6,7 +6,6 @@
 
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -37,10 +36,8 @@ class AssistantMainStageTest : public AssistantAshTestBase {
  public:
   // AssistantAshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{chromeos::features::kDarkLightMode,
-                               features::kNotificationsRefresh});
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kDarkLightMode);
 
     AssistantAshTestBase::SetUp();
   }

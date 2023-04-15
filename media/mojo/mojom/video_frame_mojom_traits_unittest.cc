@@ -15,6 +15,7 @@
 #include "media/base/video_frame.h"
 #include "media/mojo/mojom/traits_test_service.mojom.h"
 #include "media/video/fake_gpu_memory_buffer.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -51,6 +52,13 @@ class VideoFrameStructTraitsTest : public testing::Test,
  private:
   void EchoVideoFrame(const scoped_refptr<VideoFrame>& f,
                       EchoVideoFrameCallback callback) override {
+    // Touch all data in the received frame to ensure that it is valid.
+    if (f && f->IsMappable()) {
+      base::MD5Context md5_context;
+      base::MD5Init(&md5_context);
+      VideoFrame::HashFrameForTesting(&md5_context, *f);
+    }
+
     std::move(callback).Run(f);
   }
 
@@ -136,6 +144,72 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
       EXPECT_TRUE(frame->shm_region()->IsValid());
     }
   }
+}
+
+TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
+  constexpr auto kFormat = PIXEL_FORMAT_I420;
+
+  // This test works by patching the outgoing mojo message, so choose a size
+  // that's two primes to try and maximize the uniqueness of the values we're
+  // scanning for in the message.
+  constexpr gfx::Size kSize(127, 149);
+
+  auto strides = VideoFrame::ComputeStrides(kFormat, kSize);
+  size_t aggregate_size = 0;
+  size_t sizes[3] = {};
+  for (size_t i = 0; i < strides.size(); ++i) {
+    sizes[i] = VideoFrame::Rows(i, kFormat, kSize.height()) * strides[i];
+    aggregate_size += sizes[i];
+  }
+
+  auto region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
+  ASSERT_TRUE(region.IsValid());
+
+  uint8_t* data[3] = {};
+  data[0] = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
+  for (size_t i = 1; i < strides.size(); ++i) {
+    data[i] = data[i - 1] + sizes[i];
+  }
+
+  auto frame = VideoFrame::WrapExternalYuvData(
+      kFormat, kSize, gfx::Rect(kSize), kSize, strides[0], strides[1],
+      strides[2], data[0], data[1], data[2], base::Seconds(1));
+  ASSERT_TRUE(frame);
+
+  frame->BackWithSharedMemory(&region.region);
+
+  auto message = mojom::VideoFrame::SerializeAsMessage(&frame);
+
+  // Scan for the offsets array in the message body. It will start with an
+  // array header and then have the three offsets matching our frame.
+  base::span<uint32_t> body(
+      reinterpret_cast<uint32_t*>(message.mutable_payload()),
+      message.payload_num_bytes() / sizeof(uint32_t));
+  std::vector<uint32_t> offsets = {
+      static_cast<uint32_t>(data[0] - data[0]),  // offsets[0]
+      static_cast<uint32_t>(data[1] - data[0]),  // offsets[1]
+      static_cast<uint32_t>(data[2] - data[0]),  // offsets[2]
+  };
+
+  bool patched_offsets = false;
+  for (size_t i = 0; i + 3 < body.size(); ++i) {
+    if (body[i] == offsets[0] && body[i + 1] == offsets[1] &&
+        body[i + 2] == offsets[2]) {
+      body[i + 1] = 0xc01db33f;
+      patched_offsets = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(patched_offsets);
+
+  // Required to pass base deserialize checks.
+  mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
+  message = mojo::Message::CreateFromMessageHandle(&handle);
+
+  // Ensure deserialization fails instead of crashing.
+  scoped_refptr<VideoFrame> new_frame;
+  EXPECT_FALSE(mojom::VideoFrame::DeserializeFromMessage(std::move(message),
+                                                         &new_frame));
 }
 
 TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {

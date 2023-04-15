@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/no_destructor.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/hash_util.h"
@@ -160,7 +160,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   DCHECK(parent_entity);
 
   const syncer::UniquePosition unique_position =
-      ComputePosition(*parent, index, node->guid().AsLowercaseString());
+      ComputePosition(*parent, index, node->uuid().AsLowercaseString());
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
       node, model, unique_position.ToProto(), /*force_favicon_load=*/true);
@@ -169,7 +169,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   // the tombstone was not committed yet. In that case the existing entity
   // should be updated.
   const SyncedBookmarkTrackerEntity* entity =
-      bookmark_tracker_->GetEntityForGUID(node->guid());
+      bookmark_tracker_->GetEntityForUuid(node->uuid());
   const base::Time creation_time = base::Time::Now();
   if (entity) {
     // If there is a tracked entity with the same client tag hash (effectively
@@ -180,7 +180,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     bookmark_tracker_->Update(entity, entity->metadata().server_version(),
                               creation_time, specifics);
   } else {
-    entity = bookmark_tracker_->Add(node, node->guid().AsLowercaseString(),
+    entity = bookmark_tracker_->Add(node, node->uuid().AsLowercaseString(),
                                     syncer::kUncommittedVersion, creation_time,
                                     specifics);
   }

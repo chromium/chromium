@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 usuku oludlule}one{# izinsuku ezedlule}other{# izinsuku ezedlule}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Iminithi elingu-1 eledlule}one{# amaminithi edlule}other{# amaminithi edlule}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}one{#m}other{#m}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Usuku Olu-1 Olwedlule}one{Izinsuku Ezingu-# Ezedlule}other{Izinsuku Ezingu-# Ezedlule}}</translation>
 <translation id="1181037720776840403">Susa</translation>
 <translation id="1243314992276662751">Layisha</translation>
 <translation id="1266864766717917324">Ayikwazanga ukwabelana nge-<ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Kwesokunxele kuya kwesokudla</translation>
 <translation id="1383876407941801731">Sesha</translation>
 <translation id="1398853756734560583">Khulisa</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Umzuzu o-1 Odlule}one{Imizuzu Engu-# Edlule}other{Imizuzu Engu-# Edlule}}</translation>
 <translation id="1450753235335490080">Ayikwazi ukwabelana nge-<ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Inyanga e-1 Edlule}one{Izinyanga Ezingu-# Ezedlule}other{Izinyanga Ezingu-# Ezedlule}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 iminithi ne- }one{# amaminithi ne- }other{# amaminithi ne- }}</translation>
 <translation id="1643823602425662293">Isaziso</translation>
 <translation id="169515659049020177">U-Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Isithombe</translation>
 <translation id="4565377596337484307">Fihla iphasiwedi</translation>
 <translation id="4588090240171750605">Skrolela ngakwesokudla</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Unyaka o-1 Odlule}one{Iminyaka Engu-# Eyedlule}other{Iminyaka Engu-# Eyedlule}}</translation>
 <translation id="4724120544754982507">Isikhungo sesaziso, <ph name="UNREAD_NOTIFICATION_COUNT" /> izaziso ezingafundiwe</translation>
 <translation id="4729257764711776855">inombolo</translation>
 <translation id="4746179598275229723">Isandiso sisuswe ukuphina</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Iyathumela...</translation>
 <translation id="8876215549894133151">Ifomethi:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Ihora Eli-1 Eledlule}one{Amahora Angu-# Adlule}other{Amahora Angu-# Adlule}}</translation>
 <translation id="8996630695507351249">Yenza isiqinisekiso sokuthi i-<ph name="TARGET_DEVICE_NAME" /> ixhunywe ku-inthanethi.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 isekhondi}one{# amasekhondi}other{# amasekhondi}}</translation>
 <translation id="9059834730836941392">Goqa isaziso</translation>
 <translation id="9170848237812810038">&amp;Hlehlisa</translation>
 <translation id="932327136139879170">Ikhaya</translation>
 <translation id="944069440740578670">Izaziso ezingafundiwe</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Umzuzwana o-1 Odlule}one{Imizuzwana Engu-# Edlule}other{Imizuzwana Engu-# Edlule}}</translation>
 </translationbundle>

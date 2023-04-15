@@ -177,7 +177,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // be set.
   [[nodiscard]] static MultiStep WaitForStateChange(
       ui::ElementIdentifier webcontents_id,
-      StateChange state_change,
+      const StateChange& state_change,
       bool expect_timeout = false);
 
   // Required to keep from hiding inherited versions of these methods.
@@ -189,14 +189,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // InAnyContext() block.
   [[nodiscard]] static StepBuilder EnsurePresent(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where);
+      const DeepQuery& where);
 
   // Ensures that there is no element at path `where` in `webcontents_id`.
   // Unlike InteractiveTestApi::EnsurePresent, this verb can be inside an
   // InAnyContext() block.
   [[nodiscard]] static StepBuilder EnsureNotPresent(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where);
+      const DeepQuery& where);
 
   // Execute javascript `function`, which should take no arguments, in
   // WebContents `webcontents_id`.
@@ -208,7 +208,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // argument, with the element at `where`, in WebContents `webcontents_id`.
   [[nodiscard]] static StepBuilder ExecuteJsAt(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where,
+      const DeepQuery& where,
       const std::string& function);
 
   // Executes javascript `function`, which should take no arguments and return a
@@ -243,7 +243,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // element specified by `where`, and fails if the result is not truthy.
   [[nodiscard]] static StepBuilder CheckJsResultAt(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where,
+      const DeepQuery& where,
       const std::string& function);
 
   // Executes javascript `function`, which should take a single DOM element as
@@ -255,7 +255,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   template <typename T>
   [[nodiscard]] static StepBuilder CheckJsResultAt(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where,
+      const DeepQuery& where,
       const std::string& function,
       T&& matcher);
 
@@ -267,16 +267,31 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Find the DOM element at the given path in the reference element, which
   // should be an instrumented WebContents; see Instrument*(). Move the mouse to
   // the element's center point in screen coordinates.
+  //
+  // If the DOM element may be scrolled outside of the current viewport,
+  // consider using ScrollIntoView(web_contents, where) before this verb.
   [[nodiscard]] StepBuilder MoveMouseTo(ElementSpecifier web_contents,
-                                        DeepQuery where);
+                                        const DeepQuery& where);
 
   // Find the DOM element at the given path in the reference element, which
   // should be an instrumented WebContents; see Instrument*(). Perform a drag
   // from the mouse's current location to the element's center point in screen
   // coordinates, and then if `release` is true, releases the mouse button.
+  //
+  // If the DOM element may be scrolled outside of the current viewport,
+  // consider using ScrollIntoView(web_contents, where) before this verb.
   [[nodiscard]] StepBuilder DragMouseTo(ElementSpecifier web_contents,
-                                        DeepQuery where,
+                                        const DeepQuery& where,
                                         bool release = true);
+
+  using InteractiveViewsTestApi::ScrollIntoView;
+
+  // Scrolls the DOM element at `where` in instrumented WebContents
+  // `web_contents` into view; see Instrument*(). The scrolling happens
+  // instantaneously, without animation, and should be available on the next
+  // render frame or call into the renderer.
+  [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
+                                           const DeepQuery& where);
 
  protected:
   explicit InteractiveBrowserTestApi(
@@ -284,7 +299,8 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
           private_test_impl);
 
  private:
-  static RelativePositionCallback DeepQueryToRelativePosition(DeepQuery query);
+  static RelativePositionCallback DeepQueryToRelativePosition(
+      const DeepQuery& query);
 
   Browser* GetBrowserFor(ui::ElementContext current_context,
                          BrowserSpecifier spec);
@@ -300,6 +316,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 //
 // If you don't need to derive from some existing test class, prefer to use
 // InteractiveBrowserTest.
+//
+// Note that this test fixture attempts to set the context widget from the
+// created `browser()` during `SetUpOnMainThread()`. If your derived test
+// fixture does not create a browser during set up, you will need to manually
+// `SetContextWidget()` before calling `RunTestSequence()`, or use
+// `RunTestTestSequenceInContext()` instead.
 //
 // See README.md for usage.
 template <typename T,
@@ -317,8 +339,10 @@ class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
-    SetContextWidget(
-        BrowserView::GetBrowserViewForBrowser(T::browser())->GetWidget());
+    if (Browser* browser = T::browser()) {
+      SetContextWidget(
+          BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -329,6 +353,12 @@ class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
 
 // Convenience test fixture for interactive browser tests. This is the preferred
 // base class for Kombucha tests unless you specifically need something else.
+//
+// Note that this test fixture attempts to set the context widget from the
+// created `browser()` during `SetUpOnMainThread()`. If your derived test
+// fixture does not create a browser during set up, you will need to manually
+// `SetContextWidget()` before calling `RunTestSequence()`, or use
+// `RunTestTestSequenceInContext()` instead.
 //
 // See README.md for usage.
 using InteractiveBrowserTest = InteractiveBrowserTestT<InProcessBrowserTest>;
@@ -349,7 +379,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
 template <typename T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
-    DeepQuery where,
+    const DeepQuery& where,
     const std::string& function,
     T&& matcher) {
   return internal::JsResultChecker<T>::CheckJsResultAt(

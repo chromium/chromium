@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.sync;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Dialog;
@@ -207,7 +205,6 @@ public class ManageSyncSettingsTest {
     public void testTogglingSyncEverythingDoesNotStopSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setSelectedTypes(false, new HashSet<>());
-        mSyncTestRule.startSync();
         ManageSyncSettings fragment = startManageSyncPreferences();
 
         // Sync is requested to start. Toggling SyncEverything will call setSelectedTypes with
@@ -366,17 +363,25 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setPaymentsIntegrationEnabled(true);
 
+        // Get the UI elements.
         ManageSyncSettings fragment = startManageSyncPreferences();
-        assertSyncOnState(fragment);
         ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
-        mSyncTestRule.togglePreference(syncEverything);
-
         CheckBoxPreference syncAutofill =
                 (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        mSyncTestRule.togglePreference(syncAutofill);
-
         CheckBoxPreference paymentsIntegration = (CheckBoxPreference) fragment.findPreference(
                 ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
+
+        assertSyncOnState(fragment);
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        mSyncTestRule.togglePreference(syncEverything);
+
+        Assert.assertTrue(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        mSyncTestRule.togglePreference(syncAutofill);
+
         Assert.assertFalse(paymentsIntegration.isEnabled());
         Assert.assertFalse(paymentsIntegration.isChecked());
 
@@ -435,8 +440,12 @@ public class ManageSyncSettingsTest {
         clickPreference(encryption);
 
         final PassphraseTypeDialogFragment typeFragment = getPassphraseTypeDialogFragment();
-        mSyncTestRule.stopSync();
-        onView(withId(R.id.explicit_passphrase_checkbox)).perform(click());
+        mSyncTestRule.signOut();
+
+        // Mimic the user clicking on the explicit passphrase checkbox immediately after signing
+        // out.
+        TestThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
+
         // No crash means we passed.
     }
 
@@ -449,7 +458,7 @@ public class ManageSyncSettingsTest {
     public void testEnterPassphraseWhenSyncIsOff() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        mSyncTestRule.stopSync();
+        mSyncTestRule.signOut();
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> fragment.onPassphraseEntered("passphrase"));
         // No crash means we passed.

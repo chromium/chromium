@@ -102,8 +102,7 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
         EXPECT_EQ(menu_item->GetLabelAt(idx),
                   GetExpectedButtonTitleForProfile(
                       profile_connection_counts[idx].first));
-        EXPECT_CALL(*hid_connection_tracker,
-                    ShowHidContentSettingsExceptions());
+        EXPECT_CALL(*hid_connection_tracker, ShowContentSettingsExceptions());
         SimulateButtonClick(idx);
       }
       total_connection_count += profile_connection_counts[idx].second;
@@ -162,6 +161,7 @@ TEST_F(HidStatusIconTest, MultipleProfiles) {
 }
 
 TEST_F(HidStatusIconTest, NumProfilesOverLimit) {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   // Set to 10 more profiles than the max limit.
   size_t num_profiles = kMenuMaxItemCount + 10;
   std::vector<std::pair<Profile*, size_t>> profile_connection_counts;
@@ -172,7 +172,7 @@ TEST_F(HidStatusIconTest, NumProfilesOverLimit) {
     hid_connection_trackers.emplace_back(
         HidConnectionTrackerFactory::GetForProfile(profile,
                                                    /*create=*/true));
-    hid_connection_trackers[idx]->IncrementConnectionCount();
+    hid_connection_trackers[idx]->IncrementConnectionCount(origin);
     profile_connection_counts.push_back({profile, 1});
   }
   // CheckIcon has the logic to expect the icon button size is

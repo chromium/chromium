@@ -45,9 +45,9 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The tests in this file use the Network Service implementation of
 // NetworkContext, to test sending and receiving of data over TCP sockets.
@@ -622,21 +622,16 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
 class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
  public:
+#if BUILDFLAG(IS_CHROMEOS)
   DirectSocketsTcpServerBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PermissionBrokerClient::InitializeFake();
-    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(true);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    // `FirewallHoleService` is not available in standalone Lacros browsertests.
-    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ~DirectSocketsTcpServerBrowserTest() override {
     chromeos::PermissionBrokerClient::Shutdown();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ExchangeTcpServer) {
@@ -645,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ExchangeTcpServer) {
               testing::HasSubstr("succeeded"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, HasFirewallHole) {
   class DelegateImpl : public chromeos::FakePermissionBrokerClient::Delegate {
    public:
@@ -704,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, FirewallHoleDenied) {
               testing::HasSubstr("Firewall"));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, OkOnClose) {
   ASSERT_EQ(true, EvalJs(shell(), R"(

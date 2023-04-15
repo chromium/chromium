@@ -8,12 +8,12 @@ namespace extensions {
 
 mojom::RunLocation ConvertRunLocation(api::extension_types::RunAt run_at) {
   switch (run_at) {
-    case api::extension_types::RUN_AT_DOCUMENT_END:
+    case api::extension_types::RunAt::kDocumentEnd:
       return mojom::RunLocation::kDocumentEnd;
-    case api::extension_types::RUN_AT_NONE:
-    case api::extension_types::RUN_AT_DOCUMENT_IDLE:
+    case api::extension_types::RunAt::kNone:
+    case api::extension_types::RunAt::kDocumentIdle:
       return mojom::RunLocation::kDocumentIdle;
-    case api::extension_types::RUN_AT_DOCUMENT_START:
+    case api::extension_types::RunAt::kDocumentStart:
       return mojom::RunLocation::kDocumentStart;
   }
 
@@ -27,11 +27,11 @@ api::extension_types::RunAt ConvertRunLocationForAPI(
   // or kBrowserDriven. We don't expect to encounter them here.
   switch (run_at) {
     case mojom::RunLocation::kDocumentEnd:
-      return api::extension_types::RUN_AT_DOCUMENT_END;
+      return api::extension_types::RunAt::kDocumentEnd;
     case mojom::RunLocation::kDocumentStart:
-      return api::extension_types::RUN_AT_DOCUMENT_START;
+      return api::extension_types::RunAt::kDocumentStart;
     case mojom::RunLocation::kDocumentIdle:
-      return api::extension_types::RUN_AT_DOCUMENT_IDLE;
+      return api::extension_types::RunAt::kDocumentIdle;
     case mojom::RunLocation::kUndefined:
     case mojom::RunLocation::kRunDeferred:
     case mojom::RunLocation::kBrowserDriven:
@@ -39,17 +39,17 @@ api::extension_types::RunAt ConvertRunLocationForAPI(
   }
 
   NOTREACHED();
-  return api::extension_types::RUN_AT_DOCUMENT_IDLE;
+  return api::extension_types::RunAt::kDocumentIdle;
 }
 
 mojom::ExecutionWorld ConvertExecutionWorld(
     api::extension_types::ExecutionWorld world) {
   mojom::ExecutionWorld execution_world = mojom::ExecutionWorld::kIsolated;
   switch (world) {
-    case api::extension_types::EXECUTION_WORLD_NONE:
-    case api::extension_types::EXECUTION_WORLD_ISOLATED:
+    case api::extension_types::ExecutionWorld::kNone:
+    case api::extension_types::ExecutionWorld::kIsolated:
       break;  // Default to mojom::ExecutionWorld::kIsolated.
-    case api::extension_types::EXECUTION_WORLD_MAIN:
+    case api::extension_types::ExecutionWorld::kMain:
       execution_world = mojom::ExecutionWorld::kMain;
   }
 
@@ -60,15 +60,15 @@ api::extension_types::ExecutionWorld ConvertExecutionWorldForAPI(
     mojom::ExecutionWorld world) {
   switch (world) {
     case mojom::ExecutionWorld::kIsolated:
-      return api::extension_types::EXECUTION_WORLD_ISOLATED;
+      return api::extension_types::ExecutionWorld::kIsolated;
     case mojom::ExecutionWorld::kMain:
-      return api::extension_types::EXECUTION_WORLD_MAIN;
+      return api::extension_types::ExecutionWorld::kMain;
     case mojom::ExecutionWorld::kUserScript:
       NOTREACHED() << "UserScript worlds are not supported in this API.";
   }
 
   NOTREACHED();
-  return api::extension_types::EXECUTION_WORLD_ISOLATED;
+  return api::extension_types::ExecutionWorld::kIsolated;
 }
 
 }  // namespace extensions

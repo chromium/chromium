@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINTER_H_
 
-#include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
@@ -21,23 +20,6 @@ class BoxPainter {
 
  public:
   BoxPainter(const LayoutBox& layout_box) : layout_box_(layout_box) {}
-  void Paint(const PaintInfo&);
-
-  void PaintChildren(const PaintInfo&);
-  void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset& paint_offset);
-  void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
-
-  void PaintMaskImages(const PaintInfo&, const PhysicalRect&);
-
-  // |visual_rect| is for the drawing display item, covering overflowing box
-  // shadows and border image outsets. |paint_rect| is the border box rect in
-  // paint coordinates.
-  void PaintBoxDecorationBackgroundWithRect(
-      const PaintInfo& paint_info,
-      const gfx::Rect& visual_rect,
-      const PhysicalRect& paint_rect,
-      const DisplayItemClient& background_client);
 
   // Expands the bounds of the current paint chunk for hit test, and records
   // special touch action if any. This should be called in the background paint
@@ -67,11 +49,6 @@ class BoxPainter {
   gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  private:
-  void PaintBackground(const PaintInfo&,
-                       const PhysicalRect&,
-                       const Color& background_color,
-                       BackgroundBleedAvoidance = kBackgroundBleedNone);
-
   const LayoutBox& layout_box_;
 };
 

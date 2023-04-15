@@ -81,8 +81,7 @@ UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)
   init_params.preferred_width = kTrayMenuWidth;
   init_params.has_shadow = false;
   init_params.close_on_deactivate = false;
-  if (features::IsNotificationsRefreshEnabled())
-    init_params.translucent = true;
+  init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
 
@@ -106,14 +105,6 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   tray_->GetBubbleWindowContainer()->StackChildAbove(
       tray_->bubble()->GetBubbleWidget()->GetNativeWindow(),
       bubble_widget_->GetNativeWindow());
-
-  if (!features::IsNotificationsRefreshEnabled()) {
-    ui::Layer* content_layer = bubble_view_->layer();
-    float radius = kBubbleCornerRadius;
-    content_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
-    content_layer->SetIsFastRoundedCorner(true);
-    content_layer->Add(border_->layer());
-  }
 
   if (features::IsSystemTrayShadowEnabled()) {
     // Create a shadow for bubble widget.
@@ -209,11 +200,6 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
   bubble_view_->ChangeAnchorRect(anchor_rect);
 
   notification_center_view_->UpdateNotificationBar();
-
-  if (!features::IsNotificationsRefreshEnabled()) {
-    bubble_view_->layer()->StackAtTop(border_->layer());
-    border_->layer()->SetBounds(notification_center_view_->GetContentsBounds());
-  }
 
   if (shadow_) {
     // When the last notification is removed, the content bounds of message

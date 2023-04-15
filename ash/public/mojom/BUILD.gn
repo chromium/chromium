@@ -67,7 +67,7 @@ mojom("input_device_settings") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//ui/chromeos/events/mojom",
+    "//ui/events/ash/mojom",
   ]
 }
 

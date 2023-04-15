@@ -15,26 +15,26 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_copier.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
-#import "ios/chrome/browser/ui/image_util/image_copier.h"
-#import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
@@ -189,11 +189,12 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
                 if (!strongSelf)
                   return;
 
-                id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-                    strongSelf.browser->GetCommandDispatcher());
-                [handler addToReadingList:[[ReadingListAddCommand alloc]
-                                              initWithURL:linkURL
-                                                    title:innerText]];
+                ReadingListAddCommand* command =
+                    [[ReadingListAddCommand alloc] initWithURL:linkURL
+                                                         title:innerText];
+                ReadingListBrowserAgent* readingListBrowserAgent =
+                    ReadingListBrowserAgent::FromBrowser(self.browser);
+                readingListBrowserAgent->AddURLsToReadingList(command.URLs);
               }];
           [menuElements addObject:addToReadingList];
         }

@@ -20,6 +20,10 @@ namespace performance_manager::policies {
 class HighEfficiencyModePolicy : public GraphOwned,
                                  public PageNode::ObserverDefaultImpl {
  public:
+  // The default amount of time a tab must spend in the background before it's
+  // discarded by Memory Saver.
+  static const base::TimeDelta kDefaultDiscardTimeInterval;
+
   HighEfficiencyModePolicy();
   ~HighEfficiencyModePolicy() override;
 

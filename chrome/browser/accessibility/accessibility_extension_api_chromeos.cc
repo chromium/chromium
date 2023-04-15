@@ -268,6 +268,10 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled = ::features::IsAccessibilityDeprecateChromeVoxTabsEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_CHROMEVOXSETTINGSMIGRATION:
+      enabled = ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
       return RespondNow(Error("Unrecognized feature"));
   }

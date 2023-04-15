@@ -21,6 +21,7 @@ class GURL;
 
 namespace content {
 
+class RenderFrameHost;
 class WebContents;
 class WebUIController;
 class WebUIMessageHandler;
@@ -49,6 +50,14 @@ class CONTENT_EXPORT WebUI {
 
   virtual WebUIController* GetController() = 0;
   virtual void SetController(std::unique_ptr<WebUIController> controller) = 0;
+
+  // This might return nullptr
+  //  1. During construction, until the WebUI is associated with
+  //     a RenderFrameHost.
+  //  2. During destruction, if the WebUI's destruction causes the
+  //     RenderFrameHost to be destroyed (crbug.com/1308391).
+  //  3. In unittests where the WebUI is mocked, notably by TestWebUI.
+  virtual RenderFrameHost* GetRenderFrameHost() = 0;
 
   // Returns the device scale factor of the monitor that the renderer is on.
   // Whenever possible, WebUI should push resources with this scale factor to

@@ -24,10 +24,13 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/variations/service/google_groups_updater_service.h"
 
 namespace sync_preferences {
 
 const char kSyncablePrefForTesting[] = "syncable-test-preference";
+const char kSyncableMergeableDictPrefForTesting[] =
+    "syncable-mergeable-dict-test-preference";
 
 namespace {
 // Not an enum class to ease cast to int.
@@ -37,7 +40,7 @@ namespace syncable_prefs_ids {
 // Please also add new entries to `SyncablePref` enum in
 // tools/metrics/histograms/enums.xml.
 enum {
-  kSyncablePrefForTesting = 0,
+  kSyncablePrefForTesting = 0,  // For tests.
   kAutofillCreditCardEnabled = 1,
   kAutofillEnabledDeprecated = 2,
   kAutofillHasSeenIban = 3,
@@ -98,7 +101,9 @@ enum {
   kOfferTranslateEnabled = 58,
   kPrefAlwaysTranslateList = 59,
   kPrefNeverPromptSitesWithTime = 60,
-  kPrefTranslateRecentTarget = 61
+  kPrefTranslateRecentTarget = 61,
+  kPrefDogfoodGroups = 62,
+  kSyncableMergeableDictPrefForTesting = 63,  // For tests.
 };
 }  // namespace syncable_prefs_ids
 
@@ -256,8 +261,14 @@ const auto& SyncablePreferences() {
           syncer::PREFERENCES}},
         {translate::prefs::kPrefTranslateRecentTarget,
          {syncable_prefs_ids::kPrefTranslateRecentTarget, syncer::PREFERENCES}},
+        {kDogfoodGroupsSyncPrefName,
+         {syncable_prefs_ids::kPrefDogfoodGroups,
+          syncer::PRIORITY_PREFERENCES}},
         {kSyncablePrefForTesting,
          {syncable_prefs_ids::kSyncablePrefForTesting, syncer::PREFERENCES}},
+        {kSyncableMergeableDictPrefForTesting,
+         {syncable_prefs_ids::kSyncableMergeableDictPrefForTesting,
+          syncer::PREFERENCES}},
   });
   return kCommonSyncablePrefsAllowlist;
 }

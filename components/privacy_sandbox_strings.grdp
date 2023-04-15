@@ -122,6 +122,26 @@
     Sites you visit can ask Chrome for information that helps them measure the performance of their ads. Chrome protects your privacy by limiting the information sites can share with one another.
   </message>
 
+  <!-- Privacy Sandbox v4 - Notice Restricted. -->
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE" translateable="false" formatter_data="android_java">
+    Ut enim ad minim veniam.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1" translateable="false" formatter_data="android_java">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2" translateable="false" formatter_data="android_java">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_3" translateable="false" >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_ACK_BUTTON" translateable="false" formatter_data="android_java">
+    Lorem
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SETTINGS_BUTTON" translateable="false" formatter_data="android_java">
+    Ipsum
+  </message>
+
   <!-- Privacy Sandbox v4 - Notice ROW. -->
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_TITLE" desc="* A page title for this Notice screen for users outside of the EEA. It needs to serve 2 purposes: 1) it needs to encompass 3 settings: Ad topics, Site-suggested ads, and Ad measurement 2) it also tries to give a sense for a bigger project, Privacy Sandbox described at www.privacysandbox.com.   * 'ad privacy' is also the name of a new page in Chrome settings called 'Ad settings'. That new page includes 3 settings: Ad topics, Site-suggested ads, and Ad measurement.  * The new ad settings appear in the privacy section of Chrome settings: chrome://settings/adSettings **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT ROW NOTICE **** 1) This screen provides notice to Chrome users outside of the European Economic Area (EEA) (we typically refer to this screen as “Rest of World” or “ROW”). It follows guidelines established by the GDPR.  2) We’re using similar but distinct content for EEA / ROW because legal requirements differ. For ROW, we can provide notice for all 3 settings, and so all 3 settings can appear on a single screen. " formatter_data="android_java">
     Enhanced ad privacy in Chrome

@@ -96,7 +96,7 @@ public final class FeedActionDelegateImplTest {
         FeatureList.setTestFeatures(ImmutableMap.of(ChromeFeatureList.CORMORANT, true));
         String webFeedName = "SomeFeedName";
 
-        mFeedActionDelegateImpl.openWebFeed(webFeedName);
+        mFeedActionDelegateImpl.openWebFeed(webFeedName, SingleWebFeedEntryPoint.OTHER);
 
         verify(mActivityContext).startActivity(mIntentCaptor.capture());
         Assert.assertArrayEquals("Feed ID not passed correctly.", webFeedName.getBytes(),
@@ -106,7 +106,7 @@ public final class FeedActionDelegateImplTest {
     @Test
     public void testOpenWebFeed_disabledWhenCormorantFlagDisabled() {
         FeatureList.setTestFeatures(ImmutableMap.of(ChromeFeatureList.CORMORANT, false));
-        mFeedActionDelegateImpl.openWebFeed("SomeFeedName");
+        mFeedActionDelegateImpl.openWebFeed("SomeFeedName", SingleWebFeedEntryPoint.OTHER);
         verify(mActivityContext, never()).startActivity(any());
     }
 }

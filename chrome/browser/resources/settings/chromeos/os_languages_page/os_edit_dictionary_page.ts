@@ -177,7 +177,7 @@ class OsSettingsEditDictionaryPageElement extends
   /**
    * Handles tapping on the Add Word button.
    */
-  private onAddWordTap_(): void {
+  private onAddWordClick_(): void {
     this.addWordFromInput_();
     this.$.newWord.focus();
   }
@@ -219,7 +219,7 @@ class OsSettingsEditDictionaryPageElement extends
   /**
    * Handles tapping on a "Remove word" icon button.
    */
-  private onRemoveWordTap_(e: DomRepeatEvent<string>): void {
+  private onRemoveWordClick_(e: DomRepeatEvent<string>): void {
     this.languageSettingsPrivate_.removeSpellcheckWord(e.model.item);
     recordSettingChange();
   }

@@ -112,6 +112,21 @@ bool GetNormalizedCertIssuer(CRYPTO_BUFFER* cert,
   return NormalizeName(issuer_value, out_normalized_issuer, &errors);
 }
 
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytesWithSanityCheck(
+    base::span<const uint8_t> data) {
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  // Do a bare minimum of DER parsing here to see if the input looks
+  // certificate-ish.
+  if (!ParseCertificate(der::Input(data.data(), data.size()),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, nullptr)) {
+    return nullptr;
+  }
+  return x509_util::CreateCryptoBuffer(data);
+}
+
 }  // namespace
 
 // static
@@ -157,24 +172,13 @@ X509Certificate::CreateFromDERCertChainUnsafeOptions(
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediate_ca_certs;
   intermediate_ca_certs.reserve(der_certs.size() - 1);
   for (size_t i = 1; i < der_certs.size(); i++) {
-    bssl::UniquePtr<CRYPTO_BUFFER> handle = CreateCertBufferFromBytes(
-        base::as_bytes(base::make_span(der_certs[i])));
-    if (!handle)
-      break;
-    intermediate_ca_certs.push_back(std::move(handle));
+    intermediate_ca_certs.push_back(
+        x509_util::CreateCryptoBuffer(der_certs[i]));
   }
 
-  // Return NULL if we failed to parse any of the certs.
-  if (der_certs.size() - 1 != intermediate_ca_certs.size())
-    return nullptr;
-
-  bssl::UniquePtr<CRYPTO_BUFFER> handle =
-      CreateCertBufferFromBytes(base::as_bytes(base::make_span(der_certs[0])));
-  if (!handle)
-    return nullptr;
-
   return CreateFromBufferUnsafeOptions(
-      std::move(handle), std::move(intermediate_ca_certs), options);
+      x509_util::CreateCryptoBuffer(der_certs[0]),
+      std::move(intermediate_ca_certs), options);
 }
 
 // static
@@ -187,12 +191,8 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBytes(
 scoped_refptr<X509Certificate> X509Certificate::CreateFromBytesUnsafeOptions(
     base::span<const uint8_t> data,
     UnsafeCreateOptions options) {
-  bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer = CreateCertBufferFromBytes(data);
-  if (!cert_buffer)
-    return nullptr;
-
-  scoped_refptr<X509Certificate> cert =
-      CreateFromBufferUnsafeOptions(std::move(cert_buffer), {}, options);
+  scoped_refptr<X509Certificate> cert = CreateFromBufferUnsafeOptions(
+      x509_util::CreateCryptoBuffer(data), {}, options);
   return cert;
 }
 
@@ -246,8 +246,8 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
 
     bssl::UniquePtr<CRYPTO_BUFFER> handle;
     if (format & FORMAT_PEM_CERT_SEQUENCE) {
-      handle =
-          CreateCertBufferFromBytes(base::as_bytes(base::make_span(decoded)));
+      handle = CreateCertBufferFromBytesWithSanityCheck(
+          base::as_bytes(base::make_span(decoded)));
     }
     if (handle) {
       // Parsed a DER encoded certificate. All PEM blocks that follow must
@@ -640,24 +640,6 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
 }
 
 // static
-bssl::UniquePtr<CRYPTO_BUFFER> X509Certificate::CreateCertBufferFromBytes(
-    base::span<const uint8_t> data) {
-  der::Input tbs_certificate_tlv;
-  der::Input signature_algorithm_tlv;
-  der::BitString signature_value;
-  // Do a bare minimum of DER parsing here to make sure the input is not
-  // completely crazy. (This is required for at least
-  // CreateCertificateListFromBytes with FORMAT_AUTO, if not more.)
-  if (!ParseCertificate(der::Input(data.data(), data.size()),
-                        &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr)) {
-    return nullptr;
-  }
-
-  return x509_util::CreateCryptoBuffer(data);
-}
-
-// static
 std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
 X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
                                             Format format) {
@@ -665,7 +647,8 @@ X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
 
   switch (format) {
     case FORMAT_SINGLE_CERTIFICATE: {
-      bssl::UniquePtr<CRYPTO_BUFFER> handle = CreateCertBufferFromBytes(data);
+      bssl::UniquePtr<CRYPTO_BUFFER> handle =
+          CreateCertBufferFromBytesWithSanityCheck(data);
       if (handle)
         results.push_back(std::move(handle));
       break;

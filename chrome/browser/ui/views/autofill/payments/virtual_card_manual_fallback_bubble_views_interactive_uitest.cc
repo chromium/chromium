@@ -119,13 +119,13 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
     options.virtual_card_cvc = virtual_card_cvc;
     options.card_image = gfx::test::CreateImage(32, 20);
     GetController()->ShowBubble(options);
-    event_waiter_->Wait();
+    ASSERT_TRUE(event_waiter_->Wait());
   }
 
   void ReshowBubble() {
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
     GetController()->ReshowBubble();
-    event_waiter_->Wait();
+    ASSERT_TRUE(event_waiter_->Wait());
   }
 
   bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }

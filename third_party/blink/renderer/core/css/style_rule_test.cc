@@ -16,7 +16,7 @@ class StyleRuleTest : public PageTestBase {};
 namespace {
 
 const CSSSelector* FindParentSelector(const CSSSelector* selector) {
-  for (const CSSSelector* s = selector; s; s = s->TagHistory()) {
+  for (const CSSSelector* s = selector; s; s = s->NextSimpleSelector()) {
     if (s->GetPseudoType() == CSSSelector::kPseudoParent) {
       return s;
     }

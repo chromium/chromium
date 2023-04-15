@@ -233,7 +233,7 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
   // return a status of throttled.
   if (info.backoff->ShouldRejectRequest() || info.callbacks.size() >= 10) {
     UpdateCheckResult result = UpdateCheckResult(
-        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_THROTTLED, "");
+        extensions::api::runtime::RequestUpdateCheckStatus::kThrottled, "");
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   } else {
@@ -272,17 +272,17 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
 bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   const char* os = update_client::UpdateQueryParams::GetOS();
   if (strcmp(os, "mac") == 0) {
-    info->os = extensions::api::runtime::PLATFORM_OS_MAC;
+    info->os = extensions::api::runtime::PlatformOs::kMac;
   } else if (strcmp(os, "win") == 0) {
-    info->os = extensions::api::runtime::PLATFORM_OS_WIN;
+    info->os = extensions::api::runtime::PlatformOs::kWin;
   } else if (strcmp(os, "cros") == 0) {
-    info->os = extensions::api::runtime::PLATFORM_OS_CROS;
+    info->os = extensions::api::runtime::PlatformOs::kCros;
   } else if (strcmp(os, "linux") == 0) {
-    info->os = extensions::api::runtime::PLATFORM_OS_LINUX;
+    info->os = extensions::api::runtime::PlatformOs::kLinux;
   } else if (strcmp(os, "openbsd") == 0) {
-    info->os = extensions::api::runtime::PLATFORM_OS_OPENBSD;
+    info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
   } else if (strcmp(os, "fuchsia") == 0) {
-    info->os = extensions::api::runtime::PLATFORM_OS_FUCHSIA;
+    info->os = extensions::api::runtime::PlatformOs::kFuchsia;
   } else {
     NOTREACHED() << "Platform not supported: " << os;
     return false;
@@ -290,17 +290,17 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 
   const char* arch = update_client::UpdateQueryParams::GetArch();
   if (strcmp(arch, "arm") == 0) {
-    info->arch = extensions::api::runtime::PLATFORM_ARCH_ARM;
+    info->arch = extensions::api::runtime::PlatformArch::kArm;
   } else if (strcmp(arch, "arm64") == 0) {
-    info->arch = extensions::api::runtime::PLATFORM_ARCH_ARM64;
+    info->arch = extensions::api::runtime::PlatformArch::kArm64;
   } else if (strcmp(arch, "x86") == 0) {
-    info->arch = extensions::api::runtime::PLATFORM_ARCH_X86_32;
+    info->arch = extensions::api::runtime::PlatformArch::kX86_32;
   } else if (strcmp(arch, "x64") == 0) {
-    info->arch = extensions::api::runtime::PLATFORM_ARCH_X86_64;
+    info->arch = extensions::api::runtime::PlatformArch::kX86_64;
   } else if (strcmp(arch, "mipsel") == 0) {
-    info->arch = extensions::api::runtime::PLATFORM_ARCH_MIPS;
+    info->arch = extensions::api::runtime::PlatformArch::kMips;
   } else if (strcmp(arch, "mips64el") == 0) {
-    info->arch = extensions::api::runtime::PLATFORM_ARCH_MIPS64;
+    info->arch = extensions::api::runtime::PlatformArch::kMips64;
   } else {
     NOTREACHED();
     return false;
@@ -308,15 +308,15 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 
   const char* nacl_arch = update_client::UpdateQueryParams::GetNaclArch();
   if (strcmp(nacl_arch, "arm") == 0) {
-    info->nacl_arch = extensions::api::runtime::PLATFORM_NACL_ARCH_ARM;
+    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kArm;
   } else if (strcmp(nacl_arch, "x86-32") == 0) {
-    info->nacl_arch = extensions::api::runtime::PLATFORM_NACL_ARCH_X86_32;
+    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kX86_32;
   } else if (strcmp(nacl_arch, "x86-64") == 0) {
-    info->nacl_arch = extensions::api::runtime::PLATFORM_NACL_ARCH_X86_64;
+    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kX86_64;
   } else if (strcmp(nacl_arch, "mips32") == 0) {
-    info->nacl_arch = extensions::api::runtime::PLATFORM_NACL_ARCH_MIPS;
+    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips;
   } else if (strcmp(nacl_arch, "mips64") == 0) {
-    info->nacl_arch = extensions::api::runtime::PLATFORM_NACL_ARCH_MIPS64;
+    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips64;
   } else {
     NOTREACHED();
     return false;
@@ -350,7 +350,7 @@ void ChromeRuntimeAPIDelegate::OnExtensionUpdateFound(
     const base::Version& version) {
   if (version.IsValid()) {
     UpdateCheckResult result = UpdateCheckResult(
-        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_UPDATE_AVAILABLE,
+        extensions::api::runtime::RequestUpdateCheckStatus::kUpdateAvailable,
         version.GetString());
     CallUpdateCallbacks(id, std::move(result));
   }
@@ -384,12 +384,12 @@ void ChromeRuntimeAPIDelegate::UpdateCheckComplete(
 
   if (update) {
     UpdateCheckResult result = UpdateCheckResult(
-        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_UPDATE_AVAILABLE,
+        extensions::api::runtime::RequestUpdateCheckStatus::kUpdateAvailable,
         update->VersionString());
     CallUpdateCallbacks(extension_id, std::move(result));
   } else {
     UpdateCheckResult result = UpdateCheckResult(
-        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_NO_UPDATE, "");
+        extensions::api::runtime::RequestUpdateCheckStatus::kNoUpdate, "");
     CallUpdateCallbacks(extension_id, std::move(result));
   }
 }

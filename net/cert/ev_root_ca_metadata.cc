@@ -6,10 +6,6 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <stdlib.h>
-#endif
-
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -53,93 +49,7 @@ EVRootCAMetadata* EVRootCAMetadata::GetInstance() {
   return g_ev_root_ca_metadata.Pointer();
 }
 
-#if BUILDFLAG(IS_WIN)
-
-namespace {
-
-bool ConvertBytesToDottedString(const der::Input& policy_oid,
-                                std::string* dotted) {
-  CBS cbs;
-  CBS_init(&cbs, policy_oid.UnsafeData(), policy_oid.Length());
-  bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
-  if (!text)
-    return false;
-  dotted->assign(text.get());
-  return true;
-}
-
-}  // namespace
-
-bool EVRootCAMetadata::IsEVPolicyOID(PolicyOID policy_oid) const {
-  for (const auto& ev_root : kEvRootCaMetadata) {
-    if (base::Contains(ev_root.policy_oids, policy_oid)) {
-      return true;
-    }
-  }
-
-  for (const auto& ca : extra_cas_) {
-    if (ca.second == policy_oid)
-      return true;
-  }
-
-  return false;
-}
-
-bool EVRootCAMetadata::IsEVPolicyOIDGivenBytes(
-    const der::Input& policy_oid) const {
-  std::string dotted;
-  return ConvertBytesToDottedString(policy_oid, &dotted) &&
-         IsEVPolicyOID(dotted.c_str());
-}
-
-bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
-                                      PolicyOID policy_oid) const {
-  for (const auto& ev_root : kEvRootCaMetadata) {
-    if (fingerprint != ev_root.fingerprint)
-      continue;
-    return base::Contains(ev_root.policy_oids, policy_oid);
-  }
-
-  auto it = extra_cas_.find(fingerprint);
-  return it != extra_cas_.end() && it->second == policy_oid;
-}
-
-bool EVRootCAMetadata::HasEVPolicyOIDGivenBytes(
-    const SHA256HashValue& fingerprint,
-    const der::Input& policy_oid) const {
-  std::string dotted;
-  return ConvertBytesToDottedString(policy_oid, &dotted) &&
-         HasEVPolicyOID(fingerprint, dotted.c_str());
-}
-
-// static
-bool EVRootCAMetadata::IsCaBrowserForumEvOid(PolicyOID policy_oid) {
-  return strcmp(policy_oid, "2.23.140.1.1") == 0;
-}
-
-bool EVRootCAMetadata::AddEVCA(const SHA256HashValue& fingerprint,
-                               const char* policy) {
-  for (const auto& ev_root : kEvRootCaMetadata) {
-    if (fingerprint == ev_root.fingerprint)
-      return false;
-  }
-  if (extra_cas_.find(fingerprint) != extra_cas_.end())
-    return false;
-
-  extra_cas_[fingerprint] = policy;
-  return true;
-}
-
-bool EVRootCAMetadata::RemoveEVCA(const SHA256HashValue& fingerprint) {
-  auto it = extra_cas_.find(fingerprint);
-  if (it == extra_cas_.end())
-    return false;
-
-  extra_cas_.erase(it);
-  return true;
-}
-
-#elif defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
 namespace {
 
@@ -158,19 +68,12 @@ std::string OIDStringToDER(base::StringPiece policy) {
 
 }  // namespace
 
-bool EVRootCAMetadata::IsEVPolicyOID(PolicyOID policy_oid) const {
-  return policy_oids_.find(policy_oid.AsString()) != policy_oids_.end();
-}
-
-bool EVRootCAMetadata::IsEVPolicyOIDGivenBytes(
-    const der::Input& policy_oid) const {
-  // This implementation uses DER bytes already, so the two functions are the
-  // same.
-  return IsEVPolicyOID(policy_oid);
+bool EVRootCAMetadata::IsEVPolicyOID(der::Input policy_oid) const {
+  return policy_oids_.find(policy_oid.AsStringPiece()) != policy_oids_.end();
 }
 
 bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
-                                      PolicyOID policy_oid) const {
+                                      der::Input policy_oid) const {
   PolicyOIDMap::const_iterator iter = ev_policy_.find(fingerprint);
   if (iter == ev_policy_.end())
     return false;
@@ -179,20 +82,6 @@ bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
       return true;
   }
   return false;
-}
-
-bool EVRootCAMetadata::HasEVPolicyOIDGivenBytes(
-    const SHA256HashValue& fingerprint,
-    const der::Input& policy_oid) const {
-  // The implementation uses DER bytes already, so the two functions are the
-  // same.
-  return HasEVPolicyOID(fingerprint, policy_oid);
-}
-
-// static
-bool EVRootCAMetadata::IsCaBrowserForumEvOid(PolicyOID policy_oid) {
-  const uint8_t kCabEvOid[] = {0x67, 0x81, 0x0c, 0x01, 0x01};
-  return der::Input(kCabEvOid) == policy_oid;
 }
 
 bool EVRootCAMetadata::AddEVCA(const SHA256HashValue& fingerprint,
@@ -225,26 +114,13 @@ bool EVRootCAMetadata::RemoveEVCA(const SHA256HashValue& fingerprint) {
 // metadata.
 //
 
-bool EVRootCAMetadata::IsEVPolicyOID(PolicyOID policy_oid) const {
-  LOG(WARNING) << "Not implemented";
-  return false;
-}
-
-bool EVRootCAMetadata::IsEVPolicyOIDGivenBytes(
-    const der::Input& policy_oid) const {
+bool EVRootCAMetadata::IsEVPolicyOID(der::Input policy_oid) const {
   LOG(WARNING) << "Not implemented";
   return false;
 }
 
 bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
-                                      PolicyOID policy_oid) const {
-  LOG(WARNING) << "Not implemented";
-  return false;
-}
-
-bool EVRootCAMetadata::HasEVPolicyOIDGivenBytes(
-    const SHA256HashValue& fingerprint,
-    const der::Input& policy_oid) const {
+                                      der::Input policy_oid) const {
   LOG(WARNING) << "Not implemented";
   return false;
 }
@@ -264,15 +140,15 @@ bool EVRootCAMetadata::RemoveEVCA(const SHA256HashValue& fingerprint) {
 
 EVRootCAMetadata::EVRootCAMetadata() {
 // Constructs the object from the raw metadata in kEvRootCaMetadata.
-#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA) && !BUILDFLAG(IS_WIN)
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
   for (const auto& ev_root : kEvRootCaMetadata) {
     for (const auto& policy : ev_root.policy_oids) {
       if (policy.empty())
         break;
 
-      std::string policy_der = OIDStringToDER(policy.data());
+      std::string policy_der = OIDStringToDER(policy);
       if (policy_der.empty()) {
-        LOG(ERROR) << "Failed to register OID: " << policy;
+        LOG(ERROR) << "Failed to decode OID: " << policy;
         continue;
       }
 

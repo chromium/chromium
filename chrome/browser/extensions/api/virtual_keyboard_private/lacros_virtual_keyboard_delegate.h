@@ -45,12 +45,13 @@ class LacrosVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   bool ShowLanguageSettings() override;
   bool ShowSuggestionSettings() override;
   bool IsSettingsEnabled() override;
-  bool SetVirtualKeyboardMode(int mode_enum,
+  bool SetVirtualKeyboardMode(api::virtual_keyboard_private::KeyboardMode mode,
                               gfx::Rect target_bounds,
                               OnSetModeCallback on_set_mode_callback) override;
   bool SetDraggableArea(
       const api::virtual_keyboard_private::Bounds& rect) override;
-  bool SetRequestedKeyboardState(int state_enum) override;
+  bool SetRequestedKeyboardState(
+      api::virtual_keyboard_private::KeyboardState state) override;
   bool SetOccludedBounds(const std::vector<gfx::Rect>& bounds) override;
   bool SetHitTestBounds(const std::vector<gfx::Rect>& bounds) override;
   bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override;

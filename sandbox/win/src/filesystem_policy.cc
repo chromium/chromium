@@ -83,6 +83,8 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
 bool FileSystemPolicy::GenerateRules(const wchar_t* name,
                                      Semantics semantics,
                                      LowLevelPolicy* policy) {
+  CHECK(semantics == Semantics::kFilesAllowReadonly ||
+        semantics == Semantics::kFilesAllowAny);
   std::wstring mod_name(name);
   if (mod_name.empty()) {
     return false;
@@ -105,83 +107,52 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
 
   EvalResult result = ASK_BROKER;
 
-  // List of supported calls for the filesystem.
-  const unsigned kCallNtCreateFile = 0x1;
-  const unsigned kCallNtOpenFile = 0x2;
-  const unsigned kCallNtQueryAttributesFile = 0x4;
-  const unsigned kCallNtQueryFullAttributesFile = 0x8;
-  const unsigned kCallNtSetInfoRename = 0x10;
-
-  DWORD rule_to_add = kCallNtOpenFile | kCallNtCreateFile |
-                      kCallNtQueryAttributesFile |
-                      kCallNtQueryFullAttributesFile | kCallNtSetInfoRename;
-
+  // Rules added for both read-only and write scenarios.
   PolicyRule create(result);
   PolicyRule open(result);
   PolicyRule query(result);
   PolicyRule query_full(result);
-  PolicyRule rename(result);
 
-  switch (semantics) {
-    case Semantics::kFilesAllowReadonly: {
-      // We consider all flags that are not known to be readonly as potentially
-      // used for write.
-      DWORD allowed_flags = FILE_READ_DATA | FILE_READ_ATTRIBUTES |
-                            FILE_READ_EA | SYNCHRONIZE | FILE_EXECUTE |
-                            GENERIC_READ | GENERIC_EXECUTE | READ_CONTROL;
-      DWORD restricted_flags = ~allowed_flags;
-      open.AddNumberMatch(IF_NOT, OpenFile::ACCESS, restricted_flags, AND);
-      open.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
-      create.AddNumberMatch(IF_NOT, OpenFile::ACCESS, restricted_flags, AND);
-      create.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
+  if (semantics == Semantics::kFilesAllowReadonly) {
+    // We consider all flags that are not known to be readonly as potentially
+    // used for write.
+    DWORD allowed_flags = FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA |
+                          SYNCHRONIZE | FILE_EXECUTE | GENERIC_READ |
+                          GENERIC_EXECUTE | READ_CONTROL;
+    DWORD restricted_flags = ~allowed_flags;
+    open.AddNumberMatch(IF_NOT, OpenFile::ACCESS, restricted_flags, AND);
+    open.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
+    create.AddNumberMatch(IF_NOT, OpenFile::ACCESS, restricted_flags, AND);
+    create.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
+  }
 
-      // Read only access don't work for rename.
-      rule_to_add &= ~kCallNtSetInfoRename;
-      break;
-    }
-    case Semantics::kFilesAllowQuery: {
-      // Here we don't want to add policy for the open or the create.
-      rule_to_add &=
-          ~(kCallNtOpenFile | kCallNtCreateFile | kCallNtSetInfoRename);
-      break;
-    }
-    case Semantics::kFilesAllowAny: {
-      break;
-    }
-    default: {
-      NOTREACHED();
+  if (!create.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+      !policy->AddRule(IpcTag::NTCREATEFILE, &create)) {
+    return false;
+  }
+
+  if (!open.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+      !policy->AddRule(IpcTag::NTOPENFILE, &open)) {
+    return false;
+  }
+
+  if (!query.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+      !policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &query)) {
+    return false;
+  }
+
+  if (!query_full.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+      !policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &query_full)) {
+    return false;
+  }
+
+  // Rename is not allowed for read-only and does not make sense for pipes.
+  if (semantics == Semantics::kFilesAllowAny && !is_pipe) {
+    PolicyRule rename(result);
+    if (!rename.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+        !policy->AddRule(IpcTag::NTSETINFO_RENAME, &rename)) {
       return false;
     }
-  }
-
-  if ((rule_to_add & kCallNtCreateFile) &&
-      (!create.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
-       !policy->AddRule(IpcTag::NTCREATEFILE, &create))) {
-    return false;
-  }
-
-  if ((rule_to_add & kCallNtOpenFile) &&
-      (!open.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
-       !policy->AddRule(IpcTag::NTOPENFILE, &open))) {
-    return false;
-  }
-
-  if ((rule_to_add & kCallNtQueryAttributesFile) &&
-      (!query.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
-       !policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &query))) {
-    return false;
-  }
-
-  if ((rule_to_add & kCallNtQueryFullAttributesFile) &&
-      (!query_full.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
-       !policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &query_full))) {
-    return false;
-  }
-
-  if ((rule_to_add & kCallNtSetInfoRename) && !is_pipe &&
-      (!rename.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
-       !policy->AddRule(IpcTag::NTSETINFO_RENAME, &rename))) {
-    return false;
   }
 
   return true;

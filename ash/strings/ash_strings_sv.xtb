@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhet (främre port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> har ändrats till <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange den här pinkoden på den enheten: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Detta gör att <ph name="APP_NAME" /> och alla appar och webbplatser med platsbehörighet och ChromeOS kan använda wifi- och mobilnätverkens plats.</translation>
 <translation id="1017556409696559990">Minimera det översta fönstret när det inte finns någon tidigare historik i Chrome</translation>
 <translation id="1024364763893396229">Spara <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteriet håller på att ta slut i e-pennan</translation>
@@ -147,6 +148,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1651914502370159744">Öppna sidan Historik</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
+<translation id="1675844249244994876">Uppdatera det högra fönstret</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> har inte anslutits.</translation>
 <translation id="1677582821739292812">Någon tittar på din skärm</translation>
@@ -191,6 +193,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Aktivera platsåtkomst</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> har lossats</translation>
 <translation id="1838895407229022812">Nattljus är inaktiverat.</translation>
 <translation id="1854180393107901205">Sluta casta</translation>
@@ -365,7 +368,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">”Radera”</translation>
 <translation id="2750941250130734256">Det aktiva fönstret är inte längre dockat.</translation>
@@ -468,6 +470,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
 <translation id="3256109297135787951">Ta bort markeringen från ett objekt på hyllan</translation>
 <translation id="3260969790895726815">Tal behandlas lokalt och diktering fungerar offline, men vissa röstkommandon fungerar inte.</translation>
+<translation id="3265032511221679826">Vill du aktivera exakt platsåtkomst?</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3289364673986435196">Startmeny</translation>
 <translation id="3289544412142055976">Linux-appar stöds inte för närvarande</translation>
@@ -578,6 +581,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3666266999138159418">Svep för att dölja det flytande fönstret</translation>
 <translation id="367531336287639526">Välj den första ikonen till vänster om adressfältet</translation>
+<translation id="3677931086890821290">Det gör att alla appar och webbplatser med platsbehörighet och ChromeOS kan använda wifi- och mobilnätverkens plats.</translation>
 <translation id="3679827876008292680">Öppna den sista fliken i ett fönster</translation>
 <translation id="36813544980941320">wifi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Webbplatser</translation>
@@ -844,6 +848,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="493076006037866439">Zooma ut från skärmen</translation>
 <translation id="4936329710968938986">Alla, av</translation>
 <translation id="4938176435186993759">Dölj alla förslag</translation>
+<translation id="4943007472417128747">Surfzonen har inaktiverats för att använda wifi. Inaktivera wifi för att använda surfzon.</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
 <translation id="495046168593986294">Scrolla upp</translation>
@@ -1067,6 +1072,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5976112937189445008">Tryck på retur för att spela in fönstret</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
+<translation id="5983567367406220847">Surfzonen har inaktiverats på grund av inaktivitet.</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="6002179289567220515">Du inaktiverade en kamera med det fysiska reglaget. Du kan även inaktivera åtkomsten för alla kameror.</translation>
@@ -1220,6 +1226,7 @@ Nyligen installerad</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
+<translation id="6705577071209924099">Anpassa ljus</translation>
 <translation id="6707693040195709527">Bytet till en tidigare version av enheten är försenat</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6723839937902243910">Batteri</translation>
@@ -1368,6 +1375,7 @@ Nyligen installerad</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
 <translation id="7453330308669753048">Sökresultat från sökhistoriken borttaget</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> tills fulladdat</translation>
+<translation id="7459485586006128091">Surfzonen har inaktiverats på grund av ett internt fel. Testa att återansluta om några minuter.</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
@@ -1387,6 +1395,7 @@ Nyligen installerad</translation>
 Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Uppdatera det vänstra fönstret</translation>
 <translation id="7543399541175347147">Linux-appar och inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
 <translation id="7544300628205093162">Tangentbordets bakgrundsbelysning är på</translation>
 <translation id="7548434653388805669">Läggdags</translation>
@@ -1440,6 +1449,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7769299611924763557">Giffen är snart redo</translation>
+<translation id="7773536009433685931">Aktivera wifi i stället</translation>
 <translation id="7780094051999721182">genvägar</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796735576426975947">En ny avisering har dolts</translation>
@@ -1467,6 +1477,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7893503627044934815">Jag vill inte att det här filen ska visas</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Du tryckte på kortkommandot för skärmrotation. Vill du rotera skärmen?</translation>
+<translation id="7901190436359881020">Byt plats på fönstren</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tryck på fingeravtryckssensorn</translation>
 <translation id="7904094684485781019">Administratören för kontot tillåter inte multiinloggning.</translation>
@@ -1742,6 +1753,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-upplösningen ändrades till <ph name="RESOLUTION" />. Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Anslut <ph name="NAME" /> till denna Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, hanteras av administratören</translation>
+<translation id="9207682216934703221">Detta gör att <ph name="APP_NAME" />, <ph name="APP2_NAME" /> och alla appar och webbplatser med platsbehörighet och ChromeOS kan använda wifi- och mobilnätverkens plats.</translation>
 <translation id="9210037371811586452">Enhetligt skrivbordsläge avslutas</translation>
 <translation id="9211490828691860325">Alla skrivbord</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> återstår tills batteriet är fulladdat.</translation>

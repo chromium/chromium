@@ -40,6 +40,11 @@
     overflow: hidden;
   }
 
+  /* Fade out long accelerators on the left for RTL languages. */
+  :host-context([dir=rtl]) #accelerators {
+    -webkit-mask-image: linear-gradient(to right, transparent, white 32px);
+  }
+
   .accelerator-keys {
     align-items: center;
     display: flex;
@@ -55,6 +60,16 @@
     margin: var(--cr-toolbar-icon-margin);
     width: var(--cr-toolbar-icon-container-size);
   }
+
+  /* Flip the arrow icon for RTL languages. */
+  :host-context([dir=rtl]) #actionIcon {
+    transform: scaleX(-1);
+  }
+
+  /* Bolding occurs in the JS. */
+  b {
+    color: var(--cros-text-color-primary);
+  }
 </style>
 
 <div id="searchResultRow" focus-row-container>
@@ -65,7 +80,9 @@
       on-click="onSearchResultSelected"
       on-keypress="onKeyPress"
       selectable>
-      <div id="description">[[getSearchResultDescription(searchResult)]]</div>
+      <div id="description" aria-hidden="true"
+          inner-h-t-m-l="[[getSearchResultDescriptionInnerHtml(searchResult)]]">
+      </div>
       <div id="accelerators">
         <template is="dom-if" if="[[isStandardLayout(searchResult)]]">
           <template is="dom-repeat"

@@ -15,7 +15,11 @@
 
 namespace {
 
-bool PrivacySandboxRestrictedByAcccountCapability(Profile* profile) {
+bool PrivacySandboxRestrictedByAccountCapability(Profile* profile) {
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
+          .Get()) {
+    return true;
+  }
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   if (!identity_manager ||
@@ -52,7 +56,7 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   }
 
   bool restricted_by_capability =
-      PrivacySandboxRestrictedByAcccountCapability(profile_);
+      PrivacySandboxRestrictedByAccountCapability(profile_);
 
   // If the capability is restricting the Sandbox, "latch", so the sandbox is
   // always restricted.

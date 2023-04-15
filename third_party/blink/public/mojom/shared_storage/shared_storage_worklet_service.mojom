@@ -108,7 +108,6 @@ interface SharedStorageWorkletService {
   Initialize(
     pending_associated_remote<SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    pending_remote<PrivateAggregationHost>? pa_host,
     mojo_base.mojom.String16? embedder_context);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in
@@ -125,11 +124,13 @@ interface SharedStorageWorkletService {
   // When the operation succeeds, the return value `index` will be set to the
   // uint32 value that the promise resolves to; otherwise it will be set to 0.
   RunURLSelectionOperation(string name, array<url.mojom.Url> urls,
-                           array<uint8> serialized_data)
+                           array<uint8> serialized_data,
+                           pending_remote<PrivateAggregationHost>? pa_host)
     => (bool success, string error_message, uint32 index);
 
   // Handle sharedStorage.runOperation(): run the operation previously
   // registered by registerOperation() with matching `name`.
-  RunOperation(string name, array<uint8> serialized_data)
+  RunOperation(string name, array<uint8> serialized_data,
+               pending_remote<PrivateAggregationHost>? pa_host)
     => (bool success, string error_message);
 };

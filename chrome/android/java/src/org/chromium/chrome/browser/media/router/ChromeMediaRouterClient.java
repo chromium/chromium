@@ -80,6 +80,11 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CAF_MRP_DEFERRED_DISCOVERY);
     }
 
+    @Override
+    public boolean isCastAnotherContentWhileCastingEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CAST_ANOTHER_CONTENT_WHILE_CASTING);
+    }
+
     @CalledByNative
     public static void initialize() {
         if (MediaRouterClient.getInstance() != null) return;

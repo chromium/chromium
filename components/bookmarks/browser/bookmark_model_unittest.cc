@@ -567,7 +567,7 @@ TEST_F(BookmarkModelTest, AddURL) {
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
   ASSERT_TRUE(url == new_node->url());
-  ASSERT_TRUE(new_node->guid().is_valid());
+  ASSERT_TRUE(new_node->uuid().is_valid());
   ASSERT_EQ(BookmarkNode::URL, new_node->type());
   ASSERT_EQ(new_node, model_->GetMostRecentlyAddedUserNodeForURL(url));
 
@@ -590,7 +590,7 @@ TEST_F(BookmarkModelTest, AddNewURL) {
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
   ASSERT_TRUE(url == new_node->url());
-  ASSERT_TRUE(new_node->guid().is_valid());
+  ASSERT_TRUE(new_node->uuid().is_valid());
   ASSERT_EQ(BookmarkNode::URL, new_node->type());
   ASSERT_TRUE(new_node == model_->GetMostRecentlyAddedUserNodeForURL(url));
 
@@ -654,7 +654,7 @@ TEST_F(BookmarkModelTest, AddURLWithCreationTimeAndMetaInfo) {
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
   ASSERT_TRUE(url == new_node->url());
-  ASSERT_TRUE(new_node->guid().is_valid());
+  ASSERT_TRUE(new_node->uuid().is_valid());
   ASSERT_EQ(BookmarkNode::URL, new_node->type());
   ASSERT_EQ(time, new_node->date_added());
   ASSERT_TRUE(new_node->GetMetaInfoMap());
@@ -677,7 +677,7 @@ TEST_F(BookmarkModelTest, AddURLWithGUID) {
   const BookmarkNode* new_node =
       model_->AddURL(root, /*index=*/0, title, url, &meta_info, time, guid);
 
-  EXPECT_EQ(guid, new_node->guid());
+  EXPECT_EQ(guid, new_node->uuid());
 }
 
 TEST_F(BookmarkModelTest, AddURLToMobileBookmarks) {
@@ -712,7 +712,7 @@ TEST_F(BookmarkModelTest, AddFolder) {
 
   ASSERT_EQ(1u, root->children().size());
   ASSERT_EQ(title, new_node->GetTitle());
-  ASSERT_TRUE(new_node->guid().is_valid());
+  ASSERT_TRUE(new_node->uuid().is_valid());
   ASSERT_EQ(BookmarkNode::FOLDER, new_node->type());
 
   EXPECT_TRUE(new_node->id() != root->id() &&
@@ -749,7 +749,7 @@ TEST_F(BookmarkModelTest, AddFolderWithGUID) {
       model_->AddFolder(root, /*index=*/0, title, &meta_info,
                         /*creation_time=*/Time::Now(), guid);
 
-  EXPECT_EQ(guid, new_node->guid());
+  EXPECT_EQ(guid, new_node->uuid());
 }
 
 TEST_F(BookmarkModelTest, AddFolderWithWhitespaceTitle) {

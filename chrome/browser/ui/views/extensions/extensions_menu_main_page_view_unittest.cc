@@ -7,9 +7,12 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
@@ -23,6 +26,8 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -340,6 +345,72 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   }
 }
 
+// Verifies the pin button appears on the menu item, in place of context menu
+// button when state is normal, when an extension is pinned.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
+  auto extension = InstallExtension("Test Extension");
+
+  ShowMenu();
+  EXPECT_EQ(menu_items().size(), 1u);
+  HoverButton* context_menu_button =
+      GetOnlyMenuItem()->context_menu_button_for_testing();
+
+  const ui::ColorProvider* color_provider =
+      context_menu_button->GetColorProvider();
+  auto pin_icon = gfx::Image(gfx::CreateVectorIcon(
+      views::kPinIcon,
+      color_provider->GetColor(kColorExtensionMenuPinButtonIcon)));
+  auto three_dot_icon = gfx::Image(gfx::CreateVectorIcon(
+      kBrowserToolsIcon, color_provider->GetColor(kColorExtensionMenuIcon)));
+
+  // Verify context menu button has three dot icon for all button states.
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_NORMAL)),
+      three_dot_icon));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_HOVERED)),
+      three_dot_icon));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_PRESSED)),
+      three_dot_icon));
+
+  // Pin extension.
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(toolbar_model);
+  toolbar_model->SetActionVisibility(extension->id(), true);
+  LayoutMenuIfNecessary();
+
+  // Verify context menu button changes to pin icon only in normal state.
+  // Pin icon is tested by checking it is NOT the three dot icon because of a
+  // weird reason when retrieving the pin icon. We can do this because a) no
+  // other icon is expected, and b) pin icon correctly appears when manually
+  // testing.
+  EXPECT_FALSE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_NORMAL)),
+      three_dot_icon));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_HOVERED)),
+      three_dot_icon));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_PRESSED)),
+      three_dot_icon));
+
+  // Unpin extension.
+  toolbar_model->SetActionVisibility(extension->id(), false);
+  LayoutMenuIfNecessary();
+
+  // Verify context menu button has three dot icon for all button states.
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_NORMAL)),
+      three_dot_icon));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_HOVERED)),
+      three_dot_icon));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(context_menu_button->GetImage(views::Button::STATE_PRESSED)),
+      three_dot_icon));
+}
+
 TEST_F(ExtensionsMenuMainPageViewUnitTest, DisableAndEnableExtension) {
   constexpr char kName[] = "Test Extension";
   auto extension_id = InstallExtension(kName)->id();
@@ -422,8 +493,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
   base::RunLoop().RunUntilIdle();
   LayoutMenuIfNecessary();
 
-  // Verify the extension is no longer visible in the menu or on the toolbar
-  // since it was removed.
+  // Verify the extension is no longer visible in the menu.
   EXPECT_EQ(menu_items().size(), 0u);
 }
 

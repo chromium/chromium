@@ -28,6 +28,9 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeGetAssertionResponse(
       const std::vector<uint8_t>& data,
       DecodeGetAssertionResponseCallback callback) override;
+  void DecodeWifiCredentialsResponse(
+      const std::vector<uint8_t>& data,
+      DecodeWifiCredentialsResponseCallback callback) override;
 
   void SetExpectedData(std::vector<uint8_t> expected_data);
   void SetAssertionResponse(
@@ -39,6 +42,9 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
       const std::vector<uint8_t>& signature,
       const std::vector<uint8_t>& data);
 
+  void SetWifiCredentialsResponse(
+      mojom::GetWifiCredentialsResponsePtr response);
+
  private:
   std::vector<uint8_t> expected_data_;
   mojom::GetAssertionResponse::GetAssertionStatus response_status_;
@@ -49,6 +55,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   std::vector<uint8_t> response_signature_;
   std::vector<uint8_t> response_data_;
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
+  mojom::GetWifiCredentialsResponsePtr wifi_credentials_response_;
 };
 
 }  // namespace ash::quick_start

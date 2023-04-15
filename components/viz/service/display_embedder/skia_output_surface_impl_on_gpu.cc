@@ -554,9 +554,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       release_fence = CreateReleaseFenceForGL();
     }
 
-    if (!return_release_fence_cb.is_null() && is_using_dawn())
-      NOTIMPLEMENTED() << "Release fences with dawn are not supported.";
-
     if (!return_release_fence_cb.is_null()) {
       // Returning fences for Vulkan is delayed. See the comment above.
       DCHECK(!is_using_vulkan());
@@ -746,9 +743,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       DCHECK(release_fence.is_null());
       release_fence = CreateReleaseFenceForGL();
     }
-
-    if (!return_release_fence_cb.is_null() && is_using_dawn())
-      NOTIMPLEMENTED() << "Release fences with dawn are not supported.";
 
     if (!return_release_fence_cb.is_null()) {
       // Returning fences for Vulkan is delayed. See the comment above.
@@ -1624,11 +1618,6 @@ void SkiaOutputSurfaceImplOnGpu::EndAccessImages(
     context->EndAccessIfNecessary();
 }
 
-sk_sp<GrContextThreadSafeProxy>
-SkiaOutputSurfaceImplOnGpu::GetGrContextThreadSafeProxy() {
-  return gr_context() ? gr_context()->threadSafeProxy() : nullptr;
-}
-
 void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
     std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
         image_contexts) {
@@ -1702,9 +1691,6 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
 
   if (is_using_vulkan()) {
     if (!InitializeForVulkan())
-      return false;
-  } else if (is_using_dawn()) {
-    if (!InitializeForDawn())
       return false;
   } else {
     if (!InitializeForGL())

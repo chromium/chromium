@@ -8,6 +8,9 @@
       field_id: 2,
     },
   },
+  legacy_mappings: {
+    legacy_color: '$text_color_primary',
+  },
   colors: {
     text_color_primary: {
       light: "$google_grey_900",

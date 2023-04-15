@@ -39,7 +39,7 @@ em::AppInfo::Status ExtractStatus(const apps::Readiness readiness) {
       return em::AppInfo::Status::AppInfo_Status_STATUS_INSTALLED;
     case apps::Readiness::kRemoved:
     case apps::Readiness::kUninstalledByUser:
-    case apps::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kUninstalledByNonUser:
       return em::AppInfo::Status::AppInfo_Status_STATUS_UNINSTALLED;
     case apps::Readiness::kDisabledByBlocklist:
     case apps::Readiness::kDisabledByPolicy:

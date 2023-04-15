@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -42,6 +43,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/rounded_label.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/user_education_constants.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -51,7 +53,6 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -95,6 +96,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
 #include "ui/views/widget/widget.h"
@@ -366,6 +368,10 @@ ShelfView::ShelfView(ShelfModel* model,
       ShelfConfig::Get()->shelf_animation_duration());
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
+
+  if (features::IsUserEducationEnabled()) {
+    SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
+  }
 
   announcement_view_ = new views::View();
   AddChildView(announcement_view_);
@@ -1695,7 +1701,7 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
   size_t target_index = views::ViewModelUtils::DetermineMoveIndex(
       *view_model_, drag_view_, shelf_->IsHorizontalAlignment(),
       drag_view_->x(), drag_view_->y());
-  target_index = base::clamp(target_index, indices.first, indices.second);
+  target_index = std::clamp(target_index, indices.first, indices.second);
 
   // Check the relative position of |drag_view_| and its ideal bounds if it can
   // be dragged across the separator to pin.

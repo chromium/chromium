@@ -32,18 +32,17 @@ constexpr base::TimeDelta kDefaultSamplingIntervalForTesting =
 class PressureManagerImplSync {
  public:
   explicit PressureManagerImplSync(mojom::PressureManager* manager)
-      : manager_(*manager) {
-    DCHECK(manager);
-  }
+      : manager_(raw_ref<mojom::PressureManager>::from_ptr(manager)) {}
   ~PressureManagerImplSync() = default;
 
   PressureManagerImplSync(const PressureManagerImplSync&) = delete;
   PressureManagerImplSync& operator=(const PressureManagerImplSync&) = delete;
 
   mojom::PressureStatus AddClient(
-      mojo::PendingRemote<mojom::PressureClient> client) {
+      mojo::PendingRemote<mojom::PressureClient> client,
+      mojom::PressureSource source) {
     base::test::TestFuture<mojom::PressureStatus> future;
-    manager_->AddClient(std::move(client), future.GetCallback());
+    manager_->AddClient(std::move(client), source, future.GetCallback());
     return future.Get();
   }
 
@@ -74,7 +73,7 @@ class FakePressureClient : public mojom::PressureClient {
   const std::vector<mojom::PressureUpdate>& updates() const { return updates_; }
 
   void SetNextUpdateCallback(base::OnceClosure callback) {
-    DCHECK(!update_callback_) << " already called before update received";
+    CHECK(!update_callback_) << " already called before update received";
     update_callback_ = std::move(callback);
   }
 
@@ -125,7 +124,8 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     manager_impl_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>(
         kDefaultSamplingIntervalForTesting,
         base::BindRepeating(&PressureManagerImpl::UpdateClients,
-                            base::Unretained(manager_impl_.get()))));
+                            base::Unretained(manager_impl_.get()),
+                            mojom::PressureSource::kCpu)));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
     manager_impl_sync_ =
@@ -140,31 +140,39 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
 TEST_F(PressureManagerImplTest, OneClient) {
   FakePressureClient client;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()),
+  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote(),
+                                          mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
 
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
+  EXPECT_EQ(client.updates()[0].source, mojom::PressureSource::kCpu);
   EXPECT_EQ(client.updates()[0].state, mojom::PressureState::kFair);
 }
 
 TEST_F(PressureManagerImplTest, ThreeClients) {
   FakePressureClient client1;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client1.BindNewPipeAndPassRemote()),
+  ASSERT_EQ(manager_impl_sync_->AddClient(client1.BindNewPipeAndPassRemote(),
+                                          mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
   FakePressureClient client2;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client2.BindNewPipeAndPassRemote()),
+  ASSERT_EQ(manager_impl_sync_->AddClient(client2.BindNewPipeAndPassRemote(),
+                                          mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
   FakePressureClient client3;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client3.BindNewPipeAndPassRemote()),
+  ASSERT_EQ(manager_impl_sync_->AddClient(client3.BindNewPipeAndPassRemote(),
+                                          mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
 
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
   ASSERT_EQ(client1.updates().size(), 1u);
+  EXPECT_EQ(client1.updates()[0].source, mojom::PressureSource::kCpu);
   EXPECT_EQ(client1.updates()[0].state, mojom::PressureState::kFair);
   ASSERT_EQ(client2.updates().size(), 1u);
+  EXPECT_EQ(client2.updates()[0].source, mojom::PressureSource::kCpu);
   EXPECT_EQ(client2.updates()[0].state, mojom::PressureState::kFair);
   ASSERT_EQ(client3.updates().size(), 1u);
+  EXPECT_EQ(client3.updates()[0].source, mojom::PressureSource::kCpu);
   EXPECT_EQ(client3.updates()[0].state, mojom::PressureState::kFair);
 }
 
@@ -172,7 +180,8 @@ TEST_F(PressureManagerImplTest, AddClientNoProbe) {
   manager_impl_->SetCpuProbeForTesting(nullptr);
 
   FakePressureClient client;
-  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()),
+  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote(),
+                                          mojom::PressureSource::kCpu),
             mojom::PressureStatus::kNotSupported);
 }
 

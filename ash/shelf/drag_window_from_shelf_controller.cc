@@ -4,6 +4,8 @@
 
 #include "ash/shelf/drag_window_from_shelf_controller.h"
 
+#include <algorithm>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -34,7 +36,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -598,8 +599,8 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   float y_diff = location_in_screen.y() - min_y;
   float scale = (1.0f - kMinimumWindowScaleDuringDragging) * y_diff / y_full +
                 kMinimumWindowScaleDuringDragging;
-  scale = base::clamp(scale, /*min=*/kMinimumWindowScaleDuringDragging,
-                      /*max=*/1.f);
+  scale = std::clamp(scale, /*min=*/kMinimumWindowScaleDuringDragging,
+                     /*max=*/1.f);
 
   // Calculate the desired translation so that the dragged window stays under
   // the finger during the dragging.
@@ -638,14 +639,14 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
     float copy_scale =
         (bounds.bottom() - location_in_screen.y()) /
         (display_bounds.height() / kOtherWindowFullFadeHeightRatio);
-    copy_scale = 1.f - base::clamp(copy_scale, 0.f, 1.f);
+    copy_scale = 1.f - std::clamp(copy_scale, 0.f, 1.f);
 
     other_window_copy_->root()->SetOpacity(copy_scale);
 
     CHECK(other_window_);
     if (!WindowState::Get(other_window_)->IsFloated()) {
       const float copy_transform_scale =
-          base::clamp(copy_scale, kOtherWindowMaxScale, 1.f);
+          std::clamp(copy_scale, kOtherWindowMaxScale, 1.f);
       const gfx::Transform copy_transform = gfx::GetScaleTransform(
           other_window_copy_->root()->bounds().CenterPoint(),
           copy_transform_scale);

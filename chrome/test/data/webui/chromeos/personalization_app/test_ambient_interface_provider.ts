@@ -65,6 +65,8 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     },
   ];
 
+  public shouldShowBanner: boolean = true;
+
   public previews: Url[] = [
     {url: 'http://preview0'},
     {url: 'http://preview1'},
@@ -79,11 +81,14 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setAmbientModeEnabled',
       'setAnimationTheme',
       'setPageViewed',
+      'setScreenSaverDuration',
       'setTopicSource',
       'setTemperatureUnit',
       'setAlbumSelected',
       'startScreenSaverPreview',
       'fetchSettingsAndAlbums',
+      'shouldShowTimeOfDayBanner',
+      'handleTimeOfDayBannerDismissed',
     ]);
   }
 
@@ -121,6 +126,10 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     this.methodCalled('setAnimationTheme', animationTheme);
   }
 
+  setScreenSaverDuration(minutes: number): void {
+    this.methodCalled('setScreenSaverDuration', minutes);
+  }
+
   setTopicSource(topicSource: TopicSource) {
     this.methodCalled('setTopicSource', topicSource);
   }
@@ -143,5 +152,14 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   fetchSettingsAndAlbums() {
     this.methodCalled('fetchSettingsAndAlbums');
+  }
+
+  shouldShowTimeOfDayBanner(): Promise<{shouldShowBanner: boolean}> {
+    this.methodCalled('shouldShowTimeOfDayBanner');
+    return Promise.resolve({shouldShowBanner: this.shouldShowBanner});
+  }
+
+  handleTimeOfDayBannerDismissed(): void {
+    this.methodCalled('handleTimeOfDayBannerDismissed');
   }
 }

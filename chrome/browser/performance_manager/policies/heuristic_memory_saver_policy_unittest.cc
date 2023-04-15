@@ -47,8 +47,7 @@ class HeuristicMemorySaverPolicyTest
 
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {performance_manager::features::kHighEfficiencyModeAvailable,
-         performance_manager::features::kHeuristicMemorySaver},
+        {performance_manager::features::kHeuristicMemorySaver},
         /*disabled_features=*/{});
     // This is usually called when the profile is created. Fake it here since it
     // doesn't happen in tests.

@@ -44,7 +44,9 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "block math"
+        "layout-custom", "inline-layout-custom", "math", "block math",
+        // Available only if CSSDisplayMultipleValues is enabled:
+        "inline list-item", "flow-root list-item", "inline flow-root list-item"
       ],
       default_value: "inline",
     },
@@ -74,7 +76,9 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "block math"
+        "layout-custom", "inline-layout-custom", "math", "block math",
+        // Available only if CSSDisplayMultipleValues is enabled:
+        "inline list-item", "flow-root list-item", "inline flow-root list-item"
       ],
       default_value: "inline",
     },
@@ -89,17 +93,6 @@
       name: "InForcedColorsMode",
       field_template: "primitive",
       field_group: "inherited",
-      default_value: "false",
-      type_name: "bool",
-      inherited: true,
-    },
-    // Whether we're inside (or at) a block fragmentation context that may
-    // switch between legacy and NG layout, depending on the contents.
-    // This can be removed when we have got rid of the legacy engine.
-    // See crbug.com/1229581
-    {
-      name: "InsideFragmentationContextWithNondeterministicEngine",
-      field_template: "primitive",
       default_value: "false",
       type_name: "bool",
       inherited: true,

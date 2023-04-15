@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +15,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 
 /**
  * Unit tests for RestoreTabsCoordinator.
@@ -30,31 +27,24 @@ public class RestoreTabsCoordinatorUnitTest {
     @Mock
     private RestoreTabsMediator mMediator;
     @Mock
-    private ForeignSessionHelper mForeignSessionHelper;
+    private Profile mProfile;
+    @Mock
+    private RestoreTabsControllerFactory.ControllerListener mListener;
+    @Mock
+    private TabCreatorManager mTabCreatorManager;
 
     private RestoreTabsCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mCoordinator = new RestoreTabsCoordinator(mForeignSessionHelper, mMediator,
-                new RestoreTabsControllerFactory.ControllerListener() {
-                    @Override
-                    public void onDismissed() {
-                        mCoordinator.destroy();
-                    }
-                });
+        mCoordinator =
+                new RestoreTabsCoordinator(mProfile, mMediator, mListener, mTabCreatorManager);
     }
 
     @Test
     public void testRestoreTabsCoordinator_showOptions() {
-        ForeignSession session =
-                new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
-        List<ForeignSession> testSessions = new ArrayList<>();
-        testSessions.add(session);
-
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(testSessions);
         mCoordinator.showOptions();
-        verify(mMediator, times(1)).showOptions(testSessions);
+        verify(mMediator, times(1)).showOptions();
     }
 }

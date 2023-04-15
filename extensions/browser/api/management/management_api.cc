@@ -88,12 +88,12 @@ std::vector<management::LaunchType> GetAvailableLaunchTypes(
     const ManagementAPIDelegate* delegate) {
   std::vector<management::LaunchType> launch_type_list;
   if (extension.is_platform_app()) {
-    launch_type_list.push_back(management::LAUNCH_TYPE_OPEN_AS_WINDOW);
+    launch_type_list.push_back(management::LaunchType::kOpenAsWindow);
     return launch_type_list;
   }
 
-  launch_type_list.push_back(management::LAUNCH_TYPE_OPEN_AS_REGULAR_TAB);
-  launch_type_list.push_back(management::LAUNCH_TYPE_OPEN_AS_WINDOW);
+  launch_type_list.push_back(management::LaunchType::kOpenAsRegularTab);
+  launch_type_list.push_back(management::LaunchType::kOpenAsWindow);
   return launch_type_list;
 }
 
@@ -123,28 +123,28 @@ management::ExtensionInfo CreateExtensionInfo(
   info.is_app = extension.is_app();
   if (info.is_app) {
     if (extension.is_legacy_packaged_app())
-      info.type = management::EXTENSION_TYPE_LEGACY_PACKAGED_APP;
+      info.type = management::ExtensionType::kLegacyPackagedApp;
     else if (extension.is_hosted_app())
-      info.type = management::EXTENSION_TYPE_HOSTED_APP;
+      info.type = management::ExtensionType::kHostedApp;
     else
-      info.type = management::EXTENSION_TYPE_PACKAGED_APP;
+      info.type = management::ExtensionType::kPackagedApp;
   } else if (extension.is_theme()) {
-    info.type = management::EXTENSION_TYPE_THEME;
+    info.type = management::ExtensionType::kTheme;
   } else if (extension.is_login_screen_extension()) {
-    info.type = management::EXTENSION_TYPE_LOGIN_SCREEN_EXTENSION;
+    info.type = management::ExtensionType::kLoginScreenExtension;
   } else {
-    info.type = management::EXTENSION_TYPE_EXTENSION;
+    info.type = management::ExtensionType::kExtension;
   }
 
   if (info.enabled) {
-    info.disabled_reason = management::EXTENSION_DISABLED_REASON_NONE;
+    info.disabled_reason = management::ExtensionDisabledReason::kNone;
   } else {
     ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
     if (prefs->DidExtensionEscalatePermissions(extension.id())) {
       info.disabled_reason =
-          management::EXTENSION_DISABLED_REASON_PERMISSIONS_INCREASE;
+          management::ExtensionDisabledReason::kPermissionsIncrease;
     } else {
-      info.disabled_reason = management::EXTENSION_DISABLED_REASON_UNKNOWN;
+      info.disabled_reason = management::ExtensionDisabledReason::kUnknown;
     }
 
     info.may_enable = system->management_policy()->ExtensionMayModifySettings(
@@ -196,29 +196,29 @@ management::ExtensionInfo CreateExtensionInfo(
 
   switch (extension.location()) {
     case ManifestLocation::kInternal:
-      info.install_type = management::EXTENSION_INSTALL_TYPE_NORMAL;
+      info.install_type = management::ExtensionInstallType::kNormal;
       break;
     case ManifestLocation::kUnpacked:
     case ManifestLocation::kCommandLine:
-      info.install_type = management::EXTENSION_INSTALL_TYPE_DEVELOPMENT;
+      info.install_type = management::ExtensionInstallType::kDevelopment;
       break;
     case ManifestLocation::kExternalPref:
     case ManifestLocation::kExternalRegistry:
     case ManifestLocation::kExternalPrefDownload:
-      info.install_type = management::EXTENSION_INSTALL_TYPE_SIDELOAD;
+      info.install_type = management::ExtensionInstallType::kSideload;
       break;
     case ManifestLocation::kExternalPolicy:
     case ManifestLocation::kExternalPolicyDownload:
-      info.install_type = management::EXTENSION_INSTALL_TYPE_ADMIN;
+      info.install_type = management::ExtensionInstallType::kAdmin;
       break;
     case ManifestLocation::kInvalidLocation:
     case ManifestLocation::kComponent:
     case ManifestLocation::kExternalComponent:
-      info.install_type = management::EXTENSION_INSTALL_TYPE_OTHER;
+      info.install_type = management::ExtensionInstallType::kOther;
       break;
   }
 
-  info.launch_type = management::LAUNCH_TYPE_NONE;
+  info.launch_type = management::LaunchType::kNone;
   if (extension.is_app()) {
     LaunchType launch_type;
     if (extension.is_platform_app()) {
@@ -230,16 +230,16 @@ management::ExtensionInfo CreateExtensionInfo(
 
     switch (launch_type) {
       case LAUNCH_TYPE_PINNED:
-        info.launch_type = management::LAUNCH_TYPE_OPEN_AS_PINNED_TAB;
+        info.launch_type = management::LaunchType::kOpenAsPinnedTab;
         break;
       case LAUNCH_TYPE_REGULAR:
-        info.launch_type = management::LAUNCH_TYPE_OPEN_AS_REGULAR_TAB;
+        info.launch_type = management::LaunchType::kOpenAsRegularTab;
         break;
       case LAUNCH_TYPE_FULLSCREEN:
-        info.launch_type = management::LAUNCH_TYPE_OPEN_FULL_SCREEN;
+        info.launch_type = management::LaunchType::kOpenFullScreen;
         break;
       case LAUNCH_TYPE_WINDOW:
-        info.launch_type = management::LAUNCH_TYPE_OPEN_AS_WINDOW;
+        info.launch_type = management::LaunchType::kOpenAsWindow;
         break;
       case LAUNCH_TYPE_INVALID:
       case NUM_LAUNCH_TYPES:
@@ -814,19 +814,19 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
 
   LaunchType launch_type = LAUNCH_TYPE_DEFAULT;
   switch (app_launch_type) {
-    case management::LAUNCH_TYPE_OPEN_AS_PINNED_TAB:
+    case management::LaunchType::kOpenAsPinnedTab:
       launch_type = LAUNCH_TYPE_PINNED;
       break;
-    case management::LAUNCH_TYPE_OPEN_AS_REGULAR_TAB:
+    case management::LaunchType::kOpenAsRegularTab:
       launch_type = LAUNCH_TYPE_REGULAR;
       break;
-    case management::LAUNCH_TYPE_OPEN_FULL_SCREEN:
+    case management::LaunchType::kOpenFullScreen:
       launch_type = LAUNCH_TYPE_FULLSCREEN;
       break;
-    case management::LAUNCH_TYPE_OPEN_AS_WINDOW:
+    case management::LaunchType::kOpenAsWindow:
       launch_type = LAUNCH_TYPE_WINDOW;
       break;
-    case management::LAUNCH_TYPE_NONE:
+    case management::LaunchType::kNone:
       NOTREACHED();
   }
 

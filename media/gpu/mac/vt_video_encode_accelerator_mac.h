@@ -109,6 +109,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   void SetEncoderColorSpace();
 
+  void NotifyErrorStatus(EncoderStatus status);
+
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;

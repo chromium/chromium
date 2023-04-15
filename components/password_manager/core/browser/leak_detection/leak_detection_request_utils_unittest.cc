@@ -29,7 +29,8 @@ TEST(LeakDetectionRequestUtils, PrepareSingleLeakRequestData) {
   base::test::TaskEnvironment task_env;
   base::MockCallback<SingleLeakRequestDataCallback> callback;
 
-  PrepareSingleLeakRequestData("jonsnow", "1234", callback.Get());
+  PrepareSingleLeakRequestData(LeakDetectionInitiator::kSignInCheck, "jonsnow",
+                               "1234", callback.Get());
   EXPECT_CALL(
       callback,
       Run(AllOf(
@@ -48,8 +49,9 @@ TEST(LeakDetectionRequestUtils, PrepareSingleLeakRequestDataWithKey) {
   base::CancelableTaskTracker task_tracker;
   base::MockOnceCallback<void(LookupSingleLeakPayload)> callback;
 
-  PrepareSingleLeakRequestData(task_tracker, *task_runner, "random_key",
-                               "jonsnow", "1234", callback.Get());
+  PrepareSingleLeakRequestData(task_tracker, *task_runner,
+                               LeakDetectionInitiator::kSignInCheck,
+                               "random_key", "jonsnow", "1234", callback.Get());
   EXPECT_CALL(callback,
               Run(AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                               ElementsAre(0x3D, 0x70, 0xD3, 0x40)),
@@ -66,8 +68,9 @@ TEST(LeakDetectionRequestUtils, PrepareSingleLeakRequestDataCancelled) {
 
   {
     base::CancelableTaskTracker task_tracker;
-    PrepareSingleLeakRequestData(task_tracker, *task_runner, "random_key",
-                                 "jonsnow", "1234", callback.Get());
+    PrepareSingleLeakRequestData(
+        task_tracker, *task_runner, LeakDetectionInitiator::kSignInCheck,
+        "random_key", "jonsnow", "1234", callback.Get());
   }
 
   task_env.RunUntilIdle();

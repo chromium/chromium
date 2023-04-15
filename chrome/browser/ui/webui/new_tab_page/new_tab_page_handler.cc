@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -369,7 +369,7 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
         "data:image/png;base64,%s", share_button_icon.c_str()));
     doodle->share_button->background_color = SkColorSetA(
         ParseHexColor(share_button_bg),
-        base::clamp(share_button_opacity, 0.0, 1.0) * SK_AlphaOPAQUE);
+        std::clamp(share_button_opacity, 0.0, 1.0) * SK_AlphaOPAQUE);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;

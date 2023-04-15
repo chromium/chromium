@@ -217,7 +217,18 @@ void ContinueTaskView::UpdateIcon() {
     return;
   }
 
-  const gfx::ImageSkia& icon = result()->chip_icon();
+  gfx::ImageSkia icon;
+
+  // TODO(b/278271038): After changing the type of icon in
+  // `SearchResultIconInfo` from `ImageSkia` to `ImageModel`, please make sure
+  // get rid of `badge_icon` here; and use the `icon` instead. Also, you need to
+  // replace `SetBadgeIcon` in `DesksAdminTemplateResult` to `SetIcon`.
+  if (!result()->badge_icon().IsEmpty()) {
+    icon = result()->badge_icon().Rasterize(GetColorProvider());
+  } else {
+    icon = result()->chip_icon();
+  }
+
   icon_->SetImage(CreateIconWithCircleBackground(
       icon.size() == GetIconSize()
           ? icon
@@ -327,6 +338,7 @@ void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
 }
 
 ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
+  DCHECK(result_);
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   context_menu_model_->AddItemWithIcon(
       ContinueTaskCommandId::kOpenResult,
@@ -335,12 +347,17 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
       ui::ImageModel::FromVectorIcon(kLaunchIcon,
                                      ui::kColorAshSystemUIMenuIcon));
 
-  context_menu_model_->AddItemWithIcon(
-      ContinueTaskCommandId::kRemoveResult,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
-      ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
-                                     ui::kColorAshSystemUIMenuIcon));
+  // We won't create the `Remove suggestion` option for admin templates.
+  // Reference: b/273800982.
+  if (result_->result_type() != AppListSearchResultType::kDesksAdminTemplate) {
+    context_menu_model_->AddItemWithIcon(
+        ContinueTaskCommandId::kRemoveResult,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
+        ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+  }
+
   if (Shell::Get()->IsInTabletMode()) {
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     context_menu_model_->AddItemWithIcon(

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
-<translation id="1181037720776840403">Odstrániť</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
 <translation id="1403228085774130835">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne</translation>
 <translation id="1455506303394048917">Vaša aktivita v týchto kartách inkognito bude vymazaná z tohto zariadenia</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Teraz <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Zrušiť zoskupenie karty}few{Zrušiť zoskupenie kariet}many{Zrušiť zoskupenie kariet}other{Zrušiť zoskupenie kariet}}</translation>
 <translation id="2277224997687551299">Upraviť názov skupiny</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstrániť <ph name="TABS_COUNT_ONE" /> vybranú kartu zo skupiny}few{Odstrániť <ph name="TABS_COUNT_MANY" /> vybrané karty zo skupiny}many{Remove <ph name="TABS_COUNT_MANY" /> selected tabs from group.}other{Odstrániť <ph name="TABS_COUNT_MANY" /> vybraných kariet zo skupiny}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Uložiť kartu ako záložku}few{Uložiť karty ako záložky}many{Bookmark tabs}other{Uložiť karty ako záložky}}</translation>
-<translation id="2479148705183875116">Prejsť do Nastavení</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="2569352796411618312">Návrh: V poslednom čase ste nepoužili viacero kariet (<ph name="NUMBER_OF_TABS" />). Chcete ich zavrieť?</translation>
-<translation id="257674075312929031">Skupina</translation>
 <translation id="2613747923081026172">Vytvoriť skupinu</translation>
 <translation id="2662028055331606429">Hodnotenie: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Navštíviť web</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Karty zoskupíte presunutím</translation>
 <translation id="5846292395804797011">Zavrieť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5972844218283131174">Zrušiť výber všetkého</translation>
-<translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Zdieľať kartu}few{Zdieľať karty}many{Zdieľať karty}other{Zdieľať karty}}</translation>
 <translation id="7129458170538955174">Informácie o tomto obchode sú otvorené na polovičnú výšku</translation>
-<translation id="7151209024774799310">Odstrániť karty zo skupiny</translation>
 <translation id="7204204600596740190">Režim hromadného výberu</translation>
 <translation id="7326879924029668159">Prečítajte si pravidlá vrátenia tovaru a ďalšie dokumenty</translation>
 <translation id="7352298686197644113">Zistite, ktorá položka na vašich otvorených kartách má nižšiu cenu</translation>

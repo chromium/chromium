@@ -24,11 +24,21 @@ struct MediaCodecEncoderInfo {
 MEDIA_GPU_EXPORT const std::vector<MediaCodecEncoderInfo>&
 GetEncoderInfoCache();
 
+// Secure playback supporting for the decoder.
+enum class SecureCodecCapability {
+  kClear,      // Decoder only supports clear playback.
+  kAny,        // Decoder supports both clear and secure playback.
+  kEncrypted,  // Decoder only supports secure playback.
+};
+
 struct MediaCodecDecoderInfo {
   VideoCodecProfile profile;
+  VideoCodecLevel level;
   gfx::Size coded_size_min;
   gfx::Size coded_size_max;
   bool is_software_codec;
+  SecureCodecCapability secure_codec_capability;
+  std::string name;
 };
 
 // Returns information on decoder from the Java MediaCodecList.getCodecInfos()

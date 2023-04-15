@@ -864,13 +864,13 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
-    protected void drawDividerLine(CustomTabToolbar toolbar) {
+    protected void drawDividerLine() {
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
         boolean maxWidthBottomSheet = isMaxWidthLandscapeBottomSheet();
         int dividerInset = maxWidthBottomSheet ? width : 0;
 
-        drawDividerLineBase(dividerInset, 0, dividerInset, toolbar);
+        drawDividerLineBase(dividerInset, 0, dividerInset);
     }
 
     @Override

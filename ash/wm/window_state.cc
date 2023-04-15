@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_state.h"
 
+#include <absl/cleanup/cleanup.h>
 #include <memory>
 #include <utility>
 
@@ -1202,40 +1203,14 @@ void WindowState::UpdateRestoreHistory(
     return;
   }
 
-  // We'll need to pop out any window state that the `current_state_type` can
-  // not restore back to (i.e., whose restore order is equal or higher than
-  // `current_state_type`).
-  for (auto& state : base::Reversed(window_state_restore_history_)) {
-    if (CanRestoreState(current_state_type, state.window_state_type)) {
-      break;
-    }
-    // Retrieve and hold onto the restore state for the state type that we're
-    // entering into, so it can be used later, e.g., to update the restore
-    // bounds property.
-    if (IsEquivalent(state.window_state_type, current_state_type)) {
-      current_restore_state_ = std::move(state);
-    }
-    window_state_restore_history_.pop_back();
-  }
-  // If the state we're entering into is not in the history, but we also have
-  // existing restore bounds, then we want to use it. This can happen if, for
-  // example, a window was restored from full restore in a non-normal window
-  // state type, then it may have a truncated restore history but with restore
-  // bounds.
-  if (!current_restore_state_ && HasRestoreBounds()) {
-    current_restore_state_ = {
-        .window_state_type = current_state_type,
-        .actual_bounds_in_screen = GetCurrentBoundsInScreen(),
-        .restore_bounds_in_screen = GetRestoreBoundsInScreen(),
-    };
-  }
-
+  // Figure out if the previous state is restorable from the current state.
+  absl::optional<RestoreState> new_restore_state;
   if (IsValidForRestoreHistory(previous_state_type) &&
       CanRestoreState(current_state_type, previous_state_type)) {
-    window_state_restore_history_.push_back({
+    new_restore_state = {
         .window_state_type = previous_state_type,
         .actual_bounds_in_screen = GetCurrentBoundsInScreen(),
-    });
+    };
     // Save current restore bounds, if any. Also check that restore bounds are
     // not the same as current bounds, because when dragging a window, the
     // restore bounds is used temporarily to remember the original pre-drag
@@ -1245,51 +1220,86 @@ void WindowState::UpdateRestoreHistory(
     // bounds, so we can remove this workaround.
     if (HasRestoreBounds() &&
         GetRestoreBoundsInScreen() != GetCurrentBoundsInScreen()) {
-      window_state_restore_history_.back().restore_bounds_in_screen =
-          GetRestoreBoundsInScreen();
+      new_restore_state->restore_bounds_in_screen = GetRestoreBoundsInScreen();
     }
   }
 
-  // The check for tablet mode has the same reason as
-  // UpdateRestorePropertiesFromRestoreHistory().
-  if (!IsTabletModeEnabled()) {
-    // Update the restore bounds so it can be used to update window bounds.
-    if (current_restore_state_ &&
-        current_restore_state_->restore_bounds_in_screen) {
-      SetRestoreBoundsInScreen(
-          *current_restore_state_->restore_bounds_in_screen);
+  // Prune the tree so that it will be restorable from the current state. If we
+  // are adding the previous state to the history, we need to use that instead
+  // of the current type.
+  auto restore_target_state_type = new_restore_state
+                                       ? new_restore_state->window_state_type
+                                       : current_state_type;
+  for (auto& state : base::Reversed(window_state_restore_history_)) {
+    if (CanRestoreState(restore_target_state_type, state.window_state_type)) {
+      break;
+    }
+    // Minimize is special because it sometimes interferes with the restore
+    // bounds of the window state. It is specially handled by retrieving the
+    // stored state's restore bounds. This can be tested by maximizing on one
+    // axis, minimizing, unminimizing, then restoring.
+    if (previous_state_type == WindowStateType::kMinimized &&
+        IsEquivalent(state.window_state_type, current_state_type)) {
+      restore_bounds_override_ = state.restore_bounds_in_screen;
+    }
+    window_state_restore_history_.pop_back();
+  }
+
+  if (new_restore_state) {
+    window_state_restore_history_.push_back(std::move(*new_restore_state));
+  }
+
+  // This is a special logic for windows that were created from full restore.
+  // In those cases, the full history of window states is truncated. We detect
+  // this by asserting that any non-normal windows that have no previous history
+  // must have a truncated history.
+  //
+  // Unfortunately this case is particularly tricky because the restore bounds
+  // will be set externally, using the same windows property key.
+  //
+  // If we detect that we are in full restore, we will artificially create a
+  // normal restore state in history to retain the bounds.
+  if (window_state_restore_history_.empty() && HasRestoreBounds()) {
+    if (!IsNormalStateType()) {
+      window_state_restore_history_.push_back({
+          .window_state_type = WindowStateType::kDefault,
+          // Not a mistake. We do not want to use the current bounds which can
+          // be invalid for the normal state.
+          .actual_bounds_in_screen = GetRestoreBoundsInScreen(),
+          .restore_bounds_in_screen = GetRestoreBoundsInScreen(),
+      });
     }
   }
 }
 
 void WindowState::UpdateRestorePropertiesFromRestoreHistory() {
+  absl::Cleanup override_reset = [this] { restore_bounds_override_.reset(); };
+
   // TODO(xdai): For now we don't save the restore history in tablet mode in the
   // window property, so that when exiting tablet mode, the window can still
   // restore back to its old window state (see the test case
   // TabletModeWindowManagerTest.UnminimizeInTabletMode). We should revisit this
   // logic.
-  if (!IsTabletModeEnabled()) {
-    window_->SetProperty(aura::client::kRestoreShowStateKey,
-                         chromeos::ToWindowShowState(GetRestoreWindowState()));
-    // Update restore bounds again, since it may have been modified by other
-    // bounds update logic, e.g. when unminimizing.
-    if (current_restore_state_ &&
-        current_restore_state_->restore_bounds_in_screen) {
-      // This means we had existing restore bounds, so propagate it.
-      SetRestoreBoundsInScreen(
-          *current_restore_state_->restore_bounds_in_screen);
-    } else if (auto bounds = GetBoundsForRestore(PeekNextRestoreState());
-               !bounds.IsEmpty()) {
-      // This means we're entering a new state not in the restore history, i.e.
-      // not restoring back to an earlier state, so we propagate the restorable
-      // bounds from the most recent restore state.
-      SetRestoreBoundsInScreen(bounds);
-    } else {
-      // There's no restore bounds from anywhere to propagate, so clear it.
-      ClearRestoreBounds();
-    }
+  if (IsTabletModeEnabled()) {
+    return;
   }
-  current_restore_state_.reset();
+
+  window_->SetProperty(aura::client::kRestoreShowStateKey,
+                       chromeos::ToWindowShowState(GetRestoreWindowState()));
+  // If an override exists with a restore bound, use it. Otherwise, use the
+  // tip of the version history stack.
+  if (restore_bounds_override_) {
+    // This means we had existing restore bounds, so propagate it.
+    SetRestoreBoundsInScreen(*restore_bounds_override_);
+  } else if (auto bounds = GetBoundsForRestore(PeekNextRestoreState());
+             !bounds.IsEmpty()) {
+    // Not restoring back to an earlier state, so we propagate the restorable
+    // bounds from the most recent restore state.
+    SetRestoreBoundsInScreen(bounds);
+  } else {
+    // There's no restore bounds from anywhere to propagate, so clear it.
+    ClearRestoreBounds();
+  }
 }
 
 const WindowState::RestoreState* WindowState::PeekNextRestoreState() const {

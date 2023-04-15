@@ -22,7 +22,7 @@ TestMetricsServiceClient::~TestMetricsServiceClient() = default;
 
 variations::SyntheticTrialRegistry*
 TestMetricsServiceClient::GetSyntheticTrialRegistry() {
-  return nullptr;
+  return synthetic_trial_registry_;
 }
 
 metrics::MetricsService* TestMetricsServiceClient::GetMetricsService() {

@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 function version() {
-  window.domAutomationController.send('1 again');
+  return '1 again';
 }

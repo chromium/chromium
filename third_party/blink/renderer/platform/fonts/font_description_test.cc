@@ -216,7 +216,7 @@ TEST_F(FontDescriptionTest, ToString) {
   description.SetSpecifiedSize(1.1f);
   description.SetComputedSize(2.2f);
   description.SetAdjustedSize(3.3f);
-  description.SetSizeAdjust(4.4f);
+  description.SetSizeAdjust(FontSizeAdjust(4.4f));
   description.SetLetterSpacing(5.5f);
   description.SetWordSpacing(6.6f);
 

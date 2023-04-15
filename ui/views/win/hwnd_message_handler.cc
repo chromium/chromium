@@ -3496,21 +3496,10 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
   return 0;
 }
 
-LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
-                                                            WPARAM w_param,
-                                                            LPARAM l_param) {
-  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
-  using GetPointerPenInfoFn = BOOL(WINAPI*)(UINT32, POINTER_PEN_INFO*);
-  POINTER_PEN_INFO pointer_pen_info;
-  static const auto get_pointer_pen_info =
-      reinterpret_cast<GetPointerPenInfoFn>(
-          base::win::GetUser32FunctionPointer("GetPointerPenInfo"));
-  if (!get_pointer_pen_info ||
-      !get_pointer_pen_info(pointer_id, &pointer_pen_info)) {
-    SetMsgHandled(FALSE);
-    return -1;
-  }
-
+LRESULT HWNDMessageHandler::HandlePointerEventTypePen(
+    UINT message,
+    UINT32 pointer_id,
+    POINTER_PEN_INFO pointer_pen_info) {
   POINT client_point = pointer_pen_info.pointerInfo.ptPixelLocationRaw;
   ScreenToClient(hwnd(), &client_point);
   gfx::Point point = gfx::Point(client_point.x, client_point.y);
@@ -3538,6 +3527,19 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
   if (ref)
     SetMsgHandled(TRUE);
   return 0;
+}
+
+LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
+                                                            WPARAM w_param,
+                                                            LPARAM l_param) {
+  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
+  POINTER_PEN_INFO pointer_pen_info;
+  if (!GetPointerPenInfo(pointer_id, &pointer_pen_info)) {
+    SetMsgHandled(FALSE);
+    return -1;
+  }
+
+  return HandlePointerEventTypePen(message, pointer_id, pointer_pen_info);
 }
 
 bool HWNDMessageHandler::IsSynthesizedMouseMessage(unsigned int message,

@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
@@ -41,7 +42,7 @@ class GrCacheControllerTest : public testing::Test {
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), std::move(surface), std::move(context),
         false /* use_virtualized_gl_contexts */, base::DoNothing());
-    context_state_->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
+    context_state_->InitializeSkia(GpuPreferences(), workarounds);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
     context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
@@ -73,8 +74,8 @@ TEST_F(GrCacheControllerTest, PurgeGrCache) {
     SkBitmap bm;
     SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
     ASSERT_TRUE(bm.tryAllocPixels(info));
-    sk_sp<SkImage> uploaded =
-        SkImages::RasterFromBitmap(bm)->makeTextureImage(gr_context());
+    sk_sp<SkImage> uploaded = SkImages::TextureFromImage(
+        gr_context(), SkImages::RasterFromBitmap(bm));
     ASSERT_TRUE(uploaded);
   }
   EXPECT_GT(gr_context()->getResourceCachePurgeableBytes(), 0u);
@@ -95,8 +96,8 @@ TEST_F(GrCacheControllerTest, ResetPurgeGrCacheOnReuse) {
     SkBitmap bm;
     SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
     ASSERT_TRUE(bm.tryAllocPixels(info));
-    sk_sp<SkImage> uploaded =
-        SkImages::RasterFromBitmap(bm)->makeTextureImage(gr_context());
+    sk_sp<SkImage> uploaded = SkImages::TextureFromImage(
+        gr_context(), SkImages::RasterFromBitmap(bm));
     ASSERT_TRUE(uploaded);
   }
   EXPECT_GT(gr_context()->getResourceCachePurgeableBytes(), 0u);

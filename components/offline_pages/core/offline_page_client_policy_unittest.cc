@@ -168,16 +168,6 @@ TEST_F(ClientPolicyTest, CheckNTPSuggestionsDefined) {
   ExpectRequiresSpecificUserSettings(kNTPSuggestionsNamespace, false);
 }
 
-TEST_F(ClientPolicyTest, CheckSuggestedArticlesDefined) {
-  OfflinePageClientPolicy policy = GetPolicy(kSuggestedArticlesNamespace);
-  EXPECT_EQ(policy.name_space, kSuggestedArticlesNamespace);
-  EXPECT_TRUE(isTemporary(policy));
-  ExpectTemporary(kSuggestedArticlesNamespace);
-  ExpectDownloadSupport(kSuggestedArticlesNamespace, true);
-  ExpectRestrictedToTabFromClientId(kSuggestedArticlesNamespace, false);
-  ExpectRequiresSpecificUserSettings(kSuggestedArticlesNamespace, false);
-}
-
 TEST_F(ClientPolicyTest, CheckLivePageSharingDefined) {
   OfflinePageClientPolicy policy = GetPolicy(kLivePageSharingNamespace);
   EXPECT_EQ(policy.name_space, kLivePageSharingNamespace);

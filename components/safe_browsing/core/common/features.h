@@ -145,6 +145,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetAllSignal);
 // cookies.get API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetSignal);
 
+// Enables collection of DeclarativeNetRequest rules when an extension invokes
+// the updateDynamicRules()/updateSessionRules() APIs.
+BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal);
+
 // Determines the tag to pass to Omaha to get a file type policy.
 BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 
@@ -249,6 +253,9 @@ BASE_DECLARE_FEATURE(kTailoredSecurityObserverRetries);
 
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
+
+// Enable new updated strings and icons for the Tailored Security dialogs.
+BASE_DECLARE_FEATURE(kTailoredSecurityUpdatedMessages);
 
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.

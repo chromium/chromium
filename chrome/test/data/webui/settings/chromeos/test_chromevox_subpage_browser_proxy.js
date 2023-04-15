@@ -11,6 +11,16 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy {
     super([
       'getAllTtsVoiceData',
       'refreshTtsVoices',
+      'addDeviceAddedListener',
+      'removeDeviceAddedListener',
+      'addDeviceChangedListener',
+      'removeDeviceChangedListener',
+      'addDeviceRemovedListener',
+      'removeDeviceRemovedListener',
+      'addPairingListener',
+      'removePairingListener',
+      'startDiscovery',
+      'stopDiscovery',
     ]);
   }
 
@@ -52,5 +62,36 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy {
 
   refreshTtsVoices() {
     this.methodCalled('refreshTtsVoices');
+  }
+
+  addDeviceAddedListener() {
+    this.methodCalled('addDeviceAddedListener');
+  }
+  removeDeviceAddedListener() {
+    this.methodCalled('removeDeviceAddedListener');
+  }
+  addDeviceChangedListener() {
+    this.methodCalled('addDeviceChangedListener');
+  }
+  removeDeviceChangedListener() {
+    this.methodCalled('removeDeviceChangedListener');
+  }
+  addDeviceRemovedListener() {
+    this.methodCalled('addDeviceRemovedListener');
+  }
+  removeDeviceRemovedListener() {
+    this.methodCalled('removeDeviceRemovedListener');
+  }
+  addPairingListener() {
+    this.methodCalled('addPairingListener');
+  }
+  removePairingListener() {
+    this.methodCalled('removePairingListener');
+  }
+  startDiscovery() {
+    this.methodCalled('startDiscovery');
+  }
+  stopDiscovery() {
+    this.methodCalled('stopDiscovery');
   }
 }

@@ -15,6 +15,10 @@
 #ifndef ABSL_SYNCHRONIZATION_INTERNAL_KERNEL_TIMEOUT_H_
 #define ABSL_SYNCHRONIZATION_INTERNAL_KERNEL_TIMEOUT_H_
 
+#ifndef _WIN32
+#include <sys/types.h>
+#endif
+
 #include <algorithm>
 #include <chrono>  // NOLINT(build/c++11)
 #include <cstdint>
@@ -78,6 +82,18 @@ class KernelTimeout {
   // this method in the case of a spurious wakeup.
   struct timespec MakeRelativeTimespec() const;
 
+#ifndef _WIN32
+  // Convert to `struct timespec` for interfaces that expect an absolute timeout
+  // on a specific clock `c`. This is similar to `MakeAbsTimespec()`, but
+  // callers usually want to use this method with `CLOCK_MONOTONIC` when
+  // relative timeouts are requested, and when the appropriate interface expects
+  // an absolute timeout relative to a specific clock (for example,
+  // pthread_cond_clockwait() or sem_clockwait()). If !has_timeout(), attempts
+  // to convert to a reasonable absolute timeout, but callers should to test
+  // has_timeout() prefer to use a more appropriate interface.
+  struct timespec MakeClockAbsoluteTimespec(clockid_t c) const;
+#endif
+
   // Convert to unix epoch nanos for interfaces that expect an absolute timeout
   // in nanoseconds. If !has_timeout() or is_relative_timeout(), attempts to
   // convert to a reasonable absolute timeout, but callers should to test
@@ -125,12 +141,18 @@ class KernelTimeout {
   //     after the unix epoch.
   //   - If the low bit is 1, then the high 63 bits is the number of nanoseconds
   //     after the epoch used by SteadyClockNow().
+  //
+  // In all cases the time is stored as an absolute time, the only difference is
+  // the clock epoch. The use of absolute times is important since in the case
+  // of a relative timeout with a spurious wakeup, the program would have to
+  // restart the wait, and thus needs a way of recomputing the remaining time.
   uint64_t rep_;
 
   // Returns the number of nanoseconds stored in the internal representation.
-  // Together with is_absolute_timeout() and is_relative_timeout(), the return
-  // value is used to compute when the timeout should occur.
-  int64_t RawNanos() const { return static_cast<int64_t>(rep_ >> 1); }
+  // When combined with the clock epoch indicated by the low bit (which is
+  // accessed through is_absolute_timeout() and is_relative_timeout()), the
+  // return value is used to compute when the timeout should occur.
+  int64_t RawAbsNanos() const { return static_cast<int64_t>(rep_ >> 1); }
 
   // Converts to nanoseconds from now. Since the return value is a relative
   // duration, it should be recomputed by calling this method in the case of a

@@ -13,6 +13,7 @@ include_rules = [
   "+components/search",
   "+components/session_proto_db/session_proto_storage.h",
   "+components/signin/public/identity_manager",
+  "+components/sync",
   "+components/unified_consent",
   "+components/url_formatter",
   "+components/variations",

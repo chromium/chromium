@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/isolation_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/test_net_log.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -71,7 +73,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
   void NotifyClientOnReceiveResponse(
       int status_code,
-      const std::vector<std::pair<std::string, std::string>>& extra_headers);
+      const std::vector<std::pair<std::string, std::string>>& extra_headers,
+      mojo::ScopedDataPipeConsumerHandle body);
 
   void NotifyClientOnComplete(int error_code);
 
@@ -86,6 +89,9 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   void SetOnCreateLoaderAndStart(const base::RepeatingClosure& closure) {
     on_create_loader_and_start_ = closure;
   }
+
+  // Resets `client_remote_` to simulate an abort from the network side.
+  void ResetClientRemote();
 
   const ResourceRequest& request() const { return request_; }
   const GURL& GetRequestedURL() const { return request_.url; }
@@ -118,7 +124,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
 class CorsURLLoaderTestBase : public testing::Test {
  public:
-  CorsURLLoaderTestBase();
+  explicit CorsURLLoaderTestBase(bool shared_dictionary_enabled = false);
   ~CorsURLLoaderTestBase() override;
 
   CorsURLLoaderTestBase(const CorsURLLoaderTestBase&) = delete;
@@ -144,6 +150,8 @@ class CorsURLLoaderTestBase : public testing::Test {
 
     // Member of `mojom::URLLoaderFactoryOverride`.
     bool skip_cors_enabled_scheme_check;
+
+    net::IsolationInfo isolation_info;
   };
 
   void CreateLoaderAndStart(
@@ -170,18 +178,23 @@ class CorsURLLoaderTestBase : public testing::Test {
 
   void NotifyLoaderClientOnReceiveResponse(
       const std::vector<std::pair<std::string, std::string>>& extra_headers =
-          {}) {
+          {},
+      mojo::ScopedDataPipeConsumerHandle body =
+          mojo::ScopedDataPipeConsumerHandle()) {
     DCHECK(test_url_loader_factory_);
-    test_url_loader_factory_->NotifyClientOnReceiveResponse(200, extra_headers);
+    test_url_loader_factory_->NotifyClientOnReceiveResponse(200, extra_headers,
+                                                            std::move(body));
   }
 
   void NotifyLoaderClientOnReceiveResponse(
       int status_code,
       const std::vector<std::pair<std::string, std::string>>& extra_headers =
-          {}) {
+          {},
+      mojo::ScopedDataPipeConsumerHandle body =
+          mojo::ScopedDataPipeConsumerHandle()) {
     DCHECK(test_url_loader_factory_);
-    test_url_loader_factory_->NotifyClientOnReceiveResponse(status_code,
-                                                            extra_headers);
+    test_url_loader_factory_->NotifyClientOnReceiveResponse(
+        status_code, extra_headers, std::move(body));
   }
 
   void NotifyLoaderClientOnReceiveRedirect(
@@ -216,6 +229,12 @@ class CorsURLLoaderTestBase : public testing::Test {
   int num_created_loaders() const {
     DCHECK(test_url_loader_factory_);
     return test_url_loader_factory_->num_created_loaders();
+  }
+
+  // Resets `client_remote_` to simulate an abort from the network side.
+  void ResetClientRemote() {
+    DCHECK(test_url_loader_factory_);
+    return test_url_loader_factory_->ResetClientRemote();
   }
 
   // Methods forwarded to the `CorsURLLoader` under test.

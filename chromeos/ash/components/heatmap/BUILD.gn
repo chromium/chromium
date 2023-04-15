@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("heatmap") {
+  sources = [
+    "heatmap_ml_agent.cc",
+    "heatmap_ml_agent.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "heatmap_ml_agent_unittest.cc" ]
+
+  deps = [
+    ":heatmap",
+    "//base",
+    "//chromeos/dbus/machine_learning",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

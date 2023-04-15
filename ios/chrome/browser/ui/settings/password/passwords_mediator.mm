@@ -327,6 +327,10 @@ using password_manager::features::IsPasswordCheckupEnabled;
     case PasswordCheckState::kNoPasswords:
       return PasswordCheckStateDisabled;
     case PasswordCheckState::kSignedOut:
+      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
+        return PasswordCheckStateUnmutedCompromisedPasswords;
+      }
+      return PasswordCheckStateSignedOut;
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:

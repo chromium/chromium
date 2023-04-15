@@ -1,0 +1,32 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+interface Foo {
+  GetFoo() => (string value);
+};
+
+interface Bar {
+  GetBar() => (string value);
+};
+
+interface Baz {
+  GetBaz() => (string value);
+};
+
+// A bridge (aka Factory) interface that is used for binding other
+// interfaces.
+interface TestWebUIJsBridge {
+  // The WebUI calls this method to bind a Foo remote.
+  BindFoo(pending_receiver<Foo> foo);
+
+  // The WebUI calls this method to bind a Foo remote and provide the
+  // browser with a Bar remote.
+  BindFooBar(pending_receiver<Foo> foo,
+             pending_remote<Bar> bar);
+
+  // The WebUI calls this method to provide the browser with a Baz remote.
+  BindBaz(pending_remote<Baz> baz);
+};

@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/json/json_string_value_serializer.h"
-#include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/common/chrome_features.h"
@@ -25,8 +24,8 @@ namespace {
 
 class TestClient : public content::DevToolsAgentHostClient {
  public:
-  TestClient() {}
-  ~TestClient() override {}
+  TestClient() = default;
+  ~TestClient() override = default;
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {}
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {}
@@ -56,12 +55,11 @@ class ScopedDevtoolsOpener {
 
   void EnableAdBlocking(bool enabled) {
     // Send Page.setAdBlockingEnabled, should force activation.
-    base::Value ad_blocking_command(base::Value::Type::DICT);
-    ad_blocking_command.SetIntKey("id", 1);
-    ad_blocking_command.SetStringKey("method", "Page.setAdBlockingEnabled");
-    base::Value params(base::Value::Type::DICT);
-    params.SetBoolKey("enabled", enabled);
-    ad_blocking_command.SetKey("params", std::move(params));
+    base::Value::Dict ad_blocking_command =
+        base::Value::Dict()
+            .Set("id", 1)
+            .Set("method", "Page.setAdBlockingEnabled")
+            .Set("params", base::Value::Dict().Set("enabled", enabled));
     std::string json_string;
     JSONStringValueSerializer serializer(&json_string);
     ASSERT_TRUE(serializer.Serialize(ad_blocking_command));

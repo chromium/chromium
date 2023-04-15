@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
+#include "content/browser/webui/web_ui_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/public/browser/global_routing_id.h"
@@ -1175,11 +1176,13 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   // Creates a WebUI object for this navigation and saves it in `web_ui_`. Later
-  // on, the WebUI created will be moved to `frame_host`. Returns true if and
-  // only if a WebUI object is successfully created and saved.
-  bool CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
+  // on, the WebUI created will be moved to `frame_host` (if `frame_host` is
+  // null, it means a RenderFrameHost has not been picked for the navigation).
+  void CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
 
   bool HasWebUI() { return !!web_ui_; }
+
+  WebUIImpl* web_ui() { return web_ui_.get(); }
 
   std::unique_ptr<WebUIImpl> TakeWebUI() {
     CHECK(HasWebUI());

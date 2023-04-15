@@ -555,6 +555,8 @@ component("bluetooth") {
         "floss/floss_logging_client.h",
         "floss/floss_manager_client.cc",
         "floss/floss_manager_client.h",
+        "floss/floss_sdp_types.cc",
+        "floss/floss_sdp_types.h",
         "floss/floss_socket_manager.cc",
         "floss/floss_socket_manager.h",
         "floss/test_helpers.h",

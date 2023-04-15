@@ -56,7 +56,7 @@ export class EarconEngine {
     this.defaultPitch = Note.G3;
 
     /** @public {string} The choice of base sound for most controls. */
-    this.controlSound = SoundFile.CONTROL;
+    this.controlSound = WavSoundFile.CONTROL;
 
     /**
      * @public {number} The delay between sounds in the on/off sweep effect,
@@ -129,9 +129,11 @@ export class EarconEngine {
     this.currentTrackedEarcon_;
 
     // Initialization: load the base sound data files asynchronously.
-    Object.values(SoundFile)
+    Object.values(WavSoundFile)
         .concat(Object.values(Reverb))
         .forEach(sound => this.loadSound(sound, `${BASE_URL}${sound}.wav`));
+    Object.values(OggSoundFile)
+        .forEach(sound => this.loadSound(sound, `${BASE_URL}${sound}.ogg`));
   }
 
   /**
@@ -365,26 +367,26 @@ export class EarconEngine {
 
   /** Play the static sound. */
   onStatic() {
-    this.play(SoundFile.STATIC, {gain: this.staticVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.staticVolume});
   }
 
   /** Play the link sound. */
   onLink() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(this.controlSound, {pitch: Note.G4});
   }
 
   /** Play the button sound. */
   onButton() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(this.controlSound);
   }
 
   /** Play the text field sound. */
   onTextField() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(
-        SoundFile.STATIC,
+        WavSoundFile.STATIC,
         {time: this.baseDelay * 1.5, gain: this.clickVolume * 0.5});
     this.play(this.controlSound, {pitch: Note.B3});
     this.play(
@@ -394,7 +396,7 @@ export class EarconEngine {
 
   /** Play the pop up button sound. */
   onPopUpButton() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
 
     this.play(this.controlSound);
     this.play(
@@ -407,33 +409,33 @@ export class EarconEngine {
 
   /** Play the check on sound. */
   onCheckOn() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(this.controlSound, {pitch: Note.D3});
     this.play(this.controlSound, {pitch: Note.D4, time: this.baseDelay * 2});
   }
 
   /** Play the check off sound. */
   onCheckOff() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(this.controlSound, {pitch: Note.D4});
     this.play(this.controlSound, {pitch: Note.D3, time: this.baseDelay * 2});
   }
 
   /** Play the smart sticky mode on sound. */
   onSmartStickyModeOn() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume * 0.5});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume * 0.5});
     this.play(this.controlSound, {pitch: Note.D4});
   }
 
   /** Play the smart sticky mode off sound. */
   onSmartStickyModeOff() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume * 0.5});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume * 0.5});
     this.play(this.controlSound, {pitch: Note.D3});
   }
 
   /** Play the select control sound. */
   onSelect() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(this.controlSound);
     this.play(this.controlSound, {time: this.baseDelay});
     this.play(this.controlSound, {time: this.baseDelay * 2});
@@ -441,7 +443,7 @@ export class EarconEngine {
 
   /** Play the slider sound. */
   onSlider() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume});
     this.play(this.controlSound);
     this.play(
         this.controlSound, {time: this.baseDelay, gain: 0.5, pitch: Note.A3});
@@ -458,21 +460,21 @@ export class EarconEngine {
 
   /** Play the skim sound. */
   onSkim() {
-    this.play(SoundFile.SKIM);
+    this.play(WavSoundFile.SKIM);
   }
 
   /** Play the selection sound. */
   onSelection() {
-    this.play(SoundFile.SELECTION);
+    this.play(OggSoundFile.SELECTION);
   }
 
   /** Play the selection reverse sound. */
   onSelectionReverse() {
-    this.play(SoundFile.SELECTION_REVERSE);
+    this.play(OggSoundFile.SELECTION_REVERSE);
   }
 
   onNoPointerAnchor() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume * 0.2});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume * 0.2});
     const freq1 = this.frequencyFor_(Note.A_FLAT4);
     this.generateSinusoidal({
       attack: 0.00001,
@@ -686,7 +688,7 @@ export class EarconEngine {
 
   /** Play a wrap sound. */
   onWrap() {
-    this.play(SoundFile.STATIC, {gain: this.clickVolume * 0.3});
+    this.play(WavSoundFile.STATIC, {gain: this.clickVolume * 0.3});
     const freq1 = this.frequencyFor_(this.wrapPitch - 8);
     const freq2 = this.frequencyFor_(this.wrapPitch + 8);
     this.generateSinusoidal({
@@ -711,7 +713,8 @@ export class EarconEngine {
       let t = this.progressTime_ - this.context_.currentTime;
       this.progressSources_.push([
         this.progressTime_,
-        this.play(SoundFile.STATIC, {gain: 0.5 * this.progressGain_, time: t}),
+        this.play(
+            WavSoundFile.STATIC, {gain: 0.5 * this.progressGain_, time: t}),
       ]);
       this.progressSources_.push([
         this.progressTime_,
@@ -727,7 +730,8 @@ export class EarconEngine {
 
       this.progressSources_.push([
         this.progressTime_,
-        this.play(SoundFile.STATIC, {gain: 0.5 * this.progressGain_, time: t}),
+        this.play(
+            WavSoundFile.STATIC, {gain: 0.5 * this.progressGain_, time: t}),
       ]);
       this.progressSources_.push([
         this.progressTime_,
@@ -862,12 +866,19 @@ export class EarconEngine {
 // Local to module.
 
 /* @enum {string} The list of sound data files to load. */
-const SoundFile = {
+const WavSoundFile = {
   CONTROL: 'control',
-  SELECTION: 'selection',
-  SELECTION_REVERSE: 'selection_reverse',
   SKIM: 'skim',
   STATIC: 'static',
+};
+
+/* @enum {string} The list of sound data files to load. */
+const OggSoundFile = {
+  CHROMEVOX_LOADED: 'chromevox_loaded',
+  CHROMEVOX_LOADING: 'chromevox_loading',
+  INVALID_KEYPRESS: 'invalid_keypress',
+  SELECTION: 'selection',
+  SELECTION_REVERSE: 'selection_reverse',
 };
 
 /** @enum {string} The list of reverb data files to load. */

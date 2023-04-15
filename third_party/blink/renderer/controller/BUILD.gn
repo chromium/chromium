@@ -88,20 +88,17 @@ component("controller") {
       "memory_usage_monitor_win.h",
     ]
   }
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "memory_usage_monitor_mac.cc",
       "memory_usage_monitor_mac.h",
     ]
-    frameworks = [
-      "AppKit.framework",
-      "Foundation.framework",
-    ]
+    frameworks = [ "Foundation.framework" ]
   }
 
   # HighestPmfReporter depends on MemoryUsageMonitor and MemoryUsageMonitor
   # depends on platform specific code. Explicitly specify supported platforms.
-  if (is_linux || is_chromeos || is_win || is_android || is_mac) {
+  if (is_linux || is_chromeos || is_win || is_android || is_apple) {
     sources += [
       "highest_pmf_reporter.cc",
       "highest_pmf_reporter.h",
@@ -262,7 +259,7 @@ source_set("blink_unittests_sources") {
     ]
   }
 
-  if (is_linux || is_chromeos || is_android || is_mac || is_win) {
+  if (is_linux || is_chromeos || is_android || is_apple || is_win) {
     sources += [
       "highest_pmf_reporter_test.cc",
       "memory_usage_monitor_test.cc",

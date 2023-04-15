@@ -7796,18 +7796,21 @@ class NetworkContextBrowserCookieTest
       net::HttpRequestHeaders headers,
       int options = mojom::kURLLoadOptionNone,
       mojom::RequestMode mode = mojom::RequestMode::kNoCors,
-      net::HttpRequestHeaders cors_exempt_headers = net::HttpRequestHeaders()) {
-    CreateLoaderAndStart(InitializeURLLoaderFactory(options),
-                         BuildResourceRequest(url, std::move(headers), mode,
-                                              std::move(cors_exempt_headers)),
-                         options);
+      net::HttpRequestHeaders cors_exempt_headers = net::HttpRequestHeaders(),
+      bool set_request_body = false) {
+    CreateLoaderAndStart(
+        InitializeURLLoaderFactory(options),
+        BuildResourceRequest(url, std::move(headers), mode,
+                             std::move(cors_exempt_headers), set_request_body),
+        options);
   }
 
   ResourceRequest BuildResourceRequest(
       const GURL& url,
       net::HttpRequestHeaders headers,
       mojom::RequestMode mode,
-      net::HttpRequestHeaders cors_exempt_headers) {
+      net::HttpRequestHeaders cors_exempt_headers,
+      bool set_request_body = false) {
     ResourceRequest request;
     request.url = url;
     request.method = "GET";
@@ -7818,6 +7821,9 @@ class NetworkContextBrowserCookieTest
     request.trusted_params = ResourceRequest::TrustedParams();
     request.trusted_params->allow_cookies_from_browser =
         AllowCookiesFromBrowser();
+    if (set_request_body) {
+      request.request_body = new network::ResourceRequestBody();
+    }
     return request;
   }
 
@@ -7975,6 +7981,28 @@ class NetworkContextBrowserCookieTest
 
 TEST_P(NetworkContextBrowserCookieTest, Request) {
   StartLoadingURL(test_server()->GetURL("/echo"), GenerateTestRequestHeaders());
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Confirm that the processed request contains the expected headers.
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCookie3}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+}
+
+TEST_P(NetworkContextBrowserCookieTest, RequestWithBody) {
+  StartLoadingURL(test_server()->GetURL("/echo"), GenerateTestRequestHeaders(),
+                  mojom::kURLLoadOptionNone, mojom::RequestMode::kNoCors,
+                  net::HttpRequestHeaders(),
+                  /*set_request_body=*/true);
   url_loader_client()->RunUntilComplete();
   EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
 

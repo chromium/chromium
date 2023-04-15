@@ -8,7 +8,14 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 namespace ash {
 
@@ -23,7 +30,7 @@ class SetTimeUIConfig : public content::DefaultWebUIConfig<SetTimeUI> {
 };
 
 // The WebUI for chrome://set-time.
-class SetTimeUI : public ui::WebDialogUI {
+class SetTimeUI : public ui::MojoWebDialogUI {
  public:
   explicit SetTimeUI(content::WebUI* web_ui);
 
@@ -31,6 +38,17 @@ class SetTimeUI : public ui::WebDialogUI {
   SetTimeUI& operator=(const SetTimeUI&) = delete;
 
   ~SetTimeUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
+ private:
+  // The color change handler notifies the WebUI when the color provider
+  // changes the color palette
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace ash

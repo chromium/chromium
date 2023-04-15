@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 

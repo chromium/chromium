@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
-<translation id="1181037720776840403">Видалити</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
 <translation id="1403228085774130835">Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome</translation>
 <translation id="1455506303394048917">Ваші дії на цих анонімних вкладках буде стерто з пристрою</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Поточна ціна на сайті <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Розгрупувати вкладку}one{Розгрупувати вкладки}few{Розгрупувати вкладки}many{Розгрупувати вкладки}other{Розгрупувати вкладки}}</translation>
 <translation id="2277224997687551299">Змінити назву групи</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Видалити <ph name="TABS_COUNT_ONE" /> вибрану вкладку з групи}one{Видалити <ph name="TABS_COUNT_MANY" /> вибрану вкладку з групи}few{Видалити <ph name="TABS_COUNT_MANY" /> вибрані вкладки з групи}many{Видалити <ph name="TABS_COUNT_MANY" /> вибраних вкладок із групи}other{Видалити <ph name="TABS_COUNT_MANY" /> вибраної вкладки з групи}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Зробити закладку для вкладки}one{Зробити закладки для вкладок}few{Зробити закладки для вкладок}many{Зробити закладки для вкладок}other{Зробити закладки для вкладок}}</translation>
-<translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2569352796411618312">Пропозиція: ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
-<translation id="257674075312929031">Група</translation>
 <translation id="2613747923081026172">Створити групу</translation>
 <translation id="2662028055331606429">Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Відвідати сайт</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Перетягуйте вкладки, щоб групувати їх</translation>
 <translation id="5846292395804797011">Закрити групу "<ph name="TITLE_OF_GROUP" />" зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5972844218283131174">Не вибирати нічого</translation>
-<translation id="6040143037577758943">Закрити</translation>
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Поділитися вкладкою}one{Поділитися вкладками}few{Поділитися вкладками}many{Поділитися вкладками}other{Поділитися вкладками}}</translation>
 <translation id="7129458170538955174">Інформацію про цей магазин відкрито на половину висоти</translation>
-<translation id="7151209024774799310">Видалити вкладки з групи</translation>
 <translation id="7204204600596740190">Режим вибору кількох вкладок</translation>
 <translation id="7326879924029668159">Переглянути правила повернення й інше</translation>
 <translation id="7352298686197644113">Дізнайтеся, який товар на відкритих вкладках дешевший</translation>

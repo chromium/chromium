@@ -11,9 +11,12 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 
+using testing::_;
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
   MOCK_METHOD(void,
@@ -36,6 +39,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                ui::ColorId background_color_id,
                ui::ColorId separator_color_id,
                ui::ColorId dropdown_color_id,
+               ui::ColorId selection_color_id,
                read_anything::mojom::LineSpacing line_spacing,
                read_anything::mojom::LetterSpacing letter_spacing),
               (override));
@@ -99,8 +103,26 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     model_->Init(font_name, font_scale, colors, line_spacing, letter_spacing);
   }
 
+  void Activate(bool activate) { controller_->Activate(activate); }
   void OnUIReady() { controller_->OnUIReady(); }
   void OnUIDestroyed() { controller_->OnUIDestroyed(); }
+  bool AreWebContentsEmpty() { return controller_->web_contents() == nullptr; }
+
+  bool WebContentsContains(GURL url) {
+    return controller_->web_contents()->GetURL() == url;
+  }
+
+  void OnActiveWebContentsChanged() {
+    controller_->OnActiveWebContentsChanged();
+  }
+
+  void OnActiveAXTreeIDChanged() { controller_->OnActiveAXTreeIDChanged(); }
+
+  void NavigateToURL(GURL url) {
+    AddTab(browser(), url);
+    EXPECT_EQ(GetTabStripModel()->GetActiveWebContents()->GetURL(), url);
+    EXPECT_EQ(GetTabStripModel()->count(), 1);
+  }
 
   std::string GetPrefFontName() {
     return browser()->profile()->GetPrefs()->GetString(
@@ -126,6 +148,8 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     return browser()->profile()->GetPrefs()->GetInteger(
         prefs::kAccessibilityReadAnythingLetterSpacing);
   }
+
+  TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
 
  protected:
   std::unique_ptr<ReadAnythingModel> model_;
@@ -282,6 +306,65 @@ TEST_F(ReadAnythingControllerTest, CallOnUIReadyTwiceNoCrash) {
   OnUIReady();
   OnUIDestroyed();
   OnUIReady();
+}
+
+TEST_F(ReadAnythingControllerTest, Activated_DistillsContent) {
+  model_->AddObserver(&model_observer_);
+  GURL url("chrome://version");
+  NavigateToURL(url);
+
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(_, _)).Times(1);
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                                       ukm::kInvalidSourceId))
+      .Times(0);
+  Activate(true);
+  ASSERT_FALSE(AreWebContentsEmpty());
+  ASSERT_TRUE(WebContentsContains(url));
+
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(_, _)).Times(1);
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                                       ukm::kInvalidSourceId))
+      .Times(0);
+  OnActiveWebContentsChanged();
+  ASSERT_FALSE(AreWebContentsEmpty());
+  ASSERT_TRUE(WebContentsContains(url));
+
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(_, _)).Times(1);
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                                       ukm::kInvalidSourceId))
+      .Times(0);
+  OnActiveAXTreeIDChanged();
+  ASSERT_FALSE(AreWebContentsEmpty());
+  ASSERT_TRUE(WebContentsContains(url));
+}
+
+TEST_F(ReadAnythingControllerTest, NotActivated_DoesNotDistillContent) {
+  model_->AddObserver(&model_observer_);
+  NavigateToURL(GURL("chrome://version"));
+
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                                       ukm::kInvalidSourceId))
+      .Times(1);
+  Activate(false);
+  ASSERT_TRUE(AreWebContentsEmpty());
+
+  // OnActiveWebContentsChanged and OnActiveAXTreeIDChanged should never be
+  // called after Activate(false) as the controller will be removed as web
+  // contents observer so PrimaryPageChanged will never be called until
+  // Activate(true) is called. However, since it is difficult to verify that
+  // the controller is removed as a web contents observer, instead test that
+  // even if these methods are called, nothing will be distilled.
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                                       ukm::kInvalidSourceId))
+      .Times(1);
+  OnActiveWebContentsChanged();
+  ASSERT_TRUE(AreWebContentsEmpty());
+
+  EXPECT_CALL(model_observer_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
+                                                       ukm::kInvalidSourceId))
+      .Times(1);
+  OnActiveAXTreeIDChanged();
+  ASSERT_TRUE(AreWebContentsEmpty());
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

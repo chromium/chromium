@@ -17,7 +17,7 @@ class PrefService;
 class WebStateList;
 
 // Mediator that mediates between the browser container views and the
-// link_to_text tab helpers.
+// partial translate tab helpers.
 @interface PartialTranslateMediator : NSObject <PartialTranslateDelegate>
 
 // Initializer for a mediator. `webStateList` is the WebStateList for the

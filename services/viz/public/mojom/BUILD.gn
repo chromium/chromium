@@ -24,6 +24,7 @@ mojom("mojom") {
     "compositing/frame_sink_bundle_id.mojom",
     "compositing/frame_sink_id.mojom",
     "compositing/frame_timing_details.mojom",
+    "compositing/layer_context.mojom",
     "compositing/local_surface_id.mojom",
     "compositing/paint_filter.mojom",
     "compositing/quads.mojom",

@@ -13,6 +13,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+if (is_ios) {
+  import("//build/config/ios/rules.gni")
+}
+
 static_library("test_config") {
   testonly = true
   sources = [
@@ -168,10 +172,16 @@ static_library("test_support") {
 
   if (enable_base_tracing) {
     public_deps += [ "//third_party/perfetto:perfetto_test_support" ]
-    if (!is_chromeos && !is_ios) {
+    if (!is_chromeos) {
       # TODO(rasikan): Add to ios and chromeos when unblocked by the chromiumos
       # change to add the shared lib to the chrome-binary-tests directory.
       public_deps += [ ":test_trace_processor" ]
+      if (is_ios) {
+        deps += [
+          ":test_trace_processor+bundle",
+          ":test_trace_processor+link",
+        ]
+      }
     }
   }
 
@@ -477,7 +487,12 @@ if (enable_base_tracing) {
   # processor depends on dev_sqlite. The two share the same symbols but have
   # different implementations, so we need to hide dev_sqlite in this shared
   # library even in non-component builds to prevent duplicate symbols.
-  shared_library("test_trace_processor") {
+  _target_type = "shared_library"
+  if (is_ios) {
+    _target_type = "ios_framework_bundle"
+  }
+
+  target(_target_type, "test_trace_processor") {
     defines = [ "TEST_TRACE_PROCESSOR_IMPL" ]
     testonly = true
     sources = [
@@ -491,6 +506,12 @@ if (enable_base_tracing) {
     ]
     if (is_android) {
       configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    }
+
+    if (is_ios) {
+      info_plist = "test_trace_processor.plist"
+      output_name = "TestTraceProcessor"
+      bundle_deps_filter = [ "//third_party/icu:icudata" ]
     }
 
     # Set rpath on dependent tests so that they can find the shared library

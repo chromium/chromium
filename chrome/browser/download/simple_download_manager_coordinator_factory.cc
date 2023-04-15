@@ -58,8 +58,7 @@ SimpleDownloadManagerCoordinatorFactory::BuildServiceInstanceFor(
   // Use unretained is safe as the key is associated with the callback.
   return std::make_unique<download::SimpleDownloadManagerCoordinator>(
       base::BindRepeating(&DownloadUrlWithDownloadManager,
-                          base::Unretained(key)),
-      !key->IsOffTheRecord());
+                          base::Unretained(key)));
 }
 
 SimpleFactoryKey* SimpleDownloadManagerCoordinatorFactory::GetKeyToUse(

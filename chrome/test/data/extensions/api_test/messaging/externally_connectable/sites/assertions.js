@@ -177,7 +177,7 @@ function sendToBrowserForTlsChannelId(result) {
   // TLS channel ID string from the same value, they require the result code
   // to be sent as a string.
   // String() is clobbered, so coerce string creation with +.
-  sendToBrowser("" + result);
+  return "" + result;
 }
 
 function checkRuntime() {
@@ -193,16 +193,13 @@ function checkRuntime() {
 function checkTlsChannelIdResponse(response) {
   if (chrome.runtime.lastError) {
     if (chrome.runtime.lastError.message == kCouldNotEstablishConnection)
-      sendToBrowserForTlsChannelId(
+      return sendToBrowserForTlsChannelId(
           results.COULD_NOT_ESTABLISH_CONNECTION_ERROR);
-    else
-      sendToBrowserForTlsChannelId(results.OTHER_ERROR);
-    return;
+    return sendToBrowserForTlsChannelId(results.OTHER_ERROR);
   }
   if (response.sender.tlsChannelId !== undefined)
-    sendToBrowserForTlsChannelId(response.sender.tlsChannelId);
-  else
-    sendToBrowserForTlsChannelId('');
+    return sendToBrowserForTlsChannelId(response.sender.tlsChannelId);
+  return sendToBrowserForTlsChannelId('');
 }
 
 window.actions = {
@@ -355,8 +352,10 @@ window.assertions = {
 
     var port = chrome.runtime.connect(extensionId,
         {'includeTlsChannelId': includeTlsChannelId});
-    port.onMessage.addListener(checkTlsChannelIdResponse);
-    port.postMessage(message);
+    return new Promise(resolve => {
+      port.onMessage.addListener(resolve);
+      port.postMessage(message);
+    }).then(checkTlsChannelIdResponse);
   },
 
   getTlsChannelIdFromSendMessage: function(extensionId, includeTlsChannelId,
@@ -373,9 +372,11 @@ window.assertions = {
     if (!message)
       message = kMessage;
 
-    chrome.runtime.sendMessage(extensionId, message,
-        {'includeTlsChannelId': includeTlsChannelId},
-        checkTlsChannelIdResponse);
+    return new Promise(resolve => {
+      chrome.runtime.sendMessage(extensionId, message,
+          {'includeTlsChannelId': includeTlsChannelId},
+          resolve);
+    }).then(checkTlsChannelIdResponse);
   }
 };
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 143 tests; 138 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 145 tests; 140 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
@@ -23,6 +23,7 @@ PASS Headers interface: existence and properties of interface prototype object's
 PASS Headers interface: operation append(ByteString, ByteString)
 PASS Headers interface: operation delete(ByteString)
 PASS Headers interface: operation get(ByteString)
+PASS Headers interface: operation getSetCookie()
 PASS Headers interface: operation has(ByteString)
 PASS Headers interface: operation set(ByteString, ByteString)
 PASS Headers interface: iterable<ByteString, ByteString>
@@ -34,6 +35,7 @@ PASS Headers interface: new Headers() must inherit property "delete(ByteString)"
 PASS Headers interface: calling delete(ByteString) on new Headers() with too few arguments must throw TypeError
 PASS Headers interface: new Headers() must inherit property "get(ByteString)" with the proper type
 PASS Headers interface: calling get(ByteString) on new Headers() with too few arguments must throw TypeError
+PASS Headers interface: new Headers() must inherit property "getSetCookie()" with the proper type
 PASS Headers interface: new Headers() must inherit property "has(ByteString)" with the proper type
 PASS Headers interface: calling has(ByteString) on new Headers() with too few arguments must throw TypeError
 PASS Headers interface: new Headers() must inherit property "set(ByteString, ByteString)" with the proper type

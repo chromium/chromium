@@ -137,9 +137,18 @@ void AddNativeUiColorMixer(ColorProvider* provider,
     mixer[kColorScrollbarArrowForegroundPressed] = {
         dark_mode ? SkColorSetA(SK_ColorWHITE, 0xC8)
                   : SkColorSetA(SK_ColorBLACK, 0x9B)};
-    mixer[kColorScrollbarThumb] = {mixer[kColorScrollbarArrowForeground]};
-    mixer[kColorScrollbarTrack] = {dark_mode ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
-                                             : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
+    mixer[kColorScrollbarCorner] = {dark_mode
+                                        ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
+                                        : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
+    mixer[kColorScrollbarArrowBackgroundHovered] = {kColorScrollbarCorner};
+    mixer[kColorScrollbarArrowBackgroundPressed] = {
+        kColorScrollbarArrowBackgroundHovered};
+    mixer[kColorScrollbarThumb] = {kColorScrollbarArrowForeground};
+    mixer[kColorScrollbarThumbHovered] = {
+        kColorScrollbarArrowForegroundPressed};
+    mixer[kColorScrollbarThumbInactive] = {kColorScrollbarThumb};
+    mixer[kColorScrollbarThumbPressed] = {kColorScrollbarThumbHovered};
+    mixer[kColorScrollbarTrack] = {kColorScrollbarCorner};
   }
 
   if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)

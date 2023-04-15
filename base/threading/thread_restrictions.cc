@@ -260,11 +260,6 @@ void PermanentThreadAllowance::AllowBaseSyncPrimitives() {
   GetBaseSyncPrimitivesDisallowedTls() = BooleanWithStack(false);
 }
 
-// static
-void PermanentSingletonAllowance::AllowSingleton() {
-  GetSingletonDisallowedTls() = BooleanWithStack(false);
-}
-
 }  // namespace base
 
 #endif  // DCHECK_IS_ON()

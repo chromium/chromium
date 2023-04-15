@@ -329,6 +329,17 @@ TEST_F(VaapiTest, GetSupportedEncodeProfiles) {
   for (const auto& profile : VaapiWrapper::GetSupportedEncodeProfiles()) {
     const auto va_profile = ConvertToVAProfile(profile.profile);
     ASSERT_TRUE(va_profile.has_value());
+    constexpr VAProfile kSupportableVideoEncoderProfiles[] = {
+        VAProfileH264ConstrainedBaseline,
+        VAProfileH264Main,
+        VAProfileH264High,
+        VAProfileVP8Version0_3,
+        VAProfileVP9Profile0,
+        VAProfileAV1Profile0,
+    };
+    // Check if VaapiWrapper reports a profile that is not supported by
+    // VaapiVideoEncodeAccelerator.
+    ASSERT_TRUE(base::Contains(kSupportableVideoEncoderProfiles, va_profile));
 
     EXPECT_TRUE(base::Contains(va_info.at(*va_profile), VAEntrypointEncSlice) ||
                 base::Contains(va_info.at(*va_profile), VAEntrypointEncSliceLP))
@@ -388,6 +399,7 @@ TEST_F(VaapiTest, VbrAndCbrResolutionsMatch) {
 }
 
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that VAProfileProtected is indeed supported by the command line
 // vainfo utility.
 TEST_F(VaapiTest, VaapiProfileProtected) {
@@ -405,6 +417,7 @@ TEST_F(VaapiTest, VaapiProfileProtected) {
     EXPECT_EQ(impl, VAImplementation::kMesaGallium);
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
 // Verifies that if JPEG decoding and encoding are supported by VaapiWrapper,

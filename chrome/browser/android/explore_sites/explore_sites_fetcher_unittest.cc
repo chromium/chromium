@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -86,10 +85,6 @@ class ExploreSitesFetcherTest : public testing::Test {
     return &task_environment_;
   }
 
-  const base::HistogramTester* histograms() const {
-    return histogram_tester_.get();
-  }
-
  private:
   ExploreSitesFetcher::Callback StoreResult();
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest();
@@ -107,7 +102,6 @@ class ExploreSitesFetcherTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 ExploreSitesFetcher::Callback ExploreSitesFetcherTest::StoreResult() {
@@ -140,10 +134,6 @@ ExploreSitesRequestStatus ExploreSitesFetcherTest::RunFetcherWithNetError(
                  &data_received);
   EXPECT_TRUE(data_received.empty());
 
-  histograms()->ExpectUniqueSample("ExploreSites.FetcherNetErrorCode",
-                                   -net_error, 1);
-  histograms()->ExpectTotalCount("ExploreSites.FetcherHttpResponseCode", 0);
-
   return status;
 }
 
@@ -155,11 +145,6 @@ ExploreSitesRequestStatus ExploreSitesFetcherTest::RunFetcherWithHttpError(
                                 base::Unretained(this), http_error),
                  &data_received);
   EXPECT_TRUE(data_received.empty());
-
-  histograms()->ExpectUniqueSample("ExploreSites.FetcherNetErrorCode",
-                                   -net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
-  histograms()->ExpectUniqueSample("ExploreSites.FetcherHttpResponseCode",
-                                   http_error, 1);
 
   return status;
 }
@@ -212,7 +197,6 @@ ExploreSitesFetcherTest::GetLastPendingRequest() {
 ExploreSitesRequestStatus ExploreSitesFetcherTest::RunFetcher(
     base::OnceCallback<void(void)> respond_callback,
     std::string* data_received) {
-  histogram_tester_ = std::make_unique<base::HistogramTester>();
   std::unique_ptr<ExploreSitesFetcher> fetcher =
       CreateFetcher(true /* disable_retry*/, true /*is_immediate_fetch*/);
 

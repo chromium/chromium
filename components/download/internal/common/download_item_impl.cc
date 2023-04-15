@@ -617,7 +617,6 @@ void DownloadItemImpl::Pause() {
 void DownloadItemImpl::Resume(bool user_resume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
-  RecordDownloadResumption(GetLastReason(), user_resume);
 
   switch (state_) {
     case CANCELLED_INTERNAL:  // Nothing to resume.
@@ -644,7 +643,6 @@ void DownloadItemImpl::Resume(bool user_resume) {
       UpdateResumptionInfo(paused_ || user_resume);
       paused_ = false;
       if (auto_resume_count_ >= kMaxAutoResumeAttempts) {
-        RecordAutoResumeCountLimitReached(GetLastReason());
         UpdateObservers();
         return;
       }
@@ -2465,9 +2463,6 @@ void DownloadItemImpl::ResumeInterruptedDownload(
       mode == ResumeMode::USER_RESTART) {
     LOG_IF(ERROR, !GetFullPath().empty())
         << "Download full path should be empty before resumption";
-    if (destination_info_.received_bytes > 0) {
-      RecordResumptionRestartReason(last_reason_);
-    }
     destination_info_.received_bytes = 0;
     last_modified_time_.clear();
     etag_.clear();
@@ -2764,31 +2759,6 @@ const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
   }
   NOTREACHED() << "Unknown resume mode " << static_cast<int>(mode);
   return "unknown";
-}
-
-size_t DownloadItemImpl::GetApproximateMemoryUsage() const {
-  static size_t class_size = sizeof(DownloadItemImpl);
-  size_t size = class_size;
-
-  for (const GURL& url : GetUrlChain())
-    size += url.EstimateMemoryUsage();
-  size += GetReferrerUrl().EstimateMemoryUsage();
-  size += base::trace_event::EstimateMemoryUsage(
-      GetSerializedEmbedderDownloadData());
-  size += GetTabUrl().EstimateMemoryUsage();
-  size += GetTabReferrerUrl().EstimateMemoryUsage();
-  size += base::trace_event::EstimateMemoryUsage(GetSuggestedFilename());
-  size += base::trace_event::EstimateMemoryUsage(GetForcedFilePath().value());
-  size += base::trace_event::EstimateMemoryUsage(GetRemoteAddress());
-  size += base::trace_event::EstimateMemoryUsage(GetTargetFilePath().value());
-  size += base::trace_event::EstimateMemoryUsage(GetFullPath().value());
-  size += base::trace_event::EstimateMemoryUsage(GetHash());
-  size += base::trace_event::EstimateMemoryUsage(GetMimeType());
-  size += base::trace_event::EstimateMemoryUsage(GetOriginalMimeType());
-  size += base::trace_event::EstimateMemoryUsage(GetLastModifiedTime());
-  size += base::trace_event::EstimateMemoryUsage(GetETag());
-  size += base::trace_event::EstimateMemoryUsage(GetGuid());
-  return size;
 }
 
 std::pair<int64_t, int64_t> DownloadItemImpl::GetRangeRequestOffset() const {

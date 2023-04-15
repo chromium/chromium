@@ -23,6 +23,14 @@ class MockMirroringActivity : public MirroringActivity {
   MOCK_METHOD(void,
               SendStopSessionMessageToClients,
               (const std::string& hash_token));
+
+  MOCK_METHOD(void, Play, ());
+  MOCK_METHOD(void, Pause, ());
+  MOCK_METHOD(void, SetMute, (bool mute));
+  MOCK_METHOD(void, SetVolume, (float volume));
+  MOCK_METHOD(void, Seek, (base::TimeDelta time));
+  MOCK_METHOD(void, NextTrack, ());
+  MOCK_METHOD(void, PreviousTrack, ());
 };
 
 }  // namespace media_router

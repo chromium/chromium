@@ -127,7 +127,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 }
 
 - (void)handlePartialTranslateSelection {
-  DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
+  DCHECK(base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate));
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   if (!tabHelper) {
     return;
@@ -140,7 +140,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 }
 
 - (BOOL)canHandlePartialTranslateSelection {
-  DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
+  DCHECK(base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate));
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   if (!tabHelper) {
     return NO;

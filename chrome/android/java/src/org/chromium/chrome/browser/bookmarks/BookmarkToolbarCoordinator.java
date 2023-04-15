@@ -10,6 +10,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -25,9 +26,9 @@ public class BookmarkToolbarCoordinator {
     BookmarkToolbarCoordinator(Context context,
             SelectableListLayout<BookmarkId> selectableListLayout,
             SelectionDelegate selectionDelegate, SearchDelegate searchDelegate,
-            BookmarkItemsAdapter bookmarkItemsAdapter, boolean isDialogUi,
-            OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier, BookmarkModel bookmarkModel,
-            BookmarkOpener bookmarkOpener) {
+            DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
+            boolean isDialogUi, OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
+            BookmarkModel bookmarkModel, BookmarkOpener bookmarkOpener) {
         mToolbar = (BookmarkToolbar) selectableListLayout.initializeToolbar(
                 R.layout.bookmark_toolbar, selectionDelegate, 0, R.id.normal_menu_group,
                 R.id.selection_mode_menu_group, null, isDialogUi);
@@ -41,7 +42,7 @@ public class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING);
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
-        mMediator = new BookmarkToolbarMediator(context, mModel, bookmarkItemsAdapter,
+        mMediator = new BookmarkToolbarMediator(context, mModel, dragReorderableRecyclerViewAdapter,
                 bookmarkDelegateSupplier, selectionDelegate, bookmarkModel, bookmarkOpener);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);

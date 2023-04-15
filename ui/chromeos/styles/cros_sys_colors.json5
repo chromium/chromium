@@ -105,6 +105,7 @@
     'on-surface-variant': {
       light: '$cros.ref.neutralvariant30',
       dark:  '$cros.ref.neutralvariant80',
+      generate_per_mode: true,
     },
     outline: {
       light: '$cros.ref.neutralvariant50',
@@ -181,6 +182,7 @@
       light: 'rgba($cros.ref.secondary90.rgb, 0.6)',
       dark:  'rgba($cros.ref.secondary30.rgb, 0.48)',
     },
+    'dialog-container': '$cros.sys.base-elevated',
     'inverse-surface': {
       light: '$cros.ref.neutral20',
       dark:  '$cros.ref.neutral90',
@@ -207,12 +209,16 @@
       dark: 'rgba($cros.ref.neutral0.rgb, 0.6)'
     },
     'system-on-base': {
+      light: 'rgba($cros.ref.neutralvariant99.rgb, 0.6)',
+      dark: 'rgba($cros.ref.neutralvariant40.rgb, 0.5)',
+    },
+    'system-on-base-opaque': {
       light: '$cros.ref.neutralvariant95',
-      dark: 'rgba($cros.ref.neutralvariant40.rgb, 0.4)',
+      dark: '$cros.ref.neutralvariant30',
     },
     'system-on-base1': {
-      light: 'rgba($cros.ref.neutral99.rgb, 0.10)',
-      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+      light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral99.rgb, 0.10)',
     },
     'system-primary-container': {
       light: '$cros.ref.primary80',

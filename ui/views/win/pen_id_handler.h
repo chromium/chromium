@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,10 +29,25 @@ namespace views {
 // which is ultimately returned.
 class VIEWS_EXPORT PenIdHandler {
  public:
+  using GetPenDeviceStatics = Microsoft::WRL::ComPtr<
+      ABI::Windows::Devices::Input::IPenDeviceStatics> (*)();
+  using GetPointerPointStatics = Microsoft::WRL::ComPtr<
+      ABI::Windows::UI::Input::IPointerPointStatics> (*)();
+  class VIEWS_EXPORT [[maybe_unused, nodiscard]] ScopedPenIdStaticsForTesting {
+   public:
+    explicit ScopedPenIdStaticsForTesting(
+        GetPenDeviceStatics pen_device_statics,
+        GetPointerPointStatics pointer_point_statics);
+    ~ScopedPenIdStaticsForTesting();
+
+   private:
+    base::AutoReset<GetPenDeviceStatics> pen_device_resetter_;
+    base::AutoReset<GetPointerPointStatics> pointer_point_resetter_;
+  };
+
   PenIdHandler();
   virtual ~PenIdHandler();
   absl::optional<int32_t> TryGetPenUniqueId(UINT32 pointer_id);
-  static void OverrideStaticsForTesting(bool override);
 
  private:
   friend class FakePenIdHandler;
@@ -39,16 +55,45 @@ class VIEWS_EXPORT PenIdHandler {
   FRIEND_TEST_ALL_PREFIXES(PenIdHandlerTest, GetGuidMapping);
   FRIEND_TEST_ALL_PREFIXES(PenIdHandlerTest, PenDeviceStaticsFailedToSet);
   FRIEND_TEST_ALL_PREFIXES(PenIdHandlerTest, TryGetGuidHandlesBadStatics);
+  FRIEND_TEST_ALL_PREFIXES(PenIdHandlerTest, PenDeviceStaticsFailedToSet);
+  FRIEND_TEST_ALL_PREFIXES(PenIdHandlerTest, TryGetTransducerIdHandlesErrors);
+
+  struct TransducerId {
+    int32_t tsn = 0;
+    int32_t tvid = 0;
+    static constexpr int32_t kInvalidTSN = 0;
+    bool operator<(const TransducerId& other) const {
+      if (this->tsn != other.tsn) {
+        return this->tsn < other.tsn;
+      }
+      return this->tvid < other.tvid;
+    }
+    bool operator==(const TransducerId& other) const {
+      if (this->tsn == other.tsn && this->tvid == other.tvid) {
+        return true;
+      }
+      return false;
+    }
+  };
 
   // Virtual for unit testing.
   // Checks if a PenDevice can be retrieved for the `pointer_id` and returns its
   // GUID if it exists.
   virtual absl::optional<std::string> TryGetGuid(UINT32 pointer_id) const;
+  // This is a fallback scenario when TryGetGUID doesn't retrieve a PenDevice.
+  // Happens when the device doesn't have both TSN/TVID (e.g.
+  // SurfaceHub 1 + SurfaceHub Pen -> only has TSN, no TVID).
+  virtual TransducerId TryGetTransducerId(UINT32 pointer_id) const;
 
   base::flat_map<std::string, int32_t> guid_to_id_map_;
+  // Mapping from "Transducer Serial Number (TSN)" to `unique_id`. More
+  // information on TSN: https://www.usb.org/sites/default/files/hut1_22.pdf
+  base::flat_map<TransducerId, int32_t> transducer_id_to_id_map_;
   int32_t current_id_ = 0;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>
       pen_device_statics_;
+  Microsoft::WRL::ComPtr<ABI::Windows::UI::Input::IPointerPointStatics>
+      pointer_point_statics_;
 };
 
 }  // namespace views

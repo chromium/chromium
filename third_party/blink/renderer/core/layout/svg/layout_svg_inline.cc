@@ -144,17 +144,17 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
   }
 }
 
-void LayoutSVGInline::AddOutlineRects(Vector<PhysicalRect>& rect_list,
+void LayoutSVGInline::AddOutlineRects(OutlineRectCollector& collector,
                                       OutlineInfo* info,
                                       const PhysicalOffset& additional_offset,
                                       NGOutlineType outline_type) const {
   if (!IsInLayoutNGInlineFormattingContext()) {
-    LayoutInline::AddOutlineRects(rect_list, nullptr, additional_offset,
+    LayoutInline::AddOutlineRects(collector, nullptr, additional_offset,
                                   outline_type);
   } else {
     auto rect = PhysicalRect::EnclosingRect(ObjectBoundingBox());
     rect.Move(additional_offset);
-    rect_list.push_back(rect);
+    collector.AddRect(rect);
   }
   if (info)
     *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());

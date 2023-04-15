@@ -79,7 +79,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED = 38.f;
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED = 38.f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
-    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
     // External influences
@@ -111,6 +110,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
 
     private float mModelSelectorWidth;
+    // 3-dots menu button with tab strip end padding
+    private float mMenuButtonPadding;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver =
@@ -244,9 +245,9 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         };
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
-                createFolioModelSelectorButtion(context, selectorClickHandler);
+                createFolioModelSelectorButton(context, selectorClickHandler);
             } else {
-                createDetachedModelSelectorButtion(context, selectorClickHandler);
+                createDetachedModelSelectorButton(context, selectorClickHandler);
             }
 
             // Model selector button icon color
@@ -280,6 +281,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
             mTabStripFadeShort = R.drawable.tab_strip_fade_short_tsr;
             mTabStripFadeLong = R.drawable.tab_strip_fade_long_tsr;
+
+            // Use toolbar menu button padding to align MSB with menu button.
+            mMenuButtonPadding = context.getResources().getDimension(R.dimen.button_end_padding)
+                    / context.getResources().getDisplayMetrics().density;
+
         } else {
             mModelSelectorButton = new CompositorButton(context, MODEL_SELECTOR_BUTTON_WIDTH_DP,
                     MODEL_SELECTOR_BUTTON_HEIGHT_DP, selectorClickHandler);
@@ -312,7 +318,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         onContextChanged(context);
     }
 
-    private void createFolioModelSelectorButtion(
+    private void createFolioModelSelectorButton(
             Context context, CompositorOnClickHandler selectorClickHandler) {
         mModelSelectorButton =
                 new TintedCompositorButton(context, MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO,
@@ -325,7 +331,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO;
     }
 
-    private void createDetachedModelSelectorButtion(
+    private void createDetachedModelSelectorButton(
             Context context, CompositorOnClickHandler selectorClickHandler) {
         mModelSelectorButton = new TintedCompositorButton(context,
                 MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED,
@@ -421,10 +427,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             orientationChanged = true;
         }
         if (!LocalizationUtils.isLayoutRtl()) {
-            mModelSelectorButton.setX(
-                    mWidth - mModelSelectorWidth - getModelSelectorButtonWithTabStripEndPadding());
+            mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithPadding());
         } else {
-            mModelSelectorButton.setX(getModelSelectorButtonWithTabStripEndPadding());
+            mModelSelectorButton.setX(
+                    getModelSelectorButtonWidthWithPadding() - mModelSelectorWidth);
         }
 
         mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
@@ -435,17 +441,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mEventFilter.setEventArea(mStripFilterArea);
     }
 
-    private float getModelSelectorButtonWithTabStripEndPadding() {
-        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            return (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mModelSelectorWidth) / 2;
-        } else {
-            return MODEL_SELECTOR_BUTTON_PADDING_DP;
-        }
-    }
-
     private float getModelSelectorButtonWidthWithPadding() {
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            return mModelSelectorWidth + NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING;
+            float modelSelectorWithStripEndPadding =
+                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mModelSelectorWidth - mMenuButtonPadding)
+                            / 2
+                    + mMenuButtonPadding;
+            return mModelSelectorWidth + modelSelectorWithStripEndPadding;
         } else {
             return mModelSelectorWidth + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
         }
@@ -792,8 +794,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
             float endMargin = isVisible ? getModelSelectorButtonWidthWithPadding() : 0.0f;
 
-            mNormalHelper.setEndMargin(endMargin);
-            mIncognitoHelper.setEndMargin(endMargin);
+            mNormalHelper.setEndMargin(endMargin, false);
+            mIncognitoHelper.setEndMargin(endMargin, true);
         }
     }
 

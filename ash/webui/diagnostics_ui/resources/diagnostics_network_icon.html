@@ -3,6 +3,10 @@
     --cros-icon-color-primary: var(--cros-icon-color-secondary);
   }
 
+  :host-context(body.jelly-enabled) #connectingIcon {
+    --paper-spinner-color: var(--cros-sys-progress);
+  }
+
   #connectingIcon {
     height: 20px;
     width: 20px;

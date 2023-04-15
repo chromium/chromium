@@ -279,12 +279,23 @@ class WebGLConformanceIntegrationTestBase(
         self._verified_flags = True
     url = self.UrlOfStaticFilePath(test_path)
     self.tab.Navigate(url, script_to_evaluate_on_commit=harness_script)
-    self.tab.action_runner.EvaluateJavaScript(
-        'connectWebsocket("%d")' % self.__class__.websocket_server.server_port,
-        timeout=self._GetWebsocketJavaScriptTimeout())
-    self.__class__.websocket_server.WaitForConnection()
+    # TODO(crbug.com/1432592): Remove this special casing once the flaky adb
+    # issues are investigated/resolved.
+    if self.browser.platform.GetOSName() != 'android':
+      self.tab.action_runner.EvaluateJavaScript(
+          'connectWebsocket("%d")' %
+          self.__class__.websocket_server.server_port,
+          timeout=self._GetWebsocketJavaScriptTimeout())
+      self.__class__.websocket_server.WaitForConnection()
 
   def _HandleMessageLoop(self, test_timeout: float) -> None:
+    # TODO(crbug.com/1432592): Remove this special casing once the flaky adb
+    # issues are investigated/resolved.
+    if self.browser.platform.GetOSName() == 'android':
+      self.tab.action_runner.WaitForJavaScriptCondition(
+          'webglTestHarness._finished', timeout=test_timeout)
+      return
+
     start_time = time.time()
     try:
       while True:

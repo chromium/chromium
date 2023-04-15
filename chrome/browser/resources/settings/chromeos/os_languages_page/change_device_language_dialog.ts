@@ -17,6 +17,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './languages.js';
 import '../../settings_shared.css.js';
 
+import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
@@ -24,7 +25,6 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './change_device_language_dialog.html.js';
@@ -158,14 +158,14 @@ export class OsSettingsChangeDeviceLanguageDialogElement extends
     return this.selectedLanguage_ === null;
   }
 
-  private onCancelButtonTap_(): void {
+  private onCancelButtonClick_(): void {
     this.$.dialog.close();
   }
 
   /**
    * Sets device language and restarts device.
    */
-  private onActionButtonTap_(): void {
+  private onActionButtonClick_(): void {
     // Safety: This method is only called as an event listener on the action
     // button, which is only enabled if `disableActionButton_` is false - i.e.
     // `this.selectedLanguage_ !== null`.

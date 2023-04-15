@@ -341,19 +341,12 @@ class OpenSystemSettingsHelper {
   }
 
  private:
-  // The reason the settings interaction concluded. Do not modify the ordering
-  // because it is used for UMA.
-  enum ConcludeReason { REGISTRY_WATCHER, TIMEOUT, NUM_CONCLUDE_REASON_TYPES };
-
   OpenSystemSettingsHelper(const wchar_t* const schemes[],
                            base::OnceClosure on_finished_callback)
       : on_finished_callback_(std::move(on_finished_callback)) {
     static const wchar_t kUrlAssociationFormat[] =
         L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\"
         L"%ls\\UserChoice";
-
-    // Remember the start time.
-    start_time_ = base::TimeTicks::Now();
 
     for (const wchar_t* const* scan = &schemes[0]; *scan != nullptr; ++scan) {
       AddRegistryKeyWatcher(
@@ -364,8 +357,7 @@ class OpenSystemSettingsHelper {
 
     timer_.Start(FROM_HERE, base::Minutes(2),
                  base::BindOnce(&OpenSystemSettingsHelper::ConcludeInteraction,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                ConcludeReason::TIMEOUT));
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 
   ~OpenSystemSettingsHelper() {
@@ -380,23 +372,16 @@ class OpenSystemSettingsHelper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Make sure all the registry watchers have fired.
     if (--registry_watcher_count_ == 0) {
-      base::UmaHistogramMediumTimes(
-          "DefaultBrowser.SettingsInteraction.RegistryWatcherDuration",
-          base::TimeTicks::Now() - start_time_);
-
-      ConcludeInteraction(ConcludeReason::REGISTRY_WATCHER);
+      ConcludeInteraction();
     }
   }
 
   // Ends the monitoring with the system settings. Will call
   // |on_finished_callback_| and then dispose of this class instance to make
   // sure the callback won't get called subsequently.
-  void ConcludeInteraction(ConcludeReason conclude_reason) {
+  void ConcludeInteraction() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    base::UmaHistogramEnumeration(
-        "DefaultBrowser.SettingsInteraction.ConcludeReason", conclude_reason,
-        NUM_CONCLUDE_REASON_TYPES);
     std::move(on_finished_callback_).Run();
     delete instance_;
     instance_ = nullptr;
@@ -433,9 +418,6 @@ class OpenSystemSettingsHelper {
   std::vector<std::unique_ptr<base::win::RegKey>> registry_key_watchers_;
 
   base::OneShotTimer timer_;
-
-  // Records the time it takes for the final registry watcher to get signaled.
-  base::TimeTicks start_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

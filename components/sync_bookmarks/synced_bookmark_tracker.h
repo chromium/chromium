@@ -11,9 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,8 +38,8 @@ class SyncedBookmarkTrackerEntity;
 // until commit confirmation is received.
 class SyncedBookmarkTracker {
  public:
-  // Returns a client tag hash given a bookmark GUID.
-  static syncer::ClientTagHash GetClientTagHashFromGUID(const base::GUID& guid);
+  // Returns a client tag hash given a bookmark UUID.
+  static syncer::ClientTagHash GetClientTagHashFromUuid(const base::Uuid& uuid);
 
   // Creates an empty instance with no entities. Never returns null.
   static std::unique_ptr<SyncedBookmarkTracker> CreateEmpty(
@@ -72,8 +72,8 @@ class SyncedBookmarkTracker {
       const syncer::ClientTagHash& client_tag_hash) const;
 
   // Convenience function, similar to GetEntityForClientTagHash().
-  const SyncedBookmarkTrackerEntity* GetEntityForGUID(
-      const base::GUID& guid) const;
+  const SyncedBookmarkTrackerEntity* GetEntityForUuid(
+      const base::Uuid& uuid) const;
 
   // Returns null if no entity is found.
   const SyncedBookmarkTrackerEntity* GetEntityForBookmarkNode(
@@ -224,7 +224,7 @@ class SyncedBookmarkTracker {
     DUPLICATED_SERVER_ID = 6,
     UNKNOWN_BOOKMARK_ID = 7,
     UNTRACKED_BOOKMARK = 8,
-    BOOKMARK_GUID_MISMATCH = 9,
+    BOOKMARK_UUID_MISMATCH = 9,
     DUPLICATED_CLIENT_TAG_HASH = 10,
     TRACKED_MANAGED_NODE = 11,
     MISSING_CLIENT_TAG_HASH = 12,

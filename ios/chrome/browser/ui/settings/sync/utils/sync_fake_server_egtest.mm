@@ -158,27 +158,6 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo" expectedCount:1];
 }
 
-// Tests that the local cache guid does not change when sync is restarted.
-- (void)testSyncCheckSameCacheGuid_SyncRestarted {
-  // Sign in the fake identity.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-
-  // Store the original guid, then restart sync.
-  std::string original_guid = [ChromeEarlGrey syncCacheGUID];
-  [ChromeEarlGrey stopSync];
-  [ChromeEarlGrey startSync];
-
-  // Verify the guid did not change.
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  GREYAssertEqual([ChromeEarlGrey syncCacheGUID], original_guid,
-                  @"Stored guid doesn't match current value");
-}
-
 // Tests that the local cache guid changes when the user signs out and then
 // signs back in with the same account.
 - (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
@@ -202,39 +181,6 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   GREYAssertTrue(
       [ChromeEarlGrey syncCacheGUID] != original_guid,
       @"guid didn't change after user signed out and signed back in");
-}
-
-// Tests that the local cache guid does not change when sync is restarted, if
-// a user previously signed out and back in.
-// Test for http://crbug.com/413611 .
-- (void)testSyncCheckSameCacheGuid_SyncRestartedAfterSignOutAndSignIn {
-  // Sign in a fake idenitty.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
-
-  // Sign the user back in.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-
-  // Record the initial guid, before restarting sync.
-  std::string original_guid = [ChromeEarlGrey syncCacheGUID];
-  [ChromeEarlGrey stopSync];
-  [ChromeEarlGrey startSync];
-
-  // Verify the guid did not change after restarting sync.
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  GREYAssertEqual([ChromeEarlGrey syncCacheGUID], original_guid,
-                  @"Stored guid doesn't match current value");
 }
 
 // Tests that autofill profile injected in FakeServer gets synced to client.

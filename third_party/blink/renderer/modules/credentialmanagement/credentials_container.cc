@@ -1191,13 +1191,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           }
         }
       }
-      if (options->publicKey()->extensions()->hasCableRegistration()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "The 'cableRegistration' extension is only valid when creating "
-            "a credential"));
-        return promise;
-      }
       if (options->publicKey()->extensions()->credProps()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,

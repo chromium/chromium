@@ -121,15 +121,15 @@ void NetworkSettingsServiceAsh::SetExtensionProxy(
 
   // Required to display the extension which is controlling the proxy in the OS
   // Settings > Network > Proxy window.
-  base::Value proxy_extension(base::Value::Type::DICT);
-  proxy_extension.SetStringKey(kPrefExtensionNameKey,
-                               proxy_config->extension->name);
-  proxy_extension.SetStringKey(kPrefExtensionIdKey,
-                               proxy_config->extension->id);
-  proxy_extension.SetBoolKey(kPrefExtensionCanDisabledKey,
-                             proxy_config->extension->can_be_disabled);
-  pref_service->Set(ash::prefs::kLacrosProxyControllingExtension,
-                    std::move(proxy_extension));
+  base::Value::Dict proxy_extension =
+      base::Value::Dict()
+          .Set(kPrefExtensionNameKey, proxy_config->extension->name)
+          .Set(kPrefExtensionIdKey, proxy_config->extension->id)
+          .Set(kPrefExtensionCanDisabledKey,
+               proxy_config->extension->can_be_disabled);
+
+  pref_service->SetDict(ash::prefs::kLacrosProxyControllingExtension,
+                        std::move(proxy_extension));
 
   pref_service->SetDict(proxy_config::prefs::kProxy,
                         CrosapiProxyToProxyConfig(std::move(proxy_config))

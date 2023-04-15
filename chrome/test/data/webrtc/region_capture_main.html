@@ -14,11 +14,13 @@
 
       let otherCaptureTrack;
 
-      function startCaptureFromEmbeddedFrame() {
+      async function startCaptureFromEmbeddedFrame() {
+        const waiter = waitForMessage("start-capture-complete");
         document
           .getElementById("embedded_frame")
           .contentWindow.postMessage({messageType: "start-capture"}, "*");
-        // window.domAutomationController.send() called by embedded page.
+        const message = await waiter;
+        return message.result;
       }
 
       async function cropToByIndex(cropTargetIndex, targetFrame, targetTrack) {
@@ -26,41 +28,39 @@
           (cropTargetIndex == "undefined"
               ? undefined
               : getCropTarget(cropTargetIndex));
-        cropTo(cropTarget, targetFrame, targetTrack);
+        return cropTo(cropTarget, targetFrame, targetTrack);
       }
 
       // Clones |track| into |trackClone|.
       function clone() {
         if (!track || !!trackClone) {
-          window.domAutomationController.send("clone-track-failure");
-          return;
+          return "clone-track-failure";
         }
         trackClone = track.clone();
-        window.domAutomationController.send("clone-track-success");
+        return "clone-track-success";
       }
 
       function deallocate(targetTrack) {
         if (targetTrack == "original") {
           track = undefined;
           gc();
-          window.domAutomationController.send("deallocate-success");
+          return "deallocate-success";
         } else if (targetTrack == "clone") {
           trackClone = undefined;
           gc();
-          window.domAutomationController.send("deallocate-success");
+          return "deallocate-success";
         } else {
-          window.domAutomationController.send("deallocate-failure");
+          return "deallocate-failure";
         }
       }
 
       function hideElement(elementId) {
         const element = document.getElementById(elementId);
         if (!element) {
-          window.domAutomationController.send("hide-element-failure");
-          return;
+          return "hide-element-failure";
         }
         element.hidden = true;
-        window.domAutomationController.send("hide-element-success");
+        return "hide-element-success";
       }
     </script>
   </head>

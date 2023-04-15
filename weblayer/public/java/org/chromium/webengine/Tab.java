@@ -26,18 +26,34 @@ import java.util.List;
  * Tab controls the tab content and state.
  */
 public class Tab {
+    @NonNull
     private WebEngine mWebEngine;
+
+    @NonNull
     private ITabProxy mTabProxy;
+
+    @NonNull
     private TabNavigationController mTabNavigationController;
+
+    @NonNull
     private TabObserverDelegate mTabObserverDelegate;
+
+    @NonNull
     private String mGuid;
+
+    @NonNull
     private Uri mUri;
+
+    @NonNull
     private ObserverList<MessageEventListenerProxy> mMessageEventListenerProxies =
             new ObserverList<>();
+
     private boolean mPostMessageReady;
+
+    @NonNull
     private FullscreenCallbackDelegate mFullscreenCallbackDelegate;
 
-    Tab(WebEngine webEngine, @NonNull ITabParams tabParams) {
+    Tab(@NonNull WebEngine webEngine, @NonNull ITabParams tabParams) {
         assert tabParams.tabProxy != null;
         assert tabParams.tabGuid != null;
         assert tabParams.navigationControllerProxy != null;
@@ -59,10 +75,18 @@ public class Tab {
         }
     }
 
+    /**
+     * Returns the WebEngine instance associated with this Tab.
+     */
+    @NonNull
     public WebEngine getWebEngine() {
         return mWebEngine;
     }
 
+    /**
+     * Returns the URL of the page displayed.
+     */
+    @NonNull
     public Uri getDisplayUri() {
         return mUri;
     }
@@ -71,6 +95,10 @@ public class Tab {
         mUri = uri;
     }
 
+    /**
+     * Returns a unique identifier for the Tab.
+     */
+    @NonNull
     public String getGuid() {
         return mGuid;
     }
@@ -79,6 +107,10 @@ public class Tab {
      * Sets this Tab to active.
      */
     public void setActive() {
+        // TODO(rayankans): Should we make this return a ListenableFuture that resolves after the
+        // tab becomes active?
+        ThreadCheck.ensureOnUiThread();
+
         if (mTabProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -92,6 +124,9 @@ public class Tab {
      * Closes this Tab.
      */
     public void close() {
+        // TODO(rayankans): Should we make this return a ListenableFuture that resolves after the
+        // tab is closed?
+        ThreadCheck.ensureOnUiThread();
         if (mTabProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -101,8 +136,19 @@ public class Tab {
         }
     }
 
+    /**
+     * Executes the script, and resolves with the result of the execution.
+     *
+     * @param useSeparateIsolate If true, runs the script in a separate v8 Isolate. This uses more
+     * memory, but separates the injected scrips from scripts in the page. This prevents any
+     * potentially malicious interaction between first-party scripts in the page, and injected
+     * scripts. Use with caution, only pass false for this argument if you know this isn't an issue
+     * or you need to interact with first-party scripts.
+     */
+    @NonNull
     public ListenableFuture<String> executeScript(
             @NonNull String script, boolean useSeparateIsolate) {
+        ThreadCheck.ensureOnUiThread();
         if (mTabProxy == null) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox has been destroyed"));
@@ -145,6 +191,7 @@ public class Tab {
      * @return true if observer was added to the list of observers.
      */
     public boolean registerTabObserver(@NonNull TabObserver tabObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mTabObserverDelegate.registerObserver(tabObserver);
     }
 
@@ -156,6 +203,7 @@ public class Tab {
      * @return true if observer was removed from the list of observers.
      */
     public boolean unregisterTabObserver(@NonNull TabObserver tabObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mTabObserverDelegate.unregisterObserver(tabObserver);
     }
 
@@ -193,6 +241,8 @@ public class Tab {
      */
     public void addMessageEventListener(
             @NonNull MessageEventListener listener, @NonNull List<String> allowedOrigins) {
+        ThreadCheck.ensureOnUiThread();
+
         if (mTabProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -235,6 +285,8 @@ public class Tab {
      * Removes the event listener.
      */
     public void removeMessageEventListener(@NonNull MessageEventListener listener) {
+        ThreadCheck.ensureOnUiThread();
+
         MessageEventListenerProxy targetProxy = null;
         for (MessageEventListenerProxy proxy : mMessageEventListenerProxies) {
             if (proxy.getListener().equals(listener)) {
@@ -277,6 +329,8 @@ public class Tab {
      * provided, the message will be accepted by a page of any origin.
      */
     public void postMessage(@NonNull String message, @NonNull String targetOrigin) {
+        ThreadCheck.ensureOnUiThread();
+
         if (mTabProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -286,7 +340,11 @@ public class Tab {
         }
     }
 
-    public void setFullscreenCallback(FullscreenCallback callback) {
+    /**
+     * Attaches a callback to handle fullscreen events from the web content.
+     */
+    public void setFullscreenCallback(@NonNull FullscreenCallback callback) {
+        ThreadCheck.ensureOnUiThread();
         mFullscreenCallbackDelegate.setFullscreenCallback(callback);
     }
 

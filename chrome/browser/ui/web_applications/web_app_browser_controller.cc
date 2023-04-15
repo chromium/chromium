@@ -315,7 +315,8 @@ void WebAppBrowserController::OnGetAssociatedAndroidPackage(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WebAppBrowserController::OnWebAppUninstalled(
-    const AppId& uninstalled_app_id) {
+    const AppId& uninstalled_app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   if (uninstalled_app_id == app_id())
     chrome::CloseWindow(browser());
 }
@@ -487,6 +488,42 @@ GURL WebAppBrowserController::GetAppNewTabUrl() const {
   return registrar().GetAppNewTabUrl(app_id());
 }
 
+bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
+  if (!registrar().IsTabbedWindowModeEnabled(app_id())) {
+    return false;
+  }
+
+  if (!IsUrlInAppScope(url)) {
+    return false;
+  }
+
+  absl::optional<GURL> pinned_home_url =
+      registrar().GetAppPinnedHomeTabUrl(app_id());
+  if (!pinned_home_url) {
+    return false;
+  }
+
+  // We ignore query params and hash ref when deciding what should be
+  // opened as the home tab.
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  if (url.ReplaceComponents(replacements) ==
+      pinned_home_url.value().ReplaceComponents(replacements)) {
+    return true;
+  }
+
+  if (!home_tab_scope_.has_value()) {
+    home_tab_scope_ = GetTabbedHomeTabScope();
+  }
+
+  if (home_tab_scope_.has_value()) {
+    std::vector<int> vec;
+    return home_tab_scope_.value().Match(url.path(), &vec);
+  }
+  return false;
+}
+
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_app() && system_app()->IsUrlInSystemAppScope(url))
@@ -607,8 +644,7 @@ void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   // considered "appy".
   WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
 
-  if (AppUsesTabbed() && IsPinnedHomeTabUrl(registrar(), app_id(),
-                                            contents->GetLastCommittedURL())) {
+  if (AppUsesTabbed() && IsUrlInHomeTabScope(contents->GetLastCommittedURL())) {
     WebAppTabHelper::FromWebContents(contents)->set_is_pinned_home_tab(true);
   }
 }
@@ -738,6 +774,36 @@ WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
       return dark_mode_color;
   }
   return registrar().GetAppBackgroundColor(app_id());
+}
+
+absl::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope()
+    const {
+  const WebApp* web_app = registrar().GetAppById(app_id());
+  if (!web_app) {
+    return absl::nullopt;
+  }
+  TabStrip tab_strip = web_app->tab_strip().value();
+  if (const auto* params =
+          absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
+    std::vector<blink::Manifest::UrlPattern> scope_patterns =
+        params->scope_patterns;
+
+    RE2::Set scope_set = RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED);
+    for (auto& scope : scope_patterns) {
+      liburlpattern::Options options = {.delimiter_list = "/",
+                                        .prefix_list = "/",
+                                        .sensitive = true,
+                                        .strict = false};
+      liburlpattern::Pattern pattern(scope.pathname, options, "[^/]+?");
+      std::string error;
+      scope_set.Add(pattern.GenerateRegexString(), &error);
+    }
+
+    if (scope_set.Compile()) {
+      return scope_set;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace web_app

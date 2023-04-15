@@ -157,6 +157,10 @@ function initialize() {
       .then(returnCustomizationId);
   // </if>
 
+  if (getRequiredElement('variations-seed').textContent !== '') {
+    getRequiredElement('variations-seed-section').hidden = false;
+  }
+
   if (getRequiredElement('sanitizer').textContent !== '') {
     getRequiredElement('sanitizer-section').hidden = false;
   }

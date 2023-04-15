@@ -29,6 +29,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "components/metrics/metrics_service.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -191,7 +192,7 @@ TestingBrowserProcess::GetMetricsServicesManager() {
 }
 
 metrics::MetricsService* TestingBrowserProcess::metrics_service() {
-  return nullptr;
+  return metrics_service_;
 }
 
 device::GeolocationManager* TestingBrowserProcess::geolocation_manager() {
@@ -219,6 +220,11 @@ TestingBrowserProcess::network_quality_tracker() {
 
 ProfileManager* TestingBrowserProcess::profile_manager() {
   return profile_manager_.get();
+}
+
+void TestingBrowserProcess::SetMetricsService(
+    metrics::MetricsService* metrics_service) {
+  metrics_service_ = metrics_service;
 }
 
 void TestingBrowserProcess::SetProfileManager(

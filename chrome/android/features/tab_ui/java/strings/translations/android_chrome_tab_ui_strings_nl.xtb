@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
-<translation id="1181037720776840403">Verwijderen</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
 <translation id="1403228085774130835">Je kunt je gesloten tabbladen vinden in Recente tabbladen in het hoofdmenu van Chrome</translation>
 <translation id="1455506303394048917">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
@@ -14,12 +13,9 @@
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab uit groep verwijderen}other{Tabs uit groep verwijderen}}</translation>
 <translation id="2277224997687551299">Groepsnaam bewerken</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad uit groep verwijderen.}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen uit groep verwijderen.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Tabblad bookmarken}other{Tabbladen bookmarken}}</translation>
-<translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="2569352796411618312">Suggestie: <ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
-<translation id="257674075312929031">Groep</translation>
 <translation id="2613747923081026172">Groep maken</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling</translation>
 <translation id="266935134738038806">Site bezoeken</translation>
@@ -61,7 +57,6 @@
 <translation id="58326064309361797">Sleep de tabbladen om ze te groeperen</translation>
 <translation id="5846292395804797011">De groep <ph name="TITLE_OF_GROUP" /> met <ph name="NUMBER_OF_TABS" /> tabbladen sluiten</translation>
 <translation id="5972844218283131174">Alles deselecteren</translation>
-<translation id="6040143037577758943">Sluiten</translation>
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
@@ -75,7 +70,6 @@
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabblad delen}other{Tabbladen delen}}</translation>
 <translation id="7129458170538955174">Informatie over deze winkel is op halve hoogte geopend</translation>
-<translation id="7151209024774799310">Tabbladen uit groep verwijderen</translation>
 <translation id="7204204600596740190">Optie om meerdere tabbladen te selecteren</translation>
 <translation id="7326879924029668159">Retourbeleid en meer bekijken</translation>
 <translation id="7352298686197644113">Bekijk welk item op je geopende tabbladen een lagere prijs heeft</translation>

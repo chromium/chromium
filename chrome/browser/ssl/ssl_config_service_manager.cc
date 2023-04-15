@@ -137,8 +137,8 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
                         local_state_callback);
   h2_client_cert_coalescing_host_patterns_.Init(
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
-  cecpq2_enabled_.Init(prefs::kCECPQ2Enabled, local_state,
-                       local_state_callback);
+  post_quantum_enabled_.Init(prefs::kPostQuantumEnabled, local_state,
+                             local_state_callback);
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
   insecure_hash_enabled_.Init(prefs::kInsecureHashesInTLSHandshakesEnabled,
@@ -171,8 +171,8 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kSSLVersionMax, std::string());
   registry->RegisterListPref(prefs::kCipherSuiteBlacklist);
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
-  registry->RegisterBooleanPref(prefs::kCECPQ2Enabled,
-                                default_context_config.cecpq2_enabled);
+  registry->RegisterBooleanPref(prefs::kPostQuantumEnabled,
+                                default_context_config.post_quantum_enabled);
   registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled,
                                 default_context_config.ech_enabled);
   // Default value for this pref doesn't matter since it is only used when
@@ -241,21 +241,19 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
   config->disabled_cipher_suites = disabled_cipher_suites_;
   config->client_cert_pooling_policy = CanonicalizeHostnamePatterns(
       h2_client_cert_coalescing_host_patterns_.GetValue());
-  // CECPQ2 is not enabled if ChromeVariations has been set to limit the
-  // applicability of Finch trials. We take that as a signal that the customer
-  // is especially conservative.
-  config->cecpq2_enabled =
-      cecpq2_enabled_.GetValue() && variations_unrestricted_;
+  // Post-quantum key-agreement is not enabled if ChromeVariations has been set
+  // to limit the applicability of Finch trials. We take that as a signal that
+  // the customer is especially conservative.
+  config->post_quantum_enabled =
+      post_quantum_enabled_.GetValue() && variations_unrestricted_;
   config->ech_enabled = ech_enabled_.GetValue();
 
   if (insecure_hash_enabled_.IsManaged()) {
-    config->insecure_hash_enabled =
-        insecure_hash_enabled_.GetValue()
-            ? network::mojom::insecure_hash_enabled_value::kEnabled
-            : network::mojom::insecure_hash_enabled_value::kDisabled;
+    config->insecure_hash_override = insecure_hash_enabled_.GetValue()
+                                         ? network::mojom::OptionalBool::kTrue
+                                         : network::mojom::OptionalBool::kFalse;
   } else {
-    config->insecure_hash_enabled =
-        network::mojom::insecure_hash_enabled_value::kUnset;
+    config->insecure_hash_override = network::mojom::OptionalBool::kUnset;
   }
 
   return config;

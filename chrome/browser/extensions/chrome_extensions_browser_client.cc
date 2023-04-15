@@ -52,6 +52,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
@@ -725,6 +726,26 @@ bool ChromeExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
   return telemetry_service && telemetry_service->enabled();
+}
+
+void ChromeExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::vector<api::declarative_net_request::Rule>& rules) const {
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryDeclarativeNetRequestSignal)) {
+    return;
+  }
+
+  // The telemetry service will consume and release the signal object inside the
+  // `AddSignal()` call.
+  auto signal = std::make_unique<safe_browsing::DeclarativeNetRequestSignal>(
+      extension_id, rules);
+  telemetry_service->AddSignal(std::move(signal));
 }
 
 void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(

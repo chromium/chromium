@@ -17,6 +17,7 @@
 #include <ios>
 #include <limits>
 
+#include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -241,6 +242,10 @@ Process LaunchProcess(const CommandLine& cmdline,
 
 Process LaunchProcess(const CommandLine::StringType& cmdline,
                       const LaunchOptions& options) {
+  // Retain the command line on the stack for investigating shutdown hangs
+  // tracked in https://crbug.com/1431378
+  DEBUG_ALIAS_FOR_WCHARCSTR(cmdline_for_debugging, cmdline.c_str(), 200);
+
   if (options.elevated) {
     return LaunchElevatedProcess(base::CommandLine::FromString(cmdline),
                                  options.start_hidden, options.wait);

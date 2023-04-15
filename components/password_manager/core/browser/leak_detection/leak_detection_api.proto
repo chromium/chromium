@@ -44,6 +44,23 @@ message LookupSingleLeakRequest {
   // per request, or even per hash. The server can't decrypt this and
   // won't know the difference.
   bytes encrypted_lookup_hash = 3;
+
+  // The self-declared use case that the leak check is performed for.
+  enum ClientUseCase {
+    reserved 1 to 4, 8 to 14;
+    CLIENT_USE_CASE_UNSPECIFIED = 0;
+    // Leak checks done by Chrome during sign in to a website.
+    CHROME_SIGN_IN_CHECK = 5;
+    // Leak checks done by Chrome for checking a bulk of passwords (similar to
+    // Password Checkup).
+    CHROME_BULK_SYNCED_PASSWORDS_CHECK = 6;
+    // Leak checks done by Chrome for checking a bulk of passwords in On-device
+    // Proactive Password Checkup.
+    CHROME_SYNCED_ON_DEVICE_PROACTIVE_PASSWORD_CHECKUP = 7;
+    // Leak checks done by Chrome on password edit.
+    CHROME_EDIT_CHECK = 15;
+  }
+  ClientUseCase client_use_case = 4;
 }
 
 message LookupSingleLeakResponse {

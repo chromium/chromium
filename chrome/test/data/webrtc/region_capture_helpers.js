@@ -15,47 +15,68 @@ function setRole(value) {
   role = value;
 }
 
-function startEmbeddingFrame(url) {
-  const embedded_frame = document.getElementById("embedded_frame");
-  embedded_frame.src = url;
-  // window.domAutomationController.send() called by embedded page.
+async function startEmbeddingFrame(url) {
+  const waiter = waitForMessage('embedding-done');
+  document.getElementById("embedded_frame").src = url;
+  const message = await waiter;
+  return message.messageType;
 }
 
 function registerEmbeddedListeners() {
   window.addEventListener("message", (event) => {
     const type = event.data.messageType;
+    const reply = (message) => {
+      event.source.postMessage(message, "*");
+    };
     if (type == "setup-mailman") {
-      setUpMailman(event.data.url);
+      setUpMailman(event.data.url).then(reply);
     } else if (type == "start-capture") {
-      startCapture();
+      startCapture().then((result) => {
+        reply({messageType: "start-capture-complete", result});
+      });
     } else if (type == "produce-crop-target") {
-      cropTargetFromElement("embedded", event.data.element);
+      cropTargetFromElement("embedded", event.data.element)
+        .then((result) => {
+          reply({messageType: "produce-crop-target-complete", result});
+        });
     } else if (type == "crop-to") {
       cropTo(event.data.cropTarget, event.data.targetFrame,
-             event.data.targetTrackStr);
+             event.data.targetTrackStr)
+        .then((result) => {
+          reply({messageType: "crop-to-complete", result});
+        });
     } else if (type == 'create-new-element') {
-      createNewElement(event.data.targetFrame, event.data.tag, event.data.id);
+      createNewElement(event.data.targetFrame, event.data.tag, event.data.id)
+        .then((result) => {
+          reply({messageType: "create-new-element-complete", result});
+        });
     } else if (type == 'start-second-capture') {
-      startSecondCapture(event.data.targetFrame);
+      startSecondCapture(event.data.targetFrame)
+        .then((result) => {
+          reply({messageType: "start-second-capture-complete", result});
+        });
     } else if (type == 'stop-capture') {
-      stopCapture(event.data.targetFrame, event.data.targetTrack);
+      stopCapture(event.data.targetFrame, event.data.targetTrack)
+        .then((result) => {
+          reply({messageType: "stop-complete", result});
+        });
     }
   });
 }
 
 // Allows creating new elements for which new crop-targets may be created.
-function createNewElement(targetFrame, tag, id) {
+async function createNewElement(targetFrame, tag, id) {
   if (role == targetFrame) {
     const newElement = document.createElement(tag);
     newElement.id = id;
     document.body.appendChild(newElement);
-    window.domAutomationController.send(`${role}-new-element-success`);
+    return `${role}-new-element-success`;
   } else {
     if (role != "top-level") {
-      window.domAutomationController.send(`${role}-new-element-error`)
-      return;
+      return `${role}-new-element-error`;
     }
     const embedded_frame = document.getElementById("embedded_frame");
+    const waiter = waitForMessage("create-new-element-complete");
     embedded_frame.contentWindow.postMessage(
         {
           messageType: 'create-new-element',
@@ -64,7 +85,8 @@ function createNewElement(targetFrame, tag, id) {
           id: id
         },
         '*');
-    // window.domAutomationController.send() called by embedded page.
+    const message = await waiter;
+    return message.result;
   }
 }
 
@@ -81,8 +103,7 @@ function animate(element) {
 
 async function startCapture() {
   if (track || trackClone) {
-    window.domAutomationController.send("error-multiple-captures");
-    return;
+    return "error-multiple-captures";
   }
 
   try {
@@ -91,26 +112,26 @@ async function startCapture() {
       selfBrowserSurface: "include"
     });
     [track] = stream.getVideoTracks();
-    window.domAutomationController.send(`${role}-capture-success`);
+    return `${role}-capture-success`;
   } catch (e) {
-    window.domAutomationController.send(`${role}-capture-failure`);
+    return `${role}-capture-failure`;
   }
 }
 
 async function startSecondCapture(targetFrame) {
   if (targetFrame != `${role}`) {
     if (`${role}` != "top-level") {
-      window.domAutomationController.send("error");
-      return;
+      return "error";
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
+    const waiter = waitForMessage("start-second-capture-complete");
     embedded_frame.contentWindow.postMessage({
         messageType: "start-second-capture",
         targetFrame: targetFrame
       }, "*");
-    return;
-    // window.domAutomationController.send() called by embedded page.
+    const message = await waiter;
+    return message.result;
   }
 
   try {
@@ -119,27 +140,27 @@ async function startSecondCapture(targetFrame) {
       selfBrowserSurface: "include"
     });
     [otherCaptureTrack] = stream.getVideoTracks();
-    window.domAutomationController.send(`${role}-second-capture-success`);
+    return `${role}-second-capture-success`;
   } catch (e) {
-    window.domAutomationController.send(`${role}-second-capture-failure`);
+    return `${role}-second-capture-failure`;
   }
 }
 
-function stopCapture(targetFrame, targetTrack) {
+async function stopCapture(targetFrame, targetTrack) {
   if (targetFrame != `${role}`) {
     if (`${role}` != "top-level") {
-      window.domAutomationController.send("error");
-      return;
+      return "error";
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
+    const waiter = waitForMessage("stop-capture-complete");
     embedded_frame.contentWindow.postMessage({
         messageType: "stop-capture",
         targetFrame: targetFrame,
         targetTrack: targetTrack
       }, "*");
-    return;
-    // window.domAutomationController.send() called by embedded page.
+    const message = await waiter;
+    return message.result;
   }
 
   if (targetTrack == "original") {
@@ -152,41 +173,40 @@ function stopCapture(targetFrame, targetTrack) {
     otherCaptureTrack.stop();
     otherCaptureTrack = undefined
   } else {
-    window.domAutomationController.send("error");
-    return;
+    return "error";
   }
 
-  window.domAutomationController.send(`${role}-stop-success`);
+  return `${role}-stop-success`;
 }
 
 async function cropTargetFromElement(targetFrame, elementId) {
   if (role == targetFrame) {
     try {
       const element = document.getElementById(elementId);
-      makeCropTargetProxy(await CropTarget.fromElement(element));
-      // window.domAutomationController.send() called after
-      // the CropTarget is propagated to all participating pages.
+      return makeCropTargetProxy(await CropTarget.fromElement(element));
     } catch (e) {
-      window.domAutomationController.send(`${role}-produce-crop-target-error`);
+      return `${role}-produce-crop-target-error`;
     }
   } else {
     const embedded_frame = document.getElementById("embedded_frame");
+    const waiter = waitForMessage("produce-crop-target-complete");
     embedded_frame.contentWindow.postMessage({
         messageType: "produce-crop-target",
         element: elementId
       }, "*");
-    // window.domAutomationController.send() called by embedded page.
+    const message = await waiter;
+    return message.result;
   }
 }
 
 async function cropTo(cropTarget, targetFrame, targetTrackStr) {
   if (targetFrame != `${role}`) {
     if (`${role}` != "top-level") {
-      window.domAutomationController.send("error");
-      return;
+      return "error";
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
+    const waiter = waitForMessage("crop-to-complete");
     embedded_frame.contentWindow.postMessage(
         {
           messageType: 'crop-to',
@@ -195,8 +215,8 @@ async function cropTo(cropTarget, targetFrame, targetTrackStr) {
           targetTrackStr: targetTrackStr
         },
         '*');
-    // window.domAutomationController.send() called by embedded page.
-    return;
+    const message = await waiter;
+    return message.result;
   }
 
   const targetTrack = (targetTrackStr == "original" ? track :
@@ -204,15 +224,14 @@ async function cropTo(cropTarget, targetFrame, targetTrackStr) {
                        targetTrackStr == "second" ? otherCaptureTrack :
                        undefined);
   if (!targetTrack) {
-    window.domAutomationController.send("error");
-    return;
+    return "error";
   }
 
   try {
     await targetTrack.cropTo(cropTarget);
-    window.domAutomationController.send(`${role}-crop-success`);
+    return `${role}-crop-success`;
   } catch (e) {
-    window.domAutomationController.send(`${role}-crop-error`);
+    return `${role}-crop-error`;
   }
 }
 
@@ -220,27 +239,38 @@ async function cropTo(cropTarget, targetFrame, targetTrackStr) {
 // Communication with other pages belonging to this page. //
 ////////////////////////////////////////////////////////////
 
-function setUpMailman(url) {
+async function setUpMailman(url) {
   const mailman_frame = document.getElementById("mailman_frame");
   mailman_frame.src = url;
 
   window.addEventListener("message", (event) => {
-    if (event.data.messageType == "mailman-embedded") {
-      if (role == "top-level") {
-        const embedded_frame = document.getElementById("embedded_frame");
-        embedded_frame.contentWindow.postMessage({
-            messageType: "setup-mailman",
-            url: url
-          }, "*");
-        // window.domAutomationController.send() called by embedded page.
-      } else {
-        window.domAutomationController.send("mailman-ready");
-      }
-    } else if (event.data.messageType == "announce-crop-target") {
+    if (event.data.messageType == "announce-crop-target") {
       registerRemoteCropTarget(event.data.cropTarget, event.data.index);
-    } else if (event.data.messageType == "ack-crop-target") {
-      onAckReceived(event.data.index);
     }
+  });
+
+  await waitForMessage('mailman-embedded');
+  if (role == "top-level") {
+    const waiter = waitForMessage('mailman-ready');
+    document.getElementById("embedded_frame").contentWindow.postMessage({
+        messageType: "setup-mailman",
+        url: url
+      }, "*");
+    const message = await waiter;
+    return message.messageType;
+  }
+  return {messageType: "mailman-ready"};
+}
+
+function waitForMessage(expectedMessageType) {
+  return new Promise(resolve => {
+    const listener = (event) => {
+      if (event.data.messageType == expectedMessageType) {
+        window.removeEventListener("message", listener);
+        resolve(event.data);
+      }
+    };
+    window.addEventListener("message", listener);
   });
 }
 
@@ -267,20 +297,38 @@ function broadcast(msg) {
 const cropTargets = [];
 
 const EXPECTED_ACKS = 3;
-let ackCount;
-let expectedAckIndex;
 
-function makeCropTargetProxy(cropTarget) {
+async function makeCropTargetProxy(cropTarget) {
   cropTargets.push(cropTarget);
 
-  ackCount = 0;
-  expectedAckIndex = cropTargets.length - 1;
+  let ackCount = 0;
+  let expectedAckIndex = cropTargets.length - 1;
+
+  const acksCompletedPromise = new Promise(resolve => {
+    let ackListener = (event) => {
+      if (event.data.messageType == "ack-crop-target") {
+        if (event.data.index != expectedAckIndex) {
+          return;
+        }
+
+        if (++ackCount != EXPECTED_ACKS) {
+          return;
+        }
+
+        window.removeEventListener("message", ackListener);
+        resolve(`${cropTargets.length - 1}`);
+      }
+    };
+    window.addEventListener("message", ackListener);
+  });
 
   broadcast({
     messageType: "announce-crop-target",
     cropTarget: cropTarget,
     index: expectedAckIndex
   });
+
+  return acksCompletedPromise;
 }
 
 function getCropTarget(cropTargetIndex) {
@@ -291,18 +339,4 @@ function getCropTarget(cropTargetIndex) {
 function registerRemoteCropTarget(cropTarget, index) {
   cropTargets.push(cropTarget);
   broadcast({messageType: "ack-crop-target", index: index});
-}
-
-function onAckReceived(index) {
-  if (index != expectedAckIndex) {
-    return;
-  }
-
-  if (++ackCount != EXPECTED_ACKS) {
-    return;
-  }
-
-  ackCount = undefined;
-  expectedAckIndex = undefined;
-  window.domAutomationController.send(`${cropTargets.length - 1}`);
 }

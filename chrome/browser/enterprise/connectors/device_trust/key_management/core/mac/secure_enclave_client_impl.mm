@@ -112,15 +112,15 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(attributes, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
-  CFDictionarySetValue(
-      private_key_params, kSecAttrAccessControl,
-      base::ScopedCFTypeRef<SecAccessControlRef>(
-          SecAccessControlCreateWithFlags(
-              kCFAllocatorDefault,
-              // Private key can only be used when the device is unlocked.
-              kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-              // Private key is available for signing.
-              kSecAccessControlPrivateKeyUsage, nullptr)));
+  base::ScopedCFTypeRef<SecAccessControlRef> access_control(
+      SecAccessControlCreateWithFlags(
+          kCFAllocatorDefault,
+          // Private key can only be used when the device is unlocked.
+          kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+          // Private key is available for signing.
+          kSecAccessControlPrivateKeyUsage, /*error=*/nullptr));
+  CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
+                       access_control);
   return attributes;
 }
 
