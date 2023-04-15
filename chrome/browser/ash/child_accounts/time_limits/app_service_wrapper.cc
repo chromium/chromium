@@ -241,7 +241,7 @@ void AppServiceWrapper::OnAppUpdate(const apps::AppUpdate& update) {
         }
       break;
     case apps::Readiness::kUninstalledByUser:
-    case apps::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kUninstalledByNonUser:
       for (auto& listener : listeners_)
         listener.OnAppUninstalled(app_id);
       break;

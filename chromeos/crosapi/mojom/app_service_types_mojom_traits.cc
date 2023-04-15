@@ -378,8 +378,8 @@ EnumTraits<crosapi::mojom::Readiness, apps::Readiness>::ToMojom(
       return crosapi::mojom::Readiness::kUninstalledByUser;
     case apps::Readiness::kRemoved:
       return crosapi::mojom::Readiness::kRemoved;
-    case apps::Readiness::kUninstalledByMigration:
-      return crosapi::mojom::Readiness::kUninstalledByMigration;
+    case apps::Readiness::kUninstalledByNonUser:
+      return crosapi::mojom::Readiness::kUninstalledByNonUser;
   }
 
   NOTREACHED();
@@ -413,8 +413,8 @@ bool EnumTraits<crosapi::mojom::Readiness, apps::Readiness>::FromMojom(
     case crosapi::mojom::Readiness::kRemoved:
       *output = apps::Readiness::kRemoved;
       return true;
-    case crosapi::mojom::Readiness::kUninstalledByMigration:
-      *output = apps::Readiness::kUninstalledByMigration;
+    case crosapi::mojom::Readiness::kUninstalledByNonUser:
+      *output = apps::Readiness::kUninstalledByNonUser;
       return true;
   }
 

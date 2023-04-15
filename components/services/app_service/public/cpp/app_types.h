@@ -60,7 +60,8 @@ ENUM(Readiness,
      // apps, so publishers must set the app as uninstalled before
      // removing it.
      kRemoved,
-     kUninstalledByMigration)
+     // This is used for all non-user initiated uninstallation.
+     kUninstalledByNonUser)
 
 // How the app was installed.
 // This should be kept in sync with histograms.xml, InstallReason in

@@ -80,7 +80,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
         unsynced_change = true;
       }
 
-      if (update.Readiness() == apps::Readiness::kUninstalledByMigration) {
+      if (update.Readiness() == apps::Readiness::kUninstalledByNonUser) {
         // Don't sync migration uninstallations as it will interfere with other
         // devices doing their own migration.
         unsynced_change = true;

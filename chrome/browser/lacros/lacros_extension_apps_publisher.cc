@@ -194,7 +194,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       return;
     apps::AppPtr app =
         MakeApp(extension, reason == extensions::UNINSTALL_REASON_MIGRATED
-                               ? Readiness::kUninstalledByMigration
+                               ? Readiness::kUninstalledByNonUser
                                : Readiness::kUninstalledByUser);
     Publish(std::move(app));
   }

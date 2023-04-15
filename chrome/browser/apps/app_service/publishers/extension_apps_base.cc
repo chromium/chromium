@@ -114,7 +114,7 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   // uninstallation.
   auto app = std::make_unique<App>(app_type(), extension->id());
   app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
-                       ? Readiness::kUninstalledByMigration
+                       ? Readiness::kUninstalledByNonUser
                        : Readiness::kUninstalledByUser;
   AppPublisher::Publish(std::move(app));
 }

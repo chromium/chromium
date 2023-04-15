@@ -56,7 +56,7 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
     case Readiness.kTerminated:
       return true;
     case Readiness.kUninstalledByUser:
-    case Readiness.kUninstalledByMigration:
+    case Readiness.kUninstalledByNonUser:
     case Readiness.kRemoved:
     case Readiness.kUnknown:
       return false;

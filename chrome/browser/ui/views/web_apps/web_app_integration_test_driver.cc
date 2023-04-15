@@ -2251,7 +2251,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
   base::RunLoop run_loop;
 
   UninstallCompleteWaiter uninstall_waiter(
-      profile(), policy_app->id, apps::Readiness::kUninstalledByMigration);
+      profile(), policy_app->id, apps::Readiness::kUninstalledByNonUser);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
@@ -3689,7 +3689,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
                                                          const AppId& id) {
   base::RunLoop run_loop;
   AppReadinessWaiter app_registration_waiter(
-      profile, id, apps::Readiness::kUninstalledByMigration);
+      profile, id, apps::Readiness::kUninstalledByNonUser);
   WebAppInstallManagerObserverAdapter observer(profile);
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {

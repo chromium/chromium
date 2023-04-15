@@ -134,7 +134,8 @@ enum Readiness {
   // apps, so publishers must set the app as uninstalled before
   // removing it.
   kRemoved,
-  [MinVersion=1] kUninstalledByMigration,
+  // This is used for all non-user initiated uninstallation.
+  [MinVersion=1] kUninstalledByNonUser,
 };
 
 // The reason why the app was installed.

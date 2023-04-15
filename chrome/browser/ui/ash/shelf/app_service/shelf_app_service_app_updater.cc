@@ -44,11 +44,11 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
         delegate()->OnAppInstalled(browser_context(), app_id);
         return;
       case apps::Readiness::kUninstalledByUser:
-      case apps::Readiness::kUninstalledByMigration:
+      case apps::Readiness::kUninstalledByNonUser:
         if (it != installed_apps_.end()) {
           installed_apps_.erase(it);
           const bool by_migration =
-              update.Readiness() == apps::Readiness::kUninstalledByMigration;
+              update.Readiness() == apps::Readiness::kUninstalledByNonUser;
           delegate()->OnAppUninstalledPrepared(browser_context(), app_id,
                                                by_migration);
           delegate()->OnAppUninstalled(browser_context(), app_id);

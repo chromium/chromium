@@ -16,7 +16,7 @@ enum Readiness {
   kTerminated,           // Renderer process crashed.
   kUninstalledByUser,
   kRemoved,
-  kUninstalledByMigration,
+  kUninstalledByNonUser,
 };
 
 // Implementation of App

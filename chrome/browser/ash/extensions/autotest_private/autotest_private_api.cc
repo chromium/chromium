@@ -479,7 +479,7 @@ api::autotest_private::AppReadiness GetAppReadiness(apps::Readiness readiness) {
           APP_READINESS_UNINSTALLEDBYUSER;
     case apps::Readiness::kRemoved:
       return api::autotest_private::AppReadiness::APP_READINESS_REMOVED;
-    case apps::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kUninstalledByNonUser:
       return api::autotest_private::AppReadiness::
           APP_READINESS_UNINSTALLEDBYMIGRATION;
     case apps::Readiness::kUnknown:
