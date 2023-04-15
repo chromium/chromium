@@ -30,8 +30,8 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     private static final String TAG = "WebMsgLtrAdptr";
 
     private final WebView mWebView;
-    private WebMessageListenerBoundaryInterface mImpl;
-    private String[] mSupportedFeatures;
+    private final WebMessageListenerBoundaryInterface mImpl;
+    private final String[] mSupportedFeatures;
 
     public SupportLibWebMessageListenerAdapter(
             WebView webView, /* WebMessageListener */ InvocationHandler handler) {
@@ -54,16 +54,20 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
             return;
         }
 
-        // TODO(crbug.com/1374142): Add array buffer type support.
-        if (payload.getType() != MessagePayloadType.STRING) {
-            return;
+        if (payload.getType() == MessagePayloadType.STRING
+                || (payload.getType() == MessagePayloadType.ARRAY_BUFFER
+                        && BoundaryInterfaceReflectionUtil.containsFeature(
+                                mSupportedFeatures, Features.WEB_MESSAGE_ARRAY_BUFFER))) {
+            mImpl.onPostMessage(mWebView,
+                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new SupportLibWebMessageAdapter(payload, ports)),
+                    sourceOrigin, isMainFrame,
+                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new SupportLibJsReplyProxyAdapter(replyProxy)));
+        } else {
+            Log.e(TAG,
+                    "The AndroidX doesn't support payload type: "
+                            + MessagePayload.typeToString(payload.getType()));
         }
-
-        mImpl.onPostMessage(mWebView,
-                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebMessageAdapter(payload, ports)),
-                sourceOrigin, isMainFrame,
-                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibJsReplyProxyAdapter(replyProxy)));
     }
 }

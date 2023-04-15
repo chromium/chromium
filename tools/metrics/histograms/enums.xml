@@ -3117,6 +3117,9 @@ Unknown properties are collapsed to zero. -->
   <int value="73" label="RESTRICT_SENSITIVE_WEB_CONTENT">
     WebSettingsCompat#enableRestrictSensitiveWebContent()
   </int>
+  <int value="74" label="JS_REPLY_POST_MESSAGE_WITH_PAYLOAD">
+    JsReplyProxy#postMessageWithPayload(WebMessagePayload)
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

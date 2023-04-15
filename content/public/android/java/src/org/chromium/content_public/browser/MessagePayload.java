@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  * Represents a JavaScript message payload.
- * Currently only STRING is supported.
+ * Currently only String and ArrayBuffer is supported.
  */
 public final class MessagePayload {
     @MessagePayloadType
@@ -32,6 +32,9 @@ public final class MessagePayload {
         mArrayBuffer = null;
     }
 
+    /**
+     * Create a MessagePayload ArrayBuffer type.
+     */
     public MessagePayload(@NonNull byte[] arrayBuffer) {
         Objects.requireNonNull(arrayBuffer, "arrayBuffer cannot be null.");
         mType = MessagePayloadType.ARRAY_BUFFER;
@@ -65,7 +68,7 @@ public final class MessagePayload {
     }
 
     @NonNull
-    private static String typeToString(@MessagePayloadType int type) {
+    public static String typeToString(@MessagePayloadType int type) {
         switch (type) {
             case MessagePayloadType.STRING:
                 return "String";
@@ -74,6 +77,6 @@ public final class MessagePayload {
             case MessagePayloadType.INVALID:
                 return "Invalid";
         }
-        throw new RuntimeException("Unknown type: " + type);
+        throw new IllegalArgumentException("Unknown type: " + type);
     }
 }
