@@ -176,6 +176,10 @@ class OobeUI : public ui::MojoWebUIController {
   // display type.
   void ConfigureOobeDisplay();
 
+  // Updates default scaling for CfM devices.
+  void UpScaleOobe();
+  bool ShouldUpScaleOobe();
+
   // Type of UI.
   std::string display_type_;
 
@@ -201,6 +205,9 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Id of the previous oobe/login screen.
   OobeScreenId previous_screen_ = ash::OOBE_SCREEN_UNKNOWN;
+
+  // Id of display that was already scaled for CfM devices.
+  int64_t primary_display_id_ = -1;
 
   // Flag that indicates whether JS part is fully loaded and ready to accept
   // calls.
