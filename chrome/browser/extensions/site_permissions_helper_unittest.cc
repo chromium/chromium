@@ -293,6 +293,40 @@ TEST_F(SitePermissionsHelperUnitTest,
             SiteInteraction::kNone);
 }
 
+// Tests that updating permission only applies the permission to the upgraded
+// site and not others.
+TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
+  const GURL site("https://allowed.example");
+  auto extension = InstallExtensionWithPermissions(
+      "extension", /*host_permissions=*/{site.spec()});
+  const GURL site_without_permission("https://disallowed.com");
+  auto* site_contents = AddTab(site);
+
+  // Extension should only have on-click access to both sites.
+  ASSERT_EQ(PermissionsManager::UserSiteAccess::kOnSite,
+            permissions_manager()->GetUserSiteAccess(*extension, site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extension,
+                                                     site_without_permission));
+
+  // Switch the extension from on-click to always on site.
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(site_contents);
+  ASSERT_TRUE(action_runner);
+  action_runner->accept_bubble_for_testing(false);
+  permissions_helper()->UpdateSiteAccess(
+      *extension, site_contents, PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Confirm always on site permission applied.
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extension, site));
+
+  // Site without permission should remain without access.
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extension,
+                                                     site_without_permission));
+}
+
 class SitePermissionsHelperWithUserHostControlsUnitTest
     : public SitePermissionsHelperUnitTest {
  public:
@@ -357,7 +391,9 @@ TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
     ExtensionActionRunner* action_runner =
         ExtensionActionRunner::GetForWebContents(non_user_permitted_contents);
     ASSERT_TRUE(action_runner);
-    action_runner->accept_bubble_for_testing(true);
+    // Permissions for the site are still updated even if the tab is not
+    // reloaded.
+    action_runner->accept_bubble_for_testing(false);
     PermissionsManagerWaiter waiter(permissions_manager());
     permissions_helper()->UpdateSiteAccess(
         *extension, non_user_permitted_contents, UserSiteAccess::kOnClick);

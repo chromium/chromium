@@ -22,6 +22,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -66,7 +67,7 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   // a script.
   bool RequiresUserConsent(const Extension* extension) const;
 
-  // Request an injection for the given |extension|.
+  // Request an injection for the given `extension` at idle.
   void RequestInjection(const Extension* extension);
   void RequestInjection(const Extension* extension,
                         mojom::RunLocation run_location);
@@ -185,6 +186,32 @@ void ExtensionActionRunnerUnitTest::SetUp() {
   DCHECK(tab_helper);
   extension_action_runner_ = tab_helper->extension_action_runner();
   DCHECK(extension_action_runner_);
+}
+
+// TODO(crbug.com/1400812): Split the test by need for refresh or not to confirm
+// the blocked actions are running as expected.
+// Tests that when an extension is granted permissions (independent of page
+// reload) the extension is allowed to run.
+TEST_F(ExtensionActionRunnerUnitTest, GrantTabPermissions) {
+  ActiveTabPermissionGranter* active_tab_permission_granter =
+      TabHelper::FromWebContents(web_contents())
+          ->active_tab_permission_granter();
+  ASSERT_TRUE(active_tab_permission_granter);
+
+  const Extension* extension = AddExtension();
+  EXPECT_EQ(0u, GetExecutionCountForExtension(extension->id()));
+  NavigateAndCommit(GURL("https://www.google.com"));
+  RequestInjection(extension);
+  EXPECT_TRUE(RequiresUserConsent(extension));
+  EXPECT_TRUE(runner()->WantsToRun(extension));
+
+  runner()->GrantTabPermissions({extension});
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(1u, GetExecutionCountForExtension(extension->id()));
+  EXPECT_FALSE(RequiresUserConsent(extension));
+  EXPECT_FALSE(runner()->WantsToRun(extension));
 }
 
 // Test that extensions with all_hosts require permission to execute, and, once

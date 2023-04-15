@@ -1,0 +1,11 @@
+{
+  "name": "Blocked Actions Doc Idle",
+  "description": "An extension that wants to run at document idle on all urls.",
+  "version": "0.1",
+  "manifest_version": 3,
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "run_at": "document_idle",
+    "js": ["script.js"]
+  }]
+}

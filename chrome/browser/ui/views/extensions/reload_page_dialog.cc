@@ -20,7 +20,7 @@ std::u16string GetTitle(
     const std::vector<ToolbarActionViewController*> actions) {
   if (actions.size() == 0) {
     return l10n_util::GetStringUTF16(
-        IDS_EXTENSION_RELOAD_PAGE_BUBBLE_UPDATE_PERMISSIONS_TITLE);
+        IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING);
   }
   if (actions.size() == 1) {
     return l10n_util::GetStringFUTF16(
@@ -71,8 +71,8 @@ void ShowReloadPageDialog(
     }
   } else {
     dialog_builder
-        .SetTitle(
-            l10n_util::GetStringUTF16(IDS_EXTENSION_RELOAD_PAGE_BUBBLE_HEADING))
+        .SetTitle(l10n_util::GetStringUTF16(
+            IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING))
         .AddOkButton(
             base::BindOnce(std::move(callback)),
             ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(

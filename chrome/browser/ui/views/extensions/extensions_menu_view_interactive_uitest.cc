@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -810,9 +812,8 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
   auto extension = extensions().back();
   extensions::ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ShowUi("");
   VerifyUi();
@@ -824,6 +825,11 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
 
   EXPECT_TRUE(action_runner->WantsToRun(extension.get()));
+  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  // A refresh should be needed in order to run the actions and inject the
+  // content script.
+  EXPECT_TRUE(permissions_helper.PageNeedsRefreshToRun(
+      action_runner->GetBlockedActions(extension->id())));
 
   TriggerSingleExtensionButton();
 
@@ -838,18 +844,29 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
 
   const bool accept_reload_dialog = GetParam();
   if (accept_reload_dialog) {
-    content::TestNavigationObserver observer(web_contents);
     action_bubble->AcceptDialog();
     EXPECT_TRUE(web_contents->IsLoading());
     // Wait for reload to finish.
-    observer.WaitForNavigationFinished();
-    EXPECT_TRUE(observer.last_navigation_succeeded());
-    // After reload the extension should be allowed to run.
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+    // After reload the extension should run.
+    EXPECT_TRUE(DidInjectScript(web_contents));
     EXPECT_FALSE(action_runner->WantsToRun(extension.get()));
   } else {
     action_bubble->CancelDialog();
     EXPECT_FALSE(web_contents->IsLoading());
+    // The extension permission should have been applied at this point, but the
+    // extension's script and blocked actions should not inject/run since a
+    // reload is needed.
+    EXPECT_EQ(permissions_helper.GetSiteInteraction(*extension, web_contents),
+              extensions::SitePermissionsHelper::SiteInteraction::kGranted);
+    EXPECT_FALSE(DidInjectScript(web_contents));
     EXPECT_TRUE(action_runner->WantsToRun(extension.get()));
+    // Manual reload should then allow for script inject and blocked actions to
+    // run.
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+    EXPECT_TRUE(DidInjectScript(web_contents));
+    EXPECT_FALSE(action_runner->WantsToRun(extension.get()));
   }
 }
 

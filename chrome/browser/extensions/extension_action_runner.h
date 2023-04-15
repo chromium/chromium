@@ -66,20 +66,23 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   ExtensionAction::ShowAction RunAction(const Extension* extension,
                                         bool grant_tab_permissions);
 
-  // Grants activeTab to |extensions| (this should only be done if this is
-  // through a direct user action). If any extension needs a page refresh to
-  // run, this will show a dialog instead of immediately granting permissions.
+  // Runs any actions that were blocked for the given `extension`. As a
+  // requirement, this will grant activeTab permission to the extension.
+  void RunBlockedActions(const Extension* extension);
+
+  // Grants activeTab to `extensions` (this should only be done if this is
+  // through a direct user action). The permission will be applied immediately.
+  // If any extension needs a page refresh to run, this will show a dialog as
+  // well.
   void GrantTabPermissions(const std::vector<const Extension*>& extensions);
 
-  // Notifies the ExtensionActionRunner that the page access for |extension| has
-  // changed.
-  void HandlePageAccessModified(
-      const Extension* extension,
-      PermissionsManager::UserSiteAccess current_access,
-      PermissionsManager::UserSiteAccess new_access);
+  // The same as ShowReloadPageBubble, but for only one extension and the
+  // callback will reload the page.
+  void ShowReloadPageBubbleWithReloadPageCallback(
+      const ExtensionId& extension_id);
 
-  // Notifies the ExtensionActionRunner that the user site setting for `origin`
-  // with `action_ids` has changed.
+  // Notifies the ExtensionActionRunner that the user site setting for
+  // `origin` with `action_ids` has changed.
   void HandleUserSiteSettingModified(
       const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
       const url::Origin& origin,
@@ -95,7 +98,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Returns a bitmask of BlockedActionType for the actions that have been
   // blocked for the given extension.
-  int GetBlockedActions(const ExtensionId& extension_id);
+  int GetBlockedActions(const ExtensionId& extension_id) const;
 
   // Returns true if the given |extension| has any blocked actions.
   bool WantsToRun(const Extension* extension);
@@ -141,9 +144,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   }
 #endif  // defined(UNIT_TEST)
 
-  // The blocked actions that require a page refresh to run.
-  static const int kRefreshRequiredActionsMask;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
                            DoNotResetExtensionActionRunner);
@@ -188,46 +188,23 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Log metrics.
   void LogUMA() const;
 
+  // TODO(crbug.com/1400812): Move this method and
+  // `ShowReloadPageBubbleWithReloadPageCallback` out of EAR and/or combine with
+  // `ShowReloadPageDialog`.
   // Shows the bubble to prompt the user to refresh the page to run or not the
-  // action for the given |extension_ids|. |callback| is invoked when the
-  // bubble is closed.
+  // action for the given `extension_ids`. `callback` is invoked when the bubble
+  // is closed.
   void ShowReloadPageBubble(const std::vector<ExtensionId>& extension_ids,
                             base::OnceClosure callback);
 
-  // Called when the reload page bubble is accepted. Grants one time site access
-  // to `page_url` for each extension in `extension_ids`.
-  void OnReloadPageBubbleAcceptedForGrantTabPermissions(
-      const std::vector<ExtensionId>& extension_ids,
-      const GURL& page_url);
-
-  // Called when the reload page bubble is accepted. Updates site access of
-  // `extension_id` from `current_access` to `new_access` for `page_url`.
-  void OnReloadPageBubbleAcceptedForExtensionSiteAccessChange(
-      const ExtensionId& extension_id,
-      const GURL& page_url,
-      PermissionsManager::UserSiteAccess current_access,
-      PermissionsManager::UserSiteAccess new_access);
+  // Reloads the current page.
+  void OnReloadPageBubbleAccepted();
 
   // Called when the reload page bubble is accepted. Updates user site setting
   // of `origin` to `site_settings`.
   void OnReloadPageBubbleAcceptedForUserSiteSettingsChange(
       const url::Origin& origin,
       extensions::PermissionsManager::UserSiteSetting site_settings);
-
-  // Handles permission changes necessary for page access modification of the
-  // |extension|.
-  void UpdatePageAccessSettings(
-      const Extension* extension,
-      PermissionsManager::UserSiteAccess current_access,
-      PermissionsManager::UserSiteAccess new_access);
-
-  // Runs any actions that were blocked for the given |extension|. As a
-  // requirement, this will grant activeTab permission to the extension.
-  void RunBlockedActions(const Extension* extension);
-
-  // Returns true if the given `extension` needs a page refresh to run a blocked
-  // action.
-  bool PageNeedsRefreshToRun(const Extension* extension);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
