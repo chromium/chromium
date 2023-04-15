@@ -110,7 +110,7 @@
 <translation id="2929907241665500097">發生錯誤，Chrome 未能更新。<ph name="BEGIN_LINK" />請修正 Chrome 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="3019382870990049182">重新啟動以更新 ChromeOS Flex</translation>
-<translation id="303514781271618814">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
+<translation id="303514781271618814">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗</translation>
 <translation id="3037838751736561277">Google Chrome 正在背景模式中執行。</translation>
 <translation id="3038232873781883849">正在等待安裝...</translation>
 <translation id="3059710691562604940">安全瀏覽功能已停用。Chrome 建議啟用這項功能。</translation>
@@ -163,7 +163,7 @@
 <translation id="4035053306113201399">Chrome OS 必須重新啟動，才能套用更新。</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
-<translation id="4106587138345390261">Chrome 正在探索新功能，讓網站在存取較少個人資訊的情況下，仍能提供相同的瀏覽體驗</translation>
+<translation id="4106587138345390261">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗。</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4147555960264124640">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">安裝中...</translation>

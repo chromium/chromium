@@ -6924,7 +6924,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7258192266780953209">Transformacje</translation>
 <translation id="7258225044283673131">Aplikacja nie odpowiada. Aby ją zamknąć, wybierz „Wymuś zamknięcie”.</translation>
 <translation id="7260186537988033909">Rejestrowanie urządzenia w trybie kiosku i tablicy informacyjnej zostało zakończone</translation>
-<translation id="7260367682327802201">Twoje urządzenie z Androidem może mieć podobne ustawienie. Jeśli w Chrome i na Twoim urządzeniu z Androidem jest włączony pomiar skuteczności reklam, firma może mierzyć skuteczność reklam w odwiedzanych przez Ciebie witrynach i w aplikacjach, z których korzystasz.</translation>
+<translation id="7260367682327802201">Twoje urządzenie z Androidem może mieć podobne ustawienie. Jeśli w Chrome i na Twoim urządzeniu z Androidem jest włączony pomiar skuteczności reklam, firma może mierzyć skuteczność reklam w odwiedzanych przez Ciebie witrynach i w aplikacjach, z których korzystasz</translation>
 <translation id="7262004276116528033">Ta usługa logowania pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Usunięto uprawnienia 1 witryny}few{Usunięto uprawnienia {NUM_SITES} witryn}many{Usunięto uprawnienia {NUM_SITES} witryn}other{Usunięto uprawnienia {NUM_SITES} witryny}}</translation>
 <translation id="7264695323040866038">Czy chcesz zawsze używać aplikacji <ph name="APP" /> do otwierania obsługiwanych linków internetowych?</translation>

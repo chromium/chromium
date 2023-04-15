@@ -27,7 +27,7 @@
 <translation id="1043382569739532657">Bevillinger, legater og finansiel bistand</translation>
 <translation id="1048785276086539861">Når du redigerer annoteringer, skifter dette dokument tilbage til enkeltsidevisning</translation>
 <translation id="1050038467049342496">Luk andre apps</translation>
-<translation id="1053959602163383901">Du har valgt at bekræfte med en authenticator-enhed på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
+<translation id="1053959602163383901">Du har valgt at verificere med en authenticator-enhed på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="1055184225775184556">&amp;Fortryd tilføjelse</translation>
 <translation id="1056663316309890343">Fotosoftware</translation>
 <translation id="1056898198331236512">Advarsel</translation>
@@ -633,7 +633,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2512101340618156538">Ikke tilladt (standard)</translation>
 <translation id="2512413427717747692">Knappen Angiv Chrome som standardbrowser, tryk på Enter for at angive Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
 <translation id="2515629240566999685">Tjekke signalet i dit område</translation>
-<translation id="2515761554693942801">Du har valgt at bekræfte med Touch ID på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
+<translation id="2515761554693942801">Du har valgt at verificere med Touch ID på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="2521385132275182522">Hæftning nederst til højre</translation>
 <translation id="2521736961081452453">Opret formular</translation>
 <translation id="2523886232349826891">Gemmes kun på denne enhed</translation>
@@ -669,7 +669,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2587841377698384444">Id for Directory API:</translation>
 <translation id="2594318783181750337">Hurtig webvisning:</translation>
 <translation id="2595719060046994702">Denne enhed og konto administreres ikke af et selskab eller en organisation.</translation>
-<translation id="2596415276201385844">For at kunne oprette en sikker forbindelse skal dit ur skal være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chrome ikke bekræfte disse certifikater.</translation>
+<translation id="2596415276201385844">For at kunne oprette en sikker forbindelse skal dit ur skal være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chrome ikke verificere disse certifikater.</translation>
 <translation id="2597378329261239068">Dette dokument er adgangskodebeskyttet. Angiv en adgangskode.</translation>
 <translation id="259821504105826686">Foto- og digitalkunst</translation>
 <translation id="2601150049980261779">Romantiske film</translation>
@@ -930,7 +930,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3282497668470633863">Tilføj navn på kort</translation>
 <translation id="3286372614333682499">stående</translation>
 <translation id="3287510313208355388">Download, når du er online</translation>
-<translation id="3288238092761586174"><ph name="URL" /> er muligvis nødt til at gennemføre yderligere trin for at bekræfte din betaling</translation>
+<translation id="3288238092761586174"><ph name="URL" /> er muligvis nødt til at gennemføre yderligere trin for at verificere din betaling</translation>
 <translation id="3293642807462928945">Få flere oplysninger om politikken <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer dine adgangskoder i Chrome-indstillingerne</translation>
 <translation id="3299098170013242198">Windows Hello er aktiveret med henblik på udfyldning af adgangskoder</translation>
@@ -1656,7 +1656,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5051305769747448211">Livekomedier</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
 <translation id="5056549851600133418">Artikler til dig</translation>
-<translation id="5060483733937416656">Du har valgt at bekræfte med Windows Hello på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
+<translation id="5060483733937416656">Du har valgt at verificere med Windows Hello på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Udskrivningshistorik</translation>
 <translation id="5068234115460527047">Hedgefonde</translation>
@@ -3125,7 +3125,7 @@ Yderligere oplysninger:
 <translation id="8736059027199600831">30 x 40 tommer</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at åbne et nyt inkognitovindue, så du kan browse privat</translation>
 <translation id="8737685506611670901">Åbne <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
-<translation id="8738058698779197622">For at kunne oprette en sikker forbindelse skal dit ur være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chromium ikke bekræfte disse certifikater.</translation>
+<translation id="8738058698779197622">For at kunne oprette en sikker forbindelse skal dit ur være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chromium ikke verificere disse certifikater.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; for <ph name="HOST_NAME" /> blev ikke fundet. Diagnosticerer problemet.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Tilføj denne fane som bogmærke</translation>

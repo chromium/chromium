@@ -916,7 +916,7 @@
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 日曆中快速建立新活動</translation>
 <translation id="3261488570342242926">瞭解虛擬卡片</translation>
 <translation id="3264837738038045344">「管理 Chrome 設定」按鈕；按下 Enter 鍵即可前往 Chrome 設定</translation>
-<translation id="3266367459139339908">我們推出了多項新方法，限制網站可為放送個人化廣告取得哪些資訊，例如：</translation>
+<translation id="3266367459139339908">我們推出了一些新的機制，限制網站在放送個人化廣告時，可以取得哪些與使用者相關的資訊，例如：</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{未封鎖任何網站 (包括相關網站)}=1{已封鎖 1 個網站 (包括相關網站)}other{已封鎖 # 個網站 (包括相關網站)}}</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
@@ -1093,7 +1093,7 @@
 <translation id="3678342917559046352">副檔名無效：副檔名的格式必須為 &lt;extension_id&gt;、&lt;extension_id&gt; 或 &lt;update_url&gt; 其中之一。</translation>
 <translation id="3678529606614285348">在新的無痕式視窗中開啟網頁 (Ctrl + Shift + N 鍵)</translation>
 <translation id="3681007416295224113">憑證資訊</translation>
-<translation id="3681421644246505351">Chrome 會根據你近期的瀏覽記錄記下感興趣的主題。</translation>
+<translation id="3681421644246505351">Chrome 會根據你近期的瀏覽記錄，記下你感興趣的主題。</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
 <translation id="3701427423622901115">已確認重設。</translation>
 <translation id="3704162925118123524">您可能需要造訪目前所使用網路的登入網頁。</translation>
@@ -1208,7 +1208,7 @@
 <translation id="3987940399970879459">不到 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
 <translation id="3992684624889376114">為何顯示此頁</translation>
-<translation id="399952081411886534">其他讓廣告更有隱私的功能</translation>
+<translation id="399952081411886534">其他有助於保障使用者隱私的廣告控管機制</translation>
 <translation id="4000598935132966791">進一步瞭解受管理瀏覽器中的網站限制</translation>
 <translation id="4006465311664329701">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
 <translation id="4009243425692662128">你列印的頁面內容會傳送給 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描文字，檢查是否含有機密資料。</translation>
@@ -2551,7 +2551,7 @@
 <translation id="7365849542400970216">知道你的裝置使用狀態嗎？</translation>
 <translation id="7366117520888504990">198 x 275 公釐</translation>
 <translation id="7366362069757178916">付款處理常式</translation>
-<translation id="7367985555340314048">Chrome 會根據你最近的瀏覽記錄推測感興趣的主題，做為網站放送個人化廣告的依據</translation>
+<translation id="7367985555340314048">Chrome 會根據你最近的瀏覽記錄推測你感興趣的主題，做為網站放送個人化廣告的依據</translation>
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
@@ -2765,7 +2765,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798389633136518089">由於這個政策並非透過雲端來源設定，因此遭到忽略。</translation>
 <translation id="7800304661137206267">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="MAC" /> 訊息驗證及 <ph name="KX" /> 金鑰交換機制。</translation>
-<translation id="7800977246388195491">Chrome 會根據你近期的瀏覽記錄記下感興趣的主題。此外，你造訪的網站可以判斷你喜歡的內容。在此之後，網站就能要求取得這項資訊，據此向你放送個人化廣告。你可以選擇要根據哪些主題和網站顯示廣告。</translation>
+<translation id="7800977246388195491">Chrome 會根據你近期的瀏覽記錄，記下你感興趣的主題。此外，你造訪的網站可以判斷你喜歡的內容。在此之後，網站就能要求取得這項資訊，據此向你放送個人化廣告。你可以選擇要根據哪些主題和網站顯示廣告。</translation>
 <translation id="7802523362929240268">網站合法</translation>
 <translation id="7802989406998618639">請輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，讓銀行驗證你的身分</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -3074,7 +3074,7 @@
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />我們使用的資料：<ph name="END_BOLD" />你在這部裝置上透過 Chrome 造訪的網站活動。</translation>
 <translation id="8606726445206553943">使用您的 MIDI 裝置</translation>
-<translation id="8606988009912891950">廣告主題可協助網站向你顯示相關廣告，同時保護你的瀏覽記錄和身分。Chrome 可以根據你近期的瀏覽記錄，記下感興趣的主題。在此之後，你造訪的網站就可以要求 Chrome 提供相關主題，據此向你放送個人化廣告。</translation>
+<translation id="8606988009912891950">廣告主題可協助網站向你顯示相關廣告，同時保護你的瀏覽記錄和身分。Chrome 可以根據你近期的瀏覽記錄，記下你感興趣的主題。在此之後，你造訪的網站就可以要求 Chrome 提供相關主題，據此向你放送個人化廣告。</translation>
 <translation id="8617269623452051934">你的裝置使用狀態</translation>
 <translation id="861775596732816396">粗細：4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
