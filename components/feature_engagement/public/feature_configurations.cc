@@ -1137,6 +1137,35 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+
+  if (kIPHAutofillExternalAccountProfileSuggestionFeature.name ==
+      feature->name) {
+    // Externally created account profile suggestion IPH is shown:
+    // * once for an installation, 10-year window is used as the maximum
+    // * if there was no address keyboard accessory IPH in the last 2 weeks
+    // * if such a suggestion was not already accepted
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("autofill_external_account_profile_suggestion_iph_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->used =
+        EventConfig("autofill_external_account_profile_suggestion_accepted",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+#if BUILDFLAG(IS_ANDROID)
+    config->event_configs.insert(
+        EventConfig("keyboard_accessory_address_filling_iph_trigger",
+                    Comparator(EQUAL, 0), 14, k10YearsInDays));
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    return config;
+  }
+
   if (kIPHAutofillVirtualCardSuggestionFeature.name == feature->name) {
     // A config that allows the virtual card credit card suggestion IPH to be
     // shown when:

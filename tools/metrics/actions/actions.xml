@@ -36991,6 +36991,8 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="AutoDarkUserEducationMessageOptIn"
       label="For AutoDarkUserEducationMessageOptIn feature."/>
+  <suffix name="AutofillExternalAccountProfileSuggestion"
+      label="For AutofillExternalAccountProfileSuggestion feature."/>
   <suffix name="AutofillVirtualCardSuggestion"
       label="For AutofillVirtualCardSuggestion feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
