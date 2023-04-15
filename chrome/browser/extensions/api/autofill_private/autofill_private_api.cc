@@ -159,7 +159,7 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     autofill::PersonalDataManager* personal_data,
     const absl::optional<std::string>& country_code) {
   static const base::NoDestructor<base::flat_set<std::string>>
-      kSanctionedCountries({"CU", "IR", "KP", "SD", "SY"});
+      kSanctionedCountries{{"CU", "IR", "KP", "SD", "SY"}};
   autofill::AutofillProfile::Source source =
       personal_data->IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
