@@ -128,7 +128,7 @@ void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             base::Value(ash::TabletMode::Get()->InTabletMode()));
   dict->Set("isDemoModeEnabled",
             base::Value(DemoSetupController::IsDemoModeAllowed()));
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     dict->Set("flowType", base::Value("meet"));
   }
   dict->Set("isQuickStartEnabled",
