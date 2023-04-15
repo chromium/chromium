@@ -172,6 +172,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.NearbyNetworkAutomaticPrintersCount"
+    units="printers" expires_after="2023-12-11">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    The number of detected network printers classified as Automatic, excluding
+    Saved printers. Recorded when the user navigates to the OS Settings Printing
+    page to set up printers. Only recorded on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.NearbyNetworkDiscoveredPrintersCount"
+    units="printers" expires_after="2023-12-11">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    The number of detected network printers classified as Discovered, excluding
+    Saved printers. Recorded when the user navigates to the OS Settings Printing
+    page to set up printers. Only recorded on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
     expires_after="2023-08-27">
   <owner>bmgordon@chromium.org</owner>
