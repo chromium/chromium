@@ -127,6 +127,8 @@ bool DevToolsDataSource::MaybeHandleCustomRequest(const std::string& path,
   std::string stripped_path =
       StripDevToolsRevisionWithPrefix(path, "serve_rev/");
   stripped_path = StripDevToolsRevisionWithPrefix(stripped_path, "serve_file/");
+  stripped_path =
+      StripDevToolsRevisionWithPrefix(stripped_path, "serve_internal_file/");
   if (custom_devtools_frontend.SchemeIsFile()) {
     // Fetch from file system but strip all the params.
     StartFileRequest(PathWithoutParams(stripped_path), std::move(*callback));
