@@ -163,10 +163,6 @@ extern const char kAppleCalendarExperienceKitDescription[];
 extern const char kEmailName[];
 extern const char kEmailDescription[];
 
-// Title and description for the flag to fix the PDF snapshot.
-extern const char kPDFSnapshotName[];
-extern const char kPDFSnapshotDescription[];
-
 // Title and description for the flag to enable phone numbers detection and
 // processing.
 extern const char kPhoneNumberName[];

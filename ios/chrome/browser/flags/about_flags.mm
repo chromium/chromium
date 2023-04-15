@@ -84,7 +84,6 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/snapshots/features.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
@@ -1519,9 +1518,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(reading_list::switches::
                             kReadingListEnableSyncTransportModeUponSignIn)},
-    {"fix-pdf-snapshot", flag_descriptions::kPDFSnapshotName,
-     flag_descriptions::kPDFSnapshotDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPDFSnapshot)},
     {"omnibox-grouping-framework-zps",
      flag_descriptions::kOmniboxGroupingFrameworkForZPSName,
      flag_descriptions::kOmniboxGroupingFrameworkForZPSDescription,
