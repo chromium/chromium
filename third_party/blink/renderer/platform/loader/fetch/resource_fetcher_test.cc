@@ -1391,6 +1391,124 @@ TEST_F(ResourceFetcherTest, PriorityIncremental) {
   }
 }
 
+TEST_F(ResourceFetcherTest, BoostImagePriority) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBoostImagePriority);
+  auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
+  auto* fetcher = CreateFetcher(properties);
+  ResourceRequest request(KURL("https://www.example.com/"));
+
+  // A "small" image should not get a priority boost or count against the
+  // 5-image limit.
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
+        10 /* resource_width*/, 10 /* resource_height*/);
+    EXPECT_EQ(priority, ResourceLoadPriority::kLow);
+  }
+
+  // Test an image with just one of width or height set to zero but the other
+  // dimension not specified to make sure it is also treated as "small"
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
+        0 /* resource_width*/, absl::nullopt /* resource_height*/);
+    EXPECT_EQ(priority, ResourceLoadPriority::kLow);
+  }
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
+        absl::nullopt /* resource_width*/, 0 /* resource_height*/);
+    EXPECT_EQ(priority, ResourceLoadPriority::kLow);
+  }
+
+  // The next 5 images that are not-small should be boosted to Medium priority.
+  // Test both an explicit size over 10,000px^2 as well as no size specified
+  // which defaults to not-small.
+  // #1 - 200x200 = 40000px^2.
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
+        200 /* resource_width*/, 200 /* resource_height*/);
+    EXPECT_EQ(priority, ResourceLoadPriority::kMedium);
+  }
+  // #2 - non-zero width but no height.
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
+        200 /* resource_width*/, absl::nullopt /* resource_height*/);
+    EXPECT_EQ(priority, ResourceLoadPriority::kMedium);
+  }
+  // #3 - non-zero height but no width.
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */,
+        absl::nullopt /* resource_width*/, 200 /* resource_height*/);
+    EXPECT_EQ(priority, ResourceLoadPriority::kMedium);
+  }
+  // #4-5 - neither height nor width.
+  for (int i = 4; i <= 5; i++) {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */);
+    EXPECT_EQ(priority, ResourceLoadPriority::kMedium);
+  }
+
+  // After the 5th non-small image, images should get the default Low priority.
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false /* is_link_preload */);
+    EXPECT_EQ(priority, ResourceLoadPriority::kLow);
+  }
+}
+
 TEST_F(ResourceFetcherTest, Detach) {
   DetachableResourceFetcherProperties& properties =
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();

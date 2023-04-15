@@ -132,7 +132,7 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
       EXPECT_EQ(type, preload_request_->GetResourceType());
       EXPECT_EQ(url, preload_request_->ResourceURL());
       EXPECT_EQ(base_url, preload_request_->BaseURL().GetString());
-      EXPECT_EQ(width, preload_request_->ResourceWidth());
+      EXPECT_EQ(width, preload_request_->GetResourceWidth().value_or(0));
 
       ClientHintsPreferences preload_preferences;
       for (const auto& value : preload_data_->meta_ch_values) {

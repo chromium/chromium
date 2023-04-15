@@ -273,9 +273,9 @@ void BaseFetchContext::AddClientHintsIfNecessary(
                              network::mojom::blink::WebClientHintsType::
                                  kResourceWidth_DEPRECATED,
                              hints_preferences)) {
-      if (image_info->resource_width.is_set) {
+      if (image_info->resource_width) {
         float physical_width =
-            image_info->resource_width.width * image_info->dpr;
+            image_info->resource_width.value() * image_info->dpr;
         request.SetHttpHeaderField(
             network::GetClientHintToNameMap()
                 .at(network::mojom::blink::WebClientHintsType::
@@ -289,9 +289,9 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kResourceWidth,
             hints_preferences)) {
-      if (image_info->resource_width.is_set) {
+      if (image_info->resource_width) {
         float physical_width =
-            image_info->resource_width.width * image_info->dpr;
+            image_info->resource_width.value() * image_info->dpr;
         request.SetHttpHeaderField(
             network::GetClientHintToNameMap()
                 .at(network::mojom::blink::WebClientHintsType::kResourceWidth)

@@ -59,7 +59,8 @@ class HTMLResourcePreloaderTest : public PageTestBase {
         String(), TextPosition::MinimumPosition(), test_case.url,
         KURL(test_case.base_url), ResourceType::kImage,
         network::mojom::ReferrerPolicy(), ResourceFetcher::kImageNotImageSet,
-        nullptr /* exclusion_info */, FetchParameters::ResourceWidth(),
+        nullptr /* exclusion_info */, absl::nullopt /* resource_width */,
+        absl::nullopt /* resource_height */,
         PreloadRequest::kRequestTypePreconnect);
     DCHECK(preload_request);
     if (test_case.is_cors)

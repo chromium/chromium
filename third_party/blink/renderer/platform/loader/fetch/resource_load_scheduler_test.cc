@@ -374,12 +374,16 @@ TEST_F(ResourceLoadSchedulerTest, Stopped) {
 }
 
 TEST_F(ResourceLoadSchedulerTest, PriorityIsConsidered) {
-  // Push three requests.
+  // This tests the request limiting logic in the scheduler for
+  // the tight-mode and regular-mode limits as well as the
+  // special-casing for medium-priority requests.
+
+  // Allow 1 overall request as well as 1 special-case medium request
+  // while blocking anly low-priority requests (starts in tight mode)
+  Scheduler()->SetOutstandingLimitForTesting(
+      0 /* tight_limit */, 1 /* normal_limit */, 1 /* tight_medium_limit */);
+
   MockClient* client1 = MakeGarbageCollected<MockClient>();
-
-  // Allows one kHigh priority request by limits below.
-  Scheduler()->SetOutstandingLimitForTesting(0, 1);
-
   ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
   Scheduler()->Request(client1, ThrottleOption::kThrottleable,
                        ResourceLoadPriority::kLowest, 10 /* intra_priority */,
@@ -407,33 +411,66 @@ TEST_F(ResourceLoadSchedulerTest, PriorityIsConsidered) {
                        &id4);
   EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id4);
 
-  EXPECT_FALSE(client1->WasRun());
-  EXPECT_FALSE(client2->WasRun());
-  EXPECT_FALSE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
+  MockClient* client5 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id5 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client5, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kMedium, 0 /* intra_priority */,
+                       &id5);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id5);
 
+  MockClient* client6 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id6 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client6, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kMedium, 0 /* intra_priority */,
+                       &id6);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id6);
+
+  // Expect that all 3 kLow requests are held, the one kHigh request
+  // is sent by the normal limit and one of the kMedium requests
+  // was sent using the medium-specific limit.
+  EXPECT_FALSE(client1->WasRun()); /* kLowest */
+  EXPECT_FALSE(client2->WasRun()); /* kLow intra=1 */
+  EXPECT_FALSE(client3->WasRun()); /* kLow intra=3 */
+  EXPECT_TRUE(client4->WasRun());  /* kHigh - Newly run */
+  EXPECT_TRUE(client5->WasRun());  /* kMedium - Newly run */
+  EXPECT_FALSE(client6->WasRun()); /* kMedium */
+
+  // Calling Release() on kMedium schedules another one.
+  EXPECT_TRUE(ReleaseAndSchedule(id5));
+  EXPECT_FALSE(client1->WasRun()); /* kLowest */
+  EXPECT_FALSE(client2->WasRun()); /* kLow intra=1 */
+  EXPECT_FALSE(client3->WasRun()); /* kLow intra=3 */
+  // 4 and 5 were already run and checked
+  EXPECT_TRUE(client6->WasRun()); /* kMedium - Newly run */
+
+  // Calling Release() on the last kMedium does not schedule non-medium.
+  EXPECT_TRUE(ReleaseAndSchedule(id6));
+  EXPECT_FALSE(client1->WasRun()); /* kLowest */
+  EXPECT_FALSE(client2->WasRun()); /* kLow intra=1 */
+  EXPECT_FALSE(client3->WasRun()); /* kLow intra=3 */
+  // 4-6 have already run and been run and validated
+
+  // Increasing the limit to 2 should allow another low-priority request
+  // through, in order of priority (client 3 with the highest intra-priority).
   Scheduler()->SetOutstandingLimitForTesting(2);
+  EXPECT_FALSE(client1->WasRun()); /* kLowest */
+  EXPECT_FALSE(client2->WasRun()); /* kLow intra=1 */
+  EXPECT_TRUE(client3->WasRun());  /* kLow intra=3 - Newly run */
 
-  EXPECT_FALSE(client1->WasRun());
-  EXPECT_FALSE(client2->WasRun());
-  EXPECT_TRUE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
-
+  // Increasing the limit to 3 should allow another low-priority request
+  // through, in order of priority (client 2).
   Scheduler()->SetOutstandingLimitForTesting(3);
+  EXPECT_FALSE(client1->WasRun()); /* kLowest */
+  EXPECT_TRUE(client2->WasRun());  /* kLow intra=1 - Newly run */
+  // 3-6 have already run and been run and validated
 
-  EXPECT_FALSE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_TRUE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
-
+  // Increasing the limit to 4 should allow the final (lowest-priority)
+  // request through.
   Scheduler()->SetOutstandingLimitForTesting(4);
-
   EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_TRUE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
 
   // Release the rest.
+  EXPECT_TRUE(Release(id4));
   EXPECT_TRUE(Release(id3));
   EXPECT_TRUE(Release(id2));
   EXPECT_TRUE(Release(id1));

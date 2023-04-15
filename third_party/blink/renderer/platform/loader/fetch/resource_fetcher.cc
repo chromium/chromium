@@ -454,7 +454,9 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     FetchParameters::SpeculativePreloadType speculative_preload_type,
     RenderBlockingBehavior render_blocking_behavior,
     mojom::blink::ScriptType script_type,
-    bool is_link_preload) {
+    bool is_link_preload,
+    const absl::optional<float> resource_width,
+    const absl::optional<float> resource_height) {
   DCHECK(!resource_request.PriorityHasBeenSet() ||
          type == ResourceType::kImage);
   ResourceLoadPriority priority = TypeToPriority(type);
@@ -530,6 +532,10 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
       priority, type, resource_request, defer_option, render_blocking_behavior,
       is_link_preload);
 
+  priority = AdjustImagePriority(priority, type, resource_request,
+                                 speculative_preload_type, is_link_preload,
+                                 resource_width, resource_height);
+
   if (properties_->IsSubframeDeprioritizationEnabled()) {
     if (properties_->IsOutermostMainFrame()) {
       UMA_HISTOGRAM_ENUMERATION(
@@ -553,6 +559,52 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   return priority;
+}
+
+// Boost the priority for the first N not-small images from the preload scanner
+ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
+    ResourceLoadPriority priority_so_far,
+    ResourceType type,
+    const ResourceRequestHead& resource_request,
+    FetchParameters::SpeculativePreloadType speculative_preload_type,
+    bool is_link_preload,
+    const absl::optional<float> resource_width,
+    const absl::optional<float> resource_height) {
+  ResourceLoadPriority new_priority = priority_so_far;
+
+  if (speculative_preload_type ==
+          FetchParameters::SpeculativePreloadType::kInDocument &&
+      type == ResourceType::kImage && !is_link_preload &&
+      boosted_image_count_ < boosted_image_target_) {
+    // If the width or height is available, determine if it is a "small" image
+    // where "small" is any image that covers less than 10,000px^2.
+    // If a size can not be determined then it defaults to "not small"
+    // and gets the relevant priority boost.
+    bool is_small_image = false;
+    if (resource_width && resource_height) {
+      float image_area = resource_width.value() * resource_height.value();
+      if (image_area <= small_image_max_size_) {
+        is_small_image = true;
+      }
+    } else if (resource_width && resource_width == 0) {
+      is_small_image = true;
+    } else if (resource_height && resource_height == 0) {
+      is_small_image = true;
+    }
+    // Count all candidate images
+    if (!is_small_image) {
+      ++boosted_image_count_;
+
+      // only boost the priority if one wasn't explicitly set
+      if (new_priority < ResourceLoadPriority::kMedium &&
+          resource_request.GetFetchPriorityHint() ==
+              mojom::blink::FetchPriorityHint::kAuto) {
+        new_priority = ResourceLoadPriority::kMedium;
+      }
+    }
+  }
+
+  return new_priority;
 }
 
 // This method simply takes in information about a ResourceRequest, and returns
@@ -613,6 +665,15 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       allow_stale_resources_(false),
       image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
+
+  // Determine the number of images that should get a boosted priority and the
+  // pixel area threshold for determining "small" images.
+  // TODO(http://crbug.com/1431169): Change these to constexpr after the
+  // experiments determine appropriate values.
+  if (base::FeatureList::IsEnabled(features::kBoostImagePriority)) {
+    boosted_image_target_ = features::kBoostImagePriorityImageCount.Get();
+    small_image_max_size_ = features::kBoostImagePriorityImageSize.Get();
+  }
 
   if (IsMainThread()) {
     MainThreadFetchersSet().insert(this);
@@ -992,7 +1053,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         resource_type, params.GetResourceRequest(),
         ResourcePriority::kNotVisible, params.Defer(),
         params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
-        params.GetScriptType(), params.IsLinkPreload());
+        params.GetScriptType(), params.IsLinkPreload(),
+        params.GetResourceWidth(), params.GetResourceHeight());
   }
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);

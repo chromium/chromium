@@ -70,8 +70,8 @@ class CORE_EXPORT PreloadRequest {
       const network::mojom::ReferrerPolicy referrer_policy,
       ResourceFetcher::IsImageSet is_image_set,
       const ExclusionInfo* exclusion_info,
-      const FetchParameters::ResourceWidth& resource_width =
-          FetchParameters::ResourceWidth(),
+      const absl::optional<float> resource_width = absl::nullopt,
+      const absl::optional<float> resource_height = absl::nullopt,
       RequestType request_type = kRequestTypePreload);
 
   Resource* Start(Document*);
@@ -99,9 +99,6 @@ class CORE_EXPORT PreloadRequest {
   ResourceType GetResourceType() const { return resource_type_; }
 
   const String& ResourceURL() const { return resource_url_; }
-  float ResourceWidth() const {
-    return resource_width_.is_set ? resource_width_.width : 0;
-  }
   const KURL& BaseURL() const { return base_url_; }
   bool IsPreconnect() const { return request_type_ == kRequestTypePreconnect; }
   network::mojom::ReferrerPolicy GetReferrerPolicy() const {
@@ -143,13 +140,17 @@ class CORE_EXPORT PreloadRequest {
     is_attribution_reporting_eligible_img_or_script_ = eligible;
   }
 
+  absl::optional<float> GetResourceWidth() const { return resource_width_; }
+  absl::optional<float> GetResourceHeight() const { return resource_height_; }
+
  private:
   PreloadRequest(const String& initiator_name,
                  const TextPosition& initiator_position,
                  const String& resource_url,
                  const KURL& base_url,
                  ResourceType resource_type,
-                 const FetchParameters::ResourceWidth& resource_width,
+                 const absl::optional<float> resource_width,
+                 const absl::optional<float> resource_height,
                  RequestType request_type,
                  const network::mojom::ReferrerPolicy referrer_policy,
                  ResourceFetcher::IsImageSet is_image_set)
@@ -159,6 +160,7 @@ class CORE_EXPORT PreloadRequest {
         base_url_(base_url),
         resource_type_(resource_type),
         resource_width_(resource_width),
+        resource_height_(resource_height),
         request_type_(request_type),
         referrer_policy_(referrer_policy),
         is_image_set_(is_image_set) {}
@@ -177,7 +179,8 @@ class CORE_EXPORT PreloadRequest {
       mojom::blink::FetchPriorityHint::kAuto;
   String nonce_;
   FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
-  const FetchParameters::ResourceWidth resource_width_;
+  const absl::optional<float> resource_width_;
+  const absl::optional<float> resource_height_;
   const RequestType request_type_;
   const network::mojom::ReferrerPolicy referrer_policy_;
   IntegrityMetadataSet integrity_metadata_;

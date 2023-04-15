@@ -142,10 +142,11 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // Populates the ResourceRequest using the given values and information
   // stored in the FetchContext implementation. Used by ResourceFetcher to
   // prepare a ResourceRequest instance at the start of resource loading.
-  virtual void PopulateResourceRequest(ResourceType,
-                                       const FetchParameters::ResourceWidth&,
-                                       ResourceRequest&,
-                                       const ResourceLoaderOptions&);
+  virtual void PopulateResourceRequest(
+      ResourceType,
+      const absl::optional<float> resource_width,
+      ResourceRequest&,
+      const ResourceLoaderOptions&);
 
   // Called when the underlying context is detached. Note that some
   // FetchContexts continue working after detached (e.g., for fetch() operations

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS all images must be fetched by the preload scanner
+PASS high fetchpriority on <img> must translate to kHigh resource load priority
+PASS low fetchpriority on <img> must translate to kLow resource load priority
+FAIL auto fetchpriority on <img> must translate to kLow resource load priority assert_equals: expected 1 but got 2
+FAIL invalid fetchpriority on <img> must translate to kLow resource load priority assert_equals: expected 1 but got 2
+FAIL missing fetchpriority on <img> must translate to kLow resource load priority assert_equals: expected 1 but got 2
+Harness: the test ran to completion.
+

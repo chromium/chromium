@@ -258,7 +258,6 @@ class TokenPreloadScanner::StartTagScanner {
 
     TextPosition position =
         TextPosition(source.CurrentLine(), source.CurrentColumn());
-    FetchParameters::ResourceWidth resource_width;
     float source_size = source_size_;
     bool source_size_set = source_size_set_;
     if (picture_data.picked) {
@@ -271,8 +270,9 @@ class TokenPreloadScanner::StartTagScanner {
             : ResourceFetcher::kImageNotImageSet;
 
     if (source_size_set) {
-      resource_width.width = source_size;
-      resource_width.is_set = true;
+      // resource_width_ may have originally been set by an explicit width
+      // attribute on an img tag but it gets overridden by sizes if present.
+      resource_width_ = source_size;
     }
 
     if (type == absl::nullopt)
@@ -287,7 +287,7 @@ class TokenPreloadScanner::StartTagScanner {
     auto request = PreloadRequest::CreateIfNeeded(
         InitiatorFor(tag_impl_, link_is_modulepreload_), position, url_to_load_,
         predicted_base_url, type.value(), referrer_policy, is_image_set,
-        exclusion_info, resource_width, request_type);
+        exclusion_info, resource_width_, resource_height_, request_type);
     if (!request)
       return nullptr;
 
@@ -416,22 +416,36 @@ class TokenPreloadScanner::StartTagScanner {
                Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
       SetFetchPriorityHint(attribute_value);
+    } else if (Match(attribute_name, html_names::kWidthAttr)) {
+      HTMLDimension dimension;
+      if (ParseDimensionValue(attribute_value, dimension) &&
+          dimension.IsAbsolute()) {
+        resource_width_ = dimension.Value();
+      }
+      if (width_attr_dimension_type_ ==
+              HTMLImageElement::LazyLoadDimensionType::kNotAbsolute &&
+          RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+        width_attr_dimension_type_ =
+            HTMLImageElement::GetAttributeLazyLoadDimensionType(
+                attribute_value);
+      }
+    } else if (Match(attribute_name, html_names::kHeightAttr)) {
+      HTMLDimension dimension;
+      if (ParseDimensionValue(attribute_value, dimension) &&
+          dimension.IsAbsolute()) {
+        resource_height_ = dimension.Value();
+      }
+      if (height_attr_dimension_type_ ==
+              HTMLImageElement::LazyLoadDimensionType::kNotAbsolute &&
+          RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+        height_attr_dimension_type_ =
+            HTMLImageElement::GetAttributeLazyLoadDimensionType(
+                attribute_value);
+      }
     } else if (loading_attr_value_ == LoadingAttributeValue::kAuto &&
                Match(attribute_name, html_names::kLoadingAttr) &&
                RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
       loading_attr_value_ = GetLoadingAttributeValue(attribute_value);
-    } else if (width_attr_dimension_type_ ==
-                   HTMLImageElement::LazyLoadDimensionType::kNotAbsolute &&
-               Match(attribute_name, html_names::kWidthAttr) &&
-               RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
-      width_attr_dimension_type_ =
-          HTMLImageElement::GetAttributeLazyLoadDimensionType(attribute_value);
-    } else if (height_attr_dimension_type_ ==
-                   HTMLImageElement::LazyLoadDimensionType::kNotAbsolute &&
-               Match(attribute_name, html_names::kHeightAttr) &&
-               RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
-      height_attr_dimension_type_ =
-          HTMLImageElement::GetAttributeLazyLoadDimensionType(attribute_value);
     } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
       attributionsrc_attr_set_ = true;
     }
@@ -780,6 +794,8 @@ class TokenPreloadScanner::StartTagScanner {
   bool priority_hints_origin_trial_enabled_;
   const HashSet<String>* disabled_image_types_;
   bool attributionsrc_attr_set_ = false;
+  absl::optional<float> resource_width_;
+  absl::optional<float> resource_height_;
 };
 
 TokenPreloadScanner::TokenPreloadScanner(

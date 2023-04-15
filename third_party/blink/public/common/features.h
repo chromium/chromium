@@ -695,6 +695,16 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 // applied. See https://crbug.com/1369823.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageLoadingPrioritizationFix);
 
+// Boost the priority of the first N not-small images.
+// crbug.com/1431169
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostImagePriority);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kBoostImagePriorityImageCount;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kBoostImagePriorityImageSize;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kBoostImagePriorityTightMediumLimit;
+
 // If enabled, allows MediaStreamVideoSource objects to be restarted by a
 // successful source switch. Normally, switching the source would only allowed
 // on streams that are in started state. However, changing the source also first

@@ -831,11 +831,13 @@ static bool SourceSizeValue(const Element* element,
   return exists;
 }
 
-FetchParameters::ResourceWidth HTMLImageElement::GetResourceWidth() const {
-  FetchParameters::ResourceWidth resource_width;
+absl::optional<float> HTMLImageElement::GetResourceWidth() const {
+  absl::optional<float> resource_width;
+  float width_value;
   Element* element = source_.Get();
-  resource_width.is_set = SourceSizeValue(element ? element : this,
-                                          GetDocument(), resource_width.width);
+  if (SourceSizeValue(element ? element : this, GetDocument(), width_value)) {
+    resource_width = width_value;
+  }
   return resource_width;
 }
 

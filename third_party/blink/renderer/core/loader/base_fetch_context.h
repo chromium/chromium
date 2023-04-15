@@ -35,7 +35,7 @@ class WebSocketHandshakeThrottle;
 // frame
 struct ClientHintImageInfo {
   float dpr;
-  FetchParameters::ResourceWidth resource_width;
+  absl::optional<float> resource_width;
   absl::optional<int> viewport_width;
   absl::optional<int> viewport_height;
 };

@@ -1,0 +1,41 @@
+Tests resource priorities.
+
+sendSyncScriptRequest
+Request: empty-script.js?sync priority: High
+sendAsyncScriptRequest
+Request: empty-script.js?async priority: Low
+sendModuleScriptRequest
+Request: module1.js priority: High
+Request: module2.js priority: High
+sendScriptRequestPrecededByImage
+Request: slow-script.pl?delay=500&sendScriptRequestPrecededByImage priority: High
+Request: abe.png?precedingScript priority: Medium
+Request: empty-script.js?precededByImage priority: Medium
+sendScriptRequestPrecededByPreloadedImage
+Request: abe.png?preloaded priority: Low
+Request: style.css?precededByPreloadedImage priority: VeryHigh
+sendStyleRequestPrecededByImage
+Request: slow-script.pl?delay=500&sendStyleRequestPrecededByImage priority: High
+Request: abe.png?precedingStyle priority: Medium
+Request: style.css?precededByImage priority: Medium
+sendStyleRequestPrecededByPreloadedImage
+Request: abe.png?preloaded priority: Low
+Request: empty-script.js?precededByPreloadedImage priority: High
+sendXHRSync
+Request: empty.html?xhr-sync priority: VeryHigh
+sendXHRAsync
+Request: empty.html?xhr-async priority: High
+sendImageRequest
+Request: abe.png?image priority: Low
+sendStyleRequest
+Request: style.css?style priority: VeryHigh
+createIFrame
+Request: empty.html?iframe priority: VeryHigh
+sendScriptsFromDocumentWriteAfterImage
+Request: slow-script.pl?delay=500&sendScriptsFromDocumentWriteAfterImage priority: High
+Request: abe.png?precedingDocWrite priority: Medium
+Request: docwrite.js priority: Medium
+Request: empty-script.js?docWritten-1 priority: High
+Request: empty-script.js?docWritten-2 priority: High
+Request: empty-script.js?docWritten-3 priority: High
+

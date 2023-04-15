@@ -45,10 +45,7 @@ FetchParameters::FetchParameters(ResourceRequest resource_request,
                                  ResourceLoaderOptions options)
     : resource_request_(std::move(resource_request)),
       decoder_options_(TextResourceDecoderOptions::kPlainTextContent),
-      options_(std::move(options)),
-      speculative_preload_type_(SpeculativePreloadType::kNotSpeculative),
-      defer_(kNoDefer),
-      image_request_behavior_(ImageRequestBehavior::kNone) {}
+      options_(std::move(options)) {}
 
 FetchParameters::FetchParameters(FetchParameters&&) = default;
 
@@ -89,11 +86,14 @@ void FetchParameters::SetCrossOriginAccessControl(
     resource_request_.SetHTTPOrigin(origin);
 }
 
-void FetchParameters::SetResourceWidth(ResourceWidth resource_width) {
-  if (resource_width.is_set) {
-    resource_width_.width = resource_width.width;
-    resource_width_.is_set = true;
-  }
+void FetchParameters::SetResourceWidth(
+    const absl::optional<float> resource_width) {
+  resource_width_ = resource_width;
+}
+
+void FetchParameters::SetResourceHeight(
+    const absl::optional<float> resource_height) {
+  resource_height_ = resource_height;
 }
 
 void FetchParameters::SetSpeculativePreloadType(

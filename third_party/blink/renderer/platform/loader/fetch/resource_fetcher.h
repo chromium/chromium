@@ -313,11 +313,13 @@ class PLATFORM_EXPORT ResourceFetcher
       FetchParameters::SpeculativePreloadType speculative_preload_type,
       RenderBlockingBehavior render_blocking_behavior,
       mojom::blink::ScriptType script_type,
-      bool is_link_preload) {
-    return ComputeLoadPriority(type, request, visibility_statue, defer_option,
-                               speculative_preload_type,
-                               render_blocking_behavior, script_type,
-                               is_link_preload);
+      bool is_link_preload,
+      const absl::optional<float> resource_width = absl::nullopt,
+      const absl::optional<float> resource_height = absl::nullopt) {
+    return ComputeLoadPriority(
+        type, request, visibility_statue, defer_option,
+        speculative_preload_type, render_blocking_behavior, script_type,
+        is_link_preload, resource_width, resource_height);
   }
 
   bool ShouldLoadIncrementalForTesting(ResourceType type) {
@@ -384,7 +386,17 @@ class PLATFORM_EXPORT ResourceFetcher
           FetchParameters::SpeculativePreloadType::kNotSpeculative,
       RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
       mojom::blink::ScriptType script_type = mojom::blink::ScriptType::kClassic,
-      bool is_link_preload = false);
+      bool is_link_preload = false,
+      const absl::optional<float> resource_width = absl::nullopt,
+      const absl::optional<float> resource_height = absl::nullopt);
+  ResourceLoadPriority AdjustImagePriority(
+      ResourceLoadPriority priority_so_far,
+      ResourceType type,
+      const ResourceRequestHead& resource_request,
+      FetchParameters::SpeculativePreloadType speculative_preload_type,
+      bool is_link_preload,
+      const absl::optional<float> resource_width,
+      const absl::optional<float> resource_height);
   bool ShouldLoadIncremental(ResourceType type) const;
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
@@ -612,6 +624,17 @@ class PLATFORM_EXPORT ResourceFetcher
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   SubresourceLoadMetrics subresource_load_metrics_;
+
+  // Number of of not-small images that get a priority boost.
+  // TODO(http://crbug.com/1431169): change this to a const after experiments
+  // determine an approopriate value.
+  uint32_t boosted_image_target_ = 0;
+
+  // Number of images that have had their priority boosted by heuristics.
+  uint32_t boosted_image_count_ = 0;
+
+  // Area (in pixels) below which an image is considered "small"
+  uint32_t small_image_max_size_ = 0;
 };
 
 class ResourceCacheValidationSuppressor {

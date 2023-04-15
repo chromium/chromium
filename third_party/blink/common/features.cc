@@ -1437,6 +1437,24 @@ BASE_FEATURE(kImageLoadingPrioritizationFix,
              "ImageLoadingPrioritizationFix",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Boost the priority of the first N not-small images.
+// crbug.com/1431169
+BASE_FEATURE(kBoostImagePriority,
+             "BoostImagePriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The number of images to bopost the priority of before returning
+// to the default (low) priority.
+const base::FeatureParam<int> kBoostImagePriorityImageCount{
+    &kBoostImagePriority, "image_count", 5};
+// Maximum size of an image (in px^2) to be considered "small".
+// Small images, where dimensions are specified in the markup, are not boosted.
+const base::FeatureParam<int> kBoostImagePriorityImageSize{&kBoostImagePriority,
+                                                           "image_size", 10000};
+// Number of medium-priority requests to allow in tight-mode independent of the
+// total number of outstanding requests.
+const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
+    &kBoostImagePriority, "tight_medium_limit", 1};
+
 BASE_FEATURE(kAllowSourceSwitchOnPausedVideoMediaStream,
              "AllowSourceSwitchOnPausedVideoMediaStream",
              base::FEATURE_ENABLED_BY_DEFAULT);
