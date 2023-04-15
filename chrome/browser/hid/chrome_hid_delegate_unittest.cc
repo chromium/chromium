@@ -158,8 +158,8 @@ class MockHidConnectionTracker : public HidConnectionTracker {
       : HidConnectionTracker(profile) {}
   ~MockHidConnectionTracker() override = default;
 
-  MOCK_METHOD(void, IncrementConnectionCount, (), (override));
-  MOCK_METHOD(void, DecrementConnectionCount, (), (override));
+  MOCK_METHOD(void, IncrementConnectionCount, (const url::Origin&), (override));
+  MOCK_METHOD(void, DecrementConnectionCount, (const url::Origin&), (override));
   MOCK_METHOD(void,
               NotifyDeviceConnected,
               (const url::Origin& origin),
@@ -539,7 +539,7 @@ class ChromeHidTestHelper {
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
     if (supports_hid_connection_tracker_)
-      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount);
+      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -552,7 +552,7 @@ class ChromeHidTestHelper {
 
     base::RunLoop decrement_connection_count_loop;
     if (supports_hid_connection_tracker_) {
-      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount)
+      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount(origin))
           .WillOnce(RunClosure(decrement_connection_count_loop.QuitClosure()));
     }
 
@@ -595,7 +595,7 @@ class ChromeHidTestHelper {
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
     if (supports_hid_connection_tracker_)
-      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount);
+      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -608,7 +608,7 @@ class ChromeHidTestHelper {
 
     base::RunLoop decrement_connection_count_loop;
     if (supports_hid_connection_tracker_) {
-      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount)
+      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount(origin))
           .WillOnce(RunClosure(decrement_connection_count_loop.QuitClosure()));
     }
 
@@ -652,7 +652,7 @@ class ChromeHidTestHelper {
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
     if (supports_hid_connection_tracker_)
-      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount);
+      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -671,7 +671,7 @@ class ChromeHidTestHelper {
     // as it will be called in the disconnect path.
     if (supports_hid_connection_tracker_) {
       base::RunLoop decrement_connection_count_loop;
-      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount)
+      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount(origin))
           .WillOnce(RunClosure(decrement_connection_count_loop.QuitClosure()));
       connection.reset();
       decrement_connection_count_loop.Run();
@@ -718,7 +718,7 @@ class ChromeHidTestHelper {
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
     if (supports_hid_connection_tracker_)
-      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount);
+      EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -737,7 +737,7 @@ class ChromeHidTestHelper {
     // as it will be called in the remove device path.
     if (supports_hid_connection_tracker_) {
       base::RunLoop decrement_connection_count_loop;
-      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount)
+      EXPECT_CALL(hid_connection_tracker(), DecrementConnectionCount(origin))
           .WillOnce(RunClosure(decrement_connection_count_loop.QuitClosure()));
       RemoveDevice(device);
       decrement_connection_count_loop.Run();
@@ -810,7 +810,8 @@ class ChromeHidTestHelper {
     hid_service->GetDevices(devices_future.GetCallback());
     EXPECT_THAT(devices_future.Take(), ElementsAre(HasGuid(device->guid)));
 
-    EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount).Times(0);
+    EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin))
+        .Times(0);
     EXPECT_CALL(hid_connection_tracker(), NotifyDeviceConnected(origin))
         .Times(0);
     // Open a connection to `device`.

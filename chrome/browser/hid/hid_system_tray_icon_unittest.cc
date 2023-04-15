@@ -88,32 +88,34 @@ Profile* HidSystemTrayIconTestBase::CreateTestingProfile(
 }
 
 void HidSystemTrayIconTestBase::TestSingleProfile() {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   Profile* profile = CreateTestingProfile("user");
   HidConnectionTracker* hid_connection_tracker =
       HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/true);
   CheckIconHidden();
 
-  hid_connection_tracker->IncrementConnectionCount();
+  hid_connection_tracker->IncrementConnectionCount(origin);
   CheckIcon({{profile, 1}});
 
-  hid_connection_tracker->IncrementConnectionCount();
+  hid_connection_tracker->IncrementConnectionCount(origin);
   CheckIcon({{profile, 2}});
 
-  hid_connection_tracker->IncrementConnectionCount();
+  hid_connection_tracker->IncrementConnectionCount(origin);
   CheckIcon({{profile, 3}});
 
-  hid_connection_tracker->DecrementConnectionCount();
+  hid_connection_tracker->DecrementConnectionCount(origin);
   CheckIcon({{profile, 2}});
 
-  hid_connection_tracker->DecrementConnectionCount();
+  hid_connection_tracker->DecrementConnectionCount(origin);
   CheckIcon({{profile, 1}});
 
-  hid_connection_tracker->DecrementConnectionCount();
+  hid_connection_tracker->DecrementConnectionCount(origin);
   task_environment()->FastForwardBy(HidSystemTrayIcon::kProfileUnstagingTime);
   CheckIconHidden();
 }
 
 void HidSystemTrayIconTestBase::TestProfileShownWhileUnstaging() {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   Profile* profile = CreateTestingProfile("user");
   HidConnectionTracker* hid_connection_tracker =
       HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/true);
@@ -122,10 +124,10 @@ void HidSystemTrayIconTestBase::TestProfileShownWhileUnstaging() {
   // Check the profile is visible while unstaging during 1000ms interval and
   // removed after that.
   {
-    hid_connection_tracker->IncrementConnectionCount();
+    hid_connection_tracker->IncrementConnectionCount(origin);
     CheckIcon({{profile, 1}});
 
-    hid_connection_tracker->DecrementConnectionCount();
+    hid_connection_tracker->DecrementConnectionCount(origin);
     task_environment()->FastForwardBy(base::Seconds(6));
     // Connection count is updated immediately while the profile is scheduled
     // to be removed later.
@@ -137,17 +139,17 @@ void HidSystemTrayIconTestBase::TestProfileShownWhileUnstaging() {
   // Simulate bouncing the device connection and make sure the profile exist
   // during 1000ms interval and removed eventually.
   {
-    hid_connection_tracker->IncrementConnectionCount();
+    hid_connection_tracker->IncrementConnectionCount(origin);
     CheckIcon({{profile, 1}});
-    hid_connection_tracker->DecrementConnectionCount();
+    hid_connection_tracker->DecrementConnectionCount(origin);
     CheckIcon({{profile, 0}});
-    hid_connection_tracker->IncrementConnectionCount();
+    hid_connection_tracker->IncrementConnectionCount(origin);
     CheckIcon({{profile, 1}});
-    hid_connection_tracker->DecrementConnectionCount();
+    hid_connection_tracker->DecrementConnectionCount(origin);
     CheckIcon({{profile, 0}});
-    hid_connection_tracker->IncrementConnectionCount();
+    hid_connection_tracker->IncrementConnectionCount(origin);
     CheckIcon({{profile, 1}});
-    hid_connection_tracker->DecrementConnectionCount();
+    hid_connection_tracker->DecrementConnectionCount(origin);
     CheckIcon({{profile, 0}});
     task_environment()->FastForwardBy(HidSystemTrayIcon::kProfileUnstagingTime);
     CheckIconHidden();
@@ -155,6 +157,7 @@ void HidSystemTrayIconTestBase::TestProfileShownWhileUnstaging() {
 }
 
 void HidSystemTrayIconTestBase::TestMultipleProfiles() {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   size_t num_profiles = 3;
   std::vector<Profile*> profiles;
   std::vector<HidConnectionTracker*> hid_connection_trackers;
@@ -167,13 +170,13 @@ void HidSystemTrayIconTestBase::TestMultipleProfiles() {
   }
   CheckIconHidden();
 
-  hid_connection_trackers[0]->IncrementConnectionCount();
+  hid_connection_trackers[0]->IncrementConnectionCount(origin);
   CheckIcon({{profiles[0], 1}});
 
-  hid_connection_trackers[1]->IncrementConnectionCount();
+  hid_connection_trackers[1]->IncrementConnectionCount(origin);
   CheckIcon({{profiles[0], 1}, {profiles[1], 1}});
 
-  hid_connection_trackers[2]->IncrementConnectionCount();
+  hid_connection_trackers[2]->IncrementConnectionCount(origin);
   CheckIcon({{profiles[0], 1}, {profiles[1], 1}, {profiles[2], 1}});
 
   // Destroyed a profile will remove it from being tracked in the hid system
@@ -182,13 +185,13 @@ void HidSystemTrayIconTestBase::TestMultipleProfiles() {
   CheckIcon({{profiles[1], 1}, {profiles[2], 1}});
 
   // The remaining two profiles are removed 5 seconds apart.
-  hid_connection_trackers[2]->DecrementConnectionCount();
+  hid_connection_trackers[2]->DecrementConnectionCount(origin);
   // Connection count is updated immediately while the profile is scheduled
   // to be removed later.
   CheckIcon({{profiles[1], 1}, {profiles[2], 0}});
 
   task_environment()->FastForwardBy(base::Seconds(5));
-  hid_connection_trackers[1]->DecrementConnectionCount();
+  hid_connection_trackers[1]->DecrementConnectionCount(origin);
   CheckIcon({{profiles[1], 0}, {profiles[2], 0}});
 
   task_environment()->FastForwardBy(base::Seconds(5));

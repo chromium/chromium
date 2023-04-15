@@ -17,8 +17,8 @@ class HidConnectionTracker : public KeyedService {
   HidConnectionTracker& operator=(HidConnectionTracker&) = delete;
   ~HidConnectionTracker() override;
 
-  virtual void IncrementConnectionCount();
-  virtual void DecrementConnectionCount();
+  virtual void IncrementConnectionCount(const url::Origin& origin);
+  virtual void DecrementConnectionCount(const url::Origin& origin);
 
   // Generate a notification about a connection created for |origin|.
   virtual void NotifyDeviceConnected(const url::Origin& origin);

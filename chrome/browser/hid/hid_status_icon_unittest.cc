@@ -162,6 +162,7 @@ TEST_F(HidStatusIconTest, MultipleProfiles) {
 }
 
 TEST_F(HidStatusIconTest, NumProfilesOverLimit) {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   // Set to 10 more profiles than the max limit.
   size_t num_profiles = kMenuMaxItemCount + 10;
   std::vector<std::pair<Profile*, size_t>> profile_connection_counts;
@@ -172,7 +173,7 @@ TEST_F(HidStatusIconTest, NumProfilesOverLimit) {
     hid_connection_trackers.emplace_back(
         HidConnectionTrackerFactory::GetForProfile(profile,
                                                    /*create=*/true));
-    hid_connection_trackers[idx]->IncrementConnectionCount();
+    hid_connection_trackers[idx]->IncrementConnectionCount(origin);
     profile_connection_counts.push_back({profile, 1});
   }
   // CheckIcon has the logic to expect the icon button size is

@@ -66,7 +66,7 @@ HidConnectionTracker::~HidConnectionTracker() {
   CleanUp();
 }
 
-void HidConnectionTracker::IncrementConnectionCount() {
+void HidConnectionTracker::IncrementConnectionCount(const url::Origin& origin) {
   ++connection_count_;
   auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
   if (!hid_system_tray_icon) {
@@ -80,7 +80,7 @@ void HidConnectionTracker::IncrementConnectionCount() {
   }
 }
 
-void HidConnectionTracker::DecrementConnectionCount() {
+void HidConnectionTracker::DecrementConnectionCount(const url::Origin& origin) {
   --connection_count_;
   auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
   if (!hid_system_tray_icon) {

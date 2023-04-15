@@ -250,7 +250,7 @@ void ChromeHidDelegate::IncrementConnectionCount(
   auto* hid_connection_tracker =
       GetConnectionTracker(browser_context, /*create=*/true);
   if (hid_connection_tracker) {
-    hid_connection_tracker->IncrementConnectionCount();
+    hid_connection_tracker->IncrementConnectionCount(origin);
     hid_connection_tracker->NotifyDeviceConnected(origin);
   }
 }
@@ -268,6 +268,6 @@ void ChromeHidDelegate::DecrementConnectionCount(
   auto* hid_connection_tracker =
       GetConnectionTracker(browser_context, /*create=*/false);
   if (hid_connection_tracker) {
-    hid_connection_tracker->DecrementConnectionCount();
+    hid_connection_tracker->DecrementConnectionCount(origin);
   }
 }

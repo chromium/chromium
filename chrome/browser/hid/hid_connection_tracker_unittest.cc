@@ -206,33 +206,35 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
 }  // namespace
 
 TEST_F(HidConnectionTrackerTest, DeviceConnection) {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
+  hid_connection_tracker().IncrementConnectionCount(origin);
   EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
+  hid_connection_tracker().IncrementConnectionCount(origin);
   EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
-  hid_connection_tracker().DecrementConnectionCount();
+  hid_connection_tracker().DecrementConnectionCount(origin);
   EXPECT_CALL(hid_system_tray_icon(),
               UnstageProfile(profile(), /*immediate*/ false));
-  hid_connection_tracker().DecrementConnectionCount();
+  hid_connection_tracker().DecrementConnectionCount(origin);
 }
 
+// Test the scenario with null HID system tray icon and it doesn't cause crash.
 TEST_F(HidConnectionTrackerTest, DeviceConnectionWithNullSystemTrayIcon) {
-  // Test the scenario with null HID system tray icon and it doesn't cause
-  // crash.
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
-  hid_connection_tracker().IncrementConnectionCount();
-  hid_connection_tracker().IncrementConnectionCount();
-  hid_connection_tracker().DecrementConnectionCount();
-  hid_connection_tracker().DecrementConnectionCount();
+  hid_connection_tracker().IncrementConnectionCount(origin);
+  hid_connection_tracker().IncrementConnectionCount(origin);
+  hid_connection_tracker().DecrementConnectionCount(origin);
+  hid_connection_tracker().DecrementConnectionCount(origin);
 }
 
 TEST_F(HidConnectionTrackerTest, ProfileDestroyed) {
+  auto origin = url::Origin::Create(GURL("https://www.example.com"));
   CreateTestingProfile(kTestProfileName);
   EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
+  hid_connection_tracker().IncrementConnectionCount(origin);
   EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
-  hid_connection_tracker().IncrementConnectionCount();
+  hid_connection_tracker().IncrementConnectionCount(origin);
   EXPECT_CALL(hid_system_tray_icon(),
               UnstageProfile(profile(), /*immediate*/ true));
   profile_manager()->DeleteTestingProfile(kTestProfileName);
