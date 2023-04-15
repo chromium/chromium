@@ -7,22 +7,58 @@
  * (HTMLSelectMenuElement enabled).
  */
 
- @namespace "http://www.w3.org/1999/xhtml";
+@namespace "http://www.w3.org/1999/xhtml";
 
 selectmenu {
   display: inline-block;
   user-select: none;
+  font-family: sans-serif;
+  font-size: .875em;
 }
 
 selectmenu::-internal-selectmenu-button {
   display: inline-flex;
   align-items: center;
-  background-color: -internal-light-dark(#ffffff, #3B3B3B);
-  padding: 0 0 0 3px;
-  border: 1px solid -internal-light-dark(#767676, #858585);
-  border-radius: 2px;
   cursor: default;
   appearance: none;
+  background-color: Field;
+  color: ButtonText;
+  border: 1px solid ButtonBorder;
+  border-radius: 0.25em;
+  padding: 0.25em;
+}
+
+/* TODO(masonf) We need an internal pseudo for the selected value part */
+selectmenu::part(selected-value) {
+  color: HighlightText;
+}
+
+selectmenu option {
+  font-size: .875em;
+  padding: 0.25em;
+}
+
+selectmenu option:hover {
+  cursor: default;
+  user-select: none;
+  background-color: SelectedItem;
+  color: SelectedItemText;
+}
+
+selectmenu optgroup {
+  padding-bottom: 0.75em;
+}
+
+selectmenu optgroup:last-child {
+  padding-bottom: 0;
+}
+
+selectmenu optgroup > option {
+  padding-left: 0.75em;
+}
+
+selectmenu optgroup > option {
+  padding-left: 0.75em;
 }
 
 selectmenu::-internal-selectmenu-button-icon {
@@ -48,15 +84,14 @@ selectmenu:disabled::-internal-selectmenu-button {
   opacity: 0.7;
 }
 
-selectmenu option:hover {
-  background-color: lightgray;
-  cursor: default;
-  user-select: none;
-}
-
 selectmenu option:disabled {
   background-color: initial;
-  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+  color: GrayText;
+}
+
+/* remove highlight on disabled options, making them visually un-selectable  */
+selectmenu option:disabled:hover {
+  background-color: transparent;
 }
 
 selectmenu option:checked:disabled {
@@ -64,12 +99,13 @@ selectmenu option:checked:disabled {
 }
 
 selectmenu::-internal-selectmenu-listbox {
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
-  padding: 4px;
+  background-color: Field;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25em;
+  padding: 0.25em 0;
 }
 
 /* TODO(github.com/openui/open-ui/issues/645): We need a better way to correctly
