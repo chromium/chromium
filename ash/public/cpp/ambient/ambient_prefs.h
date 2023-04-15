@@ -90,6 +90,11 @@ ASH_PUBLIC_EXPORT extern const char
 // for the sign-in profile.
 ASH_PUBLIC_EXPORT extern const char kAmbientModeManagedScreensaverImages[];
 
+// Integer pref for the number of minutes to wait before putting the device into
+// sleep after Ambient mode has started. Logged in users can set this value in
+// the Personalization Hub screensaver subpage.
+ASH_PUBLIC_EXPORT extern const char kAmbientModeRunningDurationMinutes[];
+
 // Migrates from the legacy |ambient::prefs::kAmbientTheme| to the new
 // |ambient::prefs::kAmbientUiSettings|.
 ASH_PUBLIC_EXPORT void MigrateDeprecatedPrefs(PrefService& pref_service);

@@ -81,6 +81,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setAmbientModeEnabled',
       'setAnimationTheme',
       'setPageViewed',
+      'setScreenSaverDuration',
       'setTopicSource',
       'setTemperatureUnit',
       'setAlbumSelected',
@@ -123,6 +124,10 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setAnimationTheme(animationTheme: AnimationTheme) {
     this.methodCalled('setAnimationTheme', animationTheme);
+  }
+
+  setScreenSaverDuration(minutes: number): void {
+    this.methodCalled('setScreenSaverDuration', minutes);
   }
 
   setTopicSource(topicSource: TopicSource) {

@@ -210,6 +210,11 @@ void PersonalizationAppAmbientProviderImpl::SetTopicSource(
   MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
 }
 
+void PersonalizationAppAmbientProviderImpl::SetScreenSaverDuration(
+    int minutes) {
+  Shell::Get()->ambient_controller()->SetScreenSaverDuration(minutes);
+}
+
 void PersonalizationAppAmbientProviderImpl::SetTemperatureUnit(
     ash::AmbientModeTemperatureUnit temperature_unit) {
   if (settings_->temperature_unit != temperature_unit) {

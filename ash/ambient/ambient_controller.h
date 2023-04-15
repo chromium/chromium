@@ -136,6 +136,10 @@ class ASH_EXPORT AmbientController
 
   void ToggleInSessionUi();
 
+  // |minutes| is the number of minutes to run screen saver before putting the
+  // device into sleep. |minutes| with a value 0 means forever.
+  void SetScreenSaverDuration(int minutes);
+
   // Returns true if ambient mode containers are visible or are being
   // constructed.
   bool IsShown() const;

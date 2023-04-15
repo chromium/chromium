@@ -54,6 +54,7 @@ class PersonalizationAppAmbientProviderImpl
           observer) override;
   void SetAmbientModeEnabled(bool enabled) override;
   void SetAnimationTheme(ash::AmbientTheme animation_theme) override;
+  void SetScreenSaverDuration(int minutes) override;
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override;

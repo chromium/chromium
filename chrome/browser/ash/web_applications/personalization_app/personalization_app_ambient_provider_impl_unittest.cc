@@ -283,6 +283,10 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     ambient_provider_->UpdateSettings();
   }
 
+  void SetScreenSaverDuration(int minutes) {
+    ambient_provider_->SetScreenSaverDuration(minutes);
+  }
+
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) {
     ambient_provider_->SetTopicSource(topic_source);
   }

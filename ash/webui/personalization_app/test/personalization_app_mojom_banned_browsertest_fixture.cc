@@ -41,6 +41,7 @@ class MockPersonalizationAppAmbientProvider
               SetAnimationTheme,
               (ash::AmbientTheme animation_theme),
               (override));
+  MOCK_METHOD(void, SetScreenSaverDuration, (int minutes), (override));
   MOCK_METHOD(void,
               SetTopicSource,
               (ash::AmbientModeTopicSource topic_source),

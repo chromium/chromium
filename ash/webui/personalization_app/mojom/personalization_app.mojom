@@ -655,6 +655,11 @@ interface AmbientProvider {
   // Sets the ambient animation theme.
   SetAnimationTheme(AnimationTheme animation_theme);
 
+  // Sets the screen saver running duration before put into sleep.
+  //
+  // SPECIAL NOTE: |minutes| with value 0 means forever.
+  SetScreenSaverDuration(int32 minutes);
+
   // Sets the ambient mode topic source.
   //
   // SPECIAL NOTE: If |SetAnimationTheme(kVideo)| is called, the provider's

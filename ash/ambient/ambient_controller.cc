@@ -229,6 +229,12 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
       kManagedScreensaverImageRefreshInterval.InSeconds());
+
+  if (ash::features::IsScreenSaverDurationEnabled()) {
+    registry->RegisterIntegerPref(
+        ambient::prefs::kAmbientModeRunningDurationMinutes,
+        kDefaultScreenSaverDuration.InMinutes());
+  }
 }
 
 AmbientController::AmbientController(
@@ -654,6 +660,15 @@ void AmbientController::ToggleInSessionUi() {
     ShowUi();
   else
     CloseUi();
+}
+
+void AmbientController::SetScreenSaverDuration(int minutes) {
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->Set(ambient::prefs::kAmbientModeRunningDurationMinutes,
+                    base::Value(minutes));
 }
 
 bool AmbientController::IsShown() const {
