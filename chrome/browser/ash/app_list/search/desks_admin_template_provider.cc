@@ -14,7 +14,10 @@
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "ui/gfx/image/image_skia.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
@@ -30,7 +33,7 @@ DesksAdminTemplateResult::DesksAdminTemplateResult(
     AppListControllerDelegate* list_controller,
     const base ::GUID& template_uuid,
     const std::u16string& title,
-    const gfx::ImageSkia& icon)
+    const ui::ImageModel& icon)
     : profile_(profile),
       list_controller_(list_controller),
       template_uuid_(template_uuid) {
@@ -42,7 +45,9 @@ DesksAdminTemplateResult::DesksAdminTemplateResult(
   SetResultType(ResultType::kDesksAdminTemplate);
   SetDisplayType(DisplayType::kContinue);
   SetMetricsType(ash::DESKS_ADMIN_TEMPLATE);
-  SetChipIcon(icon);
+
+  // TODO(b/278271038): Change to use `SetIcon` here instead of `SetBadgeIcon`.
+  SetBadgeIcon(icon);
 }
 
 DesksAdminTemplateResult::~DesksAdminTemplateResult() = default;
@@ -66,16 +71,12 @@ void DesksAdminTemplateProvider::StartZeroState() {
 
   auto* controller = ash::SavedDeskController::Get();
 
-  // TODO(b/273799604): Change the `icon_color` after future discussion.
-  auto* color_provider = ash::ColorProvider::Get();
-  // NOTE: Color provider may not be set in unit tests.
-  SkColor icon_color =
-      color_provider
-          ? color_provider->GetContentLayerColor(
-                ash::ColorProvider::ContentLayerType::kIconColorPrimary)
-          : gfx::kGoogleGrey900;
-  gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      ash::kDesksTemplatesIcon, app_list::kSystemIconDimension, icon_color);
+  ui::ColorId color_id =
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysTertiary
+          : static_cast<ui::ColorId>(cros_tokens::kIconColorPrimary);
+  ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
+      ash::kDesksTemplatesIcon, color_id, kSystemIconDimension);
 
   for (const auto& metadata : controller->GetAdminTemplateMetadata()) {
     // With productivity launcher enabled, release notes are shown in continue

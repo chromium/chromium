@@ -217,7 +217,18 @@ void ContinueTaskView::UpdateIcon() {
     return;
   }
 
-  const gfx::ImageSkia& icon = result()->chip_icon();
+  gfx::ImageSkia icon;
+
+  // TODO(b/278271038): After changing the type of icon in
+  // `SearchResultIconInfo` from `ImageSkia` to `ImageModel`, please make sure
+  // get rid of `badge_icon` here; and use the `icon` instead. Also, you need to
+  // replace `SetBadgeIcon` in `DesksAdminTemplateResult` to `SetIcon`.
+  if (!result()->badge_icon().IsEmpty()) {
+    icon = result()->badge_icon().Rasterize(GetColorProvider());
+  } else {
+    icon = result()->chip_icon();
+  }
+
   icon_->SetImage(CreateIconWithCircleBackground(
       icon.size() == GetIconSize()
           ? icon

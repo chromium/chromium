@@ -16,9 +16,9 @@
 class AppListControllerDelegate;
 class Profile;
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace app_list {
 
@@ -29,7 +29,7 @@ class DesksAdminTemplateResult : public ChromeSearchResult {
                            AppListControllerDelegate* list_controller,
                            const base::GUID& template_uuid,
                            const std::u16string& title,
-                           const gfx::ImageSkia& icon);
+                           const ui::ImageModel& icon);
 
   ~DesksAdminTemplateResult() override;
 
