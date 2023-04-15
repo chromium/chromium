@@ -24,9 +24,11 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -1752,7 +1754,10 @@ void OverviewGrid::ShowSavedDeskLibrary() {
     // library if we are currently in the zero state mode.
     gfx::Rect library_bounds = bounds_;
     library_bounds.Inset(gfx::Insets::TLBR(
-        DesksBarView::GetExpandedBarHeight(root_window_), 0, 0, 0));
+        DesksBarView::GetPreferredBarHeight(root_window_,
+                                            DesksBarView::Type::kOverview,
+                                            DesksBarView::State::kExpanded),
+        0, 0, 0));
 
     saved_desk_library_widget_->SetBounds(library_bounds);
   }
@@ -2186,8 +2191,8 @@ void OverviewGrid::MaybeInitDesksWidget() {
   if (!desks_util::ShouldDesksBarBeCreated() || desks_widget_)
     return;
 
-  desks_widget_ =
-      DesksBarView::CreateDesksWidget(root_window_, GetDesksWidgetBounds());
+  desks_widget_ = DeskBarViewBase::CreateDeskWidget(
+      root_window_, GetDesksWidgetBounds(), DeskBarViewBase::Type::kOverview);
 
   // The following order of function calls is significant: SetContentsView()
   // must be called before DesksBarView:: Init(). This is needed because the
@@ -2576,9 +2581,9 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
                                    ->disable_app_id_check_for_saved_desks() ||
                                !full_restore::GetAppId(window).empty());
   int addend = increment ? 1 : -1;
-  if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id)
+  if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id) {
     num_unsupported_windows_ += addend;
-  else if (Shell::Get()->saved_desk_delegate()->IsIncognitoWindow(window)) {
+  } else if (Shell::Get()->saved_desk_delegate()->IsIncognitoWindow(window)) {
     num_incognito_windows_ += addend;
   }
 
@@ -2587,14 +2592,12 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
 }
 
 int OverviewGrid::GetDesksBarHeight() const {
-  const bool should_show_zero_state_desks_bar =
-      desks_bar_view_ ? desks_bar_view_->IsZeroState()
-                      : !IsShowingSavedDeskLibrary() &&
-                            DesksController::Get()->GetNumberOfDesks() == 1;
-
-  return should_show_zero_state_desks_bar
-             ? DesksBarView::kZeroStateBarHeight
-             : DesksBarView::GetExpandedBarHeight(root_window_);
+  DeskBarViewBase::State state =
+      desks_bar_view_
+          ? desks_bar_view_->state()
+          : DesksBarView::GetPerferredState(DesksBarView::Type::kOverview);
+  return DesksBarView::GetPreferredBarHeight(
+      root_window_, DesksBarView::Type::kOverview, state);
 }
 
 }  // namespace ash

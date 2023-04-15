@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/callback_list.h"
@@ -33,8 +34,7 @@ class ZeroStateIconButton;
 
 // A bar that resides at the top portion of the overview mode's ShieldView,
 // which contains the virtual desks mini_views, as well as the new desk button.
-class ASH_EXPORT DesksBarView : public views::View,
-                                public DesksController::Observer {
+class ASH_EXPORT DesksBarView : public DeskBarViewBase {
  public:
   explicit DesksBarView(OverviewGrid* overview_grid);
 
@@ -42,19 +42,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   DesksBarView& operator=(const DesksBarView&) = delete;
 
   ~DesksBarView() override;
-
-  static constexpr int kZeroStateBarHeight = 40;
-
-  // Returns the height of the expanded desks bar that exists on `root`. The
-  // height of zero state desks bar is `kZeroStateBarHeight`.
-  static int GetExpandedBarHeight(aura::Window* root);
-
-  // Creates and returns the widget that contains the DeskBarView in overview
-  // mode. The returned widget has no content view yet, and hasn't been shown
-  // yet.
-  static std::unique_ptr<views::Widget> CreateDesksWidget(
-      aura::Window* root,
-      const gfx::Rect& bounds);
 
   void set_is_bounds_animation_on_going(bool value) {
     is_bounds_animation_on_going_ = value;
@@ -148,10 +135,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   void SetDragDetails(const gfx::Point& screen_location,
                       bool dragged_item_over_bar);
 
-  // Returns true if it is in zero state. It is the state of the desks bar when
-  // there's only a single desk available, in which case the bar is shown in a
-  // minimized state.
-  bool IsZeroState() const;
   // Handle the mouse press event from a desk preview.
   void HandlePressEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
   // Handle the gesture long press event from a desk preview.
@@ -205,12 +188,26 @@ class ASH_EXPORT DesksBarView : public views::View,
   void OnDeskNameChanged(const Desk* desk,
                          const std::u16string& new_name) override;
 
-  // This is called on initialization, creating a new desk through the
-  // NewDeskButton or ExpandedDesksBarButton, or expanding from zero state
-  // bar to the expanded desks bar. Performs the expanding animation if
-  // |expanding_bar_view| is true, otherwise animates the mini_views (also the
-  // ExpandedDesksBarButton) to their final positions if
-  // |initializing_bar_view| is false.
+  // This is used for the initialization, the expansion, or just the update of
+  // child components.
+  // Given input parameter values of {`initializing_bar_view`,
+  // `expanding_bar_view`}, this does different things as following.
+  //    1. {false, false}
+  //      When a desk is added from the expanded state, the bar remains
+  //      expanded.
+  //    2. {true, false}
+  //      When the bar is being initialized, the bar will switch to either the
+  //      zero state or the expanded state.
+  //    3. {false, true}
+  //      When the bar is being expanded, the bar will switch to the expanded
+  //      state. This is when a desk is added from the zero state, or by the
+  //      interaction of bar UI, such as clicking the default desk button,
+  //      dragging overview item over new desk button, clicking the library
+  //      button, etc.
+  //    4. {true, true}
+  //      Not a valid input.
+  // TODO(b/277969403): Improve and simplify this overloaded function by moving
+  // logic to `SwitchToZeroState` and `SwitchToExpandedState`.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
   // If the focused `view` is outside of the scroll view's visible bounds,
@@ -253,8 +250,13 @@ class ASH_EXPORT DesksBarView : public views::View,
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
 
-  // Animates the bar from expanded state to zero state. Clears `mini_views_`.
+  // Animates the bar from the expanded state to the zero state. It refreshes
+  // the bounds of the desk bar widget, and also updates child UI components,
+  // including desk mini views, the new desk button, and the library button.
   void SwitchToZeroState();
+
+  // Animates the bar from the zero state to the expanded state.
+  void SwitchToExpandedState();
 
   // Bring focus to the name view of the desk with `desk_index`.
   void NudgeDeskName(int desk_index);

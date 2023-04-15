@@ -120,8 +120,9 @@ gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
   const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
   DCHECK(desks_bar_view);
 
-  const int expanded_desks_bar_height =
-      DesksBarView::GetExpandedBarHeight(overview_grid->root_window());
+  const int expanded_desks_bar_height = DesksBarView::GetPreferredBarHeight(
+      overview_grid->root_window(), DesksBarView::Type::kOverview,
+      DesksBarView::State::kExpanded);
 
   // We should always use the expanded desks bar height here even if the desks
   // bar is actually in zero state to calculate `scale_factor`. Because if zero
@@ -399,8 +400,9 @@ void OverviewWindowDragController::StartNormalDragMode(
           GetItemSizeWhenOnDesksBar(grid.get(), window_original_size);
       grid_desks_bar_data.desks_bar_bounds = grid_desks_bar_data.shrink_bounds =
           gfx::RectF(grid->desks_bar_view()->GetBoundsInScreen());
-      const int expanded_height =
-          DesksBarView::GetExpandedBarHeight(grid->root_window());
+      const int expanded_height = DesksBarView::GetPreferredBarHeight(
+          grid->root_window(), DesksBarView::Type::kOverview,
+          DesksBarView::State::kExpanded);
       grid_desks_bar_data.desks_bar_bounds.set_height(expanded_height);
       grid_desks_bar_data.shrink_bounds.set_height(expanded_height);
       grid_desks_bar_data.shrink_bounds.Inset(gfx::InsetsF::VH(

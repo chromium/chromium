@@ -36,6 +36,7 @@
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
@@ -1705,9 +1706,8 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
 
   // Verify that originally the label is in the center of the workspace.
   // Midpoint of height minus shelf.
-  int expected_y = (300 - ShelfConfig::Get()->shelf_size() +
-                    DesksBarView::kZeroStateBarHeight) /
-                   2;
+  int expected_y =
+      (300 - ShelfConfig::Get()->shelf_size() + kDeskBarZeroStateHeight) / 2;
   EXPECT_EQ(gfx::Point(200, expected_y),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
 
@@ -1718,9 +1718,8 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
-  expected_y = (400 - ShelfConfig::Get()->shelf_size() +
-                DesksBarView::kZeroStateBarHeight) /
-               2;
+  expected_y =
+      (400 - ShelfConfig::Get()->shelf_size() + kDeskBarZeroStateHeight) / 2;
   EXPECT_EQ(gfx::Point(150, expected_y),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
 }

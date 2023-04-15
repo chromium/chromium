@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
@@ -176,8 +177,9 @@ class OverviewWindowDragControllerTest : public AshTestBase {
   }
 
   int GetDesksBarViewExpandedStateHeight(const DesksBarView* desks_bar_view) {
-    return desks_bar_view->GetExpandedBarHeight(
-        desks_bar_view->GetWidget()->GetNativeWindow()->GetRootWindow());
+    return DesksBarView::GetPreferredBarHeight(
+        desks_bar_view->GetWidget()->GetNativeWindow()->GetRootWindow(),
+        DesksBarView::Type::kOverview, DesksBarView::State::kExpanded);
   }
 };
 
@@ -311,16 +313,14 @@ TEST_F(OverviewWindowDragControllerTest,
   const auto* desks_bar_view = overview_grid()->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   // Check the height of the desks bar view. It should have height
-  // `kZeroStateBarHeight` while dragging `window`.
-  EXPECT_EQ(DesksBarView::kZeroStateBarHeight,
-            desks_bar_view->bounds().height());
+  // `kDeskBarZeroStateHeight` while dragging `window`.
+  EXPECT_EQ(kDeskBarZeroStateHeight, desks_bar_view->bounds().height());
 
   // Now drop `window`. Check the height of the desks bar view. It should still
-  // be `kZeroStateBarHeight`.
+  // be `kDeskBarZeroStateHeight`.
   auto* event_generator = GetEventGenerator();
   event_generator->ReleaseLeftButton();
-  EXPECT_EQ(DesksBarView::kZeroStateBarHeight,
-            desks_bar_view->bounds().height());
+  EXPECT_EQ(kDeskBarZeroStateHeight, desks_bar_view->bounds().height());
 
   // Click on the zero state new desk button to create a new desk. This
   // shouldn't end overview mode. The desks bar view should be transformed to
@@ -344,8 +344,7 @@ TEST_F(OverviewWindowDragControllerTest,
                          DeskCloseType::kCombineDesks);
   EXPECT_TRUE(overview_controller()->InOverviewSession());
   EXPECT_TRUE(desks_bar_view->IsZeroState());
-  EXPECT_EQ(DesksBarView::kZeroStateBarHeight,
-            desks_bar_view->bounds().height());
+  EXPECT_EQ(kDeskBarZeroStateHeight, desks_bar_view->bounds().height());
 }
 
 // Tests that dragging window in portrait mode won't cause overview items

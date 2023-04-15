@@ -20,6 +20,14 @@ constexpr float kEdgePaddingRatio = 0.1f;
 // full desk change.
 constexpr int kTouchpadSwipeLengthForDeskChange = 420;
 
+// This is the height allocated for elements other than the desk preview (e.g.
+// the DeskNameView, and the vertical paddings). Note, the vertical paddings
+// should exclude the preview border's insets.
+constexpr int kDeskBarNonPreviewAllocatedHeight = 48;
+
+// This is the desk bar height for zero state.
+constexpr int kDeskBarZeroStateHeight = 40;
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_CONSTANTS_H_

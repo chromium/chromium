@@ -8,8 +8,10 @@
 
 #include "ash/shell.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -232,7 +234,7 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
     // When `to_zero_state` is false, desks bar is switching from zero to
     // expanded state.
     if (to_zero_state) {
-      target_widget_bounds.set_height(DesksBarView::kZeroStateBarHeight);
+      target_widget_bounds.set_height(kDeskBarZeroStateHeight);
 
       if (chromeos::features::IsJellyrollEnabled()) {
         // When `Jellyroll` is enabled, setting desks bar's bounds to its bounds
@@ -259,8 +261,9 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
       // Then set the bounds of the desks bar back to its bounds at zero state
       // to start the bounds change animation. See more details at
       // `is_bounds_animation_on_going_`.
-      target_widget_bounds.set_height(bar_view_->GetExpandedBarHeight(
-          desks_widget->GetNativeWindow()->GetRootWindow()));
+      target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
+          desks_widget->GetNativeWindow()->GetRootWindow(),
+          DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
       desks_widget->SetBounds(target_widget_bounds);
       bar_view_->set_is_bounds_animation_on_going(true);
       desks_widget->SetBounds(current_widget_bounds);
