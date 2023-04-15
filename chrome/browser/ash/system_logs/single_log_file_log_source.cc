@@ -88,7 +88,9 @@ SingleLogFileLogSource::SingleLogFileLogSource(SupportedSource source_type)
     : SystemLogsSource(GetLogFileSourceRelativeFilePathValue(source_type)),
       source_type_(source_type),
       log_file_dir_path_(kDefaultSystemLogDirPath),
-      max_read_size_(kMaxReadSize) {}
+      max_read_size_(kMaxReadSize),
+      file_cursor_position_(0),
+      file_inode_(0) {}
 
 SingleLogFileLogSource::~SingleLogFileLogSource() {}
 
@@ -136,36 +138,35 @@ void SingleLogFileLogSource::ContinueReadFile(
     bool bytes_skipped,
     size_t num_rotations_allowed,
     SystemLogsResponse* response) {
-  // Handle for reading the log file that is source of logging data.
-  base::File file;
-
   // Attempt to open the file if it was not previously opened.
-  file.Initialize(GetLogFilePath(),
-                  base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid())
-    return;
+  if (!file_.IsValid()) {
+    file_.Initialize(GetLogFilePath(),
+                     base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!file_.IsValid())
+      return;
 
-  // Keeps track of how much data has been read or skipped from |file|.
-  size_t file_cursor_position = 0;
-
-  // File system inode value that was associated with |log_file_path_| when it
-  // was originally opened for reading.
-  ino_t file_inode = GetInodeValue(GetLogFilePath());
+    file_cursor_position_ = 0;
+    file_inode_ = GetInodeValue(GetLogFilePath());
+  }
 
   // Check for file size reset.
-  const size_t length = file.GetLength();
+  const size_t length = file_.GetLength();
+  if (length < file_cursor_position_) {
+    file_cursor_position_ = 0;
+    file_.Seek(base::File::FROM_BEGIN, 0);
+  }
 
   // Check for large read and skip forward to avoid out-of-memory conditions.
-  if (length > max_read_size_) {
+  if (length - file_cursor_position_ > max_read_size_) {
     bytes_skipped = true;
-    file.Seek(base::File::FROM_END, -max_read_size_);
-    // Update |file_cursor_position| to support the file size reset check.
-    file_cursor_position = length - max_read_size_;
+    file_.Seek(base::File::FROM_END, -max_read_size_);
+    // Update |file_cursor_position_| to support the file size reset check.
+    file_cursor_position_ = length - max_read_size_;
   }
 
   // The calculated amount of data to read, after adjusting for
   // |max_read_size_|.
-  const size_t size_to_read = length - file_cursor_position;
+  const size_t size_to_read = length - file_cursor_position_;
 
   // Trim down the previously read data before starting a new read.
   const size_t available_previous_read_size = max_read_size_ - size_to_read;
@@ -177,10 +178,11 @@ void SingleLogFileLogSource::ContinueReadFile(
   // Read from file until end.
   std::string new_result_string;
   new_result_string.resize(size_to_read);
-  size_t size_read = file.ReadAtCurrentPos(&new_result_string[0], size_to_read);
+  size_t size_read =
+      file_.ReadAtCurrentPos(&new_result_string[0], size_to_read);
   new_result_string.resize(size_read);
 
-  const bool file_was_rotated = file_inode != GetInodeValue(GetLogFilePath());
+  const bool file_was_rotated = file_inode_ != GetInodeValue(GetLogFilePath());
   const bool should_handle_file_rotation =
       file_was_rotated && num_rotations_allowed > 0;
 
@@ -197,7 +199,7 @@ void SingleLogFileLogSource::ContinueReadFile(
     // itself.
     size_t adjusted_size_read =
         last_newline_pos == std::string::npos ? 0 : last_newline_pos + 1;
-    file.Seek(base::File::FROM_CURRENT, -size_read + adjusted_size_read);
+    file_.Seek(base::File::FROM_CURRENT, -size_read + adjusted_size_read);
     new_result_string.resize(adjusted_size_read);
 
     // Update |size_read| to reflect that the read was only up to the last
@@ -205,12 +207,16 @@ void SingleLogFileLogSource::ContinueReadFile(
     size_read = adjusted_size_read;
   }
 
+  file_cursor_position_ += size_read;
+
   result_string->append(new_result_string);
 
   // If the file was rotated, close the file handle and call this function
   // again, to read from the new file.
   if (should_handle_file_rotation) {
-    file.Close();
+    file_.Close();
+    file_cursor_position_ = 0;
+    file_inode_ = 0;
     ContinueReadFile(std::move(result_string), bytes_skipped,
                      num_rotations_allowed - 1, response);
   } else {

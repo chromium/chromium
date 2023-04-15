@@ -169,18 +169,62 @@ TEST_F(SingleLogFileLogSourceTest, IncrementalReads) {
   FetchFromSource();
 
   EXPECT_EQ(2, num_callback_calls());
-  EXPECT_EQ("Hello world!\nThe quick brown fox jumps over the lazy dog\n",
-            latest_response());
+  EXPECT_EQ("The quick brown fox jumps over the lazy dog\n", latest_response());
 
   EXPECT_TRUE(AppendToFile(base::FilePath("messages"),
                            "Some like it hot.\nSome like it cold\n"));
   FetchFromSource();
 
   EXPECT_EQ(3, num_callback_calls());
+  EXPECT_EQ("Some like it hot.\nSome like it cold\n", latest_response());
+
+  // As a sanity check, read entire contents of file separately to make sure it
+  // was written incrementally, and hence read incrementally.
+  std::string file_contents;
+  EXPECT_TRUE(base::ReadFileToString(log_file_path(), &file_contents));
   EXPECT_EQ(
-      "Hello world!\nThe quick brown fox jumps over the lazy dog\nSome like it "
-      "hot.\nSome like it cold\n",
-      latest_response());
+      "Hello world!\nThe quick brown fox jumps over the lazy dog\n"
+      "Some like it hot.\nSome like it cold\n",
+      file_contents);
+}
+
+// The log files read by SingleLogFileLogSource are not expected to be
+// overwritten. This test is just to ensure that the SingleLogFileLogSource
+// class is robust enough not to break in the event of an overwrite.
+TEST_F(SingleLogFileLogSourceTest, FileOverwrite) {
+  InitializeSource(SingleLogFileLogSource::SupportedSource::kUiLatest);
+
+  EXPECT_TRUE(AppendToFile(base::FilePath("ui/ui.LATEST"), "0123456789\n"));
+  FetchFromSource();
+
+  EXPECT_EQ(1, num_callback_calls());
+  EXPECT_EQ("0123456789\n", latest_response());
+
+  // Overwrite the file.
+  EXPECT_TRUE(WriteFile(base::FilePath("ui/ui.LATEST"), "abcdefg\n"));
+  FetchFromSource();
+
+  // Should re-read from the beginning.
+  EXPECT_EQ(2, num_callback_calls());
+  EXPECT_EQ("abcdefg\n", latest_response());
+
+  // Append to the file to make sure incremental read still works.
+  EXPECT_TRUE(AppendToFile(base::FilePath("ui/ui.LATEST"), "hijk\n"));
+  FetchFromSource();
+
+  EXPECT_EQ(3, num_callback_calls());
+  EXPECT_EQ("hijk\n", latest_response());
+
+  // Overwrite again, this time with a longer length than the existing file.
+  // Previous contents:
+  //   abcdefg~hijk~     <-- "~" is a single-char representation of newline.
+  // New contents:
+  //   lmnopqrstuvwxyz~  <-- excess text beyond end of prev contents: "yz~"
+  EXPECT_TRUE(WriteFile(base::FilePath("ui/ui.LATEST"), "lmnopqrstuvwxyz\n"));
+  FetchFromSource();
+
+  EXPECT_EQ(4, num_callback_calls());
+  EXPECT_EQ("yz\n", latest_response());
 }
 
 TEST_F(SingleLogFileLogSourceTest, IncompleteLines) {
@@ -211,14 +255,52 @@ TEST_F(SingleLogFileLogSourceTest, IncompleteLines) {
   FetchFromSource();
 
   EXPECT_EQ(4, num_callback_calls());
-  EXPECT_EQ("0123456789abcdefghijk\nHello world\n", latest_response());
+  EXPECT_EQ("Hello world\n", latest_response());
 
   EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "\n"));
   FetchFromSource();
 
   EXPECT_EQ(5, num_callback_calls());
-  EXPECT_EQ("0123456789abcdefghijk\nHello world\nGoodbye world\n",
-            latest_response());
+  EXPECT_EQ("Goodbye world\n", latest_response());
+}
+
+TEST_F(SingleLogFileLogSourceTest, HandleLogFileRotation) {
+  InitializeSource(SingleLogFileLogSource::SupportedSource::kMessages);
+
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "1st log file\n"));
+  FetchFromSource();
+  EXPECT_EQ(1, num_callback_calls());
+  EXPECT_EQ("1st log file\n", latest_response());
+
+  // Rotate file. Make sure the rest of the old file and the contents of the new
+  // file are both read.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "More 1st log file\n"));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "2nd log file\n"));
+
+  FetchFromSource();
+  EXPECT_EQ(2, num_callback_calls());
+  EXPECT_EQ("More 1st log file\n2nd log file\n", latest_response());
+
+  // Rotate again, but this time omit the newline before rotating.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "No newline here..."));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "3rd log file\n"));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "Also no newline here"));
+
+  FetchFromSource();
+  EXPECT_EQ(3, num_callback_calls());
+  // Make sure the rotation didn't break anything: the last part of the new file
+  // does not end with a newline; thus the new file should not be read.
+  EXPECT_EQ("No newline here...3rd log file\n", latest_response());
+
+  // Finish the previous read attempt by adding the missing newline.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "...yet\n"));
+  FetchFromSource();
+  EXPECT_EQ(4, num_callback_calls());
+  EXPECT_EQ("Also no newline here...yet\n", latest_response());
 }
 
 TEST_F(SingleLogFileLogSourceTest, ReadAtMaxReadSizeNotLimited) {
@@ -250,6 +332,104 @@ TEST_F(SingleLogFileLogSourceTest, ReadOverMaxReadSizeLimitedToTail) {
       "Line 3\n"
       "Line 4\n",
       latest_response());
+}
+
+TEST_F(SingleLogFileLogSourceTest, ReadOverMaxReadSizeBeforeRotate) {
+  InitializeSource(SingleLogFileLogSource::SupportedSource::kMessages);
+  SetMaxReadSize(14);
+
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "1st log file\n"));
+  EXPECT_TRUE(
+      AppendToFile(base::FilePath("messages"), "Exceeds max read size\n"));
+  FetchFromSource();
+  EXPECT_EQ(1, num_callback_calls());
+  EXPECT_EQ("<earlier logs truncated>\n<partial line>max read size\n",
+            latest_response());
+
+  // Rotate file. Make sure the rest of the old file and the contents of the new
+  // file are both read.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "More\n"));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "2nd file\n"));
+
+  FetchFromSource();
+  EXPECT_EQ(2, num_callback_calls());
+  EXPECT_EQ("More\n2nd file\n", latest_response());
+
+  // Rotate again, but this time omit the newline before rotating.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"),
+                           "Long line without a newline ... "));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "ended\n"));
+  // Partial line counted against max read size.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "partial"));
+
+  FetchFromSource();
+  EXPECT_EQ(3, num_callback_calls());
+  EXPECT_EQ("<earlier logs truncated>\n<partial line> ended\n",
+            latest_response());
+}
+
+TEST_F(SingleLogFileLogSourceTest, ReadOverMaxReadSizeAfterRotate) {
+  InitializeSource(SingleLogFileLogSource::SupportedSource::kMessages);
+  SetMaxReadSize(14);
+
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "1st\n"));
+  FetchFromSource();
+  EXPECT_EQ(1, num_callback_calls());
+  EXPECT_EQ("1st\n", latest_response());
+
+  // Rotate file. Make sure the rest of the old file and the contents of the new
+  // file are both read.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "More\n"));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "2nd file\n"));
+  EXPECT_TRUE(
+      AppendToFile(base::FilePath("messages"), "More data in 2nd file\n"));
+
+  FetchFromSource();
+  EXPECT_EQ(2, num_callback_calls());
+  EXPECT_EQ("<earlier logs truncated>\n<partial line>a in 2nd file\n",
+            latest_response());
+
+  // Rotate again, but this time omit the newline before rotating.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "Start ... "));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"),
+                           "ended here but is a long line\n"));
+  // Partial line counted against max read size.
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "partial"));
+
+  FetchFromSource();
+  EXPECT_EQ(3, num_callback_calls());
+  EXPECT_EQ("<earlier logs truncated>\n<partial line>g line\n",
+            latest_response());
+}
+
+TEST_F(SingleLogFileLogSourceTest, ReadOverMaxReadSizeBeforeAndAfterRotate) {
+  InitializeSource(SingleLogFileLogSource::SupportedSource::kMessages);
+  SetMaxReadSize(14);
+
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "1st log file\n"));
+  FetchFromSource();
+  EXPECT_EQ(1, num_callback_calls());
+  EXPECT_EQ("1st log file\n", latest_response());
+
+  EXPECT_TRUE(
+      AppendToFile(base::FilePath("messages"), "Exceeds max read size 1\n"));
+  EXPECT_TRUE(
+      RotateFile(base::FilePath("messages"), base::FilePath("messages.1")));
+  EXPECT_TRUE(AppendToFile(base::FilePath("messages"), "2nd file\n"));
+  EXPECT_TRUE(
+      AppendToFile(base::FilePath("messages"), "Exceeds max read size 2\n"));
+  FetchFromSource();
+  EXPECT_EQ(2, num_callback_calls());
+  EXPECT_EQ("<earlier logs truncated>\n<partial line>x read size 2\n",
+            latest_response());
 }
 
 TEST_F(SingleLogFileLogSourceTest, LongPartialLineEventuallySkipped) {
