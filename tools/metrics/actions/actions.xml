@@ -7024,6 +7024,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.SignIn.ShowSignInDisableToastFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed personalization control and triggered a sign-in
+    disabled message to be shown.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.SignIn.ShowSignInOnlyFlowFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed personalization control and triggered a sign-in
+    only flow to be shown.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.SignIn.ShowSyncnHalfSheetFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed personalization control and triggered a sign-in
+    half sheet to be shown.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.WebFeed.Selected">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>

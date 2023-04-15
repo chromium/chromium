@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/feed/core/v2/public/common_enums.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -1035,6 +1036,8 @@
     [handler showSignin:command baseViewController:self.NTPViewController];
     [self.feedMetricsRecorder
         recordShowSignInOnlyUIWithUserId:hasUserIdentities];
+    [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
+                                  feed::FeedSignInUI::kShowSignInOnlyFlow];
   } else if ([self isSignInAllowed] && [self isSyncAllowed]) {
     // Show a sign-in promo half sheet for feed BoC sign-in promo when the
     // condition of showing sign-in only flow is not fulfilled. This UI will
@@ -1046,19 +1049,19 @@
         initWithBaseViewController:self.NTPViewController
                            browser:self.browser];
     [self.feedSignInPromoCoordinator start];
+    [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
+                                  feed::FeedSignInUI::kShowSyncHalfSheet];
   } else {
     // Show a snackbar message if sign-in or sync is disabled and the above UI
     // shouldn't be shown.
-    // TODO(crbug.com/1382615): remove when able to hide the personalization
-    // control when sign-in or sync is disabled.
     [self showSignInDisableMessage];
+    [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
+                                  feed::FeedSignInUI::kShowSignInDisableToast];
   }
 }
 
 - (void)showSignInUI {
   // Show a snackbar message if sign-in or sync is disabled.
-  // TODO(crbug.com/1382615): remove when able to hide the  personalization
-  // control when sign-in or sync is disabled.
   if (![self isSignInAllowed] || ![self isSyncAllowed]) {
     [self showSignInDisableMessage];
     return;

@@ -982,6 +982,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.FeedSignInUI" enum="FeedSignInUI"
+    expires_after="2023-10-15">
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Recorded when a signed out user triggered a sign-in related UI from feed
+    personalization control. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-09-03">
   <owner>harringtond@chromium.org</owner>
