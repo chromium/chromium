@@ -65,7 +65,10 @@ if (is_chromeos_ash) {
     "ui/latency/mojom/latency_info.mojom-webui.js",
   ]
 
-  mojo_ts_files += [ "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts" ]
+  mojo_ts_files += [
+    "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-webui.ts",
+    "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts",
+  ]
 }
 
 preprocess_if_expr("copy_mojo_ts") {
@@ -81,6 +84,7 @@ preprocess_if_expr("copy_mojo_ts") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/ash/services/connectivity/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
     ]
   }

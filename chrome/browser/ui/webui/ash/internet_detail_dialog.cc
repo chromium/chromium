@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/connectivity_services.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,6 +201,12 @@ void InternetDetailDialogUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void InternetDetailDialogUI::BindInterface(
+    mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+        receiver) {
+  ash::GetPasspointService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(InternetDetailDialogUI)

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -87,6 +88,10 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
           receiver);
 
  private:

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/audio_config_service.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/public/cpp/connectivity_services.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -307,6 +308,12 @@ void OSSettingsUI::BindInterface(
   google_drive_page_handler_factory_ =
       std::make_unique<GoogleDrivePageHandlerFactory>(
           Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+        receiver) {
+  ash::GetPasspointService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

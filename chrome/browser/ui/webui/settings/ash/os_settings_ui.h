@@ -24,6 +24,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
+#include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -168,6 +169,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Binds to the Google Drive page handler mojo.
   void BindInterface(
       mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver);
+
+  // Binds to the cros Passpoint service.
+  void BindInterface(
+      mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+          receiver);
 
  private:
   base::TimeTicks time_when_opened_;

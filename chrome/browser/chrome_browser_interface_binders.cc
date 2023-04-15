@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
@@ -312,6 +313,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
+#include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -1222,6 +1224,13 @@ void PopulateChromeWebUIFrameBinders(
       ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::NetworkUI,
       ash::OobeUI, ash::settings::OSSettingsUI, ash::LockScreenNetworkUI,
       ash::ShimlessRMADialogUI>(map);
+
+  if (ash::features::IsPasspointSettingsEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        chromeos::connectivity::mojom::PasspointService,
+        ash::InternetDetailDialogUI, ash::NetworkUI,
+        ash::settings::OSSettingsUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::printing::printing_manager::mojom::PrintingMetadataProvider,
