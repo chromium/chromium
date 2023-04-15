@@ -154,10 +154,9 @@ xsltSetAttrVTsegment(xsltAttrVTPtr avt, void *val) {
     if (avt->nb_seg >= avt->max_seg) {
         size_t size = sizeof(xsltAttrVT) +
                       (avt->max_seg + MAX_AVT_SEG) * sizeof(void *);
-	xsltAttrVTPtr tmp = (xsltAttrVTPtr) xmlRealloc(avt, size);
-	if (tmp == NULL)
+	avt = (xsltAttrVTPtr) xmlRealloc(avt, size);
+	if (avt == NULL)
 	    return NULL;
-        avt = tmp;
 	memset(&avt->segments[avt->nb_seg], 0, MAX_AVT_SEG*sizeof(void *));
 	avt->max_seg += MAX_AVT_SEG;
     }
@@ -181,7 +180,7 @@ xsltCompileAttr(xsltStylesheetPtr style, xmlAttrPtr attr) {
     xmlChar *ret = NULL;
     xmlChar *expr = NULL;
     xmlXPathCompExprPtr comp = NULL;
-    xsltAttrVTPtr avt;
+    xsltAttrVTPtr avt, tmp;
     int i = 0, lastavt = 0;
 
     if ((style == NULL) || (attr == NULL) || (attr->children == NULL))
@@ -245,8 +244,9 @@ xsltCompileAttr(xsltStylesheetPtr style, xmlAttrPtr attr) {
 		str = cur;
 		if (avt->nb_seg == 0)
 		    avt->strstart = 1;
-		if ((avt = xsltSetAttrVTsegment(avt, (void *) ret)) == NULL)
+		if ((tmp = xsltSetAttrVTsegment(avt, (void *) ret)) == NULL)
 		    goto error;
+                avt = tmp;
 		ret = NULL;
 		lastavt = 0;
 	    }
@@ -290,17 +290,19 @@ xsltCompileAttr(xsltStylesheetPtr style, xmlAttrPtr attr) {
 		if (avt->nb_seg == 0)
 		    avt->strstart = 0;
 		if (lastavt == 1) {
-		    if ((avt = xsltSetAttrVTsegment(avt, NULL)) == NULL) {
+		    if ((tmp = xsltSetAttrVTsegment(avt, NULL)) == NULL) {
                         xsltTransformError(NULL, style, attr->parent,
                                            "out of memory\n");
 		        goto error;
                     }
+                    avt = tmp;
 		}
-		if ((avt = xsltSetAttrVTsegment(avt, (void *) comp)) == NULL) {
+		if ((tmp = xsltSetAttrVTsegment(avt, (void *) comp)) == NULL) {
                     xsltTransformError(NULL, style, attr->parent,
                                        "out of memory\n");
 		    goto error;
                 }
+                avt = tmp;
 		lastavt = 1;
 		xmlFree(expr);
 		expr = NULL;
@@ -329,8 +331,9 @@ xsltCompileAttr(xsltStylesheetPtr style, xmlAttrPtr attr) {
 	str = cur;
 	if (avt->nb_seg == 0)
 	    avt->strstart = 1;
-	if ((avt = xsltSetAttrVTsegment(avt, (void *) ret)) == NULL)
+	if ((tmp = xsltSetAttrVTsegment(avt, (void *) ret)) == NULL)
 	    goto error;
+        avt = tmp;
 	ret = NULL;
     }
 
