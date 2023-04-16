@@ -206,6 +206,16 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::kIPHDesktopPwaInstallFeature))
     return;
 
+  // TODO(1432894): Use toast or snooze instead of legacy promo.
+  // kIPHAutofillExternalAccountProfileSuggestionFeature:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
+                    &feature_engagement::
+                        kIPHAutofillExternalAccountProfileSuggestionFeature,
+                    kAutofillSuggestionElementId,
+                    IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
+                    .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
+
   // kIPHAutofillVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForLegacyPromo(

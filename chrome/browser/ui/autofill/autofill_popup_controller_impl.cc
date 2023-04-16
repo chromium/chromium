@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
@@ -321,6 +322,15 @@ void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
     feature_engagement::TrackerFactory::GetForBrowserContext(
         web_contents_->GetBrowserContext())
         ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
+  }
+
+  if (web_contents_ &&
+      suggestion.feature_for_iph ==
+          feature_engagement::
+              kIPHAutofillExternalAccountProfileSuggestionFeature.name) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext())
+        ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
   }
 
   absl::optional<std::u16string> announcement =

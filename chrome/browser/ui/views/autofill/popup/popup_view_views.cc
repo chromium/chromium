@@ -365,6 +365,17 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       browser->window()->MaybeShowFeaturePromo(
           feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
     }
+
+    if (controller_->GetSuggestionAt(row).feature_for_iph ==
+        feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature
+            .name) {
+      GetPopupRowViewAt(row).SetProperty(views::kElementIdentifierKey,
+                                         kAutofillSuggestionElementId);
+
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::
+              kIPHAutofillExternalAccountProfileSuggestionFeature);
+    }
   }
 }
 

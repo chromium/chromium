@@ -163,6 +163,7 @@ struct Suggestion {
   IsLoading is_loading = IsLoading(false);
 
   // The In-Product-Help feature that should be shown for the suggestion.
+  // TODO(1432893): Consider making it `const Feature*`.
   std::string feature_for_iph;
 
   // If specified, this text will be played back as voice over for a11y.
