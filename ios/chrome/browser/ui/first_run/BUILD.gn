@@ -7,8 +7,6 @@ source_set("field_trial") {
   sources = [
     "ios_first_run_field_trials.cc",
     "ios_first_run_field_trials.h",
-    "trending_queries_field_trial.cc",
-    "trending_queries_field_trial.h",
   ]
   deps = [
     ":field_trial_ids",
@@ -170,36 +168,6 @@ source_set("interruptible_chrome_coordinator") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "trending_queries_field_trial_unittest.mm" ]
-  deps = [
-    ":field_trial",
-    ":field_trial_ids",
-    ":first_run",
-    ":utils",
-    "//base",
-    "//base/test:test_support",
-    "//components/metrics",
-    "//components/policy/core/common:common_constants",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
-    "//ios/chrome/browser/ui/fancy_ui",
-    "//ios/chrome/browser/ui/start_surface:feature_flags",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
 }
 
 source_set("eg2_tests") {

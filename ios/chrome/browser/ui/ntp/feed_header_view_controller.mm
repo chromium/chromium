@@ -131,12 +131,8 @@ NSInteger kFeedSymbolPointSize = 17;
 
   // Applies an opacity to the background. If ReduceTransparency is enabled,
   // then this replaces the blur effect.
-  // With ContentSuggestionsUIModuleRefresh enabled, the background color will
-  // be clear for continuity with the overall NTP gradient view.
-  self.view.backgroundColor = IsContentSuggestionsUIModuleRefreshEnabled()
-                                  ? [UIColor clearColor]
-                                  : [[UIColor colorNamed:kBackgroundColor]
-                                        colorWithAlphaComponent:0.95];
+  self.view.backgroundColor =
+      [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
 
   self.container = [[UIView alloc] init];
 
@@ -157,15 +153,6 @@ NSInteger kFeedSymbolPointSize = 17;
   if (UIAccessibilityIsReduceTransparencyEnabled() ||
       ![self.feedControlDelegate isFollowingFeedAvailable] ||
       !self.blurBackgroundView) {
-    if (IsContentSuggestionsUIModuleRefreshEnabled() &&
-        UIAccessibilityIsReduceTransparencyEnabled()) {
-      // Give background a solid color since it is clear when not pinned to the
-      // top of the NTP.
-      self.view.backgroundColor = blurred
-                                      ? [[UIColor colorNamed:kBackgroundColor]
-                                            colorWithAlphaComponent:0.95]
-                                      : [UIColor clearColor];
-    }
     return;
   }
 
@@ -176,15 +163,8 @@ NSInteger kFeedSymbolPointSize = 17;
   // blurred.
   if (!animated) {
     self.blurBackgroundView.hidden = !blurred;
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.view.backgroundColor = blurred
-                                      ? [[UIColor colorNamed:kBackgroundColor]
-                                            colorWithAlphaComponent:0.1]
-                                      : [UIColor clearColor];
-    } else {
-      self.view.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
-          colorWithAlphaComponent:(blurred ? 0.1 : 0.95)];
-    }
+    self.view.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
+        colorWithAlphaComponent:(blurred ? 0.1 : 0.95)];
     return;
   }
   [UIView transitionWithView:self.blurBackgroundView
@@ -196,15 +176,8 @@ NSInteger kFeedSymbolPointSize = 17;
       completion:^(BOOL finished) {
         // Only reduce opacity after the animation is complete to avoid showing
         // content suggestions tiles momentarily.
-        if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-          self.view.backgroundColor =
-              blurred ? [[UIColor colorNamed:kBackgroundColor]
-                            colorWithAlphaComponent:0.1]
-                      : [UIColor clearColor];
-        } else {
-          self.view.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
-              colorWithAlphaComponent:(blurred ? 0.1 : 0.95)];
-        }
+        self.view.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
+            colorWithAlphaComponent:(blurred ? 0.1 : 0.95)];
       }];
 }
 

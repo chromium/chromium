@@ -508,34 +508,6 @@ id<GREYMatcher> notPracticallyVisible() {
                  @"NTP scroll position not saved properly.");
 }
 
-// Tests that the trending queries module header is visible and all four
-// trending queries are interactable.
-// Re-enable this test if trending queries is re-launched as a stable LE.
-- (void)DISABLED_testTrendingQueries {
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.features_enabled.push_back(kTrendingQueriesModule);
-  config.variations_enabled = {3350760};
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID([NSString
-              stringWithFormat:
-                  @"%@",
-                  l10n_util::GetNSString(
-                      IDS_IOS_CONTENT_SUGGESTIONS_TRENDING_QUERIES_MODULE_TITLE)])]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  for (int index = 0; index < 4; index++) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID([NSString
-                stringWithFormat:@"%@%i",
-                                 kQuerySuggestionViewA11yIdentifierPrefix,
-                                 index])]
-        assertWithMatcher:grey_interactable()];
-  }
-}
-
 // Tests that the pull to refresh (iphone) or the refresh button (ipad) lands
 // the user on the top of the NTP even with a previously saved scroll position.
 - (void)testReload {
@@ -1280,7 +1252,6 @@ id<GREYMatcher> notPracticallyVisible() {
   // otherwise support the various possible experiment arms.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kTrendingQueriesModule);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Ensures that feed header is visible before enabling ablation.
@@ -1324,7 +1295,6 @@ id<GREYMatcher> notPracticallyVisible() {
   // TODO(crbug.com/1350826): Adapt the test with launch of trending queries.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kTrendingQueriesModule);
   // TODO(crbug.com/1403077): Reenable the discover feed sync promo feature
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

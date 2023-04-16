@@ -5,8 +5,6 @@
 source_set("cells") {
   sources = [
     "content_suggestions_gesture_commands.h",
-    "content_suggestions_module_container.h",
-    "content_suggestions_module_container.mm",
     "content_suggestions_most_visited_action_item.h",
     "content_suggestions_most_visited_action_item.mm",
     "content_suggestions_most_visited_constants.h",

@@ -228,12 +228,6 @@ extern const char kLongPressSurroundingTextName[] =
 extern const char kLongPressSurroundingTextDescription[] =
     "When enabled, long pressing a text will analyze larger part of the text.";
 
-const char kContentSuggestionsUIModuleRefreshName[] =
-    "Content Suggestions UI Module Refresh";
-const char kContentSuggestionsUIModuleRefreshDescription[] =
-    "When enabled, the Content Suggestions will be redesigned to be contained "
-    "into distinct modules.";
-
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =
@@ -1004,10 +998,6 @@ const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
     "managed by the toolbar container coordinator rather than BVC.";
-
-extern const char kTrendingQueriesModuleName[] = "Show Trending Queries module";
-extern const char kTrendingQueriesModuleDescription[] =
-    "When enabled, the trending queries module will be shown in the NTP";
 
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";

@@ -313,7 +313,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/dialogs:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests_internal",
     "//ios/chrome/browser/ui/download:unit_tests",
-    "//ios/chrome/browser/ui/first_run:unit_tests",
     "//ios/chrome/browser/ui/first_run/tos:unit_tests",
     "//ios/chrome/browser/ui/fullscreen:unit_tests",
     "//ios/chrome/browser/ui/gestures:unit_tests",

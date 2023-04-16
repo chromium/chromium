@@ -186,18 +186,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
               action:@selector(handleSingleTapInView:)];
   singleTapRecognizer.delegate = self;
   [self.view addGestureRecognizer:singleTapRecognizer];
-
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    GradientView* gradientView = [[GradientView alloc]
-        initWithTopColor:[UIColor colorNamed:kBackgroundColor]
-             bottomColor:
-                 [UIColor colorNamed:@"ntp_background_bottom_gradient_color"]];
-    gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:gradientView];
-    AddSameConstraints(self.view, gradientView);
-  } else {
-    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
-  }
+  self.view.backgroundColor = ntp_home::NTPBackgroundColor();
 
   [self registerNotifications];
 

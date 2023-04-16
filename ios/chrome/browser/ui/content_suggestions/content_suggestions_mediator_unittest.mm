@@ -265,46 +265,6 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
   [mediator_ mostRecentTabWasRemoved:web_state];
 }
 
-// Tests that the mediator calls the consumer properly in response to a call
-// from TestStartSuggestServiceResponseBridge
-TEST_F(ContentSuggestionsMediatorTest,
-       TestStartSuggestServiceResponseDelegating) {
-  // Expect the consumer is called with something if no suggestions are
-  // returned.
-  OCMExpect([consumer_ setTrendingQueriesWithConfigs:[OCMArg any]]);
-  std::vector<QuerySuggestion> response_queries{
-      {u"query1", GURL("http://test-url.com/query1")},
-      {u"query2", GURL("http://test-url.com/query1")}};
-  [mediator_ suggestionsReceived:std::move(response_queries)];
-
-  // Expect the consumer is called with an empty array if no suggestions are
-  // returned.
-  OCMExpect([consumer_ setTrendingQueriesWithConfigs:@[]]);
-  [mediator_ suggestionsReceived:std::vector<QuerySuggestion>()];
-
-  int index = 1;
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kTrendingQuery, 0);
-  histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 0);
-
-  // Test that the mediator loads the URL in the config passed into
-  // loadSuggestedQuery:.
-  GURL url = GURL("http://chromium.org");
-  QuerySuggestionConfig* config = [[QuerySuggestionConfig alloc] init];
-  config.index = index;
-  config.URL = url;
-  [mediator_ loadSuggestedQuery:config];
-  EXPECT_EQ(url, url_loader_->last_params.web_params.url);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      ui::PAGE_TRANSITION_LINK,
-      url_loader_->last_params.web_params.transition_type));
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kTrendingQuery, 1);
-  histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 1);
-}
-
 // Tests that the command is sent to the dispatcher when opening the What's new.
 TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);

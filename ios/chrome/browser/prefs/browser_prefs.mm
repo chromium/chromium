@@ -73,7 +73,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial.h"
 #import "ios/chrome/browser/ui/ntp/synced_segments_field_trial.h"
@@ -124,6 +123,9 @@ const char kLocalConsentsDictionary[] = "local_consents";
 // Deprecated 01/2023.
 const char* kTrialGroupMICeAndDefaultBrowserVersionPrefName =
     "fre_refactoring_mice_and_default_browser.trial_version";
+
+// Deprecated 04/2023.
+const char kTrialPrefName[] = "trending_queries.trial_version";
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -139,7 +141,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
-  trending_queries_field_trial::RegisterLocalStatePrefs(registry);
   new_tab_page_retention_field_trial::RegisterLocalStatePrefs(registry);
   synced_segments_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
@@ -406,6 +407,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 01/2023
   prefs->ClearPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName);
+
+  // Added 04/2023
+  if (prefs->FindPreference(kTrialPrefName)) {
+    prefs->ClearPref(kTrialPrefName);
+  }
 }
 
 // This method should be periodically pruned of year+ old migrations.

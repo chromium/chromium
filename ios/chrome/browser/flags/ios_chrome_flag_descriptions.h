@@ -190,11 +190,6 @@ extern const char kLongPressSurroundingTextDescription[];
 extern const char kMapsExperienceKitName[];
 extern const char kMapsExperienceKitDescription[];
 
-// Title and description for the flag that updates the Content Suggestions to a
-// new module design.
-extern const char kContentSuggestionsUIModuleRefreshName[];
-extern const char kContentSuggestionsUIModuleRefreshDescription[];
-
 // Title and description for the flag to enable the Credential
 // Provider Extension promo.
 extern const char kCredentialProviderExtensionPromoName[];
@@ -882,10 +877,6 @@ extern const char kTFLiteLanguageDetectionIgnoreDescription[];
 // implementation.
 extern const char kToolbarContainerName[];
 extern const char kToolbarContainerDescription[];
-
-// Title and Description for the flag to enable the trending queries module.
-extern const char kTrendingQueriesModuleName[];
-extern const char kTrendingQueriesModuleDescription[];
 
 // Title and description for the flag to enable using Lens to search for an
 // image from the long press context menu.

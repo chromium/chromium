@@ -22,10 +22,6 @@ const CGFloat kSpaceIconTitle = 10;
 const CGFloat kIconSize = 56;
 // Standard width of tiles.
 const CGFloat kPreferredMaxWidth = 74;
-// Non-standard width of tiles. (Used only when the Content Suggestions UI
-// Module Refresh feature is enabled.)
-const CGFloat kModulePreferredMaxWidth = 74;
-const CGFloat kModulePreferredMaxWidthWide = 83;
 
 }  // namespace
 
@@ -44,19 +40,7 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
-
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      // Since modules are given more horizontal space on iPad, allow for more
-      // estimated width for the label to calculate content size.
-      CGFloat modulePreferredWidth = self.traitCollection.horizontalSizeClass ==
-                                             UIUserInterfaceSizeClassRegular
-                                         ? kModulePreferredMaxWidthWide
-                                         : kModulePreferredMaxWidth;
-
-      _titleLabel.preferredMaxLayoutWidth = modulePreferredWidth;
-    } else {
-      _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
-    }
+    _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
 
     _titleLabel.numberOfLines = kLabelNumLines;
     _imageContainerView = [[UIView alloc] init];
@@ -86,21 +70,10 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
     AddSameCenterConstraints(_imageContainerView, backgroundView);
     UIView* containerView = backgroundView;
 
-    if (IsContentSuggestionsUIModuleRefreshEnabled() && isPlaceholder) {
-      ApplyVisualConstraintsWithMetrics(
-          @[ @"V:|[container]-(space)-[title]-(>=0)-|" ],
-          @{@"container" : containerView, @"title" : _titleLabel},
-          @{@"space" : @(kSpaceIconTitle)});
-      [NSLayoutConstraint activateConstraints:@[
-        [_titleLabel.widthAnchor constraintEqualToConstant:kIconSize],
-        [_titleLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-      ]];
-    } else {
-      ApplyVisualConstraintsWithMetrics(
-          @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
-          @{@"container" : containerView, @"title" : _titleLabel},
-          @{@"space" : @(kSpaceIconTitle)});
-    }
+    ApplyVisualConstraintsWithMetrics(
+        @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
+        @{@"container" : containerView, @"title" : _titleLabel},
+        @{@"space" : @(kSpaceIconTitle)});
 
     _imageBackgroundView = backgroundView;
 
@@ -117,14 +90,10 @@ const CGFloat kModulePreferredMaxWidthWide = 83;
 
 // Returns the font size for the location label.
 - (UIFont*)titleLabelFont {
-  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  } else {
-    return PreferredFontForTextStyleWithMaxCategory(
-        UIFontTextStyleCaption1,
-        self.traitCollection.preferredContentSizeCategory,
-        UIContentSizeCategoryAccessibilityLarge);
-  }
+  return PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleCaption1,
+      self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityLarge);
 }
 
 #pragma mark - UIView

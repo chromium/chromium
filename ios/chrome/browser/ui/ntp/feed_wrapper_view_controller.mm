@@ -91,10 +91,7 @@
   [emptyCollectionView setShowsVerticalScrollIndicator:NO];
   [self.view addSubview:emptyCollectionView];
   self.contentCollectionView = emptyCollectionView;
-  self.contentCollectionView.backgroundColor =
-      IsContentSuggestionsUIModuleRefreshEnabled()
-          ? [UIColor clearColor]
-          : ntp_home::NTPBackgroundColor();
+  self.contentCollectionView.backgroundColor = ntp_home::NTPBackgroundColor();
   self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.contentCollectionView, self.view);
 }

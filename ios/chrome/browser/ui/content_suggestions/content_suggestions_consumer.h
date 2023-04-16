@@ -37,10 +37,6 @@
 - (void)setShortcutTilesWithConfigs:
     (NSArray<ContentSuggestionsMostVisitedActionItem*>*)configs;
 
-// Indicates to the consumer the current Trending Queries to show with
-// `configs`.
-- (void)setTrendingQueriesWithConfigs:(NSArray<QuerySuggestionConfig*>*)configs;
-
 // Indicates to the consumer that the given `config` has updated data.
 - (void)updateShortcutTileConfig:
     (ContentSuggestionsMostVisitedActionItem*)config;
