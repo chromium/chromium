@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 component("cpp") {
   sources = [
     "audio_system_to_service_adapter.cc",
@@ -34,6 +36,29 @@ component("cpp") {
   ]
 
   output_name = "audio_public_cpp"
+}
+
+component("audio_features") {
+  public = [ "audio_features.h" ]
+  sources = [
+    "audio_features.cc",
+    "audio_features_export.h",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  public_deps = [ "//base" ]
+
+  defines = [ "AUDIO_FEATURES_IMPLEMENTATION" ]
+}
+
+if (is_android) {
+  source_set("audio_feature_list") {
+    sources = [ "audio_feature_list.cc" ]
+    deps = [
+      ":audio_features",
+      "//base",
+      "//services/audio:audio_service_jni_headers",
+    ]
+  }
 }
 
 source_set("test_support") {

@@ -69,6 +69,7 @@
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
 #include "media/base/media_switches.h"
+#include "services/audio/public/cpp/audio_features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -117,6 +118,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAsyncSensorCalls,
     &features::kBackForwardCache,
     &features::kBackForwardTransitions,
+    &features::kBlockMidiByDefault,
     &features::kHttpsOnlyMode,
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
