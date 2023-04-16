@@ -34,7 +34,7 @@ type RealmFilter = {
 export class RealmStorage {
   /** Tracks handles and their realms sent to the client. */
   readonly #knownHandlesToRealm = new Map<string, string>();
-  readonly #realmMap: Map<string, Realm> = new Map();
+  readonly #realmMap = new Map<string, Realm>();
 
   get knownHandlesToRealm() {
     return this.#knownHandlesToRealm;

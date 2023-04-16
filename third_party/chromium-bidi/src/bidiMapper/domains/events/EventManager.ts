@@ -95,21 +95,21 @@ export class EventManager implements IEventManager {
    * Needed for getting buffered events from all the contexts in case of
    * subscripting to all contexts.
    */
-  #eventToContextsMap: Map<
+  #eventToContextsMap = new Map<
     string,
     Set<CommonDataTypes.BrowsingContext | null>
-  > = new Map();
+  >();
   /**
    * Maps `eventName` + `browsingContext` to buffer. Used to get buffered events
    * during subscription. Channel-agnostic.
    */
-  #eventBuffers: Map<string, Buffer<EventWrapper>> = new Map();
+  #eventBuffers = new Map<string, Buffer<EventWrapper>>();
   /**
    * Maps `eventName` + `browsingContext` + `channel` to last sent event id.
    * Used to avoid sending duplicated events when user
    * subscribes -> unsubscribes -> subscribes.
    */
-  #lastMessageSent: Map<string, number> = new Map();
+  #lastMessageSent = new Map<string, number>();
   #subscriptionManager: SubscriptionManager;
   #bidiServer: BidiServer;
   #isNetworkDomainEnabled: boolean;

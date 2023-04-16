@@ -57,6 +57,7 @@ module.exports = {
     // Some rules use 'warn' in order to ease local development iteration.
     // keep-sorted start
     "@typescript-eslint/explicit-member-accessibility": ["warn", {accessibility: 'no-public'}],
+    '@typescript-eslint/consistent-generic-constructors': 'warn',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-extraneous-class': 'warn',

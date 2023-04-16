@@ -34,8 +34,8 @@ export class CdpConnection {
   readonly #transport: ITransport;
   readonly #browserCdpClient: CdpClient;
   /** Map from session ID to CdpClient. */
-  readonly #sessionCdpClients: Map<string, CdpClient> = new Map();
-  readonly #commandCallbacks: Map<number, CdpCallbacks> = new Map();
+  readonly #sessionCdpClients = new Map<string, CdpClient>();
+  readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #log: (...messages: unknown[]) => void;
 
   #nextId = 0;

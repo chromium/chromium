@@ -44,7 +44,7 @@ export class BrowsingContextImpl {
   readonly #contextId: string;
   readonly #parentId: string | null;
   readonly #eventManager: IEventManager;
-  readonly #children: Map<string, BrowsingContextImpl> = new Map();
+  readonly #children = new Map<string, BrowsingContextImpl>();
   readonly #realmStorage: RealmStorage;
 
   #url = 'about:blank';

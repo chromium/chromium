@@ -75,13 +75,13 @@ export class SubscriptionManager {
   // BrowsingContext `null` means the event has subscription across all the
   // browsing contexts.
   // Channel `null` means no `channel` should be added.
-  #channelToContextToEventMap: Map<
+  #channelToContextToEventMap = new Map<
     string | null,
     Map<
       CommonDataTypes.BrowsingContext | null,
       Map<Session.SubscribeParametersEvent, number>
     >
-  > = new Map();
+  >();
   #browsingContextStorage: BrowsingContextStorage;
 
   constructor(browsingContextStorage: BrowsingContextStorage) {
