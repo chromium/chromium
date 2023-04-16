@@ -456,7 +456,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libcxxabi_revision':    'e33143c8c06000c3fe12fe3cf88d775f5f3f5b5a',
+  'libcxxabi_revision':    '0123281f7b7aebd09d5309cacf3d61758ac1ecbc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
