@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431318178759467895">Color</translation>
+<translation id="5456936324019847994">No es pot connectar a cap APN personalitzat que estigui activat. Contacta amb el teu operador de telefonia mòbil per obtenir més informació.</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>

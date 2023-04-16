@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431318178759467895">Cor</translation>
+<translation id="5456936324019847994">Não é possível ligar a APNs (Nomes de Pontos de Acesso) personalizados ativados. Contacte o seu operador móvel para obter mais informações.</translation>
 <translation id="5457599981699367932">Navegar como convidado</translation>
 <translation id="54609108002486618">Geridos</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}other{{0} tentativas restantes.}}</translation>

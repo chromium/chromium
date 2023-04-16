@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">ঠিকনা ২</translation>
 <translation id="3328459813621383194">নিষ্ক্ৰিয় টেবসমূহ স্থানান্তৰ কৰক</translation>
 <translation id="3328801116991980348">ছাইটৰ তথ্য</translation>
+<translation id="3344485292736684439">{count,plural, =1{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে, {email}}one{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}other{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}}</translation>
 <translation id="3371831930909698441">অনুবাদ কৰিব পাৰি। স্ক্ৰীনৰ একেবাৰে তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
 <translation id="3377063233124932127">এতিয়া আপোনাৰ ছেভ কৰি থোৱা বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক একেবাৰে ওপৰত।</translation>
 <translation id="3393920035788932672">পপ-আপসমূহ অনুমতি দিয়া হৈছে</translation>
@@ -1032,6 +1033,7 @@
 <translation id="7840771868269352570">আপুনি বাছনি কৰা বস্তুটো আঁতৰোৱা হ’ব।</translation>
 <translation id="7845466610722898">পঢ়াৰ সূচী দেখুৱাওক</translation>
 <translation id="784551991304901159">সমল চাবলৈ মেনুখনৰ পৰা অন কৰক বাছনি কৰক</translation>
+<translation id="7846158885638438868">{count,plural, =1{"{title}"ত বুকমাৰ্ক কৰা হৈছে}one{"{title}"ত বুকমাৰ্ক কৰা হৈছে}other{"{title}"ত বুকমাৰ্ক কৰা হৈছে}}</translation>
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7856733331829174190">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="785938070103630874">পাছৱৰ্ড, পৰিশোধ পদ্ধতি অথবা ঠিকনা আৰু অধিক খোলক</translation>

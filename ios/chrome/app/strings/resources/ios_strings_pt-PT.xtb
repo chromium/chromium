@@ -354,6 +354,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3324193307694657476">Morada 2</translation>
 <translation id="3328459813621383194">Mover separadores inativos</translation>
 <translation id="3328801116991980348">Informações do site</translation>
+<translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="3377063233124932127">Agora, os seus marcadores, palavras-passe e outros itens guardados estão na parte superior.</translation>
 <translation id="3393920035788932672">Pop-ups Permitidos</translation>
@@ -1033,6 +1034,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
 <translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>
+<translation id="7846158885638438868">{count,plural, =1{Adicionado aos marcadores em "{title}"}other{Adicionados aos marcadores em "{title}"}}</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>

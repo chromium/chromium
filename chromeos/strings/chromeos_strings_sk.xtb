@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Aktivované</translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Farebne</translation>
+<translation id="5456936324019847994">Nedá sa pripojiť k žiadnym povoleným vlastným názvom prístupových bodov (APN). Viac sa dozviete od svojho operátora.</translation>
 <translation id="5457599981699367932">Prehliadať ako hosť</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zostáva {0} pokus}few{Zostávajú {0} pokusy}many{{0} attempts left}other{Zostáva {0} pokusov}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Súbor nebol nájdený</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="594552776027197022">Generovanie náhodného páru kľúčov</translation>
+<translation id="5946538341867151940">Nemáte pripojenie. Ak váš mobilný operátor odporúča vlastný názov prístupového bodu (APN), vyberte + Nový názov prístupového bodu (APN) a zadajte informácie o ňom.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Predvolená tapeta</translation>
 <translation id="6017514345406065928">Zelená</translation>

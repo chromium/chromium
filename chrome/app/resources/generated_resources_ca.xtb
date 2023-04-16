@@ -118,6 +118,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1090541560108055381">Abans de fer la vinculació, comprova que aquest codi sigui el mateix en els dos dispositius</translation>
 <translation id="1091767800771861448">Premeu ESCAPE per ometre (només compilacions no oficials).</translation>
 <translation id="1093457606523402488">Xarxes visibles:</translation>
+<translation id="1094219634413363886">Veuràs una notificació si la gravació s'inicia en aquest dispositiu gestionat</translation>
 <translation id="1095761715416917775">Assegura't de poder accedir a les dades sincronitzades en qualsevol moment</translation>
 <translation id="1095879482467973146">Gestor de contrasenyes de Google al web</translation>
 <translation id="109647177154844434">Si desinstal·les Parallels Desktop, la imatge de Windows se suprimirà. Això inclou les aplicacions, la configuració i les dades. Confirmes que vols continuar?</translation>
@@ -3850,6 +3851,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4340125850502689798">Nom d'usuari no vàlid</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> es vol comunicar amb l'aplicació "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">No permetis que els llocs web enviïn notificacions</translation>
+<translation id="4341280816303414009">És possible que es gravi la pantalla</translation>
 <translation id="4341577178275615435">Per activar o desactivar la navegació amb cursor de text, utilitza la drecera F7</translation>
 <translation id="4341905082470253054">S'està comprovant l'estat del TPM...</translation>
 <translation id="434198521554309404">Ràpid. Segur. Senzill.</translation>
@@ -5671,6 +5673,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5979421442488174909">&amp;Tradueix a: <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Per afegir pàgines a les adreces d'interès, fes clic a l'estrella de la barra d'adreces</translation>
 <translation id="5981362776161841923">Per permetre una extensió, canvia l'opció de configuració predeterminada més avall.</translation>
+<translation id="5982578203375898585">Mostra les baixades quan s'hagin completat</translation>
 <translation id="5984222099446776634">Visitats recentment</translation>
 <translation id="5985458664595100876">El format de l'URL no és vàlid. S'admeten els formats del tipus \\servidor\ús_compartit i smb://servidor\ús_compartit.</translation>
 <translation id="598810097218913399">Suprimeix l'assignació</translation>

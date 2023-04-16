@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328459813621383194">ຍ້າຍແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
+<translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="3371831930909698441">ມີບໍລິການແປພາສາ. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="3377063233124932127">ຕອນນີ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆທີ່ບັນທຶກໄວ້ຂອງທ່ານແມ່ນຢູ່ເທິງສຸດ.</translation>
 <translation id="3393920035788932672">ອະ​ນຸ​ຍາດ​ໃຫ້ປັອບອັບແລ້ວ</translation>
@@ -1032,6 +1033,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7840771868269352570">ລາຍການທີ່ທ່ານເລືອກຈະຖືກລຶບອອກ.</translation>
 <translation id="7845466610722898">ສະແດງລາຍຊື່ການອ່ານ</translation>
 <translation id="784551991304901159">ເພື່ອເບິ່ງເນື້ອຫາ, ໃຫ້ເລືອກເປີດໃຊ້ຈາກເມນູ</translation>
+<translation id="7846158885638438868">{count,plural, =1{ເພີ່ມບຸກມາກໃສ່ "{title}" ແລ້ວ}other{ເພີ່ມບຸກມາກໃສ່ "{title}" ແລ້ວ}}</translation>
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7856733331829174190">ບໍ່ສາມາດດາວໂຫລດໄດ້</translation>
 <translation id="785938070103630874">ເປີດລະຫັດຜ່ານ, ວິທີການຈ່າຍເງິນ ຫຼື ທີ່ຢູ່ ແລະ ືອື່ນ</translation>

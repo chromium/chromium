@@ -225,6 +225,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1978498689038657292">Text input</translation>
 <translation id="1980808257969311265">Join <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Show previous week</translation>
+<translation id="1986150224850161328">Make sure your phone and Chromebook are on the same network and then try again. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Can't capture content</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
@@ -374,6 +375,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2761723519669354964">Open highlighted item from shelf</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Exit capture mode</translation>
+<translation id="2785499565474703580">One device connected</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1280,7 @@ New install</translation>
 <translation id="6941333068993625698">Submit feedback</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
 <translation id="6945221475159498467">Select</translation>
+<translation id="6945922087561257829">Your phone is using a mobile network. Make sure your phone and Chromebook are on the same Wi-Fi network and then try again. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>
 <translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
@@ -1332,6 +1335,7 @@ New install</translation>
 <translation id="7188494361780961876">Menu moved to the top-left corner of the screen.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
+<translation id="7219573373513695352">No devices connected</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
@@ -1482,6 +1486,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7902625623987030061">Touch the fingerprint sensor</translation>
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> devices connected</translation>
 <translation id="7930731167419639574">Speech is now processed locally and dictation works offline</translation>
 <translation id="7932451802722951285">Open in Google Calendar</translation>
 <translation id="7933084174919150729">The Google Assistant is only available for primary profile.</translation>

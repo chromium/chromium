@@ -3143,6 +3143,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="369489984217678710">Slaptažodžiai ir kiti prisijungimo duomenys</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Saugos patikros atliktos. Duomenys bus įkelti.}=1{Saugos patikros atliktos. Failas bus įkeltas.}one{Saugos patikros atliktos. Failai bus įkelti.}few{Saugos patikros atliktos. Failai bus įkelti.}many{Saugos patikros atliktos. Failai bus įkelti.}other{Saugos patikros atliktos. Failai bus įkelti.}}</translation>
 <translation id="3696817060563289264">Atsisiųsti teksto atpažinimo failai</translation>
+<translation id="3697716475445175867">paskutinį kartą atidaryta</translation>
 <translation id="3698471669415859717">Peržiūra baigta</translation>
 <translation id="3698825735945432002">Filtro tipas</translation>
 <translation id="3699624789011381381">El. pašto adresas</translation>
@@ -6378,6 +6379,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6596816719288285829">IP adresas</translation>
 <translation id="6597017209724497268">Duomenų imčių skaičius</translation>
 <translation id="6597331566371766302">Toliau nurodytus plėtinius užblokavo administratorius.</translation>
+<translation id="659894938503552850">naujausias</translation>
 <translation id="6601262427770154296">Tvarkyti naudotojo žodynus</translation>
 <translation id="6601612474695404578">Kai kuriose svetainėse naudojami trečiosios šalies slapukai puslapiams įkelti. Jei svetainė neveikia, galite pabandyti leisti slapukus.</translation>
 <translation id="6602937173026466876">Prieiga prie spausdintuvų</translation>
@@ -8161,6 +8163,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8161293209665121583">Tinklalapių skaitytojo režimą</translation>
 <translation id="8161604891089629425">Kontūrinis šriftas</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skirtuko perkėlimas į naują langą}one{Skirtukų perkėlimas į naują langą}few{Skirtukų perkėlimas į naują langą}many{Skirtukų perkėlimas į naują langą}other{Skirtukų perkėlimas į naują langą}}</translation>
+<translation id="8163708146810922598">seniausias</translation>
 <translation id="8165997195302308593">„Crostini“ prievado numerio persiuntimas</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefono numerį}one{# telefono numerį}few{# telefono numerius}many{# telefono numerio}other{# telefono numerių}}</translation>
 <translation id="8168071266284693455">Žymės, slaptažodžiai, istorija ir daugiau yra sinchronizuoti visuose jūsų įrenginiuose</translation>
@@ -8675,6 +8678,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8637688295594795546">Galimas sistemos naujinys. Ruošiamasi atsisiųsti...</translation>
 <translation id="8639047128869322042">Tikrinama, ar nėra kenkėjiškos programinės įrangos...</translation>
 <translation id="8639635302972078117">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje.</translation>
+<translation id="8640575194957831802">Paskutinį kartą atidaryta</translation>
 <translation id="8642900771896232685">2 sek.</translation>
 <translation id="8642947597466641025">Padidinti tekstą</translation>
 <translation id="8643403533759285912">Ištrinti grupę</translation>

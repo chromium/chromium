@@ -2105,6 +2105,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6167577165590485365">Darrer intent de recollida:</translation>
 <translation id="6169916984152623906">Ara pots navegar de manera privada i les altres persones que utilitzin aquest dispositiu no veuran la teva activitat. Tanmateix, les baixades i les adreces d'interès sí que es desaran.</translation>
+<translation id="617256461084925519">Google Chrome està provant de verificar la teva identitat per poder emplenar la informació de pagament.</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
 <translation id="6177531123306197852">Sobre C2</translation>
 <translation id="6180316780098470077">Interval d'intents</translation>
@@ -2656,6 +2657,7 @@ Detalls addicionals:
 <translation id="7518003948725431193">No s'ha trobat cap pàgina web per a l'adreça: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">S'ha amagat la secció "<ph name="SECTION" />"</translation>
+<translation id="752189128961566325">Pots utilitzar-la en tots els productes de Google</translation>
 <translation id="7523408071729642236">Fabricació</translation>
 <translation id="7526934274050461096">La connexió amb aquest lloc no és privada</translation>
 <translation id="7529884293139707752">Educació a casa</translation>
@@ -2883,6 +2885,7 @@ Detalls addicionals:
 <translation id="8057711352706143257"><ph name="SOFTWARE_NAME" /> no s'ha configurat correctament. Normalment el problema se soluciona desinstal·lant <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Producció alimentària</translation>
 <translation id="8058603697124206642">no és obligatori</translation>
+<translation id="8064892030280197386">verificar la teva identitat per poder emplenar la informació de pagament.</translation>
 <translation id="8066225060526005217">Gestionat per la configuració de galetes</translation>
 <translation id="8067872629359326442">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
 <translation id="8070439594494267500">Icona de l'aplicació</translation>

@@ -353,6 +353,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3324193307694657476">Adreça 2</translation>
 <translation id="3328459813621383194">Mou les pestanyes inactives</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
+<translation id="3344485292736684439">{count,plural, =1{S'ha desat l'adreça d'interès a "{title}" al teu compte, {email}}other{S'han desat les adreces d'interès a "{title}" al teu compte, {email}}}</translation>
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
 <translation id="3377063233124932127">Ara, les adreces d'interès, les contrasenyes i altres dades desades es troben a la part superior.</translation>
 <translation id="3393920035788932672">Finestres emergents permeses</translation>
@@ -1032,6 +1033,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7840771868269352570">Els elements seleccionats se suprimiran.</translation>
 <translation id="7845466610722898">Mostra la llista de lectura</translation>
 <translation id="784551991304901159">Per veure contingut, al menú, selecciona Activa</translation>
+<translation id="7846158885638438868">{count,plural, =1{S'ha afegit a les adreces d'interès a "{title}"}other{S'han afegit a les adreces d'interès a "{title}"}}</translation>
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7856733331829174190">No s'ha pogut baixar</translation>
 <translation id="785938070103630874">Obre les contrasenyes, les formes de pagament o l'adreça i altres dades</translation>

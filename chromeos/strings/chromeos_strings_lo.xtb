@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5430931332414098647">ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="5431318178759467895">ສີ</translation>
+<translation id="5456936324019847994">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບ APN ທີ່ກຳນົດເອງເຊິ່ງເປີດການນຳໃຊ້ຢູ່. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="5457599981699367932">ທ່ອງເນັດເປັນແຂກ</translation>
 <translation id="54609108002486618">ຖືກຈັດການ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ {0} ຄັ້ງ}}</translation>

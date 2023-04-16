@@ -118,6 +118,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1090541560108055381">Antes de sincronizar, certifique-se de que este código é o mesmo em ambos os dispositivos</translation>
 <translation id="1091767800771861448">Prima ESCAPE para ignorar (apenas nas compilações não oficiais).</translation>
 <translation id="1093457606523402488">Redes visíveis</translation>
+<translation id="1094219634413363886">É apresentada uma notificação se a gravação for iniciada neste dispositivo gerido</translation>
 <translation id="1095761715416917775">Certifique-se de que pode aceder sempre aos seus dados de sincronização</translation>
 <translation id="1095879482467973146">Gestor de Palavras-passe da Google na Web</translation>
 <translation id="109647177154844434">A desinstalação do Parallels Desktop irá eliminar a sua imagem do Windows. Isto inclui as respetivas apps, definições e dados. Tem a certeza de que pretende continuar?</translation>
@@ -3853,6 +3854,7 @@ Pretende pará-lo?</translation>
 <translation id="4340125850502689798">Nome de utilizador inválido.</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> pretende comunicar com a aplicação "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Não permitir que os sites enviem notificações</translation>
+<translation id="4341280816303414009">O seu ecrã pode ser gravado</translation>
 <translation id="4341577178275615435">Para ativar ou desativar a navegação por cursor, utilize o atalho F7.</translation>
 <translation id="4341905082470253054">A verificar o estado do TPM…</translation>
 <translation id="434198521554309404">Rápido. Seguro. Fácil.</translation>
@@ -5676,6 +5678,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5979421442488174909">&amp;Traduzir para <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para adicionar páginas aos marcadores, clicar na estrela na barra de endereço</translation>
 <translation id="5981362776161841923">Para permitir uma extensão, altere a predefinição abaixo.</translation>
+<translation id="5982578203375898585">Mostrar as transferências quando estiverem concluídas</translation>
 <translation id="5984222099446776634">Visitados Recentemente</translation>
 <translation id="5985458664595100876">Formato de URL inválido. Os formatos suportados são \\server\share e smb://server/share.</translation>
 <translation id="598810097218913399">Remover atribuição</translation>

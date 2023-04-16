@@ -2105,6 +2105,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6167577165590485365">Última tentativa de obtenção:</translation>
 <translation id="6169916984152623906">Agora, pode navegar em privado e as outras pessoas que utilizarem este dispositivo não veem a sua atividade. No entanto, as transferências e os marcadores são guardados.</translation>
+<translation id="617256461084925519">O Google Chrome está a tentar validar a sua identidade para poder preencher as suas informações de pagamento.</translation>
 <translation id="6177128806592000436">A sua ligação a este site não é segura</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">Intervalo entre tentativas</translation>
@@ -2655,6 +2656,7 @@ Detalhes adicionais:
 <translation id="7518003948725431193">Não foi encontrada qualquer página Web para o endereço Web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Secção "<ph name="SECTION" />" ocultada</translation>
+<translation id="752189128961566325">Pode usá-lo em todos os produtos Google</translation>
 <translation id="7523408071729642236">Indústria</translation>
 <translation id="7526934274050461096">A sua ligação a este site não é privada.</translation>
 <translation id="7529884293139707752">Ensino doméstico</translation>
@@ -2882,6 +2884,7 @@ Detalhes adicionais:
 <translation id="8057711352706143257">O "<ph name="SOFTWARE_NAME" />" não está configurado corretamente. Normalmente, a desinstalação do "<ph name="SOFTWARE_NAME" />" resolve o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Produção de alimentos</translation>
 <translation id="8058603697124206642">Não obrigatório</translation>
+<translation id="8064892030280197386">validar a sua identidade para poder preencher as informações de pagamento.</translation>
 <translation id="8066225060526005217">Gerido pelas definições de cookies</translation>
 <translation id="8067872629359326442">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium pode ajudar. Para alterar a sua palavra-passe e notificar a Google de que a sua conta pode estar em risco, clique em Proteger conta.</translation>
 <translation id="8070439594494267500">Ícone da app</translation>

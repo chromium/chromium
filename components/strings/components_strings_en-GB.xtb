@@ -307,6 +307,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1658918301167915956">bluetooth devices</translation>
 <translation id="1662550410081243962">Save and fill payment methods</translation>
 <translation id="1663943134801823270">Cards and addresses are from Chrome. You can manage them in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Get an email</translation>
 <translation id="1671391448414634642">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Short edge first</translation>
@@ -367,6 +368,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1806174020048213474">This app is requesting permission to install Wi-Fi credentials. After setup, your <ph name="DEVICE_TYPE" /> will automatically connect to participating Wi-Fi networks. To remove these credentials, uninstall the app.</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1807528111851433570">Start sheet</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Your CVC is on the back of your card. It’s the last three digits at the top right of the signature box.</translation>
 <translation id="181000283860817563">Track prices across multiple sites</translation>
 <translation id="1810391395243432441">Protect passwords with your screen lock</translation>
@@ -1586,6 +1588,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4877083676943085827">{COUNT,plural, =0{None}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> search</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
+<translation id="4879723019639546076">This address is saved only to Chrome. To use it across Google products, save it in your Google Account, (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Search history</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4881808915112408168">24.0 in x 31.5 in</translation>
@@ -2144,6 +2147,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6279183038361895380">Press |<ph name="ACCELERATOR" />| to show your cursor</translation>
 <translation id="6280223929691119688">Can’t deliver to this address. Select a different address.</translation>
 <translation id="6284292079994426700">26 in x 38 in</translation>
+<translation id="6284517535531159884">Variations Seed Type</translation>
 <translation id="6285507000506177184">Manage downloads in Chrome button; press Enter to manage files that you have downloaded in Chrome</translation>
 <translation id="6289939620939689042">Page colour</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2317,6 +2321,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
 <translation id="6718612893943028815">Use camera?</translation>
 <translation id="6721678857435001674">See the make and model of your Security Key</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>

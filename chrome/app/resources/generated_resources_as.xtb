@@ -118,6 +118,7 @@
 <translation id="1090541560108055381">পেয়াৰ কৰাৰ পূৰ্বে, দুয়োটা ডিভাইচতে এই ক’ডটো একেই হোৱাটো নিশ্চিত কৰক</translation>
 <translation id="1091767800771861448">এৰি যাবলৈ ESCAPE টিপক (কেৱল অনানুষ্ঠানিক বিল্ড)।</translation>
 <translation id="1093457606523402488">দৃশ্যমান নেটৱর্ক:</translation>
+<translation id="1094219634413363886">এই পৰিচালিত ডিভাইচটোত ৰেকৰ্ডিং আৰম্ভ হ’লে আপুনি এটা জাননী দেখা পাব</translation>
 <translation id="1095761715416917775">নিশ্চিত হৈ লওক যে আপুনি যাতে নিজৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পাৰে</translation>
 <translation id="1095879482467973146">ৱেবত Google Password Manager</translation>
 <translation id="109647177154844434">Parallels Desktop আনইনষ্টল কৰিলে আপোনাৰ Windowsৰ প্রতিচ্ছবিখন মচা যাব। ইয়াত এইটোৰ এপ্লিকেশ্বনসমূহ, ছেটিংসমূহ আৰু ডেটা অন্তৰ্ভুক্ত। আপুনি অব্যাহত ৰাখিবলৈ বিচৰাটো নিশ্চিতনে?</translation>
@@ -3863,6 +3864,7 @@
 <translation id="4340125850502689798">ব্যৱহাৰকাৰীৰ নামটো অমান্য</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />এ "<ph name="EXTENSION_NAME" />" এপ্‌টোৰ সৈতে যোগাযোগ কৰিব বিচাৰিছে</translation>
 <translation id="4340799661701629185">ছাইটক জাননী পঠিওৱাৰ অনুমতি নিদিব</translation>
+<translation id="4341280816303414009">আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰা হ’ব পাৰে</translation>
 <translation id="4341577178275615435">কেৰেট ব্ৰাউজিং অন অথবা অফ কৰিবলৈ শ্বৰ্টকাট F7 ব্যৱহাৰ কৰক</translation>
 <translation id="4341905082470253054">TPMৰ স্থিতি পৰীক্ষা কৰি থকা হৈছে...</translation>
 <translation id="434198521554309404">দ্ৰুত। সুৰক্ষিত। সহজ।</translation>
@@ -5686,6 +5688,7 @@
 <translation id="5979421442488174909"><ph name="LANGUAGE" />লৈ &amp;অনুবাদ কৰক</translation>
 <translation id="5979469435153841984">কোনো এটা পৃষ্ঠা বুকমাৰ্ক কৰিবলৈ ঠিকনাৰ বাৰত থকা তৰাচিহ্নত ক্লিক কৰক</translation>
 <translation id="5981362776161841923">এটা এক্সটেনশ্বনক অনুমতি দিবলৈ, তলত আপোনাৰ ডিফ’ল্ট ছেটিং সলনি কৰক।</translation>
+<translation id="5982578203375898585">ডাউনল’ডসমূহ কৰা হ’লে সেইবোৰ দেখুৱাওক</translation>
 <translation id="5984222099446776634">শেহতীয়াকৈ চোৱা</translation>
 <translation id="5985458664595100876">URLৰ ফর্মেট মান্য নহয়। সমৰ্থিত ফৰ্মেটসমূহ হৈছে \\server\share আৰু smb://server/share।</translation>
 <translation id="598810097218913399">আবণ্টন কৰা ছুইচটো আঁতৰাওক</translation>
