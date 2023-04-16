@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
@@ -193,7 +193,7 @@ TEST_F(AttributionRequestHelperTest, Begin_HeadersAdded) {
   EXPECT_TRUE(base::EndsWith(message, expected_origin));
   std::string potential_id =
       message.substr(0, message.length() - expected_origin.length());
-  EXPECT_TRUE(base::GUID::ParseLowercase(potential_id).is_valid());
+  EXPECT_TRUE(base::Uuid::ParseLowercase(potential_id).is_valid());
 
   histograms_.ExpectUniqueSample(
       "Conversions.TriggerAttestation.DestinationOriginStatus",

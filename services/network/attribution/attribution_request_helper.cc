@@ -14,10 +14,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/uuid.h"
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
@@ -70,7 +70,7 @@ struct AttributionRequestHelper::AttestationOperation {
   explicit AttestationOperation(
       const base::RepeatingCallback<AttributionAttestationMediator()>&
           create_mediator)
-      : aggregatable_report_id(base::GUID::GenerateRandomV4()),
+      : aggregatable_report_id(base::Uuid::GenerateRandomV4()),
         mediator(create_mediator.Run()) {}
 
   // Returns the message associated to this atttestation operation. It is
@@ -79,7 +79,7 @@ struct AttributionRequestHelper::AttestationOperation {
   std::string Message(const url::Origin& destination_origin);
 
   // TODO(https://crbug.com/1406645): use explicitly spec compliant structure
-  base::GUID aggregatable_report_id;
+  base::Uuid aggregatable_report_id;
 
   AttributionAttestationMediator mediator;
 };
