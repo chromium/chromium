@@ -12,11 +12,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -159,7 +159,7 @@ void PrivateAggregationHost::SendHistogramReport(
           ? now
           : GetScheduledReportTime(
                 /*report_issued_time=*/now),
-      /*report_id=*/base::GUID::GenerateRandomV4(), reporting_origin,
+      /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
       debug_mode_details->is_enabled
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled,
