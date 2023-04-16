@@ -15,6 +15,9 @@
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -59,6 +62,16 @@ constexpr int kCardArtImageRadius = 3;  // 3dp
 
 // The SkAlpha value for the image grey overlay.
 constexpr double kImageOverlayAlpha = 0.04;  // 4%
+
+// The border color used for card art images.
+constexpr SkColor kCardArtBorderColor = SkColorSetARGB(0xFF, 0xE3, 0xE3, 0xE3);
+
+// The stroke width of the card art border.
+constexpr int kCardArtBorderStrokeWidth = 2;
+
+// The width and length card art is resized to.
+constexpr int kCardArtImageWidth = 40;
+constexpr int kCardArtImageHeight = 24;
 
 }  // namespace
 
@@ -106,12 +119,52 @@ void AutofillImageFetcherImpl::OnCardArtImageFetched(
   if (!card_art_image.IsEmpty()) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableNewCardArtAndNetworkImages)) {
-      credit_card_art_image->card_art_image =
-          gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-              kCardArtImageRadius,
-              gfx::ImageSkiaOperations::CreateResizedImage(
-                  card_art_image.AsImageSkia(),
-                  skia::ImageOperations::RESIZE_BEST, gfx::Size(40, 24))));
+      if (card_art_url ==
+          "https://www.gstatic.com/autofill/virtualcard/icon/"
+          "capitalone_40_24.png") {
+        // Render Capital One asset directly. No need to calculate and add grey
+        // border to image.
+        credit_card_art_image->card_art_image = card_art_image;
+      } else {
+        // Create the outer rectange. The outer rectangle is for the
+        // entire image which includes the card art and additional border.
+        gfx::RectF outer_rect =
+            gfx::RectF(kCardArtImageWidth, kCardArtImageHeight);
+
+        // The inner rectangle only includes the card art. To calculate the
+        // inner rectangle, we need to factor the space that the border stroke
+        // will take up.
+        gfx::RectF inner_rect = gfx::RectF(
+            /*x=*/kCardArtBorderStrokeWidth, /*y=*/kCardArtBorderStrokeWidth,
+            /*width=*/kCardArtImageWidth - (kCardArtBorderStrokeWidth * 2),
+            /*height=*/kCardArtImageHeight - (kCardArtBorderStrokeWidth * 2));
+        gfx::Canvas canvas =
+            gfx::Canvas(gfx::Size(kCardArtImageWidth, kCardArtImageHeight),
+                        /*image_scale=*/1.0f, /*is_opaque=*/false);
+        cc::PaintFlags card_art_paint;
+        card_art_paint.setAntiAlias(true);
+
+        // Draw card art with rounded corners in the inner rectangle.
+        canvas.DrawRoundRect(inner_rect, kCardArtImageRadius, card_art_paint);
+        canvas.DrawImageInt(
+            gfx::ImageSkiaOperations::CreateResizedImage(
+                card_art_image.AsImageSkia(),
+                skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kCardArtImageWidth, kCardArtImageHeight)),
+            outer_rect.x(), outer_rect.y(), card_art_paint);
+
+        // Draw border around card art using outer rectangle.
+        card_art_paint.setStrokeWidth(kCardArtBorderStrokeWidth);
+        card_art_paint.setColor(kCardArtBorderColor);
+        card_art_paint.setStyle(cc::PaintFlags::kStroke_Style);
+        canvas.DrawRoundRect(outer_rect, kCardArtImageRadius, card_art_paint);
+
+        // Add radius around entire image.
+        credit_card_art_image->card_art_image =
+            gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+                kCardArtImageRadius,
+                gfx::ImageSkia::CreateFromBitmap(canvas.GetBitmap(), 1.0f)));
+      }
     } else {
       credit_card_art_image->card_art_image =
           AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
