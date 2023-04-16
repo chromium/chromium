@@ -5,7 +5,7 @@
 #include "services/device/hid/hid_device_info.h"
 
 #include "base/containers/contains.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
@@ -85,8 +85,8 @@ HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
   platform_device_id_map_.emplace_back(report_ids, platform_device_id);
 
   device_ = mojom::HidDeviceInfo::New(
-      base::GenerateGUID(), physical_device_id, vendor_id, product_id,
-      product_name, serial_number, bus_type,
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), physical_device_id,
+      vendor_id, product_id, product_name, serial_number, bus_type,
       std::vector<uint8_t>(report_descriptor.begin(), report_descriptor.end()),
       std::move(collections), has_report_id, max_input_report_size,
       max_output_report_size, max_feature_report_size, device_node,
@@ -127,8 +127,8 @@ HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
       HidBlocklist::Get().IsVendorProductBlocked(vendor_id, product_id);
 
   device_ = mojom::HidDeviceInfo::New(
-      base::GenerateGUID(), physical_device_id, vendor_id, product_id,
-      product_name, serial_number, bus_type,
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), physical_device_id,
+      vendor_id, product_id, product_name, serial_number, bus_type,
       /*report_descriptor=*/std::vector<uint8_t>{}, std::move(collections),
       has_report_id, max_input_report_size, max_output_report_size,
       max_feature_report_size, /*device_node=*/"", protected_input_report_ids,

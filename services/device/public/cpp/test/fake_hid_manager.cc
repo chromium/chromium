@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
@@ -237,7 +237,7 @@ mojom::HidDeviceInfoPtr FakeHidManager::CreateAndAddDeviceWithTopLevelUsage(
   collection->input_reports.push_back(mojom::HidReportDescription::New());
 
   auto device = mojom::HidDeviceInfo::New();
-  device->guid = base::GenerateGUID();
+  device->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   device->physical_device_id = physical_device_id;
   device->vendor_id = vendor_id;
   device->product_id = product_id;
