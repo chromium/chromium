@@ -141,7 +141,10 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  ASSERT_EQ(ui::AXMode(), web_contents->GetAccessibilityMode());
+  auto accessibility_mode = web_contents->GetAccessibilityMode();
+  // Strip off kNativeAPIs, which may be set in some situations.
+  accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
+  ASSERT_EQ(ui::AXMode(), accessibility_mode);
 
   // Enable automation.
   base::FilePath extension_path =
@@ -153,7 +156,10 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   // Now the AXMode should include kLabelImages.
   ui::AXMode expected_mode = ui::kAXModeWebContentsOnly;
   expected_mode.set_mode(ui::AXMode::kLabelImages, true);
-  EXPECT_EQ(expected_mode, web_contents->GetAccessibilityMode());
+  accessibility_mode = web_contents->GetAccessibilityMode();
+  // Strip off kNativeAPIs, which may be set in some situations.
+  accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
+  EXPECT_EQ(expected_mode, accessibility_mode);
 }
 
 // Flaky on Mac: crbug.com/1248445
