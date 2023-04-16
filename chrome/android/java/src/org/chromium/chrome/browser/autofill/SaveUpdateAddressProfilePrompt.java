@@ -165,7 +165,7 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void setSaveDetails(String address, String email, String phone) {
+    void setSaveOrMigrateDetails(String address, String email, String phone) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.address), address);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.email), email);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.phone), phone);

@@ -207,7 +207,7 @@ public class SaveUpdateAddressProfilePromptTest {
 
         View dialog = mPrompt.getDialogViewForTesting();
 
-        mPrompt.setSaveDetails("address", "email", "phone");
+        mPrompt.setSaveOrMigrateDetails("address", "email", "phone");
         validateTextView(dialog.findViewById(R.id.address), "address");
         validateTextView(dialog.findViewById(R.id.email), "email");
         validateTextView(dialog.findViewById(R.id.phone), "phone");

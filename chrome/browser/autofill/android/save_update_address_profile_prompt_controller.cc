@@ -4,9 +4,11 @@
 
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -141,10 +143,21 @@ SaveUpdateAddressProfilePromptController::GetNegativeButtonText() {
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetAddress() {
-  return GetEnvelopeStyleAddress(profile_,
-                                 g_browser_process->GetApplicationLocale(),
-                                 /*include_recipient=*/true,
-                                 /*include_country=*/true);
+  if (is_migration_to_account_) {
+    const std::u16string name =
+        profile_.GetInfo(NAME_FULL_WITH_HONORIFIC_PREFIX,
+                         g_browser_process->GetApplicationLocale());
+    const std::u16string address = profile_.GetInfo(
+        ADDRESS_HOME_LINE1, g_browser_process->GetApplicationLocale());
+    const std::u16string separator =
+        !name.empty() && !address.empty() ? u"\n" : u"";
+    return base::StrCat({name, separator, address});
+  } else {
+    return GetEnvelopeStyleAddress(profile_,
+                                   g_browser_process->GetApplicationLocale(),
+                                   /*include_recipient=*/true,
+                                   /*include_country=*/true);
+  }
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetEmail() {

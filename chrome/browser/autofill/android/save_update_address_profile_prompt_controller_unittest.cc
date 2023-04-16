@@ -249,10 +249,14 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
               controller_->GetPositiveButtonText());
   }
 
-  EXPECT_EQ(
-      u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium, CA "
-      u"91111\nUnited States",
-      controller_->GetAddress());
+  if (is_migration_to_account()) {
+    EXPECT_EQ(u"John H. Doe\n666 Erebus St.", controller_->GetAddress());
+  } else {
+    EXPECT_EQ(
+        u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium, CA "
+        u"91111\nUnited States",
+        controller_->GetAddress());
+  }
   EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
   EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
 
