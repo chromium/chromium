@@ -399,6 +399,9 @@ struct PasswordForm {
   // If true, this is a credential found using affiliation-based match.
   bool is_affiliation_based_match = false;
 
+  // If true, this is a credential found using grouping match.
+  bool is_grouped_match = false;
+
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is not persisted and filled
   // out only for submitted forms.
