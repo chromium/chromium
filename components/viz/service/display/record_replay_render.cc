@@ -217,7 +217,7 @@ static const char* gRepaintMimeType;
 static int gRepaintJPEGQuality;
 
 // Event to signal when repainting has finished.
-static base::WaitableEvent* gRepaintEvent;
+static std::atomic<base::WaitableEvent*> gRepaintEvent;
 
 // Encoded result of repainting.
 static std::atomic<char*> gRepaintResult;
@@ -234,8 +234,8 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   if (HasDivergedFromRecording()) {
     // If we've diverged from the recording then we're probably repainting,
     // and in any case don't need to notify the recorder that the paint finished.
-    // Keep track of the paint result in case we are indeed repainting.
-    gRepaintResult = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
+    if (gRepaintEvent)
+      gRepaintResult = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
   } else {
     size_t bookmark = gLastCommitBookmark;
     if (bookmark) {
