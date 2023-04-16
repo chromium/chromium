@@ -4523,4 +4523,192 @@ TEST_F(PasswordManagerTest, HaveFormManagersReceivedDataDependsOnDriver) {
   EXPECT_FALSE(manager()->HaveFormManagersReceivedData(&other_driver));
 }
 
+enum class PredictionSource {
+  ID_ATTRIBUTE = 0,
+  NAME_ATTRIBUTE = 1,
+  AUTOCOMPLETE = 2,
+  SERVER = 3
+};
+
+class PasswordManagerWithOtpVariationsTest
+    : public PasswordManagerTest,
+      public testing::WithParamInterface<std::tuple<
+          /*saved_form.username=*/std::u16string,
+          /*saved_form.password=*/absl::optional<std::u16string>,
+          /*another_saved_form.password_value=*/absl::optional<std::u16string>,
+          /*one_time_code_form.username_value=*/std::u16string,
+          PredictionSource>> {
+ protected:
+  const std::u16string test_form_password_element_ = u"one-time-code";
+  const std::u16string test_form_otp_value_ = u"123456";
+  const std::u16string test_form_username_element_ = u"username";
+};
+
+// Tests that only filling and saving fallbacks are available for a field
+// classified as an OTP field. The test is similar to non-parametrized
+// FillingAndSavingFallbacksOnOtpForm*, but tries many different circumstances.
+TEST_P(PasswordManagerWithOtpVariationsTest,
+       FillingAndSavingFallbacksOnOtpForm) {
+  auto [saved_form_username, saved_form_password, another_saved_form_password,
+        one_time_code_form_username_value, prediction_type] = GetParam();
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(
+      prediction_type == PredictionSource::SERVER);
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
+      .WillRepeatedly(Return(true));
+  PasswordForm saved_form;
+  // No saved password means no saved credential.
+  const bool has_saved_login = saved_form_password.has_value();
+  if (has_saved_login) {
+    saved_form.url = test_form_url_;
+    saved_form.signon_realm = test_signon_realm_;
+    saved_form.username_value = saved_form_username;
+    saved_form.password_value = saved_form_password.value();
+    store_->AddLogin(saved_form);
+  }
+  const bool has_saved_login_of_another_form =
+      another_saved_form_password.has_value();
+  PasswordForm another_saved_form;
+  if (has_saved_login_of_another_form) {
+    another_saved_form.url = test_form_url_;
+    another_saved_form.signon_realm = test_signon_realm_;
+    another_saved_form.username_value = u"another_username";
+    another_saved_form.password_value = another_saved_form_password.value();
+    store_->AddLogin(another_saved_form);
+  }
+
+  PasswordForm one_time_code_form;
+  one_time_code_form.url = test_form_url_;
+  one_time_code_form.signon_realm = test_signon_realm_;
+  one_time_code_form.form_data.url = test_form_url_;
+  one_time_code_form.form_data.unique_renderer_id = FormRendererId(10);
+
+  const bool otp_form_has_username = one_time_code_form_username_value != u"";
+  if (otp_form_has_username) {
+    one_time_code_form.username_value = one_time_code_form_username_value;
+    one_time_code_form.username_element = test_form_username_element_;
+    FormFieldData username_field;
+    username_field.name = test_form_username_element_;
+    username_field.value = one_time_code_form_username_value;
+    username_field.form_control_type = "text";
+    username_field.unique_renderer_id = FieldRendererId(1);
+    one_time_code_form.form_data.fields.push_back(username_field);
+  }
+
+  FormFieldData otp_field;
+  otp_field.value = test_form_otp_value_;
+  otp_field.form_control_type = "password";
+  otp_field.unique_renderer_id = FieldRendererId(2);
+  one_time_code_form.form_data.fields.push_back(otp_field);
+  switch (prediction_type) {
+    case PredictionSource::ID_ATTRIBUTE:
+      one_time_code_form.form_data.fields[otp_form_has_username].id_attribute =
+          test_form_password_element_;
+      break;
+    case PredictionSource::NAME_ATTRIBUTE:
+      one_time_code_form.form_data.fields[otp_form_has_username]
+          .name_attribute = test_form_password_element_;
+      break;
+    case PredictionSource::AUTOCOMPLETE:
+      one_time_code_form.form_data.fields[otp_form_has_username]
+          .autocomplete_attribute =
+          base::UTF16ToUTF8(test_form_password_element_);
+      break;
+    case PredictionSource::SERVER:
+      FormStructure form_structure(one_time_code_form.form_data);
+      form_structure.field(otp_form_has_username)
+          ->set_server_predictions(
+              {CreateFieldPrediction(autofill::NOT_PASSWORD)});
+      manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+      break;
+  }
+
+  PasswordFormFillData form_data;
+  EXPECT_CALL(driver_, SetPasswordFillData)
+      .WillRepeatedly(SaveArg<0>(&form_data));
+
+  manager()->OnPasswordFormsParsed(&driver_, {one_time_code_form.form_data});
+  task_environment_.RunUntilIdle();
+
+  // Check that manual filling fallback available.
+  if (has_saved_login) {
+    EXPECT_EQ(saved_form.username_value,
+              form_data.preferred_login.username_value);
+    EXPECT_EQ(saved_form.password_value,
+              form_data.preferred_login.password_value);
+  } else if (has_saved_login_of_another_form) {
+    EXPECT_EQ(another_saved_form.username_value,
+              form_data.preferred_login.username_value);
+    EXPECT_EQ(another_saved_form.password_value,
+              form_data.preferred_login.password_value);
+  } else {
+    EXPECT_EQ(form_data.preferred_login.username_value, u"");
+    EXPECT_EQ(form_data.preferred_login.password_value, u"");
+  }
+  // Check that no automatic filling available.
+  EXPECT_TRUE(form_data.username_element_renderer_id.is_null());
+  EXPECT_TRUE(form_data.password_element_renderer_id.is_null());
+  // Check that saving fallback is available.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, _, _))
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+  manager()->OnInformAboutUserInput(&driver_, one_time_code_form.form_data);
+  ASSERT_TRUE(form_manager_to_save);
+
+  PasswordForm expected_pending_form;
+  if ((!otp_form_has_username && has_saved_login) ||
+      (otp_form_has_username && has_saved_login &&
+       one_time_code_form_username_value == saved_form_username)) {
+    // If there is no username or the username matches existing credential,
+    // password manager tries to update the existing credential. If a user
+    // clicks a manual fallback for updating, update password bubble is shown.
+    expected_pending_form = saved_form;
+  } else if (!otp_form_has_username && has_saved_login_of_another_form) {
+    // If there is no username, password manager tries to update the existing
+    // credential. If a user clicks a manual fallback for updating, update
+    // password bubble is shown.
+    expected_pending_form = another_saved_form;
+  } else {
+    // No matching credential in password manager. If a user clicks a manual
+    // fallback for saving, save password bubble is shown.
+    expected_pending_form = one_time_code_form;
+
+    // Set values that is expected from parsing |form_data|.
+    expected_pending_form.password_element_renderer_id = FieldRendererId(2);
+    expected_pending_form.password_value = test_form_otp_value_;
+    if (otp_form_has_username) {
+      expected_pending_form.username_value = one_time_code_form_username_value;
+      expected_pending_form.username_element = test_form_username_element_;
+    }
+  }
+  // Just in case a user uses the manual for saving, the otp value will be saved
+  // as password.
+  expected_pending_form.password_value = test_form_otp_value_;
+  expected_pending_form.only_for_fallback = true;
+  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
+              FormMatches(expected_pending_form));
+
+  // Check that neither save or update prompt is shown automatically;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
+  OnPasswordFormSubmitted(one_time_code_form.form_data);
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+}
+
+// TODO(crbug.com/1428906): Add cases for
+// |PendingCredentialsState::EQUAL_TO_SAVED_MATCH| and
+// |PendingCredentialsState::AUTOMATIC_SAVE|.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordManagerWithOtpVariationsTest,
+    testing::Combine(testing::Values(u"", u"username"),
+                     testing::Values(u"password", absl::nullopt),
+                     testing::Values(u"another_password", absl::nullopt),
+                     testing::Values(u"", u"username", u"+1 650 000 000"),
+                     testing::Values(PredictionSource::ID_ATTRIBUTE,
+                                     PredictionSource::NAME_ATTRIBUTE,
+                                     PredictionSource::AUTOCOMPLETE,
+                                     PredictionSource::SERVER)));
+
 }  // namespace password_manager
