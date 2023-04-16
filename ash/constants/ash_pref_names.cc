@@ -1009,16 +1009,6 @@ const char kUserGeolocationAllowed[] = "ash.user.geolocation_allowed";
 // session. Values are from PrivacyHubController::AccessLevel.
 const char kDeviceGeolocationAllowed[] = "ash.device.geolocation_allowed";
 
-// Double prefs storing the most recent valid geoposition, which is only used
-// when the device lacks connectivity and we're unable to retrieve a valid
-// geoposition to calculate the sunset / sunrise times.
-//
-// Note the night light feature will be migrated to use `GeolocationController`
-// eventually, at which time `kNightLightCachedLatitude|Longitude` will be
-// superseded by these prefs.
-const char kDeviceGeolocationCachedLatitude[] = "ash.device.cached_latitude";
-const char kDeviceGeolocationCachedLongitude[] = "ash.device.cached_longitude";
-
 // A boolean pref which determines whether tap-dragging is enabled.
 const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
 

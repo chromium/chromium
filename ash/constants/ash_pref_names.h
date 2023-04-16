@@ -465,10 +465,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserCameraAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserMicrophoneAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserGeolocationAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeviceGeolocationAllowed[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDeviceGeolocationCachedLatitude[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDeviceGeolocationCachedLongitude[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTapDraggingEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadEnabled[];

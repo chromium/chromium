@@ -16,7 +16,6 @@
 #include "base/time/clock.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/astro.h"
 
@@ -49,8 +48,7 @@ GeolocationController::GeolocationController(
                 std::move(factory),
                 SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       backoff_delay_(kMinimumDelayAfterFailure),
-      timer_(std::make_unique<base::OneShotTimer>()),
-      scoped_session_observer_(this) {
+      timer_(std::make_unique<base::OneShotTimer>()) {
   auto* timezone_settings = system::TimezoneSettings::GetInstance();
   current_timezone_id_ = timezone_settings->GetCurrentTimezoneID();
   timezone_settings->AddObserver(this);
@@ -68,12 +66,6 @@ GeolocationController* GeolocationController::Get() {
       ash::Shell::Get()->geolocation_controller();
   DCHECK(controller);
   return controller;
-}
-
-// static
-void GeolocationController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDoublePref(prefs::kDeviceGeolocationCachedLatitude, 0.0);
-  registry->RegisterDoublePref(prefs::kDeviceGeolocationCachedLongitude, 0.0);
 }
 
 void GeolocationController::AddObserver(Observer* observer) {
@@ -124,16 +116,6 @@ bool GeolocationController::IsPreciseGeolocationAllowed() const {
   return primary_user_prefs->GetBoolean(ash::prefs::kUserGeolocationAllowed);
 }
 
-void GeolocationController::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  if (pref_service == active_user_pref_service_.get()) {
-    return;
-  }
-
-  active_user_pref_service_ = pref_service;
-  LoadCachedGeopositionIfNeeded();
-}
-
 // static
 base::TimeDelta
 GeolocationController::GetNextRequestDelayAfterSuccessForTesting() {
@@ -180,9 +162,6 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
   geoposition_ = std::make_unique<SimpleGeoposition>();
   geoposition_->latitude = position.latitude;
   geoposition_->longitude = position.longitude;
-
-  is_current_geoposition_from_cache_ = false;
-  StoreCachedGeoposition();
 
   if (previous_sunset && previous_sunrise) {
     // If the change in geoposition results in an hour or more in either sunset
@@ -250,55 +229,6 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   astro.setTime(midday_today_sec * 1000.0);
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   return base::Time::FromDoubleT(sun_rise_set_ms / 1000.0);
-}
-
-void GeolocationController::LoadCachedGeopositionIfNeeded() {
-  DCHECK(active_user_pref_service_);
-
-  // Even if there is a geoposition, but it's coming from a previously cached
-  // value, switching users should load the currently saved values for the
-  // new user. This is to keep users' prefs completely separate. We only ignore
-  // the cached values once we have a valid non-cached geoposition from any
-  // user in the same session.
-  if (geoposition_ && !is_current_geoposition_from_cache_) {
-    return;
-  }
-
-  if (!active_user_pref_service_->HasPrefPath(
-          prefs::kDeviceGeolocationCachedLatitude) ||
-      !active_user_pref_service_->HasPrefPath(
-          prefs::kDeviceGeolocationCachedLongitude)) {
-    LOG(ERROR)
-        << "No valid current geoposition and no valid cached geoposition"
-           " are available. Will use default times for sunset / sunrise.";
-    geoposition_.reset();
-    return;
-  }
-
-  geoposition_ = std::make_unique<SimpleGeoposition>();
-  geoposition_->latitude = active_user_pref_service_->GetDouble(
-      prefs::kDeviceGeolocationCachedLatitude);
-  geoposition_->longitude = active_user_pref_service_->GetDouble(
-      prefs::kDeviceGeolocationCachedLongitude);
-  is_current_geoposition_from_cache_ = true;
-}
-
-void GeolocationController::StoreCachedGeoposition() const {
-  CHECK(geoposition_);
-  const SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  for (const auto& user_session : session_controller->GetUserSessions()) {
-    PrefService* pref_service = session_controller->GetUserPrefServiceForUser(
-        user_session->user_info.account_id);
-    if (!pref_service) {
-      continue;
-    }
-
-    pref_service->SetDouble(prefs::kDeviceGeolocationCachedLatitude,
-                            geoposition_->latitude);
-    pref_service->SetDouble(prefs::kDeviceGeolocationCachedLongitude,
-                            geoposition_->longitude);
-  }
 }
 
 }  // namespace ash
