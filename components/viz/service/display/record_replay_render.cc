@@ -248,7 +248,7 @@ void OnPaintFinished(const SkPixmap& pixmap) {
 
 void OnRepaintFinished() {
   CHECK(HasDivergedFromRecording());
-  gRepaintEvent->Signal();
+  gRepaintEvent.load()->Signal();
 }
 
 static cc::ProxyMain* gCurrentCompositorProxy;
