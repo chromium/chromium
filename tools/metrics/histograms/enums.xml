@@ -55310,6 +55310,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="kNecessary"/>
 </enum>
 
+<enum name="KidsChromeManagementClientParsingError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Response dictionary failure"/>
+  <int value="2" label="Display classification failure"/>
+  <int value="3" label="Invalid display classification"/>
+</enum>
+
 <enum name="KidsExternalFetcherStatus">
   <int value="0" label="NoError"/>
   <int value="1" label="AuthError"/>
