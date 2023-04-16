@@ -255,6 +255,8 @@ void V8Window::NamedPropertyGetterCustom(
   if (!doc)
     return;
 
+  recordreplay::Diagnostic("[RUN-1747-1754] V8Window::NamedPropertyGetterCustom #5 %p", doc);
+
   bool has_named_item = doc->HasNamedItem(name);
   bool has_id_item = doc->HasElementWithId(name);
 
