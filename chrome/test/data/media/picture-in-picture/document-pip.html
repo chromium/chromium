@@ -1,8 +1,10 @@
 <script>
 var pipWindow;
-async function createDocumentPipWindow() {
-    pipWindow = await documentPictureInPicture.requestWindow();
+async function createDocumentPipWindow({ width = 300, height = 300 } = {}) {
+    pipWindow = await documentPictureInPicture.requestWindow({ width: width, height: height, });
+    pipWindow.document.open();
     pipWindow.document.write("Hello, world.<a name='top'>top</a>");
+    pipWindow.document.close();
     return true;
 }
 
