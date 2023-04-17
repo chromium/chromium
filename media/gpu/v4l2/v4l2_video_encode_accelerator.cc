@@ -1986,10 +1986,12 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   // Quantization parameter. The h264 qp range is 0-51.
   // Note: Webrtc default values are 24 and 37 respectively, see
   // h264_encoder_impl.cc.
-  // These values were copied from the VA-API encoder.
+  // These values were previously copied from the VA-API encoder.
+  // The MAX_QP parameter needed modification to 51 due to
+  // b/274867782 and b/241549978.
   // Ignore return values as these controls are optional.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_MAX_QP, 42)});
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_MAX_QP, 51)});
   // Don't set MIN_QP with other controls since it is not supported by
   // some devices and may prevent other controls from being set.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
