@@ -53,6 +53,10 @@ Only one build configuration is currently supported.
      use_system_xcode = false
      mac_sdk_official_version = "13.0"
      ```
+     When building an ARM browser on an x64 mac add the following setting:
+     ```ini
+     target_cpu = "arm64"
+     ```
      A hermetic version of xcode also needs to be downloaded and installed. Run the following:
      ```
      cd /path/to/chromium/src
