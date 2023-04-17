@@ -283,19 +283,6 @@ bool WebViewAutofillClientIOS::IsFastCheckoutSupported(
   return false;
 }
 
-bool WebViewAutofillClientIOS::TryToShowFastCheckout(
-    const FormData& form,
-    const FormFieldData& field,
-    base::WeakPtr<AutofillManager> autofill_manager) {
-  return false;
-}
-
-void WebViewAutofillClientIOS::HideFastCheckout(bool allow_further_runs) {}
-
-bool WebViewAutofillClientIOS::IsShowingFastCheckoutUI() {
-  return false;
-}
-
 bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
   return false;
 }

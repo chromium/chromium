@@ -169,37 +169,17 @@ TEST_F(ChromeAutofillClientTestForFastCheckout,
        IsFastCheckoutSupportedWithDisabledFeature) {
   FormData form;
   FormFieldData field;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(::features::kFastCheckout);
   EXPECT_FALSE(
       client()->IsFastCheckoutSupported(form, field, *autofill_manager()));
 }
 
-TEST_F(ChromeAutofillClientTestForFastCheckout,
-       HideFastCheckout_IsShowing_CallsStopOnFastCheckoutClient) {
-  ON_CALL(*fast_checkout_client(), IsShowing)
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(*fast_checkout_client(), Stop(true));
-  client()->HideFastCheckout(/*allow_further_runs=*/true);
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout,
-       HideFastCheckout_NotShowing_DoesNotCallStopOnFastCheckoutClient) {
-  ON_CALL(*fast_checkout_client(), IsShowing)
-      .WillByDefault(testing::Return(false));
-  EXPECT_CALL(*fast_checkout_client(), Stop).Times(0);
-  client()->HideFastCheckout(/*allow_further_runs=*/true);
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout, IsShowingFastCheckoutUI) {
-  EXPECT_CALL(*fast_checkout_client(), IsShowing)
+TEST_F(ChromeAutofillClientTestForFastCheckout, IsFastCheckoutSupported) {
+  EXPECT_CALL(*fast_checkout_client(), IsSupported)
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(client()->IsShowingFastCheckoutUI());
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout, TryToShowFastCheckout) {
-  EXPECT_CALL(*fast_checkout_client(), TryToStart)
-      .WillOnce(testing::Return(true));
-  EXPECT_TRUE(client()->TryToShowFastCheckout(
-      FormData(), FormFieldData(), autofill_manager()->GetWeakPtr()));
+  EXPECT_TRUE(client()->IsFastCheckoutSupported(FormData(), FormFieldData(),
+                                                *autofill_manager()));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

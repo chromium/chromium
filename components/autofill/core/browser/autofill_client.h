@@ -653,23 +653,6 @@ class AutofillClient : public RiskDataLoader {
   // HasCreditCardScanFeature() returns true.
   virtual void ScanCreditCard(CreditCardScanCallback callback) = 0;
 
-  // Checks whether Fast Checkout is supported in the current situation. The
-  // checks are performed by `FastCheckoutTriggerValidator` and are more
-  // extensive than `IsFastCheckoutSupported()`.
-  // If it is, shows the FastCheckout surface (for autofilling information
-  // during the checkout flow) and returns `true` on success.
-  virtual bool TryToShowFastCheckout(
-      const FormData& form,
-      const FormFieldData& field,
-      base::WeakPtr<AutofillManager> autofill_manager) = 0;
-
-  // Hides the Fast Checkout surface (for autofilling information during the
-  // checkout flow) if one is currently shown.
-  // The internal UI state has to be reset by setting parameter
-  // `allow_further_runs = true` before a second Fast Checkout run can be
-  // started successfully.
-  virtual void HideFastCheckout(bool allow_further_runs) = 0;
-
   // Returns true if the Fast Checkout feature is both supported by platform and
   // enabled.
   // TODO(crbug.com/1379149): Remove once bug is resolved.
@@ -677,9 +660,6 @@ class AutofillClient : public RiskDataLoader {
       const FormData& form,
       const FormFieldData& field,
       const AutofillManager& autofill_manager) = 0;
-
-  // Returns whether the FC surface is currently being shown.
-  virtual bool IsShowingFastCheckoutUI() = 0;
 
   // Returns true if the Touch To Fill feature is both supported by platform and
   // enabled. Should be called before |ShowTouchToFillCreditCard| or

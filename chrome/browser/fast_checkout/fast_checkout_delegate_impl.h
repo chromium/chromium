@@ -19,8 +19,6 @@
 //
 // It is supposed to be owned by the given |BrowserAutofillManager|, and
 // interact with it and its |FastCheckoutClient|.
-//
-// TODO(crbug.com/1379149): Remove similar methods from |AutofillClient|.
 class FastCheckoutDelegateImpl : public autofill::FastCheckoutDelegate {
  public:
   FastCheckoutDelegateImpl(content::WebContents* web_contents,

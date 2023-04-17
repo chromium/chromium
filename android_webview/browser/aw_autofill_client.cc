@@ -244,19 +244,6 @@ bool AwAutofillClient::IsFastCheckoutSupported(
   return false;
 }
 
-bool AwAutofillClient::TryToShowFastCheckout(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    base::WeakPtr<autofill::AutofillManager> autofill_manager) {
-  return false;
-}
-
-void AwAutofillClient::HideFastCheckout(bool allow_further_runs) {}
-
-bool AwAutofillClient::IsShowingFastCheckoutUI() {
-  return false;
-}
-
 bool AwAutofillClient::IsTouchToFillCreditCardSupported() {
   return false;
 }

@@ -156,7 +156,6 @@ class MockAutofillClient : public TestAutofillClient {
               (const override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
-  MOCK_METHOD(void, HideFastCheckout, (bool), (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
               (mojom::RendererFormDataAction action,

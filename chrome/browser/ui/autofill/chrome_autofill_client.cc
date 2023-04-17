@@ -772,28 +772,6 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
-bool ChromeAutofillClient::TryToShowFastCheckout(
-    const FormData& form,
-    const FormFieldData& field,
-    base::WeakPtr<AutofillManager> autofill_manager) {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         GetFastCheckoutClient()->TryToStart(
-             web_contents()->GetLastCommittedURL(), form, field,
-             autofill_manager);
-#else
-  return false;
-#endif
-}
-
-void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
-#if BUILDFLAG(IS_ANDROID)
-  if (IsShowingFastCheckoutUI()) {
-    GetFastCheckoutClient()->Stop(/*allow_further_runs=*/allow_further_runs);
-  }
-#endif
-}
-
 bool ChromeAutofillClient::IsFastCheckoutSupported(
     const FormData& form,
     const FormFieldData& field,
@@ -801,15 +779,6 @@ bool ChromeAutofillClient::IsFastCheckoutSupported(
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
          GetFastCheckoutClient()->IsSupported(form, field, autofill_manager);
-#else
-  return false;
-#endif
-}
-
-bool ChromeAutofillClient::IsShowingFastCheckoutUI() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         GetFastCheckoutClient()->IsShowing();
 #else
   return false;
 #endif

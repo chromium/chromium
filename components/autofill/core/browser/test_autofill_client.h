@@ -374,23 +374,12 @@ class TestAutofillClientTemplate : public T {
   void ScanCreditCard(
       AutofillClient::CreditCardScanCallback callback) override {}
 
-  bool TryToShowFastCheckout(
-      const FormData& form,
-      const FormFieldData& field,
-      base::WeakPtr<AutofillManager> autofill_manager) override {
-    return false;
-  }
-
-  void HideFastCheckout(bool allow_further_runs) override {}
-
   bool IsFastCheckoutSupported(
       const FormData& form,
       const FormFieldData& field,
       const AutofillManager& autofill_manager) override {
     return false;
   }
-
-  bool IsShowingFastCheckoutUI() override { return false; }
 
   bool IsTouchToFillCreditCardSupported() override { return false; }
 
