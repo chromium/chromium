@@ -375,17 +375,16 @@ void WorkerProcessLauncherTest::DoLaunchProcess() {
   EXPECT_TRUE(event_handler_);
   EXPECT_FALSE(worker_process_.IsValid());
 
-  WCHAR notepad[MAX_PATH + 1];
-  ASSERT_GT(
-      ExpandEnvironmentStrings(L"\045SystemRoot\045\\system32\\notepad.exe",
-                               notepad, MAX_PATH),
-      0u);
+  WCHAR calc[MAX_PATH + 1];
+  ASSERT_GT(ExpandEnvironmentStrings(L"\045SystemRoot\045\\system32\\calc.exe",
+                                     calc, MAX_PATH),
+            0u);
 
   STARTUPINFOW startup_info = {0};
   startup_info.cb = sizeof(startup_info);
 
   PROCESS_INFORMATION temp_process_info = {};
-  ASSERT_TRUE(CreateProcess(nullptr, notepad,
+  ASSERT_TRUE(CreateProcess(nullptr, calc,
                             nullptr,  // default process attributes
                             nullptr,  // default thread attributes
                             FALSE,    // do not inherit handles
