@@ -692,9 +692,11 @@ void ToolbarView::Layout() {
   if (display_mode_ == DisplayMode::NORMAL) {
     LayoutCommon();
 
+#if BUILDFLAG(IS_MAC)
     if (features::IsChromeRefresh2023()) {
       UpdateClipPath();
     }
+#endif
   }
 
   // Call super implementation to ensure layout manager and child layouts
