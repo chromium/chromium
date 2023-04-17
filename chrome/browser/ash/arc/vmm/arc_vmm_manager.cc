@@ -76,27 +76,40 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                                        2);
             },
             arc_system_state_observation_->GetWeakPtr()),
-        base::BindRepeating(&ArcVmmManager::SetSwapState,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            [](base::WeakPtr<ArcVmmManager> manager, bool enable) {
+              if (manager) {
+                manager->SetSwapState(enable ? SwapState::ENABLE
+                                             : SwapState::DISABLE);
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
     scheduler_->Start();
   }
 }
 
 ArcVmmManager::~ArcVmmManager() = default;
 
-void ArcVmmManager::SetSwapState(bool enable) {
-  if (enable) {
-    SendSwapRequest(
-        vm_tools::concierge::SwapOperation::ENABLE,
-        base::BindOnce(
-            &ArcVmmManager::PostWithSwapDelay, weak_ptr_factory_.GetWeakPtr(),
-            base::BindOnce(&ArcVmmManager::SendSwapRequest,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           vm_tools::concierge::SwapOperation::SWAPOUT,
-                           base::DoNothing())));
-  } else {
-    SendSwapRequest(vm_tools::concierge::SwapOperation::DISABLE,
-                    base::DoNothing());
+void ArcVmmManager::SetSwapState(SwapState state) {
+  switch (state) {
+    case SwapState::ENABLE:
+      SendSwapRequest(vm_tools::concierge::SwapOperation::ENABLE,
+                      base::DoNothing());
+      break;
+    case SwapState::ENABLE_WITH_SWAPOUT:
+      SendSwapRequest(
+          vm_tools::concierge::SwapOperation::ENABLE,
+          base::BindOnce(
+              &ArcVmmManager::PostWithSwapDelay, weak_ptr_factory_.GetWeakPtr(),
+              base::BindOnce(&ArcVmmManager::SendSwapRequest,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             vm_tools::concierge::SwapOperation::SWAPOUT,
+                             base::DoNothing())));
+      break;
+    case SwapState::DISABLE:
+      SendSwapRequest(vm_tools::concierge::SwapOperation::DISABLE,
+                      base::DoNothing());
+      break;
   }
 }
 
@@ -153,9 +166,9 @@ class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
     if (accelerator == vmm_swap_enabled_) {
-      manager_->SetSwapState(true);
+      manager_->SetSwapState(SwapState::ENABLE_WITH_SWAPOUT);
     } else if (accelerator == vmm_swap_disabled_) {
-      manager_->SetSwapState(false);
+      manager_->SetSwapState(SwapState::DISABLE);
     } else {
       NOTREACHED();
       return false;

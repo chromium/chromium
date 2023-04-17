@@ -18,6 +18,12 @@ namespace arc {
 
 class ArcBridgeService;
 
+enum class SwapState {
+  ENABLE,
+  ENABLE_WITH_SWAPOUT,
+  DISABLE,
+};
+
 // ARCVM vmm features manager.
 class ArcVmmManager : public KeyedService {
  public:
@@ -37,7 +43,7 @@ class ArcVmmManager : public KeyedService {
   // SetSwapState change the ARCVM vmm swap state in crosvm. When swap enabled,
   // the crosvm process will be STOP and guest memory will be moved to the
   // staging memory.
-  void SetSwapState(bool enable);
+  void SetSwapState(SwapState state);
 
   void set_user_id_hash(const std::string& user_id_hash) {
     user_id_hash_ = user_id_hash;

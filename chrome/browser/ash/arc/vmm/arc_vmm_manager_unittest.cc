@@ -115,7 +115,7 @@ class ArcVmmManagerTest : public testing::Test {
 
 TEST_F(ArcVmmManagerTest, SwapSuccess) {
   InitVmmManager();
-  manager()->SetSwapState(true);
+  manager()->SetSwapState(SwapState::ENABLE_WITH_SWAPOUT);
   base::RunLoop().RunUntilIdle();
   // Send "ENABLE" first.
   EXPECT_EQ(1, client()->enable_count());
@@ -149,11 +149,41 @@ TEST_F(ArcVmmManagerTest, ObservationAndScheduler) {
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 
-  // Should trigger the swap out state after 1 hour.
+  // Should trigger the swap enable state after 1 hour. The swap "out" state is
+  // expected set by concierge.
   task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_EQ(1, client()->enable_count());
-  EXPECT_EQ(1, client()->swap_out_count());
+  EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
+}
+
+// This test verify the weak ptr safety in scheduler.
+TEST_F(ArcVmmManagerTest, WeakPtrRef) {
+  class TestClass {
+   public:
+    void add(int x) { value += x; }
+
+    int value = 0;
+
+    base::WeakPtrFactory<TestClass> weak_ptr_factory_{this};
+  };
+
+  TestClass* test_class = new TestClass;
+  auto cb = base::BindRepeating(
+      [](base::WeakPtr<TestClass> c, int v) {
+        if (c) {
+          c->add(v);
+        }
+      },
+      test_class->weak_ptr_factory_.GetWeakPtr());
+
+  EXPECT_EQ(test_class->value, 0);
+  cb.Run(1);
+  EXPECT_EQ(test_class->value, 1);
+
+  delete test_class;
+  cb.Run(2);
+  // Expect no crash here.
 }
 
 }  // namespace arc
