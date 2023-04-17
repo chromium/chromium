@@ -10,7 +10,8 @@
 namespace field_trial_constants {
 
 // Version suffix for group names.
-const char kNewTabPageRetentionVersionSuffix[] = "_20230308";
+const char kNewTabPageRetentionVersionSuffixImprovedTiles[] = "_20230308";
+const char kNewTabPageRetentionVersionSuffixTileAblation[] = "_20230504";
 
 // Variation IDs for the improved popular sites default suggestions experiment
 // arms.

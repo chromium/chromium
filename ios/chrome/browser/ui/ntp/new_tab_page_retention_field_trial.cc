@@ -129,7 +129,8 @@ void CreateNewTabPageFieldTrial(
   config.AddGroup(
       base::StrCat({field_trial_constants::
                         kIOSPopularSitesImprovedSuggestionsWithAppsEnabledGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
       field_trial_constants::kPopularSitesImprovedSuggestionsWithAppsEnabledID,
       weight_by_id[field_trial_constants::
                        kPopularSitesImprovedSuggestionsWithAppsEnabledID]);
@@ -139,7 +140,8 @@ void CreateNewTabPageFieldTrial(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::
                         kIOSPopularSitesImprovedSuggestionsWithAppsEnabledGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
       popular_sites_with_apps_params);
 
   // Popular sites without popular apps group.
@@ -147,7 +149,8 @@ void CreateNewTabPageFieldTrial(
       base::StrCat(
           {field_trial_constants::
                kIOSPopularSitesImprovedSuggestionsWithoutAppsEnabledGroup,
-           field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+           field_trial_constants::
+               kNewTabPageRetentionVersionSuffixImprovedTiles}),
       field_trial_constants::
           kPopularSitesImprovedSuggestionsWithoutAppsEnabledID,
       weight_by_id[field_trial_constants::
@@ -159,14 +162,16 @@ void CreateNewTabPageFieldTrial(
       base::StrCat(
           {field_trial_constants::
                kIOSPopularSitesImprovedSuggestionsWithoutAppsEnabledGroup,
-           field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+           field_trial_constants::
+               kNewTabPageRetentionVersionSuffixImprovedTiles}),
       popular_sites_without_apps_params);
 
   // Popular sites control group.
   config.AddGroup(
       base::StrCat({field_trial_constants::
                         kIOSPopularSitesImprovedSuggestionsControlGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
       field_trial_constants::kPopularSitesImprovedSuggestionsControlID,
       weight_by_id
           [field_trial_constants::kPopularSitesImprovedSuggestionsControlID]);
@@ -176,13 +181,15 @@ void CreateNewTabPageFieldTrial(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::
                         kIOSPopularSitesImprovedSuggestionsControlGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
       popular_sites_control_param);
 
   // Tile ablation group that hides all tiles.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationHideAllGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixTileAblation}),
       field_trial_constants::kTileAblationHideAllID,
       weight_by_id[field_trial_constants::kTileAblationHideAllID]);
   base::FieldTrialParams tile_ablation_hide_all_params;
@@ -190,13 +197,15 @@ void CreateNewTabPageFieldTrial(
   base::AssociateFieldTrialParams(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::kTileAblationHideAllGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixTileAblation}),
       tile_ablation_hide_all_params);
 
   // Tile ablation group that hides only MVT tiles.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationHideOnlyMVTGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixTileAblation}),
       field_trial_constants::kTileAblationHideOnlyMVTID,
       weight_by_id[field_trial_constants::kTileAblationHideOnlyMVTID]);
   base::FieldTrialParams tile_ablation_hide_mvt_params;
@@ -204,13 +213,15 @@ void CreateNewTabPageFieldTrial(
   base::AssociateFieldTrialParams(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::kTileAblationHideOnlyMVTGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixTileAblation}),
       tile_ablation_hide_mvt_params);
 
   // Tile ablation control group.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationControlGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixTileAblation}),
       field_trial_constants::kTileAblationControlID,
       weight_by_id[field_trial_constants::kTileAblationControlID]);
   base::FieldTrialParams tile_ablation_control_params;
@@ -218,7 +229,8 @@ void CreateNewTabPageFieldTrial(
   base::AssociateFieldTrialParams(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::kTileAblationControlGroup,
-                    field_trial_constants::kNewTabPageRetentionVersionSuffix}),
+                    field_trial_constants::
+                        kNewTabPageRetentionVersionSuffixTileAblation}),
       tile_ablation_control_params);
 
   // Default group.
@@ -233,14 +245,14 @@ void CreateNewTabPageFieldTrial(
   const std::string& group_name = trial->group_name();
 
   if (group_name ==
-          base::StrCat(
-              {field_trial_constants::
-                   kIOSPopularSitesImprovedSuggestionsControlGroup,
-               field_trial_constants::kNewTabPageRetentionVersionSuffix}) ||
+          base::StrCat({field_trial_constants::
+                            kIOSPopularSitesImprovedSuggestionsControlGroup,
+                        field_trial_constants::
+                            kNewTabPageRetentionVersionSuffixImprovedTiles}) ||
       group_name ==
-          base::StrCat(
-              {field_trial_constants::kTileAblationControlGroup,
-               field_trial_constants::kNewTabPageRetentionVersionSuffix}) ||
+          base::StrCat({field_trial_constants::kTileAblationControlGroup,
+                        field_trial_constants::
+                            kNewTabPageRetentionVersionSuffixTileAblation}) ||
       group_name == field_trial_constants::kNewTabPageRetentionDefaultGroup) {
     feature_list->RegisterFieldTrialOverride(
         ntp_tiles::kNewTabPageRetention.name,
