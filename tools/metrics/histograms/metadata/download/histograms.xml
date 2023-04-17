@@ -366,6 +366,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.DownloadManagerImpl.CreateDownloadItemTime"
+    units="ms" expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records time taken to execute DownloadManagerImpl::CreateDownloadItem(),
+    logged on each execution.
+  </summary>
+</histogram>
+
+<histogram name="Download.DownloadManagerImpl.PostInitializationTime"
+    units="ms" expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records time taken to execute DownloadManagerImpl::PostInitialization(),
+    logged on each execution unless the function returns early due to already
+    being initialized.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Download.DownloadSize" units="KB"
     expires_after="never">
 <!-- expires-never: Used for long term download system health monitoring. -->
@@ -679,6 +700,52 @@ chromium-metrics-reviews@google.com.
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records events for download later feature in download Android UI.
+  </summary>
+</histogram>
+
+<histogram name="Download.LoadHistoryDownloads.AddExtensionInfoAndNotifyTime"
+    units="ms" expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the time taken to add the DownloadedByExtension data to the
+    DownloadItem and notify observers in
+    DownloadHistory::LoadHistoryDownloads(), logged on each loop iteration (once
+    per DownloadRow) if extensions are enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Download.LoadHistoryDownloads.DeserializeStoragePartitionConfigTime"
+    units="ms" expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the time taken to obtain the StoragePartitionConfig from the
+    serialized embedder download data in
+    DownloadHistory::LoadHistoryDownloads(), logged on each loop iteration (once
+    per DownloadRow).
+  </summary>
+</histogram>
+
+<histogram name="Download.LoadHistoryDownloads.DownloadRows" units="rows"
+    expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of rows passed to
+    DownloadHistory::LoadHistoryDownloads(), logged on each execution.
+  </summary>
+</histogram>
+
+<histogram name="Download.LoadHistoryDownloads.NotifyObserversTime" units="ms"
+    expires_after="2023-09-09">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the total time taken to call OnHistoryQueryComplete() on all the
+    observers in DownloadHistory::LoadHistoryDownloads(), logged on each
+    execution of the latter.
   </summary>
 </histogram>
 

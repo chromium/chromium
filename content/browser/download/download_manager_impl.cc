@@ -1047,6 +1047,8 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     base::Time last_access_time,
     bool transient,
     const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Download.DownloadManagerImpl.CreateDownloadItemTime");
   // Retrieve the in-progress download if it exists. Notice that this also
   // removes it from |in_progress_downloads_|.
   auto in_progress_download = RetrieveInProgressDownload(id);
@@ -1129,6 +1131,8 @@ void DownloadManagerImpl::PostInitialization(
   if (initialized_)
     return;
 
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Download.DownloadManagerImpl.PostInitializationTime");
   switch (dependency) {
     case DOWNLOAD_INITIALIZATION_DEPENDENCY_HISTORY_DB:
       history_db_initialized_ = true;
