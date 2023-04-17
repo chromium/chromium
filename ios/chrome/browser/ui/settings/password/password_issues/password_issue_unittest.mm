@@ -33,6 +33,7 @@ PasswordIssue* MakeTestPasswordIssue(
   form.signon_realm = "https://example.com";
   form.username_value = u"user";
   form.password_value = u"password";
+  form.url = GURL(form.signon_realm);
   form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
 
   for (auto insecure_type : insecure_types) {

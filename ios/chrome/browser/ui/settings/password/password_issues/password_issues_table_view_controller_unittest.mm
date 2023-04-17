@@ -25,6 +25,27 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Creates a test password issue.
+PasswordIssue* CreateTestPasswordIssue() {
+  auto form = password_manager::PasswordForm();
+  form.url = GURL("http://www.example.com/accounts/LoginAuth");
+  form.action = GURL("http://www.example.com/accounts/Login");
+  form.username_element = u"Email";
+  form.username_value = u"test@egmail.com";
+  form.password_element = u"Passwd";
+  form.password_value = u"test";
+  form.submit_element = u"signIn";
+  form.signon_realm = "http://www.example.com/";
+  form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  return [[PasswordIssue alloc]
+                initWithCredential:password_manager::CredentialUIEntry(form)
+      enableCompromisedDescription:NO];
+}
+
+}  // namespace
+
 // Test class that conforms to PasswordIssuesPresenter in order to test the
 // presenter methods are called correctly.
 @interface FakePasswordIssuesPresenter : NSObject <PasswordIssuesPresenter>
@@ -32,6 +53,8 @@
 @property(nonatomic) PasswordIssue* presentedPassword;
 
 @property(nonatomic, assign) BOOL dismissedWarningsPresented;
+
+@property(nonatomic, strong) CrURL* openedURL;
 
 @end
 
@@ -47,6 +70,7 @@
 - (void)dismissAndOpenURL:(CrURL*)URL {
   // TODO(crbug.com/1419986): Add unit test checking the right url was passed
   // after tapping the header's link.
+  _openedURL = URL;
 }
 
 - (void)presentDismissedCompromisedCredentials {
@@ -72,23 +96,18 @@ class PasswordIssuesTableViewControllerTest
   }
 
   // Adds password issue to the view controller.
-  void AddPasswordIssue(NSString* dismissed_warnings_button_text = nil) {
-    auto form = password_manager::PasswordForm();
-    form.url = GURL("http://www.example.com/accounts/LoginAuth");
-    form.action = GURL("http://www.example.com/accounts/Login");
-    form.username_element = u"Email";
-    form.username_value = u"test@egmail.com";
-    form.password_element = u"Passwd";
-    form.password_value = u"test";
-    form.submit_element = u"signIn";
-    form.signon_realm = "http://www.example.com/";
-    form.scheme = password_manager::PasswordForm::Scheme::kHtml;
-    PasswordIssue* password_issue = [[PasswordIssue alloc]
-                  initWithCredential:password_manager::CredentialUIEntry(form)
-        enableCompromisedDescription:NO];
+  void AddPasswordIssue() {
+    SetIssuesAndDismissedWarningsButtonText(@[ CreateTestPasswordIssue() ]);
+  }
+
+  // Passes the given PasswordIssues and text for dismissed warnings button to
+  // the view controller.
+  void SetIssuesAndDismissedWarningsButtonText(
+      NSArray<PasswordIssue*>* password_issues,
+      NSString* dismissed_warnings_button_text = nil) {
     PasswordIssueGroup* issue_group =
         [[PasswordIssueGroup alloc] initWithHeaderText:nil
-                                        passwordIssues:@[ password_issue ]];
+                                        passwordIssues:password_issues];
 
     PasswordIssuesTableViewController* passwords_controller =
         static_cast<PasswordIssuesTableViewController*>(controller());
@@ -144,7 +163,8 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
       password_manager::features::kIOSPasswordCheckup);
 
   CreateController();
-  AddPasswordIssue(@"Dismiss Warnings (1)");
+  SetIssuesAndDismissedWarningsButtonText(@[ CreateTestPasswordIssue() ],
+                                          @"Dismiss Warnings (1)");
 
   PasswordIssuesTableViewController* passwords_controller =
       static_cast<PasswordIssuesTableViewController*>(controller());
@@ -153,4 +173,23 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
   [passwords_controller tableView:passwords_controller.tableView
           didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
   EXPECT_TRUE(presenter().dismissedWarningsPresented);
+}
+
+// Test verifies tapping change password button triggers function in presenter.
+TEST_F(PasswordIssuesTableViewControllerTest, TestChangePasswordTap) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  CreateController();
+  PasswordIssue* password_issue = CreateTestPasswordIssue();
+  SetIssuesAndDismissedWarningsButtonText(@[ password_issue ]);
+
+  PasswordIssuesTableViewController* passwords_controller =
+      static_cast<PasswordIssuesTableViewController*>(controller());
+
+  EXPECT_FALSE(presenter().openedURL);
+  // Tap change website button.
+  [passwords_controller tableView:passwords_controller.tableView
+          didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0]];
+  EXPECT_NSEQ(presenter().openedURL, password_issue.changePasswordURL.value());
 }
