@@ -1327,6 +1327,11 @@
       [self isThumbStripEnabled]) {
     [self updateThumbstripIfNeededOnViewController:self.baseViewController];
   }
+
+  if (level == SceneActivationLevelBackground) {
+    // When going in the background, hide the Inactive Tabs UI.
+    [self.inactiveTabsCoordinator hide];
+  }
 }
 
 #pragma mark - ViewControllerTraitCollectionObserver
