@@ -13,6 +13,8 @@ source_set("reading_list") {
     "offline_url_utils.mm",
     "reading_list_browser_agent.h",
     "reading_list_browser_agent.mm",
+    "reading_list_constants.h",
+    "reading_list_constants.mm",
     "reading_list_distiller_page.h",
     "reading_list_distiller_page.mm",
     "reading_list_distiller_page_factory.h",

@@ -2421,6 +2421,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         =1 {Page added to your reading list in your account, {email}}
         other {Pages added to your reading list in your account, {email}}}
       </message>
+      <message name="IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION" desc="Text shown for the undo button in the snackbar which is shown when a new reading list item is added. Should be in uppercase letters. [CHAR_LIMIT=14]" meaning="Undo the action of adding new item to the reading list by removing the newly added item. [CHAR_LIMIT=14]">
+        UNDO
+      </message>
       <message name="IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status and url). Read by Text To Speech. Similar to IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL">
         <ph name="TITLE"><ex>Chromium - The Chromium Projects</ex>$1</ph>, <ph name="STATE"><ex>Available offline</ex>$2</ph>, <ph name="URL"><ex>http://www.chromium.org/Home</ex>$3</ph>
       </message>

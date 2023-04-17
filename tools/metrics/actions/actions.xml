@@ -20629,6 +20629,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileReadingListDeleteFromSnackbarUndo">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user clicks on the &quot;undo&quot; button from the
+    snackbar which is shown when items are added to the reading list, to remove
+    the new items.
+  </description>
+</action>
+
 <action name="MobileReadingListDeleteRead">
   <owner>gambard@chromium.org</owner>
   <description>

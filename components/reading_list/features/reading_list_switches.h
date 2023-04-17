@@ -34,6 +34,11 @@ BASE_DECLARE_FEATURE(kReadingListEnableDualReadingListModel);
 // haven't turned on full sync.
 BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
 
+// Returns whether reading list storage related UI can be enabled, by testing
+// `kReadingListEnableSyncTransportModeUponSignIn` and
+// `kReadingListEnableDualReadingListModel`.
+bool IsReadingListAccountStorageUIEnabled();
+
 }  // namespace switches
 }  // namespace reading_list
 

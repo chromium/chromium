@@ -31,5 +31,11 @@ BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsReadingListAccountStorageUIEnabled() {
+  return base::FeatureList::IsEnabled(kReadingListEnableDualReadingListModel) &&
+         base::FeatureList::IsEnabled(
+             kReadingListEnableSyncTransportModeUponSignIn);
+}
+
 }  // namespace switches
 }  // namespace reading_list

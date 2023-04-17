@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 
 class Browser;
+@class MDCSnackbarMessageAction;
 
 class ReadingListBrowserAgent
     : public BrowserUserData<ReadingListBrowserAgent> {
@@ -30,8 +31,24 @@ class ReadingListBrowserAgent
 
   void AddURLToReadingListwithTitle(const GURL& URL, NSString* title);
 
+  // Create undo action for the "added to reading list" snackbar, which enables
+  // the user to remove the item(s) just added to the reading list.
+  // The undo action is not a perfect restore of the previous state. E.g.
+  // it will remove the item from both storages if the account storage is
+  // enabled, and if the user tries to re-add an existing entry (no-op add),
+  // then taps "undo", the existing entry will be removed.
+  MDCSnackbarMessageAction* CreateUndoActionWithReadingListURLs(
+      NSArray<URLWithTitle*>* urls);
+
+  // Removes the given urls from the reading list.
+  void RemoveURLsFromReadingList(NSArray<URLWithTitle*>* urls);
+
   // The browser associated with this agent.
   Browser* browser_;
+
+  // Create weak pointers to ensure that the callback bound to the object is
+  // canceled when the object is destroyed.
+  base::WeakPtrFactory<ReadingListBrowserAgent> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_BROWSER_AGENT_H_

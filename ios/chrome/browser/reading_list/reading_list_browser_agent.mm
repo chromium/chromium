@@ -10,9 +10,11 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -62,6 +64,7 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 
   NSString* snackbar_text = nil;
+  MDCSnackbarMessageAction* snackbar_action = nil;
   if (!account_info.IsEmpty() &&
       base::FeatureList::IsEnabled(
           kEnableEmailInBookmarksReadingListSnackbar)) {
@@ -71,6 +74,10 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             pattern, "count", (int)urls.count, "email", account_info.email);
     snackbar_text = base::SysUTF16ToNSString(utf16Text);
+    snackbar_action =
+        reading_list::switches::IsReadingListAccountStorageUIEnabled()
+            ? CreateUndoActionWithReadingListURLs(urls)
+            : nil;
   } else {
     snackbar_text =
         l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
@@ -79,6 +86,7 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:snackbar_text];
   message.accessibilityLabel = snackbar_text;
+  message.action = snackbar_action;
   message.duration = 2.0;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
@@ -112,4 +120,37 @@ void ReadingListBrowserAgent::AddURLToReadingListwithTitle(const GURL& url,
   reading_model->AddOrReplaceEntry(url, base::SysNSStringToUTF8(title),
                                    reading_list::ADDED_VIA_CURRENT_APP,
                                    /*estimated_read_time=*/base::TimeDelta());
+}
+
+MDCSnackbarMessageAction*
+ReadingListBrowserAgent::CreateUndoActionWithReadingListURLs(
+    NSArray<URLWithTitle*>* urls) {
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  base::WeakPtr<ReadingListBrowserAgent> weak_agent =
+      weak_ptr_factory_.GetWeakPtr();
+  action.handler = ^{
+    base::RecordAction(
+        base::UserMetricsAction("MobileReadingListDeleteFromSnackbarUndo"));
+    ReadingListBrowserAgent* agent = weak_agent.get();
+    if (agent) {
+      agent->RemoveURLsFromReadingList(urls);
+    }
+  };
+  action.accessibilityIdentifier = kReadingListAddedToAccountSnackbarUndoID;
+  action.title =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION);
+  action.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION);
+  return action;
+}
+
+void ReadingListBrowserAgent::RemoveURLsFromReadingList(
+    NSArray<URLWithTitle*>* urls) {
+  ReadingListModel* reading_model =
+      ReadingListModelFactory::GetInstance()->GetForBrowserState(
+          browser_->GetBrowserState());
+
+  for (URLWithTitle* url_with_title in urls) {
+    reading_model->RemoveEntryByURL(url_with_title.URL);
+  }
 }
