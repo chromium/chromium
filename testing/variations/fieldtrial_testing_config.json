@@ -7180,9 +7180,6 @@
                     "enable_features": [
                         "AmbientBadgeSuppressFirstVisit",
                         "InstallableAmbientBadgeMessage"
-                    ],
-                    "disable_features": [
-                        "AmbientBadgeSiteEngagement"
                     ]
                 }
             ]

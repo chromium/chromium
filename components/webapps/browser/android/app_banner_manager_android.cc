@@ -185,13 +185,6 @@ void AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge(
   }
 }
 
-bool AppBannerManagerAndroid::HasSufficientEngagementForAmbientBadge() {
-  double score = GetSiteEngagementService()->GetScore(validated_url_);
-  int min_engagement =
-      features::kAmbientBadgeSiteEngagement_MinEngagement.Get();
-  return score >= min_engagement;
-}
-
 void AppBannerManagerAndroid::ResetCurrentPageData() {
   AppBannerManager::ResetCurrentPageData();
   native_app_data_.Reset();

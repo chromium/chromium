@@ -112,10 +112,6 @@ class AppBannerManagerAndroid : public AppBannerManager {
   // ambient badge.
   void PerformWorkerCheckForAmbientBadge();
 
-  // Checks whether the web page has sufficient engagement for showing the
-  // ambient badge.
-  bool HasSufficientEngagementForAmbientBadge();
-
  protected:
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;

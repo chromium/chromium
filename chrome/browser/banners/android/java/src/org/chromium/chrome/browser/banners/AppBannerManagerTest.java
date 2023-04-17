@@ -1330,50 +1330,6 @@ public class AppBannerManagerTest {
     @Test
     @SmallTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=AmbientBadgeSiteEngagement:minimal_engagement/100"})
-    public void testAmbientBadgeInsufficientEngagement() throws Exception {
-        String url = WebappTestPage.getServiceWorkerUrlWithAction(
-                mTestServer, "call_stashed_prompt_on_click");
-        // Set the engagement to trigger beforeinstall event but not ambient badge.
-        resetEngagementForUrl(url, 10);
-
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
-
-        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
-
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        waitForBadgeStatus(tab, AmbientBadgeState.PENDING_ENGAGEMENT);
-        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
-
-        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
-        tapAndWaitForModalBanner(tab);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=AmbientBadgeSiteEngagement:minimal_engagement/100"})
-    public void testAmbientBadgeSufficientEngagement() throws Exception {
-        String url = WebappTestPage.getServiceWorkerUrlWithAction(
-                mTestServer, "call_stashed_prompt_on_click");
-        // Set the engagement big enough for ambient badge.
-        resetEngagementForUrl(url, 100);
-
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
-
-        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
-
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
-        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
-
-        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
-        tapAndWaitForModalBanner(tab);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AppBanners"})
     @Features.EnableFeatures({ChromeFeatureList.WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT})
     public void testAmbientBadgeSuppressedOnFirstVisit() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithAction(

@@ -133,12 +133,6 @@ void AmbientBadgeManager::CheckEngagementForAmbientBadge() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAmbientBadgeSiteEngagement) &&
-      !HasSufficientEngagementForAmbientBadge()) {
-    UpdateState(State::kPendingEngagement);
-    return;
-  }
-
   infobars::ContentInfoBarManager* infobar_manager =
       webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
           web_contents_.get());
@@ -157,11 +151,6 @@ void AmbientBadgeManager::CheckEngagementForAmbientBadge() {
 void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge() {
   // TODO(crbug/1425546): Move the worker check logic from AppBannerManager.
   app_banner_manager_->PerformWorkerCheckForAmbientBadge();
-}
-
-bool AmbientBadgeManager::HasSufficientEngagementForAmbientBadge() {
-  // TODO(crbug/1425546): Move the check engagement logic from AppBannerManager.
-  return app_banner_manager_->HasSufficientEngagementForAmbientBadge();
 }
 
 bool AmbientBadgeManager::ShouldSuppressAmbientBadge() {
