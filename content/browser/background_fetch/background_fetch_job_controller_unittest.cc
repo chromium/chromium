@@ -14,9 +14,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/uuid.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/background_fetch/background_fetch_constants.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
@@ -120,7 +120,7 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
     // New |unique_id|, since this is a new Background Fetch registration.
     *registration_id = BackgroundFetchRegistrationId(
         kExampleServiceWorkerRegistrationId, storage_key(), kExampleDeveloperId,
-        base::GenerateGUID());
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
 
     std::vector<scoped_refptr<BackgroundFetchRequestInfo>> request_infos;
     int request_counter = 0;

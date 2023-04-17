@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -153,9 +153,9 @@ void BackgroundFetchServiceImpl::Fetch(
 
   // New |unique_id|, since this is a new Background Fetch registration. This is
   // the only place new |unique_id|s should be created outside of tests.
-  BackgroundFetchRegistrationId registration_id(service_worker_registration_id,
-                                                storage_key_, developer_id,
-                                                base::GenerateGUID());
+  BackgroundFetchRegistrationId registration_id(
+      service_worker_registration_id, storage_key_, developer_id,
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   background_fetch_context_->StartFetch(
       registration_id, std::move(requests), std::move(options), icon,
@@ -211,7 +211,7 @@ bool BackgroundFetchServiceImpl::ValidateUniqueId(
     const std::string& unique_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::IsValidGUIDOutputString(unique_id)) {
+  if (!base::Uuid::ParseLowercase(unique_id).is_valid()) {
     mojo::ReportBadMessage("Invalid unique_id");
     return false;
   }

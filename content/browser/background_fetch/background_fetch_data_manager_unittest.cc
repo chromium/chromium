@@ -13,12 +13,12 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/uuid.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
@@ -662,8 +662,8 @@ class BackgroundFetchDataManagerTest
 
     std::string response_data(
         over_quota ? kBackgroundFetchMaxQuotaBytes + 1 : kResponseSize, 'x');
-    auto blob_builder =
-        std::make_unique<storage::BlobDataBuilder>(base::GenerateGUID());
+    auto blob_builder = std::make_unique<storage::BlobDataBuilder>(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     blob_builder->AppendData(response_data);
     auto handle = background_fetch_data_manager_->blob_storage_context()
                       ->context()
@@ -823,7 +823,7 @@ class BackgroundFetchDataManagerTest
 
   blink::mojom::SerializedBlobPtr BuildBlob(const std::string data) {
     auto blob_data = std::make_unique<storage::BlobDataBuilder>(
-        "blob-id:" + base::GenerateGUID());
+        "blob-id:" + base::Uuid::GenerateRandomV4().AsLowercaseString());
     blob_data->AppendData(data);
     std::unique_ptr<storage::BlobDataHandle> blob_handle =
         background_fetch_data_manager_->blob_storage_context_->context()
@@ -952,7 +952,7 @@ TEST_F(BackgroundFetchDataManagerTest, RegistrationLimitIsEnforced) {
     // First Service Worker.
     BackgroundFetchRegistrationId registration_id1(
         swid1, storage_key(), kExampleDeveloperId + base::NumberToString(i),
-        base::GenerateGUID());
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     CreateRegistration(
         registration_id1, std::vector<blink::mojom::FetchAPIRequestPtr>(),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(), &error);
@@ -961,7 +961,7 @@ TEST_F(BackgroundFetchDataManagerTest, RegistrationLimitIsEnforced) {
     // Second service Worker.
     BackgroundFetchRegistrationId registration_id2(
         swid2, storage_key(), kExampleDeveloperId + base::NumberToString(i),
-        base::GenerateGUID());
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     CreateRegistration(
         registration_id2, std::vector<blink::mojom::FetchAPIRequestPtr>(),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(), &error);
@@ -972,7 +972,8 @@ TEST_F(BackgroundFetchDataManagerTest, RegistrationLimitIsEnforced) {
   // bringing us to the limit.
   {
     BackgroundFetchRegistrationId registration_id(
-        swid1, storage_key(), "developer_id1", base::GenerateGUID());
+        swid1, storage_key(), "developer_id1",
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     CreateRegistration(
         registration_id, std::vector<blink::mojom::FetchAPIRequestPtr>(),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(), &error);
@@ -982,7 +983,8 @@ TEST_F(BackgroundFetchDataManagerTest, RegistrationLimitIsEnforced) {
   // A registration this time should fail.
   {
     BackgroundFetchRegistrationId registration_id(
-        swid1, storage_key(), "developer_id2", base::GenerateGUID());
+        swid1, storage_key(), "developer_id2",
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     CreateRegistration(
         registration_id, std::vector<blink::mojom::FetchAPIRequestPtr>(),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(), &error);
@@ -993,7 +995,8 @@ TEST_F(BackgroundFetchDataManagerTest, RegistrationLimitIsEnforced) {
   // The registration should also fail for the other Service Worker.
   {
     BackgroundFetchRegistrationId registration_id(
-        swid2, storage_key(), "developer_id3", base::GenerateGUID());
+        swid2, storage_key(), "developer_id3",
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     CreateRegistration(
         registration_id, std::vector<blink::mojom::FetchAPIRequestPtr>(),
         blink::mojom::BackgroundFetchOptions::New(), SkBitmap(), &error);
@@ -2364,7 +2367,7 @@ TEST_F(BackgroundFetchDataManagerTest, CreateInParallel) {
     // New |unique_id| per iteration, since each is a distinct registration.
     BackgroundFetchRegistrationId registration_id(
         service_worker_registration_id, storage_key(), kExampleDeveloperId,
-        base::GenerateGUID());
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
 
     background_fetch_data_manager_->CreateRegistration(
         registration_id, std::move(requests), options.Clone(), SkBitmap(),

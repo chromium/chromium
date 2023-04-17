@@ -5,7 +5,7 @@
 #include "content/browser/background_fetch/storage/start_next_pending_request_task.h"
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/fetch/fetch_api_request_proto.h"
@@ -66,7 +66,8 @@ void StartNextPendingRequestTask::DidGetPendingRequests(
   // Create an active request.
   proto::BackgroundFetchActiveRequest active_request;
 
-  active_request_.set_download_guid(base::GenerateGUID());
+  active_request_.set_download_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
   active_request_.set_unique_id(pending_request_.unique_id());
   active_request_.set_request_index(pending_request_.request_index());
   // Transfer ownership of the request to avoid a potentially expensive copy.
