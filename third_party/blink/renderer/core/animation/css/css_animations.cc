@@ -2946,7 +2946,6 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimationRangeStart:
     case CSSPropertyID::kAnimationTimeline:
     case CSSPropertyID::kAnimationTimingFunction:
-    case CSSPropertyID::kContentVisibility:
     case CSSPropertyID::kContain:
     case CSSPropertyID::kContainerName:
     case CSSPropertyID::kContainerType:
@@ -2967,6 +2966,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kWritingMode:
       return true;
     case CSSPropertyID::kDisplay:
+    case CSSPropertyID::kContentVisibility:
       return !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled();
     default:
       return false;
