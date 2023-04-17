@@ -23,7 +23,7 @@ namespace ash::smb_dialog {
 namespace {
 
 constexpr int kSmbCredentialsDialogHeight = 230;
-constexpr int kSmbCredentialsDialogHeightWithJellyOn = 275;
+constexpr int kSmbCredentialsDialogHeightWithJellyOn = 295;
 
 void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   static const struct {
@@ -39,8 +39,8 @@ void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
   }
-  bool is_jelly = chromeos::features::IsJellyEnabled();
-  html_source->AddBoolean("isJelly", is_jelly);
+  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  html_source->AddBoolean("isJellyEnabled", is_jelly_enabled);
 }
 
 std::string GetDialogId(const std::string& mount_id) {

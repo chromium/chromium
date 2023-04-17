@@ -169,6 +169,10 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = SmbBrowserProxyImpl.getInstance();
+
+    const jellyEnabled = loadTimeData.getBoolean('isJellyEnabled');
+    const theme = jellyEnabled ? 'refresh23' : 'legacy';
+    document.documentElement.setAttribute('theme', theme);
   },
 
   /** @override */

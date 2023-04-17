@@ -46,6 +46,11 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = SmbBrowserProxyImpl.getInstance();
+
+    const jellyEnabled = loadTimeData.getBoolean('isJellyEnabled');
+    const theme = jellyEnabled ? 'refresh23' : 'legacy';
+    document.documentElement.setAttribute('theme', theme);
+    startColorChangeUpdater();
   },
 
   /** @override */
@@ -73,11 +78,4 @@ Polymer({
         this.mountId_, this.username_, this.password_);
     chrome.send('dialogClose');
   },
-});
-
-window.addEventListener('load', () => {
-  const jellyEnabled = loadTimeData.getBoolean('isJelly');
-  const theme = jellyEnabled ? 'refresh23' : 'legacy';
-  document.documentElement.setAttribute('theme', theme);
-  startColorChangeUpdater();
 });

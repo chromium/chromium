@@ -16,7 +16,6 @@ js_type_check("closure_compile") {
 js_library("smb_share_dialog") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources/smb_shares:add_smb_share_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

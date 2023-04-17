@@ -1,3 +1,7 @@
+<!-- The common style definitions should go to <add-smb-share-dialog>
+  component for consistency, because that component is used in both Files app
+  and OS settings page. Only Files app specific styles should be added here.
+-->
 <style>
   add-smb-share-dialog::part(dialog) {
     border-radius: 0;
@@ -5,30 +9,18 @@
     width: 100%;
   }
 
-  :host-context([theme='legacy']) add-smb-share-dialog::part(dialog) {
-    background-color: var(--cros-bg-color-elevation-3);
-  }
-
-  :host-context([theme='refresh23']) add-smb-share-dialog::part(dialog) {
-    background-color: var(--cros-sys-dialog_container);
-  }
-
   :host-context([theme='legacy']) add-smb-share-dialog::part(title) {
-    --cr-primary-text-color: var(--cros-text-color-primary);
     padding-top: 4px;
   }
 
-  :host-context([theme='refresh23']) add-smb-share-dialog::part(title) {
-    --cr-dialog-title-slot-padding-bottom: 0;
-    --cr-dialog-title-slot-padding-end: 32px;
-    --cr-dialog-title-slot-padding-start: 32px;
-    --cr-dialog-title-slot-padding-top: 32px;
-    --cr-primary-text-color: var(--cros-sys-on_surface);
+  /* SMB dialog inside Files app is rendered inside a native dialog with fixed
+    height, so we need to hard-code the body height. */
+  :host-context([theme='legacy']) add-smb-share-dialog::part(body) {
+    height: 390px;
   }
 
   :host-context([theme='refresh23']) add-smb-share-dialog::part(body) {
-    --cr-dialog-body-padding-horizontal: 32px;
-    --cr-form-field-bottom-spacing: 8px;
+    height: 425px;
   }
 </style>
 
