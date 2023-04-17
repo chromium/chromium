@@ -1457,7 +1457,6 @@
           "--board=amd64-generic",
           "--use-vm"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1476,41 +1475,6 @@
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "variant_id": "amd64-generic"
-      },
-      {
-        "args": [
-          "--stop-ui",
-          "--env-var",
-          "LIBVA_DRIVERS_PATH",
-          "./",
-          "--env-var",
-          "LIBVA_DRIVER_NAME",
-          "libfake",
-          "--gtest_filter=\"VaapiTest.*\"",
-          "--board=eve",
-          "--flash"
-        ],
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "vaapi_unittest eve",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_type": "eve",
-              "os": "ChromeOS"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "vaapi_unittest",
-        "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "eve"
       }
     ]
   },

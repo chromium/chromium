@@ -4012,6 +4012,11 @@
       },
     },
   },
+  'vaapi_unittest eve': {
+    'remove_from': [
+      'lacros-amd64-generic-rel',
+    ]
+  },
   'variations_smoke_tests': {
     'modifications': {
       'linux-chrome': {

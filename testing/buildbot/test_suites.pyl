@@ -3997,7 +3997,6 @@
           '--env-var', 'LIBVA_DRIVER_NAME', 'libfake',
           '--gtest_filter="VaapiTest.*"',
         ],
-	'ci_only': True, # https://crbug.com/1425489
       },
     },
 
