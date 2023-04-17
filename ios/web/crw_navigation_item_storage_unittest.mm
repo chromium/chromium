@@ -37,9 +37,6 @@ class CRWNavigationItemStorageTest : public PlatformTest {
                                              web::ReferrerPolicyDefault)];
     [item_storage_ setTimestamp:base::Time::Now()];
     [item_storage_ setTitle:base::SysNSStringToUTF16(@"Title")];
-    [item_storage_
-        setDisplayState:web::PageDisplayState(CGPointZero, UIEdgeInsetsZero,
-                                              0.0, 0.0, 0.0)];
     [item_storage_ setHTTPRequestHeaders:@{@"HeaderKey" : @"HeaderValue"}];
     [item_storage_ setUserAgentType:web::UserAgentType::DESKTOP];
   }
@@ -75,8 +72,6 @@ TEST_F(CRWNavigationItemStorageTest, Histograms) {
                            web::ReferrerPolicyDefault)];
   [storage setTimestamp:base::Time::Now()];
   [storage setTitle:base::UTF8ToUTF16(std::string(5120, 'd'))];
-  [storage setDisplayState:web::PageDisplayState(CGPointZero, UIEdgeInsetsZero,
-                                                 0.0, 0.0, 0.0)];
   [storage setHTTPRequestHeaders:@{
     @"HeaderKey1" : @"HeaderValue1",
     @"HeaderKey2" : @"HeaderValue2",
@@ -98,8 +93,6 @@ TEST_F(CRWNavigationItemStorageTest, Histograms) {
       web::kNavigationItemSerializedReferrerURLSizeHistogram, 4 /*KB*/, 1);
   histogram_tester.ExpectBucketCount(
       web::kNavigationItemSerializedTitleSizeHistogram, 5 /*KB*/, 1);
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedDisplayStateSizeHistogram, 0 /*KB*/, 1);
   histogram_tester.ExpectBucketCount(
       web::kNavigationItemSerializedRequestHeadersSizeHistogram, 1 /*KB*/, 1);
 }

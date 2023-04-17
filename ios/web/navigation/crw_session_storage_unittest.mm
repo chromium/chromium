@@ -88,8 +88,6 @@ class CRWSessionStorageTest : public PlatformTest {
         web::Referrer(GURL("http://referrer.url"), web::ReferrerPolicyDefault);
     item_storage.timestamp = base::Time::Now();
     item_storage.title = base::SysNSStringToUTF16(@"Title");
-    item_storage.displayState =
-        web::PageDisplayState(CGPointZero, UIEdgeInsetsZero, 0.0, 0.0, 0.0);
     item_storage.HTTPRequestHeaders = @{@"HeaderKey" : @"HeaderValue"};
     session_storage_.itemStorages = @[ item_storage ];
   }

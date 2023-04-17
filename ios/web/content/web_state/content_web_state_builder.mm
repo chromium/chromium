@@ -137,7 +137,6 @@ CRWSessionStorage* BuildContentSessionStorage(
     }
     storage.timestamp = item->GetTimestamp();
     storage.title = item->GetTitle();
-    storage.displayState = item->GetPageDisplayState();
     storage.userAgentType = item->GetUserAgentType();
     storage.HTTPRequestHeaders = item->GetHttpRequestHeaders();
     [item_storages addObject:storage];

@@ -18,7 +18,6 @@ BOOL ItemStoragesAreEqual(CRWNavigationItemStorage* item1,
          item1.referrer.url == item2.referrer.url &&
          item1.referrer.policy == item2.referrer.policy &&
          item1.timestamp == item2.timestamp && item1.title == item2.title &&
-         item1.displayState == item2.displayState &&
          item1.userAgentType == item2.userAgentType &&
          [item1.HTTPRequestHeaders
              isEqualToDictionary:item2.HTTPRequestHeaders];
