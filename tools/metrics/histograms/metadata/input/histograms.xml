@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Internal.PkState.EnabledByDefault"
-    enum="IMEAutocorrectActions" expires_after="2023-08-01">
+    enum="IMEAutocorrectInternalStates" expires_after="2023-08-01">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
