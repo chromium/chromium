@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 class Profile;
@@ -41,6 +42,7 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
   EmojiUI& operator=(const EmojiUI&) = delete;
   ~EmojiUI() override;
 
+  static bool ShouldShow(const ui::TextInputClient* input_client);
   static void Show(Profile* profile);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
