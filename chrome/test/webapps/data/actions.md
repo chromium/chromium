@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 163) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 164) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -112,8 +112,9 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | close_custom_toolbar |  |  | 27 | Implemented | Press the 'x' button on the custom toolbar that is towards the top of the WebApp window. |  |
 | close_pwa |  |  | 28 | Implemented | Close the WebApp window. |  |
 | maybe_close_pwa |  |  | 143 | Implemented | Close the current app window if there is one open. |  |
-| open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
+| open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) & open_app_settings_from_command($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
 | open_app_settings_from_app_menu | Site |  | 97 | Implemented |  | phillis@ |
+| open_app_settings_from_command | Site |  | 163 | Implemented | Open app settings via its browser command. |  |
 | open_in_chrome |  |  | 71 | Implemented | Click on the 'open in chrome' link in the 3-dot menu of the app window | cliffordcheng@, P1 |
 | set_open_in_tab | Site | set_open_in_tab_from_app_settings($1) & set_open_in_tab_from_app_home($1) | 148 | Parameterized | All methods to toggle an app to open in a tab in the same window. | dibyapal@ |
 | set_open_in_tab_from_app_settings | Site |  | 149 | Implemented | Toggle the "open in window"  option in the chrome://app-settings/<app-id> page to disable an app from opening in a separate window, so that the app opens in a tab in the same window. | dibyapal@ |

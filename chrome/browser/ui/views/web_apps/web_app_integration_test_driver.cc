@@ -1695,6 +1695,26 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
 #endif
 }
 
+void WebAppIntegrationTestDriver::OpenAppSettingsFromCommand(Site site) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  Browser* app_browser = GetAppBrowserForSite(site);
+  ASSERT_TRUE(app_browser);
+
+  content::WebContentsAddedObserver nav_observer;
+
+  // Click App Settings from app browser.
+  CHECK(chrome::ExecuteCommand(app_browser, IDC_WEB_APP_SETTINGS));
+  // Wait for new web content to be created.
+  nav_observer.GetWebContents();
+  AfterStateChangeAction();
+#endif
+}
+
 void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
