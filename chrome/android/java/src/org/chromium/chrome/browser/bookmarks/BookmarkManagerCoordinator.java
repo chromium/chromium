@@ -196,9 +196,7 @@ public class BookmarkManagerCoordinator
         mMediator.onDestroy();
     }
 
-    /**
-     * @return The view that shows the main browsing history UI.
-     */
+    /** Returns the view that shows the main bookmarks UI. */
     public View getView() {
         return mMainView;
     }
