@@ -836,11 +836,11 @@ class End2EndTest : public ::testing::Test {
   scoped_refptr<CastEnvironment> cast_environment_sender_;
   scoped_refptr<CastEnvironment> cast_environment_receiver_;
 
-  raw_ptr<LoopBackTransport> receiver_to_sender_;  // Owned by CastTransport.
-  raw_ptr<LoopBackTransport> sender_to_receiver_;  // Owned by CastTransport.
-
   std::unique_ptr<CastTransportImpl> transport_sender_;
   std::unique_ptr<CastTransportImpl> transport_receiver_;
+
+  raw_ptr<LoopBackTransport> receiver_to_sender_;  // Owned by CastTransport.
+  raw_ptr<LoopBackTransport> sender_to_receiver_;  // Owned by CastTransport.
 
   std::unique_ptr<CastReceiver> cast_receiver_;
   std::unique_ptr<CastSender> cast_sender_;
