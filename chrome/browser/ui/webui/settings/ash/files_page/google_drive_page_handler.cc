@@ -22,6 +22,7 @@ google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
   status->remaining_space = base::UTF16ToUTF8(
       ui::FormatBytes(progress.free_space - progress.required_space));
   status->stage = progress.stage;
+  status->is_error = progress.IsError();
   return status;
 }
 
@@ -71,11 +72,6 @@ drivefs::pinning::PinManager* GoogleDrivePageHandler::GetPinManager() {
 }
 
 void GoogleDrivePageHandler::OnProgress(const Progress& progress) {
-  if (progress.stage != drivefs::pin_manager_types::mojom::Stage::kSuccess &&
-      !progress.IsError()) {
-    return;
-  }
-
   auto* pin_manager = GetPinManager();
   if (!pin_manager) {
     page_->OnServiceUnavailable();

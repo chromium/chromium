@@ -195,6 +195,7 @@ suite('<settings-google-drive-subpage>', function() {
           remainingSpace: '1,024 KB',
           requiredSpace: '512 MB',
           stage: Stage.kSuccess,
+          isError: false,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
         flush();
@@ -208,6 +209,7 @@ suite('<settings-google-drive-subpage>', function() {
           remainingSpace: '1,024 KB',
           requiredSpace: '512 MB',
           stage: Stage.kCannotGetFreeSpace,
+          isError: true,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
         flush();
@@ -248,4 +250,90 @@ suite('<settings-google-drive-subpage>', function() {
         'Pinning pref should be false');
     assertFalse(bulkPinningToggle.checked, 'Pinning toggle should be false');
   });
+
+  test(
+      'atempting to enable bulk pinning when no free space shows dialog',
+      async function() {
+        page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+
+        // Mock space values and the `kNotEnoughSpace` stage via the browser
+        // proxy.
+        testBrowserProxy.observerRemote.onProgress({
+          remainingSpace: '512 MB',
+          requiredSpace: '1,024 MB',
+          stage: Stage.kNotEnoughSpace,
+          isError: true,
+        });
+        testBrowserProxy.observerRemote.$.flushForTesting();
+        flush();
+
+        // Wait for the page to update the progress information.
+        await assertAsync(() => page.remainingSpace === '512 MB');
+
+        // Click the bulk pinning toggle.
+        bulkPinningToggle.click();
+
+        // Wait for the confirmation dialog to appear and assert the toggle
+        // hasn't been enabled when the dialog is visible, then click the
+        // "Cancel" button.
+        await assertAsync(
+            () => page.dialogType ===
+                ConfirmationDialogType.BULK_PINNING_NOT_ENOUGH_SPACE,
+            5000);
+        await assertAsync(() => !bulkPinningToggle.checked);
+        await clickConfirmationDialogButton('.cancel-button');
+
+        // Wait for the dialog to be dismissed, then assert the toggle hasn't
+        // been checked and the preference hasn't been set.
+        await assertAsync(
+            () => page.dialogType === ConfirmationDialogType.NONE, 5000);
+        assertFalse(
+            page.getPref('drivefs.bulk_pinning_enabled').value,
+            'Pinning pref should be false');
+        assertFalse(
+            bulkPinningToggle.checked, 'Pinning toggle should not be toggled');
+      });
+
+  test(
+      'attempting to enable bulk pinning when no free space shows dialog',
+      async function() {
+        page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+
+        // Mock space values and the `kNotEnoughSpace` stage via the browser
+        // proxy.
+        testBrowserProxy.observerRemote.onProgress({
+          remainingSpace: 'x',
+          requiredSpace: 'y',
+          stage: Stage.kCannotGetFreeSpace,
+          isError: true,
+        });
+        testBrowserProxy.observerRemote.$.flushForTesting();
+        flush();
+
+        // Wait for the page to update the progress information.
+        await assertAsync(() => page.remainingSpace === 'x');
+
+        // Click the bulk pinning toggle.
+        bulkPinningToggle.click();
+
+        // Wait for the confirmation dialog to appear and assert the toggle
+        // hasn't been enabled when the dialog is visible, then click the
+        // "Cancel" button.
+        await assertAsync(
+            () => page.dialogType ===
+                ConfirmationDialogType.BULK_PINNING_UNEXPECTED_ERROR,
+            5000);
+        await assertAsync(() => !bulkPinningToggle.checked);
+        await clickConfirmationDialogButton('.cancel-button');
+
+        // Wait for the dialog to be dismissed, then assert the toggle hasn't
+        // been checked and the preference hasn't been set.
+        await assertAsync(
+            () => page.dialogType === ConfirmationDialogType.NONE, 5000);
+        assertFalse(
+            page.getPref('drivefs.bulk_pinning_enabled').value,
+            'Pinning pref should be false');
+        assertFalse(
+            bulkPinningToggle.checked, 'Pinning toggle should not be toggled');
+      });
 });

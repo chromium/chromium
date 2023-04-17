@@ -19,6 +19,9 @@ struct Status {
 
   // The current stage the pin manager is going through.
   drivefs.pin_manager_types.mojom.Stage stage;
+
+  // Whether the stage returned is an error.
+  bool is_error;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler

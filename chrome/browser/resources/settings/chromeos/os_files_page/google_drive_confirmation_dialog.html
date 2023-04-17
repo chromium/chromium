@@ -4,11 +4,15 @@
   <div slot="title">[[titleText]]</div>
   <div slot="body">[[bodyText]]</div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelClick_">
-      [[cancelButtonText]]
-    </cr-button>
-    <cr-button class="action-button" on-click="onActionClick_">
-      [[actionButtonText]]
-    </cr-button>
+    <template is="dom-if" if="[[cancelButtonText]]" restamp>
+      <cr-button class="cancel-button" on-click="onCancelClick_">
+        [[cancelButtonText]]
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[actionButtonText]]" restamp>
+      <cr-button class="action-button" on-click="onActionClick_">
+        [[actionButtonText]]
+      </cr-button>
+    </template>
   </div>
 </cr-dialog>

@@ -12,6 +12,7 @@ import '../../settings_vars.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
@@ -43,6 +44,8 @@ const GOOGLE_DRIVE_BULK_PINNING_PREF = 'drivefs.bulk_pinning_enabled';
 export enum ConfirmationDialogType {
   DISCONNECT = 'disconnect',
   BULK_PINNING_DISABLE = 'bulk-pinning-disable',
+  BULK_PINNING_NOT_ENOUGH_SPACE = 'bulk-pinning-not-enough-space',
+  BULK_PINNING_UNEXPECTED_ERROR = 'bulk-pinning-unexpected-error',
   NONE = 'none',
 }
 
@@ -165,7 +168,11 @@ export class SettingsGoogleDriveSubpageElement extends
    * This could also end up in an error state (e.g. no free space).
    */
   private onProgress_(status: Status) {
-    this.bulkPinningStatus_ = status;
+    if (status.stage !== this.bulkPinningStatus_?.stage ||
+        status.remainingSpace !== this.bulkPinningStatus_?.remainingSpace ||
+        status.requiredSpace !== this.bulkPinningStatus_?.requiredSpace) {
+      this.bulkPinningStatus_ = status;
+    }
   }
 
   /**
@@ -227,6 +234,10 @@ export class SettingsGoogleDriveSubpageElement extends
       case ConfirmationDialogType.BULK_PINNING_DISABLE:
         this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);
         break;
+      default:
+        // All other dialogs currently do not require any action (only a
+        // cancellation) and so should not be reached.
+        assertNotReached('Unknown acceptance criteria from dialog');
     }
   }
 
@@ -266,18 +277,33 @@ export class SettingsGoogleDriveSubpageElement extends
     const target = e.target as SettingsToggleButtonElement;
     const newValueAfterToggle =
         !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value;
-    target.checked = true;
 
-    // Turning the preference on should have no friction.
-    if (newValueAfterToggle) {
-      this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
+    if (this.bulkPinningStatus_?.isError) {
+      target.checked = false;
+      // If there is not enough free space for the user to reliably turn on bulk
+      // pinning, spawn a dialog.
+      if (this.bulkPinningStatus_?.stage === Stage.kNotEnoughSpace) {
+        this.dialogType_ = ConfirmationDialogType.BULK_PINNING_NOT_ENOUGH_SPACE;
+        return;
+      }
+
+      // If an error occurs (that is not related to low disk space) surface an
+      // unexpected error dialog.
+      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_UNEXPECTED_ERROR;
       return;
     }
+
+    target.checked = true;
 
     // Turning the preference off should first spawn a dialog to have the user
     // confirm that is what they want to do, leave the target as checked as the
     // user must confirm before the preference gets updated.
-    this.dialogType_ = ConfirmationDialogType.BULK_PINNING_DISABLE;
+    if (!newValueAfterToggle) {
+      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_DISABLE;
+      return;
+    }
+
+    this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
   }
 }
 
