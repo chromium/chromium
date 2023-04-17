@@ -114,8 +114,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
                       *icon_,
-                      selected ? kColorOmniboxResultsIconSelected
-                               : kColorOmniboxResultsIcon,
+                      selected ? kColorOmniboxResultsButtonIconSelected
+                               : kColorOmniboxResultsButtonIcon,
                       GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));

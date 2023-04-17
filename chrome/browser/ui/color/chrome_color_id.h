@@ -219,6 +219,8 @@
   E_CPONLY(kColorOmniboxResultsBackgroundHovered) \
   E_CPONLY(kColorOmniboxResultsBackgroundSelected) \
   E_CPONLY(kColorOmniboxResultsButtonBorder) \
+  E_CPONLY(kColorOmniboxResultsButtonIcon) \
+  E_CPONLY(kColorOmniboxResultsButtonIconSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDrop) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \

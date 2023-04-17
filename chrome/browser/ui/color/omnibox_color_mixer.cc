@@ -154,6 +154,19 @@ void ApplyCR2023OmniboxExpandedStateColors(
   // Update suggestion vector icon color.
   mixer[kColorOmniboxResultsIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorOmniboxResultsIconSelected] = {kColorOmniboxResultsIcon};
+
+  // Update chip colors.
+  mixer[kColorOmniboxResultsButtonBorder] = {kColorOmniboxKeywordSeparator};
+  mixer[kColorOmniboxResultsButtonIcon] = {kColorOmniboxResultsUrl};
+  mixer[kColorOmniboxResultsButtonIconSelected] = {
+      kColorOmniboxResultsButtonIcon};
+  // TODO(crbug.com/1431337) Update to use sys tokens. We need a sys token like
+  //   `{dark_mode ? kColorRefNeutral90 : kColorRefNeutral65}`.
+  mixer[kColorOmniboxResultsButtonInkDrop] =
+      ui::SelectBasedOnDarkInput(kColorToolbar, SkColorSetRGB(226, 226, 226),
+                                 SkColorSetRGB(153, 153, 153));
+  mixer[kColorOmniboxResultsButtonInkDropSelected] = {
+      kColorOmniboxResultsButtonInkDrop};
 }
 
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
@@ -228,6 +241,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGreyAlpha200);
   mixer[kColorOmniboxResultsButtonBorder] = ui::BlendTowardMaxContrast(
       kColorToolbarBackgroundSubtleEmphasis, gfx::kGoogleGreyAlpha400);
+  mixer[kColorOmniboxResultsButtonIcon] = {kColorOmniboxResultsIcon};
+  mixer[kColorOmniboxResultsButtonIconSelected] = {
+      kColorOmniboxResultsIconSelected};
   mixer[kColorOmniboxResultsButtonInkDrop] =
       ui::GetColorWithMaxContrast(kColorOmniboxResultsBackgroundHovered);
   mixer[kColorOmniboxResultsButtonInkDropSelected] =
