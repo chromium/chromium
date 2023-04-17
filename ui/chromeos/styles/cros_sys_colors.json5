@@ -20,6 +20,7 @@
   },
   colors: {
     /* Primary */
+    /* If this is changed, please also update SampleColorScheme */
     primary: {
       light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
@@ -33,6 +34,7 @@
       light: '$cros.ref.primary100',
       dark:  '$cros.ref.primary20',
     },
+    /* If this is changed, please also update SampleColorScheme */
     'primary-container': {
       light: '$cros.ref.primary90',
       dark:  'blend(rgba($cros.ref.primary30.rgb, 0.08), $cros.ref.secondary30)',
@@ -70,6 +72,7 @@
       light: '$cros.ref.tertiary100',
       dark:  '$cros.ref.tertiary20',
     },
+    /* If this is changed, please also update SampleColorScheme */
     'tertiary-container': {
       light: '$cros.ref.tertiary90',
       dark:  '$cros.ref.tertiary30',
