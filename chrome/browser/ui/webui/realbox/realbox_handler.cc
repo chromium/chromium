@@ -764,7 +764,8 @@ void RealboxHandler::OpenAutocompleteMatch(
     bool meta_key,
     bool shift_key) {
   if (line >= autocomplete_controller()->result().size()) {
-    NOTREACHED();
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
   const base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -779,7 +780,8 @@ void RealboxHandler::OnNavigationLikely(
     uint8_t line,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
   if (autocomplete_controller()->result().size() <= line) {
-    NOTREACHED();
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
   if (auto* search_prefetch_service =
@@ -808,7 +810,8 @@ void RealboxHandler::OpenURL(const GURL& destination_url,
 void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
   if (autocomplete_controller()->result().size() <= line ||
       !autocomplete_controller()->result().match_at(line).SupportsDeletion()) {
-    NOTREACHED();
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
 
@@ -838,7 +841,8 @@ void RealboxHandler::ExecuteAction(uint8_t line,
                                    bool meta_key,
                                    bool shift_key) {
   if (line >= autocomplete_controller()->result().size()) {
-    NOTREACHED();
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
     return;
   }
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
