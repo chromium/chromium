@@ -29,6 +29,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 
   // ShellToplevelWrapper overrides:
   bool Initialize() override;
+  bool IsSupportedOnAuraToplevel(uint32_t version) const override;
   void SetMaximized() override;
   void UnSetMaximized() override;
   void SetFullscreen() override;

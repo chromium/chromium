@@ -53,6 +53,9 @@ class ShellToplevelWrapper {
   // Initializes the ShellToplevel.
   virtual bool Initialize() = 0;
 
+  // Returns true if `aura_toplevel_` version is equal or newer than `version`.
+  virtual bool IsSupportedOnAuraToplevel(uint32_t version) const = 0;
+
   // Sets a native window to maximized state.
   virtual void SetMaximized() = 0;
 

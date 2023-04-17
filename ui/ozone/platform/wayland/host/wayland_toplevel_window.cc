@@ -803,16 +803,19 @@ void WaylandToplevelWindow::ShowSnapPreview(
 void WaylandToplevelWindow::CommitSnap(
     WaylandWindowSnapDirection snap_direction,
     float snap_ratio) {
-  if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION)) {
+  if (shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
+                             ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION)) {
     shell_toplevel_->CommitSnap(snap_direction, snap_ratio);
     return;
   }
 
-  if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)) {
+  if (shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
+                             ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)) {
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kNone:
-        zaura_surface_unset_snap(aura_surface());
-        return;
+        // Toplevel does not support `WaylandWindowSnapDirection::kNone` yet.
+        // Let it fallthrough to `zaura_surface_unset_snap()`.
+        break;
       case WaylandWindowSnapDirection::kPrimary:
       case WaylandWindowSnapDirection::kSecondary:
         shell_toplevel_->CommitSnap(snap_direction, snap_ratio);

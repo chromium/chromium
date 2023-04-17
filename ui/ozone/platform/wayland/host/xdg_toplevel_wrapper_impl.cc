@@ -145,6 +145,11 @@ bool XDGToplevelWrapperImpl::Initialize() {
   return true;
 }
 
+bool XDGToplevelWrapperImpl::IsSupportedOnAuraToplevel(uint32_t version) const {
+  return aura_toplevel_ &&
+         zaura_toplevel_get_version(aura_toplevel_.get()) >= version;
+}
+
 void XDGToplevelWrapperImpl::SetMaximized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_maximized(xdg_toplevel_.get());
