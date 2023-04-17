@@ -787,12 +787,15 @@ void PaintArtifactCompositor::Update(
     scoped_refptr<const PaintArtifact> artifact,
     const ViewportProperties& viewport_properties,
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
+    const Vector<const TransformPaintPropertyNode*>&
+        anchor_scroll_container_nodes,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   const bool unification_enabled =
       base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
   DCHECK(scroll_translation_nodes.empty() || unification_enabled);
+  DCHECK(anchor_scroll_container_nodes.empty() || !unification_enabled);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
@@ -918,6 +921,13 @@ void PaintArtifactCompositor::Update(
     for (auto* node : scroll_node_only) {
       property_tree_manager.EnsureCompositorScrollNode(*node->ScrollNode(),
                                                        *node);
+    }
+  } else {
+    // anchor-scroll requires all relevant scroll containers to have their
+    // cc::TransformNode and cc::ScrollNode, so that compositor can update the
+    // translation correctly.
+    for (auto* node : anchor_scroll_container_nodes) {
+      property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
     }
   }
 

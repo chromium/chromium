@@ -78,6 +78,7 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
+  bool IsAnchorScrollData() const override { return true; }
 
   void Trace(Visitor*) const override;
 
@@ -107,6 +108,13 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   // Sum of the scroll origins of the above scroll containers. Used by
   // compositor to deal with writing modes.
   gfx::Vector2d accumulated_scroll_origin_;
+};
+
+template <>
+struct DowncastTraits<AnchorScrollData> {
+  static bool AllowFrom(const ScrollSnapshotClient& client) {
+    return client.IsAnchorScrollData();
+  }
 };
 
 }  // namespace blink

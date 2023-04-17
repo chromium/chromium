@@ -27,6 +27,8 @@ class ScrollSnapshotClient : public GarbageCollectedMixin {
   // Compares the last snapshot with the current state, and returns true if a
   // new animation frame should be schedules due to snapshot difference.
   virtual bool ShouldScheduleNextService() = 0;
+
+  virtual bool IsAnchorScrollData() const { return false; }
 };
 
 }  // namespace blink
