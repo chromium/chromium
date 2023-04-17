@@ -20,12 +20,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /** Unit tests for {@link ConstraintsChecker}. */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class ConstraintsCheckerTest {
     @Rule

@@ -22,10 +22,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Unit tests for {@link MessageCardProviderMediator}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class MessageCardProviderMediatorUnitTest {
     private static final int SUGGESTED_TAB_COUNT = 2;
     private static final int TESTING_ACTION = -1;
