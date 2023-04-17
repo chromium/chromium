@@ -54,12 +54,16 @@ namespace printing {
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
-constexpr gfx::Size kPhysicalSize = gfx::Size(612, 792);
-constexpr gfx::Rect kPrintableArea = gfx::Rect(0, 0, 612, 792);
+constexpr gfx::Size kLetterPhysicalSize = gfx::Size(612, 792);
+constexpr gfx::Rect kLetterPrintableArea = gfx::Rect(5, 5, 602, 782);
+constexpr gfx::Size kLegalPhysicalSize = gfx::Size(612, 1008);
+constexpr gfx::Rect kLegalPrintableArea = gfx::Rect(5, 5, 602, 998);
 
 // The default margins are set to 1.0cm in //printing/print_settings.cc, which
-// is about 28 printer units. The resulting content size is 556 x 736.
-constexpr gfx::Size kExpectedContentSize = gfx::Size(556, 736);
+// is about 28 printer units. The resulting content size is 556 x 736 for
+// Letter, and similarly is 556 x 952 for Legal.
+constexpr gfx::Size kLetterExpectedContentSize = gfx::Size(556, 736);
+constexpr gfx::Size kLegalExpectedContentSize = gfx::Size(556, 952);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
@@ -432,6 +436,35 @@ class SystemAccessProcessPrintBrowserTestBase
       button.click();)";
     ASSERT_TRUE(content::ExecuteScript(preview_dialog, kScript));
     WaitUntilCallbackReceived();
+  }
+
+  void AdjustMediaAfterPreviewIsReadyAndLoaded() {
+    // First invoke the Print Preview dialog with `StartPrint()`.
+    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+               /*print_renderer=*/mojo::NullAssociatedRemote(),
+               /*print_preview_disabled=*/false,
+               /*has_selection=*/false);
+    content::WebContents* preview_dialog =
+        print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+    ASSERT_TRUE(preview_dialog);
+
+    set_rendered_page_count(print_preview_observer.rendered_page_count());
+
+    // Initial Print Preview is completely ready.
+    // Reset the observer, and then modify the paper size.  This will initiate
+    // another preview render.
+    // The default paper size is first in the list at index zero, so choose
+    // the second item from the list to cause a change.
+    print_preview_observer.ResetForAnotherPreview();
+    const char kSetPaperSizeScript[] = R"(
+      var element =
+          document.getElementsByTagName('print-preview-app')[0]
+              .$['sidebar']
+              .shadowRoot.querySelector('print-preview-media-size-settings');
+      element.setSetting('mediaSize', element.capability.option[1]);)";
+    ASSERT_TRUE(content::ExecJs(preview_dialog, kSetPaperSizeScript));
+    print_preview_observer.WaitUntilPreviewIsReady();
   }
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
@@ -822,12 +855,40 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
       print_view_manager.snooped_params();
   ASSERT_TRUE(snooped_params);
   EXPECT_EQ(kTestPrinterCapabilitiesDpi, snooped_params->params->dpi);
-  EXPECT_EQ(kPhysicalSize, snooped_params->params->page_size);
-  EXPECT_EQ(kPrintableArea, snooped_params->params->printable_area);
-  EXPECT_EQ(kExpectedContentSize, snooped_params->params->content_size);
+  EXPECT_EQ(kLetterPhysicalSize, snooped_params->params->page_size);
+  EXPECT_EQ(kLetterPrintableArea, snooped_params->params->printable_area);
+  EXPECT_EQ(kLetterExpectedContentSize, snooped_params->params->content_size);
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       UpdatePrintSettingsPrintableArea) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  TestPrintViewManager print_view_manager(web_contents);
+  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
+
+  AdjustMediaAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(1u, rendered_page_count());
+
+  const mojom::PrintPagesParamsPtr& snooped_params =
+      print_view_manager.snooped_params();
+  ASSERT_TRUE(snooped_params);
+  EXPECT_EQ(kTestPrinterCapabilitiesDpi, snooped_params->params->dpi);
+  EXPECT_EQ(kLegalPhysicalSize, snooped_params->params->page_size);
+  EXPECT_EQ(kLegalPrintableArea, snooped_params->params->printable_area);
+  EXPECT_EQ(kLegalExpectedContentSize, snooped_params->params->content_size);
+}
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartPrinting) {
