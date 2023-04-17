@@ -1,48 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<%
-var testlist = [];
-var outers = [
-    ["inline-block", '<div class="inline-block">', '</div><span class="next">ZZ</span>'],
-    ["float", '<div class="float">', '</div><span class="next">ZZ</span>'],
-    ["table-cell", '<table><tr><td>', '</td><td class="next">ZZ</td></tr></table>']];
-var middles = [
-    null,
-    ["inline-block", '<div class="inline-block">', '</div>']];
-var targets = [
-    ["block", '<div class="target">HH</div>'],
-    ["inline", '<span class="target">HH</span>'],
-    ["block with borders", '<div class="target border">HHH</div>'],
-    ["inline with borders", '<span class="target border">HHH</span>']];
-for (var outer of outers) {
-    for (var middle of middles) {
-        for (var target of targets) {
-            var title = target[0];
-            var html = target[1];
-            if (middle) {
-                title += " in " + middle[0];
-                html = middle[1] + html + middle[2];
-            }
-            title = "Shrink-to-fit " + outer[0] + " with a child of orthogonal " + title;
-            html = outer[1] + html + outer[2];
-            testlist.push([title, html]);
-        }
-    }
-}
-var min, limit, title;
-if (index < 0) {
-    min = 0;
-    limit = testlist.length;
-    title = "Shrink-to-fit with orthogonal children"
-} else {
-    min = index;
-    limit = index + 1;
-    title = testlist[index][0];
-}
-%><title>CSS Writing Modes Test: <%= title %></title>
+<title>CSS Writing Modes Test: {{title}}</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows" title="7.3. Orthogonal Flows">
-<meta name="assert" content="<%= title %>">
-<meta name="flags" content="ahem dom<%= index < 0 ? ' combo' : ''%>">
+<meta name="assert" content="{{title}}">
+<meta name="flags" content="ahem dom{{flags}}">
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/"> <!-- 2015-12-23 -->
 <script src="/resources/testharness.js"></script>
@@ -88,13 +49,8 @@ td {
 <div id="container">
 <p>Test passes if the X-position of the <b>left</b> edge of the orange box and the <b>right</b> edge of the blue box are the same.
 <p>If script is enabled, there should be one or more PASS and no FAIL.
-<% for (var i = min; i < limit; ++i) {
-    var test = testlist[i];
-%><h3><%= (i + 1) + ": " + test[0] %></h3>
-<div class="test">
-    <%- test[1] %>
+{{tests}}
 </div>
-<% } %></div>
 <script>
 if (window.location.search == "?wait") {
     console.log("Sleeping 5 secs for debug");
