@@ -6575,6 +6575,17 @@
        ]
       ]
      }
+    },
+    "types": {
+     "scripted": {
+      "svglength-value-access-when-in-detached-document-crash.html": [
+       "5bca7a804f6a1bdadf5846fc891a33d000a448b1",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     }
    },
    "web-animations": {
@@ -269760,11 +269771,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "056370c363b34ca3958e6440176e74cb73caf424",
+     "015ff825c81943ab0471b0d12456e51ec6be61c6",
      []
     ],
     "mtime.json": [
-     "baf6d64420a5df11411070a4487940e6339d5977",
+     "0ad33b6a01827e4cd508bfcb9030be6d00497def",
      []
     ]
    },
@@ -285436,46 +285447,6 @@
      ],
      "anchor-position-top-layer-ref.html": [
       "dc7f77f2b3441ebee25f3e40a9480b668ee79ea4",
-      []
-     ],
-     "anchor-scroll-basics.tentative.html.ini": [
-      "b11398997c0d844481a3a872f1eb06bb4e6fe0cf",
-      []
-     ],
-     "anchor-scroll-nested.tentative.html.ini": [
-      "0e9d17885a766709ef56f976532bf44a6bb50d24",
-      []
-     ],
-     "anchor-scroll-update-001.tentative.html.ini": [
-      "0a16da344f6311c60b7bbe3d246ea0836c2aa5b8",
-      []
-     ],
-     "anchor-scroll-update-002.tentative.html.ini": [
-      "08b46c027fbb4950767495b012c0900167f56401",
-      []
-     ],
-     "anchor-scroll-update-003.tentative.html.ini": [
-      "4c98b567952ce7e9a71e516e3f8f8ed7ca439639",
-      []
-     ],
-     "anchor-scroll-update-004.tentative.html.ini": [
-      "64801cfb7837b8cf5956097f3921e99b9a3b6326",
-      []
-     ],
-     "anchor-scroll-update-005.tentative.html.ini": [
-      "bc7e891e0155face76900eedf352874697e9dcb6",
-      []
-     ],
-     "anchor-scroll-update-006.tentative.html.ini": [
-      "d0ce399276e220f1310ab6896ec3664161d413cf",
-      []
-     ],
-     "anchor-scroll-vlr.tentative.html.ini": [
-      "c3f96ea242af7a20bc5ec588f8faea1b161384ad",
-      []
-     ],
-     "anchor-scroll-vrl.tentative.html.ini": [
-      "4f3fe39eed570ad07ac3bbd3dace1d25d862999e",
       []
      ],
      "reference": {
@@ -328992,16 +328963,12 @@
        []
       ]
      },
-     "round-function-expected.txt": [
-      "e4c2c681e01f996c96056ad49b34fe3267b754ec",
-      []
-     ],
      "round-function.html.ini": [
       "57f9dc3d27514209c8a30a8b7f90737e56d201c9",
       []
      ],
      "round-mod-rem-computed-expected.txt": [
-      "d9d16c13baeb4150e2b0f90566f191ae65c67041",
+      "ee0a94f9c190a6ad3daa063c3416580727e192d3",
       []
      ],
      "round-mod-rem-computed.html.ini": [
@@ -329009,7 +328976,7 @@
       []
      ],
      "round-mod-rem-serialize-expected.txt": [
-      "f5c09a5539f1cb221d6827eed1ac0656775af532",
+      "f2130569f7b8d712a01f31f74eea5e5354d22668",
       []
      ],
      "round-mod-rem-serialize.html.ini": [
@@ -366391,6 +366358,46 @@
       }
      }
     }
+   },
+   "html-aam": {
+    "META.yaml": [
+     "572918600acc4487e0fdf6fa63a4fc26dc6818b5",
+     []
+    ],
+    "fragile": {
+     "area-role-expected.txt": [
+      "086bb96e34a6e01452957f8ded5b19e41bb237c8",
+      []
+     ],
+     "area-role.html.ini": [
+      "bb8873fd9b73988b232cb0609366bdc88cb1472b",
+      []
+     ],
+     "optgroup-role-expected.txt": [
+      "086bb96e34a6e01452957f8ded5b19e41bb237c8",
+      []
+     ],
+     "optgroup-role.html.ini": [
+      "a73ffc67419f964dff0b3c727ca69bd1b700456f",
+      []
+     ]
+    },
+    "roles-expected.txt": [
+     "086bb96e34a6e01452957f8ded5b19e41bb237c8",
+     []
+    ],
+    "roles.html.ini": [
+     "e9d5e27228d2a6d51054a2090fb3a7a159f53382",
+     []
+    ],
+    "table-roles-expected.txt": [
+     "086bb96e34a6e01452957f8ded5b19e41bb237c8",
+     []
+    ],
+    "table-roles.html.ini": [
+     "d07fd4b3d9dedec1841bc10dea792ecd539d6eb3",
+     []
+    ]
    },
    "html-media-capture": {
     "DIR_METADATA": [
@@ -559485,6 +559492,46 @@
       ]
      }
     }
+   },
+   "html-aam": {
+    "fragile": {
+     "area-role.html": [
+      "9b6ded56860631e14ae091bcf8ffac36afb0a09a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "optgroup-role.html": [
+      "f36a5d69835452e440a5d74299d8241c9c601618",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
+    "roles.html": [
+     "c5cb3e35487de534ddfecd04e0feafb369a0f3a0",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "table-roles.html": [
+     "d7865f5fccab6ff12fc592835512e613e883ef80",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ]
    },
    "html-media-capture": {
     "capture_reflect.html": [
