@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import java.util.Map;
 
 /**
+ * Implemented in Chromium.
+ *
  * Interface to provide native views to incorporate in an external surface-controlled
  * RecyclerView.
  *

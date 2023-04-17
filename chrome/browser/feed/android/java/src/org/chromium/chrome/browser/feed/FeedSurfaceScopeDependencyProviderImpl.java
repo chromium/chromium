@@ -20,15 +20,16 @@ import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 /**
  * Provides activity, darkmode and logging context for a single surface.
  */
-public class FeedSurfaceScopeDependencyProvider
-        implements SurfaceScopeDependencyProvider, ScrollListener {
+public class FeedSurfaceScopeDependencyProviderImpl
+        implements org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider,
+                   ScrollListener {
     private static final String TAG = "Feed";
     private final Activity mActivity;
     private final Context mActivityContext;
     private final boolean mDarkMode;
     private final ObserverList<SurfaceHeaderOffsetObserver> mObserverList = new ObserverList<>();
 
-    public FeedSurfaceScopeDependencyProvider(
+    public FeedSurfaceScopeDependencyProviderImpl(
             Activity activity, Context activityContext, boolean darkMode) {
         mActivityContext = FeedProcessScopeDependencyProvider.createFeedContext(activityContext);
         mDarkMode = darkMode;
@@ -50,8 +51,26 @@ public class FeedSurfaceScopeDependencyProvider
         return mDarkMode;
     }
 
+    @Deprecated
     @Override
-    public AutoplayPreference getAutoplayPreference() {
+    public SurfaceScopeDependencyProvider.AutoplayPreference getAutoplayPreference() {
+        assert ThreadUtils.runningOnUiThread();
+        @VideoPreviewsType
+        int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
+        switch (videoPreviewsType) {
+            case VideoPreviewsType.NEVER:
+                return SurfaceScopeDependencyProvider.AutoplayPreference.AUTOPLAY_DISABLED;
+            case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
+                return SurfaceScopeDependencyProvider.AutoplayPreference
+                        .AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
+            case VideoPreviewsType.WIFI:
+            default:
+                return SurfaceScopeDependencyProvider.AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
+        }
+    }
+
+    @Override
+    public AutoplayPreference getAutoplayPreference2() {
         assert ThreadUtils.runningOnUiThread();
         @VideoPreviewsType
         int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();

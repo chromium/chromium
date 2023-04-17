@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 /**
+ * Implemented internally.
+ *
  * A renderer that can handle mixing externally-provided views with native Android views
  * in a RecyclerView.
  */

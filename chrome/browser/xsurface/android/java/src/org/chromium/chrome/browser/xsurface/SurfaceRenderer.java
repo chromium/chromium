@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import java.util.Map;
 
 /**
+ * Implemented internally.
+ *
  * Interface to call a rendering service to render a View sent by a server.
  */
 public interface SurfaceRenderer {
