@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internals") {
+  sources = [
+    "commerce_internals_handler.cc",
+    "commerce_internals_handler.h",
+    "commerce_internals_ui_base.cc",
+    "commerce_internals_ui_base.h",
+  ]
+
+  deps = [
+    "../:feature_list",
+    "../:shopping_service",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//url",
+  ]
+
+  public_deps = [
+    "../:commerce_constants",
+    "./mojom:mojo_bindings",
+    "./resources",
+  ]
+}

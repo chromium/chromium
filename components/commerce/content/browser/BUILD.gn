@@ -4,6 +4,8 @@
 
 static_library("browser") {
   sources = [
+    "commerce_internals_ui.cc",
+    "commerce_internals_ui.h",
     "commerce_tab_helper.cc",
     "commerce_tab_helper.h",
     "web_contents_wrapper.cc",
@@ -14,7 +16,10 @@ static_library("browser") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//content/public/browser",
+    "//ui/webui",
   ]
+
+  public_deps = [ "//components/commerce/core/internals" ]
 }
 
 if (!is_android) {

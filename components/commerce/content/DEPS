@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/grit",
   "+components/optimization_guide",
   "+components/prefs",
   "+content/public",
+  "+ui/base",
+  "+ui/webui",
 ]
 

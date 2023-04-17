@@ -9,7 +9,11 @@
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/no_destructor.h"
+#import "components/commerce/core/commerce_constants.h"
+#import "components/commerce/ios/browser/commerce_internals_ui.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/webui/about_ui.h"
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
@@ -59,6 +63,16 @@ std::unique_ptr<WebUIIOSController> NewWebUIIOS(WebUIIOS* web_ui,
   return std::make_unique<T>(web_ui, url.host());
 }
 
+template <>
+std::unique_ptr<WebUIIOSController> NewWebUIIOS<commerce::CommerceInternalsUI>(
+    WebUIIOS* web_ui,
+    const GURL& url) {
+  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
+  return std::make_unique<commerce::CommerceInternalsUI>(
+      web_ui, commerce::kChromeUICommerceInternalsHost,
+      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
+}
+
 // Returns a function that can be used to create the right type of WebUIIOS for
 // a tab, based on its URL. Returns NULL if the URL doesn't have WebUIIOS
 // associated with it.
@@ -76,6 +90,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   if (url_host == kChromeUIChromeURLsHost ||
       url_host == kChromeUIHistogramHost || url_host == kChromeUICreditsHost)
     return &NewWebUIIOS<AboutUI>;
+  if (url_host == commerce::kChromeUICommerceInternalsHost) {
+    return &NewWebUIIOS<commerce::CommerceInternalsUI>;
+  }
   if (url_host == kChromeUICrashesHost)
     return &NewWebUIIOS<CrashesUI>;
   if (url_host == kChromeUIDownloadInternalsHost)

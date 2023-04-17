@@ -4,6 +4,8 @@
 
 static_library("browser") {
   sources = [
+    "commerce_internals_ui.h",
+    "commerce_internals_ui.mm",
     "commerce_tab_helper.h",
     "commerce_tab_helper.mm",
     "web_state_wrapper.h",
@@ -14,8 +16,12 @@ static_library("browser") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//ios/web",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/webui",
   ]
+
+  public_deps = [ "//components/commerce/core/internals" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

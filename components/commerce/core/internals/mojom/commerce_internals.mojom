@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module commerce.mojom;
+
+// Used by the WebUI to bootstrap bidirectional communication.
+interface CommerceInternalsHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateCommerceInternalsHandler(
+      pending_remote<CommerceInternalsPage> page,
+      pending_receiver<CommerceInternalsHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface CommerceInternalsHandler {
+  // Returns whether the user is eligible to use the shopping list feature.
+  GetIsShoppingListEligible() => (bool eligible);
+};
+
+// WebUI-side handler for requests from the browser.
+interface CommerceInternalsPage {
+  // A notification that the eligibility status for the shopping list feature
+  // changed.
+  OnShoppingListEligibilityChanged(bool eligible);
+};

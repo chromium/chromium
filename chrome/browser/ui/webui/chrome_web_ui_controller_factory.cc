@@ -20,6 +20,7 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/accessibility/accessibility_ui.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -74,6 +75,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/commerce/content/browser/commerce_internals_ui.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
@@ -466,6 +469,17 @@ WebUIController* NewWebUI<AboutUI>(WebUI* web_ui, const GURL& url) {
 }
 
 template <>
+WebUIController* NewWebUI<commerce::CommerceInternalsUI>(WebUI* web_ui,
+                                                         const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  return new commerce::CommerceInternalsUI(
+      web_ui,
+      base::BindOnce(&SetUpWebUIDataSource, web_ui,
+                     commerce::kChromeUICommerceInternalsHost),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
+}
+
+template <>
 WebUIController* NewWebUI<OptimizationGuideInternalsUI>(WebUI* web_ui,
                                                         const GURL& url) {
   return OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
@@ -777,6 +791,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<BrowsingTopicsInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIComponentsHost)
     return &NewWebUI<ComponentsUI>;
+  if (url.host_piece() == commerce::kChromeUICommerceInternalsHost) {
+    return &NewWebUI<commerce::CommerceInternalsUI>;
+  }
   if (url.spec() == chrome::kChromeUIConstrainedHTMLTestURL)
     return &NewWebUI<ConstrainedWebDialogUI>;
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

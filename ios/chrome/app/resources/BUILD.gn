@@ -60,6 +60,7 @@ ios_chrome_repack_scalables("repack_scalable_resources") {
 repack("repack_unscaled_resources") {
   visibility = [ ":packed_resources" ]
   sources = [
+    "$root_gen_dir/components/commerce_internals_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
@@ -74,6 +75,7 @@ repack("repack_unscaled_resources") {
   ]
   deps = [
     ":ios_resources",
+    "//components/commerce/core/internals/resources",
     "//components/download/resources/download_internals:resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
