@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
+import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -269,8 +270,26 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void openWebFeed(String webFeedName) {
-            mActionDelegate.openWebFeed(webFeedName);
+        public void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {
+            @SingleWebFeedEntryPoint
+            int singleWebFeedEntryPoint;
+
+            switch (entryPoint) {
+                case OpenWebFeedEntryPoint.ATTRIBUTION:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.ATTRIBUTION;
+                    break;
+                case OpenWebFeedEntryPoint.RECOMMENDATION:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.RECOMMENDATION;
+                    break;
+                case OpenWebFeedEntryPoint.GROUP_HEADER:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.GROUP_HEADER;
+                    break;
+
+                default:
+                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.OTHER;
+            }
+
+            mActionDelegate.openWebFeed(webFeedName, singleWebFeedEntryPoint);
         }
 
         private void openSuggestionUrl(

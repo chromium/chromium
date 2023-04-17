@@ -784,13 +784,19 @@ void MetricsReporter::ReportStableContentSliceVisibilityTimeForGoodVisits(
   good_visit_state_.AddTimeInFeed(delta);
 }
 
-void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
-                                    SurfaceId surface_id) {
+void MetricsReporter::SurfaceOpened(
+    const StreamType& stream_type,
+    SurfaceId surface_id,
+    SingleWebFeedEntryPoint single_web_feed_entry_point) {
   VVLOG << "Feed SurfaceOpened " << stream_type << " id=" << surface_id;
   ReportPersistentDataIfDayIsDone();
   surfaces_waiting_for_content_.emplace(
       surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
   ReportUserActionHistogram(FeedUserActionType::kOpenedFeedSurface);
+  if (stream_type.IsSingleWebFeed()) {
+    base::UmaHistogramEnumeration("ContentSuggestions.SingleWebFeed.EntryPoint",
+                                  single_web_feed_entry_point);
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsReporter::ReportOpenFeedIfNeeded, GetWeakPtr(),

@@ -1958,6 +1958,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.SingleWebFeed.EntryPoint"
+    enum="SingleWebFeedEntryPoint" expires_after="2023-07-23">
+  <owner>jeffreyochen@chromium.org</owner>
+  <owner>creator@chromium.org</owner>
+  <summary>
+    Android: reports the entry point used to launch the single web feed view.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.CardIndexOnSwitch" units="index"
     expires_after="2023-04-21">
   <owner>adamta@google.com</owner>
