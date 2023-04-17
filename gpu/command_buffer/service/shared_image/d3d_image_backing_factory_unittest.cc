@@ -1643,8 +1643,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 
     const gfx::Size plane_sizes[kNumPlanes] = {
         size, gfx::Size(size.width() / 2, size.height() / 2)};
-    const viz::ResourceFormat plane_formats[kNumPlanes] = {viz::RED_8,
-                                                           viz::RG_88};
+    const viz::SharedImageFormat plane_formats[kNumPlanes] = {
+        viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88};
 
     for (size_t i = 0; i < std::min(shared_image_backings.size(), kNumPlanes);
          i++) {
@@ -1652,8 +1652,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 
       EXPECT_EQ(backing->mailbox(), mailboxes[i]);
       EXPECT_EQ(backing->size(), plane_sizes[i]);
-      EXPECT_EQ(backing->format(),
-                viz::SharedImageFormat::SinglePlane(plane_formats[i]));
+      EXPECT_EQ(backing->format(), plane_formats[i]);
       EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
       EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
       EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
@@ -2050,8 +2049,8 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
 
   const gfx::Size plane_sizes[kNumPlanes] = {
       size, gfx::Size(size.width() / 2, size.height() / 2)};
-  const viz::ResourceFormat plane_formats[kNumPlanes] = {viz::RED_8,
-                                                         viz::RG_88};
+  const viz::SharedImageFormat plane_formats[kNumPlanes] = {
+      viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88};
 
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_image_refs;
@@ -2060,8 +2059,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
 
     EXPECT_EQ(backing->mailbox(), mailboxes[i]);
     EXPECT_EQ(backing->size(), plane_sizes[i]);
-    EXPECT_EQ(backing->format(),
-              viz::SharedImageFormat::SinglePlane(plane_formats[i]));
+    EXPECT_EQ(backing->format(), plane_formats[i]);
     EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
     EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
     EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
