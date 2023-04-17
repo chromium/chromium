@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
@@ -60,6 +61,10 @@ void AnchorElementObserver::Notify() {
       new_anchor->IncrementImplicitlyAnchoredElementCount();
     }
     anchor_ = new_anchor;
+    if (element_->GetLayoutObject()) {
+      element_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kAnchorPositioning);
+    }
   }
   ResetIdTargetObserverIfNeeded();
 }
