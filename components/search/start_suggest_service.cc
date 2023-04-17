@@ -203,7 +203,7 @@ void StartSuggestService::SuggestResponseLoaded(
 void StartSuggestService::SuggestionsParsed(
     SuggestResultCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  if (!result.has_value() || !result.value().is_list()) {
     std::move(callback).Run(QuerySuggestions());
     return;
   }
@@ -211,7 +211,7 @@ void StartSuggestService::SuggestionsParsed(
   SearchSuggestionParser::Results results;
   AutocompleteInput input;
   const bool results_parsed = SearchSuggestionParser::ParseSuggestResults(
-      *result, input, *scheme_classifier_, -1, false, &results);
+      result->GetList(), input, *scheme_classifier_, -1, false, &results);
   if (!results_parsed) {
     std::move(callback).Run(QuerySuggestions());
     return;

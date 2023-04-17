@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -24,10 +25,6 @@
 
 class AutocompleteInput;
 class AutocompleteSchemeClassifier;
-
-namespace base {
-class Value;
-}
 
 namespace network {
 class SimpleURLLoader;
@@ -343,7 +340,7 @@ class SearchSuggestionParser {
   // Parses JSON response received from the provider, stripping XSSI
   // protection if needed. Returns the parsed data if successful, NULL
   // otherwise.
-  static absl::optional<base::Value> DeserializeJsonData(
+  static absl::optional<base::Value::List> DeserializeJsonData(
       base::StringPiece json_data);
 
   // Parses results from the suggest server and updates the appropriate suggest
@@ -351,7 +348,7 @@ class SearchSuggestionParser {
   // whether the response was received from the keyword provider.
   // Returns whether the appropriate result list members were updated.
   static bool ParseSuggestResults(
-      const base::Value& root_val,
+      const base::Value::List& root_list,
       const AutocompleteInput& input,
       const AutocompleteSchemeClassifier& scheme_classifier,
       int default_result_relevance,

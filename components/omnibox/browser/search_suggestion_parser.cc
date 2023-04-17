@@ -505,7 +505,7 @@ std::string SearchSuggestionParser::ExtractJsonData(
 }
 
 // static
-absl::optional<base::Value> SearchSuggestionParser::DeserializeJsonData(
+absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
     base::StringPiece json_data) {
   // The JSON response should be an array.
   for (size_t response_start_index = json_data.find("["), i = 0;
@@ -516,8 +516,8 @@ absl::optional<base::Value> SearchSuggestionParser::DeserializeJsonData(
 
     absl::optional<base::Value> data =
         base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (data) {
-      return data;
+    if (data && data->is_list()) {
+      return std::move(data->GetList());
     }
   }
   return absl::nullopt;
@@ -525,16 +525,12 @@ absl::optional<base::Value> SearchSuggestionParser::DeserializeJsonData(
 
 // static
 bool SearchSuggestionParser::ParseSuggestResults(
-    const base::Value& root_val,
+    const base::Value::List& root_list,
     const AutocompleteInput& input,
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,
     bool is_keyword_result,
     Results* results) {
-  if (!root_val.is_list())
-    return false;
-  const auto& root_list = root_val.GetList();
-
   // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
     return false;
