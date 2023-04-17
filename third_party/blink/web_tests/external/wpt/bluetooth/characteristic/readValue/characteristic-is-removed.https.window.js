@@ -8,9 +8,13 @@ const expected = new DOMException(
     'GATT Characteristic no longer exists.', 'InvalidStateError');
 
 bluetooth_test(async () => {
+  console.log('[crbug.com/1430625] To getMeasurementIntervalCharacteristic');
   const {characteristic, fake_characteristic} =
       await getMeasurementIntervalCharacteristic();
+  console.log('[crbug.com/1430625] To fake_characteristic.remove()');
   await fake_characteristic.remove();
+  console.log('[crbug.com/1430625] To characteristic.readValue()');
   await assert_promise_rejects_with_message(
       characteristic.readValue(), expected, 'Characteristic got removed.');
+  console.log('[crbug.com/1430625] End of the test');
 }, test_desc);
