@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/user_education/views/help_bubble_view.h"
+#include "ash/user_education/views/help_bubble_view_ash.h"
 
 #include <initializer_list>
 #include <memory>
@@ -284,19 +284,19 @@ END_METADATA
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kHelpBubbleElementIdForTesting);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kDefaultButtonIdForTesting);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kFirstNonDefaultButtonIdForTesting);
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyTextIdForTesting);
 
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
-HelpBubbleView::HelpBubbleView(
+HelpBubbleViewAsh::HelpBubbleViewAsh(
     const user_education::HelpBubbleDelegate* delegate,
     const internal::HelpBubbleAnchorParams& anchor,
     user_education::HelpBubbleParams params)
@@ -433,7 +433,7 @@ HelpBubbleView::HelpBubbleView(
 
   // Add other buttons.
   if (!params.buttons.empty()) {
-    auto run_callback_and_close = [](HelpBubbleView* bubble_view,
+    auto run_callback_and_close = [](HelpBubbleViewAsh* bubble_view,
                                      base::OnceClosure callback) {
       // We want to call the button callback before deleting the bubble in case
       // the caller needs to do something with it, but the callback itself
@@ -650,29 +650,29 @@ HelpBubbleView::HelpBubbleView(
   MaybeStartAutoCloseTimer();
 }
 
-HelpBubbleView::~HelpBubbleView() = default;
+HelpBubbleViewAsh::~HelpBubbleViewAsh() = default;
 
-void HelpBubbleView::MaybeStartAutoCloseTimer() {
+void HelpBubbleViewAsh::MaybeStartAutoCloseTimer() {
   if (timeout_.is_zero()) {
     return;
   }
 
   auto_close_timer_.Start(FROM_HERE, timeout_, this,
-                          &HelpBubbleView::OnTimeout);
+                          &HelpBubbleViewAsh::OnTimeout);
 }
 
-void HelpBubbleView::OnTimeout() {
+void HelpBubbleViewAsh::OnTimeout() {
   std::move(timeout_callback_).Run();
   GetWidget()->Close();
 }
 
-bool HelpBubbleView::OnMousePressed(const ui::MouseEvent& event) {
+bool HelpBubbleViewAsh::OnMousePressed(const ui::MouseEvent& event) {
   base::RecordAction(
       base::UserMetricsAction("InProductHelp.Promos.BubbleClicked"));
   return false;
 }
 
-std::u16string HelpBubbleView::GetAccessibleWindowTitle() const {
+std::u16string HelpBubbleViewAsh::GetAccessibleWindowTitle() const {
   std::u16string result = accessible_name_;
 
   // If there's a keyboard navigation hint, append it after a full stop.
@@ -683,8 +683,8 @@ std::u16string HelpBubbleView::GetAccessibleWindowTitle() const {
   return result;
 }
 
-void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
-                                               bool active) {
+void HelpBubbleViewAsh::OnWidgetActivationChanged(views::Widget* widget,
+                                                  bool active) {
   if (widget == GetWidget()) {
     if (active) {
       ++activate_count_;
@@ -695,7 +695,7 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-void HelpBubbleView::OnThemeChanged() {
+void HelpBubbleViewAsh::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
@@ -716,7 +716,7 @@ void HelpBubbleView::OnThemeChanged() {
   }
 }
 
-gfx::Size HelpBubbleView::CalculatePreferredSize() const {
+gfx::Size HelpBubbleViewAsh::CalculatePreferredSize() const {
   const gfx::Size layout_manager_preferred_size =
       View::CalculatePreferredSize();
 
@@ -733,7 +733,7 @@ gfx::Size HelpBubbleView::CalculatePreferredSize() const {
   return layout_manager_preferred_size;
 }
 
-gfx::Rect HelpBubbleView::GetAnchorRect() const {
+gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
   gfx::Rect default_anchor_rect = BubbleDialogDelegateView::GetAnchorRect();
   if (!local_anchor_bounds_) {
     return default_anchor_rect;
@@ -758,12 +758,12 @@ gfx::Rect HelpBubbleView::GetAnchorRect() const {
 }
 
 // static
-bool HelpBubbleView::IsHelpBubble(views::DialogDelegate* dialog) {
+bool HelpBubbleViewAsh::IsHelpBubble(views::DialogDelegate* dialog) {
   auto* const contents = dialog->GetContentsView();
-  return contents && views::IsViewClass<HelpBubbleView>(contents);
+  return contents && views::IsViewClass<HelpBubbleViewAsh>(contents);
 }
 
-bool HelpBubbleView::IsFocusInHelpBubble() const {
+bool HelpBubbleViewAsh::IsFocusInHelpBubble() const {
 #if BUILDFLAG(IS_MAC)
   if (close_button_ && close_button_->HasFocus()) {
     return true;
@@ -782,22 +782,22 @@ bool HelpBubbleView::IsFocusInHelpBubble() const {
 #endif
 }
 
-views::LabelButton* HelpBubbleView::GetDefaultButtonForTesting() const {
+views::LabelButton* HelpBubbleViewAsh::GetDefaultButtonForTesting() const {
   return default_button_;
 }
 
-views::LabelButton* HelpBubbleView::GetNonDefaultButtonForTesting(
+views::LabelButton* HelpBubbleViewAsh::GetNonDefaultButtonForTesting(
     int index) const {
   return non_default_buttons_[index];
 }
 
-void HelpBubbleView::SetForceAnchorRect(gfx::Rect force_anchor_rect) {
+void HelpBubbleViewAsh::SetForceAnchorRect(gfx::Rect force_anchor_rect) {
   force_anchor_rect.Offset(
       -views::BubbleDialogDelegateView::GetAnchorRect().OffsetFromOrigin());
   local_anchor_bounds_ = force_anchor_rect;
 }
 
-BEGIN_METADATA(HelpBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HelpBubbleViewAsh, views::BubbleDialogDelegateView)
 END_METADATA
 
 }  // namespace ash

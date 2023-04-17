@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_H_
-#define ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_H_
+#ifndef ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_ASH_H_
+#define ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_ASH_H_
 
 #include <cstddef>
 #include <memory>
@@ -60,20 +60,20 @@ struct HelpBubbleAnchorParams {
 // The HelpBubbleView is a special BubbleDialogDelegateView for
 // in-product help which educates users about certain Chrome features in
 // a deferred context.
-class ASH_EXPORT HelpBubbleView : public views::BubbleDialogDelegateView {
+class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
  public:
-  METADATA_HEADER(HelpBubbleView);
+  METADATA_HEADER(HelpBubbleViewAsh);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpBubbleElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyTextIdForTesting);
 
-  HelpBubbleView(const user_education::HelpBubbleDelegate* delegate,
-                 const internal::HelpBubbleAnchorParams& anchor,
-                 user_education::HelpBubbleParams params);
-  HelpBubbleView(const HelpBubbleView&) = delete;
-  HelpBubbleView& operator=(const HelpBubbleView&) = delete;
-  ~HelpBubbleView() override;
+  HelpBubbleViewAsh(const user_education::HelpBubbleDelegate* delegate,
+                    const internal::HelpBubbleAnchorParams& anchor,
+                    user_education::HelpBubbleParams params);
+  HelpBubbleViewAsh(const HelpBubbleViewAsh&) = delete;
+  HelpBubbleViewAsh& operator=(const HelpBubbleViewAsh&) = delete;
+  ~HelpBubbleViewAsh() override;
 
   // Returns whether the given dialog is a help bubble.
   static bool IsHelpBubble(views::DialogDelegate* dialog);
@@ -140,4 +140,4 @@ class ASH_EXPORT HelpBubbleView : public views::BubbleDialogDelegateView {
 
 }  // namespace ash
 
-#endif  // ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_H_
+#endif  // ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEW_ASH_H_
