@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -145,8 +144,6 @@
   actionHandler.activityHandler =
       HandlerForProtocol(dispatcher, ActivityServiceCommands);
   actionHandler.menuHandler = HandlerForProtocol(dispatcher, PopupMenuCommands);
-  actionHandler.findHandler =
-      HandlerForProtocol(dispatcher, FindInPageCommands);
   actionHandler.omniboxHandler =
       HandlerForProtocol(dispatcher, OmniboxCommands);
 
