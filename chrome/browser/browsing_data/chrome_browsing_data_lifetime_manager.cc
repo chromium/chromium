@@ -207,13 +207,13 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings;
   for (const auto& setting : browsing_data_settings) {
     const auto* data_types =
-        setting.FindListKey(browsing_data::policy_fields::kDataTypes);
-    const auto time_to_live_in_hours =
-        setting.FindIntKey(browsing_data::policy_fields::kTimeToLiveInHours);
-
-    scheduled_removals_settings.push_back(
-        {GetRemoveMask(data_types->GetList()),
-         GetOriginTypeMask(data_types->GetList()), *time_to_live_in_hours});
+        setting.GetDict().FindList(browsing_data::policy_fields::kDataTypes);
+    const auto time_to_live_in_hours = setting.GetDict().FindInt(
+        browsing_data::policy_fields::kTimeToLiveInHours);
+    DCHECK(data_types);
+    scheduled_removals_settings.push_back({GetRemoveMask(*data_types),
+                                           GetOriginTypeMask(*data_types),
+                                           *time_to_live_in_hours});
   }
   return scheduled_removals_settings;
 }
