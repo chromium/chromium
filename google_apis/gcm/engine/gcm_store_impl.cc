@@ -384,18 +384,6 @@ void GCMStoreImpl::Backend::Load(StoreOpenMode open_mode,
       UMA_HISTOGRAM_COUNTS_1M("GCM.StoreSizeKB",
                               static_cast<int>(file_size / 1024));
     }
-
-    UMA_HISTOGRAM_COUNTS_1M("GCM.RestoredRegistrations",
-                            gcm_registration_count);
-    UMA_HISTOGRAM_COUNTS_1M("GCM.RestoredOutgoingMessages",
-                            result->outgoing_messages.size());
-    UMA_HISTOGRAM_COUNTS_1M("GCM.RestoredIncomingMessages",
-                            result->incoming_messages.size());
-
-    UMA_HISTOGRAM_COUNTS_1M("InstanceID.RestoredTokenCount",
-                            instance_id_token_count);
-    UMA_HISTOGRAM_COUNTS_1M("InstanceID.RestoredIDCount",
-                            result->instance_id_data.size());
   }
 
   DVLOG(1) << "Succeeded in loading "
@@ -1160,7 +1148,6 @@ bool GCMStoreImpl::Backend::LoadAccountMappingInfo(
   for (const auto& account_mapping : loaded_account_mappings) {
     bool remove = remove_account_mappings_with_email_key_ &&
                   account_mapping.account_id.IsEmail();
-    base::UmaHistogramBoolean("GCM.RemoveAccountMappingWhenLoading", remove);
     if (remove) {
       RemoveAccountMapping(account_mapping.account_id, base::DoNothing());
     } else {
@@ -1459,7 +1446,6 @@ void GCMStoreImpl::LoadContinuation(LoadCallback callback,
     std::move(callback).Run(std::move(result));
     return;
   }
-  int num_throttled_apps = 0;
   for (OutgoingMessageMap::const_iterator
            iter = result->outgoing_messages.begin();
        iter != result->outgoing_messages.end(); ++iter) {
@@ -1470,10 +1456,7 @@ void GCMStoreImpl::LoadContinuation(LoadCallback callback,
       app_message_counts_[data_message->category()] = 1;
     else
       app_message_counts_[data_message->category()]++;
-    if (app_message_counts_[data_message->category()] == kMessagesPerAppLimit)
-      num_throttled_apps++;
   }
-  UMA_HISTOGRAM_COUNTS_1M("GCM.NumThrottledApps", num_throttled_apps);
   std::move(callback).Run(std::move(result));
 }
 

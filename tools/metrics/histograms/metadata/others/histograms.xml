@@ -7036,22 +7036,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InstanceID.RestoredIDCount" units="units"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Number of Instance IDs restored from the persistent store at startup.
-  </summary>
-</histogram>
-
-<histogram name="InstanceID.RestoredTokenCount" units="units"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Number of InstanceID tokens restored from the persistent store at startup.
-  </summary>
-</histogram>
-
 <histogram name="IPC.AttachmentBrokerPrivileged.BrokerAttachmentError"
     enum="IPCAttachmentBrokerPrivilegedBrokerAttachmentError"
     expires_after="M85">
