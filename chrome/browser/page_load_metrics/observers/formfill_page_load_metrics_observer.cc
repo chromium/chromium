@@ -95,8 +95,8 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
     formfill_metadata = base::Value(base::Value::Type::DICT);
   }
 
-  if (!formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {
-    formfill_metadata.SetBoolKey(kUserDataFieldFilledKey, true);
+  if (!formfill_metadata.GetDict().FindBool(kUserDataFieldFilledKey)) {
+    formfill_metadata.GetDict().Set(kUserDataFieldFilledKey, true);
 
     settings_map->SetWebsiteSettingDefaultScope(
         url, url, ContentSettingsType::FORMFILL_METADATA,
@@ -121,7 +121,7 @@ void FormfillPageLoadMetricsObserver::MaybeRecordPriorUsageOfUserData(
 
   // User data field was detected on this site before.
   if (formfill_metadata.is_dict() &&
-      formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {
+      formfill_metadata.GetDict().FindBool(kUserDataFieldFilledKey)) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
         navigation_handle->GetRenderFrameHost(),
         blink::mojom::WebFeature::kUserDataFieldFilledPreviously);
