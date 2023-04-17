@@ -401,15 +401,6 @@ void LayoutBlock::AddVisualOverflowFromChildren() {
     AddVisualOverflowFromBlockChildren();
 }
 
-void LayoutBlock::AddLayoutOverflowFromChildren() {
-  NOT_DESTROYED();
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  DCHECK(!ChildrenInline());
-  AddLayoutOverflowFromBlockChildren();
-}
-
 void LayoutBlock::ComputeVisualOverflow(bool) {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());
@@ -426,48 +417,6 @@ void LayoutBlock::ComputeVisualOverflow(bool) {
   }
 }
 
-DISABLE_CFI_PERF
-void LayoutBlock::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
-                                        bool) {
-  NOT_DESTROYED();
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearLayoutOverflow();
-  AddLayoutOverflowFromChildren();
-  AddLayoutOverflowFromPositionedObjects();
-
-  if (IsScrollContainer()) {
-    // When we have overflow clip, propagate the original spillout since it will
-    // include collapsed bottom margins and bottom padding. Set the axis we
-    // don't care about to be 1, since we want this overflow to always be
-    // considered reachable.
-    LayoutRect client_rect(NoOverflowRect());
-    LayoutRect rect_to_apply;
-    if (IsHorizontalWritingMode())
-      rect_to_apply = LayoutRect(
-          client_rect.X(), client_rect.Y(), LayoutUnit(1),
-          (old_client_after_edge - client_rect.Y()).ClampNegativeToZero());
-    else
-      rect_to_apply = LayoutRect(
-          client_rect.X(), client_rect.Y(),
-          (old_client_after_edge - client_rect.X()).ClampNegativeToZero(),
-          LayoutUnit(1));
-    AddLayoutOverflow(rect_to_apply);
-    SetLayoutClientAfterEdge(old_client_after_edge);
-
-    if (PaddingEnd() && !ChildrenInline()) {
-      EOverflow overflow = StyleRef().OverflowInlineDirection();
-      if (overflow == EOverflow::kAuto) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kInlineOverflowAutoWithInlineEndPadding);
-      } else if (overflow == EOverflow::kScroll) {
-        UseCounter::Count(
-            GetDocument(),
-            WebFeature::kInlineOverflowScrollWithInlineEndPadding);
-      }
-    }
-  }
-}
-
 void LayoutBlock::AddVisualOverflowFromBlockChildren() {
   NOT_DESTROYED();
   for (LayoutBox* child = FirstChildBox(); child;
@@ -477,39 +426,6 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
       continue;
 
     AddVisualOverflowFromChild(*child);
-  }
-}
-
-void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
-  NOT_DESTROYED();
-  for (LayoutBox* child = FirstChildBox(); child;
-       child = child->NextSiblingBox()) {
-    if ((!IsLayoutNGContainingBlock(this) && child->IsFloating()) ||
-        child->IsOutOfFlowPositioned() || child->IsColumnSpanAll())
-      continue;
-
-    AddLayoutOverflowFromChild(*child);
-  }
-}
-
-void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
-  NOT_DESTROYED();
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
-  if (!positioned_descendants)
-    return;
-
-  for (const auto& positioned_object : *positioned_descendants) {
-    // Fixed positioned elements whose containing block is the LayoutView
-    // don't contribute to layout overflow, since they don't scroll with the
-    // content.
-    if (!IsA<LayoutView>(this) ||
-        positioned_object->StyleRef().GetPosition() != EPosition::kFixed) {
-      AddLayoutOverflowFromChild(*positioned_object,
-                                 ToLayoutSize(positioned_object->Location()));
-    }
   }
 }
 
@@ -1294,27 +1210,6 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   return layout_block;
 }
 
-RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
-  NOT_DESTROYED();
-  DCHECK(!IsTable() || IsLayoutNGObject());
-  DCHECK(ChildNeedsLayoutOverflowRecalc());
-  ClearChildNeedsLayoutOverflowRecalc();
-
-  RecalcLayoutOverflowResult result;
-
-  DCHECK(!ChildrenInline());
-  for (LayoutBox* box = FirstChildBox(); box; box = box->NextSiblingBox()) {
-    if (box->IsOutOfFlowPositioned()) {
-      continue;
-    }
-
-    result.Unite(box->RecalcLayoutOverflow());
-  }
-
-  result.Unite(RecalcPositionedDescendantsLayoutOverflow());
-  return result;
-}
-
 void LayoutBlock::RecalcChildVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(!IsTable() || IsLayoutNGObject());
@@ -1334,57 +1229,10 @@ void LayoutBlock::RecalcChildVisualOverflow() {
   }
 }
 
-RecalcLayoutOverflowResult
-LayoutBlock::RecalcPositionedDescendantsLayoutOverflow() {
-  NOT_DESTROYED();
-  RecalcLayoutOverflowResult result;
-
-  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
-  if (!positioned_descendants)
-    return result;
-
-  for (auto& box : *positioned_descendants)
-    result.Unite(box->RecalcLayoutOverflow());
-
-  return result;
-}
-
-RecalcLayoutOverflowResult LayoutBlock::RecalcLayoutOverflow() {
-  NOT_DESTROYED();
-  bool children_layout_overflow_changed = false;
-  if (ChildNeedsLayoutOverflowRecalc()) {
-    children_layout_overflow_changed =
-        RecalcChildLayoutOverflow().layout_overflow_changed;
-  }
-
-  bool self_needs_overflow_recalc = SelfNeedsLayoutOverflowRecalc();
-  if (!self_needs_overflow_recalc && !children_layout_overflow_changed)
-    return RecalcLayoutOverflowResult();
-
-  // rebuild_fragment_tree can be false here as it is a legacy root.
-  return {RecalcSelfLayoutOverflow(), /* rebuild_fragment_tree */ false};
-}
-
 void LayoutBlock::RecalcVisualOverflow() {
   NOT_DESTROYED();
   RecalcChildVisualOverflow();
   RecalcSelfVisualOverflow();
-}
-
-bool LayoutBlock::RecalcSelfLayoutOverflow() {
-  NOT_DESTROYED();
-  bool self_needs_layout_overflow_recalc = SelfNeedsLayoutOverflowRecalc();
-  // If the current block needs layout, overflow will be recalculated during
-  // layout time anyway. We can safely exit here.
-  if (NeedsLayout())
-    return false;
-
-  LayoutUnit old_client_after_edge = LayoutClientAfterEdge();
-  ComputeLayoutOverflow(old_client_after_edge, true);
-  if (IsScrollContainer())
-    Layer()->GetScrollableArea()->UpdateAfterOverflowRecalc();
-
-  return !HasNonVisibleOverflow() || self_needs_layout_overflow_recalc;
 }
 
 void LayoutBlock::RecalcSelfVisualOverflow() {

@@ -37,7 +37,6 @@ class LayoutNGMixin : public Base {
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) override;
   RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
-  RecalcLayoutOverflowResult RecalcChildLayoutOverflow() override;
   void RecalcVisualOverflow() override;
 
   bool IsLayoutNGObject() const final;

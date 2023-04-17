@@ -55,14 +55,6 @@ void LayoutNGBlockFlowMixin<Base>::StyleDidChange(
   }
 }
 
-#if DCHECK_IS_ON()
-template <typename Base>
-void LayoutNGBlockFlowMixin<Base>::AddLayoutOverflowFromChildren() {
-  Base::CheckIsNotDestroyed();
-  NOTREACHED();
-}
-#endif
-
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::TakeNGInlineNodeData() {
   Base::CheckIsNotDestroyed();

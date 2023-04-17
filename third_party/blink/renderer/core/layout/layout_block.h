@@ -210,13 +210,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool HasDefiniteLogicalHeight() const;
 
  protected:
-  RecalcLayoutOverflowResult RecalcPositionedDescendantsLayoutOverflow();
-  bool RecalcSelfLayoutOverflow();
   void RecalcSelfVisualOverflow();
 
  public:
-  virtual RecalcLayoutOverflowResult RecalcChildLayoutOverflow();
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
   void RecalcChildVisualOverflow();
   void RecalcVisualOverflow() override;
 
@@ -276,17 +272,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   bool RespectsCSSOverflow() const override;
 
- private:
-  void AddLayoutOverflowFromPositionedObjects();
-  void AddLayoutOverflowFromBlockChildren();
-
  protected:
-  virtual void ComputeVisualOverflow(
-      bool recompute_floats);
-  virtual void ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
-                                     bool recompute_floats = false);
-
-  virtual void AddLayoutOverflowFromChildren();
+  // TOOD(crbug.com/1229581): Remove `recompute_floats`.
+  virtual void ComputeVisualOverflow(bool recompute_floats);
   void AddVisualOverflowFromChildren();
   virtual void AddVisualOverflowFromBlockChildren();
 

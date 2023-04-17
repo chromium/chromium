@@ -57,10 +57,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-#if DCHECK_IS_ON()
-  void AddLayoutOverflowFromChildren() final;
-#endif
-
   void AddOutlineRects(OutlineRectCollector&,
                        LayoutObject::OutlineInfo*,
                        const PhysicalOffset& additional_offset,

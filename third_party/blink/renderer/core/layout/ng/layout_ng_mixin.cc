@@ -125,12 +125,6 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
 }
 
 template <typename Base>
-RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
-  Base::CheckIsNotDestroyed();
-  return Base::RecalcChildLayoutOverflowNG();
-}
-
-template <typename Base>
 void LayoutNGMixin<Base>::RecalcVisualOverflow() {
   Base::CheckIsNotDestroyed();
   if (Base::CanUseFragmentsForVisualOverflow()) {
