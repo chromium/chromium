@@ -57,7 +57,8 @@ UpdateContext::UpdateContext(
       crx_state_change_callback(crx_state_change_callback),
       notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
-      session_id(base::StrCat({"{", base::GenerateUuid(), "}"})),
+      session_id(base::StrCat(
+          {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"})),
       persisted_data(persisted_data),
       is_update_check_only(is_update_check_only) {
   for (const auto& id : ids) {
@@ -83,7 +84,8 @@ UpdateContext::UpdateContext(
       crx_state_change_callback(crx_state_change_callback),
       notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
-      session_id(base::StrCat({"{", base::GenerateUuid(), "}"})),
+      session_id(base::StrCat(
+          {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"})),
       persisted_data(persisted_data),
       is_update_check_only(is_update_check_only) {
   for (const auto& id : ids) {
