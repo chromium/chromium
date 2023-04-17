@@ -74,6 +74,14 @@ export class PasswordManagerToolbarElement extends
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('passwordManagerLearnMoreURL'));
   }
+
+  private onKeyDown_(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.dispatchEvent(new CustomEvent(
+          'search-enter-click', {bubbles: true, composed: true}));
+      e.preventDefault();
+    }
+  }
 }
 
 declare global {

@@ -30,6 +30,7 @@ if (include_js_tests) {
       "cr_elements/cr_elements_focus_test.js",
       "extensions/cr_extensions_interactive_ui_tests.js",
       "history/history_focus_test.js",
+      "password_manager/password_manager_interactive_ui_tests.js",
       "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
       "support_tool/support_tool_interactive_ui_test.js",

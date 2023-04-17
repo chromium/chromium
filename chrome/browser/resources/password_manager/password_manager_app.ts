@@ -30,6 +30,7 @@ import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 import {PasswordRemovedEvent} from './password_details_card.js';
 import {getTemplate} from './password_manager_app.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordsSectionElement} from './passwords_section.js';
 import {Page, Route, RouteObserverMixin} from './router.js';
 import {SettingsSectionElement} from './settings_section.js';
 import {PasswordManagerSideBarElement} from './side_bar.js';
@@ -53,6 +54,7 @@ export interface PasswordManagerAppElement {
     content: IronPagesElement,
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
+    passwords: PasswordsSectionElement,
     prefs: SettingsPrefsElement,
     removalToast: CrToastElement,
     settings: SettingsSectionElement,
@@ -197,6 +199,10 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   private onUndoButtonClick_() {
     PasswordManagerImpl.getInstance().undoRemoveSavedPasswordOrException();
     this.$.removalToast.hide();
+  }
+
+  private onSearchEnterClick_() {
+    this.$.passwords.focusFirstResult();
   }
 }
 declare global {

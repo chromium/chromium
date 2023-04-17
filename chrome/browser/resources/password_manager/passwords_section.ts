@@ -183,6 +183,17 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     }
   }
 
+  public focusFirstResult() {
+    if (!this.searchTerm_) {
+      // If search term is empty don't do anything.
+      return;
+    }
+    const result = this.shadowRoot!.querySelector('password-list-item');
+    if (result) {
+      result.focus();
+    }
+  }
+
   private hideGroupsList_(): boolean {
     return this.groups_.filter(this.groupFilter_()).length === 0;
   }

@@ -20,6 +20,7 @@ export interface PasswordListItemElement {
   $: {
     displayedName: HTMLElement,
     numberOfAccounts: HTMLElement,
+    seePasswordDetails: HTMLElement,
   };
 }
 const PasswordListItemElementBase = I18nMixin(PolymerElement);
@@ -68,6 +69,10 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   override ready() {
     super.ready();
     this.addEventListener('click', this.onRowClick_);
+  }
+
+  override focus() {
+    this.$.seePasswordDetails.focus();
   }
 
   private async onRowClick_() {
