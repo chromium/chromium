@@ -150,6 +150,7 @@ component("mixers") {
     "//skia",
     "//third_party/material_color_utilities",
     "//ui/base:features",
+    "//ui/color/dynamic_color",
     "//ui/gfx:color_utils",
   ]
 
