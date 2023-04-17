@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -23,6 +25,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -57,31 +60,43 @@ bool ShouldAllowRetry(InstallResult result) {
   }
 }
 
-std::u16string GetErrorMessage(InstallResult result) {
+std::pair<std::u16string, absl::optional<GURL>> GetErrorMessageAndHelpLink(
+    InstallResult result) {
+  // TODO(b/256699588): Replace the below direct URLs with p-links.
   switch (result) {
     case InstallResult::kBorealisNotAllowed:
     case InstallResult::kDlcUnsupportedError:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DISALLOWED);
+      return {
+          l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DISALLOWED),
+          absl::nullopt};
     case InstallResult::kBorealisInstallInProgress:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_PROGRESS);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_PROGRESS),
+              absl::nullopt};
     case InstallResult::kDlcInternalError:
     case InstallResult::kDlcNeedUpdateError:
-      return l10n_util::GetStringUTF16(
-          IDS_BOREALIS_INSTALLER_ERROR_DLC_INTERNAL);
+      return {
+          l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DLC_INTERNAL),
+          GURL("https://support.google.com/chromebook/answer/177889")};
     case InstallResult::kDlcBusyError:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DLC_BUSY);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DLC_BUSY),
+              absl::nullopt};
     case InstallResult::kDlcNeedRebootError:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_REBOOT);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_REBOOT),
+              absl::nullopt};
     case InstallResult::kDlcNeedSpaceError:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_SPACE);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_SPACE),
+              GURL("https://support.google.com/chromebook/answer/1061547")};
     case InstallResult::kDlcUnknownError:
-      return l10n_util::GetStringUTF16(
-          IDS_BOREALIS_INSTALLER_ERROR_DLC_UNKNOWN);
+      return {
+          l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DLC_UNKNOWN),
+          absl::nullopt};
     case InstallResult::kOffline:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_OFFLINE);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_OFFLINE),
+              GURL("https://support.google.com/chromebook/answer/6318213")};
     case InstallResult::kStartupFailed:
     case InstallResult::kMainAppNotPresent:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_STARTUP);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_STARTUP),
+              absl::nullopt};
     case InstallResult::kSuccess:
     case InstallResult::kCancelled:
       NOTREACHED_NORETURN();
@@ -148,10 +163,26 @@ class BorealisInstallerErrorDialog : public views::DialogDelegate {
     title_label->SetMultiLine(true);
     view->AddChildView(title_label);
 
-    views::Label* message_label = new views::Label(GetErrorMessage(result_));
+    std::pair<std::u16string, absl::optional<GURL>> message_link =
+        GetErrorMessageAndHelpLink(result_);
+    views::Label* message_label = new views::Label(message_link.first);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     view->AddChildView(message_label);
+
+    if (message_link.second.has_value()) {
+      views::Link* learn_more_link =
+          new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+      learn_more_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      learn_more_link->SetCallback(base::BindRepeating(
+          [](GURL url) {
+            ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+                url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+          },
+          message_link.second.value()));
+      view->AddChildView(learn_more_link);
+    }
 
     SetContentsView(std::move(view));
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/borealis/borealis_installer_disallowed_dialog.h"
 #include <memory>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -12,11 +13,13 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -32,32 +35,47 @@ using AllowStatus = ::borealis::BorealisFeatures::AllowStatus;
 // Views uses tricks like this to ensure singleton-ness of dialogs.
 static Widget* g_instance_ = nullptr;
 
-static std::u16string GetMessageForStatus(AllowStatus status) {
+static std::pair<std::u16string, absl::optional<GURL>> GetMessageForStatus(
+    AllowStatus status) {
+  // TODO(b/256699588): Replace the below direct URLs with p-links.
   switch (status) {
     case AllowStatus::kAllowed:
       DCHECK(false);
       // Unreachable in practice. Show "failed" message just in case.
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED),
+              absl::nullopt};
     case AllowStatus::kFeatureDisabled:
     case AllowStatus::kUnsupportedModel:
     case AllowStatus::kHardwareChecksFailed:
     case AllowStatus::kIncorrectToken:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_DISABLED);
+      // TODO(b/256699588): Replace this with an actual help-center link when
+      // one is created.
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_DISABLED),
+              GURL("https://www.chromium.org/chromium-os/steam-on-chromeos/"
+                   "#supported-devices")};
     case AllowStatus::kFailedToDetermine:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FAILED),
+              absl::nullopt};
     case AllowStatus::kBlockedOnIrregularProfile:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_IRREGULAR);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_IRREGULAR),
+              absl::nullopt};
     case AllowStatus::kBlockedOnNonPrimaryProfile:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_PRIMARY);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_PRIMARY),
+              absl::nullopt};
     case AllowStatus::kBlockedOnChildAccount:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHILD);
+      // TODO(b/256699588): Add a help-center link for child-accounts.
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHILD),
+              absl::nullopt};
     case AllowStatus::kVmPolicyBlocked:
     case AllowStatus::kUserPrefBlocked:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_ADMIN);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_ADMIN),
+              absl::nullopt};
     case AllowStatus::kBlockedOnStable:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHANNEL);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHANNEL),
+              GURL("https://support.google.com/chromebook/answer/1086915")};
     case AllowStatus::kBlockedByFlag:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG);
+      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG),
+              absl::nullopt};
   }
 }
 
@@ -100,10 +118,26 @@ class BorealisInstallerDisallowedDialog : public DialogDelegate {
     title_label->SetMultiLine(true);
     view->AddChildView(title_label);
 
-    views::Label* message_label = new views::Label(GetMessageForStatus(status));
+    std::pair<std::u16string, absl::optional<GURL>> message_link =
+        GetMessageForStatus(status);
+    views::Label* message_label = new views::Label(message_link.first);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     view->AddChildView(message_label);
+
+    if (message_link.second.has_value()) {
+      views::Link* learn_more_link =
+          new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+      learn_more_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      learn_more_link->SetCallback(base::BindRepeating(
+          [](GURL url) {
+            ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+                url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+          },
+          message_link.second.value()));
+      view->AddChildView(learn_more_link);
+    }
 
     SetContentsView(std::move(view));
   }
