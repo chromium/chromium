@@ -66,6 +66,8 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::CHROMEOS_WEBSITE_ID;
     case SourceIdType::EXTENSION_ID:
       return SourceType::EXTENSION_ID;
+    case SourceIdType::SOFT_NAVIGATION_ID:
+      return SourceType::SOFT_NAVIGATION_ID;
   }
 }
 

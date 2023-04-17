@@ -27,6 +27,7 @@ enum SourceType {
   WEB_IDENTITY_ID = 10;
   CHROMEOS_WEBSITE_ID = 11;
   EXTENSION_ID = 12;
+  SOFT_NAVIGATION_ID = 13;
 }
 
 // Android Activity Type defined by

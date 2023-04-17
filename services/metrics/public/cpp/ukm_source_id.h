@@ -93,8 +93,14 @@ class METRICS_EXPORT SourceIdObj {
     // Some criteria (e.g. checking if it's a synced extension) will be applied
     // when recording metrics with this type.
     EXTENSION_ID = 12,
+    // Source ID type for reporting soft navigation metrics. A new source of
+    // this type and associated events are expected to be recorded within the
+    // same report interval; it will not be kept in memory between different
+    // reports. The URLs associated with source ids of this type are soft
+    // navigation URLs.
+    SOFT_NAVIGATION_ID = 13,
 
-    kMaxValue = EXTENSION_ID,
+    kMaxValue = SOFT_NAVIGATION_ID,
   };
 
   // Default constructor has the invalid value.

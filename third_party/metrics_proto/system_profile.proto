@@ -419,13 +419,13 @@ message SystemProfileProto {
     message InternalStorageDevice {
       // Id of the storage device manufacturer.
       // Can be vendor_id (for NVMe, 32bit), manfid (for eMMC, 16bit, since
-      // M113), oemid (for eMMC, 16bit, before M113) etc. depending on the
-      // device type.
+      // M113), oemid (for eMMC, 16bit, before M113), JEDEC manfid (for UFS,
+      // 16bit) etc. depending on the device type.
       optional uint32 vendor_id = 1;
 
       // Id of the storage device product.
-      // Can be product_id (for NVMe, 32bit), PNM (for eMMC, 48bit) etc.
-      // depending on the device type.
+      // Can be product_id (for NVMe, 32bit), PNM (for eMMC, 48bit), hashed
+      // model name (for UFS, 32bit) etc. depending on the device type.
       optional uint64 product_id = 2;
 
       // Revision of the storage device product.
