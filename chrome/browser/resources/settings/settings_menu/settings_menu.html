@@ -11,7 +11,7 @@
       }
 
       #menu {
-        color: var(--settings-nav-item-color);
+        color: var(--google-grey-700);
         display: flex;
         flex-direction: column;
         min-width: fit-content;
@@ -47,6 +47,10 @@
       }
 
       @media (prefers-color-scheme: dark) {
+        #menu {
+          color: var(--cr-primary-text-color);
+        }
+
         .menu-separator {
           border-bottom: var(--cr-separator-line);  /* override */
         }

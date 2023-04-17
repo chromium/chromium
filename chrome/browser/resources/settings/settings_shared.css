@@ -172,10 +172,6 @@ cr-radio-group {
   flex: 1;
 }
 
-.list-item > label span[disabled] {
-  opacity: var(--settings-disabled-opacity);
-}
-
 /* This button has no ink ripple. */
 .list-button[is='action-link'] {
   align-items: center;

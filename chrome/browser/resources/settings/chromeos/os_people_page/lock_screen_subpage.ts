@@ -25,7 +25,6 @@ import './setup_pin_dialog.js';
 import './pin_autosubmit_dialog.js';
 import './local_data_recovery_dialog.js';
 import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
