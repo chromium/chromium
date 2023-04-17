@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.DoNotStripLogs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -221,6 +222,7 @@ public class AutofillManagerWrapper {
         return sIsLoggable;
     }
 
+    @DoNotStripLogs
     private static void updateLogStat() {
         // Use 'setprop log.tag.AwAutofillManager DEBUG' to enable the log at runtime.
         // NOTE: See the comment on TAG above for why this is still AwAutofillManager.
