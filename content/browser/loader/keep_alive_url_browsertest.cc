@@ -5,12 +5,16 @@
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,7 +36,10 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -41,28 +48,60 @@ namespace content {
 namespace {
 
 constexpr char16_t kPromiseResolvedPageTitle[] = u"Resolved";
+
 constexpr char kPrimaryHost[] = "a.com";
 constexpr char kSecondaryHost[] = "b.com";
+
 constexpr char kKeepAliveEndpoint[] = "/beacon";
+constexpr char kKeepAliveRedirectedEndpoint[] = "/beacon-redirected";
+
 constexpr char kKeepAliveResponse[] =
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: text/html; charset=utf-8\r\n"
     "\r\n";
+constexpr char kKeepAliveRedirectToSameOriginResponse[] =
+    "HTTP/1.1 301 Moved Permanently\r\n"
+    "Location: /beacon-redirected\r\n"
+    "\r\n";
+constexpr char kKeepAliveRedirectToUnSafeResponse[] =
+    "HTTP/1.1 301 Moved Permanently\r\n"
+    "Location: chrome://settings\r\n"
+    "\r\n";
+constexpr char kKeepAliveRedirectToViolatingCSPResponse[] =
+    "HTTP/1.1 301 Moved Permanently\r\n"
+    "Location: http://b.com/beacon-redirected\r\n"
+    "\r\n";
+
+// `arg` is a 2-tuple (URLLoaderCompletionStatus, int).
+MATCHER(ErrorCodeEq, "match the same error code") {
+  const auto& expected = std::get<1>(arg);
+  const auto& got = std::get<0>(arg).error_code;
+  if (got != expected) {
+    *result_listener << "expected error code [" << expected << "] got [" << got
+                     << "]";
+    return false;
+  }
+  return true;
+}
 
 // A helper to manage responding to multiple fetch keepalive requests in batch.
 class KeepAliveRequestsHandler {
  public:
   KeepAliveRequestsHandler(net::EmbeddedTestServer* server,
-                           size_t num_requests) {
-    for (size_t i = 0; i < num_requests; ++i) {
+                           const std::vector<std::string>& relative_urls) {
+    for (const auto& relative_url : relative_urls) {
       controllers_.emplace_back(
           std::make_unique<net::test_server::ControllableHttpResponse>(
-              server, kKeepAliveEndpoint));
+              server, relative_url));
     }
   }
   // Not Copyable.
   KeepAliveRequestsHandler(const KeepAliveRequestsHandler&) = delete;
   KeepAliveRequestsHandler& operator=(const KeepAliveRequestsHandler&) = delete;
+
+  net::test_server::ControllableHttpResponse& operator[](size_t i) {
+    return *controllers_[i];
+  }
 
   void WaitForAllRequests() {
     for (auto& controller : controllers_) {
@@ -148,6 +187,14 @@ class KeepAliveURLLoadersTestObserver
   KeepAliveURLLoadersTestObserver& operator=(
       const KeepAliveURLLoadersTestObserver&) = delete;
 
+  // Waits for `OnReceiveRedirectForwarded` to be called `total` times.
+  void WaitForTotalOnReceiveRedirectForwarded(size_t total) {
+    on_receive_redirect_forwarded_count_.WaitUntil(total);
+  }
+  // Waits for `OnReceiveRedirectProcessed` to be called `total` times.
+  void WaitForTotalOnReceiveRedirectProcessed(size_t total) {
+    on_receive_redirect_processed_count_.WaitUntil(total);
+  }
   // Waits for `OnReceiveResponseForwarded` to be called `total` times.
   void WaitForTotalOnReceiveResponseForwarded(size_t total) {
     on_receive_response_forwarded_count_.WaitUntil(total);
@@ -156,13 +203,21 @@ class KeepAliveURLLoadersTestObserver
   void WaitForTotalOnReceiveResponseProcessed(size_t total) {
     on_receive_response_processed_count_.WaitUntil(total);
   }
-  // Waits for `OnCompleteForwarded` to be called `total` times.
-  void WaitForTotalOnCompleteForwarded(size_t total) {
-    on_complete_forwarded_count_.WaitUntil(total);
+  // Waits for `OnCompleteForwarded` to be called `error_codes.size()` times,
+  // and the error codes from `on_complete_forwarded_status_` should match
+  // `error_codes`.
+  void WaitForTotalOnCompleteForwarded(const std::vector<int>& error_codes) {
+    on_complete_forwarded_count_.WaitUntil(error_codes.size());
+    EXPECT_THAT(on_complete_forwarded_status_,
+                testing::Pointwise(ErrorCodeEq(), error_codes));
   }
-  // Waits for `OnCompleteProcessed` to be called `total` times.
-  void WaitForTotalOnCompleteProcessed(size_t total) {
-    on_complete_processed_count_.WaitUntil(total);
+  // Waits for `OnCompleteProcessed` to be called `error_codes.size()` times,
+  // and the error codes from `on_complete_processed_status_` should match
+  // `error_codes`.
+  void WaitForTotalOnCompleteProcessed(const std::vector<int>& error_codes) {
+    on_complete_processed_count_.WaitUntil(error_codes.size());
+    EXPECT_THAT(on_complete_processed_status_,
+                testing::Pointwise(ErrorCodeEq(), error_codes));
   }
 
  protected:
@@ -170,23 +225,39 @@ class KeepAliveURLLoadersTestObserver
 
  private:
   // KeepAliveURLLoader::TestObserver overrides:
+  void OnReceiveRedirectForwarded(KeepAliveURLLoader* loader) override {
+    on_receive_redirect_forwarded_count_.Increment();
+  }
+  void OnReceiveRedirectProcessed(KeepAliveURLLoader* loader) override {
+    on_receive_redirect_processed_count_.Increment();
+  }
   void OnReceiveResponseForwarded(KeepAliveURLLoader* loader) override {
     on_receive_response_forwarded_count_.Increment();
   }
   void OnReceiveResponseProcessed(KeepAliveURLLoader* loader) override {
     on_receive_response_processed_count_.Increment();
   }
-  void OnCompleteForwarded(KeepAliveURLLoader* loader) override {
+  void OnCompleteForwarded(
+      KeepAliveURLLoader* loader,
+      const network::URLLoaderCompletionStatus& completion_status) override {
     on_complete_forwarded_count_.Increment();
+    on_complete_forwarded_status_.push_back(completion_status);
   }
-  void OnCompleteProcessed(KeepAliveURLLoader* loader) override {
+  void OnCompleteProcessed(
+      KeepAliveURLLoader* loader,
+      const network::URLLoaderCompletionStatus& completion_status) override {
     on_complete_processed_count_.Increment();
+    on_complete_processed_status_.push_back(completion_status);
   }
 
+  AtomicCounter on_receive_redirect_forwarded_count_;
+  AtomicCounter on_receive_redirect_processed_count_;
   AtomicCounter on_receive_response_forwarded_count_;
   AtomicCounter on_receive_response_processed_count_;
   AtomicCounter on_complete_forwarded_count_;
   AtomicCounter on_complete_processed_count_;
+  std::vector<network::URLLoaderCompletionStatus> on_complete_forwarded_status_;
+  std::vector<network::URLLoaderCompletionStatus> on_complete_processed_status_;
 };
 
 }  // namespace
@@ -216,15 +287,20 @@ class KeepAliveURLBrowserTest
   KeepAliveURLBrowserTest& operator=(const KeepAliveURLBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
+    base::test::AllowCheckIsTestForTesting();
     loaders_observer_ = base::MakeRefCounted<KeepAliveURLLoadersTestObserver>();
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
     loader_service()->SetLoaderObserverForTesting(loaders_observer_);
+
+    // TODO(crbug.com/1356128): Update `embedded_test_server()` to support
+    // serving contents + modified headers.
+    ContentBrowserTest::SetUpOnMainThread();
   }
 
-  void RegisterRequestsHandler(size_t num_requests) {
+  void RegisterRequestsHandler(const std::vector<std::string>& relative_urls) {
     requests_handler_ = std::make_unique<KeepAliveRequestsHandler>(
-        embedded_test_server(), num_requests);
+        embedded_test_server(), relative_urls);
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -250,18 +326,23 @@ class KeepAliveURLBrowserTest
   KeepAliveURLLoadersTestObserver& loaders_observer() {
     return *loaders_observer_;
   }
+
   GURL GetKeepalivePageURL(const std::string& method,
-                           size_t num_requests = 1) const {
+                           size_t num_requests = 1,
+                           bool set_csp = false) const {
     return embedded_test_server()->GetURL(
         kPrimaryHost,
-        base::StringPrintf("/fetch-keepalive.html?method=%s&requests=%zu",
-                           method.c_str(), num_requests));
+        base::StringPrintf(
+            "/set-header-with-file/content/test/data/fetch-keepalive.html?"
+            "method=%s&requests=%zu%s",
+            method.c_str(), num_requests,
+            set_csp
+                ? "&Content-Security-Policy: connect-src 'self' http://csp.test"
+                : ""));
   }
   GURL GetCrossOriginPageURL() {
     return embedded_test_server()->GetURL(kSecondaryHost, "/title2.html");
   }
-
-  void ExpectReceiveResponseCalled() const {}
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -280,7 +361,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
   const std::string method = GetParam();
-  RegisterRequestsHandler(1);
+  RegisterRequestsHandler({kKeepAliveEndpoint});
   ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
   // Ensure the keepalive request is sent, but delay response.
   requests_handler().WaitForAllRequests();
@@ -293,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
   TitleWatcher watcher(web_contents(), kPromiseResolvedPageTitle);
   EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
   loaders_observer().WaitForTotalOnReceiveResponseForwarded(1);
-  loaders_observer().WaitForTotalOnCompleteForwarded(1);
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 }
 
@@ -313,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
                        MAYBE_TwoConcurrentRequestsPerHost) {
   const std::string method = GetParam();
   const size_t num_requests = 2;
-  RegisterRequestsHandler(num_requests);
+  RegisterRequestsHandler({kKeepAliveEndpoint, kKeepAliveEndpoint});
   ASSERT_TRUE(
       NavigateToURL(web_contents(), GetKeepalivePageURL(method, num_requests)));
   // Ensure all keepalive requests are sent, but delay responses.
@@ -327,7 +408,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   TitleWatcher watcher(web_contents(), kPromiseResolvedPageTitle);
   EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
   loaders_observer().WaitForTotalOnReceiveResponseForwarded(2);
-  loaders_observer().WaitForTotalOnCompleteForwarded(2);
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK, net::OK});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 }
 
@@ -337,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
                        ReceiveResponseAfterPageUnload) {
   const std::string method = GetParam();
-  RegisterRequestsHandler(1);
+  RegisterRequestsHandler({kKeepAliveEndpoint});
   ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
   RenderFrameHostImplWrapper rfh_1(current_frame_host());
   // Ensure the current page can be unloaded instead of being cached.
@@ -366,11 +447,11 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
 
 // Delays response to a keepalive ping until after the page making the keepalive
 // ping is put into BackForwardCache. The response should be processed by the
-// renderer after the page is restored from BackForwardcache.
+// renderer after the page is restored from BackForwardCache.
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
                        ReceiveResponseInBackForwardCache) {
   const std::string method = GetParam();
-  RegisterRequestsHandler(1);
+  RegisterRequestsHandler({kKeepAliveEndpoint});
   ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
   RenderFrameHostImplWrapper rfh_1(current_frame_host());
   // Ensure the keepalive request is sent before leaving the current page.
@@ -385,6 +466,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // The loader is still pending to receive response.
   ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
   ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+
   // Send back response.
   requests_handler().Send(kKeepAliveResponse);
   // The response is immediately forwarded to the in-BackForwardCache renderer.
@@ -396,7 +478,120 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   TitleWatcher watcher(web_contents(), kPromiseResolvedPageTitle);
   EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
   requests_handler().Done();
-  loaders_observer().WaitForTotalOnCompleteForwarded(1);
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+// Delays handling redirect for a keepalive ping until after the page making the
+// keepalive ping has been unloaded. The browser must ensure the redirect is
+// verified and properly processed by the browser.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       ReceiveRedirectAfterPageUnload) {
+  const std::string method = GetParam();
+  RegisterRequestsHandler({kKeepAliveEndpoint, kKeepAliveRedirectedEndpoint});
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+  // Ensure the current page can be unloaded instead of being cached.
+  DisableBackForwardCache(web_contents());
+  // Ensure the keepalive request is sent before leaving the current page.
+  requests_handler()[0].WaitForRequest();
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+
+  // Navigate to cross-origin page.
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
+  // Ensure the previous page has been unloaded.
+  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
+  // The disconnected loader is still pending to receive response.
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 1u);
+
+  // Send back response to redirect.
+  requests_handler()[0].Send(kKeepAliveRedirectToSameOriginResponse);
+  requests_handler()[0].Done();
+  // The in-browser logic should process the redirect.
+  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
+
+  // The redirect request should be processed in browser and gets sent.
+  requests_handler()[1].WaitForRequest();
+  // End the keepalive request by sending back final response.
+  requests_handler()[1].Send(kKeepAliveResponse);
+  requests_handler()[1].Done();
+
+  // The response should be processed in browser.
+  loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
+  // `KeepAliveURLLoader::OnComplete` will not be called but the loader must
+  // still be terminated, as renderer is dead.
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+}
+
+// Delays handling an unsafe redirect for a keepalive ping until after the page
+// making the keepalive ping has been unloaded.
+// The browser must ensure the unsafe redirect is not followed.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       ReceiveUnSafeRedirectAfterPageUnload) {
+  const std::string method = GetParam();
+  RegisterRequestsHandler({kKeepAliveEndpoint});
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+  // Ensure the current page can be unloaded instead of being cached.
+  DisableBackForwardCache(web_contents());
+  // Ensure the keepalive request is sent before leaving the current page.
+  requests_handler()[0].WaitForRequest();
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+
+  // Navigate to cross-origin page.
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
+  // Ensure the previous page has been unloaded.
+  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
+  // The disconnected loader is still pending to receive response.
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 1u);
+
+  // Send back response to redirect to unsafe target.
+  requests_handler()[0].Send(kKeepAliveRedirectToUnSafeResponse);
+  requests_handler()[0].Done();
+
+  // The redirect is unsafe, so the loader is terminated.
+  loaders_observer().WaitForTotalOnCompleteProcessed(
+      {net::ERR_UNSAFE_REDIRECT});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+// Delays handling an violating CSP redirect for a keepalive ping until after
+// the page making the keepalive ping has been unloaded.
+// The browser must ensure the redirect is not followed.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       ReceiveViolatingCSPRedirectAfterPageUnload) {
+  const std::string method = GetParam();
+  RegisterRequestsHandler({kKeepAliveEndpoint});
+
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      GetKeepalivePageURL(method, /*num_requests=*/1, /*set_csp=*/true)));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+  // Ensure the current page can be unloaded instead of being cached.
+  DisableBackForwardCache(web_contents());
+  // Ensure the keepalive request is sent before leaving the current page.
+  requests_handler()[0].WaitForRequest();
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+
+  // Navigate to cross-origin page.
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
+  // Ensure the previous page has been unloaded.
+  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
+  // The disconnected loader is still pending to receive response.
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 1u);
+
+  // Send back response to redirect to the target that violates CSP.
+  requests_handler()[0].Send(kKeepAliveRedirectToViolatingCSPResponse);
+  requests_handler()[0].Done();
+
+  // The redirect doesn't match CSP source from the 1st page, so the loader is
+  // terminated.
+  loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_BLOCKED_BY_CSP});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 }
 

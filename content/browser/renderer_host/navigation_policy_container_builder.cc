@@ -314,6 +314,14 @@ NavigationPolicyContainerBuilder::CreatePolicyContainerForBlink() {
 }
 
 scoped_refptr<PolicyContainerHost>
+NavigationPolicyContainerBuilder::GetPolicyContainerHost() {
+  DCHECK(HasComputedPolicies());
+  CHECK(host_);
+
+  return host_;
+}
+
+scoped_refptr<PolicyContainerHost>
 NavigationPolicyContainerBuilder::TakePolicyContainerHost() && {
   DCHECK(HasComputedPolicies());
 

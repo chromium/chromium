@@ -244,11 +244,13 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::NavigateTo:
       return "Refused to navigate to '$1' because it violates the "
              "following Content Security Policy directive: \"$2\".";
+    case CSPDirectiveName::ConnectSrc:
+      return "Refused to connect to '$1' because it violates the "
+             "following Content Security Policy directive: \"$2\".";
 
     case CSPDirectiveName::BaseURI:
     case CSPDirectiveName::BlockAllMixedContent:
     case CSPDirectiveName::ChildSrc:
-    case CSPDirectiveName::ConnectSrc:
     case CSPDirectiveName::DefaultSrc:
     case CSPDirectiveName::FontSrc:
     case CSPDirectiveName::ImgSrc:

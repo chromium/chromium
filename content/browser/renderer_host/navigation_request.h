@@ -798,6 +798,12 @@ class CONTENT_EXPORT NavigationRequest
   // Must only be called after ReadyToCommitNavigation().
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
+  // Returns a new refptr to this navigation's PolicyContainerHost.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  // It is invalid to call after `TakePolicyContainerHost()`.
+  scoped_refptr<PolicyContainerHost> GetPolicyContainerHost();
+
   // Moves this navigation's PolicyContainerHost out of this instance.
   //
   // Must only be called after ReadyToCommitNavigation().

@@ -9826,10 +9826,10 @@ void RenderFrameHostImpl::CommitNavigation(
       if (factory_bundle_for_keep_alive) {
         // Also setting up URLLoaderFactory for keepalive using the same loader
         // factories.
-        auto* storage_partition = GetStoragePartition();
-        storage_partition->GetKeepAliveURLLoaderService()->BindFactory(
+        GetStoragePartition()->GetKeepAliveURLLoaderService()->BindFactory(
             keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
-            std::move(factory_bundle_for_keep_alive));
+            std::move(factory_bundle_for_keep_alive),
+            navigation_request->GetPolicyContainerHost());
       }
     }
 

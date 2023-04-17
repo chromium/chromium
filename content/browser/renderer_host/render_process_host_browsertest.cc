@@ -1135,6 +1135,11 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
 
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
                        KeepAliveRendererProcessWithServiceWorker) {
+  if (IsKeepAliveInBrowserMigrationEnabled()) {
+    // TODO(crbug.com/1356128): Add keepalive in-browser support for workers.
+    return;
+  }
+
   base::RunLoop run_loop;
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(HandleHungBeacon, run_loop.QuitClosure()));

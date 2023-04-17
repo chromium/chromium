@@ -3038,6 +3038,12 @@ NavigationRequest::CreatePolicyContainerForBlink() {
 
   return policy_container_builder_->CreatePolicyContainerForBlink();
 }
+scoped_refptr<PolicyContainerHost> NavigationRequest::GetPolicyContainerHost() {
+  DCHECK_GE(state_, READY_TO_COMMIT);
+  // It is invalid calling this method after `TakePolicyContainerHost()`.
+  CHECK(policy_container_builder_);
+  return policy_container_builder_->GetPolicyContainerHost();
+}
 
 scoped_refptr<PolicyContainerHost>
 NavigationRequest::TakePolicyContainerHost() {

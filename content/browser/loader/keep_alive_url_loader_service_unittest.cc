@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/public/browser/navigation_entry.h"
@@ -14,9 +15,11 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
@@ -30,11 +33,17 @@ namespace {
 
 using testing::_;
 using testing::Eq;
+using testing::IsEmpty;
+using testing::SizeIs;
 using testing::WithArg;
 
 constexpr char kTestRequestUrl[] = "https://example.test";
 constexpr char kTestResponseHeaderName[] = "My-Test-Header";
 constexpr char kTestResponseHeaderValue[] = "my-test-value";
+constexpr char kTestRedirectRequestUrl[] = "https://redirect.test";
+constexpr char kTestUnSafeRedirectRequestUrl[] = "about:blank";
+constexpr char kTestViolatingCSPRedirectRequestUrl[] =
+    "https://violate-csp.test";
 
 // Mock a receiver URLLoaderClient that may exist in renderer.
 class MockReceiverURLLoaderClient : public network::mojom::URLLoaderClient {
@@ -94,13 +103,14 @@ class FakeRemoteURLLoaderFactory {
   // Binds `remote_url_loader` to a new URLLoader.
   void CreateLoaderAndStart(
       const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      bool expect_success = true) {
     remote_url_loader_factory->CreateLoaderAndStart(
         remote_url_loader.BindNewPipeAndPassReceiver(),
         /*request_id=*/1, /*options=*/0, request, std::move(client),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     remote_url_loader_factory.FlushForTesting();
-    ASSERT_TRUE(remote_url_loader.is_connected());
+    ASSERT_EQ(remote_url_loader.is_connected(), expect_success);
   }
 
   bool is_remote_url_loader_connected() {
@@ -131,7 +141,8 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
  protected:
   void SetUp() override {
     network_url_loader_factory_ =
-        std::make_unique<network::TestURLLoaderFactory>();
+        std::make_unique<network::TestURLLoaderFactory>(
+            /*observe_loader_requests=*/true);
     // Intercepts Mojo bad-message error.
     mojo::SetDefaultProcessErrorHandler(
         base::BindLambdaForTesting([&](const std::string& error) {
@@ -139,6 +150,8 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
           mojo_bad_message_ = error;
         }));
     RenderViewHostTestHarness::SetUp();
+
+    AddConnectSrcCSPToRFH(kTestRedirectRequestUrl);
   }
 
   void TearDown() override {
@@ -172,17 +185,26 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
     // Receiver: Held in `loader_service_`.
     loader_service_->BindFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
-        std::move(pending_factory));
+        std::move(pending_factory),
+        static_cast<RenderFrameHostImpl*>(main_rfh())
+            ->policy_container_host()
+            ->Clone());
   }
 
-  network::ResourceRequest CreateResourceRequest(const GURL& url,
-                                                 bool keepalive = true,
-                                                 bool is_trusted = false) {
+  network::ResourceRequest CreateResourceRequest(
+      const GURL& url,
+      bool keepalive = true,
+      bool is_trusted = false,
+      absl::optional<network::mojom::RedirectMode> redirect_mode =
+          absl::nullopt) {
     network::ResourceRequest request;
     request.url = url;
     request.keepalive = keepalive;
     if (is_trusted) {
       request.trusted_params = network::ResourceRequest::TrustedParams();
+    }
+    if (redirect_mode) {
+      request.redirect_mode = *redirect_mode;
     }
     return request;
   }
@@ -199,10 +221,10 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
     return response;
   }
 
-  net::RedirectInfo CreateRedirectInfo() {
+  net::RedirectInfo CreateRedirectInfo(const GURL& new_url) {
     net::RedirectInfo redirect_info;
     redirect_info.new_method = "GET";
-    redirect_info.new_url = GURL("https://redirect.test/");
+    redirect_info.new_url = new_url;
     redirect_info.status_code = 301;
     return redirect_info;
   }
@@ -224,6 +246,16 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
 
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest() {
     return &network_url_loader_factory_->pending_requests()->back();
+  }
+
+  void AddConnectSrcCSPToRFH(const std::string& allowed_url) {
+    static_cast<RenderFrameHostImpl*>(main_rfh())
+        ->policy_container_host()
+        ->AddContentSecurityPolicies(network::ParseContentSecurityPolicies(
+            "connect-src " + allowed_url,
+            network::mojom::ContentSecurityPolicyType::kEnforce,
+            network::mojom::ContentSecurityPolicySource::kMeta,
+            GURL(kTestRequestUrl)));
   }
 
   network::TestURLLoaderFactory& network_url_loader_factory() {
@@ -277,6 +309,22 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadTrustedRequestAndTerminate) {
       "Unexpected `resource_request` in "
       "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
       "resource_request.trusted_params must not be set");
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterPageIsUnloaded) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Deletes the current RenderFrameHost and then loads a keepalive request.
+  DeleteContents();
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl)),
+      renderer_loader_client.BindNewPipeAndPassRemote(),
+      /*expect_success=*/true);
+
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveResponse) {
@@ -358,8 +406,9 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveRedirect) {
       .Times(1);
   // Simluates receiving redirect in the network service.
   GetLastPendingRequest()->client->OnReceiveRedirect(
-      CreateRedirectInfo(), CreateResponseHead({{kTestResponseHeaderName,
-                                                 kTestResponseHeaderValue}}));
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -369,9 +418,11 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
 
-  // Loads keepalive request:
+  // Loads keepalive request that redirects first:
   renderer_loader_factory.CreateLoaderAndStart(
-      CreateResourceRequest(GURL(kTestRequestUrl)),
+      CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/true,
+                            /*is_trusted=*/false,
+                            network::mojom::RedirectMode::kFollow),
       renderer_loader_client.BindNewPipeAndPassRemote());
   ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
   ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
@@ -379,6 +430,7 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   // Disconnects and unbinds the receiver client & remote loader.
   renderer_loader_client.ResetReceiver();
   renderer_loader_factory.reset_remote_url_loader();
+  DeleteContents();
   base::RunLoop().RunUntilIdle();
 
   // OnReceiveRedirect:
@@ -388,9 +440,145 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
   // Simluates receiving redirect in the network service.
   GetLastPendingRequest()->client->OnReceiveRedirect(
-      CreateRedirectInfo(), CreateResponseHead({{kTestResponseHeaderName,
-                                                 kTestResponseHeaderValue}}));
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
   base::RunLoop().RunUntilIdle();
+
+  // Verifies URLLoader::FollowRedirect() is sent to network service.
+  const auto& params =
+      GetLastPendingRequest()->test_url_loader->follow_redirect_params();
+  EXPECT_THAT(params, SizeIs(1));
+  EXPECT_EQ(params[0].new_url, absl::nullopt);
+  EXPECT_THAT(params[0].removed_headers, IsEmpty());
+  EXPECT_TRUE(params[0].modified_headers.IsEmpty());
+  EXPECT_TRUE(params[0].modified_cors_exempt_headers.IsEmpty());
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       OnReceiveRedirectToUnSafeTargetAfterRendererIsDisconnected) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads keepalive request that redirects first:
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/true,
+                            /*is_trusted=*/false,
+                            network::mojom::RedirectMode::kFollow),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // OnReceiveRedirect:
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
+  // Simluates receiving unsafe redirect in the network service.
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestUnSafeRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
+  base::RunLoop().RunUntilIdle();
+
+  // Verifies URLLoader::FollowRedirect() is NOT sent to network service.
+  const auto& params =
+      GetLastPendingRequest()->test_url_loader->follow_redirect_params();
+  EXPECT_THAT(params, IsEmpty());
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       OnReceiveRedirectWithErrorRedirectModeAfterRendererIsDisconnected) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads keepalive request that redirects first, with error redirect_mode:
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/true,
+                            /*is_trusted=*/false,
+                            network::mojom::RedirectMode::kError),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // OnReceiveRedirect:
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
+  // Simluates receiving redirect in the network service.
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
+  base::RunLoop().RunUntilIdle();
+
+  // Verifies URLLoader::FollowRedirect() is NOT sent to network service.
+  const auto& params =
+      GetLastPendingRequest()->test_url_loader->follow_redirect_params();
+  EXPECT_THAT(params, IsEmpty());
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest,
+       OnReceiveRedirectViolatingCSPAfterRendererIsDisconnected) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  // Loads keepalive request that redirects first:
+  renderer_loader_factory.CreateLoaderAndStart(
+      CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/true,
+                            /*is_trusted=*/false,
+                            network::mojom::RedirectMode::kFollow),
+      renderer_loader_client.BindNewPipeAndPassRemote());
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  DeleteContents();
+  base::RunLoop().RunUntilIdle();
+
+  // OnReceiveRedirect:
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
+  // Simluates receiving redirect in the network service.
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestViolatingCSPRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
+  base::RunLoop().RunUntilIdle();
+
+  // Verifies URLLoader::FollowRedirect() is NOT sent to network service.
+  const auto& params =
+      GetLastPendingRequest()->test_url_loader->follow_redirect_params();
+  EXPECT_THAT(params, IsEmpty());
+  // Expects no forwarding.
+  EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveEarlyHints) {

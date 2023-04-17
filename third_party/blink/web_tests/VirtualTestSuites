@@ -1910,8 +1910,10 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/background-fetch/",
-      "external/wpt/beacon/beacon-basic.https.window.js",
-      "external/wpt/beacon/beacon-navigate.https.window.js",
+      "external/wpt/beacon/",
+      "external/wpt/content-security-policy/connect-src/connect-src-beacon-allowed.sub.html",
+      "external/wpt/content-security-policy/connect-src/connect-src-beacon-blocked.sub.html",
+      "external/wpt/content-security-policy/connect-src/connect-src-beacon-redirect-to-blocked.sub.html",
       "external/wpt/fetch/",
       "external/wpt/xhr/"
     ],

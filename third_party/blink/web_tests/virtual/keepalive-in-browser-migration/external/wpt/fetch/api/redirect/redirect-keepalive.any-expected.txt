@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS same-origin redirect; setting up
-PASS cross-origin redirect; setting up
-PASS cross-origin redirect with preflight; setting up
-FAIL same-origin redirect assert_unreached: Error: assert_equals: expected (string) "on" but got (object) null Reached unreachable code
-FAIL cross-origin redirect assert_unreached: Error: assert_equals: expected (string) "on" but got (object) null Reached unreachable code
-FAIL cross-origin redirect with preflight assert_unreached: Error: assert_equals: expected (string) "on" but got (object) null Reached unreachable code
-Harness: the test ran to completion.
-
