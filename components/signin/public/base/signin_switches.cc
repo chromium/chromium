@@ -14,7 +14,7 @@ namespace switches {
 // AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.
 BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
              "GaiaIdCacheInAccountManagerFacade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the
