@@ -17,7 +17,7 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
     return;
   }
 
-  // TODO(crbug.com/1399942): Validate final mappings for Gm3 color.
+  // TODO(crbug.com/1399942): Validate final mappings for ChromeRefresh23 color.
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorTabBackgroundActiveFrameActive] = {ui::kColorSysBase};
   mixer[kColorTabBackgroundActiveFrameInactive] = {
@@ -33,4 +33,8 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfaceSecondary};
   mixer[kColorTabForegroundInactiveFrameInactive] = {
       kColorTabForegroundInactiveFrameActive};
+
+  mixer[kColorTabBackgroundHoverFrameActive] = {ui::kColorSysStateHeaderHover};
+  mixer[kColorTabBackgroundHoverFrameInactive] = {
+      ui::kColorSysStateHoverOnSubtle};
 }

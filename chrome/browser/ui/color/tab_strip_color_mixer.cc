@@ -131,6 +131,12 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
     }
   }
 
+  // Fallbacks for ChromeRefresh2023, these colors dont exist in the
+  // GM2TabStyleViews version of the tabstrip.
+  mixer[kColorTabBackgroundHoverFrameActive] = {ui::kColorSysStateHeaderHover};
+  mixer[kColorTabBackgroundHoverFrameInactive] = {
+      ui::kColorSysStateHoverOnSubtle};
+
   /* WebUI Tab Strip colors. */
   // TODO(https://crbug.com/1060398): Update the tab strip color to respond
   // appopriately to activation changes.

@@ -94,6 +94,9 @@ class GM2TabStyleViews : public TabStyleViews {
   // treated as an active tab regardless of its true current state.
   virtual int GetStrokeThickness(bool should_paint_as_active = false) const;
 
+  // Returns the progress (0 to 1) of the hover animation.
+  double GetHoverAnimationValue() const override;
+
  private:
   // Gets the bounds for the leading and trailing separators for a tab.
   TabStyle::SeparatorBounds GetSeparatorBounds(float scale) const;
@@ -120,9 +123,6 @@ class GM2TabStyleViews : public TabStyleViews {
 
   // Returns whether the hover animation is being shown.
   bool IsHoverActive() const;
-
-  // Returns the progress (0 to 1) of the hover animation.
-  double GetHoverAnimationValue() const override;
 
   // Returns the opacity of the hover effect that should be drawn, which may not
   // be the same as GetHoverAnimationValue.
@@ -151,10 +151,7 @@ class GM2TabStyleViews : public TabStyleViews {
                               bool paint_hover_effect,
                               absl::optional<int> fill_id,
                               int y_inset) const;
-  void PaintBackgroundHover(gfx::Canvas* canvas,
-                            const SkPoint& p,
-                            SkScalar radius,
-                            SkColor color) const;
+  virtual void PaintBackgroundHover(gfx::Canvas* canvas, float scale) const;
   void PaintBackgroundStroke(gfx::Canvas* canvas,
                              TabActive active,
                              SkColor stroke_color) const;
@@ -844,7 +841,8 @@ void GM2TabStyleViews::PaintTabBackgroundFill(gfx::Canvas* canvas,
 
   canvas->ClipPath(fill_path, true);
 
-  if (ShouldPaintTabBackgroundColor(active, fill_id.has_value())) {
+  if ((tab_->IsActive() || tab_->IsSelected()) &&
+      ShouldPaintTabBackgroundColor(active, fill_id.has_value())) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(GetTabBackgroundColor(active));
@@ -864,19 +862,20 @@ void GM2TabStyleViews::PaintTabBackgroundFill(gfx::Canvas* canvas,
   if (paint_hover_effect) {
     SkPoint hover_location(gfx::PointToSkPoint(hover_controller_->location()));
     hover_location.scale(SkFloatToScalar(scale));
-    const SkScalar kMinHoverRadius = 16;
-    const SkScalar radius =
-        std::max(SkFloatToScalar(tab_->width() / 4.f), kMinHoverRadius);
-    PaintBackgroundHover(canvas, hover_location, radius * scale,
-                         SkColorSetA(GetTabBackgroundColor(TabActive::kActive),
-                                     hover_controller_->GetAlpha()));
+    PaintBackgroundHover(canvas, scale);
   }
 }
 
 void GM2TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
-                                            const SkPoint& p,
-                                            SkScalar radius,
-                                            SkColor color) const {
+                                            float scale) const {
+  SkPoint hover_location(gfx::PointToSkPoint(hover_controller_->location()));
+  hover_location.scale(SkFloatToScalar(scale));
+  const SkScalar kMinHoverRadius = 16;
+  const SkScalar radius =
+      std::max(SkFloatToScalar(tab_->width() / 4.f), kMinHoverRadius) * scale;
+  const SkColor color = SkColorSetA(GetTabBackgroundColor(TabActive::kActive),
+                                    hover_controller_->GetAlpha());
+
   // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   const SkColor4f colors[2] = {
       SkColor4f::FromColor(color),
@@ -884,9 +883,10 @@ void GM2TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(cc::PaintShader::MakeRadialGradient(
-      p, radius, colors, nullptr, 2, SkTileMode::kClamp));
+      hover_location, radius, colors, nullptr, 2, SkTileMode::kClamp));
   canvas->sk_canvas()->drawRect(
-      SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
+      SkRect::MakeXYWH(hover_location.x() - radius, hover_location.y() - radius,
+                       radius * 2, radius * 2),
       flags);
 }
 
@@ -989,6 +989,7 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
   ~ChromeRefresh2023TabStyleViews() override = default;
   SkColor GetTabBackgroundColor(TabActive active) const override;
   int GetStrokeThickness(bool should_paint_as_active = false) const override;
+  void PaintBackgroundHover(gfx::Canvas* canvas, float scale) const override;
 };
 
 ChromeRefresh2023TabStyleViews::ChromeRefresh2023TabStyleViews(Tab* tab)
@@ -1021,6 +1022,28 @@ int ChromeRefresh2023TabStyleViews::GetStrokeThickness(
   }
 
   return 0;
+}
+
+void ChromeRefresh2023TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
+                                                          float scale) const {
+  const SkPath fill_path =
+      GetPath(TabStyle::PathType::kHighlight, canvas->image_scale(), true);
+  canvas->ClipPath(fill_path, true);
+
+  // Override the color for ChromeRefresh2023
+  const auto* cp = tab()->GetWidget()->GetColorProvider();
+  const SkColor color =
+      cp->GetColor(tab()->controller()->ShouldPaintAsActiveFrame()
+                       ? kColorTabBackgroundHoverFrameActive
+                       : kColorTabBackgroundHoverFrameInactive);
+  const SkColor4f color_with_alpha_animation =
+      SkColor4f::FromColor(SkColorSetA(color, GetHoverAnimationValue() * 255));
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(color_with_alpha_animation);
+  canvas->DrawRect(gfx::ScaleToEnclosingRect(tab()->GetLocalBounds(), scale),
+                   flags);
 }
 
 }  // namespace
