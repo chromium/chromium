@@ -44,7 +44,6 @@ const CGFloat kHorizontalPadding = 16;
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
     _textView.delegate = self;
-    _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _textView.adjustsFontForContentSizeCategory = YES;
     _textView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
     _textView.textContainer.lineFragmentPadding = 0;
@@ -69,6 +68,8 @@ const CGFloat kHorizontalPadding = 16;
                                  argument:argument];
   NSDictionary* attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
   };
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
