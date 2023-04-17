@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
@@ -213,7 +213,8 @@ void DistillerPageIOS::OnLoadURLDone(
     return;
   }
 
-  web::WebFrame* main_frame = web::GetMainFrame(web_state_.get());
+  web::WebFrame* main_frame =
+      web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!main_frame) {
     HandleJavaScriptResult(nil);
     return;
