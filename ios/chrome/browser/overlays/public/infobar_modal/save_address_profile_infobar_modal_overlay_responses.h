@@ -42,6 +42,10 @@ class CancelViewAction : public OverlayResponseInfo<CancelViewAction> {
   BOOL edit_view_is_dismissed_;
 };
 
+// Response info used to create dispatched OverlayResponses once the user
+// clicks on "No Thanks".
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(NoThanksViewAction);
+
 }  // namespace save_address_profile_infobar_modal_responses
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_RESPONSES_H_

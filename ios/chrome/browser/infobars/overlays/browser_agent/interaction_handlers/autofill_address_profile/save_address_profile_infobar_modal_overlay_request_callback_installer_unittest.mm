@@ -33,6 +33,7 @@ using autofill_address_profile_infobar_overlays::
 using save_address_profile_infobar_modal_responses::CancelViewAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
+using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 // Test fixture for
 // SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller.
@@ -101,4 +102,11 @@ TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
   EXPECT_CALL(mock_handler_, CancelModal(infobar_, fakeFromEditModal));
   request_->GetCallbackManager()->DispatchResponse(
       OverlayResponse::CreateWithInfo<CancelViewAction>(fakeFromEditModal));
+}
+
+TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
+       NoThanksAction) {
+  EXPECT_CALL(mock_handler_, NoThanksWasPressed(infobar_));
+  request_->GetCallbackManager()->DispatchResponse(
+      OverlayResponse::CreateWithInfo<NoThanksViewAction>());
 }

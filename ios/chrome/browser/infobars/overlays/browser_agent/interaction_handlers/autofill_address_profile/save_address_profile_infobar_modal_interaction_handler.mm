@@ -57,6 +57,11 @@ void SaveAddressProfileInfobarModalInteractionHandler::CancelModal(
   }
 }
 
+void SaveAddressProfileInfobarModalInteractionHandler::NoThanksWasPressed(
+    InfoBarIOS* infobar) {
+  GetInfoBarDelegate(infobar)->Never();
+}
+
 #pragma mark - Private
 
 std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>

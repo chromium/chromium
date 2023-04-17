@@ -26,6 +26,7 @@ class MockAutofillSaveUpdateAddressProfileDelegateIOS
 
   MOCK_METHOD0(Accept, bool());
   MOCK_METHOD0(EditAccepted, void());
+  MOCK_METHOD0(Never, bool());
 };
 
 class MockAutofillSaveUpdateAddressProfileDelegateIOSFactory {

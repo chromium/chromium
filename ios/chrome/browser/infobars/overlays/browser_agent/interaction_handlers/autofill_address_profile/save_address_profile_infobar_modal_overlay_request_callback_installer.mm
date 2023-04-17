@@ -24,6 +24,7 @@ using autofill_address_profile_infobar_overlays::
 using save_address_profile_infobar_modal_responses::CancelViewAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
+using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller(
@@ -64,6 +65,34 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
   interaction_handler_->CancelModal(infobar, info->edit_view_is_dismissed());
 }
 
+void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
+    NoThanksCallback(OverlayRequest* request, OverlayResponse* response) {
+  InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
+  if (!infobar) {
+    return;
+  }
+
+  // Inform the interaction handler to not migrate, then add the
+  // infobar removal callback as a completion.  This causes the infobar and its
+  // badge to be removed once the infobar modal's dismissal finishes.
+  interaction_handler_->NoThanksWasPressed(infobar);
+  request->GetCallbackManager()->AddCompletionCallback(base::BindOnce(
+      &SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
+          RemoveInfobarCompletionCallback,
+      weak_factory_.GetWeakPtr(), request));
+}
+
+void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
+    RemoveInfobarCompletionCallback(OverlayRequest* request,
+                                    OverlayResponse* response) {
+  InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
+  if (!infobar) {
+    return;
+  }
+  InfoBarManagerImpl::FromWebState(request->GetQueueWebState())
+      ->RemoveInfoBar(infobar);
+}
+
 #pragma mark - OverlayRequestCallbackInstaller
 
 void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
@@ -85,4 +114,11 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
               CancelModalCallback,
           weak_factory_.GetWeakPtr(), request),
       CancelViewAction::ResponseSupport()));
+
+  manager->AddDispatchCallback(OverlayDispatchCallback(
+      base::BindRepeating(
+          &SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
+              NoThanksCallback,
+          weak_factory_.GetWeakPtr(), request),
+      NoThanksViewAction::ResponseSupport()));
 }

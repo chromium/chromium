@@ -25,6 +25,7 @@ using autofill_address_profile_infobar_overlays::
 using save_address_profile_infobar_modal_responses::CancelViewAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
+using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 @interface SaveAddressProfileInfobarModalOverlayMediator ()
 // The save address profile modal config from the request.
@@ -125,6 +126,11 @@ using save_address_profile_infobar_modal_responses::
   [self dismissOverlay];
 
   self.currentViewIsEditView = NO;
+}
+
+- (void)noThanksButtonWasPressed {
+  [self dispatchResponse:OverlayResponse::CreateWithInfo<NoThanksViewAction>()];
+  [self dismissOverlay];
 }
 
 @end

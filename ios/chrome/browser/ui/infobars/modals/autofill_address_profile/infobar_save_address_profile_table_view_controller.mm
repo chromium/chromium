@@ -121,8 +121,9 @@ const CGFloat kSymbolSize = 16;
   self.tableView.sectionFooterHeight = 0;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
-  if (!self.isMigrationToAccount) {
-    // Configure the NavigationBar.
+  if (!self.isMigrationToAccount || self.currentAddressProfileSaved) {
+    // Do not show the cancel button when the migration prompt is presented and
+    // the profile is not migrated yet.
     UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                              target:self
@@ -203,6 +204,13 @@ const CGFloat kSymbolSize = 16;
     [tableViewTextButtonCell.button
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
+        forControlEvents:UIControlEventTouchUpInside];
+  } else if (itemType == ItemTypeAddressProfileNoThanksButton) {
+    TableViewTextButtonCell* tableViewTextButtonCell =
+        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+    [tableViewTextButtonCell.button
+               addTarget:self
+                  action:@selector(noThanksButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
   } else {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -296,6 +304,10 @@ const CGFloat kSymbolSize = 16;
 
 - (void)showEditAddressProfileModal {
   [self.saveAddressProfileModalDelegate showEditView];
+}
+
+- (void)noThanksButtonWasPressed:(UIButton*)sender {
+  [self.saveAddressProfileModalDelegate noThanksButtonWasPressed];
 }
 
 #pragma mark - Private Methods

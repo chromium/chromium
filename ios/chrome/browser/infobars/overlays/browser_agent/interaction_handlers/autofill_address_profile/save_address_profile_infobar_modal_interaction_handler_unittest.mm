@@ -70,3 +70,8 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, Cancel) {
       mock_delegate().user_decision(),
       autofill::AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
+
+TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, NoThanks) {
+  EXPECT_CALL(mock_delegate(), Never());
+  handler_.NoThanksWasPressed(infobar_.get());
+}
