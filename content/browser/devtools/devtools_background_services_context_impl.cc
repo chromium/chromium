@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
-#include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,7 +29,8 @@ std::string CreateEntryKeyPrefix(devtools::proto::BackgroundService service) {
 }
 
 std::string CreateEntryKey(devtools::proto::BackgroundService service) {
-  return CreateEntryKeyPrefix(service) + base::GenerateGUID();
+  return CreateEntryKeyPrefix(service) +
+         base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 constexpr devtools::proto::BackgroundService ServiceToProtoEnum(

@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -229,8 +228,8 @@ TEST_F(DevToolsAgentHostImplTest, TestExternalProxy) {
   std::unique_ptr<TestExternalAgentDelegate> delegate(
       new TestExternalAgentDelegate());
 
-  scoped_refptr<DevToolsAgentHost> agent_host =
-      DevToolsAgentHost::Forward(base::GenerateGUID(), std::move(delegate));
+  scoped_refptr<DevToolsAgentHost> agent_host = DevToolsAgentHost::Forward(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), std::move(delegate));
   EXPECT_EQ(agent_host, DevToolsAgentHost::GetForId(agent_host->GetId()));
 
   TestDevToolsClientHost client_host;

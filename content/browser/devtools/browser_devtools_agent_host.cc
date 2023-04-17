@@ -6,11 +6,11 @@
 
 #include "base/clang_profiling_buildflags.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "content/browser/devtools/devtools_session.h"
@@ -159,7 +159,7 @@ BrowserDevToolsAgentHost::BrowserDevToolsAgentHost(
     scoped_refptr<base::SingleThreadTaskRunner> tethering_task_runner,
     const CreateServerSocketCallback& socket_callback,
     bool only_discovery)
-    : DevToolsAgentHostImpl(base::GenerateGUID()),
+    : DevToolsAgentHostImpl(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       auto_attacher_(std::make_unique<BrowserAutoAttacher>()),
       tethering_task_runner_(tethering_task_runner),
       socket_callback_(socket_callback),
