@@ -34,6 +34,10 @@ class ASH_EXPORT WorkspaceEventHandler : public ui::EventHandler {
 
   ~WorkspaceEventHandler() override;
 
+  MultiWindowResizeController* multi_window_resize_controller() const {
+    return multi_window_resize_controller_.get();
+  }
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

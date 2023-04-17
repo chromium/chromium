@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_LOCK_OR_UNLOCK_BUTTON_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_LOCK_OR_UNLOCK_BUTTON_H_
 
+#include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -18,18 +19,17 @@ namespace ash {
 // two windows are snapped. It acts as the entry point for the creating or
 // removing the `SnapGroup`. This entry point is guarded by the feature flag
 // `kSnapGroup`.
+// TODO(b/277398869): Remove this class.
 class SnapGroupLockOrUnlockButton : public views::ImageButton {
  public:
   METADATA_HEADER(SnapGroupLockOrUnlockButton);
-  SnapGroupLockOrUnlockButton(aura::Window* window1, aura::Window* window2);
+  SnapGroupLockOrUnlockButton(aura::Window* window1,
+                              aura::Window* window2,
+                              base::RepeatingClosure pressed_callback);
   SnapGroupLockOrUnlockButton(const SnapGroupLockOrUnlockButton&) = delete;
   SnapGroupLockOrUnlockButton& operator=(const SnapGroupLockOrUnlockButton&) =
       delete;
   ~SnapGroupLockOrUnlockButton() override;
-
-  // Called on lock button is pressed to create or remove a snap group and
-  // `RefreshLockButton()`.
-  void OnLockButtonPressed();
 
  private:
   // Updates the lock icon and tooltip to reflect the lock button state.

@@ -34,10 +34,16 @@ class SnapGroup : public aura::WindowObserver {
   friend class SnapGroupController;
 
   // Observes the windows that are added in the `SnapGroup`.
-  void StartObservingWindows(aura::Window* window1, aura::Window* window2);
+  void StartObservingWindows();
 
   // Stops observing the windows when the `SnapGroup` gets destructed.
   void StopObservingWindows();
+
+  // Restores the windows bounds on snap group removed as the windows bounds are
+  // shrunk either horizontally or vertically to make room for the split view
+  // divider during `UpdateSnappedWindowsAndDividerBounds()` in
+  // `SplitViewController`.
+  void RestoreWindowsBoundsOnSnapGroupRemoved();
 
   aura::Window* window1_;
   aura::Window* window2_;

@@ -59,6 +59,9 @@ class SplitViewDividerView : public views::View,
   // hiding the `snap_group_expanded_menu_widget_`.
   void OnKebabButtonPressed();
 
+  // Called to update the bounds of the `snap_group_expanded_menu_widget_`.
+  void MaybeUpdateExpandedMenuWidgetBounds();
+
   SplitViewController* split_view_controller_;
   SplitViewDividerHandlerView* divider_handler_view_ = nullptr;
   SplitViewDivider* divider_;

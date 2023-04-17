@@ -314,7 +314,7 @@ void SplitViewDivider::OnWindowActivated(ActivationReason reason,
   if (IsInTabletMode() && !is_dragging_window_ &&
       (!gained_active || base::Contains(observed_windows_, gained_active))) {
     SetAlwaysOnTop(true);
-  } else if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
+  } else if (IsSnapGroupEnabledInClamshellMode()) {
     StackOnTopOfTheObservedWindows();
   } else {
     // If `gained_active` is not one of the observed windows, or there is one

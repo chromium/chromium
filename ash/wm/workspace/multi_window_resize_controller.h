@@ -85,6 +85,7 @@ class ASH_EXPORT MultiWindowResizeController
 
  private:
   friend class MultiWindowResizeControllerTest;
+  friend class SnapGroupLockOrUnlockButton;
   friend class SnapGroupTest;
   class ResizeMouseWatcherHost;
   class ResizeView;
@@ -169,7 +170,7 @@ class ASH_EXPORT MultiWindowResizeController
   // Hides the `resize_widget_` and `lock_widget_` if they get created.
   void Hide();
 
-  // Resets the window resizer and hides the resize widget.
+  // Resets the window resizer and hides the widgets.
   void ResetResizer();
 
   // Initiates a resize.
@@ -209,6 +210,9 @@ class ASH_EXPORT MultiWindowResizeController
   bool IsOverComponent(aura::Window* window,
                        const gfx::Point& location_in_screen,
                        int component) const;
+
+  // Called when the lock button is pressed to create a snap group.
+  void OnLockButtonPressed();
 
   // Windows and direction to resize.
   ResizeWindows windows_;

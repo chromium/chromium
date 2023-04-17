@@ -55,6 +55,15 @@ class SnapGroupExpandedMenuView : public views::View {
   // shown on the other half of the screen.
   void OnUpdateSecondaryWindowButtonPressed();
 
+  // Called when the unlock button in the expaned menu is pressed to unlock the
+  // snap group.
+  void OnUnLockButtonPressed();
+
+  // `snap_group_` is guaranteed to be non nullptr during `this` lifetime.
+  // TODO(michelefan): revisit this comment and related logic if we decided to
+  // show divider on one window snapped in clamshell.
+  SnapGroup* const snap_group_;
+
   // Child views of this class, which are listed from top to bottom (horizontal
   // screen orientation) or left to right (vertical screen orientation).
   IconButton* swap_windows_button_;

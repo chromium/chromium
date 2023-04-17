@@ -5,7 +5,6 @@
 #include "ash/wm/workspace_controller_test_api.h"
 
 #include "ash/wm/workspace/backdrop_controller.h"
-#include "ash/wm/workspace/workspace_event_handler_test_helper.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "ui/aura/window.h"

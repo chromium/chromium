@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
 
-class WorkspaceEventHandler;
 class WorkspaceLayoutManager;
 
 // WorkspaceController acts as a central place that ties together all the
@@ -29,13 +29,14 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
 
   ~WorkspaceController() override;
 
+  WorkspaceEventHandler* event_handler() const { return event_handler_.get(); }
+  WorkspaceLayoutManager* layout_manager() const { return layout_manager_; }
+
   // Returns the current window state.
   WorkspaceWindowState GetWindowState() const;
 
   // Starts the animation that occurs on first login.
   void DoInitialAnimation();
-
-  WorkspaceLayoutManager* layout_manager() { return layout_manager_; }
 
  private:
   friend class WorkspaceControllerTestApi;
@@ -46,7 +47,7 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
   aura::Window* viewport_;
   std::unique_ptr<WorkspaceEventHandler> event_handler_;
 
-  // Owned by |viewport_|.
+  // Owned by `viewport_`.
   WorkspaceLayoutManager* layout_manager_;
 };
 

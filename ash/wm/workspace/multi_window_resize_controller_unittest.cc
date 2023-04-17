@@ -15,7 +15,6 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
-#include "ash/wm/workspace/workspace_event_handler_test_helper.h"
 #include "ash/wm/workspace_controller.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/containers/contains.h"
@@ -71,8 +70,7 @@ class MultiWindowResizeControllerTest : public AshTestBase {
     WorkspaceController* wc = ShellTestApi().workspace_controller();
     WorkspaceEventHandler* event_handler =
         WorkspaceControllerTestApi(wc).GetEventHandler();
-    resize_controller_ =
-        WorkspaceEventHandlerTestHelper(event_handler).resize_controller();
+    resize_controller_ = event_handler->multi_window_resize_controller();
   }
 
  protected:

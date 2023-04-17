@@ -507,15 +507,13 @@ SplitViewController::SnapPosition GetSnapPosition(
       vertical_edge_inset);
 }
 
-bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() {
+bool IsSnapGroupEnabledInClamshellMode() {
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
   const bool in_tablet_mode =
       tablet_mode_controller && tablet_mode_controller->InTabletMode();
-  return snap_group_controller &&
-         snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
-         !in_tablet_mode;
+  return snap_group_controller && !in_tablet_mode;
 }
 
 views::Widget::InitParams CreateWidgetInitParams(

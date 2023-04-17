@@ -10,15 +10,18 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -26,9 +29,11 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/background.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
@@ -44,7 +49,7 @@ constexpr base::TimeDelta kHideDelay = base::Milliseconds(500);
 const int kResizeWidgetPadding = 15;
 
 // Distance between the resize widget and lock widget.
-const int kResizeWidgetAndLockWidgetDistance = 75;
+const int kResizeWidgetAndLockWidgetDistance = 85;
 
 // Returns the widget init params needed to create the resize widget or snap
 // group lock widget.
@@ -122,20 +127,13 @@ bool Intersects(int x1, int max_1, int x2, int max_2) {
   return x2 <= max_1 && max_2 > x1;
 }
 
-// Returns true if the entry point to create and remove the snap group through
-// the multi-window resizer is enabled.
-bool CanShowLockWidget() {
-  auto* snap_group_controller = Shell::Get()->snap_group_controller();
-  return snap_group_controller &&
-         snap_group_controller->IsArm2ManuallyLockEnabled();
-}
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
 // ResizeView:
 // View contained in the widget. Passes along mouse events to the
 // MultiWindowResizeController so that it can start/stop the resize loop.
+
 class MultiWindowResizeController::ResizeView : public views::View {
  public:
   ResizeView(MultiWindowResizeController* controller, Direction direction)
@@ -222,6 +220,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
 // ResizeMouseWatcherHost:
 // MouseWatcherHost implementation for MultiWindowResizeController. Forwards
 // Contains() to MultiWindowResizeController.
+
 class MultiWindowResizeController::ResizeMouseWatcherHost
     : public views::MouseWatcherHost {
  public:
@@ -236,7 +235,7 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
   bool Contains(const gfx::Point& point_in_screen, EventType type) override {
     return (type == EventType::kPress)
                ? host_->IsOverResizeWidget(point_in_screen) ||
-                     (CanShowLockWidget() &&
+                     (IsSnapGroupEnabledInClamshellMode() &&
                       host_->IsOverLockWidget(point_in_screen))
                : host_->IsOverWindows(point_in_screen);
   }
@@ -261,13 +260,16 @@ bool MultiWindowResizeController::ResizeWindows::Equals(
 
 // -----------------------------------------------------------------------------
 // MultiWindowResizeController:
+
 MultiWindowResizeController::MultiWindowResizeController() {
   Shell::Get()->overview_controller()->AddObserver(this);
 }
 
 MultiWindowResizeController::~MultiWindowResizeController() {
-  if (Shell::Get()->overview_controller())
+  if (Shell::Get()->overview_controller()) {
     Shell::Get()->overview_controller()->RemoveObserver(this);
+  }
+
   ResetResizer();
 }
 
@@ -556,19 +558,26 @@ void MultiWindowResizeController::ShowNow() {
     base::UmaHistogramBoolean(
         kMultiWindowResizerShowTwoWindowsSnappedHistogramName, true);
 
-    if (CanShowLockWidget()) {
+    if (IsSnapGroupEnabledInClamshellMode()) {
       DCHECK(!lock_widget_.get());
       lock_widget_ = std::make_unique<views::Widget>();
       lock_widget_->Init(CreateWidgetParams(
           parent_window, /*widget_name=*/"SnapGroupLockWidget"));
       lock_button_ = lock_widget_->SetContentsView(
-          std::make_unique<SnapGroupLockOrUnlockButton>(window1, window2));
-
+          std::make_unique<SnapGroupLockOrUnlockButton>(
+              window1, window2,
+              base::BindRepeating(
+                  &MultiWindowResizeController::OnLockButtonPressed,
+                  base::Unretained(this))));
       gfx::Rect lock_widget_show_bounds_in_screen =
           ConvertRectToScreen(windows_.window1->parent(),
                               CalculateLockWidgetBounds(resize_widget_bounds));
       lock_widget_->SetBounds(lock_widget_show_bounds_in_screen);
       lock_widget_->Show();
+      lock_button_->SetPaintToLayer();
+      lock_button_->layer()->SetFillsBoundsOpaquely(false);
+      lock_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+          kColorAshShieldAndBase80, snap_group::kLockButtonCornerRadius));
     }
   }
 
@@ -761,7 +770,8 @@ bool MultiWindowResizeController::IsOverWindows(
     return true;
   }
 
-  if (CanShowLockWidget() && IsOverLockWidget(location_in_screen)) {
+  if (IsSnapGroupEnabledInClamshellMode() &&
+      IsOverLockWidget(location_in_screen)) {
     return true;
   }
 
@@ -802,6 +812,16 @@ bool MultiWindowResizeController::IsOverComponent(
   gfx::Point window_loc(location_in_screen);
   ::wm::ConvertPointFromScreen(window, &window_loc);
   return window_util::GetNonClientComponent(window, window_loc) == component;
+}
+
+void MultiWindowResizeController::OnLockButtonPressed() {
+  aura::Window* window1 = windows_.window1;
+  aura::Window* window2 = windows_.window2;
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+  snap_group_controller->AddSnapGroup(window1, window2);
+  ResetResizer();
 }
 
 }  // namespace ash
