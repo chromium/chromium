@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -24,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/browser_url_handler_impl.h"
@@ -4642,7 +4642,8 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
                                         const std::string& target_document) {
     // Use a random, GUID-based hostname, to avoid hitting the network cache.
     GURL image_url = embedded_test_server()->GetURL(
-        base::GenerateGUID() + ".com", "/blank.jpg");
+        base::Uuid::GenerateRandomV4().AsLowercaseString() + ".com",
+        "/blank.jpg");
     const char kScriptTemplate[] = R"(
         new Promise(resolve => {
             let img = document.createElement('img');
