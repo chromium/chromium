@@ -1059,7 +1059,7 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
 
   const base::Value* value = pref->GetValue();
   DCHECK(value->is_dict());
-  absl::optional<bool> is_completed = value->FindBoolKey(user_id_hash);
+  absl::optional<bool> is_completed = value->GetDict().FindBool(user_id_hash);
 
   // If migration was skipped or failed, disable lacros.
   return is_completed.value_or(false);

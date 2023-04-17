@@ -762,13 +762,13 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
         for (const auto& entry : *usb_detachable_allow_list) {
           mojom::UsbDeviceIdPtr usb_device_id = mojom::UsbDeviceId::New();
           absl::optional<int> vid =
-              entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid);
+              entry.GetDict().FindInt(ash::kUsbDetachableAllowlistKeyVid);
           if (vid) {
             usb_device_id->has_vendor_id = true;
             usb_device_id->vendor_id = vid.value();
           }
           absl::optional<int> pid =
-              entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid);
+              entry.GetDict().FindInt(ash::kUsbDetachableAllowlistKeyPid);
           if (pid) {
             usb_device_id->has_product_id = true;
             usb_device_id->product_id = pid.value();

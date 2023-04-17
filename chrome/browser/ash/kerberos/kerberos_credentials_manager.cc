@@ -870,7 +870,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
 
     // Get the remember password flag, default to false.
     bool remember_password =
-        account.FindBoolKey(kRememberPassword).value_or(false);
+        account.GetDict().FindBool(kRememberPassword).value_or(false);
 
     // Get Kerberos configuration if given. Otherwise, use default to make sure
     // it overwrites an existing unmanaged account.

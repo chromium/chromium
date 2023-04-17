@@ -83,8 +83,8 @@ void CrostiniPortForwarder::SignalActivePortsChanged() {
 
 bool CrostiniPortForwarder::MatchPortRuleDict(const base::Value& dict,
                                               const PortRuleKey& key) {
-  absl::optional<int> port_number = dict.FindIntKey(kPortNumberKey);
-  absl::optional<int> protocol_type = dict.FindIntKey(kPortProtocolKey);
+  absl::optional<int> port_number = dict.GetDict().FindInt(kPortNumberKey);
+  absl::optional<int> protocol_type = dict.GetDict().FindInt(kPortProtocolKey);
   return (port_number && port_number.value() == key.port_number) &&
          (protocol_type &&
           protocol_type.value() == static_cast<int>(key.protocol_type)) &&

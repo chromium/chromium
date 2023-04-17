@@ -74,10 +74,11 @@ class FakeEventRouter : public extensions::EventRouter {
     ASSERT_TRUE(file_system_);
     const base::Value* dict = &event->event_args[0];
     ASSERT_TRUE(dict->is_dict());
-    const std::string* file_system_id = dict->FindStringKey("fileSystemId");
+    const std::string* file_system_id =
+        dict->GetDict().FindString("fileSystemId");
     EXPECT_NE(file_system_id, nullptr);
     EXPECT_EQ(kFileSystemId, *file_system_id);
-    absl::optional<int> id = dict->FindIntKey("requestId");
+    absl::optional<int> id = dict->GetDict().FindInt("requestId");
     EXPECT_TRUE(id);
     int request_id = *id;
     EXPECT_TRUE(event->event_name == extensions::api::file_system_provider::
