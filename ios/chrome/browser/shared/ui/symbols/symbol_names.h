@@ -62,7 +62,9 @@ extern NSString* const kLegacyPlusCircleFillSymbol;
 extern NSString* const kIncognitoCircleFilliOS14Symbol;
 
 // Default symbol names.
+extern NSString* const kCircleFillSymbol;
 extern NSString* const kSyncEnabledSymbol;
+extern NSString* const kSyncCircleSymbol;
 extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kDefaultBrowseriOS14Symbol;
 extern NSString* const kDiscoverSymbol;
@@ -98,6 +100,7 @@ extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
 extern NSString* const kMagnifyingglassSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
+extern NSString* const kEllipsisRectangleSymbol;
 extern NSString* const kPinSymbol;
 extern NSString* const kPinSlashSymbol;
 extern NSString* const kSettingsSymbol;

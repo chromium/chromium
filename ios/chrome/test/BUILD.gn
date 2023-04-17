@@ -306,6 +306,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/content_suggestions:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/cells:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/identifier:unit_tests",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:unit_tests",
     "//ios/chrome/browser/ui/context_menu:unit_tests",
     "//ios/chrome/browser/ui/credential_provider_promo:unit_tests",
     "//ios/chrome/browser/ui/default_promo:unit_tests",

@@ -69,12 +69,18 @@ source_set("set_up_list") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":features",
+    ":set_up_list_item_type",
     "//base",
     "//components/password_manager/core/browser",
     "//components/prefs:prefs",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/signin",
   ]
+}
+
+source_set("set_up_list_item_type") {
+  sources = [ "set_up_list_item_type.h" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -87,6 +93,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":set_up_list",
+    ":set_up_list_item_type",
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//components/prefs",

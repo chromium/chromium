@@ -7,15 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// The possible types of items for the Set Up List.
-enum class SetUpListItemType {
-  kSignInSync = 1,
-  kDefaultBrowser = 2,
-  kAutofill = 3,
-  kFollow = 4,
-
-  kMaxValue = kFollow
-};
+enum class SetUpListItemType;
 
 // An item (or task) that might appear in the Set Up List on the NTP / Home.
 @interface SetUpListItem : NSObject

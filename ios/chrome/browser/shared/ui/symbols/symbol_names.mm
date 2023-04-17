@@ -54,7 +54,9 @@ NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kLegacyPlusCircleFillSymbol = @"legacy_plus_circle_fill";
 
 // Default symbol names.
+NSString* const kCircleFillSymbol = @"circle.fill";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
+NSString* const kSyncCircleSymbol = @"arrow.triangle.2.circlepath.circle.fill";
 NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
 NSString* const kDefaultBrowseriOS14Symbol = @"app.badge";
 NSString* const kDiscoverSymbol = @"flame";
@@ -90,6 +92,7 @@ NSString* const kMicrophoneFillSymbol = @"mic.fill";
 NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kMagnifyingglassSymbol = @"magnifyingglass";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
+NSString* const kEllipsisRectangleSymbol = @"ellipsis.rectangle";
 NSString* const kPinSymbol = @"pin";
 NSString* const kPinSlashSymbol = @"pin.slash";
 NSString* const kSettingsSymbol = @"gearshape";

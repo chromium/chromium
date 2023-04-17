@@ -2706,11 +2706,20 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE" desc="Title for the Set Up List item that encourages the user to set up Chrome's autofill settings.">
         Use Chrome for Autofill
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_COLLAPSE" desc="Accessibility label for the button to expand the Set Up List.">
+        Collapse list
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set Chrome as their default browser.">
         Use Chrome anytime you tap links in messages, documents, and other apps.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE" desc="Title for the Set Up List item that encourages the user to set Chrome as their default browser.">
         Use Chrome by Default
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_EXPAND" desc="Accessibility label for the button to expand the Set Up List.">
+        Expand list
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_MENU" desc="Accessibility label for the Set Up List menu button.">
+        Options
       </message>
       <message name="IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF" desc="Title for the item to turn off the Set Up List, in the Set Up List Settings action sheet.">
         Turn off

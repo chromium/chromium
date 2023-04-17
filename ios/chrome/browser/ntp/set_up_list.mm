@@ -8,6 +8,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,14 +54,6 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
 
 @implementation SetUpList
 
-- (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items {
-  self = [super init];
-  if (self) {
-    _items = items;
-  }
-  return self;
-}
-
 + (instancetype)buildFromPrefs:(PrefService*)prefs
          authenticationService:(AuthenticationService*)authService {
   NSMutableArray<SetUpListItem*>* items =
@@ -70,6 +63,14 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
   AddItemIfNotNil(items, autofillItem(prefs));
   // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
   return [[self alloc] initWithItems:items];
+}
+
+- (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items {
+  self = [super init];
+  if (self) {
+    _items = items;
+  }
+  return self;
 }
 
 @end

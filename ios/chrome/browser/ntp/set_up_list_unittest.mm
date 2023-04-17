@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
