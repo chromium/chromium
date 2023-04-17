@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "build/branding_buildflags.h"
 #import "components/variations/seed_response.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_url_constants.h"
@@ -74,8 +75,11 @@ class IOSChromeVariationsSeedFetcherTest : public PlatformTest {
 
 // Tests that the request to the finch server would not be made when seed
 // fetching is not enabled.
+//
+// Note: this would happen only when build is NOT Google Chrome branded.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(IOSChromeVariationsSeedFetcherTest,
-       DISABLED_testThatRequestIsNotMadeWhenFetchSeedNotEnabled) {
+       testThatRequestIsNotMadeWhenFetchSeedNotEnabled) {
   // Attach mock delegate.
   id delegate =
       OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
@@ -92,6 +96,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 0);
   histogram_tester.ExpectTotalCount(kSeedFetchResultHistogram, 0);
 }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Tests that the request to the finch server would be made when seed fetching
 // is enabled.

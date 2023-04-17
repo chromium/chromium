@@ -164,6 +164,7 @@ source_set("unit_tests") {
     ":store",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/variations",
     "//components/version_info:version_info",
     "//net",
