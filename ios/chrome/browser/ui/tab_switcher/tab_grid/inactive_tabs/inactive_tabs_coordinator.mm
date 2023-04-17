@@ -163,6 +163,11 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 }
 
 - (void)hide {
+  [self.userEducationCoordinator stop];
+  self.userEducationCoordinator = nil;
+  [self closeSettings];
+  [self.viewController.gridViewController dismissModals];
+
   UIView* baseView = self.baseViewController.view;
 
   [baseView layoutIfNeeded];

@@ -326,6 +326,8 @@
 
   [self dismissPopovers];
 
+  [self.inactiveTabsCoordinator hide];
+
   if (_bookmarksCoordinator) {
     [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
   }
