@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -138,8 +139,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
                                                   : profile_model;
 }
 
-// TODO (crbug.com/1430453): Implement the distinction of profile/account
-// models when both models are used.
 bool ShouldDisplayCloudSlashIconForProfileModel(
     SyncSetupService* sync_setup_service) {
   if (!base::FeatureList::IsEnabled(
@@ -149,6 +148,20 @@ bool ShouldDisplayCloudSlashIconForProfileModel(
   return !(
       sync_setup_service->IsSyncRequested() &&
       sync_setup_service->IsDataTypePreferred(syncer::ModelType::BOOKMARKS));
+}
+
+bool IsAccountBookmarkModelAvailable(
+    AuthenticationService* authenticationService) {
+  if (!base::FeatureList::IsEnabled(
+          bookmarks::kEnableBookmarksAccountStorage)) {
+    return false;
+  }
+  // TODO (crbug.com/1430453): Implements the distinction of profile/account
+  // models when both models are used.
+  return authenticationService->HasPrimaryIdentity(
+             signin::ConsentLevel::kSignin) &&
+         !authenticationService->HasPrimaryIdentity(
+             signin::ConsentLevel::kSync);
 }
 
 #pragma mark - Updating Bookmarks

@@ -213,7 +213,8 @@ const int kMaxBookmarksSearchResults = 50;
   [self
       generateTableViewDataForModel:self.sharedState.profileBookmarkModel
                           inSection:BookmarksHomeSectionIdentifierRootProfile];
-  if (![self accountBookmarkModelAvailable]) {
+  if (!bookmark_utils_ios::IsAccountBookmarkModelAvailable(
+          _authenticationService)) {
     return;
   }
   [self updateHeaderForProfileRootNode];
@@ -660,20 +661,6 @@ const int kMaxBookmarksSearchResults = 50;
   bool syncTypesDisabledPolicy =
       IsManagedSyncDataType(prefService, SyncSetupService::kSyncBookmarks);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
-}
-
-// Returns YES if the account storage should be visible.
-- (BOOL)accountBookmarkModelAvailable {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
-    return NO;
-  }
-  // TODO (crbug.com/1430453): Needs to use better signal to know if
-  // the account is enabled or not.
-  return _authenticationService->HasPrimaryIdentity(
-             signin::ConsentLevel::kSignin) &&
-         !_authenticationService->HasPrimaryIdentity(
-             signin::ConsentLevel::kSync);
 }
 
 @end

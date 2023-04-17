@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class AuthenticationService;
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
@@ -87,6 +88,10 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
 // For nodes in account model, the icon should never been shown.
 bool ShouldDisplayCloudSlashIconForProfileModel(
     SyncSetupService* sync_setup_service);
+
+// Returns true if the account bookmark model is available.
+bool IsAccountBookmarkModelAvailable(
+    AuthenticationService* authenticationService);
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
 // `folder` is the intended parent of `node`.

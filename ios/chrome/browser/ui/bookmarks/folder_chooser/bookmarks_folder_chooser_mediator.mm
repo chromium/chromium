@@ -124,18 +124,8 @@ using bookmarks::BookmarkNode;
       _syncSetupService);
 }
 
-// TODO(crbug.com/1430453): Update logic when API to check whether butter is
-// enabled is available.
 - (BOOL)shouldShowAccountBookmarks {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
-    return NO;
-  }
-
-  BOOL isSignedIn =
-      _authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      !_authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  return isSignedIn;
+  return bookmark_utils_ios::IsAccountBookmarkModelAvailable(_authService);
 }
 
 #pragma mark - BookmarksFolderChooserMutator

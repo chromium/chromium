@@ -461,21 +461,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private
 
-// Whether account bookmark model is available.
-- (BOOL)isAccountBookmarkModelAvailable {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
-    return NO;
-  }
-
-  // TODO(crbug.com/1430453): Update logic when API to check whether butter is
-  // enabled is available.
-  BOOL isSignedInOnly =
-      _authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      !_authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  return isSignedInOnly;
-}
-
 // If `_parentFolder` belongs to `_accountBookmarkModel` and
 // `accountBookmarkModel` becomes unavailable, this method will cancel folder
 // editor. Returns whether folder editor was cancelled or not.
@@ -484,7 +469,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       bookmark_utils_ios::GetBookmarkModelForNode(_parentFolder,
                                                   _profileBookmarkModel.get(),
                                                   _accountBookmarkModel.get());
-  if (![self isAccountBookmarkModelAvailable] &&
+  if (!bookmark_utils_ios::IsAccountBookmarkModelAvailable(
+          _authService.get()) &&
       parentFolderModel == _accountBookmarkModel.get()) {
     [self dismiss];
     return YES;
