@@ -1826,6 +1826,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
 
 void ArcAppListPrefs::RemovePackageFromPrefs(const std::string& package_name) {
   ScopedDictPrefUpdate(prefs_, arc::prefs::kArcPackages)->Remove(package_name);
+  OnArcAppListRefreshed(profile_);
 }
 
 void ArcAppListPrefs::OnAppListRefreshed(
