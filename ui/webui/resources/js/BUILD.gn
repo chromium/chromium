@@ -80,4 +80,5 @@ build_webui("build") {
   ]
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+  optimize = optimize_webui
 }
