@@ -386,7 +386,7 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.DIPS.TimxeFromStorageToInteraction{DIPSCookieMode}"
+<histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
     units="ms" expires_after="2023-11-01">
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
