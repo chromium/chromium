@@ -3053,7 +3053,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             public void onFinishedShowing(int layoutType) {
                 assert layoutType == LayoutType.TAB_SWITCHER
                         || layoutType == LayoutType.START_SURFACE;
-                mTabModelSelector.getModel(currentTab.isIncognito()).closeTab(currentTab);
+                PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
+                    mTabModelSelector.getModel(currentTab.isIncognito()).closeTab(currentTab);
+                });
                 getLayoutManager().removeObserver(this);
             }
         });
