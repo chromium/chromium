@@ -76,11 +76,12 @@ void HeadlessPrintManager::UpdatePrintSettings(
 
 void HeadlessPrintManager::SetupScriptedPrintPreview(
     SetupScriptedPrintPreviewCallback callback) {
-  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
+  DLOG(ERROR) << "Scripted print preview is not supported";
+  std::move(callback).Run();
 }
 
 void HeadlessPrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
-  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
+  DLOG(ERROR) << "Scripted print preview is not supported";
 }
 
 void HeadlessPrintManager::RequestPrintPreview(
