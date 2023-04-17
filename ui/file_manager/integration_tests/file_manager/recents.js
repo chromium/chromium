@@ -1230,12 +1230,7 @@ testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
   await remoteCall.waitForFiles(appId, files);
 
   // Search term "tall".
-  await remoteCall.waitAndClickElement(appId, '#search-button');
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box [type="search"]', 'focus']));
-  await remoteCall.inputText(appId, '#search-box [type="search"]', 'tall');
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box [type="search"]', 'input']));
+  await remoteCall.typeSearchText(appId, 'tall');
 
   // Check only tall.txt should show.
   await remoteCall.waitForFiles(

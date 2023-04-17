@@ -7,7 +7,7 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {str, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
+import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
@@ -34,6 +34,14 @@ enum SearchInputState {
   OPENING = 'opening',
   OPEN = 'open',
   CLOSING = 'closing',
+}
+
+/**
+ * Helper function that centralizes the test if we are searching the "Recents"
+ * directory.
+ */
+function isInRecent(dir: CurrentDirectory|undefined): boolean {
+  return dir?.rootType == VolumeManagerCommon.RootType.RECENT;
 }
 
 /**
@@ -251,10 +259,7 @@ export class SearchContainer extends EventTarget {
       this.setQuery(query);
     }
     if (util.isSearchV2Enabled()) {
-      const dir = state.currentDirectory;
-      const status = search.status;
-      if (status === PropStatus.STARTED && query &&
-          dir?.rootType !== VolumeManagerCommon.RootType.RECENT) {
+      if (search.status === PropStatus.STARTED && query) {
         this.showOptions_(state);
         this.showPathDisplay_();
       }
@@ -390,9 +395,17 @@ export class SearchContainer extends EventTarget {
           text: str('DRIVE_DIRECTORY_LABEL'),
           default: true,
         });
+      } else if (isInRecent(dir)) {
+        options.push({
+          value: SearchLocation.THIS_FOLDER,
+          text: dirPath[dirPath.length - 1]?.label ||
+              str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
+          default: true,
+        });
       } else {
         options.push({
-          value: SearchLocation.ROOT_FOLDER,
+          value: dirPath.length > 1 ? SearchLocation.ROOT_FOLDER :
+                                      SearchLocation.THIS_FOLDER,
           text: dirPath[0]?.label || str('SEARCH_OPTIONS_LOCATION_THIS_VOLUME'),
           default: dirPath.length === 1,
         });
@@ -414,32 +427,36 @@ export class SearchContainer extends EventTarget {
     this.optionsContainer_.appendChild(element);
     element.id = 'search-options';
     element.getLocationSelector().options = this.createLocationOptions_(state);
-    element.getRecencySelector().options = [
-      {
-        value: SearchRecency.ANYTIME,
-        text: str('SEARCH_OPTIONS_RECENCY_ALL_TIME'),
-      },
-      {
-        value: SearchRecency.TODAY,
-        text: str('SEARCH_OPTIONS_RECENCY_TODAY'),
-      },
-      {
-        value: SearchRecency.YESTERDAY,
-        text: str('SEARCH_OPTIONS_RECENCY_YESTERDAY'),
-      },
-      {
-        value: SearchRecency.LAST_WEEK,
-        text: str('SEARCH_OPTIONS_RECENCY_LAST_WEEK'),
-      },
-      {
-        value: SearchRecency.LAST_MONTH,
-        text: str('SEARCH_OPTIONS_RECENCY_LAST_MONTH'),
-      },
-      {
-        value: SearchRecency.LAST_YEAR,
-        text: str('SEARCH_OPTIONS_RECENCY_LAST_YEAR'),
-      },
-    ];
+    if (isInRecent(state.currentDirectory)) {
+      element.getRecencySelector().setAttribute('hidden', '');
+    } else {
+      element.getRecencySelector().options = [
+        {
+          value: SearchRecency.ANYTIME,
+          text: str('SEARCH_OPTIONS_RECENCY_ALL_TIME'),
+        },
+        {
+          value: SearchRecency.TODAY,
+          text: str('SEARCH_OPTIONS_RECENCY_TODAY'),
+        },
+        {
+          value: SearchRecency.YESTERDAY,
+          text: str('SEARCH_OPTIONS_RECENCY_YESTERDAY'),
+        },
+        {
+          value: SearchRecency.LAST_WEEK,
+          text: str('SEARCH_OPTIONS_RECENCY_LAST_WEEK'),
+        },
+        {
+          value: SearchRecency.LAST_MONTH,
+          text: str('SEARCH_OPTIONS_RECENCY_LAST_MONTH'),
+        },
+        {
+          value: SearchRecency.LAST_YEAR,
+          text: str('SEARCH_OPTIONS_RECENCY_LAST_YEAR'),
+        },
+      ];
+    }
     element.getFileTypeSelector().options = [
       {
         value: chrome.fileManagerPrivate.FileCategory.ALL,
@@ -508,7 +525,7 @@ export class SearchContainer extends EventTarget {
   private updateSearchOptions_() {
     if (util.isSearchV2Enabled()) {
       this.store_.dispatch(updateSearch({
-        query: undefined,   // do not change
+        query: this.getQuery(),
         status: undefined,  // do not change
         options: this.currentOptions_,
       }));
@@ -619,6 +636,7 @@ export class SearchContainer extends EventTarget {
       this.searchWrapper_.classList.remove('has-cursor', 'has-text');
       this.searchBox_.classList.remove('has-cursor', 'has-text');
       this.searchButton_.tabIndex = 0;
+      this.currentOptions_ = getDefaultSearchOptions();
     }
   }
 

@@ -7,6 +7,8 @@ import {metrics} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {State} from '../../externs/ts/state.js';
+import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
@@ -113,7 +115,28 @@ export class FileTypeFiltersController {
         'directory-changed', this.onCurrentDirectoryChanged_.bind(this));
 
     this.updateButtonActiveStates_();
+
+    /**
+     * @private {boolean}
+     */
+    this.inRecent_ = false;
+
+    if (util.isSearchV2Enabled()) {
+      getStore().subscribe(this);
+    }
   }
+
+
+  /** @param {!State} state latest state from the store. */
+  onStateChanged(state) {
+    if (util.isSearchV2Enabled()) {
+      if (this.inRecent_) {
+        const search = state.search;
+        this.container_.hidden = !!(search?.query);
+      }
+    }
+  }
+
 
   /**
    * @param {chrome.fileManagerPrivate.FileCategory} fileCategory File category
@@ -219,6 +242,7 @@ export class FileTypeFiltersController {
           chrome.fileManagerPrivate.FileCategory.ALL;
       this.updateButtonActiveStates_();
     }
+    this.inRecent_ = isEnteringRecentEntry;
   }
 
   /**
