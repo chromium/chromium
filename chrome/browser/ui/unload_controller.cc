@@ -45,6 +45,12 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
   // that avoids the fast shutdown path where we just kill all the renderers.
   if (is_attempting_to_close_browser_)
     ClearUnloadState(contents, true);
+
+  if (!browser_->tab_strip_model()->IsTabClosable(
+          browser_->tab_strip_model()->GetIndexOfWebContents(contents))) {
+    return false;
+  }
+
   return !is_attempting_to_close_browser_ ||
          is_calling_before_unload_handlers();
 }
