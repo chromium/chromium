@@ -13,11 +13,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/blob_handle.h"
@@ -115,8 +115,9 @@ ChromeBlobStorageContext* ChromeBlobStorageContext::GetFor(
     // Resolve our storage directories.
     FilePath blob_storage_parent =
         context->GetPath().Append(kBlobStorageParentDirectory);
-    FilePath blob_storage_dir = blob_storage_parent.Append(
-        FilePath::FromUTF8Unsafe(base::GenerateGUID()));
+    FilePath blob_storage_dir =
+        blob_storage_parent.Append(FilePath::FromUTF8Unsafe(
+            base::Uuid::GenerateRandomV4().AsLowercaseString()));
 
     // Only populate the task runner if we're not off the record. This enables
     // paging/saving blob data to disk.
@@ -201,7 +202,7 @@ std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
     const std::string& content_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  std::string uuid(base::GenerateGUID());
+  std::string uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   auto blob_data_builder = std::make_unique<storage::BlobDataBuilder>(uuid);
   blob_data_builder->set_content_type(content_type);
   blob_data_builder->AppendData(data);
