@@ -44,6 +44,17 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
                      const WebAppInstallInfo& web_app_info,
                      UpdateOsHooksCallback callback) override;
 
+  // FakeOsIntegrationManager skips the execution logic and writes directly
+  // to the DB, even if the execute_and_write_config
+  // param is enabled in features::kOsIntegrationSubManagers. To test the
+  // actual OS integration, use the production version of OsIntegrationManager.
+  //
+  // See OsIntegrationSynchronizeCommandTest as an example of using this
+  // function.
+  void Synchronize(const AppId& app_id,
+                   base::OnceClosure callback,
+                   absl::optional<SynchronizeOsOptions> options) override;
+
   size_t num_create_shortcuts_calls() const {
     return num_create_shortcuts_calls_;
   }
