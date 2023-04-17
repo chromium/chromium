@@ -54,6 +54,7 @@ import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -237,10 +238,15 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         String callerOriginString = convertOriginToString(callerOrigin);
         byte[] clientDataHash = null;
 
-        // Conditional requests and payments should still go through Google Play Services.
-        if (!options.isConditional && payment == null && isCredManEnabled()
-                && BuildCompat.isAtLeastU()) {
-            getCredentialViaCredMan(options, callerOrigin, frameHost);
+        // Payments should still go through Google Play Services.
+        if (payment == null && isCredManEnabled() && BuildCompat.isAtLeastU()) {
+            if (options.isConditional) {
+                mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
+                prefetchCredentialsViaCredMan(
+                        options, callerOrigin, frameHost, callerOriginString, clientDataHash);
+            } else {
+                getCredentialViaCredMan(options, callerOrigin, frameHost);
+            }
             return;
         }
 
@@ -765,16 +771,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
         final Context context = ContextUtils.getApplicationContext();
 
-        final Bundle publicKeyCredentialOptionBundle = new Bundle();
-        publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
-                CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
-        publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
-        publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", null);
-        publicKeyCredentialOptionBundle.putBoolean(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
-
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
         OutcomeReceiver<Object, Throwable> receiver = new OutcomeReceiver<>() {
@@ -842,32 +838,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         };
 
         try {
-            // Build the CredentialOption:
-            final Class<?> credentialOptionBuilderClass =
-                    Class.forName("android.credentials.CredentialOption$Builder");
-            final Object credentialOptionBuilder =
-                    credentialOptionBuilderClass
-                            .getConstructor(String.class, Bundle.class, Bundle.class)
-                            .newInstance(CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL",
-                                    publicKeyCredentialOptionBundle,
-                                    publicKeyCredentialOptionBundle);
-            final Object credentialOption =
-                    credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
-
-            // Build the GetCredentialRequest:
-            final Class<?> getCredentialRequestBuilderClass =
-                    Class.forName("android.credentials.GetCredentialRequest$Builder");
-            final Object getCredentialRequestBuilderObject =
-                    getCredentialRequestBuilderClass.getConstructor(Bundle.class)
-                            .newInstance(new Bundle());
-            getCredentialRequestBuilderClass
-                    .getMethod("addCredentialOption", credentialOption.getClass())
-                    .invoke(getCredentialRequestBuilderObject, credentialOption);
-            getCredentialRequestBuilderClass.getMethod("setOrigin", String.class)
-                    .invoke(getCredentialRequestBuilderObject, convertOriginToString(origin));
-            final Object getCredentialRequest =
-                    getCredentialRequestBuilderClass.getMethod("build").invoke(
-                            getCredentialRequestBuilderObject);
+            final Object getCredentialRequest = buildGetCredentialRequest(origin, requestAsJson);
 
             // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
             // `@SuppressWarnings` when the Android U SDK is available.
@@ -883,6 +854,145 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
         }
+    }
+
+    /**
+     * Queries credential availability using the Android 14 CredMan API.
+     * TODO: update the version code to U when Chromium builds with Android 14 SDK.
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @SuppressWarnings("WrongConstant")
+    private void prefetchCredentialsViaCredMan(PublicKeyCredentialRequestOptions options,
+            Origin origin, RenderFrameHost frameHost, String callerOriginString,
+            byte[] clientDataHash) {
+        final String requestAsJson =
+                Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
+        final Context context = ContextUtils.getApplicationContext();
+
+        // The Android 14 APIs have to be called via reflection until Chromium
+        // builds with the Android 14 SDK by default.
+        OutcomeReceiver<Object, Throwable> receiver = new OutcomeReceiver<>() {
+            @Override
+            public void onError(Throwable e) {
+                // TODO: map these errors to more than just `UNKNOWN_ERROR`.
+                Log.e(TAG, "CredMan call failed", e);
+                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            }
+
+            @Override
+            public void onResult(Object prepareGetCredentialResponse) {
+                if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
+                    // The request was completed synchronously when the cancellation was received.
+                    return;
+                }
+                boolean hasPublicKeyCredentials;
+                boolean hasPasswordCredentials;
+                boolean hasRemoteResults;
+                Object pendingGetCredentialHandle;
+                try {
+                    Method hasCredentialResultsMethod =
+                            prepareGetCredentialResponse.getClass().getMethod(
+                                    "hasCredentialResults", String.class);
+                    hasPublicKeyCredentials = (Boolean) hasCredentialResultsMethod.invoke(
+                            prepareGetCredentialResponse,
+                            "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+                    hasPasswordCredentials = (Boolean) hasCredentialResultsMethod.invoke(
+                            prepareGetCredentialResponse,
+                            "android.credentials.TYPE_PASSWORD_CREDENTIAL");
+                    hasRemoteResults = (Boolean) prepareGetCredentialResponse.getClass()
+                                               .getMethod("hasRemoteResults")
+                                               .invoke(prepareGetCredentialResponse);
+                    pendingGetCredentialHandle = prepareGetCredentialResponse.getClass()
+                                                         .getMethod("getPendingGetCredentialHandle")
+                                                         .invoke(prepareGetCredentialResponse);
+
+                } catch (ReflectiveOperationException e) {
+                    Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+                if (pendingGetCredentialHandle == null) {
+                    Log.e(TAG, "prepareGetCredentialResponse is unusable.");
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+
+                if (mBrowserBridge == null) {
+                    mBrowserBridge = new WebAuthnBrowserBridge();
+                }
+                mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
+                // TODO: Wire `hasPublicKeyCredentials`, `hasPublicKeyCredentials`,
+                // `hasRemoteResults` and `pendingGetCredentialHandle` instead of
+                // calling `onCredentialsDetailsListReceived`.
+                mBrowserBridge.onCredentialsDetailsListReceived(frameHost,
+                        new ArrayList<WebAuthnCredentialDetails>(), options.isConditional,
+                        (selectedCredentialId)
+                                -> maybeDispatchGetAssertionRequest(options, callerOriginString,
+                                        clientDataHash, selectedCredentialId));
+            }
+        };
+
+        try {
+            final Object getCredentialRequest = buildGetCredentialRequest(origin, requestAsJson);
+
+            // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
+            // `@SuppressWarnings` when the Android U SDK is available.
+            final Object manager = context.getSystemService("credential");
+            manager.getClass()
+                    .getMethod("prepareGetCredential", getCredentialRequest.getClass(),
+                            android.os.CancellationSignal.class,
+                            java.util.concurrent.Executor.class, OutcomeReceiver.class)
+                    .invoke(manager, getCredentialRequest, null, context.getMainExecutor(),
+                            receiver);
+        } catch (ReflectiveOperationException e) {
+            Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
+            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
+    }
+
+    private Object buildGetCredentialRequest(Origin origin, String requestAsJson)
+            throws ReflectiveOperationException {
+        Bundle publicKeyCredentialOptionBundle =
+                buildPublicKeyCredentialOptionBundle(requestAsJson);
+
+        // Build the CredentialOption:
+        final Class<?> credentialOptionBuilderClass =
+                Class.forName("android.credentials.CredentialOption$Builder");
+        final Object credentialOptionBuilder =
+                credentialOptionBuilderClass
+                        .getConstructor(String.class, Bundle.class, Bundle.class)
+                        .newInstance(CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL",
+                                publicKeyCredentialOptionBundle, publicKeyCredentialOptionBundle);
+        final Object credentialOption =
+                credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
+
+        // Build the GetCredentialRequest:
+        final Class<?> getCredentialRequestBuilderClass =
+                Class.forName("android.credentials.GetCredentialRequest$Builder");
+        final Object getCredentialRequestBuilderObject =
+                getCredentialRequestBuilderClass.getConstructor(Bundle.class)
+                        .newInstance(new Bundle());
+        getCredentialRequestBuilderClass
+                .getMethod("addCredentialOption", credentialOption.getClass())
+                .invoke(getCredentialRequestBuilderObject, credentialOption);
+        getCredentialRequestBuilderClass.getMethod("setOrigin", String.class)
+                .invoke(getCredentialRequestBuilderObject, convertOriginToString(origin));
+        return getCredentialRequestBuilderClass.getMethod("build").invoke(
+                getCredentialRequestBuilderObject);
+    }
+
+    private Bundle buildPublicKeyCredentialOptionBundle(String requestAsJson) {
+        final Bundle publicKeyCredentialOptionBundle = new Bundle();
+        publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
+                CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
+        publicKeyCredentialOptionBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
+        publicKeyCredentialOptionBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", null);
+        publicKeyCredentialOptionBundle.putBoolean(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
+        return publicKeyCredentialOptionBundle;
     }
 
     @NativeMethods
