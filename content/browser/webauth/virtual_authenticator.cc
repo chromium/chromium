@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -29,7 +29,7 @@ VirtualAuthenticator::VirtualAuthenticator(
       has_cred_blob_(options.has_cred_blob),
       has_min_pin_length_(options.has_min_pin_length),
       has_prf_(options.has_prf),
-      unique_id_(base::GenerateGUID()),
+      unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
   state_->transport = options.transport;
   // If the authenticator has user verification, simulate having set it up
