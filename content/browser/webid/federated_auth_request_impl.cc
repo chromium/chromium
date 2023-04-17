@@ -922,6 +922,24 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
   OnFetchDataForIdpSucceeded(std::move(idp_info), accounts, client_metadata);
 }
 
+bool HasScope(const std::vector<std::string>& scope, std::string name) {
+  auto it = std::find(std::begin(scope), std::end(scope), name);
+  if (it == std::end(scope)) {
+    return false;
+  }
+  return true;
+}
+
+bool ShouldRequestPermission(const std::vector<std::string>& scope) {
+  if (scope.size() == 0) {
+    // If "scope" is not passed, defaults the parameter to
+    // ["sub", "name", "email" and "picture"].
+    return true;
+  }
+  return HasScope(scope, "sub") && HasScope(scope, "name") &&
+         HasScope(scope, "email") && HasScope(scope, "picture");
+}
+
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const IdpNetworkRequestManager::AccountList& accounts,
@@ -929,12 +947,19 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   fetch_data_.did_succeed_for_at_least_one_idp = true;
 
   const GURL& idp_config_url = idp_info->provider->config_url;
+
+  bool request_permission = true;
+
+  if (IsFedCmAuthzEnabled()) {
+    request_permission = ShouldRequestPermission(idp_info->provider->scope);
+  }
+
   const std::string idp_for_display = FormatUrlForDisplay(idp_config_url);
-  idp_info->data =
-      IdentityProviderData(idp_for_display, accounts, idp_info->metadata,
-                           ClientMetadata{client_metadata.terms_of_service_url,
-                                          client_metadata.privacy_policy_url},
-                           idp_info->rp_context);
+  idp_info->data = IdentityProviderData(
+      idp_for_display, accounts, idp_info->metadata,
+      ClientMetadata{client_metadata.terms_of_service_url,
+                     client_metadata.privacy_policy_url},
+      idp_info->rp_context, /* request_permission */ request_permission);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   fetch_data_.pending_idps.erase(idp_config_url);

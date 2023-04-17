@@ -147,7 +147,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                                  show_auto_reauthn_checkbox);
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-        CreateTestClientMetadata(terms_of_service_url), {account});
+        CreateTestClientMetadata(terms_of_service_url), {account},
+        /*request_permission=*/true);
     dialog_->ShowSingleAccountConfirmDialog(
         kTopFrameETLDPlusOne,
         exclude_iframe
@@ -294,7 +295,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
       std::vector<IdentityProviderDisplayData> idp_data;
       idp_data.emplace_back(
           kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list);
+          CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
+          /*request_permission=*/true);
       dialog_->ShowMultiAccountPicker(idp_data);
     }
 
@@ -484,7 +486,8 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
   IdentityProviderDisplayData idp_data(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL()), {account});
+      content::ClientMetadata(GURL(), GURL()), {account},
+      /*request_permission=*/true);
 
   CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
                                /*show_auto_reauthn_checkbox=*/false);
@@ -507,7 +510,8 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
   IdentityProviderDisplayData idp_data(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL()), {account});
+      content::ClientMetadata(GURL(), GURL()), {account},
+      /*request_permission=*/true);
 
   CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
                                /*show_auto_reauthn_checkbox=*/false);
@@ -645,13 +649,15 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
       kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
   idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
                         CreateTestClientMetadata(kTermsOfServiceUrl),
-                        accounts_first_idp);
+                        accounts_first_idp,
+                        /*request_permission=*/true);
   idp_data.emplace_back(
       u"idp2.com", content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-2.com"),
       CreateTestIdentityRequestAccounts(
           kAccountSuffixes2,
-          content::IdentityRequestAccount::LoginState::kSignUp));
+          content::IdentityRequestAccount::LoginState::kSignUp),
+      /*request_permission=*/true);
   CreateMultiIdpAccountPicker(idp_data);
 
   std::vector<views::View*> children = dialog()->children();

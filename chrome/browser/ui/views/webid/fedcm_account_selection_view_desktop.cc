@@ -64,7 +64,7 @@ void FedCmAccountSelectionView::Show(
     idp_display_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
-        identity_provider.accounts);
+        identity_provider.accounts, identity_provider.request_permission);
     // TODO(crbug.com/1406014): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider.rp_context;
@@ -277,6 +277,15 @@ void FedCmAccountSelectionView::OnAccountSelected(
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
+
+  if (!idp_display_data.request_permission) {
+    // Return early if the dialog doesn't need to ask for the
+    // user's permission to share their id/email/name/picture.
+    delegate_->OnAccountSelected(idp_display_data.idp_metadata.config_url,
+                                 account);
+    return;
+  }
+
   state_ = (state_ == State::ACCOUNT_PICKER &&
             account.login_state == Account::LoginState::kSignUp)
                ? State::PERMISSION

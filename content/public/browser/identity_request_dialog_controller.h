@@ -48,7 +48,8 @@ struct CONTENT_EXPORT IdentityProviderData {
                        const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
-                       const blink::mojom::RpContext& rp_context);
+                       const blink::mojom::RpContext& rp_context,
+                       const bool request_permission);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
 
@@ -57,6 +58,9 @@ struct CONTENT_EXPORT IdentityProviderData {
   IdentityProviderMetadata idp_metadata;
   ClientMetadata client_metadata;
   blink::mojom::RpContext rp_context;
+  // Whether the dialog should ask for the user's permission to share
+  // the id/email/name/picture permission or not.
+  bool request_permission;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI

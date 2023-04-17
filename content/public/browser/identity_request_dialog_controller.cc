@@ -28,12 +28,14 @@ IdentityProviderData::IdentityProviderData(
     const std::vector<IdentityRequestAccount>& accounts,
     const IdentityProviderMetadata& idp_metadata,
     const ClientMetadata& client_metadata,
-    const blink::mojom::RpContext& rp_context)
+    const blink::mojom::RpContext& rp_context,
+    bool request_permission)
     : idp_for_display{idp_for_display},
       accounts{accounts},
       idp_metadata{idp_metadata},
       client_metadata{client_metadata},
-      rp_context(rp_context) {}
+      rp_context(rp_context),
+      request_permission(request_permission) {}
 
 IdentityProviderData::IdentityProviderData(const IdentityProviderData& other) =
     default;
