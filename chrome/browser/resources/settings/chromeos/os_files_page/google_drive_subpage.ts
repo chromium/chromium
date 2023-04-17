@@ -20,7 +20,7 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {GoogleDriveBrowserProxy, Status} from './google_drive_browser_proxy.js';
+import {GoogleDriveBrowserProxy, Stage, Status} from './google_drive_browser_proxy.js';
 import {getTemplate} from './google_drive_subpage.html.js';
 
 const SettingsGoogleDriveSubpageElementBase =
@@ -95,7 +95,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * Keeps track of the latest response about bulk pinning from the page
    * handler.
    */
-  private bulkPinningStatus_?: Status;
+  private bulkPinningStatus_: Status|null = null;
 
   /**
    * If the underlying service is unavailable, this will get set to true.
@@ -138,7 +138,6 @@ export class SettingsGoogleDriveSubpageElement extends
         this.onServiceUnavailable_.bind(this));
     this.callbackRouter.onProgress.addListener(this.onProgress_.bind(this));
   }
-
 
   /**
    * Invoked when the underlying service is not longer available.
@@ -207,6 +206,24 @@ export class SettingsGoogleDriveSubpageElement extends
     }
 
     this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, true);
+  }
+
+  /**
+   * Returns the sublabel for the bulk pinning preference toggle. If the
+   * required / free space has been calculated, includes the values in the
+   * sublabel.
+   */
+  private getBulkPinningSubLabel_(): string {
+    if (!this.bulkPinningStatus_ ||
+        this.bulkPinningStatus_?.stage !== Stage.kSuccess ||
+        this.bulkPinningServiceUnavailable_) {
+      return this.i18n('googleDriveOfflineSubtitle');
+    }
+
+    const {requiredSpace, remainingSpace} = this.bulkPinningStatus_;
+    return this.i18n('googleDriveOfflineSubtitle') + ' ' +
+        this.i18n(
+            'googleDriveOfflineSpaceSubtitle', requiredSpace!, remainingSpace!);
   }
 }
 

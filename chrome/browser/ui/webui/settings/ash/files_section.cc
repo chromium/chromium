@@ -113,6 +113,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_SUBTITLE},
       {"googleDriveOfflineClearTitle",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_TITLE},
+      {"googleDriveOfflineSpaceSubtitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_STORAGE_REQUIRED_SUBTITLE},
       {"googleDriveOfflineClearSubtitle",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_SUBTITLE},
       {"googleDriveOfflineClearAction",

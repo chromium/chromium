@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, Status} from '../mojom-webui/google_drive_handler.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PageRemote, Status} from '../mojom-webui/google_drive_handler.mojom-webui.js';
 import {Stage} from '../mojom-webui/pin_manager_types.mojom-webui.js';
 
 // Communicates with the GoogleDrivePageHandler in the browser process.
@@ -35,6 +35,7 @@ export {
   GoogleDriveBrowserProxy,
   PageHandlerRemote as GoogleDrivePageHandlerRemote,
   PageCallbackRouter as GoogleDrivePageCallbackRouter,
+  PageRemote as GoogleDrivePageRemote,
   Stage,
   Status,
 };

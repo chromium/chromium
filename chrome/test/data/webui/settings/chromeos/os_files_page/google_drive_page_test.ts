@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -23,11 +23,23 @@ class GoogleDriveTestBrowserProxy extends TestBrowserProxy implements
 
   observer: GoogleDrivePageCallbackRouter;
 
+  observerRemote: GoogleDrivePageRemote;
+
   constructor() {
     super(['calculateRequiredSpace']);
     this.handler = TestMock.fromClass(GoogleDrivePageHandlerRemote);
     this.observer = new GoogleDrivePageCallbackRouter();
+    this.observerRemote = this.observer.$.bindNewPipeAndPassRemote();
   }
+}
+
+/**
+ * Generate the expected text for space available.
+ */
+function generateRequiredSpaceText(
+    requiredSpace: string, remainingSpace: string): string {
+  return `This will use about ${requiredSpace} leaving ${
+      remainingSpace} available.`;
 }
 
 suite('<settings-google-drive-subpage>', function() {
@@ -35,6 +47,7 @@ suite('<settings-google-drive-subpage>', function() {
   let prefElement: SettingsPrefsElement;
   let connectDisconnectButton: CrButtonElement;
   let testBrowserProxy: GoogleDriveTestBrowserProxy;
+  let bulkPinningToggle: SettingsToggleButtonElement;
 
   setup(async function() {
     testBrowserProxy = new GoogleDriveTestBrowserProxy();
@@ -53,6 +66,10 @@ suite('<settings-google-drive-subpage>', function() {
         querySelectorShadow(
             page.shadowRoot!, ['#driveConnectDisconnect', 'cr-button']) as
         CrButtonElement;
+
+    bulkPinningToggle =
+        querySelectorShadow(page.shadowRoot!, ['#driveBulkPinning']) as
+        SettingsToggleButtonElement;
   });
 
   teardown(function() {
@@ -125,5 +142,68 @@ suite('<settings-google-drive-subpage>', function() {
 
         // Ensure after cancelling the dialog the preference is unchanged.
         await assertAsync(() => !page.getPref('gdata.disabled').value, 5000);
+      });
+
+  test(
+      'clicking the toggle updates the bulk pinning preference',
+      async function() {
+        page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+        bulkPinningToggle.click();
+        await assertAsync(
+            () => page.getPref('drivefs.bulk_pinning_enabled').value, 5000);
+      });
+
+  test(
+      'progress sent via the browser proxy updates the sub title text',
+      async function() {
+        page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+
+        /**
+         * Helper method to retrieve the subtitle text from the bulk pinning
+         * label.
+         */
+        const expectSubTitleText = async (fn: (text: string) => boolean) => {
+          let subTitleElement: HTMLElement|null;
+          await assertAsync(() => {
+            subTitleElement =
+                bulkPinningToggle.shadowRoot!.querySelector<HTMLElement>(
+                    '#sub-label-text');
+            return subTitleElement !== null && fn(subTitleElement!.innerText);
+          }, 5000);
+        };
+
+
+        // Expect the subtitle text does not include required space when no
+        // values have been returned from the page handler.
+        const requiredSpaceText =
+            generateRequiredSpaceText('512 MB', '1,024 KB');
+        await expectSubTitleText(
+            subTitle => !subTitle.includes(requiredSpaceText));
+
+        // Mock space values and the `kSuccess` stage via the browser proxy.
+        testBrowserProxy.observerRemote.onProgress({
+          remainingSpace: '1,024 KB',
+          requiredSpace: '512 MB',
+          stage: Stage.kSuccess,
+        });
+        testBrowserProxy.observerRemote.$.flushForTesting();
+        flush();
+
+        // Ensure the sub title text gets updated with the space values.
+        await expectSubTitleText(
+            subTitle => subTitle.includes(requiredSpaceText));
+
+        // Mock a failure case via the browser proxy.
+        testBrowserProxy.observerRemote.onProgress({
+          remainingSpace: '1,024 KB',
+          requiredSpace: '512 MB',
+          stage: Stage.kCannotGetFreeSpace,
+        });
+        testBrowserProxy.observerRemote.$.flushForTesting();
+        flush();
+
+        // Ensure the sub title textremoves the space values.
+        await expectSubTitleText(
+            subTitle => !subTitle.includes(requiredSpaceText));
       });
 });
