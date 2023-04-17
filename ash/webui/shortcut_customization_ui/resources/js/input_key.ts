@@ -55,7 +55,6 @@ export const keyToIconNameMap: {[key: string]: string} = {
   'MediaPlayPause': 'play-pause',
   'MediaTrackNext': 'next-track',
   'MediaTrackPrevious': 'last-track',
-  'Menu': 'menu',
   'MicrophoneMuteToggle': 'microphone-mute',
   'ModeChange': 'globe',
   'OpenLauncher': 'open-launcher',
