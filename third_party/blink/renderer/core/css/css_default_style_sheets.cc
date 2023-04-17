@@ -327,7 +327,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   if (!RuntimeEnabledFeatures::
           FormControlsVerticalWritingModeSupportEnabled() &&
       !form_controls_not_vertical_style_sheet_ &&
-      (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element))) {
+      (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
+       IsA<HTMLInputElement>(element))) {
     form_controls_not_vertical_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(
             IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));

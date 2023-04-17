@@ -408,7 +408,7 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input, textarea, select {
+input:not([type=color]), textarea, select {
     writing-mode: horizontal-tb !important;
 }
 button:not(::-internal-selectmenu-button) {
@@ -818,8 +818,8 @@ input[type="radio" i] {
 
 input[type="color" i] {
     appearance: auto;
-    width: 50px;
-    height: 27px;
+    inline-size: 50px;
+      block-size: 27px;
     /* Same as native_theme_base. */
     border: 1px solid ButtonBorder;
     padding: 1px 2px;
@@ -850,8 +850,8 @@ input[type="color" i]::-webkit-color-swatch {
 
 input[type="color" i][list] {
     appearance: auto;
-    width: 94px;
-    height: 27px
+    inline-size: 94px;
+      block-size: 27px
 }
 
 input[type="color" i][list]::-webkit-color-swatch-wrapper {
