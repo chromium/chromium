@@ -13,7 +13,7 @@ import 'chrome://resources/cr_components/app_management/permission_item.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {getAppIcon, getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './arc_detail_view.html.js';
@@ -35,36 +35,16 @@ class AppManagementArcDetailViewElement extends
   static get properties() {
     return {
       app_: Object,
-
-      listExpanded_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   private app_: App;
-  private listExpanded_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
-
-    this.listExpanded_ = false;
-  }
-
-  private toggleListExpanded_(): void {
-    this.listExpanded_ = !this.listExpanded_;
-  }
-
-  private iconUrlFromId_(app: App): string {
-    return getAppIcon(app);
-  }
-
-  private getCollapsedIcon_(listExpanded: boolean): string {
-    return listExpanded ? 'cr:expand-less' : 'cr:expand-more';
   }
 
   /**
