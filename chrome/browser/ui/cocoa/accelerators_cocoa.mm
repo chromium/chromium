@@ -60,6 +60,7 @@ const struct AcceleratorMapping {
 
     // Accelerators used in the Main Menu, but not the toolbar menu.
     {IDC_OPTIONS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_COMMA},
+    {IDC_WEB_APP_SETTINGS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_COMMA},
     {IDC_HIDE_APP, ui::EF_COMMAND_DOWN, ui::VKEY_H},
     {IDC_EXIT, ui::EF_COMMAND_DOWN, ui::VKEY_Q},
     {IDC_OPEN_FILE, ui::EF_COMMAND_DOWN, ui::VKEY_O},

@@ -50,7 +50,10 @@ base::scoped_nsobject<NSMenuItem> BuildAppMenu(
                     .target(app_delegate)
                     .action(@selector(showPreferences:))
                     .remove_if(is_pwa),
-                Item().is_separator().remove_if(is_pwa),
+                Item(IDS_PREFERENCES)
+                    .command_id(IDC_WEB_APP_SETTINGS)
+                    .remove_if(!is_pwa),
+                Item().is_separator(),
                 Item(IDS_CLEAR_BROWSING_DATA)
                     .command_id(IDC_CLEAR_BROWSING_DATA)
                     .remove_if(is_pwa),

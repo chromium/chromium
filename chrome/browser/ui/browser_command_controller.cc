@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/content_restriction.h"
 #include "chrome/common/pref_names.h"
@@ -938,10 +939,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_OPEN_IN_CHROME:
       OpenInChrome(browser_);
       break;
-    case IDC_SITE_SETTINGS:
-      ShowSiteSettings(
-          browser_,
-          browser_->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+    case IDC_WEB_APP_SETTINGS:
+#if !BUILDFLAG(IS_CHROMEOS)
+      CHECK(browser_->app_controller());
+      ShowWebAppSettings(browser_, browser_->app_controller()->app_id(),
+                         web_app::AppSettingsPageEntryPoint::kBrowserCommand);
+#endif
       break;
     case IDC_WEB_APP_MENU_APP_INFO: {
       content::WebContents* const web_contents =
@@ -1204,7 +1207,7 @@ void BrowserCommandController::InitCommandState() {
       is_web_app_or_custom_tab ||
       sharing_hub::SharingHubOmniboxEnabled(browser_->profile());
   command_updater_.UpdateCommandEnabled(IDC_COPY_URL, enable_copy_url);
-  command_updater_.UpdateCommandEnabled(IDC_SITE_SETTINGS,
+  command_updater_.UpdateCommandEnabled(IDC_WEB_APP_SETTINGS,
                                         is_web_app_or_custom_tab);
   command_updater_.UpdateCommandEnabled(IDC_WEB_APP_MENU_APP_INFO,
                                         is_web_app_or_custom_tab);

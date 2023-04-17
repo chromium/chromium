@@ -159,7 +159,8 @@ constexpr char kAppSettingsPageEntryPointsHistogramName[] =
 enum class AppSettingsPageEntryPoint {
   kPageInfoView = 0,
   kChromeAppsPage = 1,
-  kMaxValue = kChromeAppsPage,
+  kBrowserCommand = 2,
+  kMaxValue = kBrowserCommand,
 };
 
 // When user_display_mode indicates a user preference for opening in

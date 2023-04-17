@@ -4001,6 +4001,9 @@ Unknown properties are collapsed to zero. -->
 <enum name="AppSettingsPageEntryPoints">
   <int value="0" label="From page info view in app window/tab"/>
   <int value="1" label="From chrome://apps page"/>
+  <int value="2"
+      label="From a browser command, currently the App Menu in the menu bar
+             on Mac OS"/>
 </enum>
 
 <enum name="AppsPageDragSource">
