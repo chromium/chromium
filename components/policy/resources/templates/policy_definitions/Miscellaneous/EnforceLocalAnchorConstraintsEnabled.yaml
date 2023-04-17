@@ -23,7 +23,8 @@ desc: |-
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not enforce
   constraints encoded into trust anchors loaded from the platform trust store.
 
-  This policy has no effect if the
+  In <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 112,
+  this policy has no effect if the
   <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME">ChromeRootStoreEnabled</ph>
   policy is disabled.
 
