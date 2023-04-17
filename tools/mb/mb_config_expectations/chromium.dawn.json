@@ -87,6 +87,7 @@
   },
   "Dawn Win10 x64 ASAN Release": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_asan": true,
@@ -99,6 +100,7 @@
   },
   "Dawn Win10 x64 Builder": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -110,6 +112,7 @@
   },
   "Dawn Win10 x64 DEPS Builder": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -121,6 +124,7 @@
   },
   "Dawn Win10 x86 Builder": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -133,6 +137,7 @@
   },
   "Dawn Win10 x86 DEPS Builder": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
