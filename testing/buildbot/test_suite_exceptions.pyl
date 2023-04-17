@@ -4812,15 +4812,6 @@
           'shards': 10,
         },
       },
-      'mac10.15-wpt-content-shell-fyi-rel': {
-        'experiment_percentage': 100,
-      },
-      'mac11-wpt-content-shell-fyi-rel': {
-        'experiment_percentage': 100,
-      },
-      'mac12-arm64-wpt-content-shell-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       'win10-wpt-content-shell-fyi-rel': {
         'args': [
           '--target',
