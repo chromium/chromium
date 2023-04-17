@@ -149,6 +149,13 @@ reclient = struct(
     ),
 )
 
+siso = struct(
+    project = struct(
+        DEFAULT_TRUSTED = reclient.instance.DEFAULT_TRUSTED,
+        DEFAULT_UNTRUSTED = reclient.instance.DEFAULT_UNTRUSTED,
+    ),
+)
+
 def _rotation(name):
     return branches.value(
         branch_selector = branches.selector.MAIN,
@@ -421,6 +428,7 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
+    siso_project = None,
     health_spec = None,
 
     # Provide vars for bucket and executable so users don't have to
@@ -485,6 +493,7 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
+        siso_project = args.DEFAULT,
         health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -667,6 +676,8 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
+        siso_project: a string indicating the GCP project hosting the RBE
+            instance and other Cloud services. e.g. logging, trace etc.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -831,6 +842,12 @@ def builder(
     )
     if reclient != None:
         properties["$build/reclient"] = reclient
+
+    siso = {
+        "project": defaults.get_value("siso_project", siso_project),
+    }
+    if siso["project"]:
+        properties["$build/siso"] = siso
 
     kwargs = dict(kwargs)
     if bucket != args.COMPUTE:

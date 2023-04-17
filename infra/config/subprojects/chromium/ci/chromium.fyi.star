@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
+load("//lib/builders.star", "builders", "cpu", "os", "reclient", "siso", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
@@ -1591,9 +1591,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         short_name = "andss",
     ),
     execution_timeout = 10 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 ci.builder(
@@ -1665,9 +1664,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         short_name = "lnxss",
     ),
     execution_timeout = 6 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
     use_clang_coverage = True,
 )
 
@@ -1740,9 +1738,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         short_name = "winss",
     ),
     execution_timeout = 6 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
     use_clang_coverage = True,
 )
 
