@@ -122,11 +122,6 @@ SaveUpdateAddressProfilePromptControllerTest::GetExpectedNegativeButtonText()
         IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
   }
 
-  if (!is_update_ && profile_.source() == AutofillProfile::Source::kAccount) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_IN_ACCOUNT_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
-  }
-
   return l10n_util::GetStringUTF16(
       IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL);
 }
