@@ -462,7 +462,7 @@ class CachedResponseFileReaderLoaderClient final
   CachedResponseFileReaderLoaderClient& operator=(
       const CachedResponseFileReaderLoaderClient&) = delete;
 
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override {
+  FileErrorCode DidStartLoading(uint64_t) override {
     return FileErrorCode::kOK;
   }
 

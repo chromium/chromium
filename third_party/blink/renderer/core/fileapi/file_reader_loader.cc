@@ -148,7 +148,7 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
                                         uint64_t expected_content_size) {
   total_bytes_ = expected_content_size;
 
-  if (auto err = client_->DidStartLoading(total_size, expected_content_size);
+  if (auto err = client_->DidStartLoading(expected_content_size);
       err != FileErrorCode::kOK) {
     Failed(err);
     return;

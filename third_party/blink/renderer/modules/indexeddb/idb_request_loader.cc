@@ -88,7 +88,7 @@ void IDBRequestLoader::StartNextValue() {
   loader_->Start(unwrapper.WrapperBlobHandle());
 }
 
-FileErrorCode IDBRequestLoader::DidStartLoading(uint64_t, uint64_t) {
+FileErrorCode IDBRequestLoader::DidStartLoading(uint64_t) {
   return FileErrorCode::kOK;
 }
 

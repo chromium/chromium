@@ -255,7 +255,7 @@ class XMLHttpRequest::BlobLoader final
   }
 
   // FileReaderClient functions.
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override {
+  FileErrorCode DidStartLoading(uint64_t) override {
     return FileErrorCode::kOK;
   }
   FileErrorCode DidReceiveData(const char* data, unsigned length) override {
