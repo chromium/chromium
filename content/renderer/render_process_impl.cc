@@ -40,7 +40,6 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_v8_features.h"
 #include "v8/include/v8-initialization.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -211,12 +210,6 @@ RenderProcessImpl::RenderProcessImpl()
         true);
   }
 #endif
-
-  // The following line enables V8 support for SharedArrayBuffer. Note that the
-  // SharedArrayBuffer constructor will be added to every global object only if
-  // the v8 flag `sharedarraybuffer-per-context` is disabled (cf. next block of
-  // code).
-  blink::WebV8Features::EnableSharedArrayBuffer();
 
   if (!enable_shared_array_buffer_unconditionally) {
     // It is still possible to enable SharedArrayBuffer per context using the

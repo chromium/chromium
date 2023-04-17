@@ -31,9 +31,6 @@ class BLINK_EXPORT WebV8Features {
 
   static void EnableMojoJSFileSystemAccessHelper(v8::Local<v8::Context>, bool);
 
-  // Enables SharedArrayBuffer for this process.
-  static void EnableSharedArrayBuffer();
-
  private:
   WebV8Features() = delete;
 };
