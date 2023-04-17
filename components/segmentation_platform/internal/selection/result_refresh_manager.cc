@@ -28,6 +28,45 @@ void CollectTrainingData(Config* config, ExecutionService* execution_service) {
     }
   }
 }
+
+stats::SegmentationSelectionFailureReason GetSuccessOrFailureReason(
+    SegmentResultProvider::ResultState result_state) {
+  switch (result_state) {
+    case SegmentResultProvider::ResultState::kUnknown:
+      NOTREACHED();
+      return stats::SegmentationSelectionFailureReason::kMaxValue;
+    case SegmentResultProvider::ResultState::kSuccessFromDatabase:
+      return stats::SegmentationSelectionFailureReason::kScoreUsedFromDatabase;
+    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
+      return stats::SegmentationSelectionFailureReason::
+          kScoreComputedFromDefaultModel;
+    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
+      return stats::SegmentationSelectionFailureReason::
+          kScoreComputedFromTfliteModel;
+    case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentNotReady;
+    case SegmentResultProvider::ResultState::kSegmentNotAvailable:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentNotAvailable;
+    case SegmentResultProvider::ResultState::kSignalsNotCollected:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentSignalsNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelMetadataMissing:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultMissingMetadata;
+    case SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultSignalNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultExecFailed;
+    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentTfliteExecFailed;
+  }
+}
+
 }  // namespace
 
 ResultRefreshManager::ResultRefreshManager(
@@ -90,8 +129,14 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
       result ? result->state : SegmentResultProvider::ResultState::kUnknown;
 
   if (!SupportMultiOutput(result.get())) {
+    stats::RecordSegmentSelectionFailure(
+        *config,
+        stats::SegmentationSelectionFailureReason::kMultiOutputNotSupported);
     return;
   }
+
+  stats::RecordSegmentSelectionFailure(*config,
+                                       GetSuccessOrFailureReason(result_state));
 
   proto::PredictionResult pred_result = result->result;
   // If the model result is available either from database or running the
@@ -106,6 +151,8 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
         SegmentResultProvider::ResultState::kDefaultModelScoreUsed));
 
   if (unexpired_score_from_db || expired_score_and_run_model) {
+    stats::RecordClassificationResultComputed(*config, pred_result);
+
     proto::ClientResult client_result =
         metadata_utils::CreateClientResultFromPredResult(pred_result,
                                                          base::Time::Now());

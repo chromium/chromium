@@ -121,7 +121,7 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   if (result) {
     status = ResultStateToPredictionStatus(result->state);
     pred_result = result->result;
-    stats::RecordSegmentSelectionUpdated(*config_, absl::nullopt, pred_result);
+    stats::RecordClassificationResultComputed(*config_, pred_result);
 
     // Collect training data. The execution service and training data collector
     // might be null in testing.

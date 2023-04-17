@@ -245,9 +245,8 @@ void RecordSegmentSelectionComputed(
   // to write custom logic for other kinds of segments.
 }
 
-void RecordSegmentSelectionUpdated(
+void RecordClassificationResultComputed(
     const Config& config,
-    const absl::optional<proto::PredictionResult>& old_result,
     const proto::PredictionResult& new_result) {
   PostProcessor post_processor;
   int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
@@ -255,10 +254,18 @@ void RecordSegmentSelectionUpdated(
       base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
                     ".PostProcessing.TopLabel.Computed"});
   base::UmaHistogramSparse(computed_hist, new_result_top_label);
+}
+
+void RecordClassificationResultUpdated(
+    const Config& config,
+    const absl::optional<proto::PredictionResult>& old_result,
+    const proto::PredictionResult& new_result) {
   if (config.on_demand_execution) {
     return;
   }
 
+  PostProcessor post_processor;
+  int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
   int old_result_top_label =
       old_result.has_value()
           ? post_processor.GetIndexOfTopLabel(old_result.value())
@@ -278,10 +285,13 @@ void RecordSegmentSelectionUpdated(
   // none -> label 0 : -200
   // none -> label 1 : -199
   // none -> label 2 : -198
+  // label 0 -> none : -2
   // label 0 -> label 1 : 1
   // label 0 -> label 2 : 2
+  // label 1 -> none : 98
   // label 1 -> label 0 : 100
   // label 1 -> label 2 : 102
+  // label 2 -> none : 198
   // label 2 -> label 0 : 200
   // label 2 -> label 1 : 201
 

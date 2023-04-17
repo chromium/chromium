@@ -34,12 +34,11 @@ CachedResultProvider::CachedResultProvider(
                                               : proto::PredictionResult();
     PredictionStatus status = has_valid_result ? PredictionStatus::kSucceeded
                                                : PredictionStatus::kFailed;
-    // TODO(ritikagup): Revisit if the metrics need to be stored here.
     stats::RecordSegmentSelectionFailure(
         *config, has_valid_result ? stats::SegmentationSelectionFailureReason::
-                                        kSelectionAvailableInPrefs
+                                        kSelectionAvailableInProtoPrefs
                                   : stats::SegmentationSelectionFailureReason::
-                                        kInvalidSelectionResultInPrefs);
+                                        kInvalidSelectionResultInProtoPrefs);
 
     auto post_processed_result =
         post_processor.GetPostProcessedClassificationResult(pred_result,

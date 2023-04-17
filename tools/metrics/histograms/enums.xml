@@ -92876,6 +92876,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="At least one segment default model missing metadata"/>
   <int value="15"
       label="At least one segment on demand tflite model execution failed"/>
+  <int value="16" label="Segment selection available in proto prefs"/>
+  <int value="17" label="Invalid selection result found in proto prefs"/>
+  <int value="18"
+      label="Proto prefs result is valid and doesn't require update"/>
+  <int value="19" label="Proto prefs result is updated"/>
+  <int value="20" label="Model execution score is obtained from database"/>
+  <int value="21"
+      label="Model execution score is obtained from executing default model"/>
+  <int value="22"
+      label="Model execution score is obtained from executing server model"/>
+  <int value="23" label="Multi output is not supported by the config"/>
 </enum>
 
 <enum name="SelectedTheme">

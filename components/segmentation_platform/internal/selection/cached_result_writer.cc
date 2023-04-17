@@ -52,8 +52,8 @@ bool CachedResultWriter::IsPrefUpdateRequiredForClient(
 
   if (!force_refresh_results && !has_expired_results) {
     stats::RecordSegmentSelectionFailure(
-        *config,
-        stats::SegmentationSelectionFailureReason::kSelectionTtlNotExpired);
+        *config, stats::SegmentationSelectionFailureReason::
+                     kProtoPrefsUpdateNotRequired);
     VLOG(1) << __func__ << ": previous client_result"
             << " has not yet expired. Expiration: " << expiration_time;
     return false;
@@ -70,8 +70,10 @@ void CachedResultWriter::UpdateNewClientResultToPrefs(
       prev_client_result.has_value()
           ? absl::make_optional(prev_client_result->client_result())
           : absl::nullopt;
-  stats::RecordSegmentSelectionUpdated(*config, prev_prediction_result,
-                                       client_result.client_result());
+  stats::RecordClassificationResultUpdated(*config, prev_prediction_result,
+                                           client_result.client_result());
+  stats::RecordSegmentSelectionFailure(
+      *config, stats::SegmentationSelectionFailureReason::kProtoPrefsUpdated);
   result_prefs_->SaveClientResultToPrefs(config->segmentation_key,
                                          client_result);
 }
