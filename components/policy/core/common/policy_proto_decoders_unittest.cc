@@ -5,6 +5,7 @@
 #include "components/policy/core/common/policy_proto_decoders.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_map.h"
@@ -121,6 +122,7 @@ TEST_F(PolicyProtoDecodersTest, PolicyWithOptionRecommended) {
 }
 
 TEST_F(PolicyProtoDecodersTest, IntegerPolicyWithValueLowerThanMinLimit) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::string too_small_value =
       base::NumberToString(std::numeric_limits<int32_t>::min() - 1LL);
 
@@ -187,6 +189,7 @@ TEST_F(PolicyProtoDecodersTest, JsonPolicy) {
 }
 
 TEST_F(PolicyProtoDecodersTest, InvalidJsonPolicy) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::string invalidDummyJson = R"({
     "key": "value"
   )";  // lacks a close brace

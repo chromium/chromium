@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
@@ -182,6 +183,7 @@ TEST_F(ConfigurationPolicyHandlerListTest,
 // Device platform policy will be fitered out.
 TEST_F(ConfigurationPolicyHandlerListTest,
        ApplySettingsWithPlatformDevicePolicy) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   AddSimplePolicy();
   details()->is_device_policy = true;
 
