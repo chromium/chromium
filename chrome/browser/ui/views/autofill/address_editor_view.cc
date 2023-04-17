@@ -213,8 +213,6 @@ void AddressEditorView::UpdateEditorView() {
     views::Combobox* country_combo_box = static_cast<views::Combobox*>(
         GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combo_box);
-    DCHECK_EQ(controller_->GetCountriesSize(),
-              country_combo_box->GetRowCount());
     country_combo_box->SetSelectedIndex(controller_->chosen_country_index());
   } else if (controller_->GetCountriesSize() > 0UL) {
     controller_->set_chosen_country_index(0UL);

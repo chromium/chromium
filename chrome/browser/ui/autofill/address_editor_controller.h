@@ -98,6 +98,9 @@ class AddressEditorController {
   bool IsValid(const EditorField& field, const std::u16string& value);
 
  private:
+  // Validation is turned on only for account address profiles.
+  bool is_filter_out_unsupported_countries() const { return is_validatable_; }
+
   // Updates |countries_| with the content of |model| if it's not null,
   // otherwise use a local model.
   void UpdateCountries(autofill::CountryComboboxModel* model);
