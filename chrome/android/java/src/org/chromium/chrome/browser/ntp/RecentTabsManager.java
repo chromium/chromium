@@ -428,9 +428,14 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
             return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
         }
 
-        if (mSyncService.isSyncRequested() && !mForeignSessions.isEmpty()) {
-            return SyncPromoState.NO_PROMO;
+        if (!mForeignSessions.isEmpty()) {
+          return SyncPromoState.NO_PROMO;
         }
+
+        // TODO(crbug.com/1341324): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
+        // be returned if mSyncService.getSelectedTypes().isEmpty(). Otherwise,
+        // LegacySyncPromoView incorrectly displays a promo with string
+        // R.string.ntp_recent_tabs_sync_promo_instructions.
         return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
     }
 

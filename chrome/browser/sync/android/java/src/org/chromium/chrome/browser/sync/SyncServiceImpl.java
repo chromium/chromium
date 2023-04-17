@@ -166,11 +166,6 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public boolean isSyncRequested() {
-        return SyncServiceImplJni.get().isSyncRequested(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         ThreadUtils.assertOnUiThread();
         if (++mSetupInProgressCounter == 1) {
@@ -383,7 +378,6 @@ public class SyncServiceImpl extends SyncService {
         long init(SyncServiceImpl caller);
 
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
-        boolean isSyncRequested(long nativeSyncServiceAndroidBridge);
         void setSyncRequested(long nativeSyncServiceAndroidBridge);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);

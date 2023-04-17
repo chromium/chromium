@@ -571,7 +571,7 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().isSyncRequested());
+            assertTrue(SyncService.get().hasSyncConsent());
             assertFalse(SyncService.get().isFirstSetupComplete());
             assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertTrue(SyncService.get().hasKeepEverythingSynced());
@@ -602,7 +602,7 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().isSyncRequested());
+            assertTrue(SyncService.get().hasSyncConsent());
             assertFalse(SyncService.get().isFirstSetupComplete());
             assertEquals(HISTORY_SYNC_DATA_TYPES, SyncService.get().getSelectedTypes());
             assertFalse(SyncService.get().hasKeepEverythingSynced());
@@ -637,7 +637,7 @@ public class SyncConsentFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(SyncService.get().isSyncRequested());
+            assertTrue(SyncService.get().hasSyncConsent());
             assertFalse(SyncService.get().isFirstSetupComplete());
         });
         // Click the cancel button to exit the activity.
