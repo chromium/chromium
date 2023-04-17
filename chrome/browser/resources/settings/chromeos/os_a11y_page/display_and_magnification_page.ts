@@ -17,6 +17,7 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -30,8 +31,9 @@ import {Route, Router} from '../router.js';
 
 import {getTemplate} from './display_and_magnification_page.html.js';
 
-const SettingsDisplayAndMagnificationElementBase = DeepLinkingMixin(
-    RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const SettingsDisplayAndMagnificationElementBase =
+    DeepLinkingMixin(RouteOriginMixin(
+        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsDisplayAndMagnificationElement extends
     SettingsDisplayAndMagnificationElementBase {
@@ -45,14 +47,6 @@ export class SettingsDisplayAndMagnificationElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Enum values for the
        * 'settings.a11y.screen_magnifier_mouse_following_mode' preference. These
@@ -139,7 +133,6 @@ export class SettingsDisplayAndMagnificationElement extends
     };
   }
 
-  prefs: {[key: string]: any};
   private isKioskModeActive_: boolean;
   private experimentalColorEnhancementSettingsEnabled_: boolean;
   private route_: Route;

@@ -5,20 +5,28 @@
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {SettingsDisplayAndMagnificationElement} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('settings-display-and-magnification-page', () => {
   let page: SettingsDisplayAndMagnificationElement;
+  let prefElement: SettingsPrefsElement;
 
-  function initPage() {
+  async function initPage() {
+    prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
+
+    await CrSettingsPrefs.initialized;
     page = document.createElement('settings-display-and-magnification-page');
+    page.prefs = prefElement.prefs;
     document.body.appendChild(page);
+    flush();
   }
 
   setup(() => {
@@ -29,6 +37,7 @@ suite('settings-display-and-magnification-page', () => {
 
   teardown(() => {
     page.remove();
+    prefElement.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -38,8 +47,7 @@ suite('settings-display-and-magnification-page', () => {
         `should focus ${selector} button when returning from ${
             route.path} subpage`,
         async () => {
-          initPage();
-          flush();
+          await initPage();
           const router = Router.getInstance();
 
           const subpageButton =
@@ -65,15 +73,72 @@ suite('settings-display-and-magnification-page', () => {
         });
   });
 
-  test('no subpages are available in kiosk mode', () => {
+  test('no subpages are available in kiosk mode', async () => {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
       showTabletModeShelfNavigationButtonsSettings: true,
     });
-    initPage();
-    flush();
+    await initPage();
 
     const subpageLinks = page.shadowRoot!.querySelectorAll('cr-link-row');
     subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
+  });
+
+  test('Turns on color enhancement filters', async () => {
+    // Enabled in os_settings_v3_browsertest.js.
+    assertTrue(loadTimeData.getBoolean(
+        'areExperimentalAccessibilityColorEnhancementSettingsEnabled'));
+    await initPage();
+
+    assertFalse(page.prefs.settings.a11y.color_filtering.enabled.value);
+
+    let colorDeficiencyDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#colorFilteringDeficiencyTypeDropdown');
+    assertEquals(null, colorDeficiencyDropdown);
+
+    let colorFilteringIntensitySlider =
+        page.shadowRoot!.querySelector('colorFilteringIntensitySlider');
+    assertEquals(null, colorFilteringIntensitySlider);
+
+    const enableColorFilteringToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableColorFiltering');
+    assert(enableColorFilteringToggle);
+    assertTrue(isVisible(enableColorFilteringToggle));
+
+    enableColorFilteringToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertTrue(page.prefs.settings.a11y.color_filtering.enabled.value);
+
+    // Color enhancement options options become visible.
+    colorDeficiencyDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#colorFilteringDeficiencyTypeDropdown');
+    assert(colorDeficiencyDropdown);
+    assertTrue(isVisible(colorDeficiencyDropdown));
+
+    colorFilteringIntensitySlider =
+        page.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#colorFilteringIntensitySlider');
+    assert(colorFilteringIntensitySlider);
+    assertTrue(isVisible(colorFilteringIntensitySlider));
+
+    const amount = page.prefs.settings.a11y.color_filtering
+                       .color_vision_correction_amount.value;
+
+    // Try a keypress on the slider to ensure that it behaves OK.
+    pressAndReleaseKeyOn(
+        colorFilteringIntensitySlider.shadowRoot!.querySelector('cr-slider')!,
+        37, [], 'ArrowLeft');
+    await flushTasks();
+
+    // The slider should have decreased, causing the pref to decrease.
+    assertGT(
+        amount,
+        page.prefs.settings.a11y.color_filtering.color_vision_correction_amount
+            .value);
   });
 });

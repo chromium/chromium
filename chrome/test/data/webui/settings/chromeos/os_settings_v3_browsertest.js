@@ -435,6 +435,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageDisplayAndMagnificationPage',
    'os_a11y_page/display_and_magnification_page_test.js',
+   {enabled: ['features::kExperimentalAccessibilityColorEnhancementSettings']},
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',
