@@ -13,6 +13,7 @@
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -266,6 +267,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
               ->HasCalculatorKeyOnAnyKeyboard()) {
         filtered_accelerators.push_back(accelerator);
       }
+      continue;
+    }
+
+    // If the accelerator is pressing Search + Alt to do capslock, only Alt +
+    // Search should be shown in the shortcuts app.
+    if (accelerator.key_code() == ui::VKEY_MENU &&
+        accelerator.modifiers() == ui::EF_COMMAND_DOWN) {
       continue;
     }
 

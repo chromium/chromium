@@ -163,6 +163,29 @@ TEST_F(AcceleratorAliasConverterTest, CheckCalculatorKeyAlias) {
   EXPECT_EQ(accelerator, accelerator_aliases[0]);
 }
 
+TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  const ui::Accelerator good_accelerator{ui::VKEY_LWIN, ui::EF_ALT_DOWN};
+  const ui::Accelerator bad_accelerator{ui::VKEY_MENU, ui::EF_COMMAND_DOWN};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(good_accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(good_accelerator, accelerator_aliases[0]);
+
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(bad_accelerator);
+  EXPECT_EQ(0u, accelerator_aliases.size());
+}
+
 class TopRowAliasTest : public AcceleratorAliasConverterTest,
                         public testing::WithParamInterface<
                             TopRowAcceleratorAliasConverterTestData> {
