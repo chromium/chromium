@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -21,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -575,8 +575,9 @@ TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
 
           // Add an external request.
           EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
-                    version_->StartExternalRequest(base::GenerateGUID(),
-                                                   timeout_type));
+                    version_->StartExternalRequest(
+                        base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                        timeout_type));
           run_loop.Run();
           EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
           EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
@@ -1778,8 +1779,8 @@ TEST_F(ServiceWorkerVersionTest, PendingExternalRequest) {
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   ASSERT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
 
-  std::string uuid1 = base::GenerateGUID();
-  std::string uuid2 = base::GenerateGUID();
+  std::string uuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::string uuid2 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Test adding request with |uuid1| and different TimeoutType-s.
   EXPECT_EQ(Result::kOk,
@@ -1825,8 +1826,9 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
 
           // Add an external request.
           EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
-                    version_->StartExternalRequest(base::GenerateGUID(),
-                                                   timeout_type));
+                    version_->StartExternalRequest(
+                        base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                        timeout_type));
           run_loop.Run();
           EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
           EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
@@ -1892,16 +1894,18 @@ TEST_F(ServiceWorkerVersionTest,
 
     // Add an external request, with kDoesNotTimeout timeout.
     EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
-              version_->StartExternalRequest(base::GenerateGUID(),
-                                             ReqTimeoutType::kDoesNotTimeout));
+              version_->StartExternalRequest(
+                  base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  ReqTimeoutType::kDoesNotTimeout));
     run_loop.Run();
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
     EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
     // Add another external request with kDefault timeout.
     EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
-              version_->StartExternalRequest(base::GenerateGUID(),
-                                             ReqTimeoutType::kDefault));
+              version_->StartExternalRequest(
+                  base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  ReqTimeoutType::kDefault));
   }
 
   // Now advance time to check worker's running state.

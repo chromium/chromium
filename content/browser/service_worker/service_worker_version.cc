@@ -16,7 +16,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial_params.h"
@@ -29,6 +28,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/uuid.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -1681,7 +1681,8 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
     return;
   }
 
-  if (!url.is_valid() || !base::IsValidGUID(client_uuid)) {
+  if (!url.is_valid() ||
+      !base::Uuid::ParseCaseInsensitive(client_uuid).is_valid()) {
     mojo::ReportBadMessage(
         "Received unexpected invalid URL/UUID from renderer process.");
     receiver_.reset();

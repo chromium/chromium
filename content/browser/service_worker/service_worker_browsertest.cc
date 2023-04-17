@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -36,6 +35,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   request->is_main_resource_load = true;
   auto dispatcher = std::make_unique<ServiceWorkerFetchDispatcher>(
       std::move(request), network::mojom::RequestDestination::kDocument,
-      /*client_id=*/base::GenerateGUID(), version,
+      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(), version,
       base::BindLambdaForTesting([&]() { is_prepare_callback_called = true; }),
       base::BindLambdaForTesting(
           [&](blink::ServiceWorkerStatusCode status,
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   request->is_main_resource_load = true;
   auto dispatcher = std::make_unique<ServiceWorkerFetchDispatcher>(
       std::move(request), network::mojom::RequestDestination::kDocument,
-      /*client_id=*/base::GenerateGUID(), version,
+      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(), version,
       base::BindLambdaForTesting([&]() { is_prepare_callback_called = true; }),
       base::BindLambdaForTesting(
           [&](blink::ServiceWorkerStatusCode status,

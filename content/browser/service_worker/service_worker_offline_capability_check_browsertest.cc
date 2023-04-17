@@ -5,10 +5,10 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
@@ -140,8 +140,9 @@ class FetchEventTestHelper {
     fetch_event_dispatch->fetch_dispatcher =
         std::make_unique<ServiceWorkerFetchDispatcher>(
             std::move(request), network::mojom::RequestDestination::kDocument,
-            base::GenerateGUID() /* client_id */, std::move(version),
-            base::DoNothing() /* prepare callback */, std::move(fetch_callback),
+            base::Uuid::GenerateRandomV4().AsLowercaseString() /* client_id */,
+            std::move(version), base::DoNothing() /* prepare callback */,
+            std::move(fetch_callback),
             fetch_event_dispatch->param_and_expected_result.param
                 .is_offline_capability_check);
     fetch_event_dispatch->fetch_dispatcher->Run();
