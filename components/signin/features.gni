@@ -4,6 +4,13 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+declare_args() {
+  # Compile time flag for Bound Session Credentials.
+  # Warning: The feature is still under development. This must not be enabled in
+  #          official builds.
+  enable_bound_session_credentials = false
+}
+
 # Dice is supported on the platform (but not necessarily enabled).
 enable_dice_support = is_linux || is_mac || is_win || is_fuchsia
 
