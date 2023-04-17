@@ -2791,13 +2791,13 @@ void VerifyDesksRestoreData(PrefService* user_prefs,
 }
 
 // Returns the GUIDs in the given `user_prefs`.
-std::vector<base::GUID> GetDeskRestoreGuids(PrefService* user_prefs) {
+std::vector<base::Uuid> GetDeskRestoreGuids(PrefService* user_prefs) {
   const base::Value::List& desks_restore_guids =
       user_prefs->GetList(prefs::kDesksGuidsList);
 
-  std::vector<base::GUID> guids;
+  std::vector<base::Uuid> guids;
   for (const base::Value& value : desks_restore_guids) {
-    const base::GUID guid = base::GUID::ParseLowercase(value.GetString());
+    const base::Uuid guid = base::Uuid::ParseLowercase(value.GetString());
     guids.emplace_back(guid);
   }
   return guids;
@@ -8516,14 +8516,14 @@ TEST_P(DesksTest, DeskGuidsSaved) {
   // We don't need to save the desk GUID for restore if there is only one desk.
   NewDesk();
   auto* controller = DesksController::Get();
-  base::GUID desk1_guid = controller->desks()[0].get()->uuid();
-  base::GUID desk2_guid = controller->desks()[1].get()->uuid();
+  base::Uuid desk1_guid = controller->desks()[0].get()->uuid();
+  base::Uuid desk2_guid = controller->desks()[1].get()->uuid();
   EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
               testing::ElementsAre(desk1_guid, desk2_guid));
 
   // Add a third desk, close the second desk, and check the GUIDs.
   NewDesk();
-  base::GUID desk3_guid = controller->desks()[2].get()->uuid();
+  base::Uuid desk3_guid = controller->desks()[2].get()->uuid();
   EnterOverview();
   CloseDeskFromMiniView(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
                             ->desks_bar_view()
@@ -8539,9 +8539,9 @@ TEST_P(DesksTest, DeskGuidsReorder) {
   NewDesk();
   NewDesk();
   auto* controller = DesksController::Get();
-  base::GUID desk1_guid = controller->desks()[0].get()->uuid();
-  base::GUID desk2_guid = controller->desks()[1].get()->uuid();
-  base::GUID desk3_guid = controller->desks()[2].get()->uuid();
+  base::Uuid desk1_guid = controller->desks()[0].get()->uuid();
+  base::Uuid desk2_guid = controller->desks()[1].get()->uuid();
+  base::Uuid desk3_guid = controller->desks()[2].get()->uuid();
   EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
               testing::ElementsAre(desk1_guid, desk2_guid, desk3_guid));
 

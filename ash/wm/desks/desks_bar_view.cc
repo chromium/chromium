@@ -1528,7 +1528,7 @@ void DesksBarView::OnLibraryButtonPressed() {
   if (IsDeskNameBeingModified())
     DeskNameView::CommitChanges(GetWidget());
   overview_grid_->overview_session()->ShowSavedDeskLibrary(
-      base::GUID(), /*saved_desk_name=*/u"",
+      base::Uuid(), /*saved_desk_name=*/u"",
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 

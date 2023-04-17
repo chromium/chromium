@@ -18,11 +18,11 @@
 #include "ash/wm/desks/templates/restore_data_collector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/restore_data.h"
@@ -178,7 +178,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Returns the desk that matches the desk_uuid, and returns null if no matches
   // found.
-  Desk* GetDeskByUuid(const base::GUID& desk_uuid) const;
+  Desk* GetDeskByUuid(const base::Uuid& desk_uuid) const;
 
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
@@ -258,7 +258,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   void RestoreNameOfDeskAtIndex(std::u16string name, size_t index);
 
   // Sets the `uuid_` of the desk at `index` to the supplied `guid`.
-  void RestoreGuidOfDeskAtIndex(base::GUID guid, size_t index);
+  void RestoreGuidOfDeskAtIndex(base::Uuid guid, size_t index);
 
   // Restores the creation time of the desk at |index|.
   void RestoreCreationTimeOfDeskAtIndex(base::Time creation_time, size_t index);

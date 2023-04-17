@@ -279,7 +279,7 @@ Desk::ScopedContentUpdateNotificationDisabler::
 // Desk:
 
 Desk::Desk(int associated_container_id, bool desk_being_restored)
-    : uuid_(base::GUID::GenerateRandomV4()),
+    : uuid_(base::Uuid::GenerateRandomV4()),
       container_id_(associated_container_id),
       creation_time_(base::Time::Now()) {
   // For the very first default desk added during initialization, there won't be
@@ -480,7 +480,7 @@ void Desk::SetName(std::u16string new_name, bool set_by_user) {
   DesksController::Get()->NotifyDeskNameChanged(this, name_);
 }
 
-void Desk::SetGuid(base::GUID new_guid) {
+void Desk::SetGuid(base::Uuid new_guid) {
   if (new_guid.is_valid()) {
     uuid_ = std::move(new_guid);
   }

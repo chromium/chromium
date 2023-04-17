@@ -140,7 +140,7 @@ void RestorePrimaryUserDesks() {
     // It's possible that desks_guids_list is not yet populated.
     if (index < desks_guids_list.size()) {
       desks_controller->RestoreGuidOfDeskAtIndex(
-          base::GUID::ParseLowercase(desks_guids_list[index].GetString()),
+          base::Uuid::ParseLowercase(desks_guids_list[index].GetString()),
           index);
     }
 
