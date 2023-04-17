@@ -43,7 +43,6 @@
     },
 
     'chrome.gpu.fyi': {
-      'Lacros FYI Release (eve)': 'gpu_fyi_tests_lacros_eve_release_trybot_dcheck_off_no_symbols_reclient',
       'Lacros FYI Release (jacuzzi)': 'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient',
     },
 
@@ -2638,11 +2637,6 @@
 
     'gpu_fyi_tests_dx12vk_release_trybot_reclient': [
       'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_lacros_eve_release_trybot_dcheck_off_no_symbols_reclient': [
-      'chromeos', 'eve', 'official', 'release_bot_reclient','no_symbols',
-      'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient': [

@@ -2212,7 +2212,6 @@
   'context_lost_passthrough_tests': {
     # Not enough capacity.
     'remove_from': [
-      'Lacros FYI Release (eve)',
       'Lacros FYI Release (jacuzzi)',
     ],
   },
@@ -2606,7 +2605,6 @@
       # exception once there is enough capacity to run these tests.
       'Android FYI Release (Pixel 2)',
       # Not enough capacity.
-      'Lacros FYI Release (eve)',
       'Lacros FYI Release (jacuzzi)',
     ],
   },
@@ -2638,7 +2636,6 @@
       # exception once there is enough capacity to run these tests.
       'Android FYI Release (Pixel 2)',
       # Not enough capacity.
-      'Lacros FYI Release (eve)',
       'Lacros FYI Release (jacuzzi)',
     ],
   },
@@ -3546,7 +3543,6 @@
     },
     # Not enough capacity.
     'remove_from': [
-      'Lacros FYI Release (eve)',
       'Lacros FYI Release (jacuzzi)',
     ],
   },
@@ -4211,11 +4207,6 @@
         'swarming': {
           'shards': 30,
         },
-      },
-      'Lacros FYI Release (eve)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-device.webgl2_conformance_gles_passthrough_tests.filter',
-        ],
       },
       'Lacros FYI Release (jacuzzi)': {
         'args': [

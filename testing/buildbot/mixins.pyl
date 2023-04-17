@@ -404,14 +404,6 @@
       ],
     },
   },
-  'chromeos-eve': {
-    'swarming': {
-      'dimensions': {
-        'os': 'ChromeOS',
-        'device_type': 'eve',
-      },
-    },
-  },
   'chromeos-jacuzzi': {
     'swarming': {
       'dimensions': {
