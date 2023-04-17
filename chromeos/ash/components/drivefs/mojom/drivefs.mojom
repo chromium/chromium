@@ -143,6 +143,10 @@ interface DriveFs {
 
   // Returns the total space used by files that have been pinned.
   GetOfflineFilesSpaceUsage() => (FileError error, int64 space_used);
+
+  // Unpins all currently pinned items and force evicts them from the cache.
+  // NOTE: Force eviction does not work for hosted documents.
+  ClearOfflineFiles() => (FileError error);
 };
 
 // Implemented by Chrome, used from DriveFS.
