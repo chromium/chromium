@@ -130,6 +130,7 @@ void RefreshNativeTheme(const ColorPaletteSeed& seed) {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(is_dark_mode_enabled);
   native_theme->set_user_color(themed_color);
+  native_theme->set_scheme_variant(ToVariant(seed.scheme));
   native_theme->NotifyOnNativeThemeUpdated();
 
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
@@ -139,6 +140,7 @@ void RefreshNativeTheme(const ColorPaletteSeed& seed) {
         is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
                              : ui::NativeTheme::PreferredColorScheme::kLight);
   }
+  native_theme_web->set_scheme_variant(ToVariant(seed.scheme));
   native_theme_web->set_user_color(themed_color);
   native_theme_web->NotifyOnNativeThemeUpdated();
 }
