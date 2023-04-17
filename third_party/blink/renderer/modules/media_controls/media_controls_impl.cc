@@ -1616,10 +1616,6 @@ void MediaControlsImpl::HandleTouchEvent(Event* event) {
       !ContainsRelatedTarget(event)) {
     event->SetDefaultHandled();
 
-    // Since handling the gesturetap event will prevent the click event from
-    // happening, we need to manually hide any popups.
-    HidePopupMenu();
-
     if (tap_timer_.IsActive()) {
       // Cancel the visibility toggle event.
       tap_timer_.Stop();
