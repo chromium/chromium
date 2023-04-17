@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
@@ -45,14 +46,31 @@ LocalDeviceDataProviderImpl::~LocalDeviceDataProviderImpl() = default;
 
 void LocalDeviceDataProviderImpl::UpdatePersistedSharedCredentials(
     const std::vector<::nearby::internal::SharedCredential>&
-        shared_credentials) {}
+        new_shared_credentials) {
+  base::Value::List list;
+  for (const auto& credential : new_shared_credentials) {
+    list.Append(credential.secret_id());
+  }
+  pref_service_->SetList(prefs::kNearbyPresenceSharedCredentialIdListPrefName,
+                         std::move(list));
+}
 
 bool LocalDeviceDataProviderImpl::HaveSharedCredentialsChanged(
     const std::vector<::nearby::internal::SharedCredential>&
-        shared_credentials) {
-  // TODO (b/276307539): Implement `HavePublicCredentialsChanged`, this
-  // default implementation is to get the skeleton class to compile.
-  return true;
+        new_shared_credentials) {
+  std::set<std::string> persisted_shared_credential_ids;
+  const base::Value::List& list = pref_service_->GetList(
+      prefs::kNearbyPresenceSharedCredentialIdListPrefName);
+  for (const auto& id : list) {
+    persisted_shared_credential_ids.insert(id.GetString());
+  }
+
+  std::set<std::string> new_shared_credential_ids;
+  for (const auto& credential : new_shared_credentials) {
+    new_shared_credential_ids.insert(credential.secret_id());
+  }
+
+  return new_shared_credential_ids != persisted_shared_credential_ids;
 }
 
 std::string LocalDeviceDataProviderImpl::GetDeviceId() {

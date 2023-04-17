@@ -30,10 +30,10 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
   // LocalDeviceDataProvider
   void UpdatePersistedSharedCredentials(
       const std::vector<::nearby::internal::SharedCredential>&
-          shared_credentials) override;
+          new_shared_credentials) override;
   bool HaveSharedCredentialsChanged(
       const std::vector<::nearby::internal::SharedCredential>&
-          shared_credentials) override;
+          new_shared_credentials) override;
   std::string GetDeviceId() override;
   ::nearby::internal::Metadata GetDeviceMetadata() override;
   std::string GetAccountName() override;

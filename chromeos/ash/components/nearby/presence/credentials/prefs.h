@@ -14,6 +14,7 @@ namespace prefs {
 extern const char kNearbyPresenceDeviceIdPrefName[];
 extern const char kNearbyPresenceUserNamePrefName[];
 extern const char kNearbyPresenceProfileUrlPrefName[];
+extern const char kNearbyPresenceSharedCredentialIdListPrefName[];
 
 }  // namespace prefs
 

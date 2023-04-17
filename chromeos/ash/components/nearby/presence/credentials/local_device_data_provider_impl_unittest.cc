@@ -29,6 +29,12 @@ const std::string kCanocalizedUserEmail = "testtester@gmail.com";
 const std::string kGivenName = "Test";
 const std::string kUserName = "Test Tester";
 const std::string kProfileUrl = "https://example.com";
+const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
+const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
+const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
+const std::vector<uint8_t> kSecretId4 = {0x44, 0x44, 0x44, 0x44, 0x44, 0x44};
+const std::vector<uint8_t> kSecretId5 = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
+const std::vector<uint8_t> kSecretId6 = {0x66, 0x66, 0x66, 0x66, 0x66, 0x66};
 
 }  // namespace
 
@@ -110,6 +116,55 @@ TEST_F(LocalDeviceDataProviderImplTest, Metadata) {
   EXPECT_EQ(kUserName, metadata.user_name());
   EXPECT_EQ(kProfileUrl, metadata.device_profile_url());
   EXPECT_EQ(std::string(), metadata.bluetooth_mac_address());
+}
+
+TEST_F(LocalDeviceDataProviderImplTest, PersistCredentialIds) {
+  CreateDataProvider();
+
+  // Mock a list of shared credentials. These credentials can be empty except
+  // for the secret id field for unit test purposes since only the secret id is
+  // persisted and checked for changes.
+  ::nearby::internal::SharedCredential shared_credential1;
+  shared_credential1.set_secret_id(
+      std::string(kSecretId1.begin(), kSecretId1.end()));
+  ::nearby::internal::SharedCredential shared_credential2;
+  shared_credential2.set_secret_id(
+      std::string(kSecretId2.begin(), kSecretId2.end()));
+  ::nearby::internal::SharedCredential shared_credential3;
+  shared_credential3.set_secret_id(
+      std::string(kSecretId3.begin(), kSecretId3.end()));
+
+  // Persist the list of shared credentials ids, and expect that the same list
+  // passed to `HavePublicCredentialsChanged` returns false.
+  local_device_data_provider_->UpdatePersistedSharedCredentials(
+      {shared_credential1, shared_credential2, shared_credential3});
+  EXPECT_FALSE(local_device_data_provider_->HaveSharedCredentialsChanged(
+      {shared_credential1, shared_credential2, shared_credential3}));
+
+  // Send in a changed list of shared credential ids to
+  // `HavePublicCredentialsChanged` and expect it returns true.
+  ::nearby::internal::SharedCredential shared_credential4;
+  shared_credential4.set_secret_id(
+      std::string(kSecretId4.begin(), kSecretId4.end()));
+  ::nearby::internal::SharedCredential shared_credential5;
+  shared_credential5.set_secret_id(
+      std::string(kSecretId5.begin(), kSecretId5.end()));
+  ::nearby::internal::SharedCredential shared_credential6;
+  shared_credential6.set_secret_id(
+      std::string(kSecretId6.begin(), kSecretId6.end()));
+  EXPECT_TRUE(local_device_data_provider_->HaveSharedCredentialsChanged(
+      {shared_credential4, shared_credential5, shared_credential6}));
+
+  // Send in a changed list of shared credential ids with one removed, and
+  // expect it to return true.
+  EXPECT_TRUE(local_device_data_provider_->HaveSharedCredentialsChanged(
+      {shared_credential1, shared_credential2}));
+
+  // Send in a changed list of shared credential ids with one added, and
+  // expect it to return true.
+  EXPECT_TRUE(local_device_data_provider_->HaveSharedCredentialsChanged(
+      {shared_credential1, shared_credential2, shared_credential3,
+       shared_credential4}));
 }
 
 }  // namespace ash::nearby::presence
