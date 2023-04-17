@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Wedi gweithredu</translation>
 <translation id="5430931332414098647">Rhannu Cysylltiad Sydyn</translation>
 <translation id="5431318178759467895">Lliw</translation>
+<translation id="5456936324019847994">Methu â chysylltu ag unrhyw APN personol sydd wedi'u galluogi. Cysylltwch â'ch cludydd gwasanaethau symudol am ragor o wybodaeth.</translation>
 <translation id="5457599981699367932">Pori fel Gwestai</translation>
 <translation id="54609108002486618">Rheolir</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ymgais ar ôl}zero{{0} ymgais ar ôl}two{{0} ymgais ar ôl}few{{0} ymgais ar ôl}many{{0} ymgais ar ôl}other{{0} ymgais ar ôl}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Ni chanfuwyd y ffeil</translation>
 <translation id="5939518447894949180">Ailosod</translation>
 <translation id="594552776027197022">Cynhyrchu pâr o allweddi ar hap</translation>
+<translation id="5946538341867151940">Nid ydych yn gysylltiedig eto. Os yw'ch cludydd gwasanaethau symudol yn argymell APN personol, nodwch y wybodaeth APN trwy ddewis "+ APN Newydd"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Papur Wal Diofyn</translation>
 <translation id="6017514345406065928">Gwyrdd</translation>

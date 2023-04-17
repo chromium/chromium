@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">已啟用</translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
+<translation id="5456936324019847994">無法連線至任何已啟用的自訂 APN。詳情請洽詢你的行動電信業者。</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
+<translation id="5946538341867151940">你尚未連線。如果你的行動電信業者建議使用自訂 APN，請選取「+ 新增 APN」，輸入 APN 資訊</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">預設桌布</translation>
 <translation id="6017514345406065928">綠色</translation>

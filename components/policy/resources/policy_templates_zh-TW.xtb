@@ -4702,6 +4702,13 @@
 <translation id="5448022937220253000">選擇系統在 <ph name="LACROS_NAME" /> 停用後要如何處理使用者資料</translation>
 <translation id="5449690328792750354">Event.path API 將可供使用。</translation>
 <translation id="5452024130413254050">控制使用這項設定的 VM 是否可存取 vTPM。如未設定，預設為 False，如果不設定，則預設為 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />。</translation>
+<translation id="5452167809842762761">這項政策已在 M114 版中遭到移除。該政策的作用是停用 CECPQ2，但系統預設會停用 CECPQ2，並由 NIST 所選的後量子 KEM (Kyber) 取代，這同樣會搭配我們的標準正規金鑰協議 X25519。
+
+如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 會遵循預設的 CECPQ2 推出程序；CECPQ2 是傳輸層安全標準 (TLS) 中的後量子金鑰協議演算法。
+
+      CECPQ2 會產生更大量的傳輸層安全標準 (TLS) 訊息，在極少數情況下可能觸發某些網路硬體的錯誤。網路問題解決後，你可以將這項政策設為 False 以停用 CECPQ2。
+
+      這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。</translation>
 <translation id="5454128917282602937">當使用者在 <ph name="PRODUCT_OS_NAME" /> 裝置之間切換時，<ph name="PRODUCT_NAME" /> V2 服務會在新裝置啟動前一部裝置上的瀏覽器和應用程式視窗。
 如果將這項政策設為啟用，當使用者登入時，系統就會為目前使用者自動啟動上次使用的 <ph name="PRODUCT_OS_NAME" /> 裝置上的瀏覽器和應用程式視窗。
 如果將這項政策設為停用或不設定，登入時啟動的項目便取決於完整還原設定。</translation>

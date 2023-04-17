@@ -1098,6 +1098,7 @@
 <translation id="1915734383465415025">ಸ್ಟೋರ್ ಸಂಖ್ಯೆ</translation>
 <translation id="1916260783734263714">ಈಗಿನ ಟ್ಯಾಬ್</translation>
 <translation id="1916502483199172559">ಡಿಫಾಲ್ಟ್ ಕೆಂಪು ಅವತಾರ್</translation>
+<translation id="1916770123977586577">ನಿಮ್ಮ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಈ ಸೈಟ್‌ಗೆ ಅನ್ವಯಿಸಲು, ಈ ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="1918141783557917887">&amp;ಚಿಕ್ಕದು</translation>
 <translation id="1919872106782726755">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲು, ಪವರ್ ಬಟನ್‌ನ ಪಕ್ಕದಲ್ಲಿರುವ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲಿನ ಬಲ ಮೂಲೆಯಲ್ಲಿರುವ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆನ್ಸರ್ ಅನ್ನು ನಿಮ್ಮ ಮಗು ಸ್ಪರ್ಶಿಸುವಂತೆ ಮಾಡಿ. ನಿಮ್ಮ ಮಗುವಿನ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಇದು ಎಂದೂ ಈ <ph name="DEVICE_TYPE" /> ನಿಂದ ಹೊರಗೆ ಹೋಗುವುದಿಲ್ಲ.</translation>
 <translation id="1920390473494685033">ಸಂಪರ್ಕಗಳು</translation>
@@ -1739,7 +1740,7 @@
 <translation id="2445726032315793326">ಭಾಗಶಃ ಮ್ಯಾಗ್ನಿಫೈರ್</translation>
 <translation id="244641233057214044">ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಸಂಬಂಧಿಸಿದೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
-<translation id="2448810255793562605">ಸ್ವಯಂ ಸ್ಕ್ಯಾನ್‌ನ‌ ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ</translation>
+<translation id="2448810255793562605">ಸ್ವಯಂ ಸ್ಕ್ಯಾನ್‌ನ‌ ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2450021089947420533">ಪ್ರಯಾಣಗಳು</translation>
 <translation id="2450223707519584812">Google API ಕೀಗಳು ಕಾಣೆಯಾಗಿರುವ ಕಾರಣ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ವಿವರಗಳಿಗೆ <ph name="DETAILS_URL" /> ನೋಡಿ.</translation>
 <translation id="2450849356604136918">ಸಕ್ರಿಯ ವೀಕ್ಷಣೆಗಳಿಲ್ಲ</translation>
@@ -1869,7 +1870,7 @@
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> ಅನ್ನು ತೆರೆಯಲು <ph name="EXTENSION_NAME" /> ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="2552230905527343195">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2552966063069741410">ಸಮಯವಲಯ</translation>
-<translation id="2553290675914258594">ದೃಢೀಕರಿಸಿದ ಪ್ರವೇಶ</translation>
+<translation id="2553290675914258594">ದೃಢೀಕರಿಸಿದ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="2553340429761841190"><ph name="NETWORK_ID" /> ಅನ್ನು ಸಂಪರ್ಕಿಸಲು <ph name="PRODUCT_NAME" /> ಗೆ ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಇನ್ನೊಂದು ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2553440850688409052">ಈ ಪ್ಲಗ್‌ ಇನ್ ಅನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="2554553592469060349">ಆಯ್ಕೆ ಮಾಡಿರುವ ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ (ಗರಿಷ್ಠ ಗಾತ್ರ: 3mb).</translation>
@@ -2643,6 +2644,7 @@
 <translation id="3262986719682892278">ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
 <translation id="3264544094376351444">Sans-Serif ಫಾಂಟ್</translation>
 <translation id="3264582393905923483">ಸಂದರ್ಭ</translation>
+<translation id="3265032511221679826">ನಿಖರವಾದ ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="3265459715026181080">ವಿಂಡೋ ಮುಚ್ಚು</translation>
 <translation id="3266022278425892773">Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್</translation>
 <translation id="3266274118485960573">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
@@ -3244,7 +3246,7 @@
 <translation id="3778740492972734840">&amp;ಡೆವೆಲಪರ್  ಟೂಲ್‌ಗಳು</translation>
 <translation id="3778868487658107119">ಇದಕ್ಕೆ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ. ಕೆಲಸಗಳನ್ನು ಮಾಡಲು ತಿಳಿಸಿ. ಇದು ನಿಮ್ಮ ಸ್ವಂತ Google, ಸಹಾಯಕ್ಕೆ ಯಾವಾಗಲೂ ಸಿದ್ಧವಾಗಿರುತ್ತದೆ.</translation>
 <translation id="3780542776224651912">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗಗೊಂಡಿವೆಯೇ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು <ph name="BRAND" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="3781742599892759500">Linux ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶ</translation>
+<translation id="3781742599892759500">Linux ಮೈಕ್ರೋಫೋನ್ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="3783725005098956899">ಲಾಗ್ ತೋರಿಸಿ</translation>
 <translation id="3783889407390048282">Android ಗೆ ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳುವುದನ್ನು ತಪ್ಪಿಸಲು ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ.</translation>
 <translation id="3784472333786002075">ಕುಕೀಗಳು ಎಂದರೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ರಚಿಸಿದ ಫೈಲ್‌ಗಳು. ಎರಡು ರೀತಿಯ ಕುಕೀಗಳಿವೆ: ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ ಬಳಸಿಕೊಂಡು ಫರ್ಸ್ಟ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ರಚಿಸಲಾಗಿದೆ. ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಸೈಟ್ ಅನ್ನು ತೋರಿಸಲಾಗಿದೆ. ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಇತರ ಸೈಟ್‌ಗಳಿಂದ ರಚಿಸಲಾಗಿದೆ. ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ನೋಡುವ ಜಾಹೀರಾತುಗಳು ಅಥವಾ ಚಿತ್ರಗಳಂತಹ ಕೆಲವು ರೀತಿಯ ವಿಷಯವನ್ನು, ಈ ಸೈಟ್‌ಗಳು ಮಾಲೀಕತ್ವವನ್ನು ಹೊಂದಿವೆ.</translation>
@@ -3541,7 +3543,6 @@
 <translation id="4025039777635956441">ಆಯ್ಕೆ ಮಾಡಿದ ಸೈಟ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> ಸೂಚನೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್‌</translation>
-<translation id="4027958407426528157">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4028467762035011525">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ಪುಟದಿಂದ ಹಿಂದಕ್ಕೆ</translation>
 <translation id="403088439874411464">ಪಠ್ಯ ಗುರುತಿಸುವಿಕೆ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -4182,7 +4183,6 @@
 <translation id="4615586811063744755">ಯಾವುದೇ ಕುಕೀ ಆಯ್ಕೆ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="461661862154729886">ಶಕ್ತಿಯ ಮೂಲ</translation>
 <translation id="4617001782309103936">ತೀರಾ ಚಿಕ್ಕದು</translation>
-<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಬಳಸಲು ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="4617270414136722281">ವಿಸ್ತರಣೆ ಆಯ್ಕೆಗಳು</translation>
 <translation id="4617880081511131945">ಸಂಪರ್ಕವನ್ನು ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4618195822946934889">URL, ASCII ಅಕ್ಷರಗಳನ್ನು ಮಾತ್ರ ಒಳಗೊಂಡಿರಬಹುದು</translation>
@@ -4390,7 +4390,7 @@
 <translation id="4809447465126035330">ಅಳಿಸಿ</translation>
 <translation id="480990236307250886">ಹೋಮ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4809927044794281115">ಲೈಟ್ ಥೀಮ್‌</translation>
-<translation id="4811212958317149293">ಕೀಬೋರ್ಡ್ ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್‌ನ ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ</translation>
+<translation id="4811212958317149293">ಕೀಬೋರ್ಡ್ ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್‌ನ ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="4811503964269049987">ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್ ಅನ್ನು ಸಮೂಹಗೊಳಿಸಿ</translation>
 <translation id="4813512666221746211">ನೆಟ್‌ವರ್ಕ್  ದೋಷ</translation>
 <translation id="4814114628197290459">IBAN ಅನ್ನು ಅಳಿಸಿ</translation>
@@ -4420,7 +4420,6 @@
 <translation id="4833683849865011483">ಪ್ರಿಂಟ್ ಸರ್ವರ್‌ನ 1 ಪ್ರಿಂಟರ್‌ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="4836504898754963407">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌‍ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4837128290434901661">Google Search ಗೆ ಹಿಂತಿರುಗಿ ಬದಲಿಸುವುದೇ?</translation>
-<translation id="4837165100461973682">ನಿಮ್ಮ ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="4837926214103741331">ನೀವು ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ಪ್ರಮಾಣಿತರಾಗಿಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ಸಾಧನ ಮಾಲೀಕನನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="4837952862063191349">ನಿಮ್ಮ ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಮತ್ತು ಮರುಸ್ಥಾಪಿಸಲು, ದಯವಿಟ್ಟು ನಿಮ್ಮ ಹಳೆಯ <ph name="DEVICE_TYPE" /> ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="4838170306476614339">ನಿಮ್ಮ ಫೋನ್‌ನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -5658,7 +5657,6 @@
 <translation id="5957918771633727933">ಯಾವುದೇ ಲಭ್ಯವಿರುವ eSIM ಪ್ರೊಫೈಲ್‌ಗಳಿಲ್ಲ. ಹೊಸ <ph name="BEGIN_LINK" />ಪ್ರೊಫೈಲ್<ph name="END_LINK" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="5957987129450536192">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಚಿತ್ರದ ಬಳಿಯಿರುವ 'ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ' ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ, ನಂತರ ನೀವು ಆಲಿಸಲು ಬಯಸಿರುವುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5959471481388474538">ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="595959584676692139">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5963413905009737549">ವಿಭಾಗ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ಪೀಕ್)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
@@ -6475,7 +6473,6 @@
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> ಬಿತ್ತರಿಸು</translation>
 <translation id="6701535245008341853">ಪ್ರೊಫೈಲ್ ಅ‌ನ್ನು ಪಡೆಯುವುದಿಲ್ಲ.</translation>
 <translation id="6701547804986694515">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ನೀವು ಬಾಟ್ ಅಲ್ಲ ಎಂದು ಮಾನ್ಯಗೊಳಿಸುವ ಮಾಹಿತಿಯನ್ನು Chrome ನಲ್ಲಿ ಉಳಿಸಬಹುದು. ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ, ಸೈಟ್‌ಗಳು ನೀವು ನಿಜವಾದ ವ್ಯಕ್ತಿ ಇರಬಹುದು ಎಂಬುದಾಗಿ Chrome ನೊಂದಿಗೆ ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡಿದ ಹಿಂದಿನ ಸೈಟ್‌ನೊಂದಿಗೆ ಪರಿಶೀಲಿಸಬಹುದು</translation>
-<translation id="6701824422332982935">ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ಬಳಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6702639462873609204">&amp;ಸಂಪಾದಿಸು...</translation>
 <translation id="6703212423117969852">ಆನಂತರ ನೀವು Chrome ನಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="6703254819490889819">ಬ್ಯಾಕಪ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
@@ -6878,7 +6875,7 @@
 <translation id="7034692021407794547">ಬಿಲ್ಲಿಂಗ್ ನಿರ್ವಹಣಾ ಸವಲತ್ತುಗಳನ್ನು ಹೊಂದಿರುವ ನಿರ್ವಾಹಕರು ಮೊದಲು ನಿರ್ವಹಣೆ ಕನ್ಸೋಲ್‌ನಲ್ಲಿರುವ Google Meet ಹಾರ್ಡ್‌ವೇರ್ ವಿಭಾಗದಲ್ಲಿನ Google Meet ಹಾರ್ಡ್‌ವೇರ್ ಸೇವಾ ನಿಯಮಗಳಿಗೆ ಸಮ್ಮತಿಸಬೇಕು.</translation>
 <translation id="7036706669646341689">Linux ಗಾಗಿ <ph name="DISK_SIZE" /> ಸ್ಥಳಾವಕಾಶವನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ. ಮುಕ್ತ ಸ್ಥಳಾವಕಾಶವನ್ನು ಹೆಚ್ಚಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಿ.</translation>
 <translation id="7037509989619051237">ಪೂರ್ವವೀಕ್ಷಣೆಗಾಗಿ ಪಠ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
-<translation id="7038632520572155338">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ</translation>
+<translation id="7038632520572155338">ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> ಗಾಗಿ ಮತ್ತೊಂದು Google ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> ರಿಂದ USB ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -8802,7 +8799,6 @@
 <translation id="8749863574775030885">ಅಪರಿಚಿತ ಮಾರಾಟಗಾರರಿಂದ USB ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ಒಂದು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="8750346984209549530">ಸೆಲ್ಯುಲರ್ APN</translation>
-<translation id="8751419011949619279">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8752451679755290210">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಐಟಂಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
 <translation id="8753868764580670305">ಈ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಲಾಗಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೋಡಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8753948258138515839">ನೀವು Google Drive, ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ ಅಥವಾ ನಿಮ್ಮ ChromeOS Flex ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿರುವ ಫೈಲ್‌ಗಳಿಗೆ Files ಆ್ಯಪ್ ತ್ವರಿತ ಪ್ರವೇಶ ಒದಗಿಸುತ್ತದೆ.</translation>
@@ -8868,7 +8864,7 @@
 <translation id="8808478386290700967">ವೆಬ್‌ ಸ್ಟೋರ್‌</translation>
 <translation id="8808686172382650546">ಬೆಕ್ಕು</translation>
 <translation id="8809147117840417135">ತಿಳಿ ಕೆನ್ನೀಲಿ</translation>
-<translation id="8811862054141704416">Crostini ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶ</translation>
+<translation id="8811862054141704416">Crostini ಮೈಕ್ರೋಫೋನ್ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="8812593354822910461">ನಿಮ್ಮನ್ನು <ph name="DOMAIN" /> ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಬಹುದಾದ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು (<ph name="URL" />) ಸಹ ತೆರವುಗೊಳಿಸಿ. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಅನುಮೋದಿಸಲು ಪೋಷಕರ ಬಳಿ ವಿನಂತಿಸಿ</translation>

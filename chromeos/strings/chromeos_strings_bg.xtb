@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Активиран</translation>
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
+<translation id="5456936324019847994">Не може да се установи връзка с активирани персонализирани имена на точки за достъп (APN). Обърнете се към мобилния си оператор за още информация.</translation>
 <translation id="5457599981699367932">Сърфиране като гост</translation>
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Остава {0} опит}other{Остават {0} опита}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
+<translation id="5946538341867151940">Още нямате връзка. Ако мобилният ви оператор препоръчва персонализирано име на точката за достъп (APN), въведете съответната информация, като изберете „+ Ново име на точка за достъп (APN)“</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Тапет по подразбиране</translation>
 <translation id="6017514345406065928">зелено</translation>

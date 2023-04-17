@@ -118,6 +118,7 @@
 <translation id="1090541560108055381">Пред спарувањето, проверете дали кодов е ист на двата уреда</translation>
 <translation id="1091767800771861448">Притиснете ESCAPE за да прескокнете (Само неофицијални верзии).</translation>
 <translation id="1093457606523402488">Видливи мрежи:</translation>
+<translation id="1094219634413363886">Ќе видите известување ако започне снимање на управуваниов уред</translation>
 <translation id="1095761715416917775">Погрижете се секогаш да имате пристап до синхронизираните податоци</translation>
 <translation id="1095879482467973146">Google Password Manager на интернет</translation>
 <translation id="109647177154844434">Деинсталирањето на Parallels Desktop ќе ја избрише сликата на Windows. Тоа ги опфаќа апликациите, поставките и податоците. Дали сигурно сакате да продолжите?</translation>
@@ -1105,6 +1106,7 @@
 <translation id="1915734383465415025">Број на продавница</translation>
 <translation id="1916260783734263714">Моментална картичка</translation>
 <translation id="1916502483199172559">Стандарден црвен аватар</translation>
+<translation id="1916770123977586577">За да ги примените изменетите поставки на страницава, вчитајте ја повторно</translation>
 <translation id="1918141783557917887">&amp;Помал</translation>
 <translation id="1919872106782726755">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци најгоре десно на тастатурата, веднаш до копчето за вклучување. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Контакти</translation>
@@ -2650,6 +2652,7 @@
 <translation id="3262986719682892278">Преголема</translation>
 <translation id="3264544094376351444">Фонт Sans-Serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
+<translation id="3265032511221679826">Дали да се вклучи пристап до прецизна локација?</translation>
 <translation id="3265459715026181080">Затвори го прозорецот</translation>
 <translation id="3266022278425892773">Развојна околина на Linux</translation>
 <translation id="3266274118485960573">Се извршува безбедносната проверка.</translation>
@@ -3546,7 +3549,6 @@
 <translation id="4025039777635956441">Исклучи звук на избраниот сајт</translation>
 <translation id="402707738228916911">Примени се упатства од <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Папка <ph name="FOLDER_TITLE" /></translation>
-<translation id="4027958407426528157">Отворајте веб-сајтови во апликации инсталирани на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Додајте методи за внесување</translation>
 <translation id="4029556917477724407">Вратете се наназад од страницата <ph name="PAGE_TITLE" /></translation>
 <translation id="403088439874411464">Се преземаат датотеки за препознавање текст</translation>
@@ -3867,6 +3869,7 @@
 <translation id="4340125850502689798">Неважечко корисничко име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> сака да комуницира со апликацијата „<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Не им дозволувај на сајтовите да испраќаат известувања</translation>
+<translation id="4341280816303414009">Вашиот екран можеби ќе се снима</translation>
 <translation id="4341577178275615435">За да вклучите или исклучите „Прелистување со курсор“, користете ја кратенката F7</translation>
 <translation id="4341905082470253054">Се проверува статусот на TPM…</translation>
 <translation id="434198521554309404">Брз. Безбеден. Едноставен.</translation>
@@ -4187,7 +4190,6 @@
 <translation id="4615586811063744755">нема избрано колаче</translation>
 <translation id="461661862154729886">Извор на енергија</translation>
 <translation id="4617001782309103936">Премногу краток</translation>
-<translation id="4617019240346358451">Повторно вчитајте ја страницата за да се користи „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4617270414136722281">Опции на екстензијата</translation>
 <translation id="4617880081511131945">Не може да се воспостави врска</translation>
 <translation id="4618195822946934889">URL-адресата може да содржи само ASCII-знаци</translation>
@@ -4424,7 +4426,6 @@
 <translation id="4833683849865011483">Најден е 1 печатач од серверот за печатење</translation>
 <translation id="4836504898754963407">Управувајте со отпечатоците</translation>
 <translation id="4837128290434901661">Да се врати на „Пребарување на Google“?</translation>
-<translation id="4837165100461973682">Повторно вчитајте ја страницата за да се применат промените</translation>
 <translation id="4837926214103741331">Немате дозвола да го користите овој уред. Контактирајте го сопственикот на уредот за дозвола за пријавување.</translation>
 <translation id="4837952862063191349">За да ги отклучите и обновите локалните податоци, внесете ја старата лозинка од <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Прегледувајте ги фотографиите, аудиовизуелните содржини и известувањата од телефонот</translation>
@@ -5661,7 +5662,6 @@
 <translation id="5957918771633727933">Нема достапни eSIM-профили. Преземете нов <ph name="BEGIN_LINK" />профил.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Или допрете ја иконата „Изберете за говор“ во близина на сликата на профилот, а потоа изберете го тоа што сакате да го чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е достапна</translation>
-<translation id="595959584676692139">Вчитајте ја страницата повторно за да ја користите екстензијава</translation>
 <translation id="5963413905009737549">Секција</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> максимум)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
@@ -5690,6 +5690,7 @@
 <translation id="5979421442488174909">&amp;Преведи на <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">За да обележите некоја страница, кликнете на ѕвездата во лентата за адреси</translation>
 <translation id="5981362776161841923">За да дозволите екстензија, променете ја стандардната поставка долу.</translation>
+<translation id="5982578203375898585">Прикажи ги преземањата кога ќе завршат</translation>
 <translation id="5984222099446776634">Неодамна посетени</translation>
 <translation id="5985458664595100876">Погрешен URL-формат. Поддржани формати се \\server\share и smb://server/share.</translation>
 <translation id="598810097218913399">Отстранете го назначувањето</translation>
@@ -6476,7 +6477,6 @@
 <translation id="6700480081846086223">Емитувај <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не може да се добие профил.</translation>
 <translation id="6701547804986694515">Даден сајт што ќе го отворите може да зачува податоци со Chrome што ќе потврдат дека не сте бот. Додека прелистувате, сајтовите може да проверат со Chrome и да потврдат со некој претходен сајт што сте го отвориле дека најверојатно сте вистинска личност</translation>
-<translation id="6701824422332982935">Повторно вчитајте ја страницата за да ги користите екстензииве</translation>
 <translation id="6702639462873609204">&amp;Уреди...</translation>
 <translation id="6703212423117969852">Може да пробате пак во Chrome подоцна.</translation>
 <translation id="6703254819490889819">Врати го бекапот</translation>
@@ -8807,7 +8807,6 @@
 <translation id="8749863574775030885">Пристапувајте до USB-уреди од непознат продавач</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> сака да се поврзе со сериска порта</translation>
 <translation id="8750346984209549530">Мрежна APN</translation>
-<translation id="8751419011949619279">Отворајте веб-сајтови во апликации инсталирани на вашиот уред</translation>
 <translation id="8752451679755290210">Автоматски преместувајте се од ставка на ставка</translation>
 <translation id="8753868764580670305">Видете ги и управувајте со лозинките зачувани на уредов</translation>
 <translation id="8753948258138515839">Апликацијата Датотеки овозможува брз пристап до датотеки што сте ги зачувале на Google Drive, надворешен склад или уред со ChromeOS Flex.</translation>

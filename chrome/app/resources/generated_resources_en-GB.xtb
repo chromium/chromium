@@ -1106,6 +1106,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1915734383465415025">Shop number</translation>
 <translation id="1916260783734263714">Current tab</translation>
 <translation id="1916502483199172559">Default red avatar</translation>
+<translation id="1916770123977586577">To apply your updated settings to this site, reload this page</translation>
 <translation id="1918141783557917887">&amp;Smaller</translation>
 <translation id="1919872106782726755">To set up fingerprint, get your child to touch the fingerprint sensor at the top-right corner of the keyboard, next to the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Contacts</translation>
@@ -2652,6 +2653,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3262986719682892278">Too big</translation>
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">Context</translation>
+<translation id="3265032511221679826">Turn on precise location access?</translation>
 <translation id="3265459715026181080">Close Window</translation>
 <translation id="3266022278425892773">Linux development environment</translation>
 <translation id="3266274118485960573">Safety check is running.</translation>
@@ -3549,7 +3551,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4025039777635956441">Mute Selected Site</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> instruction received</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> folder</translation>
-<translation id="4027958407426528157">Open websites in apps installed on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Add input methods</translation>
 <translation id="4029556917477724407">Back from <ph name="PAGE_TITLE" /> page</translation>
 <translation id="403088439874411464">Downloading text recognition files</translation>
@@ -4193,7 +4194,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4615586811063744755">no cookie selected</translation>
 <translation id="461661862154729886">Energy source</translation>
 <translation id="4617001782309103936">Too short</translation>
-<translation id="4617019240346358451">Reload the page to use '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="4617270414136722281">Extension options</translation>
 <translation id="4617880081511131945">Can't establish connection</translation>
 <translation id="4618195822946934889">URL can only contain ASCII characters</translation>
@@ -4430,7 +4430,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4833683849865011483">Found one printer from the print server</translation>
 <translation id="4836504898754963407">Manage fingerprints</translation>
 <translation id="4837128290434901661">Change back to Google Search?</translation>
-<translation id="4837165100461973682">Reload the page to apply your changes</translation>
 <translation id="4837926214103741331">You are not authorised to use this device. Please contact the device owner for sign-in permission.</translation>
 <translation id="4837952862063191349">To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE" /> password.</translation>
 <translation id="4838170306476614339">View your phone's photos, media and notifications</translation>
@@ -5668,7 +5667,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5957918771633727933">No available eSIM profiles. Download a new <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
 <translation id="5957987129450536192">Tap the Select-to-Speak icon near your profile image, then select what you want to hear.</translation>
 <translation id="5959471481388474538">Network not available</translation>
-<translation id="595959584676692139">Reload page to use this extension</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> peak)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
@@ -6484,7 +6482,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6700480081846086223">Cast <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Could not get profile.</translation>
 <translation id="6701547804986694515">A site that you visit can save info with Chrome that validates that you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
-<translation id="6701824422332982935">Reload the page to use these extensions</translation>
 <translation id="6702639462873609204">&amp;Edit...</translation>
 <translation id="6703212423117969852">You can try again later in Chrome.</translation>
 <translation id="6703254819490889819">Restore backup</translation>
@@ -8818,7 +8815,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8749863574775030885">Access USB devices from an unknown vendor</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> wants to connect to a serial port</translation>
 <translation id="8750346984209549530">Mobile APN</translation>
-<translation id="8751419011949619279">Open websites in apps installed on your device</translation>
 <translation id="8752451679755290210">Move between items automatically</translation>
 <translation id="8753868764580670305">See and manage passwords saved on this device</translation>
 <translation id="8753948258138515839">The Files app provides quick access to files that you've saved on Google Drive, external storage or your Chrome OS Flex device.</translation>

@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328459813621383194">アクティブでないタブを移動する</translation>
 <translation id="3328801116991980348">サイト情報</translation>
+<translation id="3344485292736684439">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{ブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3377063233124932127">保存したブックマークやパスワードなどが上部に表示されます。</translation>
 <translation id="3393920035788932672">ポップアップ許可済み</translation>
@@ -1032,6 +1033,7 @@
 <translation id="7840771868269352570">選択したアイテムが削除されます。</translation>
 <translation id="7845466610722898">リーディング リストを表示</translation>
 <translation id="784551991304901159">コンテンツを表示するには、メニューから [オンにする] を選択します</translation>
+<translation id="7846158885638438868">{count,plural, =1{ブックマークを「{title}」に保存しました}other{ブックマークを「{title}」に保存しました}}</translation>
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7856733331829174190">ダウンロードできませんでした</translation>
 <translation id="785938070103630874">パスワード、お支払い方法、住所などを開きます</translation>

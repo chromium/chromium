@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">활성화됨</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
+<translation id="5456936324019847994">사용 설정된 맞춤 APN에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="5457599981699367932">게스트로 로그인</translation>
 <translation id="54609108002486618">관리</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{남은 시도 {0}회}other{남은 시도 {0}회}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
+<translation id="5946538341867151940">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 '+ 새 APN'을 선택하여 APN 정보를 입력합니다.</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
 <translation id="6017514345406065928">녹색</translation>

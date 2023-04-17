@@ -118,6 +118,7 @@
 <translation id="1090541560108055381">Жұптамас бұрын осы кодтың екі құрылғыда да бірдей екеніне көз жеткізіңіз.</translation>
 <translation id="1091767800771861448">Өткізіп жіберу үшін ESCAPE түймесін басыңыз (тек бейресми нұсқаларда).</translation>
 <translation id="1093457606523402488">Көрінетін желілер:</translation>
+<translation id="1094219634413363886">Осы басқарылатын құрылғыда жазу басталса, хабарландыруды көресіз</translation>
 <translation id="1095761715416917775">Синхрондалған деректерді кез келген уақытта аша алуыңыз керек</translation>
 <translation id="1095879482467973146">Желідегі Google Құпия сөз менеджері</translation>
 <translation id="109647177154844434">Parallels Desktop жойылса, Windows суреті де жойылады. Оның қолданбалары, параметрлері мен деректері бірге өшеді. Жалғастырғыңыз келе ме?</translation>
@@ -1089,6 +1090,7 @@
 <translation id="1915734383465415025">Дүкен нөмірі</translation>
 <translation id="1916260783734263714">Ағымдағы қойынды</translation>
 <translation id="1916502483199172559">Әдепкі қызыл түсті аватар</translation>
+<translation id="1916770123977586577">Жаңартылған параметрлерді бұл сайтқа қолдану үшін осы бетті қайта жүктеңіз</translation>
 <translation id="1918141783557917887">&amp;Кішірек</translation>
 <translation id="1919872106782726755">Саусақ ізін реттеу үшін, балаңыз қуат түймесінің жанындағы, пернетақтаның жоғарғы оң жақ бұрышындағы саусақ ізін оқу сканерін түртуі керек. Балаңыздың саусағының ізі туралы дерек қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
 <translation id="1920390473494685033">Контактілер</translation>
@@ -2631,6 +2633,7 @@
 <translation id="3262986719682892278">Тым үлкен</translation>
 <translation id="3264544094376351444">Sans-serif қаріпі</translation>
 <translation id="3264582393905923483">Мәнмәтін</translation>
+<translation id="3265032511221679826">Нақты геодеректі пайдалану мүмкіндігін қосу керек пе?</translation>
 <translation id="3265459715026181080">Терезені жабу</translation>
 <translation id="3266022278425892773">Linux әзірлеуші ортасы</translation>
 <translation id="3266274118485960573">Қауіпсіздік шарасы қосулы.</translation>
@@ -3527,7 +3530,6 @@
 <translation id="4025039777635956441">Таңдалған сайттағы дыбысты өшіру</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> нұсқауы алынды</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> қалтасы</translation>
-<translation id="4027958407426528157"><ph name="DEVICE_TYPE" /> құрылғысында орнатылған қолданбаларда веб-сайттарды ашу</translation>
 <translation id="4028467762035011525">Енгізу әдісін қосу</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> бетінен артқа қайту</translation>
 <translation id="403088439874411464">Мәтінді тану файлдары жүктеп алынуда.</translation>
@@ -3848,6 +3850,7 @@
 <translation id="4340125850502689798">Пайдаланушы аты дұрыс емес.</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" қолданбасымен байланысуға рұқсат сұрап тұр</translation>
 <translation id="4340799661701629185">Сайттардың хабарландырулар жіберуіне рұқсат бермеу</translation>
+<translation id="4341280816303414009">Экраныңыз жазылған болуы мүмкін</translation>
 <translation id="4341577178275615435">Перне арқылы қозғалу функциясын қосу немесе өшіру үшін F7 пернесін пайдаланыңыз.</translation>
 <translation id="4341905082470253054">TPM күйі тексерілуде…</translation>
 <translation id="434198521554309404">Жылдам. Қауіпсіз. Оңай.</translation>
@@ -4167,7 +4170,6 @@
 <translation id="4615586811063744755">бірде-бір cookie файлы таңдалмады</translation>
 <translation id="461661862154729886">Қуат көзі</translation>
 <translation id="4617001782309103936">Тым қысқа</translation>
-<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" кеңейтімін пайдалану үшін бетті қайта жүктеңіз</translation>
 <translation id="4617270414136722281">Кеңейтім опциялары</translation>
 <translation id="4617880081511131945">Байланыс орнату мүмкін емес</translation>
 <translation id="4618195822946934889">URL мекенжайында тек ASCII таңбалары болуы қажет.</translation>
@@ -4404,7 +4406,6 @@
 <translation id="4833683849865011483">Басып шығару серверінен 1 принтер табылды.</translation>
 <translation id="4836504898754963407">Саусақ іздерін басқару</translation>
 <translation id="4837128290434901661">Google Search іздеу жүйесіне қайта ораласыз ба?</translation>
-<translation id="4837165100461973682">Өзгерістер күшіне енуі үшін бетті қайта жүктеңіз</translation>
 <translation id="4837926214103741331">Бұл құрылғыны пайдалану рұқсатыңыз жоқ. Кіру рұқсатын алу үшін құрылғы иесіне хабарласыңыз.</translation>
 <translation id="4837952862063191349">Жергілікті деректердің құлпын ашып, қалпына келтіру үшін, ескі <ph name="DEVICE_TYPE" /> құпия сөзіңізді енгізіңіз.</translation>
 <translation id="4838170306476614339">Телефондағы фотосуреттерді, медиафайлдар мен хабарландыруларды көру</translation>
@@ -5638,7 +5639,6 @@
 <translation id="5957918771633727933">Қолжетімді eSIM профильдері жоқ. Жаңа <ph name="BEGIN_LINK" />профильді<ph name="END_LINK" /> жүктеп алыңыз.</translation>
 <translation id="5957987129450536192">Профиль суретіңіздің жанындағы Select-to-Speak белгішесін түртіп, естігіңіз келетін нәрсені таңдаңыз.</translation>
 <translation id="5959471481388474538">Желі қолжетімсіз</translation>
-<translation id="595959584676692139">Осы кеңейтімді қолдану үшін бетті қайта жүктеңіз</translation>
 <translation id="5963413905009737549">Бөлім</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (ең көбі – <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Барлығын &amp;жаңа терезеден ашу}=1{&amp;Жаңа терезеден ашу}other{Барлығын ({COUNT}) &amp;жаңа терезеден ашу}}</translation>
@@ -5667,6 +5667,7 @@
 <translation id="5979421442488174909">&amp;<ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="5979469435153841984">Беттерге бетбелгі қою үшін мекенжай жолағындағы жұлдызшаны түртіңіз</translation>
 <translation id="5981362776161841923">Кеңейтімге рұқсат беру үшін төмендегі әдепкі параметрді өзгертіңіз.</translation>
+<translation id="5982578203375898585">Аяқталған кезде жүктеп алынғандарды көрсету</translation>
 <translation id="5984222099446776634">Соңғы кірілген</translation>
 <translation id="5985458664595100876">URL сілтемесінің форматы дұрыс емес. Олар \\server\share және smb://server/share форматында болуы керек.</translation>
 <translation id="598810097218913399">Тағайындауды өшіру</translation>
@@ -6451,7 +6452,6 @@
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> хостын трансляциялау</translation>
 <translation id="6701535245008341853">Профильді алу мүмкін емес.</translation>
 <translation id="6701547804986694515">Сіз кірген сайт бот емес екеніңізді растайтын ақпаратты Chrome-мен сақтай алады. Шолуды жалғастыра отырып, сайттар Chrome-мен тексеріп, шынайы адам екеніңізді алдыңғы кірген сайтпен растай алады.</translation>
-<translation id="6701824422332982935">Бұл кеңейтімдерді пайдалану үшін бетті қайта жүктеңіз</translation>
 <translation id="6702639462873609204">&amp;Өзгерту…</translation>
 <translation id="6703212423117969852">Кейінірек Chrome браузерінде қайталап көріңіз.</translation>
 <translation id="6703254819490889819">Сақтық көшірмені қалпына келтіру</translation>
@@ -8778,7 +8778,6 @@
 <translation id="8749863574775030885">Белгісіз жеткізуші атынан USB құрылғыларына кіру</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> сериялық портқа қосылғысы келеді</translation>
 <translation id="8750346984209549530">Ұялы APN</translation>
-<translation id="8751419011949619279">Құрылғыда орнатылған қолданбаларда веб-сайттарды ашу</translation>
 <translation id="8752451679755290210">Элементтер арасында автоматты түрде жылжу</translation>
 <translation id="8753868764580670305">Бұл құрылғыда сақталған құпия сөздерді көру және басқару</translation>
 <translation id="8753948258138515839">Files қолданбасы Google Drive қызметінде, сыртқы жадта немесе ChromeOS Flex құрылғысында сақталған файлдарыңызға жылдам кіруге мүмкіндік береді.</translation>

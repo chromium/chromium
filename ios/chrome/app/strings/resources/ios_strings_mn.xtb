@@ -321,6 +321,7 @@
 <translation id="3131206671572504478">Бүх күүкийг блоклосон</translation>
 <translation id="313283613037595347">Шинэ Нууцлалтай таб үүсгэх</translation>
 <translation id="3146109040683991651">Chrome-г өгөгдмөл хөтчөөр тохируулах</translation>
+<translation id="3152169319860972623">Нууц үгний хяналт таны хадгалсан нууц үгнүүдийг шалгаж, аливаа онлайн зөрчлийг танд сануулна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авна уу.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Картыг хадгалах</translation>
 <translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="3157684681743766797">Бүгдийг тэмдэглэх...</translation>
@@ -353,6 +354,7 @@
 <translation id="3324193307694657476">Хаяг 2</translation>
 <translation id="3328459813621383194">Идэвхгүй табуудыг зөөх</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
+<translation id="3344485292736684439">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{Хавчуургуудыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
 <translation id="3371831930909698441">Орчуулах боломжтой байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="3377063233124932127">Одоо таны хадгалсан хавчуурга, нууц үг болон бусад зүйл дээд талд байна.</translation>
 <translation id="3393920035788932672">Мэдээллийн цонх харуулахыг зөвшөөрсөн</translation>
@@ -1031,6 +1033,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7840771868269352570">Таны сонгосон зүйлсийг устгах болно.</translation>
 <translation id="7845466610722898">Унших жагсаалтыг харуулах</translation>
 <translation id="784551991304901159">Контентыг харахын тулд цэсээс Асаахыг сонгоно уу</translation>
+<translation id="7846158885638438868">{count,plural, =1{"{title}"-д тэмдэглэсэн}other{"{title}"-д тэмдэглэсэн}}</translation>
 <translation id="7853202427316060426">Үйл ажиллагаа</translation>
 <translation id="7856733331829174190">Татаж чадсангүй</translation>
 <translation id="785938070103630874">Нууц үг, төлбөрийн хэрэгсэл, хаяг болон бусад зүйлийг нээнэ үү</translation>

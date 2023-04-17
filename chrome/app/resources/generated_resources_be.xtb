@@ -1095,6 +1095,7 @@
 <translation id="1915734383465415025">Нумар крамы</translation>
 <translation id="1916260783734263714">Бягучая ўкладка</translation>
 <translation id="1916502483199172559">Стандартны чырвоны аватар</translation>
+<translation id="1916770123977586577">Каб прымяніць змененыя налады гэтага сайта, абнавіце гэту старонку</translation>
 <translation id="1918141783557917887">&amp;Паменшыць</translation>
 <translation id="1919872106782726755">Каб наладзіць выкарыстанне адбітка пальца, папрасіце дзіця дакрануцца да сканера адбіткаў пальцаў у правым верхнім вугле клавіятуры (побач з кнопкай сілкавання). Адбіткі пальцаў дзіцяці надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
 <translation id="1920390473494685033">Кантакты</translation>
@@ -2637,6 +2638,7 @@
 <translation id="3262986719682892278">Файл занадта вялікі</translation>
 <translation id="3264544094376351444">Шрыфт без засечак</translation>
 <translation id="3264582393905923483">Кантэкст</translation>
+<translation id="3265032511221679826">Уключыць доступ да даных дакладнага месцазнаходжання?</translation>
 <translation id="3265459715026181080">Закрыць акно</translation>
 <translation id="3266022278425892773">Асяроддзе распрацоўкі Linux</translation>
 <translation id="3266274118485960573">Праверка бяспекі выконваецца.</translation>
@@ -3531,7 +3533,6 @@
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
 <translation id="402707738228916911">Атрымана інструкцыя: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Папка: <ph name="FOLDER_TITLE" /></translation>
-<translation id="4027958407426528157">Адкрываць вэб-сайты ў праграмах, усталяваных на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4029556917477724407">Вярнуцца назад са старонкі "<ph name="PAGE_TITLE" />"</translation>
 <translation id="403088439874411464">Спампоўваюцца файлы для распазнавання тэксту</translation>
@@ -4171,7 +4172,6 @@
 <translation id="4615586811063744755">файлы cookie не выбраны</translation>
 <translation id="461661862154729886">Крыніца энергіі</translation>
 <translation id="4617001782309103936">Занадта кароткі</translation>
-<translation id="4617019240346358451">Каб выкарыстаць пашырэнне "<ph name="EXTENSION_NAME" />", абнавіце старонку</translation>
 <translation id="4617270414136722281">Параметры пашырэння</translation>
 <translation id="4617880081511131945">Не ўдалося ўстанавіць падключэнне</translation>
 <translation id="4618195822946934889">URL-адрас можа змяшчаць толькі сімвалы ASCII</translation>
@@ -4408,7 +4408,6 @@
 <translation id="4833683849865011483">На серверы друку знойдзены 1 прынтар</translation>
 <translation id="4836504898754963407">Кіраваць адбіткамі пальцаў</translation>
 <translation id="4837128290434901661">Зноў зрабіць Google Пошук стандартнай пошукавай сістэмай?</translation>
-<translation id="4837165100461973682">Каб прымяніць змяненні, абнавіце старонку</translation>
 <translation id="4837926214103741331">Вы не аўтарызаваны для выкарыстання гэтай прылады. Звярніцеся да ўладальніка прылады з запытам дазволу на ўваход.</translation>
 <translation id="4837952862063191349">Каб разблакіраваць і аднавіць лакальныя даныя, увядзіце стары пароль прылады <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Прагляд фота, медыяфайлаў і апавяшчэнняў з тэлефона</translation>
@@ -5645,7 +5644,6 @@
 <translation id="5957918771633727933">Даступных профіляў eSIM-карты няма. Спампуйце новы <ph name="BEGIN_LINK" />профіль<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Націсніце значок "Чытаць уголас" побач з відарысам профілю і выберыце, што трэба агучыць.</translation>
 <translation id="5959471481388474538">Сетка недаступная</translation>
-<translation id="595959584676692139">Каб выкарыстоўваць гэта пашырэнне, перазагрузіце старонку</translation>
 <translation id="5963413905009737549">Раздзел</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> максімум)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
@@ -6464,7 +6462,6 @@
 <translation id="6700480081846086223">Трансліраваць <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не ўдалося атрымаць профіль.</translation>
 <translation id="6701547804986694515">Наведаны вамі сайт можа захаваць у Chrome інфармацыю пра тое, што вы не бот. Гэта дазваляе іншым сайтам, якія вы наведваеце, запытваць гэты даныя ў Chrome, каб правяраць, ці сапраўды вы чалавек.</translation>
-<translation id="6701824422332982935">Каб выкарыстоўваць гэтыя пашырэнні, абнавіце старонку</translation>
 <translation id="6702639462873609204">&amp;Змяніць...</translation>
 <translation id="6703212423117969852">Паўтарыце спробу пазней у браўзеры Chrome.</translation>
 <translation id="6703254819490889819">Аднавіць рэзервовую копію</translation>
@@ -8792,7 +8789,6 @@
 <translation id="8749863574775030885">Доступ да USB-прылад ад невядомага пастаўшчыка</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> хоча падключыцца да серыйнага порта</translation>
 <translation id="8750346984209549530">APN для сотавай сеткі</translation>
-<translation id="8751419011949619279">Адкрываць вэб-сайты ў праграмах, усталяваных на прыладзе</translation>
 <translation id="8752451679755290210">Аўтаматычнае перамяшчэнне паміж элементамі</translation>
 <translation id="8753868764580670305">Праглядайце паролі, захаваныя на гэтай прыладзе, і кіруйце імі</translation>
 <translation id="8753948258138515839">Праграма "Файлы" дазваляе хутка адкрываць файлы, захаваныя на Google Дыску, знешніх сховішчах і прыладах з Chrome OS Flex.</translation>

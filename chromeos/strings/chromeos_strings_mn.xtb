@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Идэвхжүүлсэн байна</translation>
 <translation id="5430931332414098647">Шуурхай модем болгох</translation>
 <translation id="5431318178759467895">Өнгө</translation>
+<translation id="5456936324019847994">Идэвхжүүлсэн аливаа захиалгат APN-д холбогдох боломжгүй. Дэлгэрэнгүй мэдээлэл авах бол мобайл оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="5457599981699367932">Зочны хувиар хайлт хийх</translation>
 <translation id="54609108002486618">Удирдсан</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} оролдлого үлдсэн}other{{0} оролдлого үлдсэн}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
+<translation id="5946538341867151940">Та одоогоор холбогдоогүй байна. Хэрэв таны мобайл оператор компани захиалгат APN-г зөвлөж байвал "+ Шинэ APN"-г сонгосноор APN-н мэдээллийг оруулна уу</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="5984145644188835034">Өгөгдмөл дэлгэцийн зураг</translation>
 <translation id="6017514345406065928">Ногоон</translation>

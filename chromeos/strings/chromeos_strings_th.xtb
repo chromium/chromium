@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">เปิดอยู่</translation>
 <translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
+<translation id="5456936324019847994">ไม่สามารถเชื่อมต่อกับ APN ที่กำหนดเองซึ่งเปิดใช้อยู่ โปรดติดต่อสอบถามข้อมูลเพิ่มเติมจากผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="5457599981699367932">ท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ลองได้อีก {0} ครั้ง}other{ลองได้อีก {0} ครั้ง}}</translation>

@@ -321,6 +321,7 @@
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
 <translation id="3146109040683991651">將 Chrome 設為預設瀏覽器</translation>
+<translation id="3152169319860972623">「密碼安全檢查」會檢查你已儲存的密碼，並在發現網路資料侵害情形時顯示警示。<ph name="BEGIN_LINK" />瞭解詳情。<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">儲存卡片</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157684681743766797">全部標示…</translation>
@@ -353,6 +354,7 @@
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328459813621383194">移動閒置分頁</translation>
 <translation id="3328801116991980348">網站資訊</translation>
+<translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
 <translation id="3393920035788932672">已允許的彈出式視窗</translation>
@@ -1032,6 +1034,7 @@
 <translation id="7840771868269352570">系統將移除所選項目。</translation>
 <translation id="7845466610722898">顯示閱讀清單</translation>
 <translation id="784551991304901159">如要查看內容，請從選單中選取「開啟」</translation>
+<translation id="7846158885638438868">{count,plural, =1{已在「{title}」中加入書籤}other{已在「{title}」中加入書籤}}</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="785938070103630874">開啟密碼、付款方式或地址等等</translation>

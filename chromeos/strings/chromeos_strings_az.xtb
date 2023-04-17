@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Aktivləşdirildi</translation>
 <translation id="5430931332414098647">Cəld modem rejimi</translation>
 <translation id="5431318178759467895">Rəng</translation>
+<translation id="5456936324019847994">Aktivləşdirilmiş fərdi APN-ə qoşulmaq olmur. Ətraflı məlumat üçün mobil operator ilə əlaqə saxlayın.</translation>
 <translation id="5457599981699367932">Qonaq kimi gözdən keçirin</translation>
 <translation id="54609108002486618">İdarə edilən</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} cəhd qalıb}other{{0} cəhd qalıb}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Fayl tapılmadı</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="594552776027197022">Təsadüfi açar cütü yaradın</translation>
+<translation id="5946538341867151940">Hələ qoşulmamısınız. Mobil operator fərdi APN tövsiyə edirsə, "+Yeni APN" seçməklə APN məlumatını daxil edin</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="5984145644188835034">Defolt Divar Kağızı</translation>
 <translation id="6017514345406065928">Yaşıl</translation>

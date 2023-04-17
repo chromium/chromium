@@ -1094,6 +1094,7 @@
 <translation id="1915734383465415025">Մասնաճյուղի համարը</translation>
 <translation id="1916260783734263714">Ընթացիկ ներդիրը</translation>
 <translation id="1916502483199172559">Կանխադրված կարմիր ավատար</translation>
+<translation id="1916770123977586577">Կայքի թարմացված կարգավորումները կիրառելու համար վերաբեռնեք այս էջը</translation>
 <translation id="1918141783557917887">&amp;Ավելի փոքր</translation>
 <translation id="1919872106782726755">Մատնահետքը կարգավորելու համար ձեր երեխան պետք է հպի մատնահետքերի սկաներին, որը ձեր ստեղնաշարի վերևի աջ անկյունում է՝ սնուցման կոճակի կողքին։ Երեխայի մատնահետքի տվյալները ապահով պահվում են այս <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="1920390473494685033">Կոնտակտներ</translation>
@@ -2636,6 +2637,7 @@
 <translation id="3262986719682892278">Ֆայլը չափազանց մեծ է</translation>
 <translation id="3264544094376351444">Sans-serif տառատեսակ</translation>
 <translation id="3264582393905923483">Համատեքստ</translation>
+<translation id="3265032511221679826">Միացնե՞լ ճշգրիտ տեղորոշումը</translation>
 <translation id="3265459715026181080">Close Window</translation>
 <translation id="3266022278425892773">Լինուքսի մշակման միջավայր</translation>
 <translation id="3266274118485960573">Անվտանգության ստուգումը դեռ չի ավարտվել։</translation>
@@ -3532,7 +3534,6 @@
 <translation id="4025039777635956441">Անջատել նշված կայքի ձայնը</translation>
 <translation id="402707738228916911">Ստացվել է ուղեցույց՝ <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">«<ph name="FOLDER_TITLE" />» պանակ</translation>
-<translation id="4027958407426528157">Բացեք կայքերը ձեր <ph name="DEVICE_TYPE" /> սարքում տեղադրված հավելվածներում</translation>
 <translation id="4028467762035011525">Ավելացնել ներածման մեթոդներ</translation>
 <translation id="4029556917477724407">Վերադառնալ «<ph name="PAGE_TITLE" />» էջից</translation>
 <translation id="403088439874411464">Տեքստի ճանաչման ֆայլերը ներբեռնվում են</translation>
@@ -4172,7 +4173,6 @@
 <translation id="4615586811063744755">քուքիներ ընտրված չեն</translation>
 <translation id="461661862154729886">Էներգիայի աղբյուր</translation>
 <translation id="4617001782309103936">Չափազանց կարճ է</translation>
-<translation id="4617019240346358451">Վերաբեռնեք էջը՝ «<ph name="EXTENSION_NAME" />» ընդլայնումն օգտագործելու համար</translation>
 <translation id="4617270414136722281">Ընդլայնումների ընտրանքներ</translation>
 <translation id="4617880081511131945">Հնարավոր չէ կապ հաստատել</translation>
 <translation id="4618195822946934889">URL-ը կարող պարունակել միայն ASCII նիշեր</translation>
@@ -4409,7 +4409,6 @@
 <translation id="4833683849865011483">Տպման սերվերում գտնվել է 1 տպիչ։</translation>
 <translation id="4836504898754963407">Մատնահետքերի կառավարում</translation>
 <translation id="4837128290434901661">Վերադառնա՞լ Google Որոնմանը</translation>
-<translation id="4837165100461973682">Վերաբեռնեք էջը՝ փոփոխությունները կիրառելու համար</translation>
 <translation id="4837926214103741331">Դուք այս սարքից օգտվելու իրավունք չունեք: Մուտք գործելու թույլտվության համար դիմեք սարքի սեփականատիրոջը:</translation>
 <translation id="4837952862063191349">Տեղական տվյալներն ապակողպելու և վերականգնելու համար մուտքագրեք նախկին <ph name="DEVICE_TYPE" /> սարքի գաղտնաբառը:</translation>
 <translation id="4838170306476614339">Դիտել հեռախոսի լուսանկարները, մեդիաֆայլերը և ծանուցումները</translation>
@@ -5646,7 +5645,6 @@
 <translation id="5957918771633727933">eSIM-ի հասանելի պրոֆիլներ չկան։ Ներբեռնեք նոր <ph name="BEGIN_LINK" />պրոֆիլ<ph name="END_LINK" />։</translation>
 <translation id="5957987129450536192">Հպեք «Ընտրեք և լսեք» պատկերակին և նշեք տեքստը՝ այն հնչեցնելու համար։</translation>
 <translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
-<translation id="595959584676692139">Կրկին բեռնեք էջը՝ այս ընդլայնումն օգտագործելու համար</translation>
 <translation id="5963413905009737549">Հատված</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> առավելագույն)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
@@ -6461,7 +6459,6 @@
 <translation id="6700480081846086223">Հեռարձակել <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Չհաջողվեց ստանալ պրոֆիլը:</translation>
 <translation id="6701547804986694515">Կայքը, որն այցելում եք, կարող է Chrome-ից պահել տեղեկություններ, որոնք հավաստում են, որ դուք ռոբոտ չեք։ Երբ դուք կայքեր եք դիտարկում, դրանք կարող են Chrome-ում տեղեկություններ պահել, որոնք հաստատում են, որ դուք իրական օգտատեր եք։</translation>
-<translation id="6701824422332982935">Վերաբեռնեք էջը՝ այս ընդլայնումներն օգտագործելու համար</translation>
 <translation id="6702639462873609204">&amp;Փոփոխել...</translation>
 <translation id="6703212423117969852">Փորձեք ավելի ուշ Կարգավորումներում։</translation>
 <translation id="6703254819490889819">Վերականգնել պահուստավորված տարբերակից</translation>
@@ -8788,7 +8785,6 @@
 <translation id="8749863574775030885">Մտնել անհայտ վաճառողի USB սարքեր</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> կայքն ուզում է միանալ հերթական միացքին</translation>
 <translation id="8750346984209549530">Բջջային APN</translation>
-<translation id="8751419011949619279">Բացեք կայքերը ձեր սարքում տեղադրված հավելվածներում</translation>
 <translation id="8752451679755290210">Ավտոմատ անցեք մեկ տարրից մյուսին</translation>
 <translation id="8753868764580670305">Դիտել և կառավարել այս սարքում պահված գաղտնաբառերը</translation>
 <translation id="8753948258138515839">«Ֆայլեր» հավելվածի օգնությամբ դուք կարող եք արագ բացել ձեր ֆայլերը, որոնք պահել եք Google Drive-ում, արտաքին կրիչի վրա կամ ChromeOS Flex սարքում։</translation>

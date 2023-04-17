@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Активиран</translation>
 <translation id="5430931332414098647">Инстант врзување</translation>
 <translation id="5431318178759467895">Боја</translation>
+<translation id="5456936324019847994">Не може да се поврзе со ниедно овозможено приспособено APN. Контактирајте со вашиот мобилен оператор за повеќе информации.</translation>
 <translation id="5457599981699367932">Прелистувај како гостин</translation>
 <translation id="54609108002486618">Управуван</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Уште {0} обид}one{Уште {0} обид}other{Уште {0} обиди}}</translation>

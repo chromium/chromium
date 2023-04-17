@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Жандырылды</translation>
 <translation id="5430931332414098647">Ыкчам байланыш түйүнү</translation>
 <translation id="5431318178759467895">Түс</translation>
+<translation id="5456936324019847994">Бир да иштетилген жеке APN менен туташтырылган жок. Толук маалымат алуу үчүн мобилдик байланыш операторуна кайрылыңыз.</translation>
 <translation id="5457599981699367932">Конок катары серептөө</translation>
 <translation id="54609108002486618">Башкарылуучу</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} аракет калды}other{{0} аракет калды}}</translation>

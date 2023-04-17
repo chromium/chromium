@@ -1094,6 +1094,7 @@
 <translation id="1915734383465415025">Номер филиала</translation>
 <translation id="1916260783734263714">Текущая вкладка</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
+<translation id="1916770123977586577">Чтобы применить к сайту новые настройки, перезагрузите страницу</translation>
 <translation id="1918141783557917887">&amp;Мельче</translation>
 <translation id="1919872106782726755">Чтобы настроить разблокировку по отпечатку, ребенок должен приложить палец к сканеру отпечатков рядом с кнопкой питания в правом верхнем углу клавиатуры. Данные отпечатков пальцев ребенка хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Контакты</translation>
@@ -2636,6 +2637,7 @@
 <translation id="3262986719682892278">Файл слишком большой.</translation>
 <translation id="3264544094376351444">Шрифты без засечек</translation>
 <translation id="3264582393905923483">Контекст</translation>
+<translation id="3265032511221679826">Открыть доступ к данным о точном местоположении?</translation>
 <translation id="3265459715026181080">Закрыть окно</translation>
 <translation id="3266022278425892773">Среда разработки Linux</translation>
 <translation id="3266274118485960573">Выполняется проверка безопасности.</translation>
@@ -3532,7 +3534,6 @@
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
 <translation id="402707738228916911">Получена инструкция: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
 <translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
-<translation id="4027958407426528157">Открывать сайты в приложениях, установленных на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" />: перейти на предыдущую страницу</translation>
 <translation id="403088439874411464">Скачивание файлов для распознавания текста</translation>
@@ -4172,7 +4173,6 @@
 <translation id="4615586811063744755">файлы cookie не выбраны</translation>
 <translation id="461661862154729886">Источник электропитания</translation>
 <translation id="4617001782309103936">Слишком короткий</translation>
-<translation id="4617019240346358451">Чтобы использовать расширение "<ph name="EXTENSION_NAME" />", обновите страницу</translation>
 <translation id="4617270414136722281">Параметры расширений</translation>
 <translation id="4617880081511131945">Не удается подключиться</translation>
 <translation id="4618195822946934889">URL может содержать только символы стандарта ASCII.</translation>
@@ -4409,7 +4409,6 @@
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
-<translation id="4837165100461973682">Чтобы изменения вступили в силу, обновите страницу</translation>
 <translation id="4837926214103741331">У вас нет доступа к этому устройству. Свяжитесь с его владельцем.</translation>
 <translation id="4837952862063191349">Чтобы разблокировать и восстановить данные, введите старый пароль устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="4838170306476614339">Просмотр фотографий, медиафайлов и уведомлений с телефона</translation>
@@ -5646,7 +5645,6 @@
 <translation id="5957918771633727933">Нет доступных профилей eSIM. Скачайте <ph name="BEGIN_LINK" />новый профиль<ph name="END_LINK" />.</translation>
 <translation id="5957987129450536192">Коснитесь значка "Озвучивание при нажатии" рядом с фотографией профиля и выберите текст для прослушивания.</translation>
 <translation id="5959471481388474538">Сеть недоступна</translation>
-<translation id="595959584676692139">Перезагрузите страницу, чтобы использовать расширение</translation>
 <translation id="5963413905009737549">Раздел</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (макс. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
@@ -6465,7 +6463,6 @@
 <translation id="6700480081846086223">Трансляция <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не удалось получить профиль.</translation>
 <translation id="6701547804986694515">Сайт, который вы посещаете, может сохранять в Chrome информацию о том, что вы реальный пользователь. Затем другие сайты также могут запрашивать эти данные у браузера.</translation>
-<translation id="6701824422332982935">Чтобы использовать эти расширения, обновите страницу</translation>
 <translation id="6702639462873609204">&amp;Изменить</translation>
 <translation id="6703212423117969852">Повторите попытку позже в браузере Chrome.</translation>
 <translation id="6703254819490889819">Восстановить данные из резервной копии</translation>
@@ -8793,7 +8790,6 @@
 <translation id="8749863574775030885">Доступ к USB-устройствам от неизвестного поставщика</translation>
 <translation id="8750155211039279868">Сайт <ph name="ORIGIN" /> запрашивает разрешение подключиться к последовательному порту</translation>
 <translation id="8750346984209549530">Мобильная точка доступа</translation>
-<translation id="8751419011949619279">Открывать сайты в приложениях, установленных на устройстве</translation>
 <translation id="8752451679755290210">Перемещайтесь между объектами автоматически</translation>
 <translation id="8753868764580670305">Посмотреть или изменить пароли, сохраненные на этом устройстве</translation>
 <translation id="8753948258138515839">С помощью приложения "Файлы" можно быстро открывать документы, сохраненные на Google Диске, внешнем накопителе или устройстве с Chrome OS Flex.</translation>

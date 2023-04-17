@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">有効</translation>
 <translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
+<translation id="5456936324019847994">有効なカスタム APN に接続できません。詳しくは、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="5457599981699367932">ゲストとしてブラウジング</translation>
 <translation id="54609108002486618">管理対象</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{あと {0} 回試行できます}other{あと {0} 回試行できます}}</translation>
