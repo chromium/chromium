@@ -20,13 +20,13 @@
 
 namespace image_editor {
 
-class EventCaptureMac::ObjCImpl
+class EventCaptureMac::MouseCaptureDelegateImpl
     : public remote_cocoa::CocoaMouseCaptureDelegate {
  public:
-  ObjCImpl(ui::EventHandler* event_handler,
-           base::OnceClosure capture_lost_callback,
-           gfx::NativeView web_contents_view,
-           gfx::NativeWindow target_native_window)
+  MouseCaptureDelegateImpl(ui::EventHandler* event_handler,
+                           base::OnceClosure capture_lost_callback,
+                           gfx::NativeView web_contents_view,
+                           gfx::NativeWindow target_native_window)
       : event_handler_(event_handler),
         capture_lost_callback_(std::move(capture_lost_callback)),
         web_contents_view_(web_contents_view.GetNativeNSView()),
@@ -98,10 +98,11 @@ EventCaptureMac::EventCaptureMac(ui::EventHandler* event_handler,
                                  base::OnceClosure capture_lost_callback,
                                  gfx::NativeView web_contents_view,
                                  gfx::NativeWindow target_native_window)
-    : objc_impl_(std::make_unique<ObjCImpl>(event_handler,
-                                            std::move(capture_lost_callback),
-                                            web_contents_view,
-                                            target_native_window)) {
+    : mouse_capture_delegate_impl_(std::make_unique<MouseCaptureDelegateImpl>(
+          event_handler,
+          std::move(capture_lost_callback),
+          web_contents_view,
+          target_native_window)) {
   CreateKeyDownLocalMonitor(event_handler, target_native_window);
 }
 
@@ -138,13 +139,13 @@ void EventCaptureMac::CreateKeyDownLocalMonitor(
     return event;
   };
 
-  objc_impl_->SetKeyboardMonitor([NSEvent
+  mouse_capture_delegate_impl_->SetKeyboardMonitor([NSEvent
       addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
                                    handler:block]);
 }
 
 EventCaptureMac::~EventCaptureMac() {
-  objc_impl_->Reset();
+  mouse_capture_delegate_impl_->Reset();
 }
 
 void EventCaptureMac::SetCrossCursor() {

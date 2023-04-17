@@ -39,8 +39,8 @@ class EventCaptureMac {
   void CreateKeyDownLocalMonitor(ui::EventHandler* event_handler,
                                  gfx::NativeWindow target_native_window);
 
-  class ObjCImpl;
-  std::unique_ptr<ObjCImpl> objc_impl_;
+  class MouseCaptureDelegateImpl;
+  std::unique_ptr<MouseCaptureDelegateImpl> mouse_capture_delegate_impl_;
 
   base::WeakPtrFactory<EventCaptureMac> factory_{this};
 };
