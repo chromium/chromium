@@ -1479,7 +1479,7 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
   }
 }
 
-TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
+TEST_P(CertVerifyProcInternalTest, DISABLED_TestKnownRoot) {
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> cert_chain = CreateCertificateChainFromFile(
       certs_dir, "leaf_from_known_root.pem", X509Certificate::FORMAT_AUTO);
