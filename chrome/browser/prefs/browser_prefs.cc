@@ -799,6 +799,11 @@ const char kActiveRegistrationToken[] =
     "invalidation.active_registration_token";
 const char kFCMInvalidationClientIDCache[] = "fcm.invalidation.client_id_cache";
 
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kConsolidatedConsentTrial[] = "per_user_metrics.trial_group";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -882,6 +887,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
   registry->RegisterStringPref(kActiveRegistrationToken, std::string());
   registry->RegisterStringPref(kFCMInvalidationClientIDCache, std::string());
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterStringPref(kConsolidatedConsentTrial, std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1847,6 +1857,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kTypeSubscribedForInvalidations);
   local_state->ClearPref(kActiveRegistrationToken);
   local_state->ClearPref(kFCMInvalidationClientIDCache);
+
+// Added 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kConsolidatedConsentTrial);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
