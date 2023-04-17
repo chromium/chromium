@@ -231,9 +231,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerFlowController* GetProfilePickerFlowController() const;
 
   // Returns a closure that can be executed to clear (see
-  // `ProfilePickerView::Clear()`) the view. It is the owner's responsibility to
-  // make sure that the `ProfilePickerView` is still alive and that the callback
-  // is valid, before running it.
+  // `ProfilePickerView::Clear()`) the view. Uses a weak pointer internally, so
+  // it can be called after the view has been destroyed. It is different from
+  // `ProfilePicker::Hide()` because it only clears this specific instance of
+  // the picker view, whereas `Hide()` would close any picker view.
   ClearHostClosure GetClearClosure();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -930,12 +930,8 @@ ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
 }
 
 ClearHostClosure ProfilePickerView::GetClearClosure() {
-  return ClearHostClosure(base::BindOnce(
-      &ProfilePickerView::Clear,
-      // The method contract indicates that it is the responsibility of the
-      // callers to make sure `this` is valid. As the callers are all owned by
-      // `this`, it should be a reasonable assumption.
-      base::Unretained(this)));
+  return ClearHostClosure(base::BindOnce(&ProfilePickerView::Clear,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

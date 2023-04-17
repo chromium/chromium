@@ -674,6 +674,54 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
             kProfileColor);
 }
 
+// Regression test for https://crbug.com/1431342
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateSignedInProfileClosePicker) {
+  // Closes the picker at the same time the new browser is created.
+  class ClosePickerOnBrowserAddedObserver : public BrowserListObserver {
+   public:
+    explicit ClosePickerOnBrowserAddedObserver(
+        ProfilePickerCreationFlowBrowserTest* fixture)
+        : fixture_(fixture) {
+      BrowserList::AddObserver(this);
+    }
+
+    // This observer is registered early, before the call to
+    // `OpenBrowserWindowForProfile()` in `ProfileManagementFlowController`. It
+    // causes the `ProfileManagementFlowController` to be deleted before its
+    // `clear_host_callback_` is called
+    void OnBrowserAdded(Browser* browser) override {
+      BrowserList::RemoveObserver(this);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // On Lacros, using `ProfilePicker::Hide()` causes a timeout.
+      fixture_->widget()->CloseNow();
+#else
+      ProfilePicker::Hide();
+#endif
+      fixture_->WaitForPickerClosed();
+    }
+
+   private:
+    raw_ptr<ProfilePickerCreationFlowBrowserTest> fixture_ = nullptr;
+  };
+
+  ClosePickerOnBrowserAddedObserver close_picker_on_browser_added(this);
+
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in sync confirmation screen getting displayed.
+  Profile* profile_being_created = SignInForNewProfile(
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
+
+  // Simulate closing the UI with "No, thanks".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+
+  Browser* new_browser = BrowserAddedWaiter(/*total_count=*/2u).Wait();
+  WaitForLoadStop(GURL("chrome://newtab/"),
+                  new_browser->tab_strip_model()->GetActiveWebContents());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1368936) Test is flaky on Linux Tests
 #if BUILDFLAG(IS_LINUX)
