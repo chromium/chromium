@@ -23815,6 +23815,13 @@ be describing additional metrics about the same event.
       A boolean signaling that the event has occurred (typically only records
       true values).
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
