@@ -63,6 +63,7 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
       IsFlexItemIncludingNG() || IsCustomItem() || IsDocumentElement() ||
       IsGridItemIncludingNG() || IsWritingModeRoot() || IsMathItem() ||
       StyleRef().Display() == EDisplay::kFlowRoot ||
+      StyleRef().Display() == EDisplay::kFlowRootListItem ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||
       StyleRef().IsDeprecatedWebkitBoxWithVerticalLineClamp() ||
       StyleRef().SpecifiesColumns() ||

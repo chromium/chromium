@@ -3744,12 +3744,6 @@ crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001
 
 # ====== End of display: contents tests ======
 
-# ====== Begin of other css-display tests ======
-
-crbug.com/995106 external/wpt/css/css-display/display-flow-root-list-item-001.html [ Failure ]
-
-# ====== End of other css-display tests ======
-
 crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16be.html?include=workers [ Skip Timeout ]
 crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16le.html?include=workers [ Skip Timeout ]
 
