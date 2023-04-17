@@ -17,8 +17,6 @@
 
 namespace ash {
 
-class Shelf;
-
 // Window layout manager for windows intended to handle lock tray actions.
 // Since "new note" is currently the only supported action, the layout
 // manager uses new note tray action state to determine it state.
@@ -41,7 +39,6 @@ class ASH_EXPORT LockActionHandlerLayoutManager
  public:
   LockActionHandlerLayoutManager(
       aura::Window* window,
-      Shelf* shelf,
       LockScreenActionBackgroundController* action_background_controller);
 
   LockActionHandlerLayoutManager(const LockActionHandlerLayoutManager&) =

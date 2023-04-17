@@ -602,10 +602,6 @@ void ShelfLayoutManager::LayoutShelf(bool animate) {
 
   CalculateTargetBoundsAndUpdateWorkArea();
   UpdateBoundsAndOpacity(animate);
-
-  // Update insets in ShelfWindowTargeter when shelf bounds change.
-  for (auto& observer : observers_)
-    observer.WillChangeVisibilityState(visibility_state());
 }
 
 void ShelfLayoutManager::UpdateVisibilityState() {
