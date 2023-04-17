@@ -779,9 +779,9 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Unset) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_PaperSize) {
   auto* prefs = GetPrefs();
-  base::Value paper_size(base::Value::Type::DICT);
-  paper_size.SetStringKey(kPaperSizeName, "iso_a4_210x297mm");
-  prefs->Set("printing.paper_size_default", std::move(paper_size));
+  base::Value::Dict paper_size;
+  paper_size.Set(kPaperSizeName, "iso_a4_210x297mm");
+  prefs->Set("printing.paper_size_default", base::Value(std::move(paper_size)));
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
