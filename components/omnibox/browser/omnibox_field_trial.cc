@@ -1170,6 +1170,11 @@ const base::FeatureParam<int> kRealboxMaxPreviousSearchRelatedSuggestions(
     "RealboxMaxPreviousSearchRelatedSuggestions",
     3);
 
+const base::FeatureParam<bool> kRealboxSecondaryZeroSuggestCounterfactual(
+    &omnibox::kRealboxSecondaryZeroSuggest,
+    "RealboxSecondaryZeroSuggestCounterfactual",
+    false);
+
 // <- Two-column realbox
 // ---------------------------------------------------------
 // Inspire Me ->

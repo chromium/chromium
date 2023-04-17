@@ -1545,18 +1545,18 @@ const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
     {
         {"RealboxMaxPreviousSearchRelatedSuggestions", "2"},
 };
-const FeatureEntry::FeatureParam
-    kRealboxThreePreviousSearchRelatedSuggestions[] = {
-        {"RealboxMaxPreviousSearchRelatedSuggestions", "3"},
+const FeatureEntry::FeatureParam kRealboxSecondaryZeroSuggestCounterfactual[] =
+    {
+        {"RealboxSecondaryZeroSuggestCounterfactual", "true"},
 };
 
-const FeatureEntry::FeatureVariation
-    kRealboxMaxPreviousSearchRelatedSuggestionsVariations[] = {
-        {"2 secondary suggestions", kRealboxTwoPreviousSearchRelatedSuggestions,
-         std::size(kRealboxTwoPreviousSearchRelatedSuggestions), nullptr},
-        {"3 secondary suggestions",
-         kRealboxThreePreviousSearchRelatedSuggestions,
-         std::size(kRealboxThreePreviousSearchRelatedSuggestions), nullptr}};
+const FeatureEntry::FeatureVariation kRealboxSecondaryZeroSuggestVariations[] =
+    {{"2 secondary suggestions (default is 3)",
+      kRealboxTwoPreviousSearchRelatedSuggestions,
+      std::size(kRealboxTwoPreviousSearchRelatedSuggestions), nullptr},
+     {"counterfactual (don't show secondary suggestions)",
+      kRealboxSecondaryZeroSuggestCounterfactual,
+      std::size(kRealboxSecondaryZeroSuggestCounterfactual), nullptr}};
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
@@ -5625,10 +5625,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"realbox-secondary-zero-suggest",
      flag_descriptions::kRealboxSecondaryZeroSuggestName,
      flag_descriptions::kRealboxSecondaryZeroSuggestDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kRealboxSecondaryZeroSuggest,
-         kRealboxMaxPreviousSearchRelatedSuggestionsVariations,
-         "RealboxSecondaryZeroSuggest")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRealboxSecondaryZeroSuggest,
+                                    kRealboxSecondaryZeroSuggestVariations,
+                                    "RealboxSecondaryZeroSuggest")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 

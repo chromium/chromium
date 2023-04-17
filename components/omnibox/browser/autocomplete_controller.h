@@ -38,14 +38,15 @@
 class ClipboardProvider;
 class DocumentProvider;
 class HistoryFuzzyProvider;
-class HistoryURLProvider;
 class HistoryQuickProvider;
+class HistoryURLProvider;
 class KeywordProvider;
+class OmniboxTriggeredFeatureService;
+class OnDeviceHeadProvider;
 class SearchProvider;
 class TemplateURLService;
 class VoiceSuggestProvider;
 class ZeroSuggestProvider;
-class OnDeviceHeadProvider;
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
@@ -500,6 +501,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool search_service_worker_signal_sent_;
 
   raw_ptr<TemplateURLService> template_url_service_;
+
+  raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
 
   // Combined, used to cancel model execution requests sent to
   // `AutocompleteScoringModelService` and to prevent its callbacks from being

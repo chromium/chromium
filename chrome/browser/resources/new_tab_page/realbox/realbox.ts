@@ -20,7 +20,8 @@ import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 import {getTemplate} from './realbox.html.js';
 
 // 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.
-const showSecondarySideMediaQueryList = window.matchMedia('(min-width: 900px)');
+const canShowSecondarySideMediaQueryList =
+    window.matchMedia('(min-width: 900px)');
 
 interface Input {
   text: string;
@@ -65,8 +66,7 @@ export class RealboxElement extends PolymerElement {
        */
       canShowSecondarySide: {
         type: Boolean,
-        value: () => showSecondarySideMediaQueryList.matches &&
-            loadTimeData.getBoolean('showSecondarySide'),
+        value: () => canShowSecondarySideMediaQueryList.matches,
         reflectToAttribute: true,
       },
 
@@ -258,7 +258,7 @@ export class RealboxElement extends PolymerElement {
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged_.bind(this));
-    showSecondarySideMediaQueryList.addEventListener(
+    canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
@@ -267,7 +267,7 @@ export class RealboxElement extends PolymerElement {
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
-    showSecondarySideMediaQueryList.removeEventListener(
+    canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
 
@@ -331,8 +331,7 @@ export class RealboxElement extends PolymerElement {
   //============================================================================
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
-    this.canShowSecondarySide =
-        e.matches && loadTimeData.getBoolean('showSecondarySide');
+    this.canShowSecondarySide = e.matches;
   }
 
   private onHeaderFocusin_() {

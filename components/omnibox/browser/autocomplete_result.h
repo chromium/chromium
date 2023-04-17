@@ -27,6 +27,7 @@
 class AutocompleteInput;
 class AutocompleteProvider;
 class AutocompleteProviderClient;
+class OmniboxTriggeredFeatureService;
 class PrefService;
 class TemplateURLService;
 
@@ -111,6 +112,7 @@ class AutocompleteResult {
   // (except for the first match) or no tail suggestions.
   void SortAndCull(const AutocompleteInput& input,
                    TemplateURLService* template_url_service,
+                   OmniboxTriggeredFeatureService* triggered_feature_service,
                    const AutocompleteMatch* preserve_default_match = nullptr);
 
   // Ensures that matches belonging to suggestion groups, i.e., those with a
@@ -290,6 +292,7 @@ class AutocompleteResult {
   friend class AutocompleteResultForTesting;
   friend class AutocompleteProviderTest;
   friend class HistoryURLProviderTest;
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Desktop_TwoColumnRealbox);
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 

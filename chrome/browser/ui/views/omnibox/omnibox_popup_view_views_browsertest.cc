@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -234,6 +235,13 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     ASSERT_TRUE(theme_service->UsingDefaultTheme());
 #endif  // BUILDFLAG(IS_LINUX)
   }
+
+  OmniboxTriggeredFeatureService* triggered_feature_service() {
+    return &triggered_feature_service_;
+  }
+
+ private:
+  OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 
 views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
@@ -627,7 +635,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   ACMatches matches;
   matches.push_back(match);
   results.AppendMatches(matches);
-  results.SortAndCull(input, nullptr);
+  results.SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   autocomplete_controller->NotifyChanged();
 
   // Check that arrowing up and down emits the event.

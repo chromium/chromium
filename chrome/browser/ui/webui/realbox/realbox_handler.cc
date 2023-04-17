@@ -545,10 +545,6 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
 
   source->AddBoolean("roundCorners", base::FeatureList::IsEnabled(
                                          ntp_features::kRealboxRoundedCorners));
-
-  source->AddBoolean(
-      "showSecondarySide",
-      base::FeatureList::IsEnabled(omnibox::kRealboxSecondaryZeroSuggest));
 }
 
 // static

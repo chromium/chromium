@@ -351,7 +351,9 @@ AutocompleteController::AutocompleteController(
               .Get()),
       is_cros_launcher_(is_cros_launcher),
       search_service_worker_signal_sent_(false),
-      template_url_service_(provider_client_->GetTemplateURLService()) {
+      template_url_service_(provider_client_->GetTemplateURLService()),
+      triggered_feature_service_(
+          provider_client_->GetOmniboxTriggeredFeatureService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
 
   // Providers run in the order they're added. Async providers should run first
@@ -429,7 +431,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   DCHECK(!input.omit_asynchronous_matches() ||
          input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
-  provider_client_->GetOmniboxTriggeredFeatureService()->ResetInput();
+  triggered_feature_service_->ResetInput();
 
   // When input.omit_asynchronous_matches() is true, the AutocompleteController
   // is being used for text classification, which should not notify observers.
@@ -711,13 +713,13 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
   }
 
   // Add any features that have been triggered.
-  provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
+  triggered_feature_service_->RecordToLogs(
       &logs->features_triggered, &logs->features_triggered_in_session);
 }
 
 void AutocompleteController::ResetSession() {
   search_service_worker_signal_sent_ = false;
-  provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
+  triggered_feature_service_->ResetSession();
 }
 
 void AutocompleteController::
@@ -746,12 +748,10 @@ void AutocompleteController::
   // a field trial has triggered, and the current page classification to the AQS
   // parameter.
   bool search_feature_triggered =
-      provider_client_->GetOmniboxTriggeredFeatureService()
-          ->GetFeatureTriggeredInSession(
-              metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE) ||
-      provider_client_->GetOmniboxTriggeredFeatureService()
-          ->GetFeatureTriggeredInSession(
-              metrics::OmniboxEventProto_Feature_REMOTE_ZERO_SUGGEST_FEATURE);
+      triggered_feature_service_->GetFeatureTriggeredInSession(
+          metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE) ||
+      triggered_feature_service_->GetFeatureTriggeredInSession(
+          metrics::OmniboxEventProto_Feature_REMOTE_ZERO_SUGGEST_FEATURE);
   const std::string experiment_stats = base::StringPrintf(
       "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       search_feature_triggered, input_.current_page_classification());
@@ -1002,7 +1002,7 @@ void AutocompleteController::UpdateResult(
         base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
     if (!single_sort_and_cull_pass) {
       result_.SortAndCull(input_, template_url_service_,
-                          preserve_default_match);
+                          triggered_feature_service_, preserve_default_match);
     }
     // If not all providers are done, merge the old and new matches before
     // sorting.
@@ -1012,7 +1012,7 @@ void AutocompleteController::UpdateResult(
             .Get();
     // Sort the matches and trim them to a small number of "best" matches.
     result_.SortAndCull(
-        input_, template_url_service_,
+        input_, template_url_service_, triggered_feature_service_,
         preserve_default_after_transfer ? preserve_default_match : nullptr);
   } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     // The async ML scoring is only run once all the providers are done. Use a
@@ -1032,7 +1032,8 @@ void AutocompleteController::UpdateResult(
     return;
   } else {
     // Sort the matches and trim them to a small number of "best" matches.
-    result_.SortAndCull(input_, template_url_service_, preserve_default_match);
+    result_.SortAndCull(input_, template_url_service_,
+                        triggered_feature_service_, preserve_default_match);
   }
   AnnotateResultAndNotifyChanged(last_default_match,
                                  last_default_associated_keyword,
@@ -1106,11 +1107,11 @@ void AutocompleteController::AnnotateResultAndNotifyChanged(
   // rich autocompleted.
   const auto top_match_rich_autocompletion_type =
       TopMatchRichAutocompletionType(result_);
-  provider_client_->GetOmniboxTriggeredFeatureService()
-      ->RichAutocompletionTypeTriggered(top_match_rich_autocompletion_type);
+  triggered_feature_service_->RichAutocompletionTypeTriggered(
+      top_match_rich_autocompletion_type);
   if (top_match_rich_autocompletion_type !=
       AutocompleteMatch::RichAutocompletionType::kNone) {
-    provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+    triggered_feature_service_->FeatureTriggered(
         metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
   }
 
@@ -1583,6 +1584,7 @@ void AutocompleteController::OnUrlScoringModelDone(
     }
 
     result_.SortAndCull(input, template_url_service_,
+                        triggered_feature_service_,
                         /*preserve_default_match=*/nullptr);
   }
 

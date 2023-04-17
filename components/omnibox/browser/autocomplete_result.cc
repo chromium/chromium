@@ -43,6 +43,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
+#include "omnibox_triggered_feature_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -267,6 +268,7 @@ void AutocompleteResult::AppendMatches(const ACMatches& matches) {
 void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
+    OmniboxTriggeredFeatureService* triggered_feature_service,
     const AutocompleteMatch* preserve_default_match) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
@@ -395,11 +397,27 @@ void AutocompleteResult::SortAndCull(
              base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
             base::FeatureList::IsEnabled(
                 omnibox::kRealboxSecondaryZeroSuggest)) {
-          size_t max_previous_search_related =
-              OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
-                  .Get();
-          sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
-              max_previous_search_related, suggestion_groups_map_));
+          // Report whether secondary zero-prefix suggestions were triggered.
+          if (base::ranges::any_of(
+                  suggestion_groups_map_, [](const auto& entry) {
+                    return entry.second.side_type() ==
+                           omnibox::GroupConfig_SideType_SECONDARY;
+                  })) {
+            triggered_feature_service->FeatureTriggered(
+                metrics::
+                    OmniboxEventProto_Feature_REMOTE_SECONDARY_ZERO_SUGGEST);
+          }
+
+          // Don't show the secondary zero-prefix suggestions in the
+          // counterfactual arm.
+          if (!OmniboxFieldTrial::kRealboxSecondaryZeroSuggestCounterfactual
+                   .Get()) {
+            size_t max_previous_search_related =
+                OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
+                    .Get();
+            sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
+                max_previous_search_related, suggestion_groups_map_));
+          }
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(

@@ -129,7 +129,6 @@ suite('NewTabPageRealboxTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       realboxSeparator: ' - ',
-      showSecondarySide: true,
     });
   });
 

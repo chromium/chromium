@@ -32,6 +32,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/url_formatter/url_fixer.h"
+#include "omnibox_triggered_feature_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
@@ -639,12 +640,16 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
       delete;
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+  OmniboxTriggeredFeatureService* triggered_feature_service() {
+    return &triggered_feature_service_;
+  }
   TestOmniboxEditModel* model() { return &model_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   TestOmniboxEditModelDelegate edit_model_delegate_;
   TestingPrefServiceSimple pref_service_;
+  OmniboxTriggeredFeatureService triggered_feature_service_;
 
   TestOmniboxView view_;
   TestOmniboxEditModel model_;
@@ -667,7 +672,8 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLine) {
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_TRUE(model()->IsPopupSelectionOnInitialLine());
   model()->SetPopupSelection(Selection(0), true, false);
@@ -689,7 +695,8 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLineWithNoDefaultMatches) {
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
 
   model()->OnPopupResultChanged();
   EXPECT_EQ(Selection::kNoMatch, model()->GetPopupSelection().line);
@@ -721,7 +728,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
   // Test moving and wrapping down.
@@ -777,7 +785,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
 
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
@@ -869,7 +878,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
 
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
@@ -938,7 +948,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
 
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
 
@@ -1013,7 +1024,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
 
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
 
   // Simulate OmniboxController updating the popup, then check initial state.
@@ -1079,7 +1091,8 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   model()->SetPopupSelection(Selection(0), true, false);
   // The default state should be unfocused.
@@ -1098,7 +1111,8 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   matches[0].contents = u"match2.com";
   matches[0].destination_url = GURL("http://match2.com");
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(Selection::FOCUSED_BUTTON_TAB_SWITCH,
             model()->GetPopupSelection().state);
@@ -1115,7 +1129,8 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   matches[0].contents = u"match3.com";
   matches[0].destination_url = GURL("http://match3.com");
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(0U, model()->GetPopupSelection().line);
   EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
@@ -1128,7 +1143,8 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   matches[0].contents = u"match4.com";
   matches[0].destination_url = GURL("http://match4.com");
   result->AppendMatches(matches);
-  result->SortAndCull(input, nullptr);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service());
   model()->OnPopupResultChanged();
   EXPECT_EQ(0U, model()->GetPopupSelection().line);
   EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
