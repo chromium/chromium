@@ -1118,7 +1118,9 @@ class Port(object):
                                                     filename))
 
     @memoized
-    def wpt_manifest(self, path):
+    def wpt_manifest(self,
+                     path: str,
+                     exclude_jsshell: bool = True) -> WPTManifest:
         assert path in self.WPT_DIRS
         # Convert '/' to the platform-specific separator.
         path = self._filesystem.normpath(path)
@@ -1130,7 +1132,7 @@ class Port(object):
                 'manifest_update', False):
             _log.debug('Generating MANIFEST.json for %s...', path)
             WPTManifest.ensure_manifest(self, path)
-        return WPTManifest(self.host, manifest_path)
+        return WPTManifest(self.host, manifest_path, exclude_jsshell)
 
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""

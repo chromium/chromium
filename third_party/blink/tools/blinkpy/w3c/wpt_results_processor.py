@@ -266,8 +266,10 @@ class WPTResultsProcessor:
         if test_name_prefix and not test_name_prefix.endswith('/'):
             test_name_prefix += '/'
         self.test_name_prefix = test_name_prefix
-        self.wpt_manifest = self.port.wpt_manifest('external/wpt')
-        self.internal_manifest = self.port.wpt_manifest('wpt_internal')
+        # Manifests should include `jsshell` tests, which wptrunner will report
+        # as skipped. See crbug.com/1431514#c3.
+        self.wpt_manifest = self.port.wpt_manifest('external/wpt', False)
+        self.internal_manifest = self.port.wpt_manifest('wpt_internal', False)
         self.path_finder = path_finder.PathFinder(self.fs)
         # Provide placeholder properties until the `suite_start` events are
         # processed.
