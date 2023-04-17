@@ -2714,6 +2714,7 @@ component("ash") {
     "//services/preferences/public/cpp",
     "//services/video_capture/public/mojom",
     "//services/viz/public/mojom",
+    "//ui/color/dynamic_color",
     "//ui/shell_dialogs",
 
     # TODO(msw): Remove this; ash should not depend on blink/webkit.

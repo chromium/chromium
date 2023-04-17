@@ -16,17 +16,21 @@
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/dynamic_color/palette.h"
+#include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
@@ -59,6 +63,59 @@ const UserSession* GetActiveUserSession() {
 const AccountId& AccountFromSession(const UserSession* session) {
   CHECK(session);
   return session->user_info.account_id;
+}
+
+using SchemeVariant = ui::ColorProviderManager::SchemeVariant;
+
+SchemeVariant ToVariant(ColorScheme scheme) {
+  switch (scheme) {
+    case ColorScheme::kStatic:
+    case ColorScheme::kNeutral:
+      return SchemeVariant::kNeutral;
+    case ColorScheme::kTonalSpot:
+      return SchemeVariant::kTonalSpot;
+    case ColorScheme::kExpressive:
+      return SchemeVariant::kExpressive;
+    case ColorScheme::kVibrant:
+      return SchemeVariant::kVibrant;
+  }
+}
+
+SampleColorScheme GenerateSampleColorScheme(bool dark,
+                                            SkColor seed_color,
+                                            ColorScheme scheme) {
+  DCHECK_NE(scheme, ColorScheme::kStatic)
+      << "Requesting a static scheme doesn't make sense since there is no "
+         "seed color";
+
+  std::unique_ptr<ui::Palette> palette =
+      ui::GeneratePalette(seed_color, ToVariant(scheme));
+  // TODO(b/277820985): Update these tones when we decide on better ones.
+  // These match the tone values for cros.sys.primary,
+  // cros.sys.primary-container, and cros.sys.tertiary-container. Since we don't
+  // need all the colors in the mixer (which would be slower), it's
+  // reimplemented here.
+  SampleColorScheme sample;
+  sample.scheme = scheme;
+  sample.primary = palette->primary().get(dark ? 80.f : 40.f);  // primary
+  sample.secondary =
+      palette->primary().get(dark ? 30.f : 90.f);  // primary-container
+  sample.tertiary =
+      palette->tertiary().get(dark ? 30.f : 90.f);  // tertiary-container
+
+  return sample;
+}
+
+std::vector<SampleColorScheme> GenerateSamples(
+    bool dark,
+    SkColor sample_color,
+    const std::vector<const ColorScheme>& schemes) {
+  std::vector<SampleColorScheme> samples;
+  for (auto scheme : schemes) {
+    samples.push_back(GenerateSampleColorScheme(dark, sample_color, scheme));
+  }
+
+  return samples;
 }
 
 // Refresh colors of the system on the current color mode. Not only the SysUI,
@@ -210,13 +267,20 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   void GenerateSampleColorSchemes(
       base::span<const ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const override {
-    std::vector<SampleColorScheme> samples;
-    for (auto scheme : color_scheme_buttons) {
-      samples.push_back(GenerateSampleColorScheme(scheme));
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    absl::optional<SkColor> seed_color = CurrentWallpaperColor(dark);
+    if (!seed_color) {
+      LOG(WARNING) << "Using default color due to missing wallpaper sample";
+      seed_color.emplace(gfx::kGoogleBlue400);
     }
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(std::move(callback), samples),
-        base::Milliseconds(20));
+    // Schemes need to be copied as the underlying memory for the span could go
+    // out of scope.
+    std::vector<const ColorScheme> schemes_copy(color_scheme_buttons.begin(),
+                                                color_scheme_buttons.end());
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GenerateSamples, dark, *seed_color, schemes_copy),
+        base::BindOnce(std::move(callback)));
   }
 
   // WallpaperControllerObserver overrides:
@@ -279,18 +343,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     seed.scheme = ColorScheme::kTonalSpot;
 
     return seed;
-  }
-
-  SampleColorScheme GenerateSampleColorScheme(ColorScheme scheme) const {
-    // TODO(b/258719005): Return correct and different schemes for each
-    // `scheme`.
-    DCHECK_NE(scheme, ColorScheme::kStatic)
-        << "Requesting a static scheme doesn't make sense since there is no "
-           "seed color";
-    return {.scheme = scheme,
-            .primary = SK_ColorRED,
-            .secondary = SK_ColorGREEN,
-            .tertiary = SK_ColorBLUE};
   }
 
   void NotifyObservers(const absl::optional<ColorPaletteSeed>& seed) {

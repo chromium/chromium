@@ -363,23 +363,18 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest,
        GenerateSampleColorSchemes) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
-  ColorScheme color_scheme_buttons[] = {
-      ColorScheme::kTonalSpot,
-      ColorScheme::kNeutral,
-      ColorScheme::kVibrant,
-      ColorScheme::kExpressive,
-  };
-  std::vector<SampleColorScheme> samples;
-  for (auto scheme : color_scheme_buttons) {
-    samples.push_back({.scheme = scheme,
-                       .primary = SK_ColorRED,
-                       .secondary = SK_ColorGREEN,
-                       .tertiary = SK_ColorBLUE});
-  }
   base::MockOnceCallback<void(const std::vector<ash::SampleColorScheme>&)>
       generate_sample_color_schemes_callback;
+
+  // Matcher for the vector in the callback.
+  auto matcher = testing::UnorderedElementsAre(
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kTonalSpot),
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kNeutral),
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kVibrant),
+      testing::Field(&SampleColorScheme::scheme, ColorScheme::kExpressive));
+
   base::RunLoop run_loop;
-  EXPECT_CALL(generate_sample_color_schemes_callback, Run(samples))
+  EXPECT_CALL(generate_sample_color_schemes_callback, Run(matcher))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   theme_provider()->GenerateSampleColorSchemes(
