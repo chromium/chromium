@@ -41,8 +41,6 @@ class TestAppListClient : public AppListClient {
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
                                 SearchResultActionType action) override;
-  void ViewClosing() override {}
-  void ViewShown(int64_t display_id) override {}
   void ActivateItem(int profile_id,
                     const std::string& id,
                     int event_flags,

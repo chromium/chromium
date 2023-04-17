@@ -1206,9 +1206,6 @@ void AppListControllerImpl::InvokeSearchResultAction(
 void AppListControllerImpl::ViewShown(int64_t display_id) {
   UpdateSearchBoxUiVisibilities();
 
-  if (client_)
-    client_->ViewShown(display_id);
-
   // Note that IsHomeScreenVisible() might still return false at this point, as
   // the home screen visibility takes into account whether the app list view is
   // obscured by an app window, or overview UI. This method gets called when the
@@ -1227,9 +1224,6 @@ bool AppListControllerImpl::AppListTargetVisibility() const {
 }
 
 void AppListControllerImpl::ViewClosing() {
-  if (client_)
-    client_->ViewClosing();
-
   split_view_observation_.Reset();
 }
 

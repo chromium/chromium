@@ -1547,15 +1547,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListBadgedAppsCount" units="apps"
-    expires_after="2020-04-26">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Number of apps (including ones in folders) with Chrome badge, across all
-    Launcher pages. This is gathered per open-launcher event.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListBubbleAppMovingType" enum="AppListAppMovingType"
     expires_after="2023-12-17">
   <owner>tbarzic@chromium.org</owner>

@@ -54,6 +54,8 @@ class ASH_EXPORT AppListTestApi {
   // bubble apps page animation, the bubble view animation and apps grid
   // animation).
   void WaitForBubbleWindow(bool wait_for_opening_animation);
+  void WaitForBubbleWindowInRootWindow(aura::Window* root_window,
+                                       bool wait_for_opening_animation);
 
   // Waits until all the animations to show the app list become idle. No
   // operations if the app list is already idle.

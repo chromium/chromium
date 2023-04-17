@@ -77,10 +77,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
 
   //////////////////////////////////////////////////////////////////////////////
   // Interfaces on the app list UI:
-  // Invoked when the app list is shown in the display with |display_id|.
-  virtual void ViewShown(int64_t display_id) = 0;
-  // Invoked when the app list is closed.
-  virtual void ViewClosing() = 0;
   // Notifies target visibility changes of the app list.
   virtual void OnAppListVisibilityWillChange(bool visible) = 0;
   // Notifies visibility changes of the app list.
