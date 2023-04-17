@@ -383,13 +383,6 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
 void WaylandSurface::ApplyPendingState() {
   DCHECK(!apply_state_immediately_);
   if (pending_state_.buffer_id != state_.buffer_id) {
-    // Setting Color Space of surface.
-    // Should be called infrequently: only when color space is changing to a
-    // a different one.
-    if (pending_state_.color_space != state_.color_space) {
-      zcr_color_management_surface_->SetColorSpace(pending_state_.color_space);
-    }
-
     // The logic in DamageBuffer currently relies on attachment coordinates of
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
@@ -439,6 +432,13 @@ void WaylandSurface::ApplyPendingState() {
     }
   }
   pending_state_.acquire_fence = gfx::GpuFenceHandle();
+
+  // Setting Color Space of surface.
+  // Should be called infrequently: only when color space is changing to a
+  // a different one.
+  if (pending_state_.color_space != state_.color_space) {
+    zcr_color_management_surface_->SetColorSpace(pending_state_.color_space);
+  }
 
   if (pending_state_.buffer_transform != state_.buffer_transform) {
     wl_output_transform wl_transform =
