@@ -69,6 +69,16 @@ if (toolchain_has_rust) {
     "unwind",
   ]
 
+  if (is_win) {
+    # Our C++ builds already link against a wide variety of Windows API import libraries,
+    # but the Rust stdlib requires a few extra.
+    _windows_lib_deps = [
+      "bcrypt.lib",
+      "ntdll.lib",
+      "userenv.lib",
+    ]
+  }
+
   # rlibs explicitly ignored when copying prebuilt sysroot libraries.
   # find_std_rlibs.py rightfully errors out if an unexpected prebuilt lib is
   # encountered, since it usually indicates we missed something. This ignore
@@ -234,12 +244,14 @@ if (toolchain_has_rust) {
         ldflags += [ this_file ]
       }
       if (is_win) {
-        # Our C++ builds already link against a wide variety of Windows API import libraries,
-        # but the Rust stdlib requires a few extra.
-        ldflags += [
-          "bcrypt.lib",
-          "userenv.lib",
-        ]
+        # TODO(crbug.com/1434092): This should really be `libs`, however that
+        # breaks. Normally, we specify lib files with the `.lib` suffix but
+        # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
+        # instead.
+        #
+        # Omitting the `.lib` suffix breaks linking as well, when clang drives
+        # the linking step of a C++ EXE that depends on Rust.
+        ldflags += _windows_lib_deps
       }
     }
 
@@ -301,12 +313,14 @@ if (toolchain_has_rust) {
         ldflags += [ this_file ]
       }
       if (is_win) {
-        # Our C++ builds already link against a wide variety of Windows API import libraries,
-        # but the Rust stdlib requires a few extra.
-        ldflags += [
-          "bcrypt.lib",
-          "userenv.lib",
-        ]
+        # TODO(crbug.com/1434092): This should really be `libs`, however that
+        # breaks. Normally, we specify lib files with the `.lib` suffix but
+        # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
+        # instead.
+        #
+        # Omitting the `.lib` suffix breaks linking as well, when clang drives
+        # the linking step of a C++ EXE that depends on Rust.
+        ldflags += _windows_lib_deps
       }
     }
 
