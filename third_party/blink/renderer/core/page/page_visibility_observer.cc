@@ -21,12 +21,12 @@ void PageVisibilityObserver::SetPage(Page* page) {
     return;
 
   if (page_)
-    page_->PageVisibilityObserverSet().RemoveObserver(this);
+    page_->PageVisibilityObserverSet().erase(this);
 
   page_ = page;
 
   if (page_)
-    page_->PageVisibilityObserverSet().AddObserver(this);
+    page_->PageVisibilityObserverSet().insert(this);
 }
 
 void PageVisibilityObserver::Trace(Visitor* visitor) const {
