@@ -3326,4 +3326,16 @@ TEST_F(AutofillTableTest, RemoveAllVirtualCardUsageData) {
   EXPECT_TRUE(usage_data.empty());
 }
 
+TEST_F(AutofillTableTest, DontCrashWhenAddingValueToPoisonedDB) {
+  // Simulate a preceding fatal error.
+  db_->GetSQLConnection()->Poison();
+
+  // Simulate the submission of a form.
+  AutofillChangeList changes;
+  FormFieldData field;
+  field.name = u"Name";
+  field.value = u"Superman";
+  EXPECT_FALSE(table_->AddFormFieldValue(field, &changes));
+}
+
 }  // namespace autofill

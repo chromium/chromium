@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -1206,6 +1207,9 @@ bool AutofillTable::IsSyncable() {
 
 bool AutofillTable::MigrateToVersion(int version,
                                      bool* update_compatible_version) {
+  if (!db_->is_open()) {
+    return false;
+  }
   // Migrate if necessary.
   switch (version) {
     case 83:
@@ -3482,6 +3486,10 @@ bool AutofillTable::AddFormFieldValuesTime(
 bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
                                           std::vector<AutofillChange>* changes,
                                           base::Time time) {
+  if (!db_->is_open()) {
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
   // TODO(crbug.com/1424298): Remove once it is understood where the `false`
   // results are coming from.
   auto create_debug_info = [this](const char* failure_location) {
