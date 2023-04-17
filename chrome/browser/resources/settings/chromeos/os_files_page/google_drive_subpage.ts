@@ -14,6 +14,7 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
@@ -30,6 +31,20 @@ const SettingsGoogleDriveSubpageElementBase =
  * The preference containing the value whether Google drive is disabled or not.
  */
 const GOOGLE_DRIVE_DISABLED_PREF = 'gdata.disabled';
+
+/**
+ * The preference containing the value whether bulk pinning is enabled or not.
+ */
+const GOOGLE_DRIVE_BULK_PINNING_PREF = 'drivefs.bulk_pinning_enabled';
+
+/**
+ * A list of possible confirmation dialogs that may be shown.
+ */
+export enum ConfirmationDialogType {
+  DISCONNECT = 'disconnect',
+  BULK_PINNING_DISABLE = 'bulk-pinning-disable',
+  NONE = 'none',
+}
 
 export class SettingsGoogleDriveSubpageElement extends
     SettingsGoogleDriveSubpageElementBase {
@@ -55,14 +70,6 @@ export class SettingsGoogleDriveSubpageElement extends
         type: Object,
         value: () => new Set<Setting>([Setting.kGoogleDriveConnection]),
       },
-
-      /**
-       * Whether to show the confirmation dialog when disconnecting Drive.
-       */
-      showDisconnectDriveConfirmationDialog_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -82,11 +89,6 @@ export class SettingsGoogleDriveSubpageElement extends
   private driveDisabled_: boolean;
 
   /**
-   * Tracks the state of the disconnect confirmation dialog.
-   */
-  private showDisconnectDriveConfirmationDialog_: boolean;
-
-  /**
    * A connection with the browser process to send/receive messages.
    */
   private proxy_: GoogleDriveBrowserProxy;
@@ -101,6 +103,11 @@ export class SettingsGoogleDriveSubpageElement extends
    * If the underlying service is unavailable, this will get set to true.
    */
   private bulkPinningServiceUnavailable_: boolean = false;
+
+  /**
+   * Maps the dialogType_ property.
+   */
+  private dialogType_: ConfirmationDialogType = ConfirmationDialogType.NONE;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).
@@ -130,6 +137,13 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   get remainingSpace() {
     return this.bulkPinningStatus_?.remainingSpace || -1;
+  }
+
+  /**
+   * Returns the current confirmation dialog showing.
+   */
+  get dialogType() {
+    return this.dialogType_;
   }
 
   override connectedCallback() {
@@ -191,7 +205,7 @@ export class SettingsGoogleDriveSubpageElement extends
       this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, false);
       return;
     }
-    this.showDisconnectDriveConfirmationDialog_ = true;
+    this.dialogType_ = ConfirmationDialogType.DISCONNECT;
   }
 
   /**
@@ -199,13 +213,21 @@ export class SettingsGoogleDriveSubpageElement extends
    * pressed, all remaining actions (e.g. Cancel, ESC) should not update the
    * preference.
    */
-  private onDriveDisconnectConfirmationDialogClose_(e: CustomEvent) {
-    this.showDisconnectDriveConfirmationDialog_ = false;
+  private onDriveConfirmationDialogClose_(e: CustomEvent) {
+    const closedDialogType = this.dialogType_;
+    this.dialogType_ = ConfirmationDialogType.NONE;
     if (!e.detail.accept) {
       return;
     }
 
-    this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, true);
+    switch (closedDialogType) {
+      case ConfirmationDialogType.DISCONNECT:
+        this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, true);
+        break;
+      case ConfirmationDialogType.BULK_PINNING_DISABLE:
+        this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);
+        break;
+    }
   }
 
   /**
@@ -224,6 +246,38 @@ export class SettingsGoogleDriveSubpageElement extends
     return this.i18n('googleDriveOfflineSubtitle') + ' ' +
         this.i18n(
             'googleDriveOfflineSpaceSubtitle', requiredSpace!, remainingSpace!);
+  }
+
+  /**
+   * For the various dialogs that are defined in the HTML, only one should be
+   * shown at all times. If the supplied type matches the requested type, show
+   * the dialog.
+   */
+  private shouldShowConfirmationDialog_(
+      type: ConfirmationDialogType, requestedType: string) {
+    return type === requestedType;
+  }
+
+  /**
+   * Spawn a confirmation dialog to the user if they choose to disable the bulk
+   * pinning feature, for enabling just update the preference.
+   */
+  private onToggleBulkPinning_(e: Event) {
+    const target = e.target as SettingsToggleButtonElement;
+    const newValueAfterToggle =
+        !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value;
+    target.checked = true;
+
+    // Turning the preference on should have no friction.
+    if (newValueAfterToggle) {
+      this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
+      return;
+    }
+
+    // Turning the preference off should first spawn a dialog to have the user
+    // confirm that is what they want to do, leave the target as checked as the
+    // user must confirm before the preference gets updated.
+    this.dialogType_ = ConfirmationDialogType.BULK_PINNING_DISABLE;
   }
 }
 

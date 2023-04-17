@@ -19,11 +19,17 @@
       label="[[getConnectDisconnectButtonLabel_(driveDisabled_)]]"
       deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
   </controlled-button>
-  <template is="dom-if" if="[[showDisconnectDriveConfirmationDialog_]]" restamp>
-    <settings-disconnect-drive-confirmation-dialog
+  <template is="dom-if"
+      if="[[shouldShowConfirmationDialog_(dialogType_, 'disconnect')]]" restamp>
+    <!-- TODO(b/276391980): Update text once defined. -->
+    <settings-drive-confirmation-dialog
         id="drive-disconnect-dialog"
-        on-close="onDriveDisconnectConfirmationDialogClose_">
-    </settings-disconnect-drive-confirmation-dialog>
+        cancel-button-text="$i18n{cancel}"
+        action-button-text="$i18n{googleDriveDisconnectLabel}"
+        title-text="$i18n{disconnectGoogleDriveAccount}"
+        body-text="Replace this text with the correct copy."
+        on-close="onDriveConfirmationDialogClose_">
+    </settings-drive-confirmation-dialog>
   </template>
 </div>
 
@@ -34,8 +40,23 @@
       id="driveBulkPinning"
       pref="{{prefs.drivefs.bulk_pinning_enabled}}"
       label="$i18n{googleDriveOfflineTitle}"
-      sub-label="[[getBulkPinningSubLabel_(bulkPinningStatus_)]]">
+      sub-label="[[getBulkPinningSubLabel_(bulkPinningStatus_)]]"
+      on-settings-boolean-control-change="onToggleBulkPinning_"
+      no-set-pref>
   </settings-toggle-button>
+
+  <template is="dom-if"
+      if="[[shouldShowConfirmationDialog_(dialogType_, 'bulk-pinning-disable')]]"
+      restamp>
+    <settings-drive-confirmation-dialog
+        id="drive-disconnect-dialog"
+        cancel-button-text="$i18n{cancel}"
+        action-button-text="$i18n{googleDriveTurnOffLabel}"
+        title-text="$i18n{googleDriveTurnOffTitle}"
+        body-text="$i18n{googleDriveTurnOffBody}"
+        on-close="onDriveConfirmationDialogClose_">
+    </settings-drive-confirmation-dialog>
+  </template>
 
   <div class="settings-box two-line">
     <div class="start">

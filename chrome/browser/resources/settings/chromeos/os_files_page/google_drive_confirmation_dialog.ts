@@ -13,21 +13,30 @@ import '../../settings_shared.css.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './google_drive_disconnect_drive_dialog.html.js';
+import {getTemplate} from './google_drive_confirmation_dialog.html.js';
 
-interface SettingsDisconnectDriveConfirmationDialogElement {
+interface SettingsDriveConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class SettingsDisconnectDriveConfirmationDialogElement extends PolymerElement {
+class SettingsDriveConfirmationDialogElement extends PolymerElement {
   static get is() {
-    return 'settings-disconnect-drive-confirmation-dialog';
+    return 'settings-drive-confirmation-dialog';
   }
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      actionButtonText: String,
+      cancelButtonText: String,
+      titleText: String,
+      bodyText: String,
+    };
   }
 
   /**
@@ -48,9 +57,9 @@ class SettingsDisconnectDriveConfirmationDialogElement extends PolymerElement {
   }
 
   /**
-   * When the disconnect button is pressed, close the dialog.
+   * When the action button is pressed, close the dialog.
    */
-  private onDisconnectClick_() {
+  private onActionClick_() {
     this.$.dialog.close();
   }
 
@@ -77,11 +86,11 @@ class SettingsDisconnectDriveConfirmationDialogElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-disconnect-drive-confirmation-dialog':
-        SettingsDisconnectDriveConfirmationDialogElement;
+    'settings-drive-confirmation-dialog':
+        SettingsDriveConfirmationDialogElement;
   }
 }
 
 customElements.define(
-    SettingsDisconnectDriveConfirmationDialogElement.is,
-    SettingsDisconnectDriveConfirmationDialogElement);
+    SettingsDriveConfirmationDialogElement.is,
+    SettingsDriveConfirmationDialogElement);

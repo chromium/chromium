@@ -173,7 +173,7 @@ export {setAppNotificationProviderForTesting} from './os_apps_page/app_notificat
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';
 export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, Stage} from './os_files_page/google_drive_browser_proxy.js';
-export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
+export {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {osPageVisibility} from './os_page_visibility.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';

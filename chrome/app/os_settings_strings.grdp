@@ -888,6 +888,7 @@
   <message name="IDS_SETTINGS_DISCONNECT_GOOGLE_DRIVE" desc="Label for the checkbox which enables disconnecting from Google Drive account.">
     Disconnect Google Drive account
   </message>
+  <!-- TODO(b/276391980): Remove translateable="false" when all the strings have been defined. -->
   <message name="IDS_SETTINGS_GOOGLE_DRIVE" translateable="false" desc="Label for the settings link that takes the user to the page where they can manage their Google Drive settings.">
     Google Drive
   </message>
@@ -926,6 +927,15 @@
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_CLEAR_ACTION" translateable="false" desc="Button for the Offline Storage row where users can clear their offline storage in Settings: Files: Google Drive.">
     Clear offline storage
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BUTTON_LABEL" translateable="false" desc="Button for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+    Turn off
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_TITLE_TEXT" translateable="false" desc="Title text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+    Are you sure you want to turn off automatic syncing?
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_TURN_OFF_BODY_TEXT" translateable="false" desc="Body text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
+    New Google Drive files will no longer be synced automatically, but files that are already synced will remain available.
   </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES" desc="In Downloads Settings, the title of the SMB shares setting section.">
     Network file shares

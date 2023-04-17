@@ -4,10 +4,10 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/chromeos/os_settings.js';
+import {ConfirmationDialogType, CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, SettingsGoogleDriveSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -48,6 +48,33 @@ suite('<settings-google-drive-subpage>', function() {
   let connectDisconnectButton: CrButtonElement;
   let testBrowserProxy: GoogleDriveTestBrowserProxy;
   let bulkPinningToggle: SettingsToggleButtonElement;
+
+  /**
+   * Helper to ensure a confirmation dialog is showing, retrieve a button in the
+   * dialog and click it, then assert the dialog has disappeared.
+   */
+  const clickConfirmationDialogButton =
+      async(selector: string): Promise<void> => {
+    const getButton = () => querySelectorShadow(
+                                page.shadowRoot!,
+                                [
+                                  'settings-drive-confirmation-dialog',
+                                  selector,
+                                ]) as CrButtonElement |
+        null;
+
+    // Ensure some dialog is showing.
+    await assertAsync(
+        () => page.dialogType !== ConfirmationDialogType.NONE, 5000);
+
+    // Ensure the button requested is showing.
+    await assertAsync(() => getButton() !== null);
+
+    // Click the button and wait for the dialog to disappear.
+    getButton()!.click();
+    await assertAsync(
+        () => page.dialogType === ConfirmationDialogType.NONE, 5000);
+  };
 
   setup(async function() {
     testBrowserProxy = new GoogleDriveTestBrowserProxy();
@@ -95,22 +122,11 @@ suite('<settings-google-drive-subpage>', function() {
     page.setPrefValue('gdata.disabled', false);
     flush();
 
+    // Click the connect disconnect button.
     connectDisconnectButton.click();
 
-    const getDisconnectConfirmationButton = () => {
-      return querySelectorShadow(
-                 page.shadowRoot!,
-                 [
-                   'settings-disconnect-drive-confirmation-dialog',
-                   '.action-button',
-                 ]) as CrButtonElement |
-          null;
-    };
-
-    // Wait for the disconnect confirmation button to be visible.
-    await assertAsync(() => getDisconnectConfirmationButton() !== null);
-    const disconnectButton = getDisconnectConfirmationButton()!;
-    disconnectButton.click();
+    // Click the disconnect button.
+    await clickConfirmationDialogButton('.action-button');
 
     // Ensure after clicking the disconnect button the preference is true
     // (timeout after 5s).
@@ -123,22 +139,11 @@ suite('<settings-google-drive-subpage>', function() {
         page.setPrefValue('gdata.disabled', false);
         flush();
 
+        // Click the connect disconnect button.
         connectDisconnectButton.click();
 
-        const getCancelConfirmationDialogButton = () => {
-          return querySelectorShadow(
-                     page.shadowRoot!,
-                     [
-                       'settings-disconnect-drive-confirmation-dialog',
-                       '.cancel-button',
-                     ]) as CrButtonElement |
-              null;
-        };
-
         // Wait for the disconnect confirmation button to be visible.
-        await assertAsync(() => getCancelConfirmationDialogButton() !== null);
-        const cancelButton = getCancelConfirmationDialogButton()!;
-        cancelButton.click();
+        await clickConfirmationDialogButton('.cancel-button');
 
         // Ensure after cancelling the dialog the preference is unchanged.
         await assertAsync(() => !page.getPref('gdata.disabled').value, 5000);
@@ -148,7 +153,12 @@ suite('<settings-google-drive-subpage>', function() {
       'clicking the toggle updates the bulk pinning preference',
       async function() {
         page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+        flush();
+
+        // Toggle the bulk pinning toggle.
         bulkPinningToggle.click();
+
+        // Ensure the bulk pinning preference is enabled (timeout after 5s).
         await assertAsync(
             () => page.getPref('drivefs.bulk_pinning_enabled').value, 5000);
       });
@@ -206,4 +216,36 @@ suite('<settings-google-drive-subpage>', function() {
         await expectSubTitleText(
             subTitle => !subTitle.includes(requiredSpaceText));
       });
+
+  test('disabling bulk pinning shows confirmation dialog', async function() {
+    page.setPrefValue('drivefs.bulk_pinning_enabled', true);
+    flush();
+
+    // Click the bulk pinning toggle.
+    bulkPinningToggle.click();
+
+    // Wait for the confirmation dialog to appear and click the cancel button.
+    await clickConfirmationDialogButton('.cancel-button');
+
+    // Expect the preference to not be changed and the toggle to stay checked.
+    assertTrue(
+        page.getPref('drivefs.bulk_pinning_enabled').value,
+        'Pinning pref should be true');
+    assertTrue(bulkPinningToggle.checked, 'Pinning toggle should be true');
+
+    // Click the bulk pinning toggle.
+    bulkPinningToggle.click();
+
+    // Wait for the confirmation dialog to appear and click the "Turn off"
+    // button.
+    await assertAsync(
+        () => page.dialogType === ConfirmationDialogType.BULK_PINNING_DISABLE,
+        5000);
+    await clickConfirmationDialogButton('.action-button');
+
+    assertFalse(
+        page.getPref('drivefs.bulk_pinning_enabled').value,
+        'Pinning pref should be false');
+    assertFalse(bulkPinningToggle.checked, 'Pinning toggle should be false');
+  });
 });
