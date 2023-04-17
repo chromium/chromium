@@ -3248,21 +3248,6 @@
             ]
         }
     ],
-    "CrOSBluetoothLLPrivacy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_LLPrivacy_NonDogfood",
-                    "enable_features": [
-                        "LinkLayerPrivacy"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSBluetoothMicophoneSuperResolution": [
         {
             "platforms": [
