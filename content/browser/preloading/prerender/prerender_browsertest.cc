@@ -10226,12 +10226,7 @@ class PrerenderSessionHistoryBrowserTest : public PrerenderBrowserTest {
 
     registry->BackNavigationLikely(predictor);
 
-    while (registry->HasOngoingHttpCacheQueryForTesting()) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
+    WaitForHttpCacheQueryCompletion();
   }
 
   void PerformBackNavigation() {
@@ -10240,6 +10235,17 @@ class PrerenderSessionHistoryBrowserTest : public PrerenderBrowserTest {
     TestNavigationObserver back_observer(web_contents_impl());
     controller.GoBack();
     back_observer.Wait();
+  }
+
+  void WaitForHttpCacheQueryCompletion() {
+    PrerenderHostRegistry* registry =
+        web_contents_impl()->GetPrerenderHostRegistry();
+    while (registry->HasOngoingHttpCacheQueryForTesting()) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+      run_loop.Run();
+    }
   }
 
   void ClearBackForwardCache() {
@@ -10294,6 +10300,33 @@ class PrerenderSessionHistoryBrowserTest : public PrerenderBrowserTest {
         << test::ActualVsExpectedUkmEntryToString(attempts[0], expected_entry);
   }
 };
+
+// Other tests in `PrerenderSessionHistoryBrowserTest` explicitly trigger the
+// prediction and the navigation. For this test, we actually simulate the back
+// button press events.
+IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
+                       BackButtonNavigation) {
+  const GURL url1 = GetUrl("/title1.html");
+  const GURL url2 = GetCrossSiteUrl("/title2.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+
+  ClearBackForwardCache();
+
+  base::HistogramTester histogram_tester;
+
+  NavigationControllerImpl& controller = web_contents_impl()->GetController();
+  ASSERT_TRUE(controller.CanGoBack());
+  TestNavigationObserver back_observer(web_contents_impl());
+  SimulateMouseClick(web_contents_impl(), blink::WebMouseEvent::kNoModifiers,
+                     blink::WebMouseEvent::Button::kBack);
+  WaitForHttpCacheQueryCompletion();
+  back_observer.Wait();
+
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
+      PrerenderBackNavigationEligibility::kEligible, 1);
+}
 
 IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
                        PredictionForEligibleBackNavigation) {
@@ -10487,6 +10520,122 @@ IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
   ExpectAttemptUkm(ukm_recorder, true,
                    ToPreloadingEligibility(
                        PrerenderBackNavigationEligibility::kNoHttpCacheEntry));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
+                       NotEligibleForPostMethod) {
+  const GURL url1 = GetUrl("/form_that_posts_to_echoall.html");
+  const GURL url2 = GetUrl("/echoall");
+  const GURL url3 = GetCrossSiteUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+
+  TestNavigationObserver form_post_observer(web_contents_impl());
+  ASSERT_TRUE(
+      ExecJs(web_contents_impl(), "document.getElementById('form').submit();"));
+  form_post_observer.Wait();
+  ASSERT_EQ(url2, web_contents_impl()->GetLastCommittedURL());
+  ASSERT_TRUE(web_contents_impl()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->GetHasPostData());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url3));
+
+  ClearBackForwardCache();
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  PredictBackNavigation();
+  PerformBackNavigation();
+
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
+      PrerenderBackNavigationEligibility::kMethodNotGet, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.MouseBackButton.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  // A POST navigation is not a false negative for this predictor.
+  histogram_tester.ExpectTotalCount(
+      "Preloading.Predictor.MouseBackButton.Recall", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.MouseBackButton.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectTotalCount(
+      "Preloading.Prerender.Attempt.MouseBackButton.Recall", 0);
+  ExpectAttemptUkm(ukm_recorder, true,
+                   ToPreloadingEligibility(
+                       PrerenderBackNavigationEligibility::kMethodNotGet));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
+                       NotEligibleForFailedNavigation) {
+  const GURL url1 = GetUrl("/page404.html");
+  const GURL url2 = GetCrossSiteUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+
+  ClearBackForwardCache();
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  PredictBackNavigation();
+  PerformBackNavigation();
+
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
+      PrerenderBackNavigationEligibility::kTargetIsFailedNavigation, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.MouseBackButton.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.MouseBackButton.Recall",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.MouseBackButton.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.MouseBackButton.Recall",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  ExpectAttemptUkm(
+      ukm_recorder, true,
+      ToPreloadingEligibility(
+          PrerenderBackNavigationEligibility::kTargetIsFailedNavigation));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
+                       NotEligibleForNonHttpScheme) {
+  const GURL url1 = GURL("data:text/html,test");
+  const GURL url2 = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+
+  ClearBackForwardCache();
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  PredictBackNavigation();
+  PerformBackNavigation();
+
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
+      PrerenderBackNavigationEligibility::kTargetIsNonHttp, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.MouseBackButton.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  // A navigation to a data URL is not a false negative for this predictor.
+  histogram_tester.ExpectTotalCount(
+      "Preloading.Predictor.MouseBackButton.Recall", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.MouseBackButton.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectTotalCount(
+      "Preloading.Prerender.Attempt.MouseBackButton.Recall", 0);
+  ExpectAttemptUkm(ukm_recorder, true,
+                   ToPreloadingEligibility(
+                       PrerenderBackNavigationEligibility::kTargetIsNonHttp));
 }
 
 }  // namespace content
