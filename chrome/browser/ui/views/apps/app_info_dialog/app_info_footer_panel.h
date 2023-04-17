@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
@@ -26,8 +25,7 @@ class Extension;
 // the bottom of the app info dialog.
 class AppInfoFooterPanel
     : public AppInfoPanel,
-      public extensions::ExtensionUninstallDialog::Delegate,
-      public base::SupportsWeakPtr<AppInfoFooterPanel> {
+      public extensions::ExtensionUninstallDialog::Delegate {
  public:
   METADATA_HEADER(AppInfoFooterPanel);
   AppInfoFooterPanel(Profile* profile, const extensions::Extension* app);
@@ -85,8 +83,6 @@ class AppInfoFooterPanel
 
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
-
-  base::WeakPtrFactory<AppInfoFooterPanel> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoFooterPanel, AppInfoPanel)

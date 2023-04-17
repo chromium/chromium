@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,7 +29,6 @@ class AppInfoDialogTestApi;
 // A small summary panel with the app's name, icon, version, and various links
 // that is displayed at the top of the app info dialog.
 class AppInfoHeaderPanel : public AppInfoPanel,
-                           public base::SupportsWeakPtr<AppInfoHeaderPanel>,
                            public extensions::ChromeAppIconDelegate {
  public:
   METADATA_HEADER(AppInfoHeaderPanel);
@@ -56,8 +54,6 @@ class AppInfoHeaderPanel : public AppInfoPanel,
   raw_ptr<views::ImageView> app_icon_view_ = nullptr;
 
   std::unique_ptr<extensions::ChromeAppIcon> app_icon_;
-
-  base::WeakPtrFactory<AppInfoHeaderPanel> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoHeaderPanel, AppInfoPanel)
