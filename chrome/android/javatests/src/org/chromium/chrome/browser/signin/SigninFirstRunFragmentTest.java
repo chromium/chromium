@@ -284,6 +284,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1434098")
     public void testRemovingAllAccountsDismissesAccountPickerDialog() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /*avatar=*/null);
         launchActivityWithFragment();
