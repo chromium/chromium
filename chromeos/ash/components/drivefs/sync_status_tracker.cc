@@ -144,6 +144,8 @@ void SyncStatusTracker::SetSyncState(const int64_t id,
     return;
   }
 
+  DCHECK_GT(id, 0) << "Only ids greater than 0 are considered valid";
+
   const auto components = path.GetComponents();
   DCHECK(!components.empty() && components.front() == "/");
   const base::span<const base::FilePath::StringType> path_parts(
@@ -156,10 +158,17 @@ void SyncStatusTracker::SetSyncState(const int64_t id,
       matching_node = std::make_unique<Node>();
       matching_node->path_part = path_part;
       matching_node->parent = node;
-      matching_node->id = id;
     }
     node = matching_node.get();
   }
+
+  // If attempting to override existing node with different id, remove old id
+  // from id_to_leaf_;
+  if (node->id != 0 && node->id != id) {
+    id_to_leaf_.erase(node->id);
+  }
+  node->id = id;
+
   SetNodeState(node, status, transferred, total);
 
   // If the entry with the given id has changed its path, this means it has been
@@ -169,6 +178,8 @@ void SyncStatusTracker::SetSyncState(const int64_t id,
   if (auto it = id_to_leaf_.find(id);
       it != id_to_leaf_.end() && it->second != node) {
     SetNodeState(it->second, kMoved, 0, 0);
+    // Reset node id to 0 to prevent 2 nodes with the same id at the same time.
+    it->second->id = 0;
   }
   id_to_leaf_[id] = node;
 }
