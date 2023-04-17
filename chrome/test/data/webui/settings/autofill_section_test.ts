@@ -147,11 +147,16 @@ suite('AutofillSectionUiTest', function() {
   });
 
   test('verifyAddressEditSourceNotice', async () => {
+    const email = 'stub-user@example.com';
     const address = createAddressEntry();
     const accouontAddress = createAddressEntry();
     accouontAddress.metadata!.source =
         chrome.autofillPrivate.AddressSource.ACCOUNT;
-    const section = await createAutofillSection([address, accouontAddress], {});
+    const section =
+        await createAutofillSection([address, accouontAddress], {}, {
+          ...STUB_USER_ACCOUNT_INFO,
+          email,
+        });
 
     {
       const dialog = await initiateEditing(section, 0);
@@ -170,6 +175,11 @@ suite('AutofillSectionUiTest', function() {
       assertTrue(
           isVisible(dialog.$.accountSourceNotice),
           'account notice should be visible for account address');
+
+      assertEquals(
+          dialog.$.accountSourceNotice.innerText,
+          section.i18n('editAccountAddressSourceNotice', email));
+
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
@@ -616,8 +626,9 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   test('verifyAccountSourceNoticeForNewAddress', async () => {
+    const email = 'stub-user@example.com';
     const section = await createAutofillSection([], {}, {
-      email: 'stub-user@example.com',
+      email,
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: true,
     });
@@ -627,6 +638,10 @@ suite('AutofillSectionAddressTests', function() {
     assertTrue(
         isVisible(dialog.$.accountSourceNotice),
         'account notice should be visible as the user is eligible');
+
+    assertEquals(
+        dialog.$.accountSourceNotice.innerText,
+        section.i18n('newAccountAddressSourceNotice', email));
 
     document.body.removeChild(section);
   });
