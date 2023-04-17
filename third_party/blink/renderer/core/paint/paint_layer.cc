@@ -565,6 +565,9 @@ void PaintLayer::UpdateLayerPosition() {
   // their size.
   if (GetLayoutObject().IsLayoutInline())
     UpdateSize();
+  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    return;
+  }
   PhysicalOffset local_point;
   if (LayoutBox* box = GetLayoutBox()) {
     local_point += box->PhysicalLocation();
@@ -950,6 +953,7 @@ static inline const PaintLayer* AccumulateOffsetTowardsAncestor(
 
 void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                                       PhysicalOffset& location) const {
+  DCHECK(!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled());
   if (ancestor_layer == this)
     return;
 
@@ -957,6 +961,14 @@ void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
   while (curr_layer && curr_layer != ancestor_layer)
     curr_layer =
         AccumulateOffsetTowardsAncestor(curr_layer, ancestor_layer, location);
+}
+
+const PhysicalOffset& PaintLayer::LocationWithoutPositionOffset() const {
+  DCHECK(!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled());
+#if DCHECK_IS_ON()
+  DCHECK(!needs_position_update_);
+#endif
+  return location_without_position_offset_;
 }
 
 void PaintLayer::DidUpdateScrollsOverflow() {

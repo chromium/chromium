@@ -84,13 +84,17 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
-  EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
+  }
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            content_layer->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              content_layer->LocationWithoutPositionOffset());
+  }
   EXPECT_EQ(
       gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
@@ -120,7 +124,9 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
   const auto& fragment = content_layer->GetLayoutObject().FirstFragment();
-  EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
+  }
   if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
               fragment.GetContentsCullRect().Rect());
@@ -131,8 +137,10 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   scroll_layer->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            content_layer->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              content_layer->LocationWithoutPositionOffset());
+  }
   EXPECT_EQ(
       gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
@@ -1320,6 +1328,9 @@ TEST_P(PaintLayerTest, FloatLayerAndAbsoluteUnderInlineLayer) {
   EXPECT_EQ(container, span->Parent());
   EXPECT_EQ(container, span->ContainingLayer());
 
+  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    return;
+  }
   EXPECT_EQ(PhysicalOffset(150, 150),
             floating->LocationWithoutPositionOffset());
 
@@ -1353,11 +1364,15 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
   EXPECT_EQ(span, floating->ContainingLayer());
   EXPECT_EQ(container, span->Parent());
   EXPECT_EQ(container, span->ContainingLayer());
-  EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+  }
   EXPECT_EQ(gfx::Vector2d(0, 400),
             span->ContainingLayer()->PixelSnappedScrolledContentOffset());
-  EXPECT_EQ(PhysicalOffset(150, 150),
-            floating->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(150, 150),
+              floating->LocationWithoutPositionOffset());
+  }
 }
 
 TEST_P(PaintLayerTest, FloatLayerUnderBlockUnderInlineLayer) {
@@ -1377,9 +1392,11 @@ TEST_P(PaintLayerTest, FloatLayerUnderBlockUnderInlineLayer) {
 
   EXPECT_EQ(span, floating->Parent());
   EXPECT_EQ(span, floating->ContainingLayer());
-  EXPECT_EQ(PhysicalOffset(183, 183),
-            floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(183, 183),
+              floating->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+  }
 }
 
 TEST_P(PaintLayerTest, FloatLayerUnderFloatUnderInlineLayer) {
@@ -1399,9 +1416,11 @@ TEST_P(PaintLayerTest, FloatLayerUnderFloatUnderInlineLayer) {
 
   EXPECT_EQ(span, floating->Parent());
   EXPECT_EQ(span, floating->ContainingLayer());
-  EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(183, 183),
-            floating->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(183, 183),
+              floating->LocationWithoutPositionOffset());
+  }
 }
 
 TEST_P(PaintLayerTest, FloatLayerUnderFloatLayerUnderInlineLayer) {
@@ -1425,10 +1444,14 @@ TEST_P(PaintLayerTest, FloatLayerUnderFloatLayerUnderInlineLayer) {
   EXPECT_EQ(floating_parent, floating->ContainingLayer());
   EXPECT_EQ(span, floating_parent->Parent());
   EXPECT_EQ(span, floating_parent->ContainingLayer());
-  EXPECT_EQ(PhysicalOffset(50, 50), floating->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(133, 133),
-            floating_parent->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(50, 50),
+              floating->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(133, 133),
+              floating_parent->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+  }
 }
 
 TEST_P(PaintLayerTest, LayerUnderFloatUnderInlineLayer) {
@@ -1449,8 +1472,10 @@ TEST_P(PaintLayerTest, LayerUnderFloatUnderInlineLayer) {
 
   EXPECT_EQ(span, child->Parent());
   EXPECT_EQ(span, child->ContainingLayer());
-  EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(183, 183), child->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(183, 183), child->LocationWithoutPositionOffset());
+  }
 }
 
 TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
@@ -1499,9 +1524,11 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   EXPECT_EQ(columns, spanner->ContainingLayer());
   EXPECT_EQ(columns, extra_layer->Parent());
   EXPECT_EQ(columns, extra_layer->ContainingLayer());
-  EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(100, 100),
-            extra_layer->LocationWithoutPositionOffset());
+  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(100, 100),
+              extra_layer->LocationWithoutPositionOffset());
+  }
   EXPECT_EQ(gfx::Vector2d(200, 0),
             spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
 }
@@ -2403,6 +2430,9 @@ TEST_P(PaintLayerTest, ScrollContainerLayerTransformScroller) {
 }
 
 TEST_P(PaintLayerTest, AnchorScrollConvertToLayerCoords) {
+  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    return;
+  }
   ScopedCSSAnchorPositioningForTest enabled_scope(true);
 
   SetBodyInnerHTML(R"HTML(

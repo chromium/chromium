@@ -216,12 +216,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // The physical offset from this PaintLayer to its ContainingLayer.
   // Does not include any scroll offset of the ContainingLayer. Also does not
   // include offsets for positioned elements.
-  const PhysicalOffset& LocationWithoutPositionOffset() const {
-#if DCHECK_IS_ON()
-    DCHECK(!needs_position_update_);
-#endif
-    return location_without_position_offset_;
-  }
+  //
+  // Do not use this function.  We're going to remove this.
+  const PhysicalOffset& LocationWithoutPositionOffset() const;
 
   // This is the scroll offset that's actually used to display to the screen.
   // It should only be used in paint/compositing type use cases (includes hit
@@ -235,6 +232,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   const LayoutSize& Size() const { return size_; }
 
 #if DCHECK_IS_ON()
+  // Do not use this function.  We're going to remove this.
   bool NeedsPositionUpdate() const { return needs_position_update_; }
 #endif
 
@@ -271,6 +269,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
                               bool* skipped_ancestor = nullptr) const;
 
+  // Do not use this function.  We're going to remove this.
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                             PhysicalOffset&) const;
 
@@ -709,6 +708,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned has_visible_self_painting_descendant_ : 1;
 
 #if DCHECK_IS_ON()
+  // TODO(crbug.com/1432839): Remove this.
   unsigned needs_position_update_ : 1;
 #endif
 
@@ -777,6 +777,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Our (x,y) coordinates are in our containing layer's coordinate space,
   // excluding positioning offset and scroll.
+  // TODO(crbug.com/1432839): Remove this.
   PhysicalOffset location_without_position_offset_;
 
   // The layer's size.
