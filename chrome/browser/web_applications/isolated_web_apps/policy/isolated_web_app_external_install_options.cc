@@ -33,8 +33,10 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
     return base::unexpected("Policy entry is not dictionary");
   }
 
+  const base::Value::Dict& entry_dict = entry.GetDict();
+
   const std::string* const update_manifest_url_raw =
-      entry.FindStringKey(kPolicyUpdateManifestUrlKey);
+      entry_dict.FindString(kPolicyUpdateManifestUrlKey);
   if (!update_manifest_url_raw) {
     return base::unexpected(
         "Update manifest URL value is not found or has the wrong type");
@@ -46,7 +48,7 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   }
 
   const std::string* const web_bundle_id_raw =
-      entry.FindStringKey(kPolicyWebBundleIdKey);
+      entry_dict.FindString(kPolicyWebBundleIdKey);
   if (!web_bundle_id_raw) {
     return base::unexpected(
         "Web Bundle ID value is not found or has the wrong type");

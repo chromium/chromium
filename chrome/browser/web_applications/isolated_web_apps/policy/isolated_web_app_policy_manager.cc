@@ -415,10 +415,11 @@ absl::optional<GURL> IsolatedWebAppPolicyManager::ExtractWebBundleURL(
       return absl::nullopt;
     }
 
+    const base::Value::Dict& version_entry_dict = version_entry.GetDict();
     const std::string* const version_string =
-        version_entry.FindStringKey(kUpdateManifestVersionKey);
+        version_entry_dict.FindString(kUpdateManifestVersionKey);
     const std::string* const url_string =
-        version_entry.FindStringKey(kUpdateManifestSrcKey);
+        version_entry_dict.FindString(kUpdateManifestSrcKey);
     if (!version_string || !url_string) {
       // No version or Web Bundle URL. Let's return error as this update
       // manifest looks strange.
