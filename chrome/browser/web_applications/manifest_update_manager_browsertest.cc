@@ -246,6 +246,8 @@ ManifestUpdateManager& GetManifestUpdateManager(Profile* profile) {
   return WebAppProvider::GetForTest(profile)->manifest_update_manager();
 }
 
+// Utility class to wait for a manifest update to finish and get a
+// ManifestUpdateResult back.
 class UpdateCheckResultAwaiter {
  public:
   explicit UpdateCheckResultAwaiter(const GURL& url) : url_(url) {
@@ -286,6 +288,38 @@ void WaitForUpdatePendingCallback(const GURL& url) {
       }));
   run_loop.Run();
 }
+
+// Utility class to wait for WebContentsObserver to trigger a DidFinishLoad.
+class DidFinishLoadObserver : public content::WebContentsObserver {
+ public:
+  explicit DidFinishLoadObserver(content::WebContents* contents,
+                                 const GURL& url)
+      : content::WebContentsObserver(contents), expected_url_(url) {}
+
+  bool AwaitCorrectPageLoaded() {
+    on_load_run_loop_finished_.Run();
+    base::test::TestFuture<void> future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return correct_page_loaded_;
+  }
+
+ private:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override {
+    if (!validated_url.is_valid() || validated_url != expected_url_) {
+      return;
+    }
+
+    correct_page_loaded_ = true;
+    on_load_run_loop_finished_.Quit();
+  }
+
+  base::RunLoop on_load_run_loop_finished_;
+  const GURL expected_url_;
+  bool correct_page_loaded_ = false;
+};
 
 }  // namespace
 
@@ -426,6 +460,30 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   GURL GetManifestURL() const {
     return http_server_.GetURL("/banners/manifest.json");
+  }
+
+  GURL GetAppURLWithoutManifest() const {
+    return http_server_.GetURL("/banners/no_manifest_test_page.html");
+  }
+
+  // Mimics the Create Shortcut flow from the three dot overflow menu.
+  AppId InstallWebAppWithoutManifest() {
+    GURL app_url = GetAppURLWithoutManifest();
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+
+    AppId app_id;
+    base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+        install_future;
+    GetProvider().scheduler().FetchManifestAndInstall(
+        webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+        browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+        /*bypass_service_worker_check=*/false,
+        base::BindOnce(test::TestAcceptDialogCallback),
+        install_future.GetCallback(),
+        /*use_fallback=*/true);
+    EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+              webapps::InstallResultCode::kSuccessNewInstall);
+    return install_future.Get<AppId>();
   }
 
   AppId InstallWebApp() {
@@ -774,6 +832,33 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   run_loop.Run();
   histogram_tester_.ExpectBucketCount(
       kUpdateHistogramName, ManifestUpdateResult::kAppUninstalling, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       TriggersAfterLoadingNewManifestUrl) {
+  // Install an app with no manifest, trigger an update by navigation.
+  GURL no_manifest_url = GetAppURLWithoutManifest();
+  const AppId app_id = InstallWebAppWithoutManifest();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  UpdateCheckResultAwaiter result_awaiter(no_manifest_url);
+  DidFinishLoadObserver load_observer(web_contents, no_manifest_url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), no_manifest_url));
+  EXPECT_TRUE(load_observer.AwaitCorrectPageLoaded());
+  EXPECT_TRUE(GetManifestUpdateManager(browser()->profile())
+                  .IsAppPendingPageAndManifestUrlLoadForTesting(app_id));
+
+  // Inject new manifest into the page once DidFinishLoad() is triggered. This
+  // should start the manifest checking command without the need for a refresh.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "addManifestLinkTag('/banners/manifest_for_no_manifest_page.json')"));
+  GURL newly_loaded_manifest_url =
+      http_server_.GetURL("/banners/manifest_for_no_manifest_page.json");
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            std::move(result_awaiter).AwaitNextResult());
+  EXPECT_EQ(GetProvider().registrar_unsafe().GetAppManifestUrl(app_id),
+            newly_loaded_manifest_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

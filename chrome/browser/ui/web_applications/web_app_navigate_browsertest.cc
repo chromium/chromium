@@ -180,7 +180,8 @@ class WebAppNavigatePrerenderingBrowserTest : public WebAppNavigateBrowserTest {
 // call ManifestUpdateManager as a primary page is not changed.
 IN_PROC_BROWSER_TEST_F(WebAppNavigatePrerenderingBrowserTest,
                        NotUpdateInPrerendering) {
-  const GURL example_url = embedded_test_server()->GetURL("/simple.html");
+  const GURL example_url =
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
 
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
