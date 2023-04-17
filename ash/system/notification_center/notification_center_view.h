@@ -61,7 +61,7 @@ enum class NotificationCenterAnimationState {
 // Manages scrolling of notification list.
 class ASH_EXPORT NotificationCenterView
     : public views::View,
-      public RoundedMessageCenterScrollBar::Observer,
+      public MessageCenterScrollBar::Observer,
       public views::FocusChangeListener,
       public gfx::AnimationDelegate,
       public views::ViewObserver {

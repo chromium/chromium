@@ -91,7 +91,7 @@ NotificationCenterView::NotificationCenterView(
       last_scroll_position_from_bottom_(0),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
-  auto* scroll_bar = new RoundedMessageCenterScrollBar(this);
+  auto* scroll_bar = new MessageCenterScrollBar(this);
   scroll_bar->SetInsets(kScrollBarInsets);
   scroll_bar_ = scroll_bar;
 

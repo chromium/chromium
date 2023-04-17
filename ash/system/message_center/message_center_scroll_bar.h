@@ -19,10 +19,9 @@ namespace ash {
 // The scroll bar for message center. This is basically just a RoundedScrollBar
 // but also records the metrics for the type of scrolling (only the first event
 // after the message center opens is recorded) and scrolling performance.
-// TODO(b/257291597): Rename this file to match the class name.
-class RoundedMessageCenterScrollBar : public RoundedScrollBar {
+class MessageCenterScrollBar : public RoundedScrollBar {
  public:
-  METADATA_HEADER(RoundedMessageCenterScrollBar);
+  METADATA_HEADER(MessageCenterScrollBar);
 
   class Observer {
    public:
@@ -32,13 +31,12 @@ class RoundedMessageCenterScrollBar : public RoundedScrollBar {
   };
 
   // |observer| can be null.
-  explicit RoundedMessageCenterScrollBar(Observer* observer);
+  explicit MessageCenterScrollBar(Observer* observer);
 
-  RoundedMessageCenterScrollBar(const RoundedMessageCenterScrollBar&) = delete;
-  RoundedMessageCenterScrollBar& operator=(
-      const RoundedMessageCenterScrollBar&) = delete;
+  MessageCenterScrollBar(const MessageCenterScrollBar&) = delete;
+  MessageCenterScrollBar& operator=(const MessageCenterScrollBar&) = delete;
 
-  ~RoundedMessageCenterScrollBar() override;
+  ~MessageCenterScrollBar() override;
 
  private:
   // RoundedScrollBar:

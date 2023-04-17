@@ -42,18 +42,18 @@ void CollectScrollActionReason(ScrollActionReason reason) {
 
 namespace ash {
 
-BEGIN_METADATA(RoundedMessageCenterScrollBar, RoundedScrollBar)
+BEGIN_METADATA(MessageCenterScrollBar, RoundedScrollBar)
 END_METADATA
 
-RoundedMessageCenterScrollBar::RoundedMessageCenterScrollBar(Observer* observer)
+MessageCenterScrollBar::MessageCenterScrollBar(Observer* observer)
     : RoundedScrollBar(false), observer_(observer) {
   GetThumb()->layer()->SetVisible(features::IsNotificationScrollBarEnabled());
   GetThumb()->layer()->CompleteAllAnimations();
 }
 
-RoundedMessageCenterScrollBar::~RoundedMessageCenterScrollBar() = default;
+MessageCenterScrollBar::~MessageCenterScrollBar() = default;
 
-bool RoundedMessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
+bool MessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   if (!stats_recorded_ &&
       (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN)) {
     CollectScrollActionReason(ScrollActionReason::kByArrowKey);
@@ -62,8 +62,7 @@ bool RoundedMessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   return RoundedScrollBar::OnKeyPressed(event);
 }
 
-bool RoundedMessageCenterScrollBar::OnMouseWheel(
-    const ui::MouseWheelEvent& event) {
+bool MessageCenterScrollBar::OnMouseWheel(const ui::MouseWheelEvent& event) {
   if (!stats_recorded_) {
     CollectScrollActionReason(ScrollActionReason::kByMouseWheel);
     stats_recorded_ = true;
@@ -77,7 +76,7 @@ bool RoundedMessageCenterScrollBar::OnMouseWheel(
   return result;
 }
 
-void RoundedMessageCenterScrollBar::OnGestureEvent(ui::GestureEvent* event) {
+void MessageCenterScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
     if (!presentation_time_recorder_ && GetWidget()) {
       presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
@@ -104,7 +103,7 @@ void RoundedMessageCenterScrollBar::OnGestureEvent(ui::GestureEvent* event) {
     observer_->OnMessageCenterScrolled();
 }
 
-bool RoundedMessageCenterScrollBar::OnScroll(float dx, float dy) {
+bool MessageCenterScrollBar::OnScroll(float dx, float dy) {
   const bool result = RoundedScrollBar::OnScroll(dx, dy);
   if (observer_)
     observer_->OnMessageCenterScrolled();
