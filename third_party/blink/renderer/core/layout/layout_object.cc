@@ -362,7 +362,11 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     const ComputedStyle* parent_style = parent->GetComputedStyle();
     bool is_inside =
         parent_style->ListStylePosition() == EListStylePosition::kInside ||
-        (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement());
+        (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement()) ||
+        // https://w3c.github.io/csswg-drafts/css-lists/#list-style-position-outside
+        // > If the list item is an inline box: this value is equivalent to
+        // > inside.
+        parent_style->Display() == EDisplay::kInlineListItem;
     if (is_inside) {
       return MakeGarbageCollected<LayoutNGInsideListMarker>(element);
     }
@@ -435,7 +439,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
 LayoutBlockFlow* LayoutObject::CreateBlockFlowOrListItem(
     Element* element,
     const ComputedStyle& style) {
-  if (style.Display() == EDisplay::kListItem && element &&
+  if (style.IsDisplayListItem() && element &&
       element->GetPseudoId() != kPseudoIdBackdrop) {
     // Create a LayoutBlockFlow with a ListItemOrdinal and maybe a ::marker.
     // ::backdrop is excluded since it's not tree-abiding, and ListItemOrdinal

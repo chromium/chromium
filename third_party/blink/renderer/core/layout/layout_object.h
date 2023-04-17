@@ -2794,7 +2794,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // TODO(1229581): Rename this function.
   bool IsListItemIncludingNG() const {
     NOT_DESTROYED();
-    return IsLayoutNGListItem();
+    return IsLayoutNGListItem() || IsInlineListItem();
   }
 
   // There 2 different types of list markers:
