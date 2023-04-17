@@ -159,9 +159,12 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     cursor_position_ = rect;
   }
 
-  void SetSurroundingText(const std::u16string& text,
-                          const gfx::Range& text_range,
-                          const gfx::Range& selection_range) override {
+  void SetSurroundingText(
+      const std::u16string& text,
+      const gfx::Range& text_range,
+      const gfx::Range& selection_range,
+      const absl::optional<GrammarFragment>& fragment,
+      const absl::optional<AutocorrectInfo>& autocorrect) override {
     TestResult::GetInstance()->RecordAction(u"surroundingtext:" + text);
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
         base::StringPrintf("textrangestart:%zu", text_range.start())));
@@ -185,11 +188,6 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     should_do_learning_ = should_do_learning;
     can_compose_inline_ = can_compose_inline;
   }
-
-  void SetGrammarFragmentAtCursor(
-      const ui::GrammarFragment& fragment) override {}
-  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                          const gfx::Rect& autocorrect_bounds) override {}
 
  private:
   raw_ptr<LinuxInputMethodContextDelegate> delegate_;

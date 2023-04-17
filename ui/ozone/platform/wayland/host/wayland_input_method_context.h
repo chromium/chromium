@@ -45,14 +45,17 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Init(bool initialize_for_testing = false);
 
   // LinuxInputMethodContext overrides:
-  bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
+  bool DispatchKeyEvent(const KeyEvent& key_event) override;
   // Returns true if this event comes from extended_keyboard::peek_key.
   // See also WaylandEventSource::OnKeyboardKeyEvent about how the flag is set.
-  bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
+  bool IsPeekKeyEvent(const KeyEvent& key_event) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
-  void SetSurroundingText(const std::u16string& text,
-                          const gfx::Range& text_range,
-                          const gfx::Range& selection_range) override;
+  void SetSurroundingText(
+      const std::u16string& text,
+      const gfx::Range& text_range,
+      const gfx::Range& selection_range,
+      const absl::optional<GrammarFragment>& fragment,
+      const absl::optional<AutocorrectInfo>& autocorrect) override;
   void SetContentType(TextInputType type,
                       TextInputMode mode,
                       uint32_t flags,
@@ -64,9 +67,6 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                    TextInputType old_type,
                    TextInputType new_type,
                    TextInputClient::FocusReason reason) override;
-  void SetGrammarFragmentAtCursor(const GrammarFragment& fragment) override;
-  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                          const gfx::Rect& autocorrect_bounds) override;
   void Reset() override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
@@ -99,7 +99,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
 
-  const ui::SurroundingTextTracker::State& predicted_state_for_testing() const {
+  const SurroundingTextTracker::State& predicted_state_for_testing() const {
     return surrounding_text_tracker_.predicted_state();
   }
 
@@ -146,7 +146,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // Tracks the surrounding text. Surrounding text and its selection is NOT
   // trimmed by the wayland message size limitation in SurroundingTextTracker.
-  ui::SurroundingTextTracker surrounding_text_tracker_;
+  SurroundingTextTracker surrounding_text_tracker_;
 
   // Whether the next CommitString should be treated as part of a
   // ConfirmCompositionText operation which keeps the current selection. This
