@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
@@ -35,6 +34,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -221,7 +221,8 @@ bool ExecuteScriptWithUserGestureControl(RenderFrameHost* frame,
 
   // TODO(nick): This function can't be replaced with a call to ExecJs(), since
   // ExecJs calls eval() which might be blocked by the page's CSP.
-  std::string expected_response = "ExecuteScript-" + base::GenerateGUID();
+  std::string expected_response =
+      "ExecuteScript-" + base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string new_script = base::StringPrintf(
       R"( %s;  // Original script.
           window.domAutomationController.send('%s'); )",
