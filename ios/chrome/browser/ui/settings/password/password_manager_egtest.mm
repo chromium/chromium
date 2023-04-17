@@ -538,7 +538,9 @@ id<GREYMatcher> EditDoneButton() {
       [self
           isRunningTest:@selector
           (testAccountStorageSwitchDisabledIfBlockedByPolicyAndFlagEnabled)] ||
-      [self isRunningTest:@selector(testMovePasswordToAccount)]) {
+      [self isRunningTest:@selector(testMovePasswordToAccount)] ||
+      [self isRunningTest:@selector
+            (testMovePasswordToAccountWithOnlyIncognitoTabOpen)]) {
     config.features_enabled.push_back(
         password_manager::features::kEnablePasswordsAccountStorage);
   }
@@ -3163,6 +3165,61 @@ id<GREYMatcher> EditDoneButton() {
       @"Stored form was not found in the PasswordStore results.");
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
+  OpenPasswordManager();
+
+  // `passwordMatcher` includes grey_sufficientlyVisible() because there are
+  // other invisible cells when password details is closed later.
+  id<GREYMatcher> passwordMatcher =
+      grey_allOf([self groupingEnabled]
+                     ? ButtonWithAccessibilityID(@"local.com")
+                     : ButtonWithAccessibilityID(@"local.com, username"),
+                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> localIconMatcher =
+      grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconId),
+                 grey_ancestor(passwordMatcher), nil);
+  [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:passwordMatcher]
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kMovePasswordToAccountButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kMovePasswordToAccountButtonId)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kMovePasswordToAccountButtonId)]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Regression test for crbug.com/1431975. Similar to testMovePasswordToAccount
+// above but the only open tab is an incognito one.
+- (void)testMovePasswordToAccountWithOnlyIncognitoTabOpen {
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExamplePassword:@"localPassword"
+                                               userName:@"username"
+                                                 origin:@"https://local.com"],
+      @"Stored form was not found in the PasswordStore results.");
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey closeAllNormalTabs];
+
   OpenPasswordManager();
 
   // `passwordMatcher` includes grey_sufficientlyVisible() because there are
