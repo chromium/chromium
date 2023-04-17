@@ -58,6 +58,9 @@ import java.util.LinkedList;
  * Helper methods that can be used across multiple Autofill UIs.
  */
 public class AutofillUiUtils {
+    public static final String CAPITAL_ONE_ICON_URL =
+            "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png";
+
     /**
      * Interface to provide the horizontal and vertical offset for the tooltip.
      */
@@ -435,25 +438,25 @@ public class AutofillUiUtils {
 
     /**
      * Adds dimension params to card art URL for credit cards.
-     * @param customIconURL A FIFE URL to fetch the card art icon.
+     * @param customIconUrl A FIFE URL to fetch the card art icon.
      * @param width in pixels.
      * @param height in pixels.
      * @return {@link GURL} formatted with the icon dimensions to fetch the card art icon.
      */
-    public static GURL getCCIconURLWithParams(GURL customIconURL, @Px int width, @Px int height) {
+    public static GURL getCreditCardIconUrlWithParams(
+            GURL customIconUrl, @Px int width, @Px int height) {
         // TODO(crbug.com/1313616): There is only one gstatic card art image we are using currently.
         // Remove this logic and append FIFE URL suffix by default when the static image is
         // deprecated.
         // Check if the image is gstatic stored in Static Content Service. If not append the
         // dimension params to the FIFE URL.
-        if (customIconURL.getSpec().equals(
-                    "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")) {
-            return customIconURL;
+        if (customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
+            return customIconUrl;
         }
         // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
         // option is used to set the width in pixels, "h" is used to set the height in pixels,
         // and "n" represents center cropping the image.
-        StringBuilder url = new StringBuilder(customIconURL.getSpec());
+        StringBuilder url = new StringBuilder(customIconUrl.getSpec());
         url.append("=w").append(width).append("-h").append(height).append("-n");
         return new GURL(url.toString());
     }
@@ -483,8 +486,7 @@ public class AutofillUiUtils {
             return defaultIcon;
         }
 
-        if (cardArtUrl.getSpec().equals(
-                    "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
+        if (cardArtUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
@@ -493,7 +495,8 @@ public class AutofillUiUtils {
         Resources res = context.getResources();
         Bitmap customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                        getCCIconURLWithParams(cardArtUrl, res.getDimensionPixelSize(widthId),
+                        getCreditCardIconUrlWithParams(cardArtUrl,
+                                res.getDimensionPixelSize(widthId),
                                 res.getDimensionPixelSize(heightId)),
                         res.getDimension(cornerRadiusId));
         if (customIconBitmap == null) {

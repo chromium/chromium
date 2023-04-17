@@ -232,20 +232,20 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testCreditCardArtURLIsFormattedWithImageSpecs() throws TimeoutException {
-        GURL virtualCardIconURL =
-                new GURL("https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png");
-        GURL cardArtURL = new GURL("http://google.com/test");
+    public void testCreditCardArtUrlIsFormattedWithImageSpecs() throws TimeoutException {
+        GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
+        GURL cardArtUrl = new GURL("http://google.com/test");
         int widthPixels = 32;
         int heightPixels = 20;
 
         // For virtual card icon, the URL should not be updated. For card art icon, the URL should
-        // be updated as `cardArtURL=w{width}-h{height}-n`.
-        assertThat(AutofillUiUtils.getCCIconURLWithParams(
-                           virtualCardIconURL, widthPixels, heightPixels))
-                .isEqualTo(virtualCardIconURL);
-        assertThat(AutofillUiUtils.getCCIconURLWithParams(cardArtURL, widthPixels, heightPixels))
-                .isEqualTo(new GURL(new StringBuilder(cardArtURL.getSpec())
+        // be updated as `cardArtUrl=w{width}-h{height}-n`.
+        assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
+                           capitalOneIconUrl, widthPixels, heightPixels))
+                .isEqualTo(capitalOneIconUrl);
+        assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
+                           cardArtUrl, widthPixels, heightPixels))
+                .isEqualTo(new GURL(new StringBuilder(cardArtUrl.getSpec())
                                             .append("=w")
                                             .append(widthPixels)
                                             .append("-h")
