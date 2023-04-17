@@ -190,8 +190,11 @@ class TestPrefetchService : public PrefetchService {
 
 class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
  public:
-  explicit TestPrefetchURLLoaderInterceptor(int frame_tree_node_id)
-      : PrefetchURLLoaderInterceptor(frame_tree_node_id) {}
+  explicit TestPrefetchURLLoaderInterceptor(
+      int frame_tree_node_id,
+      const GlobalRenderFrameHostId& previous_render_frame_host_id)
+      : PrefetchURLLoaderInterceptor(frame_tree_node_id,
+                                     previous_render_frame_host_id) {}
   ~TestPrefetchURLLoaderInterceptor() override = default;
 
   void AddPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container) {
@@ -244,7 +247,8 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     navigation_simulator->Start();
 
     interceptor_ = std::make_unique<TestPrefetchURLLoaderInterceptor>(
-        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+        main_rfh()->GetGlobalId());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =

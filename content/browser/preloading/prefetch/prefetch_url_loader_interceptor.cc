@@ -43,16 +43,29 @@ void RecordWasFullRedirectChainServedHistogram(
 
 // static
 std::unique_ptr<PrefetchURLLoaderInterceptor>
-PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(int frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor))
+PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
+    int frame_tree_node_id,
+    const GlobalRenderFrameHostId& referring_render_frame_host_id) {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
     return nullptr;
+  }
 
-  return std::make_unique<PrefetchURLLoaderInterceptor>(frame_tree_node_id);
+  if (!referring_render_frame_host_id) {
+    // This is expected to occur only in unit tests.
+    return nullptr;
+  }
+
+  return std::make_unique<PrefetchURLLoaderInterceptor>(
+      frame_tree_node_id, referring_render_frame_host_id);
 }
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
-    int frame_tree_node_id)
-    : frame_tree_node_id_(frame_tree_node_id) {}
+    int frame_tree_node_id,
+    const GlobalRenderFrameHostId& referring_render_frame_host_id)
+    : frame_tree_node_id_(frame_tree_node_id),
+      referring_render_frame_host_id_(referring_render_frame_host_id) {
+  DCHECK(referring_render_frame_host_id_);
+}
 
 PrefetchURLLoaderInterceptor::~PrefetchURLLoaderInterceptor() = default;
 
@@ -100,7 +113,8 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   }
 
   prefetch_service->GetPrefetchToServe(
-      tentative_resource_request.url,
+      PrefetchContainer::Key(referring_render_frame_host_id_,
+                             tentative_resource_request.url),
       base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
                      tentative_resource_request,
                      std::move(get_prefetch_callback)));

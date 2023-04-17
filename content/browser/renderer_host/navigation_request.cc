@@ -4948,7 +4948,7 @@ void NavigationRequest::OnStartChecksComplete(
           frame_tree_node_->current_frame_host()->devtools_frame_token(),
           std::move(cors_exempt_headers), std::move(client_security_state),
           devtools_accepted_stream_types, is_pdf_, initiator_document_,
-          allow_cookies_from_browser_),
+          GetPreviousRenderFrameHostId(), allow_cookies_from_browser_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),

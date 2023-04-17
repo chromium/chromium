@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace content {
@@ -23,9 +24,12 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
     : public NavigationLoaderInterceptor {
  public:
   static std::unique_ptr<PrefetchURLLoaderInterceptor> MaybeCreateInterceptor(
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      const GlobalRenderFrameHostId& referring_render_frame_host_id);
 
-  explicit PrefetchURLLoaderInterceptor(int frame_tree_node_id);
+  PrefetchURLLoaderInterceptor(
+      int frame_tree_node_id,
+      const GlobalRenderFrameHostId& referring_render_frame_host_id);
   ~PrefetchURLLoaderInterceptor() override;
 
   PrefetchURLLoaderInterceptor(const PrefetchURLLoaderInterceptor&) = delete;
@@ -60,6 +64,13 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // The frame tree node |this| is associated with, used to retrieve
   // |PrefetchService|.
   const int frame_tree_node_id_;
+
+  // Corresponds to the ID of "navigable's active document" used for "finding a
+  // matching prefetch record" in the spec. This is used as a part of
+  // `PrefetchContainer::Key` to make prefetches per-RenderFrameHost.
+  // https://wicg.github.io/nav-speculation/prefetch.html
+  // TODO(https://crbug.com/1431804): This is not strictly per-Document.
+  const GlobalRenderFrameHostId referring_render_frame_host_id_;
 
   // Called once |this| has decided whether to intercept or not intercept the
   // navigation.

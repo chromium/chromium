@@ -134,6 +134,7 @@ class NavigationURLLoaderTest : public testing::Test {
             absl::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
             content::WeakDocumentPtr() /* initiator_document */,
+            GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             false /* allow_cookies_from_browser */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),

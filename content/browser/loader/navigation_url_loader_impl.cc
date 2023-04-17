@@ -525,7 +525,7 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   // Set up an interceptor for prefetch.
   std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
       content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-          frame_tree_node_id_);
+          frame_tree_node_id_, request_info_->previous_render_frame_host_id);
   if (prefetch_interceptor) {
     interceptors_.push_back(std::move(prefetch_interceptor));
   }

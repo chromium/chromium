@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -548,21 +549,23 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         *mock_navigation_handle_);
   }
 
-  base::WeakPtr<PrefetchContainer> GetPrefetchToServe(const GURL& url) {
-    base::RunLoop run_loop;
-    base::WeakPtr<PrefetchContainer> return_prefetch;
-
+  base::WeakPtr<PrefetchContainer> GetPrefetchToServe(
+      const GURL& url,
+      GlobalRenderFrameHostId previous_render_frame_host_id =
+          GlobalRenderFrameHostId()) {
+    if (!previous_render_frame_host_id) {
+      // A valid `previous_render_frame_host_id` is given as an argument when
+      // to test that prefetched results are not used for unexpected initiator
+      // Documents. In other cases, use the ID of the expected initiator
+      // Document (RenderFrameHost where the `PrefetchDocumentManager` is
+      // associated).
+      previous_render_frame_host_id = main_rfh()->GetGlobalId();
+    }
+    base::test::TestFuture<base::WeakPtr<PrefetchContainer>> future;
     prefetch_service_->GetPrefetchToServe(
-        url, base::BindOnce(
-                 [](base::WeakPtr<PrefetchContainer>* return_prefetch,
-                    base::RunLoop* run_loop,
-                    base::WeakPtr<PrefetchContainer> prefetch_to_serve) {
-                   *return_prefetch = prefetch_to_serve;
-                   run_loop->Quit();
-                 },
-                 &return_prefetch, &run_loop));
-    run_loop.Run();
-    return return_prefetch;
+        PrefetchContainer::Key(previous_render_frame_host_id, url),
+        future.GetCallback());
+    return future.Get();
   }
 
   ScopedPrefetchServiceContentBrowserClient* test_content_browser_client() {
@@ -722,6 +725,15 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
   EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
+
+  // No servable PrefetchContainer is returned for different RenderFrameHost.
+  GlobalRenderFrameHostId different_render_frame_host_id =
+      main_rfh()->GetGlobalId();
+  different_render_frame_host_id.child_id += 1;
+  base::WeakPtr<PrefetchContainer>
+      serveable_prefetch_container_for_different_initiator = GetPrefetchToServe(
+          GURL("https://example.com"), different_render_frame_host_id);
+  ASSERT_FALSE(serveable_prefetch_container_for_different_initiator);
 
   base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
       GetPrefetchToServe(GURL("https://example.com"));
@@ -3971,7 +3983,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
   base::RunLoop get_prefetch_run_loop;
   base::WeakPtr<PrefetchContainer> serveable_prefetch_container;
   prefetch_service_->GetPrefetchToServe(
-      GURL("https://example.com"),
+      PrefetchContainer::Key(main_rfh()->GetGlobalId(),
+                             GURL("https://example.com")),
       base::BindOnce(
           [](base::WeakPtr<PrefetchContainer>* serveable_prefetch_container,
              base::RunLoop* get_prefetch_run_loop,
