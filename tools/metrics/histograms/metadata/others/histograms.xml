@@ -5714,6 +5714,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.EmptyCount"
+    units="logs" expires_after="2024-04-13">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the number of logs with empty data retrieved from debugd for
+    feedback reports. Fires during the process of sending a feedback report on
+    Chrome OS, or when the user previews the system logs from the feedback app
+    on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.NotAvailableCount"
+    units="logs" expires_after="2024-04-13">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the number of logs with not available data retrieved from debugd for
+    feedback reports. Fires during the process of sending a feedback report on
+    Chrome OS, or when the user previews the system logs from the feedback app
+    on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.OtherCount"
+    units="logs" expires_after="2024-04-13">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the number of logs with data not empty or not available retrieved
+    from debugd for feedback reports. Fires during the process of sending a
+    feedback report on Chrome OS, or when the user previews the system logs from
+    the feedback app on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.Success"
     units="boolean" expires_after="2023-09-03">
   <owner>xiangdongkong@google.com</owner>

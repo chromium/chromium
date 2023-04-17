@@ -34,6 +34,7 @@ namespace system_logs {
 
 namespace {
 
+constexpr char kEmpty[] = "<empty>";
 constexpr char kNotAvailable[] = "<not available>";
 constexpr char kRoutesKeyName[] = "routes";
 constexpr char kRoutesv6KeyName[] = "routes6";
@@ -223,13 +224,36 @@ void DebugDaemonLogSource::OnGetLogs(const base::TimeTicks get_start_time,
         "Feedback.ChromeOSApp.Duration.GetBigFeedbackLogs",
         base::TimeTicks::Now() - get_start_time);
   }
+  int empty_log_count = 0;
+  int not_available_log_count = 0;
+  int other_log_count = 0;
+
   // We ignore 'succeeded' for this callback - we want to display as much of the
   // debug info as we can even if we failed partway through parsing, and if we
   // couldn't fetch any of it, none of the fields will even appear.
   for (const auto& log : logs) {
-    if (base::Contains(kExcludeList, log.first))
+    if (base::Contains(kExcludeList, log.first)) {
       continue;
+    }
     response_->insert(log);
+    if (log.second == kEmpty) {
+      ++empty_log_count;
+    } else if (log.second == kNotAvailable) {
+      ++not_available_log_count;
+    } else {
+      ++other_log_count;
+    }
+  }
+  if (scrub_) {
+    // Record stats for the logs received from debugd.
+    // As of today, the total logs are about 211.
+    base::UmaHistogramCounts1000(
+        "Feedback.ChromeOSApp.GetBigFeedbackLogs.EmptyCount", empty_log_count);
+    base::UmaHistogramCounts1000(
+        "Feedback.ChromeOSApp.GetBigFeedbackLogs.NotAvailableCount",
+        not_available_log_count);
+    base::UmaHistogramCounts1000(
+        "Feedback.ChromeOSApp.GetBigFeedbackLogs.OtherCount", other_log_count);
   }
   RequestCompleted();
 }
@@ -242,8 +266,9 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetLoggedInUsers();
   for (const auto* user : users) {
-    if (user->username_hash().empty())
+    if (user->username_hash().empty()) {
       continue;
+    }
 
     profile_dirs.emplace_back(
         ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
@@ -260,8 +285,9 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
 
 void DebugDaemonLogSource::MergeUserLogFilesResponse(
     std::unique_ptr<SystemLogsResponse> response) {
-  for (auto& pair : *response)
+  for (auto& pair : *response) {
     response_->emplace(pair.first, std::move(pair.second));
+  }
 
   auto response_to_return = std::make_unique<SystemLogsResponse>();
   std::swap(response_to_return, response_);
@@ -274,8 +300,9 @@ void DebugDaemonLogSource::RequestCompleted() {
   DCHECK(!callback_.is_null());
 
   --num_pending_requests_;
-  if (num_pending_requests_ > 0)
+  if (num_pending_requests_ > 0) {
     return;
+  }
 
   // When all other logs are collected, fetch the user logs, because any errors
   // fetching the other logs is reported in the user logs.
