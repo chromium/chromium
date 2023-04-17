@@ -95,6 +95,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   // installed it will return false even if Chrome OS is running in a VM.
   bool IsRunningOnVm() override;
 
+  // Returns true when ChromeOS is running in debug mode. NOTE: if crossystem
+  // is not installed it will return false even if ChromeOS is running in debug
+  // mode.
+  bool IsCrosDebugMode() override;
+
   VpdStatus GetVpdStatus() const override;
 
  private:

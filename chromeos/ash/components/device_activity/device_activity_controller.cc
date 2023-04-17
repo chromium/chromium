@@ -367,6 +367,14 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerOnMachineStatisticsLoaded);
 
+  // Block virtual machines and debug builds (dev mode enabled).
+  if (statistics_provider_->IsRunningOnVm() ||
+      statistics_provider_->IsCrosDebugMode()) {
+    LOG(ERROR) << "Terminate - device is running in VM or with cros_debug mode "
+                  "enabled.";
+    return;
+  }
+
   std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
   use_cases.push_back(std::make_unique<DailyUseCaseImpl>(
       psm_device_active_secret, chrome_passed_device_params_, local_state,

@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   FlagValue GetMachineFlag(base::StringPiece name) override;
   void Shutdown() override;
   bool IsRunningOnVm() override;
+  bool IsCrosDebugMode() override;
   VpdStatus GetVpdStatus() const override;
 
   void SetMachineStatistic(const std::string& key, const std::string& value);

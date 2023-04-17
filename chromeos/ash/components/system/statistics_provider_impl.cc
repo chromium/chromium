@@ -60,6 +60,9 @@ const char kHardwareClassValueUnknown[] = "unknown";
 
 const char kIsVmCrosSystemKey[] = "inside_vm";
 
+// ChromeOS should allow debug features.
+const char kIsCrosDebugCrosSystemKey[] = "cros_debug";
+
 // Items in region dictionary.
 const char kKeyboardsPath[] = "keyboards";
 const char kLocalesPath[] = "locales";
@@ -361,6 +364,13 @@ bool StatisticsProviderImpl::IsRunningOnVm() {
   return GetMachineStatistic(kIsVmKey) == kIsVmValueTrue;
 }
 
+bool StatisticsProviderImpl::IsCrosDebugMode() {
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return false;
+  }
+  return GetMachineStatistic(kIsCrosDebugKey) == kIsCrosDebugValueTrue;
+}
+
 StatisticsProvider::VpdStatus StatisticsProviderImpl::GetVpdStatus() const {
   return vpd_status_;
 }
@@ -447,6 +457,15 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     if (is_vm_iter != machine_info_.end() &&
         is_vm_iter->second == kIsVmValueTrue) {
       machine_info_[kIsVmKey] = kIsVmValueTrue;
+    }
+
+    // By default, assume that this is *not* in debug mode. If crossystem is not
+    // present, report that we are not in debug mode.
+    machine_info_[kIsCrosDebugKey] = kIsCrosDebugValueFalse;
+    const auto is_debug_iter = machine_info_.find(kIsCrosDebugCrosSystemKey);
+    if (is_debug_iter != machine_info_.end() &&
+        is_debug_iter->second == kIsCrosDebugValueTrue) {
+      machine_info_[kIsCrosDebugKey] = kIsCrosDebugValueTrue;
     }
 
     // Use the write-protect value from crossystem only if it hasn't been loaded

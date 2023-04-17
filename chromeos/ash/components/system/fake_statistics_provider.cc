@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace ash::system {
 
@@ -49,6 +50,10 @@ void FakeStatisticsProvider::Shutdown() {
 
 bool FakeStatisticsProvider::IsRunningOnVm() {
   return GetMachineStatistic(kIsVmKey) == kIsVmValueTrue;
+}
+
+bool FakeStatisticsProvider::IsCrosDebugMode() {
+  return GetMachineStatistic(kIsCrosDebugKey) == kIsCrosDebugValueTrue;
 }
 
 StatisticsProvider::VpdStatus FakeStatisticsProvider::GetVpdStatus() const {

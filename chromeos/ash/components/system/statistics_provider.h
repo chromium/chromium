@@ -96,6 +96,16 @@ extern const char kIsVmValueFalse[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kIsVmValueTrue[];
 
+// Key/values reporting if ChromeOS is running in debug mode or not. These
+// values are read from crossystem output. See crossystem source for cros_debug
+// detection logic.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kIsCrosDebugKey[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kIsCrosDebugValueFalse[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kIsCrosDebugValueTrue[];
+
 // Manufacture date key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kManufactureDateKey[];
@@ -211,6 +221,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
 
   // Returns true if the machine is a VM.
   virtual bool IsRunningOnVm() = 0;
+
+  // Returns true if the ChromeOS machine is in debug mode.
+  virtual bool IsCrosDebugMode() = 0;
 
   // Returns the status of RO_VPD and RW_VPD partitions.
   virtual VpdStatus GetVpdStatus() const = 0;
