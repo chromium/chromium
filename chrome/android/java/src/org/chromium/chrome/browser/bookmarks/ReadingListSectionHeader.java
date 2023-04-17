@@ -75,7 +75,6 @@ class ReadingListSectionHeader {
         // TODO(crbug.com/1147259): Sort items by creation time possibly.
         Collections.sort(listItems.subList(readingListStartIndex, listItems.size()), (lhs, rhs) -> {
             // Unread items are shown first, then sorted based on creation time.
-            boolean lhsRead = lhs.getBookmarkItem().isRead();
             BookmarkItem lhsItem = lhs.getBookmarkItem();
             BookmarkItem rhsItem = rhs.getBookmarkItem();
 

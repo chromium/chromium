@@ -108,16 +108,6 @@ public final class BookmarkListEntry {
     }
 
     /**
-     * Helper function that returns whether the view type represents a bookmark or bookmark folder.
-     * Returns false for other view holder types like divider, promo headers, etc.
-     * @param viewType The type of the view in the bookmark list UI.
-     */
-    static boolean isBookmarkEntry(@ViewType int viewType) {
-        return viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER
-                || viewType == ViewType.SHOPPING_POWER_BOOKMARK;
-    }
-
-    /**
      * Create an entry representing the reading list read/unread section header.
      * @param titleRes The resource id for the title of the section header.
      * @param topPaddingRes The resource for the top padding of the section header. Ignored if 0.
