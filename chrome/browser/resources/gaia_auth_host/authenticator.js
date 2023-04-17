@@ -101,6 +101,7 @@ export let AuthCompletedCredentials;
  *   flow: string,
  *   ignoreCrOSIdpSetting: boolean,
  *   enableGaiaActionButtons: boolean,
+ *   forceDarkMode: boolean,
  *   enterpriseEnrollmentDomain: string,
  *   samlAclUrl: string,
  *   isSupervisedUser: boolean,
@@ -235,6 +236,7 @@ export const SUPPORTED_PARAMS = [
   // Url parameter name for SAML IdP web page which is used to autofill the
   // username.
   'urlParameterToAutofillSAMLUsername',
+  'forceDarkMode',
 ];
 
 // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -872,6 +874,9 @@ export class Authenticator extends EventTarget {
     }
     if (data.rart) {
       url = appendParam(url, 'rart', data.rart);
+    }
+    if (data.forceDarkMode) {
+      url = appendParam(url, 'color_scheme', 'dark');
     }
 
     return url;

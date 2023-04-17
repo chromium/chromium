@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
@@ -278,6 +279,8 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
                                             params.FindString("email")));
   params.Set("dontResizeNonEmbeddedPages", true);
   params.Set("enableGaiaActionButtons", true);
+  params.Set("forceDarkMode",
+             DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   // For in-session login flows, request Gaia to ignore third party SAML IdP SSO
   // redirection policies (and redirect to SAML IdPs by default), otherwise some

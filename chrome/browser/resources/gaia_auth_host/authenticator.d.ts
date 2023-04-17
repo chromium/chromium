@@ -52,6 +52,7 @@ export interface AuthParams {
   enterpriseEnrollmentDomain: string;
   extractSamlPasswordAttributes: boolean;
   flow: string;
+  forceDarkMode: boolean;
   gaiaPath: string;
   gaiaUrl: string;
   hl: string;
