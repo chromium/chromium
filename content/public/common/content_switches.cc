@@ -479,6 +479,10 @@ const char kForcePresentationReceiverForTesting[] =
 // Force renderer accessibility to be on instead of enabling it on demand when
 // a screen reader is detected. The disable-renderer-accessibility switch
 // overrides this if present.
+// This switch has an optional parameter that forces an AXMode bundle. The three
+// available bundle settings are: 'basic', 'form-controls', and 'complete'. If
+// the bundle argument is invalid or absent, then the AXMode will default to
+// 'complete'.
 const char kForceRendererAccessibility[]    = "force-renderer-accessibility";
 
 // Force Skia's CPU backend to use analytic anti-aliasing for all content

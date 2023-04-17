@@ -221,6 +221,18 @@ Windows, Mac or Linux.
   - macOS: Accessibility Inspector
   - Windows: Inspect, AViewer, accProbe (and many others)
 
+### Command Line Options
+
+Accessibility features in Chrome are off by default and enabled automatically
+on-demand. When running Chrome from the command line, certain options can be
+used to impact the behavior of the Chrome accessibility engine at launch.
+
+* `--force-renderer-accessibility=[basic|form-controls|complete]`: Force
+  accessibility to be enabled, with optional parameter to force the AXMode
+  to one of the predefined bundles. If the optional parameter is missing or
+  invalid, then the default AXMode will be `complete`.
+* `--disable-renderer-accessibility`: Disable accessibility
+
 ### Supported Platforms and APIs
 
 * Windows: IAccessible (also known as Microsoft Active Accessibility or MSAA),

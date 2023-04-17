@@ -105,7 +105,10 @@ class AX_BASE_EXPORT AXMode {
 
   bool is_mode_off() const { return flags_ == 0; }
 
-  bool operator!=(AXMode rhs) const { return !(*this == rhs); }
+  bool operator!=(AXMode rhs) const {
+    return flags_ != rhs.flags_ ||
+           experimental_flags_ != rhs.experimental_flags_;
+  }
 
   AXMode& operator|=(const AXMode& rhs) {
     flags_ |= rhs.flags_;

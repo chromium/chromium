@@ -155,6 +155,12 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // a function that's called frequently.
   bool force_renderer_accessibility_ = false;
 
+  // The AXMode flags to set only if the the force-renderer-accessibility flag
+  // is enabled. If the optional parameter is present, then force the AXMode to
+  // be the provided bundle value. If the optional parameter is absent or
+  // invalid, this will default to kAXModeComplete.
+  ui::AXMode force_renderer_accessibility_ax_mode_flags_;
+
   // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
   bool disable_hot_tracking_ = false;
 

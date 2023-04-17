@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -47,6 +48,14 @@ constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 // doing so is bad for performance.
 constexpr int kDisableAccessibilitySupportDelaySecs = 2;
 
+// Used for validating the 'basic' bundle parameter for
+// --force-renderer-accessibility.
+const char kAXModeBundleBasic[] = "basic";
+
+// Used for validating the 'form-controls' bundle parameter for
+// --force-renderer-accessibility.
+const char kAXModeBundleFormControls[] = "form-controls";
+
 // Record a histogram for an accessibility mode when it is enabled.
 void RecordNewAccessibilityModeFlags(
     ui::AXMode::ModeFlagHistogramValue mode_flag) {
@@ -79,6 +88,28 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   force_renderer_accessibility_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceRendererAccessibility);
+  if (force_renderer_accessibility_) {
+#if BUILDFLAG(IS_WIN)
+    std::string ax_mode_bundle = base::WideToUTF8(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+            switches::kForceRendererAccessibility));
+#else
+    std::string ax_mode_bundle =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+            switches::kForceRendererAccessibility);
+#endif
+
+    // Support --force-renderer-accessibility=[basic|form-controls|complete]
+    if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
+      force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeBasic;
+    } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
+      force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeFormControls;
+    } else {
+      // If AXMode is 'complete', invalid or missing, default to complete
+      // bundle.
+      force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeComplete;
+    }
+  }
 
   ResetAccessibilityModeValue();
 
@@ -156,8 +187,11 @@ bool BrowserAccessibilityStateImpl::IsRendererAccessibilityEnabled() {
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityModeValue() {
   accessibility_mode_ = ui::AXMode();
-  if (force_renderer_accessibility_)
-    AddAccessibilityModeFlags(ui::kAXModeComplete);
+
+  // Use forced AXMode bundle.
+  if (force_renderer_accessibility_) {
+    AddAccessibilityModeFlags(force_renderer_accessibility_ax_mode_flags_);
+  }
 }
 
 void BrowserAccessibilityStateImpl::MaybeResetAccessibilityMode() {
@@ -363,6 +397,14 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     return;
   }
 
+  // If the --force-renderer-accessibility command line flag is present, then
+  // the AXMode bundle should always be respected. Any attempts to set mode to
+  // flags other than the bundle should be ignored.
+  if (force_renderer_accessibility_ &&
+      force_renderer_accessibility_ax_mode_flags_ != mode) {
+    return;
+  }
+
   // Adding an accessibility mode flag is generally the result of an
   // accessibility API call, so we should also reset the auto-disable
   // accessibility code. The only exception is in tests or when a user manually
@@ -453,8 +495,11 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
 void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
     ui::AXMode mode) {
-  if (force_renderer_accessibility_ && mode == ui::kAXModeComplete)
+  // Turning off accessibility or changing the mode will not be allowed if the
+  // --force-renderer-accessibility command line flag has been enabled.
+  if (force_renderer_accessibility_) {
     return;
+  }
 
   int raw_flags = accessibility_mode_.flags() ^
                   (mode.flags() & accessibility_mode_.flags());
