@@ -277,6 +277,13 @@ void BookmarkBubbleView::ShowBubble(
 
     dialog_model_builder.SetMainImage(
         ui::ImageModel::FromImageSkia(main_image));
+  } else {
+    dialog_model_builder.AddExtraButton(
+        base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
+                            base::Unretained(bubble_delegate)),
+        ui::DialogModelButton::Params()
+            .SetLabel(l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS))
+            .AddAccelerator(ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)));
   }
   dialog_model_builder
       .SetTitle(l10n_util::GetStringUTF16(
@@ -296,12 +303,6 @@ void BookmarkBubbleView::ShowBubble(
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK))
               .AddAccelerator(ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
-      .AddExtraButton(
-          base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
-                              base::Unretained(bubble_delegate)),
-          ui::DialogModelButton::Params()
-              .SetLabel(l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS))
-              .AddAccelerator(ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
       .AddTextfield(
           kBookmarkName,
           l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),
