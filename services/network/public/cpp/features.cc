@@ -339,10 +339,4 @@ BASE_FEATURE(kLessChattyNetworkService,
              "LessChattyNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kAddressTrackerLinuxOutOfNetworkService,
-             "AddressTrackerLinuxOutOfNetworkService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_LINUX)
-
 }  // namespace network::features

@@ -370,6 +370,13 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // but not on WebView (until crbug.com/1430082 has been fixed).
 NET_EXPORT BASE_DECLARE_FEATURE(kMigrateSessionsOnNetworkChangeV2);
 
+#if BUILDFLAG(IS_LINUX)
+// AddressTrackerLinux will not run inside the network service in this
+// configuration, which will improve the Linux network service sandbox.
+// TODO(crbug.com/1312226): remove this.
+NET_EXPORT BASE_DECLARE_FEATURE(kAddressTrackerLinuxIsProxied);
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

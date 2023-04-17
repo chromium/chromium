@@ -27,7 +27,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,7 +75,7 @@ NetworkServiceClient::~NetworkServiceClient() {
     bool remove_ncn_observers = true;
 #if BUILDFLAG(IS_LINUX)
     remove_ncn_observers = base::FeatureList::IsEnabled(
-        network::features::kAddressTrackerLinuxOutOfNetworkService);
+        net::features::kAddressTrackerLinuxIsProxied);
 #endif  // BUILDFLAG(IS_LINUX)
     if (remove_ncn_observers) {
       net::NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
@@ -164,7 +163,7 @@ void NetworkServiceClient::OnNetworkServiceInitialized(
   bool add_ncn_observers = true;
 #if BUILDFLAG(IS_LINUX)
   add_ncn_observers = base::FeatureList::IsEnabled(
-      network::features::kAddressTrackerLinuxOutOfNetworkService);
+      net::features::kAddressTrackerLinuxIsProxied);
 #endif  // BUILDFLAG(IS_LINUX)
   if (IsOutOfProcessNetworkService() && add_ncn_observers) {
     DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded());

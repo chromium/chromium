@@ -348,4 +348,10 @@ BASE_FEATURE(kMigrateSessionsOnNetworkChangeV2,
              "MigrateSessionsOnNetworkChangeV2",
              kMigrateSessionsOnNetworkChangeV2Default);
 
+#if BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kAddressTrackerLinuxIsProxied,
+             "AddressTrackerLinuxIsProxied",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace net::features

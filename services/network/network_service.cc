@@ -337,7 +337,7 @@ NetworkService::NetworkService(
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 #if BUILDFLAG(IS_LINUX)
     if (base::FeatureList::IsEnabled(
-            features::kAddressTrackerLinuxOutOfNetworkService)) {
+            net::features::kAddressTrackerLinuxIsProxied)) {
       net::NetworkChangeNotifier::SetFactory(
           new network::NetworkChangeNotifierPassiveFactory());
     }
