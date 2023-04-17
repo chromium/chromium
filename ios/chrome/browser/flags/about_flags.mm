@@ -1102,12 +1102,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-set-up-list", flag_descriptions::kIOSSetUpListName,
      flag_descriptions::kIOSSetUpListDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSetUpList)},
-    {"ios-password-manager-cross-origin-iframe-support",
-     flag_descriptions::kIOSPasswordManagerCrossOriginIframeSupportName,
-     flag_descriptions::kIOSPasswordManagerCrossOriginIframeSupportDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kIOSPasswordManagerCrossOriginIframeSupport)},
     {"ios-password-bottom-sheet",
      flag_descriptions::kIOSPasswordBottomSheetName,
      flag_descriptions::kIOSPasswordBottomSheetDescription, flags_ui::kOsIos,

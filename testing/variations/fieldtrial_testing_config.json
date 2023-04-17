@@ -6814,21 +6814,6 @@
             ]
         }
     ],
-    "IOSPasswordManagerCrossOriginIframeSupport": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasswordManagerCrossOriginIframeSupport"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [

@@ -488,11 +488,6 @@ extern const char kIOSPasswordUISplitDescription[];
 extern const char kIOSSetUpListName[];
 extern const char kIOSSetUpListDescription[];
 
-// Title and description for the flag to enable password saving and
-// filling in cross-origin iframes on IOS.
-extern const char kIOSPasswordManagerCrossOriginIframeSupportName[];
-extern const char kIOSPasswordManagerCrossOriginIframeSupportDescription[];
-
 // Title and description for the flag to enable password bottom sheet on IOS.
 extern const char kIOSPasswordBottomSheetName[];
 extern const char kIOSPasswordBottomSheetDescription[];

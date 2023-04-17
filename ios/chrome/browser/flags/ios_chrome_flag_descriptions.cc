@@ -563,11 +563,6 @@ const char kIOSSetUpListName[] = "IOS Set Up List";
 const char kIOSSetUpListDescription[] =
     "Displays an unobtrusive list of set up tasks on Home for a new user.";
 
-const char kIOSPasswordManagerCrossOriginIframeSupportName[] =
-    "IOS Password Manager Cross-Origin Iframe Support";
-const char kIOSPasswordManagerCrossOriginIframeSupportDescription[] =
-    "Enables password saving and filling in cross-origin iframes on IOS.";
-
 const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";

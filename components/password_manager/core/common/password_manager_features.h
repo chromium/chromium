@@ -49,7 +49,6 @@ BASE_DECLARE_FEATURE(kForceInitialSyncWhenDecryptionFails);
 BASE_DECLARE_FEATURE(kInferConfirmationPasswordField);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
-BASE_DECLARE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSShowPasswordStorageInSaveInfobar);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
