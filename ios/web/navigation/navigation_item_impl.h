@@ -45,8 +45,6 @@ class NavigationItemImpl : public web::NavigationItem {
   const GURL& GetVirtualURL() const override;
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() const override;
-  void SetPageDisplayState(const PageDisplayState& display_state) override;
-  const PageDisplayState& GetPageDisplayState() const override;
   const std::u16string& GetTitleForDisplay() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
@@ -129,7 +127,6 @@ class NavigationItemImpl : public web::NavigationItem {
   Referrer referrer_;
   GURL virtual_url_;
   std::u16string title_;
-  PageDisplayState page_display_state_;
   ui::PageTransition transition_type_;
   FaviconStatus favicon_status_;
   SSLStatus ssl_;

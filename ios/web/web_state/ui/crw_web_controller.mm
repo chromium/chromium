@@ -721,7 +721,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   web::NavigationItem* item = self.currentNavItem;
   if (item && item->GetURL() == [self currentURL] &&
       _userInteractionState.UserInteractionRegisteredSincePageLoaded()) {
-    item->SetPageDisplayState(self.pageDisplayState);
+    [[maybe_unused]] const web::PageDisplayState displayState =
+        self.pageDisplayState;
   }
 }
 
@@ -1394,8 +1395,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     // resized the content area. Resetting the scroll view's zoom scale will
     // force a re-rendering.  rdar://23963992
     _applyingPageState = YES;
-    web::PageZoomState zoomState =
-        currentItem->GetPageDisplayState().zoom_state();
+    web::PageZoomState zoomState = self.pageDisplayState.zoom_state();
     if (!zoomState.IsValid())
       zoomState = web::PageZoomState(1.0, 1.0, 1.0);
     [self applyWebViewScrollZoomScaleFromZoomState:zoomState];
@@ -1462,7 +1462,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   web::NavigationItem* currentItem = self.currentNavItem;
   if (!currentItem)
     return;
-  web::PageDisplayState displayState = currentItem->GetPageDisplayState();
+  web::PageDisplayState displayState = self.pageDisplayState;
   if (!displayState.IsValid())
     return;
   CGFloat zoomPercentage = (displayState.zoom_state().zoom_scale() -
@@ -1475,8 +1475,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   displayState.zoom_state().set_zoom_scale(
       displayState.zoom_state().minimum_zoom_scale() +
       zoomPercentage * displayState.zoom_state().GetMinMaxZoomDifference());
-  currentItem->SetPageDisplayState(displayState);
-  [self applyPageDisplayState:currentItem->GetPageDisplayState()];
+  [self applyPageDisplayState:displayState];
 }
 
 - (void)applyPageDisplayState:(const web::PageDisplayState&)displayState {
@@ -1498,9 +1497,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // Early return if `scrollState` doesn't match the current NavigationItem.
   // This can sometimes occur in tests, as navigation occurs programmatically
   // and `-applyPageScrollState:` is asynchronous.
-  web::NavigationItem* currentItem = self.currentNavItem;
-  if (currentItem && currentItem->GetPageDisplayState() != displayState)
+  if (self.pageDisplayState != displayState) {
     return;
+  }
   DCHECK(displayState.IsValid());
   _applyingPageState = YES;
   if (isUserScalable) {

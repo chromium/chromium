@@ -130,15 +130,6 @@ const std::u16string& ContentNavigationItem::GetTitle() const {
   return entry_->GetTitle();
 }
 
-void ContentNavigationItem::SetPageDisplayState(
-    const PageDisplayState& page_state) {
-  page_display_state_ = page_state;
-}
-
-const PageDisplayState& ContentNavigationItem::GetPageDisplayState() const {
-  return page_display_state_;
-}
-
 const std::u16string& ContentNavigationItem::GetTitleForDisplay() const {
   return entry_->GetTitleForDisplay();
 }

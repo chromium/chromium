@@ -195,10 +195,6 @@ TEST_F(NavigationItemTest, GetTitleForDisplay) {
 TEST_F(NavigationItemTest, RestoreState) {
   NavigationItemImpl other_item;
   other_item.SetUserAgentType(UserAgentType::DESKTOP);
-  PageDisplayState display_state;
-  display_state.set_scroll_state(
-      PageScrollState(CGPointMake(0, 10), UIEdgeInsetsMake(10, 10, 2, 2)));
-  other_item.SetPageDisplayState(display_state);
   other_item.SetURL(GURL("www.otherurl.com"));
   other_item.SetVirtualURL(GURL("www.virtual.com"));
 
@@ -207,19 +203,16 @@ TEST_F(NavigationItemTest, RestoreState) {
   // With a different URL, only the UserAgent should be restored.
   item_->RestoreStateFromItem(&other_item);
   EXPECT_EQ(other_item.GetUserAgentType(), item_->GetUserAgentType());
-  EXPECT_NE(other_item.GetPageDisplayState(), item_->GetPageDisplayState());
   EXPECT_NE(other_item.GetVirtualURL(), item_->GetVirtualURL());
 
   NavigationItemImpl other_item2;
   other_item2.SetUserAgentType(UserAgentType::DESKTOP);
-  other_item2.SetPageDisplayState(display_state);
   other_item2.SetURL(item_->GetURL());
   other_item2.SetVirtualURL(GURL("www.virtual.com"));
 
   // Same URL, everything is restored.
   item_->RestoreStateFromItem(&other_item2);
   EXPECT_EQ(other_item2.GetUserAgentType(), item_->GetUserAgentType());
-  EXPECT_EQ(other_item2.GetPageDisplayState(), item_->GetPageDisplayState());
   EXPECT_EQ(other_item2.GetVirtualURL(), item_->GetVirtualURL());
 }
 

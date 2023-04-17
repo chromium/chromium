@@ -122,7 +122,6 @@ struct ItemInfoToBeRestored {
   GURL url;
   GURL virtual_url;
   UserAgentType user_agent;
-  PageDisplayState display_state;
 };
 
 }  // namespace
@@ -1504,13 +1503,11 @@ TEST_F(NavigationManagerTest, TestBackwardForwardItems) {
 TEST_F(NavigationManagerTest, Restore) {
   ItemInfoToBeRestored restore_information[3];
   restore_information[0] = {GURL("http://www.url.com/0"),
-                            GURL("http://virtual/0"), UserAgentType::MOBILE,
-                            PageDisplayState()};
+                            GURL("http://virtual/0"), UserAgentType::MOBILE};
   restore_information[1] = {GURL("http://www.url.com/1"), GURL(),
-                            UserAgentType::AUTOMATIC, PageDisplayState()};
+                            UserAgentType::AUTOMATIC};
   restore_information[2] = {GURL("http://www.url.com/2"),
-                            GURL("http://virtual/2"), UserAgentType::DESKTOP,
-                            PageDisplayState()};
+                            GURL("http://virtual/2"), UserAgentType::DESKTOP};
 
   std::vector<std::unique_ptr<NavigationItem>> items;
   for (size_t index = 0; index < std::size(restore_information); ++index) {
@@ -1518,7 +1515,6 @@ TEST_F(NavigationManagerTest, Restore) {
     items.back()->SetURL(restore_information[index].url);
     items.back()->SetVirtualURL(restore_information[index].virtual_url);
     items.back()->SetUserAgentType(restore_information[index].user_agent);
-    items.back()->SetPageDisplayState(restore_information[index].display_state);
   }
 
   // Call Restore() and check that the NavigationItems are in the correct order
@@ -1578,8 +1574,6 @@ TEST_F(NavigationManagerTest, Restore) {
       EXPECT_EQ(restore_information[i].user_agent,
                 navigation_item->GetUserAgentType());
     }
-    EXPECT_EQ(restore_information[i].display_state,
-              navigation_item->GetPageDisplayState());
   }
 
   histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 1);

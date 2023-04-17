@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
-#import "ios/web/public/ui/page_display_state.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -76,10 +75,6 @@ class NavigationItem : public base::SupportsUserData {
   // the user.
   virtual void SetTitle(const std::u16string& title) = 0;
   virtual const std::u16string& GetTitle() const = 0;
-
-  // Stores the NavigationItem's last recorded scroll offset and zoom scale.
-  virtual void SetPageDisplayState(const PageDisplayState& page_state) = 0;
-  virtual const PageDisplayState& GetPageDisplayState() const = 0;
 
   // Page-related helpers ------------------------------------------------------
 
