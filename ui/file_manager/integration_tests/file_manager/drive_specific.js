@@ -872,6 +872,28 @@ testcase.driveOfflineInfoBanner = async () => {
 };
 
 /**
+ * Tests that the encryption badge appears next to the CSE file when a Drive
+ *  volume is opened.
+ */
+testcase.driveEncryptionBadge = async () => {
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.testCSEFile]);
+
+  // Check: non-encrypted file doesn't have a badge.
+  const plain = await remoteCall.waitForElementStyles(
+      appId, '#file-list [file-name="hello.txt"] .encryption-status',
+      ['display']);
+  chrome.test.assertEq('none', plain.styles.display);
+
+  // Check: encrypted file has a badge.
+  const encrypted = await remoteCall.waitForElementStyles(
+      appId, '#file-list [file-name="test-encrypted.txt"] .encryption-status',
+      ['display']);
+  chrome.test.assertEq('flex', encrypted.styles.display);
+};
+
+/**
  * Tests that the inline file sync "in progress" icon is displayed in Drive as
  * the file starts syncing then disappears as it finishes syncing.
  */

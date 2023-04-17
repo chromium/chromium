@@ -70,6 +70,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/empty_folder.svg",
     "foreground/images/files/ui/empty_search_results.svg",
     "foreground/images/files/ui/empty_trash_folder.svg",
+    "foreground/images/files/ui/encrypted.svg",
     "foreground/images/files/ui/error_banner_icon.svg",
     "foreground/images/files/ui/error.svg",
     "foreground/images/files/ui/external_link.svg",

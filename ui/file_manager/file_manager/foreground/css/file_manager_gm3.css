@@ -2138,6 +2138,8 @@ body.files-ng #list-container li .detail-checkmark {
   color: var(--cros-sys-on_surface);
 }
 
+#list-container .list .encryption-status,
+#list-container .list .encryption-status xf-icon,
 #list-container .list .inline-status,
 #list-container .list .inline-status .progress,
 #list-container .list .inline-status xf-icon {
@@ -2151,6 +2153,8 @@ body.files-ng #list-container li .detail-checkmark {
   justify-content: center;
 }
 
+#list-container .list li.encrypted:not([renaming]) .encryption-status,
+#list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
@@ -2158,8 +2162,17 @@ body.files-ng #list-container li .detail-checkmark {
   display: flex;
 }
 
+#list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned .inline-status xf-icon[type=offline] {
   --xf-icon-color: currentColor;
+}
+
+#list-container .list li.encrypted:not([renaming]) .filename-label {
+  flex-grow: 0;
+}
+
+#list-container .list li.encrypted:not([renaming]) .encryption-status {
+  flex-grow: 1;
 }
 
 #new-folder-button {

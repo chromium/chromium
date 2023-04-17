@@ -50,6 +50,8 @@ export class XfIcon extends XfBase {
           svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
       [constants.ICON_TYPES.CLOUD]:
           svg`<use xlink:href="foreground/images/files/ui/cloud.svg#cloud"></use>`,
+      [constants.ICON_TYPES.ENCRYPTED]:
+          svg`<use xlink:href="foreground/images/files/ui/encrypted.svg#encrypted"></use>`,
       [constants.ICON_TYPES.ERROR]:
           svg`<use xlink:href="foreground/images/files/ui/error.svg#error"></use>`,
     };

@@ -829,6 +829,7 @@ export class FileTable extends Table {
     label.appendChild(
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
     if (locationInfo && locationInfo.isDriveBased) {
+      label.appendChild(filelist.renderEncryptionStatus(this.ownerDocument));
       label.appendChild(filelist.renderInlineStatus(this.ownerDocument));
     }
     if (!util.isJellyEnabled() && !util.isInlineSyncStatusEnabled()) {

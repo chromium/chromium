@@ -1549,6 +1549,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner"),
+        TestCase("driveEncryptionBadge"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
         TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()
