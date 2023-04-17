@@ -268,7 +268,7 @@ TEST_F(MediaStreamVideoTrackTest, SourceDetached) {
   WebMediaStreamTrack track = CreateTrack();
   MockMediaStreamVideoSink sink;
   auto* video_track = MediaStreamVideoTrack::From(track);
-  video_track->StopAndNotify(base::BindOnce([] {}));
+  video_track->StopAndNotify(base::DoNothing());
   sink.ConnectToTrack(track);
   sink.ConnectEncodedToTrack(track);
   video_track->SetEnabled(true);
@@ -752,7 +752,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   test::RunDelayedTasks(base::Hertz(kMinFrameRate));
 
   EXPECT_TRUE(video_track->IsRefreshFrameTimerRunningForTesting());
-  video_track->StopAndNotify(base::BindOnce([] {}));
+  video_track->StopAndNotify(base::DoNothing());
   EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
 }
 
@@ -872,6 +872,48 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   }
 
   test::RunDelayedTasks(base::Seconds(1));
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       NotifyConstraintsStartsTimerIfMinFpsIsSet) {
+  // |RequestRefreshFrame| should be called exactly twice within kMinFrameRate
+  // interval: First time from |NotifyConstraintsConfigurationComplete| and
+  // second time from the refresh timer.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(2);
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track =
+      CreateTrackWithSettings(VideoTrackAdapterSettings());
+  auto* video_track = MediaStreamVideoTrack::From(track);
+
+  video_track->SetIsScreencastForTesting(true);
+  sink.ConnectToTrack(track);
+  video_track->SetMinimumFrameRate(kMinFrameRate);
+  video_track->NotifyConstraintsConfigurationComplete();
+
+  test::RunDelayedTasks(base::Hertz(kMinFrameRate));
+
+  EXPECT_TRUE(video_track->IsRefreshFrameTimerRunningForTesting());
+  video_track->StopAndNotify(base::DoNothing());
+  EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       NotifyConstraintsDontStartTimerIfMinFpsIsUnset) {
+  // |RequestRefreshFrame| should only be called once from |AddSink| since
+  // refresh frame timer is not running.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(1);
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track =
+      CreateTrackWithSettings(VideoTrackAdapterSettings());
+  auto* video_track = MediaStreamVideoTrack::From(track);
+
+  video_track->SetIsScreencastForTesting(true);
+  sink.ConnectToTrack(track);
+  video_track->NotifyConstraintsConfigurationComplete();
+
+  test::RunDelayedTasks(base::Hertz(kMinFrameRate));
+
+  EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
 }
 
 }  // namespace media_stream_video_track_test
