@@ -5,18 +5,29 @@
 package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Handles the long screenshot action in the Sharing Hub and launches the screenshot editor.
@@ -25,6 +36,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     private final Activity mActivity;
     private final EntryManager mEntryManager;
     private final Tab mTab;
+    private final boolean mBypassPreviewDialog;
     private LongScreenshotsMediator mMediator;
 
     /**
@@ -46,7 +58,8 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
-            @Nullable LongScreenshotsMediator mediator, boolean shouldWarmupCompositor) {
+            @Nullable LongScreenshotsMediator mediator, boolean shouldWarmupCompositor,
+            boolean bypassPreviewDialog) {
         super(activity, tab.getWindowAndroid(), shareUrl, chromeOptionShareCallback,
                 sheetController, imageEditorModuleProvider);
         mActivity = activity;
@@ -54,6 +67,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
         mEntryManager =
                 manager == null ? new EntryManager(mActivity, mTab, /*inMemory=*/false) : manager;
         mMediator = mediator;
+        mBypassPreviewDialog = bypassPreviewDialog;
 
         if (shouldWarmupCompositor) {
             PaintPreviewCompositorUtils.warmupCompositor();
@@ -64,9 +78,9 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     public static LongScreenshotsCoordinator create(Activity activity, Tab tab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
-            ImageEditorModuleProvider imageEditorModuleProvider) {
+            ImageEditorModuleProvider imageEditorModuleProvider, boolean bypassPreviewDialog) {
         return new LongScreenshotsCoordinator(activity, tab, shareUrl, chromeOptionShareCallback,
-                sheetController, imageEditorModuleProvider, null, null, true);
+                sheetController, imageEditorModuleProvider, null, null, true, bypassPreviewDialog);
     }
 
     /** Called by tests to create a {@link LongScreenshotsCoordinator}. */
@@ -74,9 +88,10 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
-            LongScreenshotsMediator mediator) {
+            LongScreenshotsMediator mediator, boolean bypassPreviewDialog) {
         return new LongScreenshotsCoordinator(activity, tab, shareUrl, chromeOptionShareCallback,
-                sheetController, imageEditorModuleProvider, manager, mediator, false);
+                sheetController, imageEditorModuleProvider, manager, mediator, false,
+                bypassPreviewDialog);
     }
 
     /**
@@ -98,5 +113,39 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 super.handleScreenshot();
             }
         });
+    }
+
+    @Override
+    protected void launchSharesheet() {
+        if (!mBypassPreviewDialog) {
+            super.launchSharesheet();
+            return;
+        }
+
+        // TODO(https://crbug.com/1433326): Reduce dup with ScreenshotShareSheetMediator.
+        Bitmap bitmap = mScreenshot;
+        String isoDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                 .format(new Date(System.currentTimeMillis()));
+        String title = mActivity.getString(R.string.screenshot_title_for_share, isoDate);
+        Callback<Uri> callback = (bitmapUri) -> {
+            ShareParams params =
+                    new ShareParams.Builder(mTab.getWindowAndroid(), title, /*url=*/"")
+                            .setSingleImageUri(bitmapUri)
+                            .setFileContentType(
+                                    mActivity.getApplicationContext().getContentResolver().getType(
+                                            bitmapUri))
+                            .build();
+
+            // Use 1p share sheet, as some actions covered by preview dialog is not available.
+            mChromeOptionShareCallback.showShareSheet(params,
+                    new ChromeShareExtras.Builder()
+                            .setContentUrl(new GURL(mShareUrl))
+                            .setDetailedContentType(
+                                    ChromeShareExtras.DetailedContentType.SCREENSHOT)
+                            .build(),
+                    System.currentTimeMillis());
+        };
+
+        ShareImageFileUtils.generateTemporaryUriFromBitmap(title, bitmap, callback);
     }
 }
