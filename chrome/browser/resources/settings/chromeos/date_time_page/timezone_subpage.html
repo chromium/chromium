@@ -27,7 +27,8 @@
         label="$i18n{selectTimeZoneResolveMethod}"
         disabled="[[!prefs.generated.resolve_timezone_by_geolocation_on_off.value]]"
         menu-options="[[getTimeZoneResolveMethodsList_(
-            prefs.generated.resolve_timezone_by_geolocation_method_short)]]">
+            prefs.generated.resolve_timezone_by_geolocation_method_short)]]"
+        on-settings-control-change="onTimeZoneSelectionChanged_">
     </settings-dropdown-menu>
     <controlled-radio-button
         id="timeZoneAutoDetectOff"
@@ -41,3 +42,10 @@
     </timezone-selector>
   </settings-radio-group>
 </div>
+
+<template is="dom-if" if="[[showEnableSystemGeolocationDialog_]]" restamp>
+  <settings-system-geolocation-dialog id="geolocationDialog"
+      on-close="onEnableSystemGeolocationDialogClosed_"
+      prefs="{{prefs}}">
+  </settings-system-geolocation-dialog>
+</template>

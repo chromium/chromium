@@ -66,10 +66,16 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         type: Object,
         value: () => new Set<Setting>([Setting.kChangeTimeZone]),
       },
+
+      showEnableSystemGeolocationDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private browserProxy_: TimeZoneBrowserProxy;
+  private showEnableSystemGeolocationDialog_: boolean;
 
   constructor() {
     super();
@@ -166,6 +172,33 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     for (const radio of radios) {
       radio.disabled = true;
     }
+  }
+
+  private onTimeZoneSelectionChanged_(): void {
+    const geolocationAllowed =
+        this.getPref('ash.user.geolocation_allowed').value;
+    if (geolocationAllowed) {
+      return;
+    }
+
+    let selectedTimezoneOption = null;
+    const dropDown = this.$.timeZoneResolveMethodDropdown;
+    if (dropDown.pref) {
+      selectedTimezoneOption = dropDown.pref.value;
+    }
+
+    // Pop up geolocation dialog, when user wants to enable precise timezone,
+    // but the system geolocation access is disabled.
+    if (selectedTimezoneOption ===
+            TimeZoneAutoDetectMethod.SEND_ALL_LOCATION_INFO ||
+        selectedTimezoneOption ===
+            TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS) {
+      this.showEnableSystemGeolocationDialog_ = true;
+    }
+  }
+
+  private onEnableSystemGeolocationDialogClosed_(): void {
+    this.showEnableSystemGeolocationDialog_ = false;
   }
 }
 
