@@ -608,7 +608,7 @@ PowerBookmarkDatabaseImpl::GetPowersForGUIDs(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& guid : guids) {
-    DCHECK(base::IsValidUuid(guid));
+    DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   }
   static constexpr char kGetPowersForGUIDsSql[] =
       // clang-format off
@@ -671,7 +671,7 @@ std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
     const std::string& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(base::IsValidUuid(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   static constexpr char kGetPowerForGUIDSql[] =
       // clang-format off
       "SELECT blobs.id, blobs.specifics, saves.url "
