@@ -693,12 +693,19 @@ void SetUpTrailingIconAndAccessoryType(
 
 // Updates all items whose content is depending on `_passwordCheckupState`.
 - (void)updateItemsDependingOnPasswordCheckupState {
-  [self updateHeaderImage];
-  [self updateCompromisedPasswordsItem];
-  [self updateReusedPasswordsItem];
-  [self updateWeakPasswordsItem];
-  [self updatePasswordCheckupTimestampText];
-  [self updateCheckPasswordsButtonItem];
+  // Make these updates in a `performBatchUpdates` completion block to make sure
+  // the cell's height adjust if the new content takes up more lines than the
+  // current one.
+  [self.tableView
+      performBatchUpdates:^{
+        [self updateHeaderImage];
+        [self updateCompromisedPasswordsItem];
+        [self updateReusedPasswordsItem];
+        [self updateWeakPasswordsItem];
+        [self updatePasswordCheckupTimestampText];
+        [self updateCheckPasswordsButtonItem];
+      }
+               completion:nil];
 }
 
 // Opens the Password Issues list for the given `warningType` and resets the
