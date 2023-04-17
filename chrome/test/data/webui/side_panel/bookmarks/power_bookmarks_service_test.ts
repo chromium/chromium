@@ -61,7 +61,6 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           parentId: '2',
           title: 'Child folder',
           dateAdded: 2,
-          dateGroupModified: 1,
           children: [
             {
               id: '6',
@@ -69,6 +68,97 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
               title: 'Nested bookmark',
               url: 'http://nested/bookmark/',
               dateAdded: 4,
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  // More complex folder structure, including a more extensive hierarchy and
+  // inverted dateAdded between parents/children. Not used by default in tests.
+  const complexFolders: chrome.bookmarks.BookmarkTreeNode[] = [
+    {
+      id: '2',
+      parentId: '0',
+      title: 'Other Bookmarks',
+      children: [
+        {
+          id: '3',
+          parentId: '2',
+          title: 'Child folder',
+          dateAdded: 4,
+          children: [
+            {
+              id: '7',
+              parentId: '3',
+              title: 'Nested bookmark',
+              url: 'http://nested/bookmark/',
+              dateAdded: 1,
+              dateLastUsed: 10,
+            },
+          ],
+        },
+        {
+          id: '4',
+          parentId: '2',
+          title: 'Child folder',
+          dateAdded: 2,
+          children: [
+            {
+              id: '8',
+              parentId: '4',
+              title: 'Nested bookmark',
+              url: 'http://nested/bookmark/',
+              dateAdded: 5,
+              dateLastUsed: 6,
+            },
+          ],
+        },
+        {
+          id: '5',
+          parentId: '2',
+          title: 'Child folder',
+          dateAdded: 6,
+          children: [
+            {
+              id: '10',
+              parentId: '5',
+              title: 'Child folder',
+              dateAdded: 8,
+              children: [
+                {
+                  id: '13',
+                  parentId: '10',
+                  title: 'Nested folder',
+                  dateAdded: 0,
+                  children: [],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: '6',
+          parentId: '2',
+          title: 'Child folder',
+          dateAdded: 3,
+          children: [
+            {
+              id: '12',
+              parentId: '6',
+              title: 'Child folder',
+              dateAdded: 3,
+              children: [
+                {
+                  id: '14',
+                  parentId: '12',
+                  title: 'Nested bookmark',
+                  url: 'http://nested/bookmark/',
+                  dateAdded: 9,
+                  dateLastUsed: 1,
+                },
+              ],
             },
           ],
         },
@@ -137,6 +227,20 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(sortedBookmarks[2]!.id, '3');
   });
 
+  test('SortsByNewestWithComplexDescendants', async () => {
+    bookmarksApi.setFolders(JSON.parse(JSON.stringify(complexFolders)));
+    service.startListening();
+
+    await delegate.whenCalled('onBookmarksLoaded');
+
+    const sortedBookmarks =
+        service.filterBookmarks(undefined, 0, undefined, []);
+    assertEquals(sortedBookmarks[0]!.id, '6');
+    assertEquals(sortedBookmarks[1]!.id, '5');
+    assertEquals(sortedBookmarks[2]!.id, '4');
+    assertEquals(sortedBookmarks[3]!.id, '3');
+  });
+
   test('SortsByOldest', () => {
     const sortedBookmarks =
         service.filterBookmarks(undefined, 1, undefined, []);
@@ -145,12 +249,40 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(sortedBookmarks[2]!.id, '4');
   });
 
+  test('SortsByOldestWithComplexDescendants', async () => {
+    bookmarksApi.setFolders(JSON.parse(JSON.stringify(complexFolders)));
+    service.startListening();
+
+    await delegate.whenCalled('onBookmarksLoaded');
+
+    const sortedBookmarks =
+        service.filterBookmarks(undefined, 1, undefined, []);
+    assertEquals(sortedBookmarks[0]!.id, '5');
+    assertEquals(sortedBookmarks[1]!.id, '3');
+    assertEquals(sortedBookmarks[2]!.id, '4');
+    assertEquals(sortedBookmarks[3]!.id, '6');
+  });
+
   test('SortsByLastOpened', () => {
     const sortedBookmarks =
         service.filterBookmarks(undefined, 2, undefined, []);
     assertEquals(sortedBookmarks[0]!.id, '5');
     assertEquals(sortedBookmarks[1]!.id, '3');
     assertEquals(sortedBookmarks[2]!.id, '4');
+  });
+
+  test('SortsByLastOpenedWithComplexDescendants', async () => {
+    bookmarksApi.setFolders(JSON.parse(JSON.stringify(complexFolders)));
+    service.startListening();
+
+    await delegate.whenCalled('onBookmarksLoaded');
+
+    const sortedBookmarks =
+        service.filterBookmarks(undefined, 2, undefined, []);
+    assertEquals(sortedBookmarks[0]!.id, '3');
+    assertEquals(sortedBookmarks[1]!.id, '5');
+    assertEquals(sortedBookmarks[2]!.id, '4');
+    assertEquals(sortedBookmarks[3]!.id, '6');
   });
 
   test('SortsByAToZ', () => {

@@ -68,6 +68,82 @@ export function getFolderDescendants(folder: chrome.bookmarks.BookmarkTreeNode):
   return expanded;
 }
 
+// Compares bookmarks based on the newest dateAdded of the bookmark
+// itself and all descendants.
+function compareNewest(
+    a: chrome.bookmarks.BookmarkTreeNode,
+    b: chrome.bookmarks.BookmarkTreeNode): number {
+  let aValue: number|undefined;
+  let bValue: number|undefined;
+  getFolderDescendants(a).forEach((descendant) => {
+    if (!aValue || descendant.dateAdded! > aValue) {
+      aValue = descendant.dateAdded;
+    }
+  });
+  getFolderDescendants(b).forEach((descendant) => {
+    if (!bValue || descendant.dateAdded! > bValue) {
+      bValue = descendant.dateAdded;
+    }
+  });
+  return bValue! - aValue!;
+}
+
+// Compares bookmarks based on the oldest dateAdded of the bookmark
+// itself and all descendants.
+function compareOldest(
+    a: chrome.bookmarks.BookmarkTreeNode,
+    b: chrome.bookmarks.BookmarkTreeNode): number {
+  let aValue: number|undefined;
+  let bValue: number|undefined;
+  getFolderDescendants(a).forEach((descendant) => {
+    if (!aValue || descendant.dateAdded! < aValue) {
+      aValue = descendant.dateAdded;
+    }
+  });
+  getFolderDescendants(b).forEach((descendant) => {
+    if (!bValue || descendant.dateAdded! < bValue) {
+      bValue = descendant.dateAdded;
+    }
+  });
+  return aValue! - bValue!;
+}
+
+// Compares bookmarks based on the most recent dateLastUsed, or dateAdded if
+// dateUsed is not set, of the bookmark itself and all descendants.
+function compareLastOpened(
+    a: chrome.bookmarks.BookmarkTreeNode,
+    b: chrome.bookmarks.BookmarkTreeNode): number {
+  let aValue: number|undefined;
+  let bValue: number|undefined;
+  getFolderDescendants(a).forEach((descendant) => {
+    const descendantValue = descendant.dateLastUsed ? descendant.dateLastUsed :
+                                                      descendant.dateAdded!;
+    if (!aValue || descendantValue > aValue) {
+      aValue = descendantValue;
+    }
+  });
+  getFolderDescendants(b).forEach((descendant) => {
+    const descendantValue = descendant.dateLastUsed ? descendant.dateLastUsed :
+                                                      descendant.dateAdded!;
+    if (!bValue || descendantValue > bValue) {
+      bValue = descendantValue;
+    }
+  });
+  return bValue! - aValue!;
+}
+
+function compareAlphabetical(
+    a: chrome.bookmarks.BookmarkTreeNode,
+    b: chrome.bookmarks.BookmarkTreeNode): number {
+  return a.title!.localeCompare(b.title);
+}
+
+function compareReverseAlphabetical(
+    a: chrome.bookmarks.BookmarkTreeNode,
+    b: chrome.bookmarks.BookmarkTreeNode): number {
+  return b.title!.localeCompare(a.title);
+}
+
 export class PowerBookmarksService {
   private delegate_: PowerBookmarksDelegate;
   private bookmarksApi_: BookmarksApiProxy =
@@ -197,26 +273,15 @@ export class PowerBookmarksService {
       } else {
         let toReturn;
         if (activeSortIndex === 0) {
-          // Newest first
-          toReturn = b.dateAdded! - a.dateAdded!;
+          toReturn = compareNewest(a, b);
         } else if (activeSortIndex === 1) {
-          // Oldest first
-          toReturn = a.dateAdded! - b.dateAdded!;
+          toReturn = compareOldest(a, b);
         } else if (activeSortIndex === 2) {
-          // Last opened (or, in the case of folders, last modified)
-          toReturn = (b.dateLastUsed          ? b.dateLastUsed :
-                          b.dateGroupModified ? b.dateGroupModified :
-                                                b.dateAdded)!
-              -
-              (a.dateLastUsed          ? a.dateLastUsed :
-                   a.dateGroupModified ? a.dateGroupModified :
-                                         a.dateAdded)!;
+          toReturn = compareLastOpened(a, b);
         } else if (activeSortIndex === 3) {
-          // Alphabetical
-          toReturn = a.title!.localeCompare(b.title);
+          toReturn = compareAlphabetical(a, b);
         } else {
-          // Reverse alphabetical
-          toReturn = b.title!.localeCompare(a.title);
+          toReturn = compareReverseAlphabetical(a, b);
         }
         if (toReturn > 0) {
           changedPosition = true;
