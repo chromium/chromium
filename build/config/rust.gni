@@ -284,6 +284,10 @@ assert(!use_thin_lto || !enable_rust || use_chromium_rust_toolchain ||
 # Determine whether the local libstd can and should be built.
 local_libstd_supported = enable_local_libstd && use_chromium_rust_toolchain
 
+# Determine whether the prebuilt libstd can be used
+prebuilt_libstd_supported = !use_chromium_rust_toolchain ||
+                            (target_os == "linux" && target_cpu == "x64")
+
 # Arguments for Rust invocation.
 # This is common between gcc/clang, Mac and Windows toolchains so specify once,
 # here. This is not the complete command-line: toolchains should add -o

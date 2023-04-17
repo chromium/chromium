@@ -263,6 +263,8 @@ template("rust_target") {
         if (_use_local_std) {
           deps = [ "//build/rust/std:link_local_std" ]
         } else {
+          assert(prebuilt_libstd_supported,
+                 "Prebuilt Rust stdlib is not available for this target")
           deps = [ "//build/rust/std:link_prebuilt_std" ]
         }
       }
