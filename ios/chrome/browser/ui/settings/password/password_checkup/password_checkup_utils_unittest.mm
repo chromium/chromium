@@ -141,8 +141,10 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kDismissedWarningsWarning);
 
-  // Add a weak password.
+  // Add a muted password that is also weak.
   PasswordForm form2 = MakeSavedPassword(kExampleCom2, kUsername116);
+  AddIssueToForm(&form2, InsecureType::kLeaked, base::Minutes(1),
+                 /*is_muted=*/true);
   AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
   store().AddLogin(form2);
   RunUntilIdle();
@@ -151,10 +153,20 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kWeakPasswordsWarning);
 
-  // Add a reused password.
+  // Add a weak password.
   PasswordForm form3 = MakeSavedPassword(kExampleCom3, kUsername116);
-  AddIssueToForm(&form3, InsecureType::kReused, base::Minutes(1));
+  AddIssueToForm(&form3, InsecureType::kWeak, base::Minutes(1));
   store().AddLogin(form3);
+  RunUntilIdle();
+  insecure_credentials = manager().GetInsecureCredentials();
+  // The "weak passwords" warning stays the highest priority warning.
+  EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
+              WarningType::kWeakPasswordsWarning);
+
+  // Add a reused password.
+  PasswordForm form4 = MakeSavedPassword(kExampleCom4, kUsername116);
+  AddIssueToForm(&form4, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(form4);
   RunUntilIdle();
   insecure_credentials = manager().GetInsecureCredentials();
   // The "reused passwords" warning becomes the highest priority warning.
@@ -162,9 +174,9 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kReusedPasswordsWarning);
 
   // Add an unmuted compromised password.
-  PasswordForm form4 = MakeSavedPassword(kExampleCom4, kUsername116);
-  AddIssueToForm(&form4, InsecureType::kLeaked, base::Minutes(1));
-  store().AddLogin(form4);
+  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kUsername116);
+  AddIssueToForm(&form5, InsecureType::kLeaked, base::Minutes(1));
+  store().AddLogin(form5);
   RunUntilIdle();
   insecure_credentials = manager().GetInsecureCredentials();
   // The "compromised passwords" warning becomes the highest priority warning.

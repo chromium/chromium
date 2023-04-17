@@ -55,7 +55,12 @@ WarningType GetWarningOfHighestPriority(
       has_muted_warnings = true;
     } else if (IsCompromised(credential)) {
       return WarningType::kCompromisedPasswordsWarning;
-    } else if (credential.IsReused()) {
+    }
+
+    // A reused password warning is of higher priority than a weak password
+    // warning. So, if the credential is reused, there is no need to verify if
+    // it is also weak.
+    if (credential.IsReused()) {
       has_reused_passwords = true;
     } else if (credential.IsWeak()) {
       has_weak_passwords = true;
