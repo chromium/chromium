@@ -132,6 +132,7 @@ bool PuffDiff(UniqueStreamPtr src,
             std::move(stream), puffer, puff_buffer->size(), deflates, *puffs);
         bool result =
             src_puffin_stream->Read(puff_buffer->data(), puff_buffer->size());
+        src_puffin_stream->Close();
         return result;
       };
 
