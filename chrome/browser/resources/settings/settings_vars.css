@@ -31,8 +31,6 @@ html {
   /* Spacing between policy (controlledBy) indicator and control. */
   --settings-controlled-by-spacing: var(--cr-controlled-by-spacing);
 
-  --settings-input-max-width: var(--cr-default-input-max-width);
-
   --iron-icon-fill-color: var(--google-grey-700);
   --iron-icon-height: var(--cr-icon-size);
   --iron-icon-width: var(--cr-icon-size);
