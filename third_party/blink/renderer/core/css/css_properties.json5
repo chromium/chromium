@@ -7746,7 +7746,17 @@
       name_for_methods: "AlignSelfBlockCenter",
       converter: "ConvertInternalAlignSelfBlock",
     },
-
+    {
+      name: "-internal-align-content-block",
+      property_methods: ["ParseSingleValue"],
+      inherited: false,
+      field_group: "*",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      name_for_methods: "AlignContentBlockCenter",
+      converter: "ConvertInternalAlignContentBlock",
+    },
     // Aliases; these map to the same CSSPropertyID
     {
       name: "-epub-caption-side",

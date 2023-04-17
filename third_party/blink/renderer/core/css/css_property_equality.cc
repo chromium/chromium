@@ -1096,6 +1096,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return true;
 
     // No transitions on internal properties:
+    case CSSPropertyID::kInternalAlignContentBlock:
     case CSSPropertyID::kInternalAlignSelfBlock:
     case CSSPropertyID::kInternalEmptyLineHeight:
     case CSSPropertyID::kInternalFontSizeDelta:

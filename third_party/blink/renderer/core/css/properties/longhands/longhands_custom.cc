@@ -10294,6 +10294,14 @@ const CSSValue* InternalAlignSelfBlock::ParseSingleValue(
                                          CSSValueID::kNormal>(range);
 }
 
+const CSSValue* InternalAlignContentBlock::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext&,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeIdent<CSSValueID::kCenter,
+                                         CSSValueID::kNormal>(range);
+}
+
 const CSSValue* InternalEmptyLineHeight::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

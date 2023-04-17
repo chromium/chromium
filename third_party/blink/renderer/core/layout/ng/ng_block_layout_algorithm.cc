@@ -971,6 +971,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         intrinsic_block_size_, previous_inflow_position->logical_block_offset);
   }
 
+  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
       ConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
       intrinsic_block_size_,
@@ -1086,6 +1087,15 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   if (ConstraintSpace().IsTableCell()) {
     NGTableAlgorithmUtils::FinalizeTableCellLayout(intrinsic_block_size_,
                                                    &container_builder_);
+  }
+
+  if (RuntimeEnabledFeatures::LayoutNewFormCenteringEnabled() &&
+      Style().AlignContentBlockCenter() &&
+      !IsBreakInside(container_builder_.PreviousBreakToken())) {
+    container_builder_.MoveChildrenInBlockDirection(
+        (container_builder_.FragmentBlockSize() -
+         unconstrained_intrinsic_block_size) /
+        2);
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
@@ -1532,7 +1542,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                                      previous_inflow_position))
     return NGLayoutResult::kBfcBlockOffsetResolved;
 
-  if (UNLIKELY(child.Style().AlignSelfBlockCenter())) {
+  if (UNLIKELY(!RuntimeEnabledFeatures::LayoutNewFormCenteringEnabled() &&
+               child.Style().AlignSelfBlockCenter())) {
     // The block-size of a textfield doesn't depend on its contents, so we can
     // compute the block-size without passing the actual intrinsic block-size.
     const LayoutUnit bsp_block_sum = BorderScrollbarPadding().BlockSum();

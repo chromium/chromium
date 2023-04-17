@@ -453,6 +453,10 @@ input {
     background-color: Field;
 }
 
+input:not([type="file" i], [type="image" i]) {
+    -internal-align-content-block: center;
+}
+
 input[type="search" i] {
     appearance: auto;
     box-sizing: border-box;

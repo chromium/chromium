@@ -312,6 +312,8 @@ class StyleBuilderConverter {
   static StyleAspectRatio ConvertAspectRatio(const StyleResolverState&,
                                              const CSSValue&);
 
+  static bool ConvertInternalAlignContentBlock(StyleResolverState& state,
+                                               const CSSValue& value);
   static bool ConvertInternalAlignSelfBlock(StyleResolverState& state,
                                             const CSSValue& value);
   static bool ConvertInternalEmptyLineHeight(StyleResolverState& state,

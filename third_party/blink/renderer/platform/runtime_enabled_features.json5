@@ -2016,6 +2016,10 @@
       status: "stable",  // Since M112.
     },
     {
+      name: "LayoutNewFormCentering",
+      status: "stable",
+    },
+    {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       depends_on: ["LayoutMediaNGContainer", "RemoveConvertToLayerCoords"],

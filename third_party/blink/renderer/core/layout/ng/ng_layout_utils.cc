@@ -287,6 +287,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (node.IsFieldsetContainer())
       return NGLayoutCacheStatus::kNeedsLayout;
 
+    if (node.IsBlockFlow() && style.AlignContentBlockCenter()) {
+      return NGLayoutCacheStatus::kNeedsLayout;
+    }
+
     if (layout_result.DisableSimplifiedLayout())
       return NGLayoutCacheStatus::kNeedsLayout;
 
