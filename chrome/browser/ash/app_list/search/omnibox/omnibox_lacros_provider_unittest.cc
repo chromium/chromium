@@ -121,6 +121,9 @@ class TestSearchResultProducer : public cam::SearchController {
   // cam::SearchController overrides:
   void Search(const std::u16string& query, SearchCallback callback) override {
     last_query_ = query;
+
+    // Reset the remote and send a new pending receiver to ash.
+    publisher_.reset();
     std::move(callback).Run(publisher_.BindNewEndpointAndPassReceiver());
   }
 
@@ -251,6 +254,8 @@ TEST_F(OmniboxLacrosProviderTest, NewResults) {
   std::vector<cam::SearchResultPtr> to_produce;
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab_1"));
   ProduceResults(std::move(to_produce));
+
+  StartSearch(u"query2");
 
   // Then produce another.
   to_produce.clear();
