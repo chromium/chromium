@@ -1063,8 +1063,18 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   // supports reference counts.
   PA_DCHECK(root->brp_enabled());
 
-  // memset() can be really expensive.
+  // Iterating over the entire slot can be really expensive.
 #if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+  auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
+  // If we have a hook the object segment is not necessarily filled
+  // with |kQuarantinedByte|.
+  if (PA_LIKELY(!hook)) {
+    unsigned char* object =
+        static_cast<unsigned char*>(root->SlotStartToObject(slot_start));
+    for (size_t i = 0; i < slot_span->GetUsableSize(root); ++i) {
+      PA_DCHECK(object[i] == kQuarantinedByte);
+    }
+  }
   DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)

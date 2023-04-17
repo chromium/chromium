@@ -124,6 +124,8 @@ bool PartitionAllocHooks::ReallocOverrideHookIfEnabled(size_t* out,
   return false;
 }
 
+// Do not unset the hook if there are remaining quarantined slots
+// not to break checks on unquarantining.
 void PartitionAllocHooks::SetQuarantineOverrideHook(
     QuarantineOverrideHook* hook) {
   quarantine_override_hook_.store(hook, std::memory_order_release);
