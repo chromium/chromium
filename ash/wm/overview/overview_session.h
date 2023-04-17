@@ -22,9 +22,9 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
@@ -294,7 +294,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Shows the saved desk library. Creates the widget if needed. The desks bar
   // will be expanded if it isn't already. Focuses the item which matches
   // `item_to_focus` on the display associated with `root_window`.
-  void ShowSavedDeskLibrary(const base::GUID& item_to_focus,
+  void ShowSavedDeskLibrary(const base::Uuid& item_to_focus,
                             const std::u16string& saved_desk_name,
                             aura::Window* const root_window);
 

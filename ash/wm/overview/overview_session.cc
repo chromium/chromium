@@ -1045,7 +1045,7 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 void OverviewSession::ShowSavedDeskLibrary(
-    const base::GUID& item_to_focus,
+    const base::Uuid& item_to_focus,
     const std::u16string& saved_desk_name,
     aura::Window* const root_window) {
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
