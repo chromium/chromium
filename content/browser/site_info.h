@@ -52,9 +52,11 @@ class CONTENT_EXPORT SiteInfo {
 
   // Helper to create a SiteInfo for default SiteInstances.  Default
   // SiteInstances are used for non-isolated sites on platforms without strict
-  // site isolation, such as on Android.
+  // site isolation, such as on Android.  They may also be used on desktop
+  // platforms when strict site isolation is explicitly turned off (e.g., via
+  // switches::kDisableSiteIsolation).
   static SiteInfo CreateForDefaultSiteInstance(
-      BrowserContext* browser_context,
+      const IsolationContext& isolation_context,
       const StoragePartitionConfig storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
 
