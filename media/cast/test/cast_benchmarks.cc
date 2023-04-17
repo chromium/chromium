@@ -334,7 +334,7 @@ class RunOneBenchmark {
 
   void Run(const MeasuringPoint& p) {
     available_bitrate_ = p.bitrate;
-    Configure(CODEC_VIDEO_FAKE, CODEC_AUDIO_PCM16);
+    Configure(Codec::kVideoFake, Codec::kAudioPcm16);
     Create(p);
     StartBasicPlayer();
 

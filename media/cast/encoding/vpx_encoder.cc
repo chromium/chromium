@@ -130,10 +130,10 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
 
   // Determine appropriate codec interface.
   vpx_codec_iface_t* ctx;
-  if (cast_config_.codec == CODEC_VIDEO_VP9) {
+  if (cast_config_.codec == Codec::kVideoVp9) {
     ctx = vpx_codec_vp9_cx();
   } else {
-    DCHECK(cast_config_.codec == CODEC_VIDEO_VP8);
+    DCHECK(cast_config_.codec == Codec::kVideoVp8);
     ctx = vpx_codec_vp8_cx();
   }
 

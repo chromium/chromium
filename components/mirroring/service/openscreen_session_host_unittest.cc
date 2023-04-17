@@ -845,7 +845,7 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareVp8EncodingIfSupported) {
 
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.codec ==
-                                       media::cast::Codec::CODEC_VIDEO_VP8 &&
+                                       media::cast::Codec::kVideoVp8 &&
                                    config.use_hardware_encoder;
                           }));
 #endif
@@ -880,7 +880,7 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
 
                           [](const media::cast::FrameSenderConfig& config) {
                             return config.codec ==
-                                       media::cast::Codec::CODEC_VIDEO_H264 &&
+                                       media::cast::Codec::kVideoH264 &&
                                    config.use_hardware_encoder;
                           }));
 #endif

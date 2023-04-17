@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_COMMON_OPENSCREEN_CONVERSION_HELPERS_H_
 #define MEDIA_CAST_COMMON_OPENSCREEN_CONVERSION_HELPERS_H_
 
-#include "media/cast/cast_config.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "net/base/ip_address.h"
 #include "third_party/openscreen/src/cast/streaming/capture_configs.h"
@@ -19,7 +18,12 @@
 
 // Conversion methods for common Open Screen media cast types. Note that many
 // of these types are nearly identical in implementation.
-namespace media::cast {
+namespace media {
+enum class AudioCodec;
+enum class VideoCodec;
+
+namespace cast {
+enum class Codec;
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(base::TimeTicks ticks);
 
@@ -38,10 +42,12 @@ base::TimeDelta ToTimeDelta(openscreen::Clock::duration tp);
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame);
 
-openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::cast::Codec codec);
-openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::cast::Codec codec);
-media::cast::Codec ToCodec(openscreen::cast::AudioCodec codec);
-media::cast::Codec ToCodec(openscreen::cast::VideoCodec codec);
+openscreen::cast::AudioCodec ToOpenscreenAudioCodec(Codec codec);
+openscreen::cast::VideoCodec ToOpenscreenVideoCodec(Codec codec);
+Codec ToCodec(openscreen::cast::AudioCodec codec);
+Codec ToCodec(openscreen::cast::VideoCodec codec);
+AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec);
+VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address);
 
@@ -50,6 +56,7 @@ openscreen::cast::AudioCaptureConfig ToOpenscreenAudioConfig(
 openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(
     const FrameSenderConfig& config);
 
-}  // namespace media::cast
+}  // namespace cast
+}  // namespace media
 
 #endif  // MEDIA_CAST_COMMON_OPENSCREEN_CONVERSION_HELPERS_H_

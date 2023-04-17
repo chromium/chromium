@@ -156,7 +156,7 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl::Proxy final
 // static
 bool H264VideoToolboxEncoder::IsSupported(
     const FrameSenderConfig& video_config) {
-  return video_config.codec == CODEC_VIDEO_H264;
+  return video_config.codec == Codec::kVideoH264;
 }
 
 H264VideoToolboxEncoder::H264VideoToolboxEncoder(

@@ -113,6 +113,15 @@ chromium-metrics-reviews@google.com.
   <variant name="VP9"/>
 </variants>
 
+<histogram name="CastStreaming.Sender.Audio.NegotiatedCodec" enum="AudioCodec"
+    expires_after="2024-04-07">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Records which audio codec was negotiated during a mirroring session.
+  </summary>
+</histogram>
+
 <histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
     expires_after="2024-02-06">
   <owner>jophba@chromium.org</owner>
@@ -120,6 +129,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the currently set video bit rate during a Cast Streaming mirroring
     session. This metric is subsampled every 500 frames.
+  </summary>
+</histogram>
+
+<histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
+    expires_after="2024-04-07">
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Records which video codec was negotiated during a mirroring session.
   </summary>
 </histogram>
 

@@ -242,7 +242,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
            int bitrate,
            FrameEncodedCallback callback)
       : ImplBase(cast_environment,
-                 CODEC_AUDIO_OPUS,
+                 Codec::kAudioOpus,
                  num_channels,
                  sampling_rate,
                  sampling_rate / kDefaultFramesPerSecond, /* 10 ms frames */
@@ -355,7 +355,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
                int bitrate,
                FrameEncodedCallback callback)
       : ImplBase(cast_environment,
-                 CODEC_AUDIO_AAC,
+                 Codec::kAudioAac,
                  num_channels,
                  sampling_rate,
                  kAccessUnitSamples,
@@ -701,7 +701,7 @@ class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
             int sampling_rate,
             FrameEncodedCallback callback)
       : ImplBase(cast_environment,
-                 CODEC_AUDIO_PCM16,
+                 Codec::kAudioPcm16,
                  num_channels,
                  sampling_rate,
                  sampling_rate / kDefaultFramesPerSecond, /* 10 ms frames */
@@ -756,17 +756,17 @@ AudioEncoder::AudioEncoder(
   // as all calls to InsertAudio() are by the same thread.
   DETACH_FROM_THREAD(insert_thread_checker_);
   switch (codec) {
-    case CODEC_AUDIO_OPUS:
+    case Codec::kAudioOpus:
       impl_ = new OpusImpl(cast_environment, num_channels, sampling_rate,
                            bitrate, std::move(frame_encoded_callback));
       break;
 #if BUILDFLAG(IS_APPLE)
-    case CODEC_AUDIO_AAC:
+    case Codec::kAudioAac:
       impl_ = new AppleAacImpl(cast_environment, num_channels, sampling_rate,
                                bitrate, std::move(frame_encoded_callback));
       break;
 #endif  // BUILDFLAG(IS_MAC)
-    case CODEC_AUDIO_PCM16:
+    case Codec::kAudioPcm16:
       impl_ = new Pcm16Impl(cast_environment, num_channels, sampling_rate,
                             std::move(frame_encoded_callback));
       break;

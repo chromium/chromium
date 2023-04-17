@@ -23,7 +23,7 @@ FrameReceiverConfig GetDefaultAudioReceiverConfig() {
   config.rtp_timebase = 48000;
   config.channels = 2;
   config.target_frame_rate = 100;  // 10ms of signal per frame
-  config.codec = media::cast::CODEC_AUDIO_OPUS;
+  config.codec = media::cast::Codec::kAudioOpus;
   return config;
 }
 
@@ -36,7 +36,7 @@ FrameReceiverConfig GetDefaultVideoReceiverConfig() {
   config.rtp_timebase = kVideoFrequency;
   config.channels = 1;
   config.target_frame_rate = kDefaultMaxFrameRate;
-  config.codec = media::cast::CODEC_VIDEO_VP8;
+  config.codec = media::cast::Codec::kVideoVp8;
   return config;
 }
 

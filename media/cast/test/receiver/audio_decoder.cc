@@ -111,7 +111,7 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
            int num_channels,
            int sampling_rate)
       : ImplBase(cast_environment,
-                 CODEC_AUDIO_OPUS,
+                 Codec::kAudioOpus,
                  num_channels,
                  sampling_rate),
         decoder_memory_(new uint8_t[opus_decoder_get_size(num_channels)]),
@@ -180,7 +180,7 @@ class AudioDecoder::Pcm16Impl final : public AudioDecoder::ImplBase {
             int num_channels,
             int sampling_rate)
       : ImplBase(cast_environment,
-                 CODEC_AUDIO_PCM16,
+                 Codec::kAudioPcm16,
                  num_channels,
                  sampling_rate) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
@@ -221,10 +221,10 @@ AudioDecoder::AudioDecoder(
     Codec codec)
     : cast_environment_(cast_environment) {
   switch (codec) {
-    case CODEC_AUDIO_OPUS:
+    case Codec::kAudioOpus:
       impl_ = new OpusImpl(cast_environment, channels, sampling_rate);
       break;
-    case CODEC_AUDIO_PCM16:
+    case Codec::kAudioPcm16:
       impl_ = new Pcm16Impl(cast_environment, channels, sampling_rate);
       break;
     default:

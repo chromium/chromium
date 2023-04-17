@@ -63,8 +63,9 @@ class VideoEncoderTest
 
   void SetUp() final {
     Codec codec = GetParam().first;
-    if (codec == CODEC_VIDEO_FAKE)
+    if (codec == Codec::kVideoFake) {
       video_config_.enable_fake_codec_for_tests = true;
+    }
 
     video_config_.codec = codec;
     video_config_.use_hardware_encoder = GetParam().second;
@@ -98,7 +99,7 @@ class VideoEncoderTest
   bool is_encoder_present() const { return !!video_encoder_; }
 
   bool is_testing_software_vp8_encoder() const {
-    return video_config_.codec == CODEC_VIDEO_VP8 &&
+    return video_config_.codec == Codec::kVideoVp8 &&
            !video_config_.use_hardware_encoder;
   }
 
@@ -349,21 +350,21 @@ namespace {
 std::vector<std::pair<Codec, bool>> DetermineEncodersToTest() {
   std::vector<std::pair<Codec, bool>> values;
   // Fake encoder.
-  values.emplace_back(CODEC_VIDEO_FAKE, false);
+  values.emplace_back(Codec::kVideoFake, false);
 
   // Software VP8 encoder.
-  values.emplace_back(CODEC_VIDEO_VP8, false);
+  values.emplace_back(Codec::kVideoVp8, false);
 
   // Hardware-accelerated encoder (faked).
-  values.emplace_back(CODEC_VIDEO_VP8, true);
+  values.emplace_back(Codec::kVideoVp8, true);
 
 #if BUILDFLAG(IS_MAC)
   // VideoToolbox encoder (when VideoToolbox is present).
   FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
   video_config.use_hardware_encoder = true;
-  video_config.codec = CODEC_VIDEO_H264;
+  video_config.codec = Codec::kVideoH264;
   if (H264VideoToolboxEncoder::IsSupported(video_config)) {
-    values.emplace_back(CODEC_VIDEO_H264, true);
+    values.emplace_back(Codec::kVideoH264, true);
   }
 #endif
   return values;

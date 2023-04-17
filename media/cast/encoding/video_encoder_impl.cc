@@ -61,18 +61,18 @@ VideoEncoderImpl::VideoEncoderImpl(
   CHECK(cast_environment_->HasVideoThread());
   DCHECK(status_change_cb);
 
-  if (video_config.codec == CODEC_VIDEO_VP8 ||
-      video_config.codec == CODEC_VIDEO_VP9) {
+  if (video_config.codec == Codec::kVideoVp8 ||
+      video_config.codec == Codec::kVideoVp9) {
     encoder_ = std::make_unique<VpxEncoder>(video_config);
     cast_environment_->PostTask(
         CastEnvironment::VIDEO, FROM_HERE,
         base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,
                        encoder_.get()));
   } else if (video_config.enable_fake_codec_for_tests &&
-             video_config.codec == CODEC_VIDEO_FAKE) {
+             video_config.codec == Codec::kVideoFake) {
     encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(video_config);
 #if BUILDFLAG(ENABLE_LIBAOM)
-  } else if (video_config.codec == CODEC_VIDEO_AV1) {
+  } else if (video_config.codec == Codec::kVideoAv1) {
     encoder_ = std::make_unique<Av1Encoder>(video_config);
     cast_environment_->PostTask(
         CastEnvironment::VIDEO, FROM_HERE,

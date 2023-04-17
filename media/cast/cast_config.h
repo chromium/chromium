@@ -18,26 +18,32 @@
 
 namespace media {
 class VideoEncodeAccelerator;
+enum class AudioCodec;
+enum class VideoCodec;
 
 namespace cast {
 
 // TODO(https://crbug.com/1363514): should be removed in favor of
 // media::VideoCodec, media::AudioCodec.
-enum Codec {
-  CODEC_UNKNOWN,
-  CODEC_AUDIO_OPUS,
-  CODEC_AUDIO_PCM16,
-  CODEC_AUDIO_AAC,
-  CODEC_AUDIO_REMOTE,
+enum class Codec {
+  kUnknown,
+  kAudioOpus,
+  kAudioPcm16,
+  kAudioAac,
+  kAudioRemote,
+
   // For tests only.  Must set enable_fake_codec_for_tests to true.
-  CODEC_VIDEO_FAKE,
-  CODEC_VIDEO_VP8,
-  CODEC_VIDEO_H264,
-  CODEC_VIDEO_REMOTE,
-  CODEC_VIDEO_VP9,
-  CODEC_VIDEO_AV1,
-  CODEC_LAST = CODEC_VIDEO_AV1
+  kVideoFake,
+  kVideoVp8,
+  kVideoH264,
+  kVideoRemote,
+  kVideoVp9,
+  kVideoAv1,
+  kMaxValue = kVideoAv1
 };
+
+AudioCodec ToAudioCodec(Codec codec);
+VideoCodec ToVideoCodec(Codec codec);
 
 // Describes the content being transported over RTP streams.
 enum class RtpPayloadType {
@@ -195,7 +201,7 @@ struct FrameSenderConfig {
   double max_frame_rate = kDefaultMaxFrameRate;
 
   // Codec used for the compression of signal data.
-  Codec codec = CODEC_UNKNOWN;
+  Codec codec = Codec::kUnknown;
 
   // The AES crypto key and initialization vector.  Each of these strings
   // contains the data in binary form, of size kAesKeySize.  If they are empty
@@ -203,8 +209,8 @@ struct FrameSenderConfig {
   std::string aes_key;
   std::string aes_iv_mask;
 
-  // When true, allows use of CODEC_VIDEO_FAKE.  When false, CODEC_VIDEO_FAKE is
-  // not supported.
+  // When true, allows use of Codec::kVideoFake.  When false, Codec::kVideoFake
+  // is not supported.
   bool enable_fake_codec_for_tests = false;
 
   // These are codec specific parameters for video streams only.
@@ -250,7 +256,7 @@ struct FrameReceiverConfig {
   double target_frame_rate = 0;
 
   // Codec used for the compression of signal data.
-  Codec codec = CODEC_UNKNOWN;
+  Codec codec = Codec::kUnknown;
 
   // The AES crypto key and initialization vector.  Each of these strings
   // contains the data in binary form, of size kAesKeySize.  If they are empty

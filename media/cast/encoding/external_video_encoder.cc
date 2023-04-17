@@ -721,13 +721,13 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
 
   VideoCodecProfile codec_profile;
   switch (video_config.codec) {
-    case CODEC_VIDEO_VP8:
+    case Codec::kVideoVp8:
       codec_profile = media::VP8PROFILE_ANY;
       break;
-    case CODEC_VIDEO_H264:
+    case Codec::kVideoH264:
       codec_profile = media::H264PROFILE_MAIN;
       break;
-    case CODEC_VIDEO_FAKE:
+    case Codec::kVideoFake:
       NOTREACHED() << "Fake software video encoder cannot be external";
       [[fallthrough]];
     default:

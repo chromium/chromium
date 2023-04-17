@@ -4,6 +4,9 @@
 
 #include "media/cast/common/openscreen_conversion_helpers.h"
 
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
+#include "media/cast/cast_config.h"
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace media::cast {
@@ -65,11 +68,11 @@ const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
 
 openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::cast::Codec codec) {
   switch (codec) {
-    case CODEC_AUDIO_REMOTE:
+    case Codec::kAudioRemote:
       return openscreen::cast::AudioCodec::kNotSpecified;
-    case CODEC_AUDIO_OPUS:
+    case Codec::kAudioOpus:
       return openscreen::cast::AudioCodec::kOpus;
-    case CODEC_AUDIO_AAC:
+    case Codec::kAudioAac:
       return openscreen::cast::AudioCodec::kAac;
     default:
       NOTREACHED();
@@ -79,51 +82,86 @@ openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::cast::Codec codec) {
 
 openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::cast::Codec codec) {
   switch (codec) {
-    case CODEC_VIDEO_REMOTE:
+    case Codec::kVideoRemote:
       return openscreen::cast::VideoCodec::kNotSpecified;
-    case CODEC_VIDEO_VP8:
+    case Codec::kVideoVp8:
       return openscreen::cast::VideoCodec::kVp8;
-    case CODEC_VIDEO_H264:
+    case Codec::kVideoH264:
       return openscreen::cast::VideoCodec::kH264;
-    case CODEC_VIDEO_VP9:
+    case Codec::kVideoVp9:
       return openscreen::cast::VideoCodec::kVp9;
-    case CODEC_VIDEO_AV1:
+    case Codec::kVideoAv1:
       return openscreen::cast::VideoCodec::kAv1;
     default:
       NOTREACHED();
       return openscreen::cast::VideoCodec::kNotSpecified;
   }
 }
-media::cast::Codec ToCodec(openscreen::cast::AudioCodec codec) {
+
+Codec ToCodec(openscreen::cast::AudioCodec codec) {
   switch (codec) {
     case openscreen::cast::AudioCodec::kNotSpecified:
-      return CODEC_AUDIO_REMOTE;
+      return Codec::kAudioRemote;
     case openscreen::cast::AudioCodec::kOpus:
-      return CODEC_AUDIO_OPUS;
+      return Codec::kAudioOpus;
     case openscreen::cast::AudioCodec::kAac:
-      return CODEC_AUDIO_AAC;
+      return Codec::kAudioAac;
   }
   NOTREACHED();
-  return CODEC_UNKNOWN;
+  return Codec::kUnknown;
 }
 
-media::cast::Codec ToCodec(openscreen::cast::VideoCodec codec) {
+Codec ToCodec(openscreen::cast::VideoCodec codec) {
   switch (codec) {
     case openscreen::cast::VideoCodec::kNotSpecified:
-      return CODEC_VIDEO_REMOTE;
+      return Codec::kVideoRemote;
     case openscreen::cast::VideoCodec::kVp8:
-      return CODEC_VIDEO_VP8;
+      return Codec::kVideoVp8;
     case openscreen::cast::VideoCodec::kH264:
-      return CODEC_VIDEO_H264;
+      return Codec::kVideoH264;
     case openscreen::cast::VideoCodec::kVp9:
-      return CODEC_VIDEO_VP9;
+      return Codec::kVideoVp9;
     case openscreen::cast::VideoCodec::kAv1:
-      return CODEC_VIDEO_AV1;
+      return Codec::kVideoAv1;
     case openscreen::cast::VideoCodec::kHevc:
-      return CODEC_UNKNOWN;
+      return Codec::kUnknown;
   }
   NOTREACHED();
-  return CODEC_UNKNOWN;
+  return Codec::kUnknown;
+}
+
+AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec) {
+  switch (codec) {
+    case openscreen::cast::AudioCodec::kNotSpecified:
+      // media::AudioCodec doesn't have a concept of "not specified."
+      return AudioCodec::kUnknown;
+    case openscreen::cast::AudioCodec::kOpus:
+      return AudioCodec::kOpus;
+    case openscreen::cast::AudioCodec::kAac:
+      return AudioCodec::kAAC;
+  }
+  NOTREACHED();
+  return AudioCodec::kUnknown;
+}
+
+VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec) {
+  switch (codec) {
+    // media::VideoCodec doesn't have a concept of "not specified."
+    case openscreen::cast::VideoCodec::kNotSpecified:
+      return VideoCodec::kUnknown;
+    case openscreen::cast::VideoCodec::kVp8:
+      return VideoCodec::kVP8;
+    case openscreen::cast::VideoCodec::kH264:
+      return VideoCodec::kH264;
+    case openscreen::cast::VideoCodec::kVp9:
+      return VideoCodec::kVP9;
+    case openscreen::cast::VideoCodec::kAv1:
+      return VideoCodec::kAV1;
+    case openscreen::cast::VideoCodec::kHevc:
+      return VideoCodec::kHEVC;
+  }
+  NOTREACHED();
+  return VideoCodec::kUnknown;
 }
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address) {

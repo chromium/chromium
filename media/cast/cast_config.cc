@@ -4,8 +4,41 @@
 
 #include "media/cast/cast_config.h"
 
-namespace media {
-namespace cast {
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
+
+namespace media::cast {
+
+AudioCodec ToAudioCodec(Codec codec) {
+  switch (codec) {
+    case Codec::kAudioOpus:
+      return AudioCodec::kOpus;
+    case Codec::kAudioPcm16:
+      return AudioCodec::kPCM;
+    case Codec::kAudioAac:
+      return AudioCodec::kAAC;
+    case Codec::kAudioRemote:
+    default:
+      return AudioCodec::kUnknown;
+  }
+}
+
+VideoCodec ToVideoCodec(Codec codec) {
+  switch (codec) {
+    case Codec::kVideoVp8:
+      return VideoCodec::kVP8;
+    case Codec::kVideoH264:
+      return VideoCodec::kH264;
+    case Codec::kVideoVp9:
+      return VideoCodec::kVP9;
+    case Codec::kVideoAv1:
+      return VideoCodec::kAV1;
+    case Codec::kVideoFake:
+    case Codec::kVideoRemote:
+    default:
+      return VideoCodec::kUnknown;
+  }
+}
 
 VideoCodecParams::VideoCodecParams() = default;
 VideoCodecParams::VideoCodecParams(const VideoCodecParams& other) = default;
@@ -35,5 +68,4 @@ FrameReceiverConfig& FrameReceiverConfig::operator=(
     FrameReceiverConfig&& other) = default;
 FrameReceiverConfig::~FrameReceiverConfig() = default;
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

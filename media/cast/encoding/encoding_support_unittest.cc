@@ -41,7 +41,8 @@ TEST(EncodingSupportTest, EnablesVp8HardwareEncoderProperly) {
       true;
 #endif
 
-  EXPECT_EQ(is_enabled, IsHardwareEnabled(CODEC_VIDEO_VP8, GetValidProfiles()));
+  EXPECT_EQ(is_enabled,
+            IsHardwareEnabled(Codec::kVideoVp8, GetValidProfiles()));
 }
 
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {
@@ -63,7 +64,7 @@ TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {
 #endif
 
   EXPECT_EQ(is_enabled,
-            IsHardwareEnabled(CODEC_VIDEO_H264, GetValidProfiles()));
+            IsHardwareEnabled(Codec::kVideoH264, GetValidProfiles()));
 }
 
 }  // namespace media::cast::encoding_support
