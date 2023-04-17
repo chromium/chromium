@@ -2965,12 +2965,6 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_AUTO" desc="The text shown in the tray menu when rotation is set to auto and the user can enable the rotation lock by tapping.">
         Auto rotate
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_LANDSCAPE" desc="The text shown in the tray menu when rotation is set locked to landscape.">
-        Landscape
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_PORTRAIT" desc="The text shown in the tray menu when rotation is set locked to portrait.">
-        Portrait
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_ROTATION_LOCK_TOOLTIP" desc="The tooltip text used for the button that toggles rotation lock enabled/disabled.">
         Toggle rotation lock. <ph name="STATE_TEXT">$1<ex>Locked to vertical</ex></ph>
       </message>
