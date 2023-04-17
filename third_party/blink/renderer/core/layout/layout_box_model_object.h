@@ -158,15 +158,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutUnit OffsetWidth() const = 0;
   virtual LayoutUnit OffsetHeight() const = 0;
 
-  int PixelSnappedOffsetLeft(const Element* parent) const {
-    NOT_DESTROYED();
-    return RoundToInt(OffsetLeft(parent));
-  }
-  int PixelSnappedOffsetTop(const Element* parent) const {
-    NOT_DESTROYED();
-    return RoundToInt(OffsetTop(parent));
-  }
-
   bool HasSelfPaintingLayer() const;
   PaintLayer* Layer() const {
     NOT_DESTROYED();

@@ -204,8 +204,8 @@ int PrintContext::PageNumberForElement(Element* element,
       page_rect.width());
   print_context->ComputePageRectsWithPageSize(scaled_page_size);
 
-  int top = box->PixelSnappedOffsetTop(box->OffsetParent());
-  int left = box->PixelSnappedOffsetLeft(box->OffsetParent());
+  int top = box->OffsetTop(box->OffsetParent()).ToInt();
+  int left = box->OffsetLeft(box->OffsetParent()).ToInt();
   for (wtf_size_t page_number = 0; page_number < print_context->PageCount();
        ++page_number) {
     if (IsCoordinateInPage(top, left, print_context->PageRect(page_number)))
