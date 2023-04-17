@@ -677,7 +677,7 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
 
 LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
     const NGInlineCursor& cursor,
-    const NGTextOffset& offset) const {
+    const NGTextOffsetRange& offset) const {
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
   switch (GetSelectionStateFor(cursor.Current())) {
@@ -784,7 +784,7 @@ SelectionState LayoutSelection::ComputePaintingSelectionStateForCursor(
   if (position.IsEllipsis())
     return SelectionState::kNone;
 
-  const NGTextOffset offset = position.TextOffset();
+  const NGTextOffsetRange offset = position.TextOffset();
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
   // Determine the state of the overall selection, relative to the LayoutObject

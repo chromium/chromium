@@ -9,7 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -35,10 +35,10 @@ struct CORE_EXPORT NGInlineItemResult {
   DISALLOW_NEW();
 
  public:
-  const NGTextOffset& TextOffset() const { return text_offset; }
-  unsigned StartOffset() const { return text_offset.start; }
-  unsigned EndOffset() const { return text_offset.end; }
-  unsigned Length() const { return text_offset.Length(); }
+  const NGTextOffsetRange& TextOffset() const { return text_offset; }
+  wtf_size_t StartOffset() const { return text_offset.start; }
+  wtf_size_t EndOffset() const { return text_offset.end; }
+  wtf_size_t Length() const { return text_offset.Length(); }
 
   LayoutUnit HyphenInlineSize() const {
     return hyphen_shape_result->SnappedWidth().ClampNegativeToZero();
@@ -58,7 +58,7 @@ struct CORE_EXPORT NGInlineItemResult {
   unsigned item_index;
 
   // The range of text content for this item.
-  NGTextOffset text_offset;
+  NGTextOffsetRange text_offset;
 
   // Indicates the limits of the trailing space run.
   absl::optional<unsigned> non_hangable_run_end;
@@ -149,7 +149,7 @@ struct CORE_EXPORT NGInlineItemResult {
   NGInlineItemResult();
   NGInlineItemResult(const NGInlineItem*,
                      unsigned index,
-                     const NGTextOffset& text_offset,
+                     const NGTextOffsetRange& text_offset,
                      bool break_anywhere_if_overflow,
                      bool should_create_line_box,
                      bool has_unpositioned_floats);

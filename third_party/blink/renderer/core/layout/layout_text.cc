@@ -373,7 +373,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
       // produces one fragment but legacy produces multiple text boxes broken at
       // collapsed whitespaces. We break the fragment at collapsed whitespaces
       // to match the legacy output.
-      const NGTextOffset offset = cursor.Current().TextOffset();
+      const NGTextOffsetRange offset = cursor.Current().TextOffset();
       for (const NGOffsetMappingUnit& unit :
            mapping->GetMappingUnitsForTextContentOffsetRange(offset.start,
                                                              offset.end)) {
@@ -589,7 +589,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       bool is_collapsed = false;
       PhysicalRect rect;
       if (!item.IsGeneratedText()) {
-        const NGTextOffset& offset = item.TextOffset();
+        const NGTextOffsetRange& offset = item.TextOffset();
         if (start > offset.end || end < offset.start) {
           is_last_end_included = false;
           continue;

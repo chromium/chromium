@@ -426,7 +426,7 @@ inline NGInlineItemResult* NGLineBreaker::AddItem(const NGInlineItem& item,
     line_info->SetHaveTextCombineItem();
   NGInlineItemResults* item_results = line_info->MutableResults();
   return &item_results->emplace_back(
-      &item, item_index_, NGTextOffset(offset_, end_offset),
+      &item, item_index_, NGTextOffsetRange(offset_, end_offset),
       break_anywhere_if_overflow_, ShouldCreateLineBox(*item_results),
       HasUnpositionedFloats(*item_results));
 }

@@ -416,7 +416,7 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
       // In case of <br>, <wbr>, text-combine-upright, etc.
       return 0;
     }
-    const NGTextOffset offset = TextOffset();
+    const NGTextOffsetRange offset = TextOffset();
     auto* const item =
         base::ranges::find_if(*items, [offset](const NGInlineItem& item) {
           return item.StartOffset() <= offset.start &&
