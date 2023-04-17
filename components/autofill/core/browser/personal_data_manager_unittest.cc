@@ -964,16 +964,8 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
 
 TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), false);
-  IBAN iban0(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  iban0.set_nickname(u"Nickname 0");
-
-  IBAN iban1(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
-  iban1.set_nickname(u"Nickname 1");
-
-  personal_data_->AddIBAN(iban0);
-  personal_data_->AddIBAN(iban1);
+  personal_data_->AddIBAN(autofill::test::GetIBAN());
+  personal_data_->AddIBAN(autofill::test::GetIBAN2());
 
   EXPECT_EQ(0U, personal_data_->GetLocalIBANs().size());
 }
@@ -992,19 +984,15 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), true);
-  IBAN iban0(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  iban0.set_nickname(u"Nickname 0");
+  IBAN iban0 = autofill::test::GetIBAN();
 
-  IBAN iban1(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
+  IBAN iban1 = autofill::test::GetIBAN2();
   iban1.set_nickname(u"Nickname 1");
 
   IBAN iban1_1 = iban1;
   iban1_1.set_nickname(u"Nickname 1_1");
 
-  IBAN iban2(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_2)));
+  IBAN iban2 = autofill::test::GetIBANWithoutNickname();
   iban2.set_nickname(u"Nickname 2");
 
   // Add two test IBANs to the database. `iban1_1` has the same value
@@ -1068,9 +1056,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), true);
 
   // Start with a new IBAN.
-  IBAN iban0(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  iban0.set_nickname(u"Nickname 0");
+  IBAN iban0 = autofill::test::GetIBAN();
   // Add the IBAN to the database.
   personal_data_->OnAcceptedLocalIBANSave(iban0);
 
@@ -1080,9 +1066,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
 
   // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
   // the new IBAN is saved.
-  IBAN iban1(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
-  iban1.set_nickname(u"Nickname 1");
+  IBAN iban1 = autofill::test::GetIBAN2();
   personal_data_->OnAcceptedLocalIBANSave(iban1);
   WaitForOnPersonalDataChanged();
 
@@ -1097,8 +1081,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
 
   // Creates a new `iban2` which has the same value as `iban0` but with
   // different nickname and call `OnAcceptedLocalIBANSave()`.
-  IBAN iban2(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban2.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  IBAN iban2 = iban0;
   iban2.set_nickname(u"Nickname 2");
   personal_data_->OnAcceptedLocalIBANSave(iban2);
   WaitForOnPersonalDataChanged();
@@ -1134,22 +1117,15 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
   personal_data_->set_is_off_the_record_for_testing(true);
   prefs::SetAutofillIBANEnabled(prefs_.get(), true);
 
-  // Start with a new IBAN.
-  IBAN iban0(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  iban0.set_nickname(u"Nickname 0");
-
-  // Add the IBAN to the database.
-  personal_data_->AddIBAN(iban0);
+  // Start with a new IBAN and add the IBAN to the database.
+  personal_data_->AddIBAN(autofill::test::GetIBAN());
 
   // Verify the new IBAN is not saved.
   EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());
 
   // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
   // the new IBAN is not saved.
-  IBAN iban1(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
-  iban1.set_nickname(u"Nickname 1");
+  IBAN iban1 = autofill::test::GetIBAN2();
   personal_data_->OnAcceptedLocalIBANSave(iban1);
 
   EXPECT_TRUE(personal_data_->GetLocalIBANs().empty());

@@ -589,6 +589,19 @@ IBAN GetIBAN() {
   return iban;
 }
 
+IBAN GetIBAN2() {
+  IBAN iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_1)));
+  iban.set_nickname(u"My doctor's IBAN");
+  return iban;
+}
+
+IBAN GetIBANWithoutNickname() {
+  IBAN iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_2)));
+  return iban;
+}
+
 CreditCard GetCreditCard() {
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                          kEmptyOrigin);
