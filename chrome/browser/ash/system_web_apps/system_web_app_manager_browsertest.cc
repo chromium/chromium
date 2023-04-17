@@ -73,6 +73,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -1020,8 +1021,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
       [&](const apps::AppUpdate& app) {
         if ((app.AppType() == apps::AppType::kSystemWeb ||
              app.AppType() == apps::AppType::kWeb) &&
-            app.Readiness() != apps::Readiness::kUninstalledByNonUser &&
-            app.Readiness() != apps::Readiness::kUninstalledByUser) {
+            apps_util::IsInstalled(app.Readiness())) {
           swa_found = true;
         }
       });
