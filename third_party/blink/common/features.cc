@@ -362,7 +362,7 @@ const base::FeatureParam<SharedStorageWorkletImplementationType>::Option
 const base::FeatureParam<SharedStorageWorkletImplementationType>
     kSharedStorageWorkletImplementationType = {
         &kSharedStorageAPI, "SharedStorageWorkletImplementationType",
-        SharedStorageWorkletImplementationType::kLegacy,
+        SharedStorageWorkletImplementationType::kBlinkStyle,
         &shared_storage_worklet_implementation_types};
 
 BASE_FEATURE(kSharedStorageSelectURLLimit,
