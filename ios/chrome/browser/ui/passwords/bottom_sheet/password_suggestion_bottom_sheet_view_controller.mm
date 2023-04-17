@@ -65,8 +65,8 @@ CGFloat const kTableViewCornerRadius = 10;
   // Height constraint for the bottom sheet when showing all suggestions.
   NSLayoutConstraint* _fullHeightConstraint;
 
-  // Table view controller for the list of suggestions.
-  ChromeTableViewController* _tableViewController;
+  // Table view for the list of suggestions.
+  UITableView* _tableView;
 
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
@@ -147,7 +147,7 @@ CGFloat const kTableViewCornerRadius = 10;
   }
 
   // Refresh cells to show the checkmark icon next to the selected suggestion.
-  [_tableViewController.tableView reloadData];
+  [_tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
@@ -177,6 +177,8 @@ CGFloat const kTableViewCornerRadius = 10;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
 
+  [cell setFaviconContainerBackgroundColor:
+            [UIColor colorNamed:kPrimaryBackgroundColor]];
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
@@ -272,39 +274,34 @@ CGFloat const kTableViewCornerRadius = 10;
 // Creates the password bottom sheet's table view, initially at minimized
 // height.
 - (UITableView*)createTableView {
-  _tableViewController =
-      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
+  CGRect frame = [[UIScreen mainScreen] bounds];
+  _tableView = [[UITableView alloc] initWithFrame:frame
+                                            style:UITableViewStylePlain];
 
-  UITableView* tableView = _tableViewController.tableView;
-  tableView.layer.cornerRadius = kTableViewCornerRadius;
-  tableView.rowHeight = [self rowHeight];
-  tableView.showsVerticalScrollIndicator = NO;
-  tableView.delegate = self;
-  tableView.dataSource = self;
-  [self setTableViewWidth];
-  [tableView registerClass:TableViewURLCell.class
+  _tableView.layer.cornerRadius = kTableViewCornerRadius;
+  _tableView.rowHeight = [self rowHeight];
+  _tableView.showsVerticalScrollIndicator = NO;
+  _tableView.delegate = self;
+  _tableView.dataSource = self;
+  [_tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
+  // Set the table view's width so that it's the same for any orientation.
+  CGFloat tableWidth = MIN(frame.size.width, frame.size.height);
+  // TODO(crbug.com/1422350): Adjust this constraint properly
+  [_tableView.widthAnchor constraintEqualToConstant:tableWidth].active = YES;
+
   _minimizedHeightConstraint =
-      [tableView.heightAnchor constraintEqualToConstant:tableView.rowHeight];
+      [_tableView.heightAnchor constraintEqualToConstant:_tableView.rowHeight];
   _minimizedHeightConstraint.active = YES;
 
-  _fullHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:tableView.rowHeight * _suggestions.count];
+  _fullHeightConstraint = [_tableView.heightAnchor
+      constraintEqualToConstant:_tableView.rowHeight * _suggestions.count];
   _fullHeightConstraint.active = NO;
 
-  tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  _tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  return tableView;
-}
-
-// Sets the table view's width so that it's the same for any orientation.
-- (void)setTableViewWidth {
-  CGRect frame = [[UIScreen mainScreen] bounds];
-  CGFloat tableWidth = MIN(frame.size.width, frame.size.height);
-  [_tableViewController.tableView.widthAnchor
-      constraintEqualToConstant:tableWidth]
-      .active = YES;
+  return _tableView;
 }
 
 // Loads the favicon associated with the provided cell.

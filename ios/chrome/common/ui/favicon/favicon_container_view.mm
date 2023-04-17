@@ -29,10 +29,7 @@ const CGFloat kFaviconContainerWidth = 30;
   self = [super init];
   if (self) {
     [self.traitCollection performAsCurrentTraitCollection:^{
-      if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-        self.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-      }
-      self.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
+      [self resetBackgroundColor];
     }];
     self.layer.borderWidth = kFaviconBorderWidth;
     self.layer.cornerRadius = kFaviconCornerRadius;
@@ -59,17 +56,29 @@ const CGFloat kFaviconContainerWidth = 30;
   return self;
 }
 
+- (void)setFaviconBackgroundColor:(UIColor*)color {
+  if (color) {
+    self.backgroundColor = color;
+  } else {
+    [self resetBackgroundColor];
+  }
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if ([self.traitCollection
           hasDifferentColorAppearanceComparedToTraitCollection:
               previousTraitCollection]) {
-    self.backgroundColor =
-        self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-            ? [UIColor colorNamed:kSeparatorColor]
-            : UIColor.clearColor;
-    self.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
+    [self resetBackgroundColor];
   }
+}
+
+- (void)resetBackgroundColor {
+  self.backgroundColor =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
+          ? [UIColor colorNamed:kSeparatorColor]
+          : UIColor.clearColor;
+  self.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
 }
 
 @end
