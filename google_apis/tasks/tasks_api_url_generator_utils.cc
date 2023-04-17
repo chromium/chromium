@@ -23,11 +23,12 @@ constexpr char kPageTokenParameterName[] = "pageToken";
 constexpr char kShowCompletedParameterName[] = "showCompleted";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
-constexpr char kTaskListsListRequestedFields[] = "kind,items(id,title,updated)";
+constexpr char kTaskListsListRequestedFields[] =
+    "kind,items(id,title,updated),nextPageToken";
 
 constexpr char kTasksListUrlTemplate[] = "tasks/v1/lists/$1/tasks";
 constexpr char kTasksListRequestedFields[] =
-    "kind,items(id,title,status,parent)";
+    "kind,items(id,title,status,parent),nextPageToken";
 
 constexpr char kTaskUrlTemplate[] = "tasks/v1/lists/$1/tasks/$2";
 
