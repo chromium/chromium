@@ -215,8 +215,10 @@ void ResponsivenessMetrics::RecordDragTapOrClickUKM(
 
 // Event timing pointer events processing
 //
-// See also ./Pointer_interaction_state_machine.md to help understand the logic
-// below that how event timing group up pointer events as interactions.
+// See also ./Pointer_interaction_state_machine.md
+// (https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/Pointer_interaction_state_machine.md)
+// to help understand the logic below that how event timing group up pointer
+// events as interactions.
 bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     PerformanceEventTiming* entry,
     PointerId pointer_id,

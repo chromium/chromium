@@ -549,6 +549,8 @@ BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPAnimatedImagesReporting);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEventTimingMatchPresentationIndex);
+
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);

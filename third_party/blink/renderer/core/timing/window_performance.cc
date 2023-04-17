@@ -395,8 +395,9 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   DCHECK(!processing_start.is_null());
   DCHECK(!processing_end.is_null());
   DCHECK_GE(processing_end, processing_start);
-  if (!DomWindow())
+  if (!DomWindow() || !DomWindow()->GetFrame()) {
     return;
+  }
 
   const AtomicString& event_type = event.type();
   const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
@@ -408,9 +409,42 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
     return;
   }
   eventCounts()->Add(event_type);
-  absl::optional<PointerId> pointer_id;
-  if (pointer_event)
-    pointer_id = pointer_event->pointerId();
+
+  if (base::FeatureList::IsEnabled(
+          features::kEventTimingMatchPresentationIndex)) {
+    if (need_new_promise_for_event_presentation_time_) {
+      DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
+          *DomWindow()->GetFrame(),
+          CrossThreadBindOnce(&WindowPerformance::OnPresentationPromiseResolved,
+                              WrapCrossThreadWeakPersistent(this),
+                              ++event_presentation_promise_count_));
+      need_new_promise_for_event_presentation_time_ = false;
+    }
+  } else {
+    bool should_queue_presentation_promise = false;
+    // If there are no pending presentation promises, we should queue one. This
+    // ensures that |event_timings_| are processed even if the Blink lifecycle
+    // does not occur due to no DOM updates.
+    if (pending_presentation_promise_count_ == 0u) {
+      should_queue_presentation_promise = true;
+    } else {
+      // There are pending presentation promises, so only queue one if the event
+      // corresponds to a later frame than the one of the latest queued
+      // presentation promise.
+      should_queue_presentation_promise =
+          frame_index_ > last_registered_frame_index_;
+    }
+    if (should_queue_presentation_promise) {
+      DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
+          *DomWindow()->GetFrame(),
+          CrossThreadBindOnce(
+              &WindowPerformance::ReportEventTimingsWithFrameIndex,
+              WrapCrossThreadWeakPersistent(this), frame_index_));
+      last_registered_frame_index_ = frame_index_;
+      ++pending_presentation_promise_count_;
+    }
+  }
+
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(processing_start),
@@ -418,144 +452,197 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       event.target() ? event.target()->ToNode() : nullptr,
       DomWindow());  // TODO(haoliuk): Add WPT for Event Timing.
                      // See crbug.com/1320878.
+  absl::optional<PointerId> pointer_id;
+  if (pointer_event) {
+    pointer_id = pointer_event->pointerId();
+  }
   absl::optional<int> key_code;
-  if (event.IsKeyboardEvent())
+  if (event.IsKeyboardEvent()) {
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
-  // Add |entry| to the end of the queue along with the frame index at which is
-  // is being queued to know when to queue a presentation promise for it.
-  events_data_.push_back(
-      EventData::Create(entry, frame_index_, start_time, key_code, pointer_id));
-  bool should_queue_presentation_promise = false;
-  // If there are no pending presentation promises, we should queue one. This
-  // ensures that |event_timings_| are processed even if the Blink lifecycle
-  // does not occur due to no DOM updates.
-  if (pending_presentation_promise_count_ == 0u) {
-    should_queue_presentation_promise = true;
-  } else {
-    // There are pending presentation promises, so only queue one if the event
-    // corresponds to a later frame than the one of the latest queued
-    // presentation promise.
-    should_queue_presentation_promise =
-        frame_index_ > last_registered_frame_index_;
   }
-  if (should_queue_presentation_promise) {
-    DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
-        *DomWindow()->GetFrame(),
-        CrossThreadBindOnce(&WindowPerformance::ReportEventTimings,
-                            WrapCrossThreadWeakPersistent(this), frame_index_));
-    last_registered_frame_index_ = frame_index_;
-    ++pending_presentation_promise_count_;
-  }
+  // Add |entry| to the end of the queue along with the presentation promise
+  // index in order to match with corresponding presentation feedback later.
+  events_data_.push_back(EventData::Create(entry, frame_index_,
+                                           event_presentation_promise_count_,
+                                           start_time, key_code, pointer_id));
   SetCurrentEventTimingEvent(nullptr);
 }
 
-void WindowPerformance::ReportEventTimings(
+// Parameters:
+// |presentation_index|     - The registering index of the presentation promise.
+//                            First registered presentation promise will have an
+//                            index of 1.
+// |presentation_timestamp| - The frame presenting time or an early exit time
+//                            due to no frame updates.
+void WindowPerformance::OnPresentationPromiseResolved(
+    uint64_t presentation_index,
+    base::TimeTicks presentation_timestamp) {
+  if (!DomWindow() || !DomWindow()->document()) {
+    return;
+  }
+
+  // If the resolved presentation promise is the latest one we registered, then
+  // events arrive after will need a new presentation promise to provide
+  // presentation feedback.
+  if (presentation_index == event_presentation_promise_count_) {
+    need_new_promise_for_event_presentation_time_ = true;
+  }
+
+  CHECK(!pending_event_presentation_time_map_.Contains(presentation_index));
+  pending_event_presentation_time_map_.Set(presentation_index,
+                                           presentation_timestamp);
+  ReportEventTimings();
+
+  // Use |end_time| as a proxy for the current time to flush expired keydowns.
+  DOMHighResTimeStamp end_time =
+      MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
+  responsiveness_metrics_->MaybeFlushKeyboardEntries(end_time);
+}
+
+void WindowPerformance::ReportEventTimings() {
+  CHECK(DomWindow() && DomWindow()->document());
+  InteractiveDetector* interactive_detector =
+      InteractiveDetector::From(*(DomWindow()->document()));
+  CHECK(!events_data_.empty());
+
+  for (uint64_t presentation_index_to_report =
+           events_data_.front()->GetPresentationIndex();
+       pending_event_presentation_time_map_.Contains(
+           presentation_index_to_report);
+       ++presentation_index_to_report) {
+    base::TimeTicks presentation_timestamp =
+        pending_event_presentation_time_map_.at(presentation_index_to_report);
+    pending_event_presentation_time_map_.erase(presentation_index_to_report);
+
+    while (!events_data_.empty() &&
+           events_data_.front()->GetPresentationIndex() ==
+               presentation_index_to_report) {
+      ReportEvent(interactive_detector, events_data_.front(),
+                  presentation_timestamp);
+      events_data_.pop_front();
+    }
+  }
+}
+
+void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
+                                    Member<EventData> event_data,
+                                    base::TimeTicks presentation_timestamp) {
+  PerformanceEventTiming* entry = event_data->GetEventTiming();
+  base::TimeTicks event_timestamp = event_data->GetEventTimestamp();
+  absl::optional<int> key_code = event_data->GetKeyCode();
+  absl::optional<PointerId> pointer_id = event_data->GetPointerId();
+
+  base::TimeTicks entry_presentation_timestamp = presentation_timestamp;
+  DOMHighResTimeStamp entry_end_time =
+      MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
+
+  base::TimeDelta input_delay =
+      base::Milliseconds(entry->processingStart() - entry->startTime());
+  base::TimeDelta processing_time =
+      base::Milliseconds(entry->processingEnd() - entry->processingStart());
+  base::TimeDelta time_to_next_paint =
+      base::Milliseconds(entry_end_time - entry->processingEnd());
+
+  if (last_visibility_change_timestamp_ > event_timestamp &&
+      last_visibility_change_timestamp_ < presentation_timestamp) {
+    // The page visibility was changed. Ignore the presentation_timestamp and
+    // fallback to processingEnd (as if there was no next paint needed).
+    entry_end_time = entry->processingEnd();
+    // Adjust the entry_presentation_timestamp to also be == processingEnd.
+    // Ideally we could just assign the processingEnd value, except that
+    // processingEnd is already a DOMHighResTimeStamp and we cannot convert
+    // back to TimeTicks.  Subtracting the time_to_next_paint
+    entry_presentation_timestamp -= time_to_next_paint;
+    // Set time_to_next_paint = 0
+    time_to_next_paint = base::TimeDelta();
+  }
+
+  int rounded_duration =
+      std::round((entry_end_time - entry->startTime()) / 8) * 8;
+  entry->SetDuration(rounded_duration);
+  entry->SetUnsafePresentationTimestamp(entry_presentation_timestamp);
+
+  if (entry->name() == "pointerdown") {
+    pending_pointer_down_input_delay_ = input_delay;
+    pending_pointer_down_processing_time_ = processing_time;
+    pending_pointer_down_time_to_next_paint_ = time_to_next_paint;
+  } else if (entry->name() == "pointerup") {
+    if (pending_pointer_down_time_to_next_paint_.has_value() &&
+        interactive_detector) {
+      interactive_detector->RecordInputEventTimingUKM(
+          pending_pointer_down_input_delay_.value(),
+          pending_pointer_down_processing_time_.value(),
+          pending_pointer_down_time_to_next_paint_.value(), entry->name());
+    }
+  } else if ((entry->name() == "click" || entry->name() == "keydown" ||
+              entry->name() == "mousedown") &&
+             interactive_detector) {
+    interactive_detector->RecordInputEventTimingUKM(
+        input_delay, processing_time, time_to_next_paint, entry->name());
+  }
+
+  // Event Timing
+  ResponsivenessMetrics::EventTimestamps event_timestamps = {
+      event_timestamp, entry_presentation_timestamp};
+  if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
+                                       event_timestamps)) {
+    NotifyAndAddEventTimingBuffer(entry);
+  }
+
+  // First Input
+  //
+  // See also ./First_input_state_machine.md
+  // (https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/First_input_state_machine.md)
+  // to understand the logics below.
+  if (!first_input_timing_) {
+    if (entry->name() == event_type_names::kPointerdown) {
+      first_pointer_down_event_timing_ =
+          PerformanceEventTiming::CreateFirstInputTiming(entry);
+    } else if (entry->name() == event_type_names::kPointerup &&
+               first_pointer_down_event_timing_) {
+      first_pointer_down_event_timing_->SetInteractionId(
+          entry->interactionId());
+      DispatchFirstInputTiming(first_pointer_down_event_timing_);
+    } else if (entry->name() == event_type_names::kPointercancel) {
+      first_pointer_down_event_timing_.Clear();
+    } else if ((entry->name() == event_type_names::kMousedown ||
+                entry->name() == event_type_names::kClick ||
+                entry->name() == event_type_names::kKeydown) &&
+               !first_pointer_down_event_timing_) {
+      DispatchFirstInputTiming(
+          PerformanceEventTiming::CreateFirstInputTiming(entry));
+    }
+  }
+}
+
+void WindowPerformance::ReportEventTimingsWithFrameIndex(
     uint64_t frame_index,
     base::TimeTicks presentation_timestamp) {
   DCHECK(pending_presentation_promise_count_);
   --pending_presentation_promise_count_;
-  if (events_data_.empty())
+  if (events_data_.empty()) {
     return;
+  }
 
-  if (!DomWindow() || !DomWindow()->document())
+  if (!DomWindow() || !DomWindow()->document()) {
     return;
+  }
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
   DOMHighResTimeStamp end_time =
       MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
   while (!events_data_.empty()) {
     auto event_data = events_data_.front();
-    PerformanceEventTiming* entry = event_data->GetEventTiming();
     uint64_t entry_frame_index = event_data->GetFrameIndex();
-    base::TimeTicks event_timestamp = event_data->GetEventTimestamp();
-    absl::optional<int> key_code = event_data->GetKeyCode();
-    absl::optional<PointerId> pointer_id = event_data->GetPointerId();
     // If the entry was queued at a frame index that is larger than
     // |frame_index|, then we've reached the end of the entries that we can
     // process during this callback.
-    if (entry_frame_index > frame_index)
+    if (entry_frame_index > frame_index) {
       break;
+    }
 
+    ReportEvent(interactive_detector, event_data, presentation_timestamp);
     events_data_.pop_front();
-
-    base::TimeTicks entry_presentation_timestamp = presentation_timestamp;
-    DOMHighResTimeStamp entry_end_time = end_time;
-
-    base::TimeDelta input_delay =
-        base::Milliseconds(entry->processingStart() - entry->startTime());
-    base::TimeDelta processing_time =
-        base::Milliseconds(entry->processingEnd() - entry->processingStart());
-    base::TimeDelta time_to_next_paint =
-        base::Milliseconds(entry_end_time - entry->processingEnd());
-
-    if (last_visibility_change_timestamp_ > event_timestamp &&
-        last_visibility_change_timestamp_ < presentation_timestamp) {
-      // The page visibility was changed. Ignore the presentation_timestamp and
-      // fallback to processingEnd (as if there was no next paint needed).
-      entry_end_time = entry->processingEnd();
-      // Adjust the entry_presentation_timestamp to also be == processingEnd.
-      // Ideally we could just assign the processingEnd value, except that
-      // processingEnd is already a DOMHighResTimeStamp and we cannot convert
-      // back to TimeTicks.  Subtracting the time_to_next_paint
-      entry_presentation_timestamp -= time_to_next_paint;
-      // Set time_to_next_paint = 0
-      time_to_next_paint = base::TimeDelta();
-    }
-
-    int rounded_duration =
-        std::round((entry_end_time - entry->startTime()) / 8) * 8;
-    entry->SetDuration(rounded_duration);
-    entry->SetUnsafePresentationTimestamp(entry_presentation_timestamp);
-
-    if (entry->name() == "pointerdown") {
-      pending_pointer_down_input_delay_ = input_delay;
-      pending_pointer_down_processing_time_ = processing_time;
-      pending_pointer_down_time_to_next_paint_ = time_to_next_paint;
-    } else if (entry->name() == "pointerup") {
-      if (pending_pointer_down_time_to_next_paint_.has_value() &&
-          interactive_detector) {
-        interactive_detector->RecordInputEventTimingUKM(
-            pending_pointer_down_input_delay_.value(),
-            pending_pointer_down_processing_time_.value(),
-            pending_pointer_down_time_to_next_paint_.value(), entry->name());
-      }
-    } else if ((entry->name() == "click" || entry->name() == "keydown" ||
-                entry->name() == "mousedown") &&
-               interactive_detector) {
-      interactive_detector->RecordInputEventTimingUKM(
-          input_delay, processing_time, time_to_next_paint, entry->name());
-    }
-
-    // Event Timing
-    ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, entry_presentation_timestamp};
-    if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
-                                         event_timestamps)) {
-      NotifyAndAddEventTimingBuffer(entry);
-    }
-
-    // First Input
-    //
-    // See also ./First_input_state_machine.md to understand the logics below.
-    if (!first_input_timing_) {
-      if (entry->name() == event_type_names::kPointerdown) {
-        first_pointer_down_event_timing_ =
-            PerformanceEventTiming::CreateFirstInputTiming(entry);
-      } else if (entry->name() == event_type_names::kPointerup &&
-                 first_pointer_down_event_timing_) {
-        first_pointer_down_event_timing_->SetInteractionId(
-            entry->interactionId());
-        DispatchFirstInputTiming(first_pointer_down_event_timing_);
-      } else if (entry->name() == event_type_names::kPointercancel) {
-        first_pointer_down_event_timing_.Clear();
-      } else if ((entry->name() == event_type_names::kMousedown ||
-                  entry->name() == event_type_names::kClick ||
-                  entry->name() == event_type_names::kKeydown) &&
-                 !first_pointer_down_event_timing_) {
-        DispatchFirstInputTiming(
-            PerformanceEventTiming::CreateFirstInputTiming(entry));
-      }
-    }
   }
 
   // Use |end_time| as a proxy for the current time.
@@ -763,6 +850,11 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
 void WindowPerformance::OnPaintFinished() {
   ++frame_index_;
+
+  // The event processed after a paint will have different presentation time
+  // than previous ones, so we need to register a new presentation promise for
+  // it.
+  need_new_promise_for_event_presentation_time_ = true;
 }
 
 void WindowPerformance::NotifyPotentialDrag(PointerId pointer_id) {

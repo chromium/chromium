@@ -1231,6 +1231,11 @@ BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables reporting Event Timing with matching presentation promise index only.
+BASE_FEATURE(kEventTimingMatchPresentationIndex,
+             "EventTimingMatchPresentationIndex",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
              "OriginAgentClusterDefaultEnable",
              base::FEATURE_DISABLED_BY_DEFAULT);
