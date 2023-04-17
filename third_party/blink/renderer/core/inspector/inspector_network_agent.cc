@@ -2276,7 +2276,8 @@ protocol::Response InspectorNetworkAgent::searchInResponseBody(
 bool InspectorNetworkAgent::FetchResourceContent(Document* document,
                                                  const KURL& url,
                                                  String* content,
-                                                 bool* base64_encoded) {
+                                                 bool* base64_encoded,
+                                                 bool* loadingFailed) {
   DCHECK(document);
   DCHECK(IsMainThread());
   // First try to fetch content from the cached resource.
@@ -2286,14 +2287,18 @@ bool InspectorNetworkAgent::FetchResourceContent(Document* document,
         url, document->Fetcher()->GetCacheIdentifier(url));
   }
   if (cached_resource && InspectorPageAgent::CachedResourceContent(
-                             cached_resource, content, base64_encoded))
+                             cached_resource, content, base64_encoded)) {
+    *loadingFailed = cached_resource->ErrorOccurred();
     return true;
+  }
 
   // Then fall back to resource data.
   for (auto& resource : resources_data_->Resources()) {
     if (resource->RequestedURL() == url) {
       *content = resource->Content();
       *base64_encoded = resource->Base64Encoded();
+      *loadingFailed = IsErrorStatusCode(resource->HttpStatusCode());
+
       return true;
     }
   }

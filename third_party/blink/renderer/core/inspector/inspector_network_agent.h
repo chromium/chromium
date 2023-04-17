@@ -263,7 +263,8 @@ class CORE_EXPORT InspectorNetworkAgent final
   bool FetchResourceContent(Document*,
                             const KURL&,
                             String* content,
-                            bool* base64_encoded);
+                            bool* base64_encoded,
+                            bool* loadingFailed);
   String NavigationInitiatorInfo(LocalFrame*);
 
  private:
