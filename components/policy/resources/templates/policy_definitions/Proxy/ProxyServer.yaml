@@ -16,8 +16,8 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- pmarko@chromium.org
+- file://components/proxy_config/OWNERS
 schema:
   type: string
 supported_on:

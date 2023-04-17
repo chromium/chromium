@@ -17,8 +17,8 @@ features:
   per_profile: true
 label: Comma-separated list of proxy bypass rules
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- pmarko@chromium.org
+- file://components/proxy_config/OWNERS
 schema:
   type: string
 supported_on:

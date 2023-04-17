@@ -42,8 +42,8 @@ items:
   name: ProxyServerUseSystem
   value: 3
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- pmarko@chromium.org
+- file://components/proxy_config/OWNERS
 schema:
   $ref: ProxyServerMode
 supported_on:
