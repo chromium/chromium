@@ -202,10 +202,26 @@ struct MemberHashRecordReplayId
 };
 
 template <typename T>
-using DefaultHashTypeForMember =
-    std::conditional_t<IsSubclass<T, blink::ScriptWrappable>::value,
-                       MemberHashRecordReplayId<T>,
-                       MemberHash<T>>;
+class HasRecordReplayId {
+  template <typename U>
+  static auto Check(U* u) -> decltype(u->RecordReplayId(), std::true_type());
+  template <typename>
+  static std::false_type Check(...);
+
+ public:
+  static constexpr bool value = decltype(Check<T>(nullptr))::value;
+};
+
+template <typename T>
+constexpr bool has_record_replay_id = HasRecordReplayId<T>::value;
+
+// TODO: Consider making the default hash configurable at compile time so we
+//       can compare the behavior and performance across different combinations
+//       of configuration options.
+template <typename T>
+using DefaultHashTypeForMember = std::conditional_t<has_record_replay_id<T>,
+                                                    MemberHashRecordReplayId<T>,
+                                                    MemberHash<T>>;
 
 template <typename T>
 struct DefaultHash<blink::Member<T>> {
