@@ -743,9 +743,9 @@ void PinManager::HandleQueryItem(Id dir_id,
   const Path& path = item.path;
 
   if (!dir_path.IsParent(path)) {
-    VLOG(1) << "Disconnected path for " << Quote(md.type) << " " << id << " "
-            << Quote(path) << " when listing items in Directory " << dir_id
-            << " " << Quote(dir_path);
+    // This can happen when the parent folder was found by following a shortcut.
+    VLOG(2) << Quote(md.type) << " " << id << " " << Quote(path)
+            << " is not in Directory " << dir_id << " " << Quote(dir_path);
   }
 
   // Is this item a shortcut?
