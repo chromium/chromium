@@ -638,7 +638,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   Group* GetOrCreateGroup(const GroupId& group_id);
   void RemoveGroup(const GroupId& group_id);
-  void RemoveGroup(GroupMap::iterator it);
+  GroupMap::iterator RemoveGroup(GroupMap::iterator it);
 
   // Called when the number of idle sockets changes.
   void IncrementIdleCount();
@@ -755,9 +755,9 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // The group may be removed if this leaves the group empty. The caller must
   // call CheckForStalledSocketGroups() after all applicable groups have been
   // refreshed.
-  void RefreshGroup(GroupMap::iterator it,
-                    const base::TimeTicks& now,
-                    const char* net_log_reason_utf8);
+  GroupMap::iterator RefreshGroup(GroupMap::iterator it,
+                                  const base::TimeTicks& now,
+                                  const char* net_log_reason_utf8);
 
   GroupMap group_map_;
 

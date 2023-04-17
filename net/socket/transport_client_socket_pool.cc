@@ -839,14 +839,14 @@ void TransportClientSocketPool::OnSSLConfigForServerChanged(
                        proxy_server_.host_port_pair() == server;
   bool refreshed_any = false;
   for (auto it = group_map_.begin(); it != group_map_.end();) {
-    auto to_refresh = it++;
-    if (proxy_matches || (GURL::SchemeIsCryptographic(
-                              to_refresh->first.destination().scheme()) &&
-                          HostPortPair::FromSchemeHostPort(
-                              to_refresh->first.destination()) == server)) {
+    if (proxy_matches ||
+        (GURL::SchemeIsCryptographic(it->first.destination().scheme()) &&
+         HostPortPair::FromSchemeHostPort(it->first.destination()) == server)) {
       refreshed_any = true;
       // Note this call may destroy the group and invalidate |to_refresh|.
-      RefreshGroup(to_refresh, now, kSslConfigChanged);
+      it = RefreshGroup(it, now, kSslConfigChanged);
+    } else {
+      ++it;
     }
   }
 
@@ -876,11 +876,11 @@ void TransportClientSocketPool::CleanupIdleSockets(
 
   for (auto i = group_map_.begin(); i != group_map_.end();) {
     Group* group = i->second;
+    CHECK(group);
     CleanupIdleSocketsInGroup(force, group, now, net_log_reason_utf8);
     // Delete group if no longer needed.
     if (group->IsEmpty()) {
-      auto old = i++;
-      RemoveGroup(old);
+      i = RemoveGroup(i);
     } else {
       ++i;
     }
@@ -962,9 +962,10 @@ void TransportClientSocketPool::RemoveGroup(const GroupId& group_id) {
   RemoveGroup(it);
 }
 
-void TransportClientSocketPool::RemoveGroup(GroupMap::iterator it) {
+TransportClientSocketPool::GroupMap::iterator
+TransportClientSocketPool::RemoveGroup(GroupMap::iterator it) {
   delete it->second;
-  group_map_.erase(it);
+  return group_map_.erase(it);
 }
 
 // static
@@ -995,6 +996,7 @@ void TransportClientSocketPool::ReleaseSocket(
   CHECK(i != group_map_.end());
 
   Group* group = i->second;
+  CHECK(group);
 
   CHECK_GT(handed_out_socket_count_, 0);
   handed_out_socket_count_--;
@@ -1206,13 +1208,13 @@ void TransportClientSocketPool::AddIdleSocket(
 void TransportClientSocketPool::CancelAllConnectJobs() {
   for (auto i = group_map_.begin(); i != group_map_.end();) {
     Group* group = i->second;
+    CHECK(group);
     connecting_socket_count_ -= group->jobs().size();
     group->RemoveAllUnboundJobs();
 
     // Delete group if no longer needed.
     if (group->IsEmpty()) {
-      auto old = i++;
-      RemoveGroup(old);
+      i = RemoveGroup(i);
     } else {
       ++i;
     }
@@ -1222,6 +1224,7 @@ void TransportClientSocketPool::CancelAllConnectJobs() {
 void TransportClientSocketPool::CancelAllRequestsWithError(int error) {
   for (auto i = group_map_.begin(); i != group_map_.end();) {
     Group* group = i->second;
+    CHECK(group);
 
     while (true) {
       std::unique_ptr<Request> request = group->PopNextUnboundRequest();
@@ -1240,8 +1243,7 @@ void TransportClientSocketPool::CancelAllRequestsWithError(int error) {
 
     // Delete group if no longer needed.
     if (group->IsEmpty()) {
-      auto old = i++;
-      RemoveGroup(old);
+      i = RemoveGroup(i);
     } else {
       ++i;
     }
@@ -1265,6 +1267,7 @@ bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(
 
   for (auto i = group_map_.begin(); i != group_map_.end(); ++i) {
     Group* group = i->second;
+    CHECK(group);
     if (exception_group == group)
       continue;
     std::list<IdleSocket>* idle_sockets = group->mutable_idle_sockets();
@@ -1429,10 +1432,12 @@ void TransportClientSocketPool::TryToCloseSocketsInLayeredPools() {
   }
 }
 
-void TransportClientSocketPool::RefreshGroup(GroupMap::iterator it,
-                                             const base::TimeTicks& now,
-                                             const char* net_log_reason_utf8) {
+TransportClientSocketPool::GroupMap::iterator
+TransportClientSocketPool::RefreshGroup(GroupMap::iterator it,
+                                        const base::TimeTicks& now,
+                                        const char* net_log_reason_utf8) {
   Group* group = it->second;
+  CHECK(group);
   CleanupIdleSocketsInGroup(true /* force */, group, now, net_log_reason_utf8);
 
   connecting_socket_count_ -= group->jobs().size();
@@ -1443,8 +1448,9 @@ void TransportClientSocketPool::RefreshGroup(GroupMap::iterator it,
 
   // Delete group if no longer needed.
   if (group->IsEmpty()) {
-    RemoveGroup(it);
+    return RemoveGroup(it);
   }
+  return ++it;
 }
 
 TransportClientSocketPool::Group::Group(
