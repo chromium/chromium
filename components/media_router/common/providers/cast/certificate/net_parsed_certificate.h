@@ -33,12 +33,11 @@ class NetParsedCertificate final : public openscreen::cast::ParsedCertificate {
 
   openscreen::ErrorOr<uint64_t> GetSerialNumber() const override;
 
-  bool VerifySignedData(
-      openscreen::cast::DigestAlgorithm algorithm,
-      const openscreen::cast::ConstDataSpan& data,
-      const openscreen::cast::ConstDataSpan& signature) const override;
+  bool VerifySignedData(openscreen::cast::DigestAlgorithm algorithm,
+                        const openscreen::ByteView& data,
+                        const openscreen::ByteView& signature) const override;
 
-  bool HasPolicyOid(const openscreen::cast::ConstDataSpan& oid) const override;
+  bool HasPolicyOid(const openscreen::ByteView& oid) const override;
 
   void SetNotBeforeTimeForTesting(time_t not_before) override;
   void SetNotAfterTimeForTesting(time_t not_after) override;

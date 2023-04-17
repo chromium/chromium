@@ -38,7 +38,6 @@ ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
 namespace cast_certificate {
 
 using openscreen::ErrorOr;
-using openscreen::cast::ConstDataSpan;
 using openscreen::cast::DateTime;
 using openscreen::cast::DigestAlgorithm;
 
@@ -146,8 +145,8 @@ ErrorOr<uint64_t> NetParsedCertificate::GetSerialNumber() const {
 
 bool NetParsedCertificate::VerifySignedData(
     DigestAlgorithm algorithm,
-    const ConstDataSpan& data,
-    const ConstDataSpan& signature) const {
+    const openscreen::ByteView& data,
+    const openscreen::ByteView& signature) const {
   // TODO(davidben): This function only uses BoringSSL functions and the SPKI,
   // which is already exported as GetSpkiTlv(). Remove this method altogether
   // and move this into openscreen.
@@ -182,12 +181,12 @@ bool NetParsedCertificate::VerifySignedData(
   return EVP_PKEY_id(pubkey.get()) == EVP_PKEY_RSA &&
          EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
                               pubkey.get()) &&
-         EVP_DigestVerify(ctx.get(), signature.data, signature.length,
-                          data.data, data.length);
+         EVP_DigestVerify(ctx.get(), signature.data(), signature.size(),
+                          data.data(), data.size());
 }
 
-bool NetParsedCertificate::HasPolicyOid(const ConstDataSpan& oid) const {
-  net::der::Input net_oid(oid.data, oid.length);
+bool NetParsedCertificate::HasPolicyOid(const openscreen::ByteView& oid) const {
+  net::der::Input net_oid(oid.data(), oid.size());
   if (!cert_->has_policy_oids()) {
     return false;
   }
