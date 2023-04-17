@@ -47,10 +47,10 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
       : WebAppsSyncTestBase(SINGLE_CLIENT) {
     if (flag_enabled()) {
       scoped_feature_list_.InitAndEnableFeature(
-          features::kWebAppSyncGeneratedIconFix);
+          features::kWebAppSyncGeneratedIconUpdateFix);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kWebAppSyncGeneratedIconFix);
+          features::kWebAppSyncGeneratedIconUpdateFix);
     }
   }
 

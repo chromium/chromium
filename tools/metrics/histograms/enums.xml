@@ -58035,6 +58035,7 @@ from previous Chrome versions.
   <int value="-2136173537" label="QuickAnswers:enabled"/>
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
+  <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
   <int value="-2134244069" label="HttpFormWarning:enabled"/>
   <int value="-2133892372" label="ResamplingInputEvents:disabled"/>
@@ -58655,7 +58656,6 @@ from previous Chrome versions.
   <int value="-1835592983" label="WebAppEnableLaunchHandler:disabled"/>
   <int value="-1834967404" label="DesktopCaptureLacrosV2:enabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
-  <int value="-1834823079" label="WebAppSyncGeneratedIconFix:disabled"/>
   <int value="-1834475132" label="IgnoreSyncEncryptionKeysLongMissing:enabled"/>
   <int value="-1834151268" label="OmniboxDynamicMaxAutocomplete:disabled"/>
   <int value="-1833149810" label="enable-accessibility-tab-switcher"/>
@@ -58738,6 +58738,8 @@ from previous Chrome versions.
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
   <int value="-1783790234"
       label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
+  <int value="-1782853869"
+      label="WebAppSyncGeneratedIconRetroactiveFix:enabled"/>
   <int value="-1782684481"
       label="AutofillAutoTriggerManualFallbackForCards:disabled"/>
   <int value="-1780306716"
@@ -60331,6 +60333,8 @@ from previous Chrome versions.
   <int value="-947643308" label="EnableTouchscreensInDiagnosticsApp:disabled"/>
   <int value="-946366838" label="MetricsSettingsAndroid:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
+  <int value="-943778276"
+      label="WebAppSyncGeneratedIconRetroactiveFix:disabled"/>
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
@@ -60355,6 +60359,8 @@ from previous Chrome versions.
       label="enable-defer-all-script-without-optimization-hints"/>
   <int value="-932164609"
       label="ProcessSharingWithDefaultSiteInstances:enabled"/>
+  <int value="-931935394"
+      label="WebAppSyncGeneratedIconBackgroundFix:disabled"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
   <int value="-930478115" label="CameraAppDocScanDlc:enabled"/>
   <int value="-929944930"
@@ -61818,6 +61824,7 @@ from previous Chrome versions.
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
   <int value="-115261987" label="DesksTemplates:disabled"/>
+  <int value="-114925604" label="WebAppSyncGeneratedIconBackgroundFix:enabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
@@ -62978,6 +62985,7 @@ from previous Chrome versions.
   <int value="505561325" label="OpenXR:disabled"/>
   <int value="505804530" label="SyncAccessHandleAllSyncSurface:disabled"/>
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
+  <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
   <int value="506680761" label="WebNFC:disabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
   <int value="510066229"
@@ -65988,7 +65996,6 @@ from previous Chrome versions.
   <int value="2140453427"
       label="MigrateDefaultChromeAppToWebAppsGSuite:enabled"/>
   <int value="2141067485" label="SystemWebApps:enabled"/>
-  <int value="2141409121" label="WebAppSyncGeneratedIconFix:enabled"/>
   <int value="2141463681" label="enable-offer-upload-credit-cards"/>
   <int value="2142286279" label="ScreenSaverDuration:enabled"/>
   <int value="2142661816" label="AllowRemoteContextForNotifications:disabled"/>
