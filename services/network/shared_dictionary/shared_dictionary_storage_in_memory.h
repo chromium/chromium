@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
+#include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -96,6 +97,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                            base::Time response_time,
                            int64_t expiration,
                            const std::string& path_pattern,
+                           SharedDictionaryWriterInMemory::Result result,
                            scoped_refptr<net::IOBuffer> data,
                            size_t size,
                            const net::SHA256HashValue& hash);

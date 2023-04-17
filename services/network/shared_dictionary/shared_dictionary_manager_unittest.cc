@@ -275,4 +275,30 @@ TEST_F(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   EXPECT_EQ(sha256, dictionary_info.hash());
 }
 
+TEST_F(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      SharedDictionaryManager::CreateInMemory();
+  const net::NetworkIsolationKey kNetworkIsolationKey(kSite1, kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(kNetworkIsolationKey);
+  ASSERT_TRUE(storage);
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ":  p=\"/testfile*\"\n\n"}));
+  ASSERT_TRUE(headers);
+  base::Time now_time = base::Time::Now();
+
+  // Write the zero size data to the dictionary.
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      GURL("https://origin1.test/dict"), now_time, *headers);
+  ASSERT_TRUE(writer);
+  writer->Finish();
+
+  // Check the returned dictionary from GetDictionary().
+  std::unique_ptr<SharedDictionary> dict =
+      storage->GetDictionary(GURL("https://origin1.test/testfile?hello"));
+  EXPECT_FALSE(dict);
+}
+
 }  // namespace network

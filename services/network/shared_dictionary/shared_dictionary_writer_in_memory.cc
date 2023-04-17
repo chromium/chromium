@@ -14,7 +14,13 @@ SharedDictionaryWriterInMemory::SharedDictionaryWriterInMemory(
     : finish_callback_(std::move(finish_callback)),
       secure_hash_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {}
 
-SharedDictionaryWriterInMemory::~SharedDictionaryWriterInMemory() = default;
+SharedDictionaryWriterInMemory::~SharedDictionaryWriterInMemory() {
+  if (finish_callback_) {
+    std::move(finish_callback_)
+        .Run(Result::kErrorAborted, /*buffer=*/nullptr, /*size=*/0u,
+             net::SHA256HashValue());
+  }
+}
 
 void SharedDictionaryWriterInMemory::Append(const char* buf, int num_bytes) {
   secure_hash_->Update(buf, num_bytes);
@@ -29,6 +35,14 @@ void SharedDictionaryWriterInMemory::Finish() {
   for (const auto& item : data_) {
     total_size += item.size();
   }
+
+  if (total_size == 0) {
+    std::move(finish_callback_)
+        .Run(Result::kErrorSizeZero, /*buffer=*/nullptr, /*size=*/0u,
+             net::SHA256HashValue());
+    return;
+  }
+
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(total_size);
   size_t written_size = 0;
   for (const auto& item : data_) {
@@ -36,7 +50,7 @@ void SharedDictionaryWriterInMemory::Finish() {
     written_size += item.size();
   }
 
-  std::move(finish_callback_).Run(buffer, total_size, sha256);
+  std::move(finish_callback_).Run(Result::kSuccess, buffer, total_size, sha256);
 }
 
 }  // namespace network

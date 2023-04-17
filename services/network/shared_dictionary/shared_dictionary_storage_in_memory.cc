@@ -67,9 +67,13 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
     base::Time response_time,
     int64_t expiration,
     const std::string& path_pattern,
+    SharedDictionaryWriterInMemory::Result result,
     scoped_refptr<net::IOBuffer> data,
     size_t size,
     const net::SHA256HashValue& hash) {
+  if (result != SharedDictionaryWriterInMemory::Result::kSuccess) {
+    return;
+  }
   origin_to_dictionary_info_map_[url::Origin::Create(url)].insert(
       std::make_pair(path_pattern,
                      DictionaryInfo(url, response_time, expiration,
