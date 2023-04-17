@@ -867,7 +867,7 @@ class BookmarkManagerMediator
 
         if (mCurrentFolder.getType() == BookmarkType.READING_LIST
                 && getCurrentUiMode() != BookmarkUiMode.SEARCHING) {
-            ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(entryList, mContext);
+            ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(entryList);
         }
 
         for (BookmarkListEntry bookmarkListEntry : entryList) {

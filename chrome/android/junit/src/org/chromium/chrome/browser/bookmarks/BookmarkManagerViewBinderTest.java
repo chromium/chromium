@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -118,16 +119,21 @@ public class BookmarkManagerViewBinderTest {
 
     @Test
     public void testBindSectionHeaderView() {
-        String title = "title";
-        BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createSectionHeader(title, 10);
-        mModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
+        when(mView.getResources()).thenReturn(mActivity.getResources());
         when(mView.findViewById(anyInt())).thenReturn(mTextView);
+
+        BookmarkListEntry bookmarkListEntry =
+                BookmarkListEntry.createSectionHeader(R.string.reading_list_read,
+                        R.dimen.bookmark_reading_list_section_header_padding_top);
+        mModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
 
         PropertyModelChangeProcessor.create(
                 mModel, mView, BookmarkManagerViewBinder::bindSectionHeaderView);
 
-        verify(mTextView).setText(title);
-        verify(mTextView).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mTextView).setText(mActivity.getResources().getString(R.string.reading_list_read));
+        int expectedTopPadding = (int) mActivity.getResources().getDimension(
+                R.dimen.bookmark_reading_list_section_header_padding_top);
+        verify(mTextView).setPaddingRelative(anyInt(), eq(expectedTopPadding), anyInt(), anyInt());
     }
 
     @Test

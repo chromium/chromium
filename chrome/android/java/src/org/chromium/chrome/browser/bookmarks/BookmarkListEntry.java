@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -41,16 +43,13 @@ public final class BookmarkListEntry {
         int SHOPPING_FILTER = 9;
     }
 
-    /**
-     * Contains data used by section header in bookmark UI.
-     */
+    /** Contains data used by section header in bookmark UI. */
     static final class SectionHeaderData {
-        public final CharSequence headerTitle;
-        public final int topPadding;
-
-        SectionHeaderData(@Nullable CharSequence title, int topPadding) {
-            headerTitle = title;
-            this.topPadding = topPadding;
+        public final @StringRes int titleRes;
+        public final @DimenRes int topPaddingRes;
+        SectionHeaderData(@StringRes int titleRes, @DimenRes int topPaddingRes) {
+            this.titleRes = titleRes;
+            this.topPaddingRes = topPaddingRes;
         }
     }
 
@@ -120,12 +119,12 @@ public final class BookmarkListEntry {
 
     /**
      * Create an entry representing the reading list read/unread section header.
-     * @param title The title of the section header.
-     * @param topPadding The top padding of the section header. Only impacts the padding when
-     *         greater than 0.
+     * @param titleRes The resource id for the title of the section header.
+     * @param topPaddingRes The resource for the top padding of the section header. Ignored if 0.
      */
-    static BookmarkListEntry createSectionHeader(CharSequence title, int topPadding) {
-        SectionHeaderData sectionHeaderData = new SectionHeaderData(title, topPadding);
+    static BookmarkListEntry createSectionHeader(
+            @StringRes int titleRes, @DimenRes int topPaddingRes) {
+        SectionHeaderData sectionHeaderData = new SectionHeaderData(titleRes, topPaddingRes);
         return new BookmarkListEntry(ViewType.SECTION_HEADER, null, sectionHeaderData);
     }
 
@@ -143,12 +142,6 @@ public final class BookmarkListEntry {
     @Nullable
     BookmarkItem getBookmarkItem() {
         return mBookmarkItem;
-    }
-
-    /** @return The title text to be shown if it is a section header. */
-    @Nullable
-    CharSequence getHeaderTitle() {
-        return mSectionHeaderData.headerTitle;
     }
 
     /**
