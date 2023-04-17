@@ -50,8 +50,8 @@ bridge to access the correct PrefService instance (see [`first_run_utils.cc`][6]
 **Can I move a pref from SharedPreferences to PrefService?**
 
 In general, SharedPreferences are not exposed to C++. There is limited
-support in [`shared_preferences_migrator_android.h`][7] for simultaneous
-reading and clearing values from SharedPreferences.
+support in [`shared_preferences_migrator_android.h`][7] for reading,
+writing, and clearing values from SharedPreferences.
 
 
 
