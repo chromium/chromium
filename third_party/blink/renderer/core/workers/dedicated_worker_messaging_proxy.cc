@@ -87,6 +87,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
         back_forward_cache_controller_host) {
   DCHECK(IsParentContextThread());
   if (AskedToTerminate()) {
+    virtual_time_pauser_.UnpauseVirtualTime();
     // Worker.terminate() could be called from JS before the thread was
     // created.
     return;
