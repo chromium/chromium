@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_UPDATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 namespace apps {
 

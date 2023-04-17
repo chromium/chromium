@@ -11,7 +11,7 @@
 #include "components/services/app_service/public/cpp/capability_access.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #endif
 
 namespace apps {
