@@ -135,6 +135,7 @@ def main(argv, test_symbolizer=None):
   try:
     options, arguments = getopt.getopt(argv, "p", [
         "pass-through",
+        "flush",
         "more-info",
         "less-info",
         "chrome-symbols-dir=",
@@ -152,6 +153,7 @@ def main(argv, test_symbolizer=None):
     PrintUsage()
 
   pass_through = False
+  flush = False
   zip_arg = None
   more_info = False
   fallback_so_file = None
@@ -165,6 +167,8 @@ def main(argv, test_symbolizer=None):
       pass_through = True
     elif option == "-p":
       pass_through = True
+    elif option == "--flush":
+      flush = True
     elif option == "--symbols-dir":
       symbol.SYMBOLS_DIR = os.path.abspath(os.path.expanduser(value))
     elif option == "--symbols-zip":
@@ -218,7 +222,8 @@ def main(argv, test_symbolizer=None):
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
       stack_core.StreamingConvertTrace(sys.stdin, {}, more_info,
                                        fallback_so_file, arch_defined,
-                                       symbolizer, apks_directory, pass_through)
+                                       symbolizer, apks_directory, pass_through,
+                                       flush)
   else:
     logging.info('Searching for native crashes in: %s',
                  os.path.realpath(arguments[0]))

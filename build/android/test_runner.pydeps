@@ -209,6 +209,7 @@ pylib/results/presentation/test_results_presentation.py
 pylib/results/report_results.py
 pylib/symbols/__init__.py
 pylib/symbols/deobfuscator.py
+pylib/symbols/expensive_line_transformer.py
 pylib/symbols/stack_symbolizer.py
 pylib/utils/__init__.py
 pylib/utils/chrome_proxy_utils.py

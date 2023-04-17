@@ -53,6 +53,9 @@ _DALVIK_NATIVE_THREAD_LINE = re.compile("(\".*\" sysTid=[0-9]+ nice=[0-9]+.*)")
 _JAVA_STDERR_LINE = re.compile("([0-9]+)\s+[0-9]+\s+.\s+System.err:\s*(.+)")
 _MISC_HEADER = re.compile(
     '(?:Tombstone written to:|Abort message:|Revision:|Build fingerprint:).*')
+# A header used by tooling to mark a line that should be considered useful.
+# e.g. build/android/pylib/symbols/expensive_line_transformer.py
+_GENERIC_USEFUL_LOG_HEADER = re.compile('Generic useful log header: .*')
 
 # Matches LOG(FATAL) lines, like the following example:
 #   [FATAL:source_file.cc(33)] Check failed: !instances_.empty()
@@ -165,7 +168,7 @@ def PrintDivider():
 
 def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
                           arch_defined, llvm_symbolizer, apks_directory,
-                          pass_through):
+                          pass_through, flush):
   """Symbolize stacks on the fly as they are read from an input stream."""
 
   if fallback_so_file:
@@ -192,12 +195,16 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
       break
     if pass_through:
       sys.stdout.write(line)
+      if flush:
+        sys.stdout.flush()
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)
     if in_stack:
       if not maybe_line:
         ConvertStreamingChunk()
+        if flush:
+          sys.stdout.flush()
         so_dirs = []
         useful_lines = []
         in_stack = False
@@ -340,7 +347,8 @@ class PreProcessLog:
           or _DEBUG_TRACE_LINE.search(line)
           or _ABI_LINE.search(line)
           or _JAVA_STDERR_LINE.search(line)
-          or _MISC_HEADER.search(line)):
+          or _MISC_HEADER.search(line)
+          or _GENERIC_USEFUL_LOG_HEADER.search(line)):
         useful_log.append(line)
         continue
 
