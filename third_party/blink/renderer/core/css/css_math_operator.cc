@@ -43,6 +43,18 @@ String ToString(CSSMathOperator op) {
       return "max";
     case CSSMathOperator::kClamp:
       return "clamp";
+    case CSSMathOperator::kRoundNearest:
+      return "round";
+    case CSSMathOperator::kRoundUp:
+      return "round(up, ";
+    case CSSMathOperator::kRoundDown:
+      return "round(down, ";
+    case CSSMathOperator::kRoundToZero:
+      return "round(to-zero, ";
+    case CSSMathOperator::kMod:
+      return "mod";
+    case CSSMathOperator::kRem:
+      return "rem";
     default:
       NOTREACHED();
       return String();

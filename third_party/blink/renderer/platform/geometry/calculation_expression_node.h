@@ -22,6 +22,12 @@ enum class CalculationOperator {
   kMin,
   kMax,
   kClamp,
+  kRoundNearest,
+  kRoundUp,
+  kRoundDown,
+  kRoundToZero,
+  kMod,
+  kRem,
   kInvalid
 };
 

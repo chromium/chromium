@@ -1392,6 +1392,13 @@
     "atan2",
     "acos",
 
+    // Stepped value functions
+    "mod",
+    "rem",
+    "up",
+    "down",
+    "to-zero",
+
     // Sign related functions
     "sign",
     "abs",

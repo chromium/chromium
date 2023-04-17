@@ -253,6 +253,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
       Operands&& operands,
       CSSValueID function_id);
 
+  static CSSMathExpressionNode* CreateSteppedValueFunction(Operands&& operands,
+                                                           CSSMathOperator op);
+
   static CSSMathExpressionNode* CreateArithmeticOperationSimplified(
       const CSSMathExpressionNode* left_side,
       const CSSMathExpressionNode* right_side,
@@ -271,6 +274,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
                              Operands&& operands,
                              CSSMathOperator op);
 
+  CSSMathExpressionOperation(CalculationCategory category, CSSMathOperator op);
+
   const Operands& GetOperands() const { return operands_; }
   CSSMathOperator OperatorType() const { return operator_; }
 
@@ -280,9 +285,19 @@ class CORE_EXPORT CSSMathExpressionOperation final
            operator_ == CSSMathOperator::kMax;
   }
   bool IsClamp() const { return operator_ == CSSMathOperator::kClamp; }
+  bool IsRoundingStrategyKeyword() const {
+    return CSSMathOperator::kRoundNearest <= operator_ &&
+           operator_ <= CSSMathOperator::kRoundToZero && !operands_.size();
+  }
+  bool IsSteppedValueFunction() const {
+    return CSSMathOperator::kRoundNearest <= operator_ &&
+           operator_ <= CSSMathOperator::kRem;
+  }
 
-  // TODO(crbug.com/1284199): Check other math functions too(clamp, etc).
-  bool IsMathFunction() const final { return IsMinOrMax() || IsClamp(); }
+  // TODO(crbug.com/1284199): Check other math functions too.
+  bool IsMathFunction() const final {
+    return IsMinOrMax() || IsClamp() || IsSteppedValueFunction();
+  }
 
   String CSSTextAsClamp() const;
 

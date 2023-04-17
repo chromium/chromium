@@ -1076,6 +1076,11 @@
       base_feature: "none",
     },
     {
+      // Explainer: https://drafts.csswg.org/css-values/#round-func
+      name: "CSSSteppedValueFunctions",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-contain-3/#style-container
       // This flag is for querying custom properties only.
       name: "CSSStyleQueries",
