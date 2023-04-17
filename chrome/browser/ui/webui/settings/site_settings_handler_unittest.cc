@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -236,6 +237,12 @@ void InstallWebApp(Profile* profile, const GURL& start_url) {
   cache.OnApps(std::move(deltas), apps::AppType::kWeb,
                /*should_notify_initialized=*/true);
 }
+
+struct TestModels {
+  scoped_refptr<browsing_data::MockCookieHelper> cookie_helper;
+  scoped_refptr<browsing_data::MockLocalStorageHelper> local_storage_helper;
+  FakeBrowsingDataModel& browsing_data_model;
+};
 
 }  // namespace
 
@@ -626,9 +633,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     }
   }
 
-  // TODO(https://crbug.com/835712): Currently only set up the cookies and local
-  // storage nodes, will update all other nodes in the future.
-  void SetupModels() {
+  void SetupModels(base::OnceCallback<void(const TestModels& models)> setup) {
     scoped_refptr<browsing_data::MockCookieHelper>
         mock_browsing_data_cookie_helper;
     scoped_refptr<browsing_data::MockLocalStorageHelper>
@@ -653,88 +658,80 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
 
-    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
-        blink::StorageKey::CreateFromStringForTesting(
-            "https://www.example.com/"),
-        2);
+    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
+
+    std::move(setup).Run({mock_browsing_data_cookie_helper,
+                          mock_browsing_data_local_storage_helper,
+                          *fake_browsing_data_model});
 
     mock_browsing_data_local_storage_helper->Notify();
-
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://example.com"), "A=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.example.com/"), "B=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://abc.example.com"), "C=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://google.com"), "A=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://google.com"), "B=1");
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://google.com.au"), "A=1");
-
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.example.com"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://google.com.au")));
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://google.com.au"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://google.com.au")));
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.another-example.com"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(
-            GURL("https://google.com.au")));
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("https://www.example.com"),
-        "__Host-A=1; Path=/; Partitioned; Secure;",
-        net::CookiePartitionKey::FromURLForTesting(GURL("https://google.com")));
-
-    // Add an entry which will not be grouped with any other entries. This
-    // will require a placeholder origin to be correctly added & removed.
-    mock_browsing_data_cookie_helper->AddCookieSamples(
-        GURL("http://ungrouped.com"), "A=1");
-
     mock_browsing_data_cookie_helper->Notify();
-
-    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-    fake_browsing_data_model->AddBrowsingData(
-        url::Origin::Create(GURL("https://www.google.com")),
-        BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
 
     handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
                                    std::move(fake_browsing_data_model));
   }
 
+  // TODO(https://crbug.com/835712): Currently only set up the cookies and local
+  // storage nodes, will update all other nodes in the future.
+  void SetupModels() {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.local_storage_helper->AddLocalStorageForStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(
+              "https://www.example.com/"),
+          2);
+
+      models.cookie_helper->AddCookieSamples(GURL("http://example.com"), "A=1");
+      models.cookie_helper->AddCookieSamples(GURL("https://www.example.com/"),
+                                             "B=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://abc.example.com"),
+                                             "C=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://google.com"), "A=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://google.com"), "B=1");
+      models.cookie_helper->AddCookieSamples(GURL("http://google.com.au"),
+                                             "A=1");
+
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://www.example.com"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com.au")));
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://google.com.au"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com.au")));
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://www.another-example.com"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com.au")));
+      models.cookie_helper->AddCookieSamples(
+          GURL("https://www.example.com"),
+          "__Host-A=1; Path=/; Partitioned; Secure;",
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://google.com")));
+
+      // Add an entry which will not be grouped with any other entries. This
+      // will require a placeholder origin to be correctly added & removed.
+      models.cookie_helper->AddCookieSamples(GURL("http://ungrouped.com"),
+                                             "A=1");
+
+      models.browsing_data_model.AddBrowsingData(
+          url::Origin::Create(GURL("https://www.google.com")),
+          BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
+    }));
+  }
+
   void SetupModelsWithIsolatedWebAppData(
       const std::string& isolated_web_app_url,
       int64_t usage) {
-    auto container = std::make_unique<LocalDataContainer>(
-        /*browsing_data_cookie_helper=*/nullptr,
-        /*database_helper=*/nullptr,
-        /*browsing_data_local_storage_helper=*/nullptr,
-        /*session_storage_helper=*/nullptr,
-        /*indexed_db_helper=*/nullptr,
-        /*file_system_helper=*/nullptr,
-        /*quota_helper=*/nullptr,
-        /*service_worker_helper=*/nullptr,
-        /*data_shared_worker_helper=*/nullptr,
-        /*cache_storage_helper=*/nullptr);
-    auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
-        std::move(container), profile()->GetExtensionSpecialStoragePolicy());
-
-    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-    fake_browsing_data_model->AddBrowsingData(
-        url::Origin::Create(GURL(isolated_web_app_url)),
-        static_cast<BrowsingDataModel::StorageType>(
-            ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
-        usage);
-
-    handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
-                                   std::move(fake_browsing_data_model));
+    SetupModels(base::BindLambdaForTesting([&](const TestModels& models) {
+      models.browsing_data_model.AddBrowsingData(
+          url::Origin::Create(GURL(isolated_web_app_url)),
+          static_cast<BrowsingDataModel::StorageType>(
+              ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
+          usage);
+    }));
   }
 
   base::Value::List GetOnStorageFetchedSentList() {
@@ -1117,6 +1114,107 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   // to run at the end of the test.
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
+}
+
+TEST_F(SiteSettingsHandlerTest, Cookies) {
+  base::Value::List get_all_sites_args;
+  get_all_sites_args.Append(kCallbackId);
+
+  // Tests that a cookie eTLD+1 origin, which should use a placeholder in
+  // AllSitesMap, returns the correct origin in GetAllSites.
+  // This corresponds to case 1 in InsertOriginIntoGroup.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.cookie_helper->AddCookieSamples(GURL("http://c1.com"), "A=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c1.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(1, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "http://c1.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(1, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+
+  // Tests that multiple cookie eTLD+1 origins result in a single origin being
+  // returned in GetAllSites.
+  // This corresponds to case 2 in InsertOriginIntoGroup.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.cookie_helper->AddCookieSamples(GURL("https://c2.com"), "A=1");
+      models.cookie_helper->AddCookieSamples(GURL("https://c2.com"), "B=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c2.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(2, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "http://c2.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(2, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+
+  // Tests that an HTTP cookie origin will reuse an equivalent HTTPS origin if
+  // one exists.
+  // This corresponds to case 3 in InsertOriginIntoGroup.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.browsing_data_model.AddBrowsingData(
+          url::Origin::Create(GURL("https://w.c3.com")),
+          BrowsingDataModel::StorageType::kTrustTokens, 50);
+      models.cookie_helper->AddCookieSamples(GURL("http://w.c3.com"), "A=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c3.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(1, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "https://w.c3.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(1, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
+
+  // Tests that placeholder cookie eTLD+1 origins get removed from AllSitesMap
+  // when a more specific origin is added later.
+  {
+    SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
+      models.cookie_helper->AddCookieSamples(GURL("https://c4.com"), "B=1");
+      models.cookie_helper->AddCookieSamples(GURL("https://w.c4.com"), "A=1");
+    }));
+
+    base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+    ASSERT_EQ(1UL, site_groups.size());
+    const base::Value::Dict& first_group = site_groups[0].GetDict();
+    EXPECT_EQ("c4.com", CHECK_DEREF(first_group.FindString("etldPlus1")));
+    EXPECT_EQ(2, *first_group.FindInt("numCookies"));
+    const base::Value::List& first_group_origins =
+        CHECK_DEREF(first_group.FindList("origins"));
+    ASSERT_EQ(1UL, first_group_origins.size());
+    EXPECT_EQ(
+        "https://w.c4.com/",
+        CHECK_DEREF(first_group_origins[0].GetDict().FindString("origin")));
+    EXPECT_EQ(1, first_group_origins[0].GetDict().FindInt("numCookies"));
+  }
 }
 
 TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {

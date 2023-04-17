@@ -14,12 +14,14 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -96,6 +98,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
@@ -115,6 +118,8 @@ namespace settings {
 
 namespace {
 
+using GroupingKey = SiteSettingsHandler::GroupingKey;
+
 // Keys of the dictionary returned by HandleIsPatternValidForType.
 constexpr char kIsValidKey[] = "isValid";
 constexpr char kReasonKey[] = "reason";
@@ -129,9 +134,8 @@ constexpr char kFpsOwner[] = "fpsOwner";
 constexpr char kFpsNumMembers[] = "fpsNumMembers";
 constexpr char kFpsEnterpriseManaged[] = "fpsEnterpriseManaged";
 constexpr char kZoom[] = "zoom";
-// Placeholder value for ETLD+1 until a valid origin is added. If an ETLD+1
-// only has placeholder, then create an ETLD+1 origin.
-constexpr char kPlaceholder[] = "placeholder";
+
+constexpr uint16_t kHttpsDefaultPort = 443;
 
 // Content types for chooser data.
 constexpr ContentSettingsType kChooserDataContentSettingsTypes[] = {
@@ -209,11 +213,11 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
   }
 }
 
-base::flat_set<std::string> GetInstalledAppOrigins(Profile* profile) {
+base::flat_set<url::Origin> GetInstalledAppOrigins(Profile* profile) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
-    return base::flat_set<std::string>();
+    return base::flat_set<url::Origin>();
 
-  std::vector<std::string> origins;
+  std::vector<url::Origin> origins;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForEachApp([&origins](const apps::AppUpdate& update) {
@@ -222,103 +226,100 @@ base::flat_set<std::string> GetInstalledAppOrigins(Profile* profile) {
           // For web apps, |PublisherId()| is set to the start URL.
           const GURL start_url(update.PublisherId());
           DCHECK(start_url.is_valid());
-          origins.push_back(start_url.DeprecatedGetOriginAsURL().spec());
+          origins.push_back(url::Origin::Create(start_url));
         }
       });
-  return base::flat_set<std::string>(std::move(origins));
+  return base::flat_set<url::Origin>(std::move(origins));
 }
 
-// Groups |url| into sets of eTLD+1s in |site_group_map|, assuming |url| is an
-// origin. The effective eTLD+1 is |partition_etld_plus1| is set, otherwise it
-// is the eTLD+1 of |url|.
+// Placeholder opaque origin until a valid origin is added. If a group only has
+// the placeholder origin, then replace placeholder with the GroupingKey.
+const url::Origin& GetPlaceholderOrigin() {
+  static auto placeholder_origin = base::NoDestructor(url::Origin());
+  return *placeholder_origin;
+}
+
+// Inserts |origin| into |site_group_map|, creating a new group if necessary.
+// Origins are grouped by their GroupingKey. If |origin| is HTTP/HTTPS, the
+// GroupingKey will be |partition_etld_plus1| or |origin|'s eTLD+1. The
+// GroupingKey for other schemes will be |origin|.
 // There are three cases:
-// 1. The effective eLTD+1 is not yet in |site_group_map|. We add the ETLD+1
-//    to |site_group_map|. If the |url| is an effective ETLD+1 cookie origin,
-//    put a placeholder origin for the ETLD+1.
-// 2. The effective ETLD+1 is in |site_group_map|, and is equal to host of
-//    |url|. This means case 1 has already happened and nothing more needs to
+// 1. The GroupingKey is not yet in |site_group_map|. We add the GroupingKey
+//    to |site_group_map|. If |origin| is an eTLD+1 cookie origin,
+//    put a placeholder origin in the new group.
+// 2. The GroupingKey is in |site_group_map| and |origin| is an eTLD+1 cookie
+//    origin. This means case 1 has already happened and nothing more needs to
 //    be done.
-// 3. The effective ETLD+1 is in |site_group_map| and is different to host of
-//    |url|. For a cookies url, if a https origin with same host and partitioned
-//    status exists, nothing more needs to be done.
-// In case 3, we try to add |url| to the set of origins for the ETLD+1. If an
-// existing origin is a placeholder, delete it, because the placeholder is no
-// longer needed.
-void CreateOrAppendSiteGroupEntry(
-    std::map<std::string, std::set<std::pair<std::string, bool>>>*
-        site_group_map,
-    const GURL& url,
-    bool url_is_origin_with_cookies = false,
-    absl::optional<std::string> partition_etld_plus1 = absl::nullopt) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // As extension doesn't have ETLD+1, handle it in a different logic.
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
-    // |url| for an extension should always be in the format of
-    // "chrome-extension://<extension_id>" and it will be a single origin site
-    // group. So insert single origin site group to |site_group_map| if it
-    // doesn't exist.
-    if (site_group_map->find(url.spec()) == site_group_map->end()) {
-      site_group_map->emplace(url.spec(),
-                              std::set<std::pair<std::string, bool>>(
-                                  {{url.spec(), /*is_partitioned=*/false}}));
-    }
-    return;
-  }
-#endif
+// 3. The GroupingKey is in |site_group_map| and |origin| is NOT an eTLD+1
+//    cookie origin. For a cookie origin, if a https origin with same host and
+//    partitioned status exists, nothing more needs to be done.
+// In case 3, we try to add |origin| to the set of origins for the GroupingKey.
+// If an existing origin is a placeholder, delete it, because the placeholder
+// is no longer needed.
+void InsertOriginIntoGroup(
+    SiteSettingsHandler::AllSitesMap* site_group_map,
+    const url::Origin& origin,
+    bool is_origin_with_cookies = false,
+    absl::optional<GroupingKey> partition_grouping_key = absl::nullopt) {
+  const url::Origin& placeholder_origin = GetPlaceholderOrigin();
+  bool is_partitioned = partition_grouping_key.has_value();
+  GroupingKey grouping_key = partition_grouping_key.has_value()
+                                 ? partition_grouping_key.value()
+                                 : GroupingKey::Create(origin);
+  auto group = site_group_map->find(grouping_key);
+  bool is_etld_plus1_cookie_origin =
+      is_origin_with_cookies && origin.GetURL().SchemeIsHTTPOrHTTPS() &&
+      grouping_key.GetEtldPlusOne() == origin.host();
 
-  bool is_partitioned = partition_etld_plus1.has_value();
-  std::string effective_etld_plus1_string =
-      is_partitioned
-          ? partition_etld_plus1.value()
-          : net::registry_controlled_domains::GetDomainAndRegistry(
-                url,
-                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  auto entry = site_group_map->find(effective_etld_plus1_string);
-  bool etld_plus1_cookie_url =
-      url_is_origin_with_cookies && url.host() == effective_etld_plus1_string;
-
-  if (entry == site_group_map->end()) {
-    // Case 1:
-    std::string origin = etld_plus1_cookie_url ? kPlaceholder : url.spec();
+  // Case 1:
+  if (group == site_group_map->end()) {
+    url::Origin new_origin =
+        is_etld_plus1_cookie_origin ? placeholder_origin : origin;
     site_group_map->emplace(
-        effective_etld_plus1_string,
-        std::set<std::pair<std::string, bool>>({{origin, is_partitioned}}));
+        grouping_key,
+        std::set<std::pair<url::Origin, bool>>({{new_origin, is_partitioned}}));
     return;
   }
   // Case 2:
-  if (etld_plus1_cookie_url && !is_partitioned) {
+  if (is_etld_plus1_cookie_origin && !is_partitioned) {
     return;
   }
   // Case 3:
-  if (url_is_origin_with_cookies) {
+  if (is_origin_with_cookies && origin.scheme() == url::kHttpScheme) {
     // Cookies ignore schemes, so try and see if a https schemed version
     // already exists in the origin list, if not, then add the http schemed
     // version into the map.
-    std::string https_url = std::string(url::kHttpsScheme) +
-                            url::kStandardSchemeSeparator + url.host() + "/";
-    if (entry->second.find({https_url, is_partitioned}) !=
-        entry->second.end()) {
+    auto https_origin = url::Origin::CreateFromNormalizedTuple(
+        url::kHttpsScheme, origin.host(), kHttpsDefaultPort);
+    if (group->second.find({https_origin, is_partitioned}) !=
+        group->second.end()) {
       return;
     }
   }
-  entry->second.insert({url.spec(), is_partitioned});
-  auto placeholder = entry->second.find({kPlaceholder, is_partitioned});
-  if (placeholder != entry->second.end())
-    entry->second.erase(placeholder);
+  group->second.insert({origin, is_partitioned});
+  auto placeholder = group->second.find({placeholder_origin, is_partitioned});
+  if (placeholder != group->second.end()) {
+    group->second.erase(placeholder);
+  }
 }
 
 // Update the storage data in |origin_size_map|.
-void UpdateDataForOrigin(const GURL& url,
+void UpdateDataForOrigin(const url::Origin& origin,
                          const int64_t size,
-                         std::map<std::string, int64_t>* origin_size_map) {
-  if (size > 0)
-    (*origin_size_map)[url.spec()] += size;
+                         std::map<url::Origin, int64_t>* origin_size_map) {
+  if (size > 0) {
+    (*origin_size_map)[origin] += size;
+  }
 }
 
-// Converts |etld_plus1| into an origin representation by adding HTTP scheme.
-std::string ConvertEtldToOrigin(const std::string etld_plus1, bool secure) {
-  return std::string(secure ? url::kHttpsScheme : url::kHttpScheme) +
-         url::kStandardSchemeSeparator + etld_plus1 + "/";
+// Converts |etld_plus1| into an origin representation by adding HTTP(S) scheme.
+url::Origin ConvertEtldToOrigin(const std::string etld_plus1, bool secure) {
+  if (secure) {
+    return url::Origin::CreateFromNormalizedTuple(url::kHttpsScheme, etld_plus1,
+                                                  kHttpsDefaultPort);
+  }
+  return url::Origin::CreateFromNormalizedTuple(url::kHttpScheme, etld_plus1,
+                                                80);
 }
 
 bool IsPatternValidForType(const std::string& pattern_string,
@@ -364,14 +365,12 @@ bool IsPatternValidForType(const std::string& pattern_string,
   return true;
 }
 
-void UpdateDataFromModel(
-    std::map<std::string, std::set<std::pair<std::string, bool>>>*
-        all_sites_map,
-    std::map<std::string, int64_t>* origin_size_map,
-    const GURL& origin,
-    int64_t size) {
+void UpdateDataFromModel(SiteSettingsHandler::AllSitesMap* all_sites_map,
+                         std::map<url::Origin, int64_t>* origin_size_map,
+                         const url::Origin& origin,
+                         int64_t size) {
   UpdateDataForOrigin(origin, size, origin_size_map);
-  CreateOrAppendSiteGroupEntry(all_sites_map, origin);
+  InsertOriginIntoGroup(all_sites_map, origin);
 }
 
 void LogAllSitesAction(AllSitesAction2 action) {
@@ -552,9 +551,8 @@ std::map<std::string, std::pair<std::string, int>> GetFpsMap(
 // Converts a given |site_group_map| to a list of base::Value::Dicts, adding
 // the site engagement score for each origin.
 void ConvertSiteGroupMapToList(
-    const std::map<std::string, std::set<std::pair<std::string, bool>>>&
-        site_group_map,
-    const std::set<std::string>& origin_permission_set,
+    const SiteSettingsHandler::AllSitesMap& site_group_map,
+    const std::set<url::Origin>& origin_permission_set,
     base::Value::List* list_value,
     Profile* profile,
     CookiesTreeModel* tree_model) {
@@ -562,27 +560,30 @@ void ConvertSiteGroupMapToList(
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
   auto fps_map = GetFpsMap(privacy_sandbox_service, tree_model);
-  base::flat_set<std::string> installed_origins =
+  base::flat_set<url::Origin> installed_origins =
       GetInstalledAppOrigins(profile);
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile);
   for (const auto& entry : site_group_map) {
     // eTLD+1 is the effective top level domain + 1.
+    const GroupingKey& grouping_key = entry.first;
+    std::string grouping_host = grouping_key.Serialize();
     base::Value::Dict site_group;
-    site_group.Set(kEffectiveTopLevelDomainPlus1Name, entry.first);
+    site_group.Set(kEffectiveTopLevelDomainPlus1Name, grouping_host);
 
-    // Isolated Web Apps or extension do not support sub domains, so the origins
-    // set always contains only 1 entry.
-    const GURL primary_origin_url(entry.second.begin()->first);
+    // Isolated Web Apps and extensions do not support sub domains, so the
+    // origin set always contains only 1 entry.
+    const url::Origin primary_origin(entry.second.begin()->first);
     absl::optional<std::string> isolated_web_app_name =
-        site_settings::GetIsolatedWebAppName(profile, primary_origin_url);
+        site_settings::GetIsolatedWebAppName(profile, primary_origin.GetURL());
     if (isolated_web_app_name.has_value()) {
       site_group.Set(site_settings::kIsolatedWebAppName,
                      isolated_web_app_name.value());
     }
 
     absl::optional<std::string> extension_name =
-        site_settings::GetExtensionDisplayName(profile, primary_origin_url);
+        site_settings::GetExtensionDisplayName(profile,
+                                               primary_origin.GetURL());
     if (extension_name.has_value() && !extension_name.value().empty()) {
       site_group.Set(site_settings::kExtensionName, extension_name.value());
     }
@@ -590,19 +591,19 @@ void ConvertSiteGroupMapToList(
     bool has_installed_pwa = false;
     base::Value::List origin_list;
     for (const auto& origin_is_partitioned : entry.second) {
-      const auto& origin = origin_is_partitioned.first;
+      const url::Origin& origin = origin_is_partitioned.first;
       bool is_partitioned = origin_is_partitioned.second;
       base::Value::Dict origin_object;
-      // If origin is placeholder, create a http ETLD+1 origin for it.
-      if (origin == kPlaceholder) {
-        origin_object.Set("origin",
-                          ConvertEtldToOrigin(entry.first, /*secure=*/false));
-      } else {
-        origin_object.Set("origin", origin);
-      }
+      // If origin is placeholder, use the grouping key for the origin.
+      origin_object.Set(
+          "origin", (origin == GetPlaceholderOrigin()
+                         ? ConvertEtldToOrigin(grouping_host, /*secure=*/false)
+                         : origin)
+                        .GetURL()
+                        .spec());
       origin_object.Set("isPartitioned", is_partitioned);
       origin_object.Set("engagement",
-                        engagement_service->GetScore(GURL(origin)));
+                        engagement_service->GetScore(origin.GetURL()));
       origin_object.Set("usage", 0);
       origin_object.Set(kNumCookies, 0);
 
@@ -618,10 +619,10 @@ void ConvertSiteGroupMapToList(
     site_group.Set(kHasInstalledPWA, has_installed_pwa);
     site_group.Set(kNumCookies, 0);
     site_group.Set(kOriginList, std::move(origin_list));
-    if (fps_map.count(entry.first)) {
-      site_group.Set(kFpsOwner, fps_map[entry.first].first);
-      site_group.Set(kFpsNumMembers, fps_map[entry.first].second);
-      auto schemeful_site = ConvertEtldToSchemefulSite(entry.first);
+    if (fps_map.count(grouping_host)) {
+      site_group.Set(kFpsOwner, fps_map[grouping_host].first);
+      site_group.Set(kFpsNumMembers, fps_map[grouping_host].second);
+      auto schemeful_site = ConvertEtldToSchemefulSite(grouping_host);
       site_group.Set(kFpsEnterpriseManaged,
                      privacy_sandbox_service->IsPartOfManagedFirstPartySet(
                          schemeful_site));
@@ -659,6 +660,58 @@ bool ShouldAddToNotificationPermissionReviewList(
 }
 
 }  // namespace
+
+// static
+GroupingKey GroupingKey::Create(const url::Origin& origin) {
+  if (origin.GetURL().SchemeIsHTTPOrHTTPS()) {
+    return GroupingKey(settings::GetEtldPlusOne(origin));
+  }
+  return GroupingKey(origin);
+}
+
+// static
+GroupingKey GroupingKey::CreateFromEtldPlus1(const std::string& etld_plus1) {
+  return GroupingKey(etld_plus1);
+}
+
+GroupingKey::GroupingKey(const absl::variant<std::string, url::Origin>& value)
+    : value_(value) {}
+
+GroupingKey::GroupingKey(const GroupingKey& other) = default;
+GroupingKey& GroupingKey::operator=(const GroupingKey& other) = default;
+GroupingKey::~GroupingKey() = default;
+
+std::string GroupingKey::Serialize() const {
+  return absl::visit(
+      base::Overloaded{
+          [](const std::string& etld_plus1) { return etld_plus1; },
+          [](const url::Origin& origin) { return origin.GetURL().spec(); }},
+      value_);
+}
+
+absl::optional<std::string> GroupingKey::GetEtldPlusOne() const {
+  if (absl::holds_alternative<std::string>(value_)) {
+    return absl::get<std::string>(value_);
+  }
+  return absl::nullopt;
+}
+
+url::Origin GroupingKey::ToOrigin() const {
+  return absl::visit(
+      base::Overloaded{[](const std::string& etld_plus1) {
+                         return ConvertEtldToOrigin(etld_plus1,
+                                                    /*secure=*/true);
+                       },
+                       [](const url::Origin& origin) { return origin; }},
+      value_);
+}
+
+bool GroupingKey::operator<(const GroupingKey& other) const {
+  // To keep extensions and Isolated Web Apps grouped together, convert the
+  // GroupingKeys to an origin, putting all eTLD+1 keys under the same scheme
+  // (HTTPS), and sort based on this origin.
+  return ToOrigin() < other.ToOrigin();
+}
 
 SiteSettingsHandler::SiteSettingsHandler(Profile* profile)
     : profile_(profile) {}
@@ -1204,8 +1257,9 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
       PermissionDecisionAutoBlockerFactory::GetForProfile(profile_);
   for (auto& url : autoblocker->GetEmbargoedOrigins(content_types)) {
     // Add |url| to the set if there are any embargo settings.
-    CreateOrAppendSiteGroupEntry(&all_sites_map_, url);
-    origin_permission_set_.insert(url.spec());
+    auto origin = url::Origin::Create(url);
+    InsertOriginIntoGroup(&all_sites_map_, origin);
+    origin_permission_set_.insert(origin);
   }
 
   // Get permission exceptions which apply to a single site
@@ -1213,9 +1267,9 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
     auto exceptions = site_settings::GetSingleOriginExceptionsForContentType(
         map, content_type);
     for (const auto& e : exceptions) {
-      GURL url = GURL(e.primary_pattern.ToString());
-      CreateOrAppendSiteGroupEntry(&all_sites_map_, url);
-      origin_permission_set_.insert(url.spec());
+      auto origin = url::Origin::Create(GURL(e.primary_pattern.ToString()));
+      InsertOriginIntoGroup(&all_sites_map_, origin);
+      origin_permission_set_.insert(origin);
     }
   }
 
@@ -1235,12 +1289,12 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
           exception.GetDict().FindList(site_settings::kSites);
       DCHECK(sites);
       for (const base::Value& site : *sites) {
-        const std::string* origin =
+        const std::string* origin_string =
             site.GetDict().FindString(site_settings::kOrigin);
-        DCHECK(origin);
-        GURL url = GURL(*origin);
-        CreateOrAppendSiteGroupEntry(&all_sites_map_, url);
-        origin_permission_set_.insert(url.spec());
+        DCHECK(origin_string);
+        auto origin = url::Origin::Create(GURL(*origin_string));
+        InsertOriginIntoGroup(&all_sites_map_, origin);
+        origin_permission_set_.insert(origin);
       }
     }
   }
@@ -1338,13 +1392,13 @@ void SiteSettingsHandler::HandleGetRecentSitePermissions(
 
 base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
     Profile* profile) {
-  std::map<std::string, int64_t> origin_size_map;
+  std::map<url::Origin, int64_t> origin_size_map;
   std::map<std::pair<std::string, absl::optional<std::string>>, int>
-      origin_cookie_map;
+      host_cookie_map;
   base::Value::List list_value;
 
   GetOriginStorage(&all_sites_map_, &origin_size_map);
-  GetOriginCookies(&all_sites_map_, &origin_cookie_map);
+  GetHostCookies(&all_sites_map_, &host_cookie_map);
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &list_value,
                             profile, cookies_tree_model_.get());
 
@@ -1356,33 +1410,35 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
     const std::string& etld_plus1 =
         *site_group.FindString(kEffectiveTopLevelDomainPlus1Name);
     const auto& etld_plus1_cookie_num_it =
-        origin_cookie_map.find({etld_plus1, absl::nullopt});
+        host_cookie_map.find({etld_plus1, absl::nullopt});
     // Add the number of eTLD+1 scoped cookies.
-    if (etld_plus1_cookie_num_it != origin_cookie_map.end())
+    if (etld_plus1_cookie_num_it != host_cookie_map.end()) {
       cookie_num = etld_plus1_cookie_num_it->second;
+    }
     // Iterate over the origins for the ETLD+1, and set their usage and cookie
     // numbers.
     for (base::Value& value : origin_list) {
       base::Value::Dict& origin_info = value.GetDict();
-      const std::string* origin = origin_info.FindString("origin");
+      auto origin =
+          url::Origin::Create(GURL(*origin_info.FindString("origin")));
       bool is_partitioned =
           origin_info.FindBool("isPartitioned").value_or(false);
       if (!is_partitioned) {
         // Only unpartitioned storage has a size.
-        const auto& size_info_it = origin_size_map.find(*origin);
+        const auto& size_info_it = origin_size_map.find(origin);
         if (size_info_it != origin_size_map.end())
           origin_info.Set("usage", static_cast<double>(size_info_it->second));
       }
-      GURL origin_url(*origin);
-      const auto& origin_cookie_num_it = origin_cookie_map.find(
-          {origin_url.host(),
+      const auto& host_cookie_num_it = host_cookie_map.find(
+          {origin.host(),
            (is_partitioned ? absl::optional<std::string>(etld_plus1)
                            : absl::nullopt)});
-      if (origin_cookie_num_it != origin_cookie_map.end()) {
-        origin_info.Set(kNumCookies, origin_cookie_num_it->second);
+      if (host_cookie_num_it != host_cookie_map.end()) {
+        origin_info.Set(kNumCookies, host_cookie_num_it->second);
         // Add cookies numbers for origins that isn't an eTLD+1.
-        if (origin_url.host() != etld_plus1 || is_partitioned)
-          cookie_num += origin_cookie_num_it->second;
+        if (origin.host() != etld_plus1 || is_partitioned) {
+          cookie_num += host_cookie_num_it->second;
+        }
       }
     }
     site_group.Set(kNumCookies, cookie_num);
@@ -2247,9 +2303,8 @@ void SiteSettingsHandler::TreeModelEndBatchDeprecated(CookiesTreeModel* model) {
 }
 
 void SiteSettingsHandler::GetOriginStorage(
-    std::map<std::string, std::set<std::pair<std::string, bool>>>*
-        all_sites_map,
-    std::map<std::string, int64_t>* origin_size_map) {
+    AllSitesMap* all_sites_map,
+    std::map<url::Origin, int64_t>* origin_size_map) {
   CHECK(cookies_tree_model_.get());
 
   for (const auto& site : cookies_tree_model_->GetRoot()->children()) {
@@ -2257,7 +2312,7 @@ void SiteSettingsHandler::GetOriginStorage(
     if (size == 0)
       continue;
     UpdateDataFromModel(all_sites_map, origin_size_map,
-                        site->GetDetailedInfo().origin.GetURL(), size);
+                        site->GetDetailedInfo().origin, size);
   }
 
   for (const auto& entry : *browsing_data_model_) {
@@ -2266,24 +2321,23 @@ void SiteSettingsHandler::GetOriginStorage(
 
     // Convert the primary host to an HTTPS url to match expecations for this
     // code.
-    GURL host_url(std::string(url::kHttpsScheme) +
-                  url::kStandardSchemeSeparator + *entry.primary_host + "/");
-    UpdateDataFromModel(all_sites_map, origin_size_map, host_url,
+    url::Origin origin =
+        ConvertEtldToOrigin(*entry.primary_host, /*secure=*/true);
+    UpdateDataFromModel(all_sites_map, origin_size_map, origin,
                         entry.data_details->storage_size);
   }
 }
 
-void SiteSettingsHandler::GetOriginCookies(
-    std::map<std::string, std::set<std::pair<std::string, bool>>>*
-        all_sites_map,
+void SiteSettingsHandler::GetHostCookies(
+    AllSitesMap* all_sites_map,
     std::map<std::pair<std::string, absl::optional<std::string>>, int>*
-        origin_cookie_map) {
+        host_cookie_map) {
   CHECK(cookies_tree_model_.get());
   // Get sites that don't have data but have cookies.
   // TODO(crbug.com/1271155): Query the Browsing Data Model instead when cookie
   // information is available there.
   for (const auto& site : cookies_tree_model_->GetRoot()->children()) {
-    GURL url = site->GetDetailedInfo().origin.GetURL();
+    const url::Origin& origin = site->GetDetailedInfo().origin;
     if (!site->NumberOfCookies())
       continue;
 
@@ -2303,18 +2357,18 @@ void SiteSettingsHandler::GetOriginCookies(
                CookieTreeNode::DetailedInfo::TYPE_COOKIE);
         DCHECK(detailed_info.cookie);
 
-        absl::optional<std::string> associated_etld_plus1 =
-            detailed_info.cookie->IsPartitioned()
-                ? absl::optional<std::string>(
-                      detailed_info.cookie->PartitionKey()
-                          ->site()
-                          .GetURL()
-                          .host())
-                : absl::nullopt;
-        CreateOrAppendSiteGroupEntry(all_sites_map, url,
-                                     /*url_is_origin_with_cookies = */ true,
-                                     associated_etld_plus1);
-        (*origin_cookie_map)[{url.host(), associated_etld_plus1}]++;
+        absl::optional<std::string> partition_etld_plus1 = absl::nullopt;
+        absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
+        if (detailed_info.cookie->IsPartitioned()) {
+          partition_etld_plus1 =
+              detailed_info.cookie->PartitionKey()->site().GetURL().host();
+          partition_grouping_key =
+              GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
+        }
+        InsertOriginIntoGroup(all_sites_map, origin,
+                              /*is_origin_with_cookies=*/true,
+                              partition_grouping_key);
+        (*host_cookie_map)[{origin.host(), partition_etld_plus1}]++;
       }
     }
   }
@@ -2324,35 +2378,35 @@ void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const std::string& etld_plus1 = args[0].GetString();
+  auto grouping_key = GroupingKey::CreateFromEtldPlus1(etld_plus1);
 
   AllowJavascript();
   RemoveMatchingNodes(cookies_tree_model_.get(), absl::nullopt, etld_plus1);
 
   // Retrieve all of the origin entries grouped under this eTLD + 1.
   std::vector<url::Origin> affected_origins;
-  for (const auto& origin_is_partitioned : all_sites_map_[etld_plus1]) {
+  for (const auto& origin_is_partitioned : all_sites_map_[grouping_key]) {
     // Ignore entries which are partitioned, as no non-cookie tree storage is
     // partitioned.
     if (origin_is_partitioned.second)
       continue;
 
-    affected_origins.emplace_back(url::Origin::Create(
+    affected_origins.emplace_back(
         // A placeholder origin may have been created, in this case the
-        // eTLD+1 itself should be converted to an origin, the same as it would
-        // have been for display.
-        origin_is_partitioned.first == kPlaceholder
-            ? GURL(ConvertEtldToOrigin(etld_plus1, /*secure=*/false))
-            : GURL(origin_is_partitioned.first)));
+        // grouping key itself should be used as the origin, the same as it
+        // would have been for display.
+        origin_is_partitioned.first == GetPlaceholderOrigin()
+            ? ConvertEtldToOrigin(etld_plus1, /*secure=*/false)
+            : origin_is_partitioned.first);
   }
 
-  // Cookies may have associated with the entry for the eTLD+1 itself.
-  // As per the logic in CreateOrAppendSiteGroupEntry, this will only occur
+  // Cookies may have associated with the entry for the grouping url itself.
+  // As per the logic in InsertOriginIntoGroup, this will only occur
   // if the existing entry was https, otherwise a new http entry would be
   // created for the placeholder. Hence, we need only additionally include the
   // HTTPS version of the eTLD+1 as an origin.
-  std::string https_url = std::string(url::kHttpsScheme) +
-                          url::kStandardSchemeSeparator + etld_plus1 + "/";
-  affected_origins.emplace_back(url::Origin::Create(GURL(https_url)));
+  affected_origins.emplace_back(
+      ConvertEtldToOrigin(etld_plus1, /*secure=*/true));
 
   RemoveNonTreeModelData(affected_origins);
 }
