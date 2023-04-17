@@ -52,6 +52,9 @@ void OnRepaintFinished();
 // Set the proxy which will be used for triggering repaints from the main thread.
 void SetCompositorProxy(cc::ProxyMain* proxy);
 
+// Called when a compositor proxy has been destroyed and can't be used to trigger repaints.
+void CompositorProxyDestroyed(cc::ProxyMain* proxy);
+
 } // namespace recordreplay
 
 #endif // COMPONENTS_VIZ_SERVICE_DISPLAY_RECORD_REPLAY_RENDER_H_

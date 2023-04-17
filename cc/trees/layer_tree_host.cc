@@ -136,23 +136,6 @@ std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateSingleThreaded(
   return layer_tree_host;
 }
 
-// LayerTreeHost pointers that were originally allocated and haven't been freed yet.
-static std::unordered_set<void*>& ValidLayerTreeHosts(base::AutoLock&) {
-  static base::NoDestructor<std::unordered_set<void*>> hosts;
-  return *hosts;
-}
-
-static base::Lock& LayerTreeHostPointerLock() {
-  static base::NoDestructor<base::Lock> lock;
-  return *lock;
-}
-
-bool LayerTreeHostPointerIsValid(void* layer_tree_host) {
-  base::AutoLock auto_lock(LayerTreeHostPointerLock());
-  auto& hosts = ValidLayerTreeHosts(auto_lock);
-  return hosts.find(layer_tree_host) != hosts.end();
-}
-
 LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
     : micro_benchmark_controller_(this),
       image_worker_task_runner_(std::move(params.image_worker_task_runner)),
@@ -179,11 +162,6 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
 
   rendering_stats_instrumentation_->set_record_rendering_stats(
       pending_commit_state_->debug_state.RecordRenderingStats());
-
-  {
-    base::AutoLock auto_lock(LayerTreeHostPointerLock());
-    ValidLayerTreeHosts(auto_lock).insert(this);
-  }
 }
 
 bool LayerTreeHost::IsMobileOptimized() const {
@@ -269,11 +247,6 @@ void LayerTreeHost::InitializeProxy(std::unique_ptr<Proxy> proxy) {
 }
 
 LayerTreeHost::~LayerTreeHost() {
-  {
-    base::AutoLock auto_lock(LayerTreeHostPointerLock());
-    ValidLayerTreeHosts(auto_lock).erase(this);
-  }
-
   // Track when we're inside a main frame to see if compositor is being
   // destroyed midway which causes a crash. crbug.com/895883
   CHECK(!inside_main_frame_);

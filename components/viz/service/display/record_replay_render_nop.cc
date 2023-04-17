@@ -29,4 +29,6 @@ void OnRepaintFinished() {}
 
 void SetCompositorProxy(cc::ProxyMain* proxy) {}
 
+void CompositorProxyDestroyed(cc::ProxyMain* proxy) {}
+
 } // namespace recordreplay
