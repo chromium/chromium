@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
@@ -18,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "content/browser/indexed_db/cursor_impl.h"
@@ -433,7 +433,7 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
                        element->reader.InitWithNewPipeAndPassReceiver());
 
         // Write results to output_info.
-        output_info->uuid = base::GenerateGUID();
+        output_info->uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
         mojo_blob_storage_context()->RegisterFromDataItem(
             std::move(receiver), output_info->uuid, std::move(element));
