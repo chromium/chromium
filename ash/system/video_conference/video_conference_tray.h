@@ -60,6 +60,8 @@ class VideoConferenceTrayButton : public IconButton {
 
   ~VideoConferenceTrayButton() override;
 
+  void set_toggle_is_one_way() { toggle_is_one_way_ = true; }
+
   bool show_privacy_indicator() const { return show_privacy_indicator_; }
   bool is_capturing() const { return is_capturing_; }
 
@@ -74,11 +76,24 @@ class VideoConferenceTrayButton : public IconButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
+  // Updates the tooltip according to the medium the button is for, the toggle
+  // state, and the capture state.
+  void UpdateTooltip();
+
   // Cache of the capturing state received from `VideoConferenceManagerAsh`.
   bool is_capturing_ = false;
 
-  // Indicates whether we are showing the privacy indicator in the button.
+  // Indicates whether we are showing the privacy indicator (the green dot) in
+  // the button.
   bool show_privacy_indicator_ = false;
+
+  // Whether the toggle is a one way operation (like Screen Share). Toggling it
+  // off makes it dissapear.
+  bool toggle_is_one_way_ = false;
+
+  // The accessible name for this button's capture type (camera, microphone, or
+  // screen share).
+  const int accessible_name_id_;
 };
 
 // This class represents the VC Controls tray button in the status area and

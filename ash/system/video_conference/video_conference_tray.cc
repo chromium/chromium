@@ -24,8 +24,10 @@
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -97,11 +99,16 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
                  icon,
                  accessible_name_id,
                  /*is_togglable=*/true,
-                 /*has_border=*/true) {
+                 /*has_border=*/true),
+      accessible_name_id_(accessible_name_id) {
   SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemNegativeContainer);
   SetIconToggledColorId(cros_tokens::kCrosSysSystemOnNegativeContainer);
 
   SetToggledVectorIcon(*toggled_icon);
+
+  SetAccessibleRole(ax::mojom::Role::kToggleButton);
+
+  UpdateTooltip();
 }
 
 VideoConferenceTrayButton::~VideoConferenceTrayButton() = default;
@@ -119,6 +126,12 @@ void VideoConferenceTrayButton::UpdateCapturingState() {
   // We should only show the privacy indicator when the button is not
   // muted/untoggled.
   const bool show_privacy_indicator = is_capturing_ && !toggled();
+
+  // Always call `UpdateTooltip()` because even if `show_privacy_indicator_`
+  // doesn't change, `is_capturing_` may have.
+  base::ScopedClosureRunner scoped_closure(base::BindOnce(
+      &VideoConferenceTrayButton::UpdateTooltip, base::Unretained(this)));
+
   if (show_privacy_indicator_ == show_privacy_indicator) {
     return;
   }
@@ -158,6 +171,24 @@ void VideoConferenceTrayButton::PaintButtonContents(gfx::Canvas* canvas) {
                      kPrivacyIndicatorRadius, flags);
 }
 
+void VideoConferenceTrayButton::UpdateTooltip() {
+  int capture_state_id = VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF;
+  if (show_privacy_indicator_) {
+    capture_state_id = VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON_AND_IN_USE;
+  } else if (!toggled()) {
+    capture_state_id = VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON;
+  }
+
+  int base_string_id = VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP;
+  if (toggle_is_one_way_) {
+    base_string_id = VIDEO_CONFERENCE_ONE_WAY_TOGGLE_BUTTON_TOOLTIP;
+  }
+
+  SetTooltipText(l10n_util::GetStringFUTF16(
+      base_string_id, l10n_util::GetStringUTF16(accessible_name_id_),
+      l10n_util::GetStringUTF16(capture_state_id)));
+}
+
 VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kVideoConferenceTray) {
@@ -173,7 +204,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
                               weak_ptr_factory_.GetWeakPtr()),
           &kPrivacyIndicatorsMicrophoneIcon,
           &kVideoConferenceMicrophoneMutedIcon,
-          IDS_PRIVACY_NOTIFICATION_TITLE_MIC));
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
   audio_icon_->SetVisible(false);
 
   camera_icon_ = tray_container()->AddChildView(
@@ -181,7 +212,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           base::BindRepeating(&VideoConferenceTray::OnCameraButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
           &kPrivacyIndicatorsCameraIcon, &kVideoConferenceCameraMutedIcon,
-          IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA));
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
   camera_icon_->SetVisible(false);
 
   screen_share_icon_ = tray_container()->AddChildView(
@@ -190,7 +221,9 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
                               weak_ptr_factory_.GetWeakPtr()),
           &kPrivacyIndicatorsScreenShareIcon,
           &kPrivacyIndicatorsScreenShareIcon,
-          IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
+  // Toggling screen share stops screen share, and removes the item.
+  screen_share_icon_->set_toggle_is_one_way();
   screen_share_icon_->SetVisible(false);
 
   toggle_bubble_button_ =

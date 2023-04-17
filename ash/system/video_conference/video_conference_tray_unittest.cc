@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -21,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 
@@ -617,6 +619,48 @@ TEST_F(VideoConferenceTrayTest, SessionChanged) {
   // Switches back to active. The tray should show.
   SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(video_conference_tray()->GetVisible());
+}
+
+// Test that updating the state of a toggle updates the tooltip.
+TEST_F(VideoConferenceTrayTest, MutingChangesTooltip) {
+  auto state = SetTrayAndButtonsVisible();
+  ASSERT_TRUE(video_conference_tray()->GetVisible());
+
+  // The button is not toggled by default, and should not be capturing.
+  ASSERT_FALSE(audio_icon()->toggled());
+
+  EXPECT_EQ(
+      audio_icon()->GetTooltipText(),
+      l10n_util::GetStringFUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+          l10n_util::GetStringUTF16(
+              VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE),
+          l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON)));
+
+  // Update the state to capturing, the tooltip should update.
+  state.is_capturing_microphone = true;
+  controller()->UpdateWithMediaState(state);
+
+  EXPECT_EQ(audio_icon()->GetTooltipText(),
+            l10n_util::GetStringFUTF16(
+                VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+                l10n_util::GetStringUTF16(
+                    VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE),
+                l10n_util::GetStringUTF16(
+                    VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON_AND_IN_USE)));
+
+  // Toggle the audio off, the tooltip should be updated.
+  LeftClickOn(audio_icon());
+  ASSERT_TRUE(controller()->GetMicrophoneMuted());
+  ASSERT_TRUE(audio_icon()->toggled());
+
+  EXPECT_EQ(
+      audio_icon()->GetTooltipText(),
+      l10n_util::GetStringFUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
+          l10n_util::GetStringUTF16(
+              VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE),
+          l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
 }
 
 }  // namespace ash
