@@ -413,8 +413,7 @@ function restoreFilters() {
 
 // Checks if one filter is a duplicate of another.
 // NOTE: Custom equality check needed to avoid marking same style
-// of filters with different enabled states and indices as
-// non-duplicates.
+// of filters with different user states and indices as non-duplicates.
 function isDuplicate(filter1, filter2) {
   if (!filter1 || !filter2) {
     return false;
@@ -428,26 +427,18 @@ function isDuplicate(filter1, filter2) {
   if (filter1.selector_.anno !== filter2.selector_.anno) {
     return false;
   }
-  if (filter1.action_.skipDraw !== filter2.action_.skipDraw) {
-    return false;
-  }
-  if (filter1.action_.color !== filter2.action_.color) {
-    return false;
-  }
-  if (filter1.action_.alpha !== filter2.action_.alpha) {
-    return false;
-  }
+
   return true;
 }
 
 const defaultFilters = [
     {
-      selector_: { filename: "", func: "", anno: "frame.root.quad" },
+      selector_: { filename: "", func: "", anno: "frame.render_pass.quad" },
       action_: { skipDraw: false, color: '#000000', alpha: "10" },
       enabled_: true
     },
     {
-      selector_: { filename: "", func: "", anno: "frame.root.damage" },
+      selector_: { filename: "", func: "", anno: "frame.render_pass.damage" },
       action_: { skipDraw: false, color: '#FF0000', alpha: "20" },
       enabled_: true
     },
@@ -462,7 +453,7 @@ const defaultFilters = [
       enabled_: true
     },
     {
-      selector_: { filename: "", func: "", anno: "frame.root.material" },
+      selector_: { filename: "", func: "", anno: "frame.render_pass.material" },
       action_: { skipDraw: false },
       enabled_: false
     }
