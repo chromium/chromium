@@ -575,8 +575,8 @@ void MaybeSetHighlightBorder(views::View* view,
     return;
   }
 
-  view->SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius, type, /*use_light_color=*/false));
+  view->SetBorder(
+      std::make_unique<views::HighlightBorder>(corner_radius, type));
 }
 
 }  // namespace ash::capture_mode_util

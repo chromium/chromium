@@ -180,7 +180,7 @@ class BackgroundLayerDelegate : public ui::LayerDelegate {
 
     views::HighlightBorder::PaintBorderToCanvas(
         canvas, *shelf_view_, gfx::Rect(layer_->size()), corner_radii,
-        views::HighlightBorder::Type::kHighlightBorder2, false);
+        views::HighlightBorder::Type::kHighlightBorder2);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,

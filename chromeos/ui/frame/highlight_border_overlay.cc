@@ -59,8 +59,7 @@ class ImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     views::HighlightBorder::PaintBorderToCanvas(
         canvas, highlight_color_, border_color_, gfx::Rect(size()),
-        gfx::RoundedCornersF(corner_radius_), GetBorderType(),
-        /*use_light_colors=*/false);
+        gfx::RoundedCornersF(corner_radius_), GetBorderType());
   }
 
  private:
@@ -185,10 +184,10 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
 void HighlightBorderOverlay::UpdateNinePatchLayer() {
   // Get the highlight border features.
   const views::View& view = *(widget_->GetContentsView());
-  SkColor highlight_color = views::HighlightBorder::GetHighlightColor(
-      view, GetBorderType(), /*use_light_colors=*/false);
-  SkColor border_color = views::HighlightBorder::GetBorderColor(
-      view, GetBorderType(), /*use_light_colors=*/false);
+  SkColor highlight_color =
+      views::HighlightBorder::GetHighlightColor(view, GetBorderType());
+  SkColor border_color =
+      views::HighlightBorder::GetBorderColor(view, GetBorderType());
   HighlightBorderFeatureKey key(highlight_color, border_color,
                                 rounded_corner_radius_);
 

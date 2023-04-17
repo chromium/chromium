@@ -236,8 +236,7 @@ AppListToastView::AppListToastView(const std::u16string title,
         kCornerRadius,
         is_jelly_enabled
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder1));
   } else {
     const ui::ColorId background_color_id =
         is_jelly_enabled

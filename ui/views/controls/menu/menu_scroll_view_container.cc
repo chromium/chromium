@@ -499,8 +499,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
           // corner_radius_,
           chromeos::features::IsJellyrollEnabled()
               ? HighlightBorder::Type::kHighlightBorderOnShadow
-              : HighlightBorder::Type::kHighlightBorder1,
-          /*use_light_colors=*/false));
+              : HighlightBorder::Type::kHighlightBorder1));
     }
 #endif
   } else {

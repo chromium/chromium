@@ -193,7 +193,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
     if (corner_radius_ > 0) {
       views::HighlightBorder::PaintBorderToCanvas(
           canvas, *owner_view_, gfx::Rect(layer()->size()),
-          gfx::RoundedCornersF(corner_radius_), highlight_border_type_, false);
+          gfx::RoundedCornersF(corner_radius_), highlight_border_type_);
     } else {
       // If the shelf corners are not rounded, only paint the highlight border
       // on the inner edge of the shelf to separate the shelf and the work area.
@@ -208,9 +208,9 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 
   void PaintEdgeToCanvas(gfx::Canvas* canvas) {
     SkColor inner_color = views::HighlightBorder::GetHighlightColor(
-        *owner_view_, highlight_border_type_, /*use_light_colors=*/false);
+        *owner_view_, highlight_border_type_);
     SkColor outer_color = views::HighlightBorder::GetBorderColor(
-        *owner_view_, highlight_border_type_, /*use_light_colors=*/false);
+        *owner_view_, highlight_border_type_);
 
     const int border_thickness = views::kHighlightBorderThickness;
     const float half_thickness = border_thickness / 2.0f;

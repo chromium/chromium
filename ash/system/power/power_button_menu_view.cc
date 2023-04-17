@@ -62,8 +62,7 @@ PowerButtonMenuView::PowerButtonMenuView(
       kPowerButtonMenuCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : kPowerButtonMenuBorderType,
-      /*use_light_colors=*/false));
+          : kPowerButtonMenuBorderType));
   SetBackground(
       views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 

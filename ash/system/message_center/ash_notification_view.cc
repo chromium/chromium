@@ -681,8 +681,7 @@ AshNotificationView::AshNotificationView(
         kMessagePopupCornerRadius,
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder1));
   }
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);

@@ -640,8 +640,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kFolderBackgroundRadius,
       is_jelly_enabled ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-                       : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+                       : views::HighlightBorder::Type::kHighlightBorder1));
   background_view_->SetBackground(views::CreateThemedSolidBackground(
       is_jelly_enabled
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)

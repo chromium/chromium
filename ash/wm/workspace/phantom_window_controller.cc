@@ -214,8 +214,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
               kPhantomWindowCornerRadius,
               chromeos::features::IsJellyrollEnabled()
                   ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-                  : views::HighlightBorder::Type::kHighlightBorder1,
-              /*use_light_colors=*/false))
+                  : views::HighlightBorder::Type::kHighlightBorder1))
           .Build());
   return phantom_widget;
 }
@@ -257,8 +256,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
               kPhantomWindowCornerRadius,
               chromeos::features::IsJellyrollEnabled()
                   ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-                  : views::HighlightBorder::Type::kHighlightBorder1,
-              /*use_light_colors=*/false))
+                  : views::HighlightBorder::Type::kHighlightBorder1))
           .AddChildren(
               views::Builder<views::Label>()
                   .SetText(l10n_util::GetStringUTF16(

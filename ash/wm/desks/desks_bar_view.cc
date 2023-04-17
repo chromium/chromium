@@ -519,8 +519,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
         /*corner_radius=*/0,
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder2));
   }
 
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));

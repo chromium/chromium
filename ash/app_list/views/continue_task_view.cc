@@ -130,8 +130,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
         GetCornerRadius(/*tablet_mode=*/true),
         is_jelly_enabled
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder2));
   }
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(

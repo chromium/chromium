@@ -63,8 +63,7 @@ void RoundedLabel::OnPaintBorder(gfx::Canvas* canvas) {
         canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false);
+            : views::HighlightBorder::Type::kHighlightBorder2);
   }
 }
 

@@ -459,8 +459,7 @@ void SearchBoxView::OnPaintBorder(gfx::Canvas* canvas) {
         gfx::RoundedCornersF(corner_radius_),
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        false);
+            : views::HighlightBorder::Type::kHighlightBorder1);
   }
 }
 

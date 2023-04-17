@@ -224,8 +224,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         kDialogRoundedCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kDialogRoundedCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+        views::HighlightBorder::Type::kHighlightBorder1));
     title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }

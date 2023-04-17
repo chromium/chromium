@@ -74,8 +74,7 @@ class TabletModeMultitaskMenuView : public views::View {
         kCornerRadius,
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-            : views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder1));
 
     SetUseDefaultFillLayout(true);
 

@@ -581,10 +581,7 @@ void HotseatWidget::DelegateView::UpdateHighlightBorder(
 
   const float radius = hotseat_widget_->GetHotseatSize() / 2.0f;
   border_type_ = border_type;
-  auto border = std::make_unique<views::HighlightBorder>(
-      radius, border_type_,
-      /*use_light_colors=*/!features::IsDarkLightModeEnabled() &&
-          !is_jelly_enabled);
+  auto border = std::make_unique<views::HighlightBorder>(radius, border_type_);
   translucent_background_->SetBorder(std::move(border));
 }
 

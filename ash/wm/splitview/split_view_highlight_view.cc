@@ -69,8 +69,7 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kHighlightScreenRoundRectRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow,
-      /*use_light_colors=*/false));
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;

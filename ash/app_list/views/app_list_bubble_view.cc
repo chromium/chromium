@@ -206,7 +206,6 @@ AppListBubbleView::AppListBubbleView(
       kBubbleCornerRadius,
       is_jelly_enabled ? views::HighlightBorder::Type::kHighlightBorderOnShadow
                        : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
   views::FillLayout* layout =

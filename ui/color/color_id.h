@@ -457,12 +457,6 @@
   \
   E_CPONLY(kColorAshPrivacyIndicatorsBackground) \
   \
-  /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
-  E_CPONLY(kColorAshSystemUILightBorderColor1) \
-  E_CPONLY(kColorAshSystemUILightBorderColor2) \
-  E_CPONLY(kColorAshSystemUILightHighlightColor1) \
-  E_CPONLY(kColorAshSystemUILightHighlightColor2) \
-  \
   E_CPONLY(kColorAshSystemUIMenuBackground) \
   E_CPONLY(kColorAshSystemUIMenuIcon) \
   E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \

@@ -155,8 +155,7 @@ void RemoveQueryConfirmationDialog::OnThemeChanged() {
       kDialogRoundedCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
   title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   body_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(

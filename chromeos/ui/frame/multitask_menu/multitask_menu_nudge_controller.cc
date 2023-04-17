@@ -100,8 +100,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
       corner_radius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
 
   widget->SetContentsView(std::move(contents_view));
   return widget;

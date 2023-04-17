@@ -132,8 +132,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
       kBackgroundCornerRadius,
       is_jellyroll_enabled
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
 
   // |mirror_container_| may be larger than |this|. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container

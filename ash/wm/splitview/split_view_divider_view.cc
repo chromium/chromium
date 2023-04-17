@@ -159,8 +159,7 @@ void SplitViewDividerView::OnThemeChanged() {
 
   if (chromeos::features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
-        /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
+        /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1));
   }
 }
 

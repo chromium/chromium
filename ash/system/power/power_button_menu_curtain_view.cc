@@ -87,8 +87,7 @@ std::u16string MessageText() {
 PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType,
-      /*use_light_colors=*/false));
+      kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType));
   SetBackground(
       views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 

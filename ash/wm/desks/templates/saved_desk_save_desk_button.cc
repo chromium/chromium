@@ -41,8 +41,7 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
         kSaveDeskCornerRadius,
         chromeos::features::IsJellyrollEnabled()
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false));
+            : views::HighlightBorder::Type::kHighlightBorder2));
   }
 }
 

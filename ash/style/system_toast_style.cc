@@ -170,8 +170,7 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
       toast_corner_radius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+          : views::HighlightBorder::Type::kHighlightBorder1));
 
   // Since system toast has a very large corner radius, we should use the shadow
   // on texture layer. Refer to `ash::SystemShadowOnTextureLayer` for more

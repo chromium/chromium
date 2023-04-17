@@ -138,8 +138,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
           kSaveDeskCornerRadius,
           chromeos::features::IsJellyrollEnabled()
               ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-              : views::HighlightBorder::Type::kHighlightBorder1,
-          /*use_light_colors=*/false))
+              : views::HighlightBorder::Type::kHighlightBorder1))
       // TODO(b/274025495): Update Shadow for SavedDeskItemView.
       .AddChildren(
           views::Builder<views::FlexLayoutView>()
