@@ -157,13 +157,14 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
   // Convert to dictionary and parse the results.
   ASSERT_TRUE(result_.is_dict()) << "Result is not a dictionary: " << result_;
 
-  absl::optional<bool> success = result_.FindBoolKey("success");
+  const base::Value::Dict& dict = result_.GetDict();
+  absl::optional<bool> success = dict.FindBool("success");
   ASSERT_TRUE(success.has_value());
-  absl::optional<int> num_tests = result_.FindIntKey("numTests");
+  absl::optional<int> num_tests = dict.FindInt("numTests");
   ASSERT_TRUE(num_tests.has_value());
-  absl::optional<int> failed = result_.FindIntKey("failed");
+  absl::optional<int> failed = dict.FindInt("failed");
   ASSERT_TRUE(failed.has_value());
-  absl::optional<int> skipped = result_.FindIntKey("skipped");
+  absl::optional<int> skipped = dict.FindInt("skipped");
   ASSERT_TRUE(skipped.has_value());
 
   VLOG(0) << "Ran " << num_tests.value()
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
 
   // Only print the log if there was an error.
   if (!success.value()) {
-    const std::string* console_log = result_.FindStringKey("log");
+    const std::string* console_log = dict.FindString("log");
     ASSERT_TRUE(console_log);
     VLOG(0) << "Console log:\n" << *console_log;
     VLOG(0) << "\n\n"
