@@ -98,8 +98,11 @@ class ArcSystemUIBridgeTest : public testing::Test {
     ArcServiceManager::Get()->arc_bridge_service()->system_ui()->CloseInstance(
         &system_ui_instance_);
     bridge_->Shutdown();
-    bridge_->SetColorPaletteControllerForTesting(nullptr);
-    test_palette_.reset();
+    if (test_palette_) {
+      // Only run cleanup if simulating that Shell still exists.
+      bridge_->SetColorPaletteControllerForTesting(nullptr);
+      test_palette_.reset();
+    }
   }
 
   explicit ArcSystemUIBridgeTest(const ArcSystemUIBridge&) = delete;
@@ -115,6 +118,15 @@ class ArcSystemUIBridgeTest : public testing::Test {
 };
 
 TEST_F(ArcSystemUIBridgeTest, ConstructDestruct) {}
+
+TEST_F(ArcSystemUIBridgeTest, DestroyColorPaletteControllerFirst) {
+  // Simulate Shell destruction.
+  bridge_->OnShellDestroying();
+  // Delete the ColorPaletteController like Shell would.
+  test_palette_.reset();
+  // This would crash in `TearDown()` before https://crbug.com/1431544 was
+  // fixed.
+}
 
 TEST_F(ArcSystemUIBridgeTest, OnColorModeChanged) {
   EXPECT_FALSE(system_ui_instance_.dark_theme_status());

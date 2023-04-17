@@ -8,11 +8,17 @@
 #include "ash/components/arc/mojom/system_ui.mojom-shared.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "ash/shell_observer.h"
 #include "ash/style/color_palette_controller.h"
 #include "base/check_is_test.h"
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+namespace ash {
+class Shell;
+}
 
 namespace content {
 class BrowserContext;
@@ -25,7 +31,8 @@ class ArcBridgeService;
 // This class notifies the Chrome OS side dark theme state to Android.
 class ArcSystemUIBridge : public KeyedService,
                           public ConnectionObserver<mojom::SystemUiInstance>,
-                          public ash::ColorPaletteController::Observer {
+                          public ash::ColorPaletteController::Observer,
+                          public ash::ShellObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -48,6 +55,9 @@ class ArcSystemUIBridge : public KeyedService,
   // ash::ColorPaletteController::Observer override:
   void OnColorPaletteChanging(const ash::ColorPaletteSeed& seed) override;
 
+  // ash::ShellObserver override:
+  void OnShellDestroying() override;
+
   // Sends the device overlay color and the {@link mojom::ThemeStyleType}.
   bool SendOverlayColor(uint32_t source_color,
                         mojom::ThemeStyleType theme_style);
@@ -65,7 +75,18 @@ class ArcSystemUIBridge : public KeyedService,
   // Sends the device dark theme state to Android.
   bool SendDeviceDarkThemeState(bool dark_theme_status);
 
+  // Set `color_palette_controller_` from `ash::Shell` if it's not already set
+  // and attach the necessary observers.
+  void AttachColorPaletteController();
+
+  // Removes `this` as an observer of the `ColorPaletteController` and sets it
+  // to `nullptr`.
+  void DetachColorPaletteController();
+
   THREAD_CHECKER(thread_checker_);
+
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
 
   // The most recent seed sent to ARC.
   absl::optional<const ash::ColorPaletteSeed> previous_seed_;

@@ -78,19 +78,12 @@ ArcSystemUIBridge::ArcSystemUIBridge(content::BrowserContext* context,
 }
 
 ArcSystemUIBridge::~ArcSystemUIBridge() {
-  if (color_palette_controller_) {
-    // Only detach if we actually started listening.
-    color_palette_controller_->RemoveObserver(this);
-  }
+  DetachColorPaletteController();
   arc_bridge_service_->system_ui()->RemoveObserver(this);
 }
 
 void ArcSystemUIBridge::OnConnectionReady() {
-  if (!color_palette_controller_) {
-    color_palette_controller_ = ash::Shell::Get()->color_palette_controller();
-    CHECK(color_palette_controller_);
-    color_palette_controller_->AddObserver(this);
-  }
+  AttachColorPaletteController();
 
   const auto seed = color_palette_controller_->GetCurrentSeed();
   if (seed) {
@@ -134,6 +127,37 @@ void ArcSystemUIBridge::OnColorPaletteChanging(
       return;
     }
   }
+}
+
+void ArcSystemUIBridge::OnShellDestroying() {
+  // Detach from `color_palette_controller_` when Shell is destroyed as its
+  // owned by Shell and we can outlive Shell. Otherwise, we try to remove
+  // ourselves from a dead object in our destructor.
+  DetachColorPaletteController();
+}
+
+void ArcSystemUIBridge::AttachColorPaletteController() {
+  // Skip attaching if we haven't been detached first.
+  if (color_palette_controller_) {
+    return;
+  }
+
+  ash::Shell* const shell = ash::Shell::Get();
+  color_palette_controller_ = shell->color_palette_controller();
+  CHECK(color_palette_controller_);
+  color_palette_controller_->AddObserver(this);
+  shell_observation_.Observe(shell);
+}
+
+void ArcSystemUIBridge::DetachColorPaletteController() {
+  // Only detach if we actually started listening.
+  if (!color_palette_controller_) {
+    return;
+  }
+
+  color_palette_controller_->RemoveObserver(this);
+  color_palette_controller_ = nullptr;
+  shell_observation_.Reset();
 }
 
 bool ArcSystemUIBridge::SendDeviceDarkThemeState(bool dark_theme_status) {
