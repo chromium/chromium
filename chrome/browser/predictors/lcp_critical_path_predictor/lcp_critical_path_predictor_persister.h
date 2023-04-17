@@ -14,6 +14,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_database.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "sql/database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -53,7 +54,6 @@ class LCPCriticalPathPredictorPersister {
           void(std::unique_ptr<LCPCriticalPathPredictorPersister>)>
           on_done_initializing);
 
-  // Getter returns nullptr when the requested record was not found.
   absl::optional<LCPElement> GetLCPElement(const GURL& page_url);
 
   void SetLCPElement(const GURL& page_url, const LCPElement& lcp_element);
