@@ -508,13 +508,7 @@ void AutofillManager::OnAskForValuesToFill(
 
   NotifyObservers(&Observer::OnBeforeAskForValuesToFill, form.global_id(),
                   field.global_id());
-  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)
-#if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1375966,crbug.com/1379149) Asynchronous parsing breaks
-      // FastCheckout's keyboard suppression mechanism.
-      || client()->IsFastCheckoutSupported(form, field, *this)
-#endif
-  ) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnAskForValuesToFillImpl(form, field, bounding_box,
                              autoselect_first_suggestion,
                              form_element_was_clicked);

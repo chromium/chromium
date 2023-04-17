@@ -103,6 +103,11 @@ bool ContainsEmailFormWithSignature(
   }
   return false;
 }
+
+FastCheckoutDelegateImpl* GetDelegate(autofill::AutofillManager& manager) {
+  auto& bam = static_cast<autofill::BrowserAutofillManager&>(manager);
+  return static_cast<FastCheckoutDelegateImpl*>(bam.fast_checkout_delegate());
+}
 }  // namespace
 
 // No virtual functions of `client` must be called in the constructor.
@@ -119,7 +124,21 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           fetcher_,
           personal_data_helper_.get())),
       accessibility_service_(
-          std::make_unique<FastCheckoutAccessibilityServiceImpl>()) {
+          std::make_unique<FastCheckoutAccessibilityServiceImpl>()),
+      keyboard_suppressor_(
+          client,
+          base::BindRepeating([](autofill::AutofillManager& manager) {
+            return GetDelegate(manager) &&
+                   GetDelegate(manager)->IsShowingFastCheckoutUI();
+          }),
+          base::BindRepeating([](autofill::AutofillManager& manager,
+                                 autofill::FormGlobalId form,
+                                 autofill::FieldGlobalId field) {
+            return GetDelegate(manager) &&
+                   GetDelegate(manager)->IntendsToShowFastCheckout(manager,
+                                                                   form, field);
+          }),
+          base::Seconds(1)) {
   driver_factory_observation_.Observe(
       autofill_client_->GetAutofillDriverFactory());
 }
@@ -138,7 +157,7 @@ void FastCheckoutClientImpl::OnContentAutofillDriverCreated(
       static_cast<autofill::BrowserAutofillManager*>(driver.autofill_manager());
   manager->set_fast_checkout_delegate(
       std::make_unique<FastCheckoutDelegateImpl>(
-          &autofill_client_->GetWebContents(), this));
+          &autofill_client_->GetWebContents(), this, manager));
 }
 
 bool FastCheckoutClientImpl::TryToStart(
@@ -146,6 +165,10 @@ bool FastCheckoutClientImpl::TryToStart(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     base::WeakPtr<autofill::AutofillManager> autofill_manager) {
+  if (!keyboard_suppressor_.is_suppressing()) {
+    return false;
+  }
+
   if (!autofill_manager) {
     return false;
   }
@@ -165,7 +188,6 @@ bool FastCheckoutClientImpl::TryToStart(
       base::HashMetricName(base::GUID::GenerateRandomV4().AsLowercaseString());
 
   SetFormsToFill();
-  SetShouldSuppressKeyboard(true);
 
   fast_checkout_controller_ = CreateFastCheckoutController();
   ShowFastCheckoutUI();
@@ -181,12 +203,6 @@ void FastCheckoutClientImpl::ShowFastCheckoutUI() {
   fast_checkout_controller_->Show(
       personal_data_helper_->GetProfilesToSuggest(),
       personal_data_helper_->GetCreditCardsToSuggest());
-}
-
-void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
-  if (autofill_manager_) {
-    autofill_manager_->SetShouldSuppressKeyboard(suppress);
-  }
 }
 
 void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
@@ -230,7 +246,7 @@ void FastCheckoutClientImpl::InternalStop(bool allow_further_runs) {
   // `OnHidden` is not called if the bottom sheet never managed to show,
   // e.g. due to a failed onboarding. This ensures that keyboard suppression
   // stops.
-  SetShouldSuppressKeyboard(false);
+  keyboard_suppressor_.Unsuppress();
 
   // Reset run related state.
   is_running_ = false;
@@ -277,7 +293,7 @@ FastCheckoutClientImpl::CreateFastCheckoutController() {
 
 void FastCheckoutClientImpl::OnHidden() {
   fast_checkout_ui_state_ = FastCheckoutUIState::kWasShown;
-  SetShouldSuppressKeyboard(false);
+  keyboard_suppressor_.Unsuppress();
 }
 
 void FastCheckoutClientImpl::OnOptionsSelected(
