@@ -121,6 +121,7 @@ source_set("autofill_shared_ui") {
     "//base:base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:features",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/shared/public/features",

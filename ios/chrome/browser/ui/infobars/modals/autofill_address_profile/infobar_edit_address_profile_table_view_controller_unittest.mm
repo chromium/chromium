@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
 
 #import <memory>
 #import "base/feature_list.h"
@@ -12,9 +12,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -36,13 +39,14 @@ namespace {
 
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
-class AutofillSettingsProfileEditTableViewControllerTest
+class InfobarEditAddressProfileTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
     delegate_mock_ = OCMProtocolMock(
         @protocol(AutofillProfileEditTableViewControllerDelegate));
+    delegate_modal_mock_ = OCMProtocolMock(@protocol(InfobarModalDelegate));
     CreateController();
     CheckController();
     CreateProfileData();
@@ -52,15 +56,15 @@ class AutofillSettingsProfileEditTableViewControllerTest
   }
 
   ChromeTableViewController* InstantiateController() override {
-    AutofillSettingsProfileEditTableViewController* viewController =
-        [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithStyle:ChromeTableViewStyle()];
+    InfobarEditAddressProfileTableViewController* viewController =
+        [[InfobarEditAddressProfileTableViewController alloc]
+            initWithModalDelegate:delegate_modal_mock_];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
                    userEmail:nil
                   controller:viewController
-                settingsView:YES];
+                settingsView:NO];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     return viewController;
   }
@@ -105,23 +109,12 @@ class AutofillSettingsProfileEditTableViewControllerTest
   AutofillProfileEditTableViewController*
       autofill_profile_edit_table_view_controller_;
   id delegate_mock_;
+  id delegate_modal_mock_;
 };
 
-// Default test case of no addresses or credit cards.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
-  TableViewModel* model = [controller() tableViewModel];
-  int rowCnt =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHonorificPrefixes)
-          ? 11
-          : 10;
-
-  EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
-}
-
-// Adding a single address results in an address section.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestOneProfile) {
+// Tests the edit view initialisation for a profile in the save prompt.
+TEST_F(InfobarEditAddressProfileTableViewControllerTest,
+       TestEditViewForProfile) {
   TableViewModel* model = [controller() tableViewModel];
 
   autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
@@ -139,34 +132,41 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestOneProfile) {
   }
 
   EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(expected_values.size(), (size_t)[model numberOfItemsInSection:0]);
+  EXPECT_EQ(expected_values.size() + 1,
+            (size_t)[model numberOfItemsInSection:0]);
 
-  for (size_t row = 0; row < expected_values.size(); row++) {
+  for (size_t row = 0; row < expected_values.size() - 1; row++) {
     TableViewTextEditItem* cell =
         static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
     EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row]),
                 cell.textFieldValue);
   }
+
+  TableViewTextButtonItem* buttonCell = static_cast<TableViewTextButtonItem*>(
+      GetTableViewItem(0, expected_values.size()));
+  EXPECT_NSEQ(
+      buttonCell.buttonText,
+      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
 }
 
-class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
-    : public AutofillSettingsProfileEditTableViewControllerTest {
+class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
+    : public InfobarEditAddressProfileTableViewControllerTest {
  protected:
-  AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {
+  InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
 
   ChromeTableViewController* InstantiateController() override {
-    AutofillSettingsProfileEditTableViewController* viewController =
-        [[AutofillSettingsProfileEditTableViewController alloc]
-            initWithStyle:ChromeTableViewStyle()];
+    InfobarEditAddressProfileTableViewController* viewController =
+        [[InfobarEditAddressProfileTableViewController alloc]
+            initWithModalDelegate:delegate_modal_mock_];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:delegate_mock_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:viewController
-                settingsView:YES];
+                settingsView:NO];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     return viewController;
   }
@@ -178,11 +178,9 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests the footer text of the view controller for the address profiles with
-// source kAccount when
-//`autofill::features::kAutofillAccountProfilesUnionView` / is enabled.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       TestFooterTextWithEmail) {
+// Tests the edit view initialisation for the save prompt of an account profile.
+TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
+       TestEditForAccountProfile) {
   CreateAccountProfile();
 
   // Reload the model so that the changes are propogated.
@@ -190,10 +188,52 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
 
   TableViewModel* model = [controller() tableViewModel];
 
-  NSString* expected_footer_text = l10n_util::GetNSStringF(
-      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT, kTestSyncingEmail);
-  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:1];
-  EXPECT_NSEQ(expected_footer_text, footer.text);
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
+  std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
+      expected_values;
+
+  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
+    const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
+    if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
+        !base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
+      continue;
+    }
+
+    expected_values.push_back(
+        {field.autofillType, profile.GetRawInfo(field.autofillType)});
+  }
+
+  EXPECT_EQ(1, [model numberOfSections]);
+  EXPECT_EQ(expected_values.size() + 2,
+            (size_t)[model numberOfItemsInSection:0]);
+
+  for (size_t row = 0; row < expected_values.size(); row++) {
+    if (expected_values[row].first == autofill::ADDRESS_HOME_COUNTRY) {
+      TableViewMultiDetailTextItem* countryCell =
+          static_cast<TableViewMultiDetailTextItem*>(GetTableViewItem(0, row));
+      EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                  countryCell.trailingDetailText);
+      continue;
+    }
+    TableViewTextEditItem* cell =
+        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
+    EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                cell.textFieldValue);
+  }
+
+  TableViewTextItem* footerCell = static_cast<TableViewTextItem*>(
+      GetTableViewItem(0, expected_values.size()));
+  EXPECT_NSEQ(
+      footerCell.text,
+      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+                              kTestSyncingEmail));
+
+  TableViewTextButtonItem* buttonCell = static_cast<TableViewTextButtonItem*>(
+      GetTableViewItem(0, expected_values.size() + 1));
+  EXPECT_NSEQ(
+      buttonCell.buttonText,
+      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
 }
 
 }  // namespace

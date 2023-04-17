@@ -82,6 +82,14 @@ NSDictionary* SaveAddressProfileModalRequestConfig::GetProfileInfo() {
   return items;
 }
 
+const autofill::AutofillProfile*
+SaveAddressProfileModalRequestConfig::GetProfile() {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
+          infobar_->delegate());
+  return delegate->GetProfile();
+}
+
 void SaveAddressProfileModalRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
