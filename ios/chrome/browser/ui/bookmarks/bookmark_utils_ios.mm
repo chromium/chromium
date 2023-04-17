@@ -128,7 +128,17 @@ BookmarkModelType GetBookmarkModelType(
   return BookmarkModelType::kAccount;
 }
 
-// TODO (crbug.com/1430453): Implements the distinction of profile/account
+bookmarks::BookmarkModel* GetBookmarkModelForNode(
+    const bookmarks::BookmarkNode* bookmark_node,
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model) {
+  BookmarkModelType modelType =
+      GetBookmarkModelType(bookmark_node, profile_model, account_model);
+  return modelType == BookmarkModelType::kAccount ? account_model
+                                                  : profile_model;
+}
+
+// TODO (crbug.com/1430453): Implement the distinction of profile/account
 // models when both models are used.
 bool ShouldDisplayCloudSlashIconForProfileModel(
     SyncSetupService* sync_setup_service) {

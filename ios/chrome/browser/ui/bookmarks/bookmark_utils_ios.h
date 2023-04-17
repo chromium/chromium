@@ -58,11 +58,26 @@ NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 // `bookmark_node` is the bookmark to query. It can not be null.
 // `profile_model` is the profile mode. It can not be null.
 // `account_model` is the account mode. It can be null.
-// The node must belongs to one of the two models.
+// The node must belong to one of the two models.
 // This function is linear in time in the depth of the bookmark_node.
 // TODO(crbug.com/1417992): once the bookmark nodes has access to its model,
 // rewrite the function to be constant time.
 BookmarkModelType GetBookmarkModelType(
+    const bookmarks::BookmarkNode* bookmark_node,
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model);
+
+// Returns the bookmark model for a node, based on profile model and account
+// model.
+// `bookmark_node` is the bookmark to query. It can not be null.
+// `profile_model` is the profile mode. It can not be null.
+// `account_model` is the account mode. It can be null.
+// The node must belong to one of the two models.
+// This function is linear in time in the depth of the bookmark_node because it
+// uses `GetBookmarkModelType(...)`.
+// TODO(crbug.com/1417992): once the bookmark nodes has access to its model,
+// rewrite the function to be constant time.
+bookmarks::BookmarkModel* GetBookmarkModelForNode(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);

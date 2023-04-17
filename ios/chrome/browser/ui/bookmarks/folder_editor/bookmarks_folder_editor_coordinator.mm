@@ -9,12 +9,14 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
@@ -86,20 +88,26 @@
   // TODO(crbug.com/1402758): Create a mediator.
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* model =
+  bookmarks::BookmarkModel* profileBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _viewController = [[BookmarksFolderEditorViewController alloc]
-      initWithBookmarkModel:model
-                 folderNode:_folderNode
-           parentFolderNode:_parentFolderNode
-           syncSetupService:syncSetupService
-                syncService:syncService
-                    browser:self.browser];
+      initWithProfileBookmarkModel:profileBookmarkModel
+              accountBookmarkModel:accountBookmarkModel
+                        folderNode:_folderNode
+                  parentFolderNode:_parentFolderNode
+             authenticationService:authService
+                  syncSetupService:syncSetupService
+                       syncService:syncService
+                           browser:self.browser];
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);

@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+class AuthenticationService;
 @class BookmarksFolderEditorViewController;
 class Browser;
 @protocol SnackbarCommands;
@@ -68,20 +69,21 @@ class SyncService;
 // Snackbar commands handler for this ViewController.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
-// `bookmarkModel` must not be `nullptr` and must be loaded.
+// `profileBookmarkModel` must not be `nullptr` and must be loaded.
 // `parentFolder` must not be `nullptr`.
 // If `folder` is not `nullptr` than it means we're editing an existing folder
 // and `folder` must also be editable (`folder` can't be the root node or any
 // of the permanent nodes).
 // `browser` must not be `nullptr`.
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                           folderNode:(const bookmarks::BookmarkNode*)folder
-                     parentFolderNode:
-                         (const bookmarks::BookmarkNode*)parentFolder
-                     syncSetupService:(SyncSetupService*)syncSetupService
-                          syncService:(syncer::SyncService*)syncService
-                              browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+                      folderNode:(const bookmarks::BookmarkNode*)folder
+                parentFolderNode:(const bookmarks::BookmarkNode*)parentFolder
+           authenticationService:(AuthenticationService*)authService
+                syncSetupService:(SyncSetupService*)syncSetupService
+                     syncService:(syncer::SyncService*)syncService
+                         browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Called when the user attempt to swipe down the view controller.
