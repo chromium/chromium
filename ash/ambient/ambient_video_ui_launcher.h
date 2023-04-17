@@ -31,6 +31,7 @@ class AmbientVideoUiLauncher : public AmbientUiLauncher {
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
   bool IsActive() override;
+  bool IsReady() override;
 
  private:
   bool is_active_ = false;

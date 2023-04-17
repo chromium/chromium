@@ -1846,6 +1846,15 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
+TEST_F(AmbientControllerForManagedScreensaverTest,
+       ManagedScreensaverNotShownOnScreenDim) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  EXPECT_FALSE(IsLocked());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
 TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
   SetAmbientUiSettings(
       AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kNewMexico));

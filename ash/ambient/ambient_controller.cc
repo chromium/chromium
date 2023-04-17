@@ -611,6 +611,14 @@ void AmbientController::ShowUi() {
     return;
   }
 
+  // If the ambient ui launcher is not ready to be started then do not change
+  // the visibility. This will disabled the ui launcher until the next AmbientUi
+  // starting event occurs. Right now the only ambient ui starting events are
+  // screen lock/unlock, screen dim, preview and screen backlight off.
+  if (ambient_ui_launcher_ && !ambient_ui_launcher_->IsReady()) {
+    return;
+  }
+
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
 }
 

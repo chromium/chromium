@@ -10,6 +10,7 @@
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/ui/photo_view.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -75,6 +76,10 @@ void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
 
 bool AmbientManagedSlideshowUiLauncher::IsActive() {
   return photo_controller_.IsScreenUpdateActive();
+}
+
+bool AmbientManagedSlideshowUiLauncher::IsReady() {
+  return LockScreen::HasInstance();
 }
 
 }  // namespace ash

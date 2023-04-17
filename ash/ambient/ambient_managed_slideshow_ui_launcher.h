@@ -42,6 +42,8 @@ class AmbientManagedSlideshowUiLauncher : public AmbientUiLauncher,
 
   bool IsActive() override;
 
+  bool IsReady() override;
+
  private:
   friend class AmbientAshTestBase;
 
