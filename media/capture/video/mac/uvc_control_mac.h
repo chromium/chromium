@@ -139,12 +139,12 @@ class CAPTURE_EXPORT UvcControl {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                  "UvcControl::SetControlCurrent", "control_name", control_name);
     CHECK(interface_);
-    IOUSBDevRequest command =
+    IOUSBDevRequestTO command =
         CreateEmptyCommand(uvc::kVcRequestCodeSetCur, kUSBOut, control_selector,
                            sizeof(ValueType));
     command.pData = &value;
 
-    IOReturn ret = (*interface_)->ControlRequest(interface_, 0, &command);
+    IOReturn ret = (*interface_)->ControlRequestTO(interface_, 0, &command);
     VLOG_IF(1, ret != kIOReturnSuccess)
         << "Set " << control_name << " value to " << value << " failed (0x"
         << std::hex << ret << ")";
@@ -161,12 +161,12 @@ class CAPTURE_EXPORT UvcControl {
                  "UvcControl::SendControlRequest", "request_code", request_code,
                  "control_name", control_name);
     CHECK(interface_);
-    IOUSBDevRequest command = CreateEmptyCommand(
+    IOUSBDevRequestTO command = CreateEmptyCommand(
         request_code, kUSBIn, control_selector, sizeof(ValueType));
     ValueType data;
     command.pData = &data;
 
-    IOReturn ret = (*interface_)->ControlRequest(interface_, 0, &command);
+    IOReturn ret = (*interface_)->ControlRequestTO(interface_, 0, &command);
     VLOG_IF(1, ret != kIOReturnSuccess)
         << control_name << " failed (0x" << std::hex << ret;
     if (ret != kIOReturnSuccess) {
@@ -177,12 +177,12 @@ class CAPTURE_EXPORT UvcControl {
     return true;
   }
 
-  // Create an empty IOUSBDevRequest for a USB device to either set or get
+  // Create an empty IOUSBDevRequestTO for a USB device to either set or get
   // controls.
-  IOUSBDevRequest CreateEmptyCommand(int request_code,
-                                     int endpoint_direction,
-                                     int control_selector,
-                                     int control_command_size) const;
+  IOUSBDevRequestTO CreateEmptyCommand(int request_code,
+                                       int endpoint_direction,
+                                       int control_selector,
+                                       int control_command_size) const;
 
   ScopedIOUSBInterfaceInterface interface_;
   int unit_id_;

@@ -14,6 +14,12 @@
 
 namespace media {
 
+namespace {
+
+const unsigned int kRequestTimeoutInMilliseconds = 1000;
+
+}
+
 // Addition to the IOUSB family of structures, with subtype and unit ID.
 // Sec. 3.7.2 "Class-Specific VC Interface Descriptor"
 typedef struct VcCsInterfaceDescriptor {
@@ -225,17 +231,19 @@ UvcControl::~UvcControl() {
   }
 }
 
-// Create an empty IOUSBDevRequest for a USB device to either set or get
+// Create an empty IOUSBDevRequestTO for a USB device to either set or get
 // controls.
-IOUSBDevRequest UvcControl::CreateEmptyCommand(int request_code,
-                                               int endpoint_direction,
-                                               int control_selector,
-                                               int control_command_size) const {
+IOUSBDevRequestTO UvcControl::CreateEmptyCommand(
+    int request_code,
+    int endpoint_direction,
+    int control_selector,
+    int control_command_size) const {
   CHECK(interface_);
   CHECK((endpoint_direction == kUSBIn) || (endpoint_direction == kUSBOut));
   UInt8 interface_number;
   (*interface_)->GetInterfaceNumber(interface_, &interface_number);
-  IOUSBDevRequest command;
+  IOUSBDevRequestTO command;
+  memset(&command, 0, sizeof(command));
   command.bmRequestType = USBmakebmRequestType(
       endpoint_direction, UInt8{kUSBClass}, UInt8{kUSBInterface});
   command.bRequest = request_code;
@@ -243,6 +251,8 @@ IOUSBDevRequest UvcControl::CreateEmptyCommand(int request_code,
   command.wValue = (control_selector << 8);
   command.wLength = control_command_size;
   command.wLenDone = 0;
+  command.noDataTimeout = kRequestTimeoutInMilliseconds;
+  command.completionTimeout = kRequestTimeoutInMilliseconds;
   return command;
 }
 
