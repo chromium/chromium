@@ -197,7 +197,7 @@ try_.builder(
 try_.builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    executable = "recipe:chromium_libfuzzer_trybot",
+    executable = "recipe:chromium/fuzz",
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
