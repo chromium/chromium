@@ -628,10 +628,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
                                                        GURL phishing_url,
                                                        bool is_phishing) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (is_from_cache) {
-    base::UmaHistogramBoolean("SBClientPhishing.CacheDetectsPhishing",
-                              is_phishing);
-  } else {
+  if (!is_from_cache) {
     base::UmaHistogramBoolean("SBClientPhishing.ServerModelDetectsPhishing",
                               is_phishing);
   }
