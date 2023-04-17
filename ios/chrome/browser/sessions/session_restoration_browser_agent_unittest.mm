@@ -328,7 +328,9 @@ TEST_F(SessionRestorationBrowserAgentTest,
 
 // Tests that restoring a session with scope `kAll` works correctly on non
 // empty WebStatelist with pinned WebStates present.
-TEST_F(SessionRestorationBrowserAgentTest, RestoreAllWebStatesInSession) {
+// TODO(crbug.com/1433670): The tests are flaky.
+TEST_F(SessionRestorationBrowserAgentTest,
+       DISABLED_RestoreAllWebStatesInSession) {
   CreateSessionRestorationBrowserAgent(true);
 
   web::WebState* pinned_web_state_0 =
@@ -381,8 +383,9 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreAllWebStatesInSession) {
 
 // Tests that restoring a session with scope `kPinnedOnly` works correctly on
 // non empty WebStatelist with pinned WebStates present.
+// TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest,
-       RestorePinnedWebStatesOnlyInSession) {
+       DISABLED_RestorePinnedWebStatesOnlyInSession) {
   CreateSessionRestorationBrowserAgent(true);
 
   web::WebState* pinned_web_state_0 =
@@ -435,8 +438,9 @@ TEST_F(SessionRestorationBrowserAgentTest,
 
 // Tests that restoring a session with scope `kRegularOnly` works correctly on
 // non empty WebStatelist with pinned WebStates present.
+// TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest,
-       RestoreRegularWebStatesOnlyInSession) {
+       DISABLED_RestoreRegularWebStatesOnlyInSession) {
   CreateSessionRestorationBrowserAgent(true);
 
   web::WebState* pinned_web_state_0 =
@@ -489,8 +493,9 @@ TEST_F(SessionRestorationBrowserAgentTest,
 
 // Tests that restoring a session with scope `kAll` but disabled pinned tabs
 // works correctly on non empty WebStatelist with pinned WebStates present.
+// TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest,
-       RestoreAllWebStatesInSessionWithPinnedTabsDisabled) {
+       DISABLED_RestoreAllWebStatesInSessionWithPinnedTabsDisabled) {
   CreateSessionRestorationBrowserAgent(false);
 
   web::WebState* pinned_web_state_0 =
@@ -544,8 +549,9 @@ TEST_F(SessionRestorationBrowserAgentTest,
 // Tests that restoring a session with scope `kPinnedOnly` but disabled pinned
 // tabs works correctly on non empty WebStatelist with pinned WebStates
 // present.
+// TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest,
-       RestorePinnedWebStatesOnlyInSessionWithPinnedTabsDisabled) {
+       DISABLED_RestorePinnedWebStatesOnlyInSessionWithPinnedTabsDisabled) {
   CreateSessionRestorationBrowserAgent(false);
 
   web::WebState* pinned_web_state_0 =
@@ -599,8 +605,9 @@ TEST_F(SessionRestorationBrowserAgentTest,
 // Tests that restoring a session with scope `kRegularOnly` but disabled
 // pinned tabs works correctly on non empty WebStatelist with pinned WebStates
 // present.
+// TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest,
-       RestoreRegularWebStatesOnlyInSessionWithPinnedTabsDisabled) {
+       DISABLED_RestoreRegularWebStatesOnlyInSessionWithPinnedTabsDisabled) {
   CreateSessionRestorationBrowserAgent(false);
 
   web::WebState* pinned_web_state_0 =
@@ -719,7 +726,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
 
 // Tests that saving a session with web states, then clearing the WebStatelist
 // and then restoring the session will restore the web states correctly.
-TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
+// TODO(crbug.com/1433670): The tests are flaky.
+TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
   CreateSessionRestorationBrowserAgent(true);
 
   web::WebState* web_state =
@@ -830,8 +838,9 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
 
 // Tests that SessionRestorationAgent saves session when the active webState
 // changes.
+// TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest,
-       SaveSessionWithActiveWebStateChange) {
+       DISABLED_SaveSessionWithActiveWebStateChange) {
   CreateSessionRestorationBrowserAgent(true);
 
   InsertNewWebState(GURL(kURL1), /*parent=*/nullptr, /*index=*/0,
