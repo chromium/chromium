@@ -22,57 +22,81 @@ int GetSeparatorHeight() {
 class GM2TabStyle : public TabStyle {
  public:
   ~GM2TabStyle() override = default;
+  int GetStandardWidth() const override;
+  int GetPinnedWidth() const override;
+  int GetTabOverlap() const override;
+  gfx::Size GetSeparatorSize() const override;
+  int GetDragHandleExtension(int height) const override;
+  gfx::Size GetPreviewImageSize() const override;
+  int GetTopCornerRadius() const override;
+  int GetBottomCornerRadius() const override;
+  float GetSelectedTabOpacity() const override;
 };
 class ChromeRefresh2023TabStyle : public GM2TabStyle {
  public:
   ~ChromeRefresh2023TabStyle() override = default;
+  int GetTopCornerRadius() const override;
+  int GetBottomCornerRadius() const override;
 };
 
 }  // namespace
 
 TabStyle::~TabStyle() = default;
 
-int TabStyle::GetStandardWidth() const {
+int GM2TabStyle::GetStandardWidth() const {
   // The standard tab width is 240 DIP including both separators.
   constexpr int kTabWidth = 240;
   // The overlap includes one separator, so subtract it here.
   return kTabWidth + GetTabOverlap() - kSeparatorThickness;
 }
 
-int TabStyle::GetPinnedWidth() const {
+int GM2TabStyle::GetPinnedWidth() const {
   constexpr int kTabPinnedContentWidth = 24;
   return kTabPinnedContentWidth + GetContentsHorizontalInsetSize() * 2;
 }
 
-int TabStyle::GetTabOverlap() const {
-  return GetCornerRadius() * 2 + kSeparatorThickness;
+int GM2TabStyle::GetTabOverlap() const {
+  return GetBottomCornerRadius() * 2 + kSeparatorThickness;
 }
 
-int TabStyle::GetDragHandleExtension(int height) const {
+int GM2TabStyle::GetDragHandleExtension(int height) const {
   return (height - GetSeparatorHeight()) / 2 - 1;
 }
 
-gfx::Size TabStyle::GetSeparatorSize() const {
+gfx::Size GM2TabStyle::GetSeparatorSize() const {
   return gfx::Size(kSeparatorThickness, GetSeparatorHeight());
 }
 
-gfx::Size TabStyle::GetPreviewImageSize() const {
+gfx::Size GM2TabStyle::GetPreviewImageSize() const {
   constexpr float kTabHoverCardPreviewImageAspectRatio = 16.0f / 9.0f;
   const int width = GetStandardWidth();
   return gfx::Size(width, width / kTabHoverCardPreviewImageAspectRatio);
 }
 
-int TabStyle::GetCornerRadius() const {
+int GM2TabStyle::GetTopCornerRadius() const {
+  return views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+}
+
+int GM2TabStyle::GetBottomCornerRadius() const {
   return views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
 }
 
 int TabStyle::GetContentsHorizontalInsetSize() const {
-  return GetCornerRadius() * 2;
+  return GetBottomCornerRadius() * 2;
 }
 
-float TabStyle::GetSelectedTabOpacity() const {
+float GM2TabStyle::GetSelectedTabOpacity() const {
   return kDefaultSelectedTabOpacity;
+}
+
+int ChromeRefresh2023TabStyle::GetTopCornerRadius() const {
+  return 10;
+}
+
+int ChromeRefresh2023TabStyle::GetBottomCornerRadius() const {
+  return 12;
 }
 
 // static

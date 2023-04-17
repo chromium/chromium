@@ -158,7 +158,7 @@ class GM2TabStyleViews : public TabStyleViews {
   void PaintSeparators(gfx::Canvas* canvas) const;
 
   // Given a tab of width |width|, returns the radius to use for the corners.
-  float GetTopCornerRadiusForWidth(int width) const;
+  virtual float GetTopCornerRadiusForWidth(int width) const;
 
   // Scales |bounds| by scale and aligns so that adjacent tabs meet up exactly
   // during painting.
@@ -209,13 +209,12 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
 
   // Calculate the corner radii. Note that corner radius is based on original
   // tab width (in DIP), not our new, scaled-and-aligned bounds.
-  const float radius = GetTopCornerRadiusForWidth(tab_->width()) * scale;
-  float top_radius = radius;
-  float bottom_radius = radius;
+  float top_radius = GetTopCornerRadiusForWidth(tab_->width()) * scale;
+  float bottom_radius = tab_style()->GetBottomCornerRadius() * scale;
 
   // Compute |extension| as the width outside the separators.  This is a fixed
   // value equal to the normal corner radius.
-  const float extension = tab_style()->GetCornerRadius() * scale;
+  const float extension = bottom_radius;
 
   // Calculate the bounds of the actual path.
   const float left = aligned_bounds.x();
@@ -283,7 +282,7 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
     SkRRect rrect = SkRRect::MakeRectXY(
         SkRect::MakeLTRB(tab_left + inset, tab_top + inset, tab_right - inset,
                          tab_bottom - inset),
-        radius - inset, radius - inset);
+        top_radius - inset, top_radius - inset);
     path.addRRect(rrect);
   } else {
     // Avoid mallocs at every new path verb by preallocating an
@@ -534,7 +533,7 @@ TabStyle::SeparatorBounds GM2TabStyleViews::GetSeparatorBounds(
   CHECK(tab());
   const gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(tab_->bounds(), scale, GetStrokeThickness());
-  const int corner_radius = tab_style()->GetCornerRadius() * scale;
+  const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
   gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
   separator_size.Scale(scale);
 
@@ -940,7 +939,7 @@ void GM2TabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
 float GM2TabStyleViews::GetTopCornerRadiusForWidth(int width) const {
   // Get the width of the top of the tab by subtracting the width of the outer
   // corners.
-  const int ideal_radius = tab_style()->GetCornerRadius();
+  const int ideal_radius = tab_style()->GetTopCornerRadius();
   const int top_width = width - ideal_radius * 2;
 
   // To maintain a round-rect appearance, ensure at least one third of the top
@@ -956,13 +955,13 @@ gfx::RectF GM2TabStyleViews::ScaleAndAlignBounds(const gfx::Rect& bounds,
   // of one tab's layout bounds is the same as the left edge of the next tab's;
   // this way the two tabs' separators will be drawn at the same coordinate.
   gfx::RectF aligned_bounds(bounds);
-  const int corner_radius = tab_style()->GetCornerRadius();
+  const int bottom_corner_radius = tab_style()->GetBottomCornerRadius();
   // Note: This intentionally doesn't subtract TABSTRIP_TOOLBAR_OVERLAP from the
   // bottom inset, because we want to pixel-align the bottom of the stroke, not
   // the bottom of the overlap.
   auto layout_insets = gfx::InsetsF::TLBR(
-      stroke_thickness, corner_radius, stroke_thickness,
-      corner_radius + tab_style()->GetSeparatorSize().width());
+      stroke_thickness, bottom_corner_radius, stroke_thickness,
+      bottom_corner_radius + tab_style()->GetSeparatorSize().width());
   aligned_bounds.Inset(layout_insets);
 
   // Scale layout bounds from DIP to px.

@@ -59,7 +59,7 @@ SkPath TabGroupHighlight::GetPath() const {
   // which is a well-scoped interaction. A dragging group doesn't nestle in with
   // the tabs around it, so there are no special cases needed when determining
   // its shape.
-  const int corner_radius = TabStyle::Get()->GetCornerRadius();
+  const int corner_radius = TabStyle::Get()->GetBottomCornerRadius();
 
   SkPath path;
   path.moveTo(0, bounds().height());
