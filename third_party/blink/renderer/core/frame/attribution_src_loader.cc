@@ -205,7 +205,7 @@ class AttributionSrcLoader::ResourceClient
     } else {
       // Send the data host normally.
       attribution_host->RegisterDataHost(
-          data_host_.BindNewPipeAndPassReceiver(), type);
+          data_host_.BindNewPipeAndPassReceiver(), type_);
     }
   }
 
@@ -256,10 +256,8 @@ class AttributionSrcLoader::ResourceClient
 
   const Member<AttributionSrcLoader> loader_;
 
-  // Type of events this request can register. In some cases, this will not be
-  // assigned until the first event is received. A single attributionsrc
-  // request can only register one type of event across redirects.
-  RegistrationType type_;
+  // Type of events this request can register.
+  const RegistrationType type_;
 
   // Remote used for registering responses with the browser-process.
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
@@ -522,9 +520,6 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
   }
 
-  // TODO(johnidel): We should consider updating the eligibility header based on
-  // previously registered requests in the chain.
-
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
     document->AddPostPrerenderingActivationStep(WTF::BindOnce(
@@ -682,8 +677,6 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-  type_ = RegistrationType::kSource;
-
   if (!headers.web_source.IsNull()) {
     auto source_data = attribution_reporting::SourceRegistration::Parse(
         StringUTF8Adaptor(headers.web_source).AsStringPiece());
@@ -733,8 +726,6 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   if (!HasEitherWebOrOsHeader(headers.trigger_count(), headers.request_id)) {
     return;
   }
-
-  type_ = RegistrationType::kTrigger;
 
   if (!headers.web_trigger.IsNull()) {
     auto trigger_data = attribution_reporting::TriggerRegistration::Parse(

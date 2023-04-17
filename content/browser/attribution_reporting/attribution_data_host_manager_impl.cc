@@ -129,7 +129,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
         render_frame_id_(render_frame_id),
         navigation_id_(navigation_id) {
     DCHECK(!nav_type_ || registration_type_ == RegistrationType::kSource);
-    DCHECK(!navigation_id || registration_type_ == RegistrationType::kSource);
+    DCHECK(!navigation_id_ || registration_type_ == RegistrationType::kSource);
   }
 
   ~ReceiverContext() = default;
@@ -144,12 +144,9 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   RegistrationType registration_type() const { return registration_type_; }
 
-  void set_registration_type(RegistrationType type) {
-    DCHECK_NE(type, RegistrationType::kSourceOrTrigger);
-    registration_type_ = type;
-  }
+  size_t sources_registered() const { return sources_registered_; }
 
-  size_t num_data_registered() const { return num_data_registered_; }
+  size_t triggers_registered() const { return triggers_registered_; }
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
@@ -161,7 +158,15 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
 
-  void IncrementNumDataRegistered() { ++num_data_registered_; }
+  void IncrementSourcesRegistered() {
+    DCHECK_NE(registration_type_, RegistrationType::kTrigger);
+    ++sources_registered_;
+  }
+
+  void IncrementTriggersRegistered() {
+    DCHECK_NE(registration_type_, RegistrationType::kSource);
+    ++triggers_registered_;
+  }
 
   const AttributionInputEvent& input_event() const { return input_event_; }
 
@@ -170,9 +175,11 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   // Logically const.
   SuitableOrigin context_origin_;
 
+  // Logically const.
   RegistrationType registration_type_;
 
-  size_t num_data_registered_ = 0;
+  size_t sources_registered_ = 0;
+  size_t triggers_registered_ = 0;
 
   // Whether the attribution is registered within a fenced frame tree.
   // Logically const.
@@ -614,26 +621,28 @@ void AttributionDataHostManagerImpl::NotifyNavigationFinished(
 }
 
 const AttributionDataHostManagerImpl::ReceiverContext*
-AttributionDataHostManagerImpl::GetReceiverContext(RegistrationType type) {
-  DCHECK_NE(type, RegistrationType::kSourceOrTrigger);
+AttributionDataHostManagerImpl::GetReceiverContextForSource() {
   ReceiverContext& context = receivers_.current_context();
 
-  switch (context.registration_type()) {
-    case RegistrationType::kSourceOrTrigger:
-      context.set_registration_type(type);
-      break;
-    case RegistrationType::kSource:
-    case RegistrationType::kTrigger:
-      if (context.registration_type() != type) {
-        mojo::ReportBadMessage(
-            "AttributionDataHost: Not eligible for source/trigger.");
-        return nullptr;
-      }
-      break;
+  if (context.registration_type() == RegistrationType::kTrigger) {
+    mojo::ReportBadMessage("AttributionDataHost: Not eligible for source.");
+    return nullptr;
   }
 
-  context.IncrementNumDataRegistered();
+  context.IncrementSourcesRegistered();
+  return &context;
+}
 
+const AttributionDataHostManagerImpl::ReceiverContext*
+AttributionDataHostManagerImpl::GetReceiverContextForTrigger() {
+  ReceiverContext& context = receivers_.current_context();
+
+  if (context.registration_type() == RegistrationType::kSource) {
+    mojo::ReportBadMessage("AttributionDataHost: Not eligible for trigger.");
+    return nullptr;
+  }
+
+  context.IncrementTriggersRegistered();
   return &context;
 }
 
@@ -643,8 +652,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 
-  const ReceiverContext* context =
-      GetReceiverContext(RegistrationType::kSource);
+  const ReceiverContext* context = GetReceiverContextForSource();
   if (!context) {
     return;
   }
@@ -672,8 +680,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 
-  const ReceiverContext* context =
-      GetReceiverContext(RegistrationType::kTrigger);
+  const ReceiverContext* context = GetReceiverContextForTrigger();
   if (!context) {
     return;
   }
@@ -690,8 +697,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     const GURL& registration_url) {
-  const ReceiverContext* context =
-      GetReceiverContext(RegistrationType::kSource);
+  const ReceiverContext* context = GetReceiverContextForSource();
   if (!context) {
     return;
   }
@@ -704,8 +710,7 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     const GURL& registration_url) {
-  const ReceiverContext* context =
-      GetReceiverContext(RegistrationType::kTrigger);
+  const ReceiverContext* context = GetReceiverContextForTrigger();
   if (!context) {
     return;
   }
@@ -731,21 +736,14 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
     }
   }
 
-  const char* histogram_name = nullptr;
-  switch (context.registration_type()) {
-    case RegistrationType::kSourceOrTrigger:
-      DCHECK_EQ(context.num_data_registered(), 0u);
-      return;
-    case RegistrationType::kTrigger:
-      histogram_name = "Conversions.RegisteredTriggersPerDataHost";
-      break;
-    case RegistrationType::kSource:
-      histogram_name = "Conversions.RegisteredSourcesPerDataHost";
-      break;
+  if (size_t num = context.sources_registered()) {
+    base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
+                                  num, 101);
   }
 
-  if (size_t num = context.num_data_registered()) {
-    base::UmaHistogramExactLinear(histogram_name, num, 101);
+  if (size_t num = context.triggers_registered()) {
+    base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
+                                  num, 101);
   }
 }
 

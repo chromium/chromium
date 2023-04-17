@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/common/content_export.h"
@@ -152,8 +151,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void OsTriggerDataAvailable(const GURL& registration_url) override;
 #endif
 
-  const ReceiverContext* GetReceiverContext(
-      attribution_reporting::mojom::RegistrationType);
+  const ReceiverContext* GetReceiverContextForSource();
+  const ReceiverContext* GetReceiverContextForTrigger();
 
   void OnReceiverDisconnected();
 

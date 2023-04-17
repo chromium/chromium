@@ -207,50 +207,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   }
 }
 
-// TODO(crbug.com/1395047): Remove when redirect chains consistently register
-// sources or triggers. Currently, responses not handled via
-// attributionsrc="url" use their own independent data host, so we do not
-// enforce consistency on these redirect chains.
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       SourceTriggerRegistered_ImgSrc) {
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  std::unique_ptr<MockDataHost> source_data_host;
-  std::unique_ptr<MockDataHost> trigger_data_host;
-  base::RunLoop source_loop;
-  base::RunLoop trigger_loop;
-  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
-      .WillRepeatedly(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              RegistrationType) {
-            if (!source_data_host) {
-              source_data_host = GetRegisteredDataHost(std::move(host));
-              source_loop.Quit();
-            } else {
-              trigger_data_host = GetRegisteredDataHost(std::move(host));
-              trigger_loop.Quit();
-            }
-          });
-
-  GURL register_url = https_server()->GetURL(
-      "c.test", "/register_source_trigger_redirect_chain.html");
-
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
-  if (!source_data_host) {
-    source_loop.Run();
-  }
-  source_data_host->WaitForSourceData(/*num_source_data=*/1);
-
-  if (!trigger_data_host) {
-    trigger_loop.Run();
-  }
-  trigger_data_host->WaitForTriggerData(/*num_trigger_data=*/1);
-}
-
 // See crbug.com/1426892, where attributionsrc window.open features are
 // incorrectly handled if multiple attributionsrc features are specified.
 // Multiple attributionsrc features should not issue multiple background
@@ -810,45 +766,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front().event_triggers.size(), 1u);
   EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
-}
-
-// TODO(crbug.com/1395047): Remove this once redirect chains can register a mix
-// of sources and triggers.
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcImgTriggerThenSource_SourceIgnored) {
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  std::unique_ptr<MockDataHost> data_host;
-  base::RunLoop loop;
-  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              RegistrationType) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            loop.Quit();
-          });
-
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_trigger_source_trigger.html");
-
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
-  if (!data_host) {
-    loop.Run();
-  }
-  data_host->WaitForTriggerData(/*num_trigger_data=*/2);
-  const auto& trigger_data = data_host->trigger_data();
-
-  EXPECT_EQ(trigger_data.size(), 2u);
-
-  // Both triggers should be processed.
-  EXPECT_EQ(trigger_data.front().event_triggers.front().data, 5u);
-  EXPECT_EQ(trigger_data.back().event_triggers.front().data, 7u);
-
-  // Middle redirect source should be ignored.
-  EXPECT_EQ(data_host->source_data().size(), 0u);
 }
 
 class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {

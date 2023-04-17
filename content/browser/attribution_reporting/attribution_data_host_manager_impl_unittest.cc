@@ -341,7 +341,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
         destination_origin, /*is_within_fenced_frame=*/false,
-        RegistrationType::kSourceOrTrigger, kFrameId,
+        RegistrationType::kTrigger, kFrameId,
         /*last_navigation_id=*/kNavigationId);
 
     TriggerRegistration trigger_data;
@@ -369,7 +369,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       data_host_remote.data_host.FlushForTesting();
 
       EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Not eligible for source/trigger.");
+                "AttributionDataHost: Not eligible for source.");
     }
 
     checkpoint.Call(3);
@@ -382,6 +382,70 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
   histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 3,
+                                1);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       MixedDataHost_AllowsSourcesAndTriggers) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(mock_manager_, HandleSource);
+  }
+
+  auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
+  auto destination_site =
+      net::SchemefulSite::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
+
+  {
+    RemoteDataHost data_host_remote{.task_environment =
+                                        raw_ref(task_environment_)};
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
+        /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
+        kFrameId,
+        /*last_navigation_id=*/kNavigationId);
+
+    SourceRegistration source_data(*DestinationSet::Create({destination_site}));
+
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
+    data_host_remote.data_host.FlushForTesting();
+
+    checkpoint.Call(1);
+
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
+    data_host_remote.data_host.FlushForTesting();
+
+    checkpoint.Call(2);
+
+    data_host_remote.data_host->TriggerDataAvailable(
+        reporting_origin, TriggerRegistration(),
+        /*attestation=*/absl::nullopt);
+    data_host_remote.data_host.FlushForTesting();
+
+    checkpoint.Call(3);
+
+    data_host_remote.data_host->SourceDataAvailable(std::move(reporting_origin),
+                                                    std::move(source_data));
+    data_host_remote.data_host.FlushForTesting();
+  }
+
+  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 3,
+                                1);
+  histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 1,
                                 1);
 }
 
@@ -413,8 +477,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
-        /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
-        kFrameId, /*last_navigation_id=*/kNavigationId);
+        /*is_within_fenced_frame=*/false, RegistrationType::kSource, kFrameId,
+        /*last_navigation_id=*/kNavigationId);
 
     SourceRegistration source_data(*DestinationSet::Create({destination_site}));
 
@@ -439,7 +503,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       data_host_remote.data_host.FlushForTesting();
 
       EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Not eligible for source/trigger.");
+                "AttributionDataHost: Not eligible for trigger.");
     }
 
     checkpoint.Call(3);
@@ -1670,7 +1734,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote.FlushForTesting();
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "AttributionDataHost: Not eligible for source/trigger.");
+            "AttributionDataHost: Not eligible for trigger.");
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
