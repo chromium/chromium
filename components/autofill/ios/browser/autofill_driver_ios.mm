@@ -11,7 +11,6 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,7 +41,7 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
       client_(client),
       browser_autofill_manager_(
           std::make_unique<BrowserAutofillManager>(this, client, app_locale)) {
-    web_frame_id_ = web::GetWebFrameId(web_frame);
+  web_frame_id_ = web_frame ? web_frame->GetFrameId() : "";
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() = default;
@@ -154,11 +153,9 @@ void AutofillDriverIOS::PopupHidden() {
 }
 
 net::IsolationInfo AutofillDriverIOS::IsolationInfo() {
-  std::string main_web_frame_id = web::GetMainWebFrameId(web_state_);
   web::WebFramesManager* frames_manager =
       AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);
-  web::WebFrame* main_web_frame =
-      frames_manager->GetFrameWithId(main_web_frame_id);
+  web::WebFrame* main_web_frame = frames_manager->GetMainWebFrame();
   if (!main_web_frame)
     return net::IsolationInfo();
 

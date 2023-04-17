@@ -56,7 +56,6 @@
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -563,8 +562,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   // Store the form data when WebState is not visible, to send it as soon as it
   // becomes visible again, e.g., when the CVC unmask prompt is showing.
   if (!_webState->IsVisible()) {
-    _pendingFormData =
-        std::make_pair(web::GetWebFrameId(frame), std::move(autofillData));
+    _pendingFormData = std::make_pair(frame ? frame->GetFrameId() : "",
+                                      std::move(autofillData));
   } else {
     [self sendData:std::move(autofillData) toFrame:frame];
   }
