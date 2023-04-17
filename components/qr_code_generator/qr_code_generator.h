@@ -85,13 +85,10 @@ class QRCodeGenerator {
   // Generates a QR code containing the given data.
   // The generator will attempt to choose a version that fits the data and which
   // is >= |min_version|, if given. The returned span's length is
-  // input-dependent and not known at compile-time. The optional |mask| argument
-  // specifies the QR mask value to use (from 0 to 7). If not specified, the
-  // optimal mask is calculated per the algorithm specified in the QR standard.
+  // input-dependent and not known at compile-time.
   absl::optional<GeneratedCode> Generate(
       base::span<const uint8_t> in,
-      absl::optional<int> min_version = absl::nullopt,
-      absl::optional<uint8_t> mask = absl::nullopt);
+      absl::optional<int> min_version = absl::nullopt);
 
   // kMaxInputSize is the maximum number of bytes that `Generate` will try to
   // process. Inputs larger than this will certainly fail, but could otherwise

@@ -580,10 +580,7 @@ QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
 
 absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     base::span<const uint8_t> in,
-    absl::optional<int> min_version,
-    absl::optional<uint8_t> mask) {
-  CHECK(!mask || *mask <= kMaxMask);
-
+    absl::optional<int> min_version) {
   if (in.size() > kMaxInputSize) {
     return absl::nullopt;
   }
@@ -757,12 +754,11 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
   DCHECK_EQ(k, total_bytes);
 
-  uint8_t best_mask = mask.value_or(0);
+  // Evaluate each masking function to find the one with the lowest penalty
+  // score.
+  uint8_t best_mask = 0;
   absl::optional<unsigned> lowest_penalty;
-
-  // If |mask| was not specified, then evaluate each masking function to find
-  // the one with the lowest penalty score.
-  for (uint8_t mask_num = 0; !mask && mask_num <= kMaxMask; mask_num++) {
+  for (uint8_t mask_num = 0; mask_num <= kMaxMask; mask_num++) {
     // FormatInformationForECC returns an array of encoded formatting words for
     // the QR code that this code generates. See tables 10 and 12. For example:
     //                  00 011
