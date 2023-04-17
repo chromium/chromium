@@ -5,11 +5,7 @@
 #include "chrome/browser/hid/hid_status_icon.h"
 
 #include <string>
-#include <vector>
 
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
-#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/hid/hid_connection_tracker.h"
@@ -30,21 +26,16 @@ HidStatusIcon::~HidStatusIcon() {
   }
 }
 
-void HidStatusIcon::AddProfile(Profile* profile) {
-  DCHECK(!base::Contains(profiles_, profile));
-  profiles_.emplace_back(profile);
+void HidStatusIcon::ProfileAdded(Profile* profile) {
   RefreshIcon();
 }
 
-void HidStatusIcon::RemoveProfile(Profile* profile) {
-  DCHECK(base::Contains(profiles_, profile));
-  base::EraseIf(profiles_, [&](Profile* entry) { return profile == entry; });
+void HidStatusIcon::ProfileRemoved(Profile* profile) {
   RefreshIcon();
 }
 
 void HidStatusIcon::NotifyConnectionCountUpdated(Profile* profile) {
   DCHECK(status_icon_);
-  DCHECK(base::Contains(profiles_, profile));
   status_icon_->SetToolTip(GetTooltipLabel(GetTotalConnectionCount()));
 }
 
@@ -52,11 +43,11 @@ void HidStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   DCHECK_GE(command_id, IDC_MANAGE_HID_DEVICES_FIRST);
   DCHECK_LE(command_id, IDC_MANAGE_HID_DEVICES_LAST);
   size_t profile_idx = command_id - IDC_MANAGE_HID_DEVICES_FIRST;
-  if (profile_idx < profiles_.size()) {
+  if (profile_idx < visible_profiles_.size()) {
     // |profiles_[profile_idx]|'s HidConnectionTracker guarantees the entry in
     // |profiles_| is removed when the profile is destroyed.
     auto* hid_connection_tracker = HidConnectionTrackerFactory::GetForProfile(
-        profiles_[profile_idx], /*create=*/false);
+        visible_profiles_[profile_idx], /*create=*/false);
     DCHECK(hid_connection_tracker);
     hid_connection_tracker->ShowContentSettingsExceptions();
   }
@@ -64,9 +55,9 @@ void HidStatusIcon::ExecuteCommand(int command_id, int event_flags) {
 
 size_t HidStatusIcon::GetTotalConnectionCount() {
   size_t total_connection_count = 0;
-  for (Profile* profile : profiles_) {
-    auto* hid_connection_tracker =
-        HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
+  for (auto item : profiles_) {
+    auto* hid_connection_tracker = HidConnectionTrackerFactory::GetForProfile(
+        item.first, /*create=*/false);
     DCHECK(hid_connection_tracker);
     total_connection_count += hid_connection_tracker->total_connection_count();
   }
@@ -74,6 +65,7 @@ size_t HidStatusIcon::GetTotalConnectionCount() {
 }
 
 void HidStatusIcon::RefreshIcon() {
+  visible_profiles_.clear();
   auto* status_tray = g_browser_process->status_tray();
   DCHECK(status_tray);
   if (profiles_.empty()) {
@@ -84,15 +76,17 @@ void HidStatusIcon::RefreshIcon() {
   }
 
   auto menu = std::make_unique<StatusIconMenuModel>(this);
-  for (size_t idx = 0; idx < profiles_.size(); idx++) {
-    int command_id = IDC_MANAGE_HID_DEVICES_FIRST + static_cast<int>(idx);
+  int command_id = IDC_MANAGE_HID_DEVICES_FIRST;
+  for (const auto& [profile, staging] : profiles_) {
     if (command_id > IDC_MANAGE_HID_DEVICES_LAST) {
       // This case should be fairly rare, but if we have more profiles than
       // pre-defined command ids, we don't put those in the status icon menu.
       // TODO(crbug.com/1360981): Add a metric to capture this.
       break;
     }
-    menu->AddItem(command_id, GetManageHidDeviceButtonLabel(profiles_[idx]));
+    menu->AddItem(command_id, GetManageHidDeviceButtonLabel(profile));
+    visible_profiles_.push_back(profile);
+    command_id++;
   }
   auto tooltip_label = GetTooltipLabel(GetTotalConnectionCount());
 

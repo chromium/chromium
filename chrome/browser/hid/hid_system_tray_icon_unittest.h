@@ -22,13 +22,19 @@ class MockHidConnectionTracker : public HidConnectionTracker {
 
 class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
  public:
+  using OriginItem = std::pair<url::Origin, int>;
+  using ProfileItem = std::pair<Profile*, std::vector<OriginItem>>;
+
   HidSystemTrayIconTestBase()
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void TearDown() override;
+
   // Check if the hid system tray icon is shown and all the action buttons work
   // correctly with the given |profile_connection_counts|.
-  virtual void CheckIcon(const std::vector<std::pair<Profile*, size_t>>&
-                             profile_connection_counts) = 0;
+  virtual void CheckIcon(
+      const std::vector<ProfileItem>& profile_connection_counts) = 0;
 
   // Check no hid system tray is being shown.
   virtual void CheckIconHidden() = 0;
@@ -45,13 +51,37 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
 
   // Test the scenario involving multiple profiles including profile
   // destruction.
-  void TestMultipleProfiles();
+  void TestMultipleProfiles(
+      const std::vector<std::pair<Profile*, std::vector<url::Origin>>>&
+          profile_origins_pairs);
 
   // Test the scenario when a profile is unstaging.
-  void TestProfileShownWhileUnstaging();
+  void TestProfileShownWhileUnstaging(Profile* profile,
+                                      const url::Origin& origin);
 
   // Test the scenario with single profile.
-  void TestSingleProfile();
+  void TestSingleProfile(Profile* profile,
+                         const url::Origin& origin1,
+                         const url::Origin& origin2);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Create a extension with |extension_name|.
+  scoped_refptr<const extensions::Extension> CreateExtensionWithName(
+      const std::string& extension_name);
+
+  // Add the |extension| to the |profile|'s extension service.
+  void AddExtensionToProfile(Profile* profile,
+                             const extensions::Extension* extension);
+
+  // Run TestMultipleProfiles with extension origins.
+  void TestSingleProfileExtentionOrigins();
+
+  // Run TestProfileShownWhileUnstaging with extension origins.
+  void TestProfileShownWhileUnstagingExtensionOrigins();
+
+  // Run TestMultipleProfiles with extension origins.
+  void TestMultipleProfilesExtensionOrigins();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
 #endif  // CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_UNITTEST_H_

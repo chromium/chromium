@@ -85,12 +85,17 @@ void HidConnectionTracker::ShowSiteSettings(const url::Origin& origin) {
 }
 
 void HidConnectionTracker::CleanUp() {
-  if (!origins_.empty()) {
-    origins_.clear();
-    total_connection_count_ = 0;
-    auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
-    if (hid_system_tray_icon) {
-      hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/true);
-    }
+  origins_.clear();
+  total_connection_count_ = 0;
+  auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
+  // We can't rely on |origins_.empty()| to determine if the profile is in the
+  // system tray icon, because |origins_| is updated immediately when a
+  // profile is unstaged. In the scenario of |UnstageProfile(imm = false)|
+  // followed by profile destruction, |UnstageProfile(imm = true)| is skipped
+  // due to |origins_| being empty, and the |CleanUpProfile| callback 10s later
+  // is a no-op because the profile is destroyed. Therefore, we need to
+  // explicitly check if the profile is contained in the system tray icon.
+  if (hid_system_tray_icon && hid_system_tray_icon->ContainProfile(profile_)) {
+    hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/true);
   }
 }

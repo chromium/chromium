@@ -78,19 +78,14 @@ void HidPinnedNotification::DisplayNotification(
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }
 
-void HidPinnedNotification::AddProfile(Profile* profile) {
-  DCHECK(!base::Contains(profiles_, profile));
-  profiles_.emplace(profile);
+void HidPinnedNotification::ProfileAdded(Profile* profile) {
   DisplayNotification(CreateNotification(profile));
 }
 
-void HidPinnedNotification::RemoveProfile(Profile* profile) {
-  DCHECK(base::Contains(profiles_, profile));
-  profiles_.erase(profile);
+void HidPinnedNotification::ProfileRemoved(Profile* profile) {
   SystemNotificationHelper::GetInstance()->Close(GetNotificationId(profile));
 }
 
 void HidPinnedNotification::NotifyConnectionCountUpdated(Profile* profile) {
-  DCHECK(base::Contains(profiles_, profile));
   DisplayNotification(CreateNotification(profile));
 }

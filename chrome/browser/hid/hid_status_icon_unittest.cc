@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/hid_system_tray_icon_unittest.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/strings/stringprintf.h"
@@ -76,7 +77,7 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
     TestingBrowserProcess::GetGlobal()->SetStatusTray(nullptr);
   }
 
-  void CheckIcon(const std::vector<std::pair<Profile*, size_t>>&
+  void CheckIcon(const std::vector<HidSystemTrayIconTestBase::ProfileItem>&
                      profile_connection_counts) override {
     const auto* status_tray = static_cast<MockStatusTray*>(
         TestingBrowserProcess::GetGlobal()->status_tray());
@@ -85,27 +86,37 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
     const auto* status_icon = static_cast<MockStatusIcon*>(
         status_tray->GetStatusIconsForTest().back().get());
 
+    // Sort the |profile_connection_counts| by the address of the profile
+    // pointer. This is necessary because the menu items are created by
+    // iterating through a structure of flat_map<Profile*, bool>.
+    auto sorted_profile_connection_counts = profile_connection_counts;
+    std::sort(sorted_profile_connection_counts.begin(),
+              sorted_profile_connection_counts.end());
     size_t total_connection_count = 0;
     auto* menu_item = status_icon->menu_item();
     EXPECT_EQ(menu_item->GetItemCount(),
               std::min(profile_connection_counts.size(), kMenuMaxItemCount));
     // Check each button label and behavior of clicking the button.
-    for (size_t idx = 0; idx < profile_connection_counts.size(); idx++) {
+    for (size_t idx = 0; idx < sorted_profile_connection_counts.size(); idx++) {
+      Profile* profile = sorted_profile_connection_counts[idx].first;
+      const auto& origin_items = sorted_profile_connection_counts[idx].second;
+      for (const auto& [origin, connection_count] : origin_items) {
+        total_connection_count += connection_count;
+      }
+
       auto* hid_connection_tracker = static_cast<MockHidConnectionTracker*>(
-          HidConnectionTrackerFactory::GetForProfile(
-              profile_connection_counts[idx].first,
-              /*create=*/false));
+          HidConnectionTrackerFactory::GetForProfile(profile,
+                                                     /*create=*/false));
       EXPECT_TRUE(hid_connection_tracker);
       if (idx < kMenuMaxItemCount) {
         EXPECT_EQ(menu_item->GetCommandIdAt(idx),
                   IDC_MANAGE_HID_DEVICES_FIRST + static_cast<int>(idx));
         EXPECT_EQ(menu_item->GetLabelAt(idx),
                   GetExpectedButtonTitleForProfile(
-                      profile_connection_counts[idx].first));
+                      sorted_profile_connection_counts[idx].first));
         EXPECT_CALL(*hid_connection_tracker, ShowContentSettingsExceptions());
         SimulateButtonClick(idx);
       }
-      total_connection_count += profile_connection_counts[idx].second;
     }
 
     // Check the icon tool tip is with the right singular/plural term according
@@ -135,7 +146,8 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
   }
 };
 
-TEST_F(HidStatusIconTest, SingleProfileEmptyName) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(HidStatusIconTest, SingleProfileEmptyNameExtentionOrigins) {
   // Current TestingProfileManager can't support empty profile name as it uses
   // profile name for profile path. Passing empty would result in a failure in
   // ProfileManager::IsAllowedProfilePath(). Changing the way
@@ -145,26 +157,27 @@ TEST_F(HidStatusIconTest, SingleProfileEmptyName) {
   // profile with non-empty name and then change the profile name to empty which
   // can still achieve what this file wants to test.
   profile()->set_profile_name("");
-  TestSingleProfile();
+  TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidStatusIconTest, SingleProfileNonEmptyName) {
-  TestSingleProfile();
+TEST_F(HidStatusIconTest, SingleProfileNonEmptyNameExtentionOrigins) {
+  TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidStatusIconTest, ProfileShownWhileUnstaging) {
-  TestProfileShownWhileUnstaging();
+TEST_F(HidStatusIconTest, ProfileShownWhileUnstagingExtensionOrigins) {
+  TestProfileShownWhileUnstagingExtensionOrigins();
 }
 
-TEST_F(HidStatusIconTest, MultipleProfiles) {
-  TestMultipleProfiles();
+TEST_F(HidStatusIconTest, MultipleProfilesExtensionOrigins) {
+  TestMultipleProfilesExtensionOrigins();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(HidStatusIconTest, NumProfilesOverLimit) {
   auto origin = url::Origin::Create(GURL("https://www.example.com"));
   // Set to 10 more profiles than the max limit.
   size_t num_profiles = kMenuMaxItemCount + 10;
-  std::vector<std::pair<Profile*, size_t>> profile_connection_counts;
+  std::vector<HidSystemTrayIconTestBase::ProfileItem> profile_connection_counts;
   std::vector<HidConnectionTracker*> hid_connection_trackers;
   for (size_t idx = 0; idx < num_profiles; idx++) {
     std::string profile_name = base::StringPrintf("user%zu", idx);
@@ -173,7 +186,7 @@ TEST_F(HidStatusIconTest, NumProfilesOverLimit) {
         HidConnectionTrackerFactory::GetForProfile(profile,
                                                    /*create=*/true));
     hid_connection_trackers[idx]->IncrementConnectionCount(origin);
-    profile_connection_counts.push_back({profile, 1});
+    profile_connection_counts.push_back({profile, {{origin, 1}}});
   }
   // CheckIcon has the logic to expect the icon button size is
   // |kMenuMaxItemCount|.

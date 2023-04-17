@@ -7,10 +7,12 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/origin.h"
 
 class Profile;
 
@@ -33,9 +35,16 @@ class HidSystemTrayIcon {
   // changed.
   virtual void NotifyConnectionCountUpdated(Profile* profile) = 0;
 
+  // Check if the |profile| is being tracked by the system tray icon.
+  virtual bool ContainProfile(Profile* profile);
+
   // The time period that a profile is shown in the system tray icon while it is
   // unstaging.
   static constexpr base::TimeDelta kProfileUnstagingTime = base::Seconds(10);
+
+  const base::flat_map<Profile*, bool>& GetProfilesForTesting() {
+    return profiles_;
+  }
 
  protected:
   // Get the image for the status tray icon.
@@ -46,26 +55,22 @@ class HidSystemTrayIcon {
   static std::u16string GetManageHidDeviceButtonLabel(Profile* profile);
 
   // Get the label of the tooltip of the HID system tray icon.
-  static std::u16string GetTooltipLabel(size_t num_devices);
+  static std::u16string GetTooltipLabel(size_t num_connections);
+
+  // This map stores profiles being tracked, along with their staging status.
+  base::flat_map<Profile*, bool> profiles_;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HidSystemTrayIconTest, UnstageProfile);
-  FRIEND_TEST_ALL_PREFIXES(HidSystemTrayIconTest,
-                           CallbackAfterHidSystemTrayIconDestroyed);
+  // This function is called after the |profile| object is added to the
+  // |profiles_|.
+  virtual void ProfileAdded(Profile* profile) = 0;
 
-  // Add a profile to the system tray icon.
-  virtual void AddProfile(Profile* profile) = 0;
+  // This function is called after the |profile| object is removed from the
+  // |profiles_|.
+  virtual void ProfileRemoved(Profile* profile) = 0;
 
-  // Remove a profile from the system tray icon.
-  virtual void RemoveProfile(Profile* profile) = 0;
-
-  // Remove |profile| from the system tray icon if it is still in
-  // |unstaging_profiles_|.
-  void CleanUpProfiles(base::WeakPtr<Profile> profile);
-
-  // A list of profiles that are unstaging, which are scheduled to be removed.
-  // later.
-  std::vector<base::WeakPtr<Profile>> unstaging_profiles_;
+  // Remove |profile| from the system tray icon if it is still unstaging.
+  void CleanUpProfile(base::WeakPtr<Profile> profile);
 
   base::WeakPtrFactory<HidSystemTrayIcon> weak_factory_{this};
 };

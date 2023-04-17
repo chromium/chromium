@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -34,6 +35,7 @@
 namespace {
 
 using testing::Pair;
+using testing::Return;
 using testing::UnorderedElementsAre;
 
 constexpr char kTestProfileName[] = "user@gmail.com";
@@ -42,8 +44,9 @@ class MockHidSystemTrayIcon : public HidSystemTrayIcon {
  public:
   MOCK_METHOD(void, StageProfile, (Profile*), (override));
   MOCK_METHOD(void, UnstageProfile, (Profile*, bool), (override));
-  MOCK_METHOD(void, AddProfile, (Profile*), (override));
-  MOCK_METHOD(void, RemoveProfile, (Profile*), (override));
+  MOCK_METHOD(bool, ContainProfile, (Profile*), (override));
+  MOCK_METHOD(void, ProfileAdded, (Profile*), (override));
+  MOCK_METHOD(void, ProfileRemoved, (Profile*), (override));
   MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
 };
 
@@ -67,6 +70,13 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
 
     hid_connection_tracker_ =
         HidConnectionTrackerFactory::GetForProfile(profile(), /*create=*/true);
+  }
+
+  void TearDown() override {
+    // Set the system tray icon to null to avoid uninteresting call to it during
+    // profile destruction.
+    TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
+    BrowserWithTestWindowTest::TearDown();
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -191,6 +201,12 @@ TEST_F(HidConnectionTrackerTest, ProfileDestroyed) {
   EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
               UnorderedElementsAre(Pair(origin, 2)));
 
+  // ContainProfile should be called twice, once from
+  // HidConnectionTrackerFactory::BrowserContextShutdown and once from
+  // ~HidConnectionTracker.
+  EXPECT_CALL(hid_system_tray_icon(), ContainProfile(profile_to_be_destroyed))
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(false));
   EXPECT_CALL(hid_system_tray_icon(),
               UnstageProfile(profile_to_be_destroyed, /*immediate=*/true));
   profile_manager()->DeleteTestingProfile(kTestProfileName);

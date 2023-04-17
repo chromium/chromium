@@ -28,7 +28,7 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
     HidSystemTrayIconTestBase::TearDown();
   }
 
-  void CheckIcon(const std::vector<std::pair<Profile*, size_t>>&
+  void CheckIcon(const std::vector<HidSystemTrayIconTestBase::ProfileItem>&
                      profile_connection_counts) override {
     EXPECT_FALSE(display_service_
                      ->GetDisplayedNotificationsForType(
@@ -36,25 +36,32 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
                      .empty());
 
     // Check each button label and behavior of clicking the button.
-    for (const auto& pair : profile_connection_counts) {
+    for (const auto& profile_item : profile_connection_counts) {
+      Profile* profile = profile_item.first;
+      const auto& origin_items = profile_item.second;
+      size_t total_connection_count = 0;
+      for (const auto& [origin, connection_count] : origin_items) {
+        total_connection_count += connection_count;
+      }
+
       auto* hid_connection_tracker = static_cast<MockHidConnectionTracker*>(
-          HidConnectionTrackerFactory::GetForProfile(pair.first,
+          HidConnectionTrackerFactory::GetForProfile(profile,
                                                      /*create=*/false));
       EXPECT_TRUE(hid_connection_tracker);
       auto maybe_notification = display_service_->GetNotification(
-          HidPinnedNotification::GetNotificationId(pair.first));
+          HidPinnedNotification::GetNotificationId(profile));
       ASSERT_TRUE(maybe_notification);
-      EXPECT_EQ(maybe_notification->title(), GetExpectedIconTooltip(
-                                                 /*num_devices=*/pair.second));
+      EXPECT_EQ(maybe_notification->title(),
+                GetExpectedIconTooltip(total_connection_count));
 
       EXPECT_EQ(maybe_notification->rich_notification_data().buttons.size(),
                 1u);
       EXPECT_EQ(maybe_notification->rich_notification_data().buttons[0].title,
-                GetExpectedButtonTitleForProfile(pair.first));
+                GetExpectedButtonTitleForProfile(profile));
       EXPECT_TRUE(maybe_notification->delegate());
 
       EXPECT_CALL(*hid_connection_tracker, ShowContentSettingsExceptions());
-      SimulateButtonClick(pair.first);
+      SimulateButtonClick(profile);
     }
   }
 
@@ -76,7 +83,8 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
-TEST_F(HidPinnedNotificationTest, SingleProfileEmptyName) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(HidPinnedNotificationTest, SingleProfileEmptyNameExtensionOrigins) {
   // Current TestingProfileManager can't support empty profile name as it uses
   // profile name for profile path. Passing empty would result in a failure in
   // ProfileManager::IsAllowedProfilePath(). Changing the way
@@ -86,17 +94,18 @@ TEST_F(HidPinnedNotificationTest, SingleProfileEmptyName) {
   // profile with non-empty name and then change the profile name to empty which
   // can still achieve what this file wants to test.
   profile()->set_profile_name("");
-  TestSingleProfile();
+  TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidPinnedNotificationTest, ProfileShownWhileUnstaging) {
-  TestProfileShownWhileUnstaging();
+TEST_F(HidPinnedNotificationTest, ProfileShownWhileUnstagingExtentionOrigins) {
+  TestProfileShownWhileUnstagingExtensionOrigins();
 }
 
-TEST_F(HidPinnedNotificationTest, SingleProfileNonEmptyName) {
-  TestSingleProfile();
+TEST_F(HidPinnedNotificationTest, SingleProfileNonEmptyNameExtentionOrigins) {
+  TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidPinnedNotificationTest, MultipleProfiles) {
-  TestMultipleProfiles();
+TEST_F(HidPinnedNotificationTest, MultipleProfilesExtentionOrigins) {
+  TestMultipleProfilesExtensionOrigins();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
