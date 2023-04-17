@@ -35,7 +35,7 @@ std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
 
 }  // namespace
 
-DeskTemplate::DeskTemplate(base::GUID uuid,
+DeskTemplate::DeskTemplate(base::Uuid uuid,
                            DeskTemplateSource source,
                            const std::string& name,
                            const base::Time created_time,

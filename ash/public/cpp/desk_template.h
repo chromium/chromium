@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/guid.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/app_restore/restore_data.h"
 
 namespace aura {
@@ -51,7 +51,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
  public:
   // This constructor is used to instantiate DeskTemplate with a specific
   // source.
-  DeskTemplate(base::GUID uuid,
+  DeskTemplate(base::Uuid uuid,
                DeskTemplateSource source,
                const std::string& name,
                const base::Time created_time,
@@ -67,7 +67,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // A special value to use as an icon identifier for an incognito window.
   static constexpr char kIncognitoWindowIdentifier[] = "incognito_window";
 
-  const base::GUID& uuid() const { return uuid_; }
+  const base::Uuid& uuid() const { return uuid_; }
   DeskTemplateSource source() const { return source_; }
   base::Time created_time() const { return created_time_; }
 
@@ -131,7 +131,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // for `ToString` and `ToDebugString` according to the given `for_debugging`.
   std::string GetDeskTemplateInfo(bool for_debugging) const;
 
-  const base::GUID uuid_;  // We utilize the string based base::GUID to uniquely
+  const base::Uuid uuid_;  // We utilize the string based base::Uuid to uniquely
                            // identify the template.
 
   // Indicates the source where this desk template originates from.
