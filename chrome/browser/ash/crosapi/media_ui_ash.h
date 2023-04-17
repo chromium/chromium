@@ -28,6 +28,7 @@ class MediaUIAsh : public mojom::MediaUI {
       const base::UnguessableToken& id,
       mojo::PendingRemote<global_media_controls::mojom::DeviceService>
           pending_device_service) override;
+  void ShowDevicePicker(const std::string& item_id) override;
 
   // Returns the DeviceService associated with `id`, if it exists.
   global_media_controls::mojom::DeviceService* GetDeviceService(

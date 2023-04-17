@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -154,6 +155,39 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
   }
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void MediaNotificationService::ShowDialogAsh(
+    std::unique_ptr<media_router::StartPresentationContext> context) {
+  context_ = std::move(context);
+  auto* web_contents = content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(
+          context_->presentation_request().render_frame_host_id));
+  auto routes = media_router::WebContentsPresentationManager::Get(web_contents)
+                    ->GetMediaRoutes();
+
+  std::string item_id;
+  if (!routes.empty()) {
+    // It is possible for a sender page to connect to two routes. For the
+    // sake of the Zenith dialog, only one notification is needed.
+    item_id = routes.begin()->media_route_id();
+  } else {
+    item_id = content::MediaSession::GetRequestIdFromWebContents(web_contents)
+                  .ToString();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->media_ui_ash()
+      ->ShowDevicePicker(item_id);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::MediaUI>()
+      ->ShowDevicePicker(item_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 MediaNotificationService::~MediaNotificationService() {
   media_session_item_producer_->RemoveObserver(this);

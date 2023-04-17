@@ -6,6 +6,10 @@
 
 #include <utility>
 
+#include "ash/shell.h"
+#include "ash/system/media/media_tray.h"
+#include "ash/system/status_area_widget.h"
+
 namespace crosapi {
 
 namespace mojom {
@@ -27,6 +31,12 @@ void MediaUIAsh::RegisterDeviceService(
   device_service.set_disconnect_handler(base::BindOnce(
       &MediaUIAsh::RemoveDeviceService, base::Unretained(this), id));
   device_services_.emplace(id, std::move(device_service));
+}
+
+void MediaUIAsh::ShowDevicePicker(const std::string& item_id) {
+  ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
+      ->media_tray()
+      ->ShowBubbleWithItem(item_id);
 }
 
 mojom::DeviceService* MediaUIAsh::GetDeviceService(

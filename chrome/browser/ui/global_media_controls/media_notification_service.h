@@ -103,6 +103,12 @@ class MediaNotificationService
       mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
           client_remote) override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Show the Global Media Controls dialog in Ash.
+  void ShowDialogAsh(
+      std::unique_ptr<media_router::StartPresentationContext> context);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
 

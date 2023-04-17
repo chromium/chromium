@@ -31,9 +31,10 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
       : old_provider_(MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Set(this);
 
-    ON_CALL(*this, GetMediaNotificationListView(_, _))
-        .WillByDefault(
-            [](auto, auto) { return std::make_unique<views::View>(); });
+    ON_CALL(*this, GetMediaNotificationListView(_, _, _))
+        .WillByDefault([](auto, auto, const auto&) {
+          return std::make_unique<views::View>();
+        });
   }
 
   ~MockMediaNotificationProvider() override {
@@ -43,7 +44,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   // Medianotificationprovider implementations.
   MOCK_METHOD((std::unique_ptr<views::View>),
               GetMediaNotificationListView,
-              (int, bool));
+              (int, bool, const std::string&));
   MOCK_METHOD((std::unique_ptr<views::View>),
               GetActiveMediaNotificationView,
               ());
@@ -222,7 +223,7 @@ TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
   // be active. GetMediaNotificationlistview also should be called for
   // getting active notifications.
   EXPECT_CALL(*provider(),
-              GetMediaNotificationListView(_, /*should_clip_height=*/true));
+              GetMediaNotificationListView(_, /*should_clip_height=*/true, _));
   SimulateTapOnMediaTray();
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());
@@ -408,6 +409,25 @@ TEST_F(MediaTrayTest, DialogAnchor) {
 
   SimulateMockTrayVisibilityChanged(false);
   EXPECT_EQ(initial_bounds, GetBubbleBounds());
+}
+
+TEST_F(MediaTrayTest, ShowBubble) {
+  // We start with no bubble view.
+  EXPECT_EQ(nullptr, media_tray()->GetBubbleView());
+
+  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, ""));
+  media_tray()->ShowBubble();
+  EXPECT_NE(nullptr, media_tray()->GetBubbleView());
+}
+
+TEST_F(MediaTrayTest, ShowBubbleWithItem) {
+  // We start with no bubble view.
+  EXPECT_EQ(nullptr, media_tray()->GetBubbleView());
+
+  const std::string item_id = "my-item-id";
+  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, item_id));
+  media_tray()->ShowBubbleWithItem(item_id);
+  EXPECT_NE(nullptr, media_tray()->GetBubbleView());
 }
 
 class MediaTrayPinnedParamTest : public AshTestBase {

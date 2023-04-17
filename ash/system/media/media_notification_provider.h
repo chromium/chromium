@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MEDIA_MEDIA_NOTIFICATION_PROVIDER_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -49,10 +50,12 @@ class ASH_EXPORT MediaNotificationProvider {
 
   // Returns a MediaNotificationListView populated with the correct
   // MediaNotificationContainerImpls. Used to populate the dialog on the Ash
-  // shelf.
+  // shelf. If `item_id` is non-empty, then the list consists only of the item
+  // specified by the ID.
   virtual std::unique_ptr<views::View> GetMediaNotificationListView(
       int separator_thickness,
-      bool should_clip_height) = 0;
+      bool should_clip_height,
+      const std::string& item_id = "") = 0;
 
   // Returns a MediaNotificationContainerimplView for the active MediaSession.
   // Displayed in the quick settings of the Ash shelf.

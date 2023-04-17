@@ -281,46 +281,7 @@ TrayBubbleView* MediaTray::GetBubbleView() {
 }
 
 void MediaTray::ShowBubble() {
-  DCHECK(MediaNotificationProvider::Get());
-  SetNotificationColorTheme();
-
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = GetWeakPtr();
-  init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = GetAnchorBoundsInScreen();
-  init_params.insets = GetTrayBubbleInsets();
-  init_params.shelf_alignment = shelf()->alignment();
-  init_params.preferred_width = kTrayMenuWidth;
-  init_params.close_on_deactivate = true;
-  init_params.translucent = true;
-  init_params.corner_radius = kTrayItemCornerRadius;
-  init_params.reroute_event_handler = true;
-
-  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
-
-  auto* title_view = bubble_view->AddChildView(
-      std::make_unique<GlobalMediaControlsTitleView>());
-  title_view->SetPaintToLayer();
-  title_view->layer()->SetFillsBoundsOpaquely(false);
-  pin_button_ = title_view->pin_button();
-
-  content_view_ = bubble_view->AddChildView(
-      MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          kMenuSeparatorWidth, /*should_clip_height=*/true));
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    content_view_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
-  }
-
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
-  bubble_->ShowBubble(std::move(bubble_view));
-  SetIsActive(true);
-
-  base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",
-                            bubble_has_shown_);
-  bubble_has_shown_ = true;
+  ShowBubbleWithItem("");
 }
 
 void MediaTray::CloseBubble() {
@@ -377,6 +338,35 @@ void MediaTray::UpdateDisplayState() {
                      IsPinnedToShelf();
 
   SetVisiblePreferred(should_show);
+}
+
+void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
+  DCHECK(MediaNotificationProvider::Get());
+  SetNotificationColorTheme();
+
+  std::unique_ptr<TrayBubbleView> bubble_view = CreateTrayBubbleView();
+
+  auto* title_view = bubble_view->AddChildView(
+      std::make_unique<GlobalMediaControlsTitleView>());
+  title_view->SetPaintToLayer();
+  title_view->layer()->SetFillsBoundsOpaquely(false);
+  pin_button_ = title_view->pin_button();
+
+  content_view_ = bubble_view->AddChildView(
+      MediaNotificationProvider::Get()->GetMediaNotificationListView(
+          kMenuSeparatorWidth, /*should_clip_height=*/true, item_id));
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    content_view_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
+  }
+
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
+  SetIsActive(true);
+
+  base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",
+                            bubble_has_shown_);
+  bubble_has_shown_ = true;
 }
 
 std::u16string MediaTray::GetAccessibleNameForBubble() {
@@ -447,6 +437,24 @@ void MediaTray::AnchorUpdated() {
 
   bubble_->GetBubbleView()->SetAnchorRect(
       shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
+}
+
+std::unique_ptr<TrayBubbleView> MediaTray::CreateTrayBubbleView() {
+  TrayBubbleView::InitParams init_params;
+  init_params.delegate = GetWeakPtr();
+  init_params.parent_window = GetBubbleWindowContainer();
+  init_params.anchor_view = nullptr;
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = GetAnchorBoundsInScreen();
+  init_params.insets = GetTrayBubbleInsets();
+  init_params.shelf_alignment = shelf()->alignment();
+  init_params.preferred_width = kTrayMenuWidth;
+  init_params.close_on_deactivate = true;
+  init_params.translucent = true;
+  init_params.corner_radius = kTrayItemCornerRadius;
+  init_params.reroute_event_handler = true;
+
+  return std::make_unique<TrayBubbleView>(init_params);
 }
 
 }  // namespace ash

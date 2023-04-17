@@ -40,7 +40,7 @@ inline std::string PrintToString(UiForBrowserTest val) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Global media controls aren't supported in lacros.
 #define INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(name) \
   INSTANTIATE_TEST_SUITE_P(/* no prefix */, name,                    \
@@ -52,7 +52,7 @@ inline std::string PrintToString(UiForBrowserTest val) {
       /* no prefix */, name,                                            \
       testing::Values(UiForBrowserTest::kCast, UiForBrowserTest::kGmc), \
       testing::PrintToStringParamName())
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Macro used to skip tests that are only supported with the Cast dialog.
 //

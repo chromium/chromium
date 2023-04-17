@@ -112,7 +112,8 @@ bool MediaNotificationProviderImpl::HasFrozenNotifications() {
 std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness,
-    bool should_clip_height) {
+    bool should_clip_height,
+    const std::string& item_id) {
   DCHECK(item_manager_);
   DCHECK(color_theme_);
   auto notification_list_view =
@@ -121,7 +122,11 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
               color_theme_->separator_color, separator_thickness),
           should_clip_height);
   active_session_view_ = notification_list_view->GetWeakPtr();
-  item_manager_->SetDialogDelegate(this);
+  if (item_id.empty()) {
+    item_manager_->SetDialogDelegate(this);
+  } else {
+    item_manager_->SetDialogDelegateForId(this, item_id);
+  }
   base::UmaHistogramEnumeration(
       "Media.GlobalMediaControls.EntryPoint",
       global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray);

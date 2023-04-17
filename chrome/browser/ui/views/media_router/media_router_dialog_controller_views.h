@@ -73,7 +73,8 @@ class MediaRouterDialogControllerViews
   void InitializeMediaRouterUI();
   void DestroyMediaRouterUI();
 
-  // If there exists a media button, show the GMC dialog anchored to the media
+  // On Chrome OS, show the GMC dialog in the Ash UI. On other platforms,
+  // if there exists a media button, show the GMC dialog anchored to the media
   // button. Otherwise, show the dialog anchored to the top center of the web
   // contents.
   void ShowGlobalMediaControlsDialog(
