@@ -117,8 +117,6 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
 #endif
   absl::optional<bool> pending_report_all_frame_submission_for_testing_;
 
-  bool inside_metadata_changed_ = false;
-
   base::WeakPtrFactory<RenderFrameMetadataProviderImpl> weak_factory_{this};
 };
 

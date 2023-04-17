@@ -12,11 +12,6 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "content/public/android/content_jni_headers/RenderFrameMetadataProviderImpl_jni.h"
-#endif
-
 namespace content {
 
 RenderFrameMetadataProviderImpl::RenderFrameMetadataProviderImpl(
@@ -25,14 +20,7 @@ RenderFrameMetadataProviderImpl::RenderFrameMetadataProviderImpl(
     : task_runner_(task_runner),
       frame_token_message_queue_(frame_token_message_queue) {}
 
-RenderFrameMetadataProviderImpl::~RenderFrameMetadataProviderImpl() {
-  if (inside_metadata_changed_) {
-#if BUILDFLAG(IS_ANDROID)
-    JNIEnv* env = base::android::AttachCurrentThread();
-    android::Java_RenderFrameMetadataProviderImpl_reportRecursiveDelete(env);
-#endif
-  }
-}
+RenderFrameMetadataProviderImpl::~RenderFrameMetadataProviderImpl() = default;
 
 void RenderFrameMetadataProviderImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -121,8 +109,6 @@ void RenderFrameMetadataProviderImpl::SetLastRenderFrameMetadataForTest(
 void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
     uint32_t frame_token,
     const cc::RenderFrameMetadata& metadata) {
-  base::AutoReset<bool> auto_reset(&inside_metadata_changed_, true);
-
   // Guard for this being recursively deleted from one of the observer
   // callbacks.
   base::WeakPtr<RenderFrameMetadataProviderImpl> self =
