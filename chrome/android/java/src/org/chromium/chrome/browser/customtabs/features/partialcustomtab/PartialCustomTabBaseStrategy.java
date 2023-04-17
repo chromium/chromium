@@ -201,6 +201,7 @@ public abstract class PartialCustomTabBaseStrategy
         attrs.x = 0;
         mActivity.getWindow().setAttributes(attrs);
         updateShadowOffset();
+        if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();
         maybeInvokeResizeCallback();
     }
 
@@ -210,6 +211,7 @@ public abstract class PartialCustomTabBaseStrategy
         new Handler().post(() -> {
             initializeSize();
             updateShadowOffset();
+            if (shouldDrawDividerLine()) drawDividerLine();
             maybeInvokeResizeCallback();
         });
     }

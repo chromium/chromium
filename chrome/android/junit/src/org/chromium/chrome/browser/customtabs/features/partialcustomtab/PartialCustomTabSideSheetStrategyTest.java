@@ -8,10 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
@@ -386,6 +388,52 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
         assertNotEquals("Shadow should be restored.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(DEVICE_WIDTH - width), eq(0), eq(DEVICE_WIDTH),
+                        eq(DEVICE_HEIGHT - NAVBAR_HEIGHT), eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+    }
+
+    @Test
+    public void enterAndExitHtmlFullscreen_useDivider() {
+        var strategy = createPcctSideSheetStrategy(800, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
+        strategy.onToolbarInitialized(
+                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+        mPCCTTestRule.configInsetDrawableBg();
+        assertFalse(getWindowAttributes().isFullscreen());
+        int height = getWindowAttributes().height;
+        int width = getWindowAttributes().width;
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+
+        mFullscreen = true;
+        strategy.onEnterFullscreen(null, null);
+        assertTrue(getWindowAttributes().isFullscreen());
+        // this line gets called when divider line is removed
+        verify(mPCCTTestRule.mCoordinatorLayout).getPaddingRight();
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
+        mFullscreen = false;
+        strategy.onExitFullscreen(null);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertFalse(getWindowAttributes().isFullscreen());
+        assertEquals(height, getWindowAttributes().height);
+        assertEquals(width, getWindowAttributes().width);
+        // called twice because divider line is restored
+        verify(mPCCTTestRule.mDragBar, times(2)).setBackground(any());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
