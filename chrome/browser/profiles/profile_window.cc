@@ -245,24 +245,47 @@ void CloseProfileWindows(Profile* profile) {
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
     Profile* profile,
     base::OnceClosure callback)
-    : profile_(profile), callback_(std::move(callback)) {
+    : profile_(profile->GetWeakPtr()), callback_(std::move(callback)) {
   DCHECK(callback_);
-  BrowserList::AddObserver(this);
+  browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
 BrowserAddedForProfileObserver::~BrowserAddedForProfileObserver() {}
 
 void BrowserAddedForProfileObserver::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() == profile_) {
-    BrowserList::RemoveObserver(this);
-    // By the time the browser is added a tab (or multiple) are about to be
-    // added. Post the callback to the message loop so it gets executed after
-    // the tabs are created.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback_));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                  this);
+  if (browser_) {
+    // Do not run the callback twice.
+    return;
   }
+
+  if (browser->profile() != profile_.get()) {
+    // The profile has been deleted, or this is a different profile.
+    return;
+  }
+
+  browser_ = browser;
+  // By the time the browser is added a tab (or multiple) are about to be added.
+  // Post the callback to the message loop so it gets executed after the tabs
+  // are created.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserAddedForProfileObserver::NotifyBrowserCreatedAnDie,
+                     base::Unretained(this)));
+}
+
+void BrowserAddedForProfileObserver::OnBrowserRemoved(Browser* browser) {
+  // The browser was closed before the callback could run.
+  if (browser == browser_) {
+    browser_list_observation_.Reset();
+    browser_ = nullptr;
+  }
+}
+
+void BrowserAddedForProfileObserver::NotifyBrowserCreatedAnDie() {
+  if (browser_) {
+    std::move(callback_).Run();
+  }
+  delete this;
 }
 
 }  // namespace profiles

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_window.h"
 
 #include <stddef.h>
@@ -10,8 +9,11 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -98,6 +100,23 @@ class EmptyAcceleratorHandler : public ui::AcceleratorProvider {
                                   ui::Accelerator* accelerator) const override {
     return false;
   }
+};
+
+class BrowserAddedObserver : public BrowserListObserver {
+ public:
+  explicit BrowserAddedObserver(base::OnceCallback<void(Browser*)> callback)
+      : callback_(std::move(callback)) {
+    CHECK(callback_);
+    BrowserList::AddObserver(this);
+  }
+
+  void OnBrowserAdded(Browser* browser) override {
+    BrowserList::RemoveObserver(this);
+    std::move(callback_).Run(browser);
+  }
+
+ private:
+  base::OnceCallback<void(Browser*)> callback_;
 };
 
 }  // namespace
@@ -309,10 +328,43 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();
   size_t num_browsers = BrowserList::GetInstance()->size();
-  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
-                                        true, false, false, profile);
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<Profile*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
+                                        false, profile);
+  EXPECT_EQ(profile, future.Get());
   EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+// Regression test for https://crbug.com/1433283
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OpenTwoBrowserWindowsForProfile) {
+  Profile* profile = browser()->profile();
+  size_t num_browsers = BrowserList::GetInstance()->size();
+  base::test::TestFuture<Profile*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
+                                        false, profile);
+  CreateBrowser(profile);
+  EXPECT_EQ(profile, future.Get());
+  EXPECT_EQ(num_browsers + 2, BrowserList::GetInstance()->size());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OpenBrowserWindowForProfileBrowserDestroyed) {
+  Profile* profile = browser()->profile();
+  size_t num_browsers = BrowserList::GetInstance()->size();
+
+  BrowserAddedObserver browser_added_observer(base::BindLambdaForTesting(
+      [this](Browser* browser) { this->CloseBrowserAsynchronously(browser); }));
+
+  base::test::TestFuture<Profile*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
+                                        false, profile);
+  base::RunLoop().RunUntilIdle();
+  // `future` is not called because the browser was already destroyed.
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 

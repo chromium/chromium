@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -17,6 +18,7 @@
 #error "Not used on Android"
 #endif
 
+class BrowserList;
 class Profile;
 
 namespace base { class FilePath; }
@@ -89,10 +91,16 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
  private:
   // Overridden from BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
+
+  void NotifyBrowserCreatedAnDie();
 
   // Profile for which the browser should be opened.
-  raw_ptr<Profile> profile_;
+  base::WeakPtr<Profile> profile_;
+  raw_ptr<Browser> browser_ = nullptr;
   base::OnceClosure callback_;
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 };
 
 }  // namespace profiles
