@@ -152,6 +152,11 @@ class OmniboxEditModel {
   // with a temporary icon (associated with the current match or user text).
   bool ShouldShowCurrentPageIcon() const;
 
+  // Returns the SuperGIcon for chrome builds. Otherwise return an empty
+  // ImageModel. If `dark_mode` is enabled, return the monochrome version of the
+  // icon.
+  ui::ImageModel GetSuperGIcon(int image_size, bool dark_mode);
+
   // Sets the state of user_input_in_progress_, and notifies the observer if
   // that state has changed.
   void SetInputInProgress(bool in_progress);

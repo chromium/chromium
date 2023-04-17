@@ -152,8 +152,12 @@ void LocationIconView::AddedToWidget() {
 
 void LocationIconView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
-  UpdateIcon();
+  // Update the background before the icon since the vector icon
+  // depends on the container background color in certain cases.
+  // E.g. different icons corresponding to the SuperGIcon are set
+  // depending on the background color of the container.
   UpdateBackground();
+  UpdateIcon();
 }
 
 int LocationIconView::GetMinimumLabelTextWidth() const {
@@ -314,10 +318,12 @@ void LocationIconView::OnIconFetched(const gfx::Image& image) {
 
 void LocationIconView::Update(bool suppress_animations) {
   UpdateTextVisibility(suppress_animations);
-  UpdateIcon();
   UpdateBorder();
-  SetAccessibleProperties(/*is_initialization*/ false);
+  // Update the background before the icon, since the vector icon
+  // can depend on the container background.
   UpdateBackground();
+  UpdateIcon();
+  SetAccessibleProperties(/*is_initialization*/ false);
   // The label text color may have changed in response to changes in security
   // level.
   UpdateLabelColors();

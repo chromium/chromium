@@ -67,6 +67,7 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -76,6 +77,10 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/vector_icons/vector_icons.h"  // nogncheck
 #endif
 
 using bookmarks::BookmarkModel;
@@ -620,6 +625,23 @@ bool OmniboxEditModel::ShouldShowCurrentPageIcon() const {
   // If user input is in progress, keep showing the current page's icon so long
   // as the text matches the current page's URL, elided or unelided.
   return GetText() == display_text_ || GetText() == url_for_editing_;
+}
+
+ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size, bool dark_mode) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (dark_mode) {
+    return ui::ImageModel::FromVectorIcon(
+        vector_icons::kGoogleGLogoMonochromeIcon, ui::kColorRefPrimary100,
+        image_size);
+  } else {
+    // The icon color does not matter in this case since this icon has colors
+    // hardcoded into it.
+    return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleSuperGIcon,
+                                          gfx::kPlaceholderColor, image_size);
+  }
+#else
+  return ui::ImageModel();
+#endif
 }
 
 void OmniboxEditModel::UpdateInput(bool has_selected_text,
