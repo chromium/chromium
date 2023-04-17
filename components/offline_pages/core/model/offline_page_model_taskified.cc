@@ -92,11 +92,6 @@ SavePageResult AddPageResultToSavePageResult(AddPageResult add_page_result) {
 void ReportPageHistogramAfterSuccessfulSaving(
     const OfflinePageItem& offline_page,
     base::Time save_time) {
-  base::UmaHistogramTimes(
-      model_utils::AddHistogramSuffix(offline_page.client_id.name_space,
-                                      "OfflinePages.SavePageTime"),
-      save_time - offline_page.creation_time);
-
   base::UmaHistogramCustomCounts(
       model_utils::AddHistogramSuffix(offline_page.client_id.name_space,
                                       "OfflinePages.PageSize"),
@@ -105,48 +100,7 @@ void ReportPageHistogramAfterSuccessfulSaving(
 
 void ReportSavedPagesCount(MultipleOfflinePageItemCallback callback,
                            const MultipleOfflinePageItemResult& all_items) {
-  UMA_HISTOGRAM_COUNTS_10000("OfflinePages.SavedPageCountUponQuery",
-                             all_items.size());
   std::move(callback).Run(all_items);
-}
-
-void ReportStorageUsage(const ArchiveManager::StorageStats& storage_stats) {
-  const int kMiB = 1024 * 1024;
-  int internal_free_disk_space_mib =
-      static_cast<int>(storage_stats.internal_free_disk_space / kMiB);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("OfflinePages.StorageInfo.InternalFreeSpaceMiB",
-                              internal_free_disk_space_mib, 1, 500000, 50);
-  int external_free_disk_space_mib =
-      static_cast<int>(storage_stats.external_free_disk_space / kMiB);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("OfflinePages.StorageInfo.ExternalFreeSpaceMiB",
-                              external_free_disk_space_mib, 1, 500000, 50);
-  int internal_page_size_mib =
-      static_cast<int>(storage_stats.internal_archives_size() / kMiB);
-  UMA_HISTOGRAM_COUNTS_10000("OfflinePages.StorageInfo.InternalArchiveSizeMiB",
-                             internal_page_size_mib);
-  int external_page_size_mib =
-      static_cast<int>(storage_stats.public_archives_size / kMiB);
-  UMA_HISTOGRAM_COUNTS_10000("OfflinePages.StorageInfo.ExternalArchiveSizeMiB",
-                             external_page_size_mib);
-
-  int64_t internal_volume_storage = storage_stats.internal_archives_size() +
-                                    storage_stats.internal_free_disk_space;
-  if (internal_volume_storage > 0) {
-    int internal_percentage =
-        static_cast<int>(100.0 * storage_stats.internal_archives_size() /
-                         internal_volume_storage);
-    UMA_HISTOGRAM_PERCENTAGE("OfflinePages.StorageInfo.InternalUsagePercentage",
-                             internal_percentage);
-  }
-
-  int64_t external_volume_storage = storage_stats.public_archives_size +
-                                    storage_stats.external_free_disk_space;
-  if (external_volume_storage > 0) {
-    int external_percentage = static_cast<int>(
-        100.0 * storage_stats.public_archives_size / external_volume_storage);
-    UMA_HISTOGRAM_PERCENTAGE("OfflinePages.StorageInfo.ExternalUsagePercentage",
-                             external_percentage);
-  }
 }
 
 void OnUpdateFilePathDone(PublishPageCallback publish_done_callback,
@@ -381,15 +335,6 @@ void OfflinePageModelTaskified::InformSavePageDone(SavePageCallback callback,
                                                    SavePageResult result,
                                                    const ClientId& client_id,
                                                    int64_t offline_id) {
-  base::UmaHistogramEnumeration(
-      model_utils::AddHistogramSuffix(client_id.name_space,
-                                      "OfflinePages.SavePageResult2"),
-      result);
-
-  // Report storage usage if saving page succeeded.
-  if (result == SavePageResult::SUCCESS)
-    archive_manager_->GetStorageStats(base::BindOnce(&ReportStorageUsage));
-
   if (result == SavePageResult::ARCHIVE_CREATION_FAILED)
     CreateArchivesDirectoryIfNeeded();
   if (!callback.is_null())
@@ -470,11 +415,6 @@ void OfflinePageModelTaskified::PublishArchiveDone(
   }
 
   const base::Time add_page_start_time = OfflineTimeNow();
-  base::UmaHistogramTimes(model_utils::AddHistogramSuffix(
-                              offline_page.client_id.name_space,
-                              "OfflinePages.SavePage.PublishArchiveTime"),
-                          add_page_start_time - publish_start_time);
-
   OfflinePageItem page = offline_page;
   page.file_path = publish_results.id.new_file_path;
   page.system_download_id = publish_results.id.download_id;
@@ -530,11 +470,6 @@ void OfflinePageModelTaskified::OnAddPageForSavePageDone(
                      page_attempted.client_id, offline_id);
   if (save_page_result == SavePageResult::SUCCESS) {
     base::Time successful_finish_time = OfflineTimeNow();
-    base::UmaHistogramTimes(
-        model_utils::AddHistogramSuffix(page_attempted.client_id.name_space,
-                                        "OfflinePages.SavePage.AddPageTime"),
-        successful_finish_time - add_page_start_time);
-
     ReportPageHistogramAfterSuccessfulSaving(page_attempted,
                                              successful_finish_time);
     // TODO(romax): Just keep the same with logic in OPMImpl (which was wrong).
@@ -564,14 +499,10 @@ void OfflinePageModelTaskified::OnDeleteDone(
     DeletePageCallback callback,
     DeletePageResult result,
     const std::vector<OfflinePageItem>& deleted_items) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.DeletePageResult", result);
   std::vector<PublishedArchiveId> publish_ids;
 
   // Notify observers and run callback.
   for (const auto& item : deleted_items) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "OfflinePages.DeletePageCount",
-        model_utils::ToNamespaceEnum(item.client_id.name_space));
     offline_event_logger_.RecordPageDeleted(item.offline_id);
     for (Observer& observer : observers_)
       observer.OfflinePageDeleted(item);

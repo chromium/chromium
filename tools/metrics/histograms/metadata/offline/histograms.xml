@@ -443,23 +443,6 @@ chromium-metrics-reviews@google.com.
   <summary>Result of temporary page consistency check.</summary>
 </histogram>
 
-<histogram name="OfflinePages.DeletePageCount"
-    enum="OfflinePagesNamespaceEnumeration" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts the number of times an offline page is deleted. Events are reported
-    per offline pages namespace.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.DeletePageResult"
-    enum="OfflinePagesDeletePageResult" expires_after="2021-06-25">
-  <owner>jianli@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Result of removing an offline copy for a page.</summary>
-</histogram>
-
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
     enum="Boolean" expires_after="2023-09-03">
   <owner>curranmax@chromium.org</owner>
@@ -546,47 +529,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.SavedPageCountUponQuery" units="pages"
-    expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Total number of saved offline pages recorded when they are all queried from
-    the store. This value is more meaningful when filtered by unique users as
-    that eliminates multiple reports from the same Chrome instance.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.SavePage.AddPageTime" units="ms"
-    expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time taken to successfully create the store metadata entry for an offline
-    page archive during the process of saving an offline page.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.SavePage.ComputeDigestTime"
-    units="ms" expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time taken to successfully compute the digest of an offline page archive
-    during the process of saving an offline page.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.SavePage.CreateArchiveTime"
-    units="ms" expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time taken to successfully create an offline page archive during the process
-    of saving an offline page.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.SavePage.PercentLoaded" units="%"
     expires_after="M77">
   <owner>twellington@chromium.org</owner>
@@ -597,32 +539,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="OfflinePages.SavePage.PublishArchiveTime"
-    units="ms" expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time taken to successfully move an offline page archive to the public
-    downloads folder during the process of saving an offline page.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.SavePageResult2"
-    enum="OfflinePagesSavePageResult" expires_after="M85">
-  <owner>jianli@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Result of saving an offline copy for a page.</summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.SavePageTime" units="ms"
-    expires_after="2021-06-25">
-  <owner>jianli@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The amount of time taken to save an offline copy for a page.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.SQLStorage.StoreEvent"
     enum="OfflinePagesStoreEvent" expires_after="2021-06-25">
   <owner>sclittle@chromium.org</owner>
@@ -630,70 +546,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Used as a counter to track different events related to offline page store
     inner working.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.StorageInfo.ExternalArchiveSizeMiB" units="MiB"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The storage space used by the archive files of offline pages, including all
-    files in public directory with mhtml/mht extensions. Collected after every
-    time an offline page is saved successfully.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.StorageInfo.ExternalFreeSpaceMiB" units="MiB"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The amount of free space on the external drive (which contains the public
-    download directory). Collected after every time an offline page is saved
-    successfully.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.StorageInfo.ExternalUsagePercentage" units="%"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The percentage of storage space on the external volume (that contains public
-    download directory) used by offline pages archives.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.StorageInfo.InternalArchiveSizeMiB" units="MiB"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The storage space used by the archive files of offline pages, including the
-    files in temporary and private directory. Collected after every time an
-    offline page is saved successfully.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.StorageInfo.InternalFreeSpaceMiB" units="MiB"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The amount of free space on the internal drive (which contains the app
-    directory). Collected after every time an offline page is saved
-    successfully.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.StorageInfo.InternalUsagePercentage" units="%"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The percentage of storage space on internal volume (that contains the app
-    directory) used by offline pages archives.
   </summary>
 </histogram>
 

@@ -120,16 +120,11 @@ void OfflinePageMHTMLArchiver::OnGenerateMHTMLDone(
     return;
   }
 
-  const base::Time digest_start_time = OfflineTimeNow();
-  base::UmaHistogramTimes(
-      model_utils::AddHistogramSuffix(
-          name_space, "OfflinePages.SavePage.CreateArchiveTime"),
-      digest_start_time - mhtml_start_time);
-
   if (result.file_digest) {
     OnComputeDigestDone(url, file_path, title, name_space, base::Time(),
                         result.file_size, result.file_digest.value());
   } else {
+    const base::Time digest_start_time = OfflineTimeNow();
     ComputeDigestOnFileThread(
         file_path,
         base::BindOnce(&OfflinePageMHTMLArchiver::OnComputeDigestDone,
@@ -150,13 +145,6 @@ void OfflinePageMHTMLArchiver::OnComputeDigestDone(
     DeleteFileAndReportFailure(file_path,
                                ArchiverResult::ERROR_DIGEST_CALCULATION_FAILED);
     return;
-  }
-
-  if (!digest_start_time.is_null()) {
-    base::UmaHistogramTimes(
-        model_utils::AddHistogramSuffix(
-            name_space, "OfflinePages.SavePage.ComputeDigestTime"),
-        OfflineTimeNow() - digest_start_time);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

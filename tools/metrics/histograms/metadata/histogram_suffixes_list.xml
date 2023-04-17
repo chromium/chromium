@@ -3195,11 +3195,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.TimeToStart.Svelte"/>
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
   <affected-histogram name="OfflinePages.PageSize"/>
-  <affected-histogram name="OfflinePages.SavePage.AddPageTime"/>
-  <affected-histogram name="OfflinePages.SavePage.ComputeDigestTime"/>
-  <affected-histogram name="OfflinePages.SavePage.CreateArchiveTime"/>
-  <affected-histogram name="OfflinePages.SavePage.PublishArchiveTime"/>
-  <affected-histogram name="OfflinePages.SavePageTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Omnibox_BitmapFetchLatencyCacheSplit" separator=".">
