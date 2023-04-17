@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '../strings.m.js';
-import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';

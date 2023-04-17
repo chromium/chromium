@@ -7,8 +7,9 @@
  * `settings-checkbox` is a checkbox that controls a supplied preference.
  */
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -63,7 +64,7 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
    * Don't let clicks on a link inside the secondary label reach the checkbox.
    */
   private onSubLabelHtmlChanged_() {
-    const links = this.shadowRoot!.querySelectorAll('.secondary.label a');
+    const links = this.$.subLabel.querySelectorAll('a');
     links.forEach((link) => {
       link.addEventListener('click', this.stopPropagation_.bind(this));
     });

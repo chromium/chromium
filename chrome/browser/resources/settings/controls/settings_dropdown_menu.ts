@@ -13,7 +13,6 @@
  */
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {assert} from '//resources/js/assert_ts.js';

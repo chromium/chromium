@@ -106,19 +106,6 @@ cr-radio-group {
   width: 100%;
 }
 
-cr-radio-group:focus {
-  /* TODO(dbeam): why is this here? It looks weird and I'm not sure how to
-   * actually trigger it with mouse/keyboard/screenreader. */
-  background-color: var(--google-grey-300);
-  outline: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  cr-radio-group:focus {
-    background-color: var(--google-grey-800);
-  }
-}
-
 /* See also: .no-min-width below. */
 .text-elide {
   overflow: hidden;

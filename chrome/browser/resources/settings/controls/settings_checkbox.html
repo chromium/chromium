@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="cr-shared-style">
   #outerRow {
     align-items: center;
     display: flex;
@@ -26,8 +26,8 @@
       on-change="notifyChangedByUserInteraction"
       disabled="[[controlDisabled(disabled, pref.*)]]"
       aria-label="[[label]]">
-    <div id="label" class="label">[[label]] <slot></slot></div>
-    <div id="subLabel" class="secondary label">
+    <div id="label">[[label]] <slot></slot></div>
+    <div id="subLabel" class="cr-secondary-text">
       <div inner-h-t-m-l="[[sanitizeInnerHtml_(subLabelHtml)]]"></div>
       [[subLabel]]
     </div>
