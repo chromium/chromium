@@ -31,7 +31,7 @@
                         delegate
                  selectedCountry:(NSString*)country
                     allCountries:(NSArray<CountryItem*>*)allCountries
-    NS_DESIGNATED_INITIALIZER;
+                    settingsView:(BOOL)settingsView NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

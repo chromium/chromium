@@ -310,25 +310,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
   NSInteger itemType =
       [self.controller.tableViewModel itemTypeForIndexPath:cellPath];
-  switch (static_cast<ItemType>(itemType)) {
-    case ItemTypeHonorificPrefix:
-    case ItemTypeCompanyName:
-    case ItemTypeFullName:
-    case ItemTypeLine1:
-    case ItemTypeLine2:
-    case ItemTypeCity:
-    case ItemTypeState:
-    case ItemTypeZip:
-    case ItemTypePhoneNumber:
-    case ItemTypeEmailAddress:
-      return YES;
-    case ItemTypeCountry:
-      return !self.autofillAccountProfilesUnionViewEnabled;
-    case ItemTypeError:
-    case ItemTypeFooter:
-    case ItemTypeSaveButton:
-      return NO;
-  }
+  return [self isItemTypeTextEditCell:itemType];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -338,7 +320,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile) {
+  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
+      self.settingsView) {
     [self computeErrorIfRequiredTextField:tableViewItem];
     [self updateDoneButtonStatus];
   }
@@ -362,7 +345,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       TableViewMultiDetailTextItem* multiDetailTextItem =
           base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
       multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
-    } else {
+    } else if (self.settingsView && [self isItemTypeTextEditCell:item.type]) {
       TableViewTextEditItem* tableViewTextEditItem =
           base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
       [self computeErrorIfRequiredTextField:tableViewTextEditItem];
@@ -769,6 +752,30 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                          value:[UIColor colorNamed:kRedColor]
                          range:NSMakeRange(0, error.length)];
   return attributedText;
+}
+
+// Returns YES if the `itemType` belongs to a text edit field.
+- (BOOL)isItemTypeTextEditCell:(NSInteger)itemType {
+  switch (static_cast<ItemType>(itemType)) {
+    case ItemTypeHonorificPrefix:
+    case ItemTypeCompanyName:
+    case ItemTypeFullName:
+    case ItemTypeLine1:
+    case ItemTypeLine2:
+    case ItemTypeCity:
+    case ItemTypeState:
+    case ItemTypeZip:
+    case ItemTypePhoneNumber:
+    case ItemTypeEmailAddress:
+      return YES;
+    case ItemTypeCountry:
+      return !self.autofillAccountProfilesUnionViewEnabled;
+    case ItemTypeError:
+    case ItemTypeFooter:
+    case ItemTypeSaveButton:
+      break;
+  }
+  return NO;
 }
 
 @end

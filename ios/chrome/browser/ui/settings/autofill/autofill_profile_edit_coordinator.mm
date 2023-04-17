@@ -133,7 +133,8 @@
           [[AutofillCountrySelectionTableViewController alloc]
               initWithDelegate:self
                selectedCountry:country
-                  allCountries:allCountries];
+                  allCountries:allCountries
+                  settingsView:YES];
   [self.baseNavigationController
       pushViewController:autofillCountrySelectionTableViewController
                 animated:YES];

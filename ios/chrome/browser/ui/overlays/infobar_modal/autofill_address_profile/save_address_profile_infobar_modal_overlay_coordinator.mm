@@ -14,9 +14,11 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
@@ -34,6 +36,7 @@ using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 
 @interface SaveAddressProfileInfobarModalOverlayCoordinator () <
+    AutofillCountrySelectionTableViewControllerDelegate,
     AutofillProfileEditMediatorDelegate,
     SaveAddressProfileInfobarModalOverlayMediatorDelegate> {
   autofill::AutofillProfile _autofillProfile;
@@ -51,6 +54,7 @@ using autofill_address_profile_infobar_overlays::
 // The request's config.
 @property(nonatomic, assign, readonly)
     SaveAddressProfileModalRequestConfig* config;
+
 @end
 
 @implementation SaveAddressProfileInfobarModalOverlayCoordinator
@@ -143,7 +147,30 @@ using autofill_address_profile_infobar_overlays::
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country
                                           countryList:(NSArray<CountryItem*>*)
                                                           allCountries {
-  // TODO(crbug.com/1407666): Call for country selection.
+  for (CountryItem* countryItem in allCountries) {
+    if ([country isEqualToString:countryItem.text]) {
+      countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+  }
+  AutofillCountrySelectionTableViewController*
+      autofillCountrySelectionTableViewController =
+          [[AutofillCountrySelectionTableViewController alloc]
+              initWithDelegate:self
+               selectedCountry:country
+                  allCountries:allCountries
+                  settingsView:NO];
+
+  [self.modalViewController.navigationController
+      pushViewController:autofillCountrySelectionTableViewController
+                animated:YES];
+}
+
+#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
+
+- (void)didSelectCountry:(CountryItem*)selectedCountry {
+  [self.modalViewController.navigationController popViewControllerAnimated:YES];
+  DCHECK(self.sharedEditViewMediator);
+  [self.sharedEditViewMediator didSelectCountry:selectedCountry];
 }
 
 @end

@@ -77,7 +77,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _consumer = consumer;
 
   [self sendAutofillProfileDataToConsumer];
-  [self updateRequirementsForCountryCode:self.selectedCountryCode];
+  if (self.selectedCountryCode) {
+    [self updateRequirementsForCountryCode:self.selectedCountryCode];
+  }
+
   [_consumer setAccountProfile:(_autofillProfile->source() ==
                                 autofill::AutofillProfile::Source::kAccount)];
 }

@@ -25,6 +25,7 @@ source_set("autofill_address_profile") {
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill:autofill_shared_ui",
+    "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:modals",
     "//ios/chrome/browser/ui/overlays:coordinators",
