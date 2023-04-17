@@ -575,20 +575,6 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
 
   progress_.free_space = free_space;
   VLOG(1) << "Free space: " << HumanReadableSize(free_space);
-
-  VLOG(1) << "Enabling Docs offline";
-  drivefs_->SetDocsOfflineEnabled(
-      true, base::BindOnce(&PinManager::OnDocsOfflineEnabled, GetWeakPtr()));
-}
-
-void PinManager::OnDocsOfflineEnabled(drive::FileError error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Cannot enable Docs offline: " << error;
-    return Complete(Stage::kCannotEnableDocsOffline);
-  }
-
-  VLOG(1) << "Successfully enabled Docs offline";
   VLOG(1) << "Listing files";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kListingFiles;
@@ -884,6 +870,19 @@ void PinManager::StartPinning() {
     return Complete(Stage::kSuccess);
   }
 
+  VLOG(1) << "Enabling Docs offline";
+  drivefs_->SetDocsOfflineEnabled(
+      true, base::BindOnce(&PinManager::OnDocsOfflineEnabled, GetWeakPtr()));
+}
+
+void PinManager::OnDocsOfflineEnabled(drive::FileError error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error != drive::FILE_ERROR_OK) {
+    LOG(ERROR) << "Cannot enable Docs offline: " << error;
+    return Complete(Stage::kCannotEnableDocsOffline);
+  }
+
+  VLOG(1) << "Successfully enabled Docs offline";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kSyncing;
   NotifyProgress();
