@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,22 +39,11 @@ using ModuleBlockingDecision =
 
 // The maximum number of modules allowed in the cache. This keeps the cache
 // from growing indefinitely.
-// Note: This value is tied to the "ModuleBlocklistCache.ModuleCount" histogram.
-//       Rename the histogram if this value is ever changed.
 static constexpr size_t kMaxModuleCount = 5000u;
 
 // The maximum amount of time a stale entry is kept in the cache before it is
 // deleted.
 static constexpr base::TimeDelta kMaxEntryAge = base::Days(180);
-
-// This enum is used for UMA. Therefore, the values should never change.
-enum class BlocklistStatus {
-  // A module was marked as blocklisted during the current browser execution.
-  kNewlyBlocklisted = 0,
-  // A module was blocked when it tried to load into the process.
-  kBlocked = 1,
-  kMaxValue = kBlocked,
-};
 
 // Updates the module blocklist cache asynchronously on a background sequence
 // and return a CacheUpdateResult value.
@@ -69,42 +57,24 @@ ModuleBlocklistCacheUpdater::CacheUpdateResult UpdateModuleBlocklistCache(
     uint32_t min_time_date_stamp) {
   DCHECK(module_list_filter);
 
-  // Emit some UMA metrics about the update.
-  for (size_t i = 0; i < newly_blocklisted_modules.size(); ++i) {
-    UMA_HISTOGRAM_ENUMERATION("ModuleBlocklistCache.BlocklistStatus",
-                              BlocklistStatus::kNewlyBlocklisted);
-  }
-  for (size_t i = 0; i < blocked_modules.size(); ++i) {
-    UMA_HISTOGRAM_ENUMERATION("ModuleBlocklistCache.BlocklistStatus",
-                              BlocklistStatus::kBlocked);
-  }
-
   ModuleBlocklistCacheUpdater::CacheUpdateResult result;
 
   // Read the existing cache.
   third_party_dlls::PackedListMetadata metadata;
   std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
-  ReadResult read_result =
-      ReadModuleBlocklistCache(module_blocklist_cache_path, &metadata,
-                               &blocklisted_modules, &result.old_md5_digest);
-  UMA_HISTOGRAM_ENUMERATION("ModuleBlocklistCache.ReadResult", read_result);
+  ReadModuleBlocklistCache(module_blocklist_cache_path, &metadata,
+                           &blocklisted_modules, &result.old_md5_digest);
 
   // Update the existing data with |newly_blocklisted_modules| and
   // |blocked_modules|.
   UpdateModuleBlocklistCacheData(
       *module_list_filter, newly_blocklisted_modules, blocked_modules,
       max_module_count, min_time_date_stamp, &metadata, &blocklisted_modules);
-  // Note: This histogram is tied to the current value of kMaxModuleCount.
-  //       Rename the histogram if that value is ever changed.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("ModuleBlocklistCache.ModuleCount",
-                              blocklisted_modules.size(), 1, kMaxModuleCount,
-                              50);
 
   // Then write the updated cache to disk.
   bool write_result =
       WriteModuleBlocklistCache(module_blocklist_cache_path, metadata,
                                 blocklisted_modules, &result.new_md5_digest);
-  UMA_HISTOGRAM_BOOLEAN("ModuleBlocklistCache.WriteResult", write_result);
 
   if (write_result) {
     // Write the path of the cache into the registry so that chrome_elf can find
@@ -115,11 +85,8 @@ ModuleBlocklistCacheUpdater::CacheUpdateResult UpdateModuleBlocklistCache(
     base::win::RegKey registry_key(
         HKEY_CURRENT_USER, cache_path_registry_key.c_str(), KEY_SET_VALUE);
 
-    bool cache_path_updated = SUCCEEDED(
-        registry_key.WriteValue(third_party_dlls::kBlFilePathRegValue,
-                                module_blocklist_cache_path.value().c_str()));
-    UMA_HISTOGRAM_BOOLEAN("ModuleBlocklistCache.BlocklistPathUpdated",
-                          cache_path_updated);
+    registry_key.WriteValue(third_party_dlls::kBlFilePathRegValue,
+                            module_blocklist_cache_path.value().c_str());
   }
 
   return result;
@@ -220,8 +187,7 @@ base::FilePath ModuleBlocklistCacheUpdater::GetModuleBlocklistCachePath() {
 
 // static
 void ModuleBlocklistCacheUpdater::DeleteModuleBlocklistCache() {
-  bool delete_result = base::DeleteFile(GetModuleBlocklistCachePath());
-  UMA_HISTOGRAM_BOOLEAN("ModuleBlocklistCache.DeleteResult", delete_result);
+  base::DeleteFile(GetModuleBlocklistCachePath());
 }
 
 void ModuleBlocklistCacheUpdater::OnNewModuleFound(
