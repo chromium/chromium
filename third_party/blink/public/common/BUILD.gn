@@ -309,6 +309,7 @@ source_set("headers") {
     "switches.h",
     "thread_safe_browser_interface_broker_proxy.h",
     "unique_name/unique_name_helper.h",
+    "url_pattern.h",
     "use_counter/use_counter_feature.h",
     "use_counter/use_counter_feature_tracker.h",
     "user_agent/user_agent_brand_version_type.h",
