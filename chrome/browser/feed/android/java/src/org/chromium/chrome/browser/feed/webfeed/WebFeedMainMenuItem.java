@@ -22,6 +22,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
@@ -163,7 +165,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
             mItemText.setContentDescription(
                     mContext.getString(R.string.cormorant_creator_preview, mTitle));
-            mItemText.setOnClickListener((view) -> { launchCreatorActivity(); });
+            mItemText.setOnClickListener((view) -> {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, this::launchCreatorActivity);
+            });
         }
     }
 
@@ -294,7 +298,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mIcon.setVisibility(View.GONE);
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
-            mIcon.setOnClickListener((view) -> { launchCreatorActivity(); });
+            mIcon.setOnClickListener((view) -> {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, this::launchCreatorActivity);
+            });
         }
     }
 
