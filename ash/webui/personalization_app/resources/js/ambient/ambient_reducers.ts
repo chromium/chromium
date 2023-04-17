@@ -61,6 +61,16 @@ export function previewsReducer(
   }
 }
 
+export function screenSaverDurationReducer(
+    state: number|null, action: Actions, _: PersonalizationState): number|null {
+  switch (action.name) {
+    case AmbientActionName.SET_SCREEN_SAVER_DURATION:
+      return action.minutes;
+    default:
+      return state;
+  }
+}
+
 export function temperatureUnitReducer(
     state: AmbientState['temperatureUnit'], action: Actions,
     _: PersonalizationState): AmbientState['temperatureUnit'] {
@@ -109,6 +119,7 @@ export const ambientReducers:
       albums: albumsReducer,
       ambientModeEnabled: ambientModeEnabledReducer,
       animationTheme: animationThemeReducer,
+      duration: screenSaverDurationReducer,
       previews: previewsReducer,
       temperatureUnit: temperatureUnitReducer,
       topicSource: topicSourceReducer,

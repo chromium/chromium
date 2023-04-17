@@ -17,6 +17,7 @@ export enum AmbientActionName {
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
   SET_ANIMATION_THEME = 'set_animation_theme',
   SET_PREVIEWS = 'set_previews',
+  SET_SCREEN_SAVER_DURATION = 'set_screen_saver_duration',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
   SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
@@ -25,8 +26,8 @@ export enum AmbientActionName {
 
 export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
     SetAmbientModeEnabledAction|SetAnimationThemeAction|SetPreviewsAction|
-    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction|
-    SetShouldShowTimeOfDayBannerAction;
+    SetScreenSaverDurationAction|SetTopicSourceAction|SetTemperatureUnitAction|
+    SetAmbientUiVisibilityAction|SetShouldShowTimeOfDayBannerAction;
 
 export type SetAlbumsAction = Action&{
   name: AmbientActionName.SET_ALBUMS,
@@ -50,6 +51,11 @@ export type SetAnimationThemeAction = Action&{
 export type SetPreviewsAction = Action&{
   name: AmbientActionName.SET_PREVIEWS,
   previews: Url[],
+};
+
+export type SetScreenSaverDurationAction = Action&{
+  name: AmbientActionName.SET_SCREEN_SAVER_DURATION,
+  minutes: number,
 };
 
 export type SetTemperatureUnitAction = Action&{
@@ -104,6 +110,14 @@ export function setAnimationThemeAction(animationTheme: AnimationTheme):
  */
 export function setPreviewsAction(previews: Url[]): SetPreviewsAction {
   return {name: AmbientActionName.SET_PREVIEWS, previews};
+}
+
+/**
+ * Sets the current value of the screen saver duration.
+ */
+export function setScreenSaverDurationAction(minutes: number):
+    SetScreenSaverDurationAction {
+  return {name: AmbientActionName.SET_SCREEN_SAVER_DURATION, minutes};
 }
 
 /**
