@@ -267,8 +267,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxKeywordSelected] = {kColorOmniboxText};
   mixer[kColorOmniboxResultsBackground] = {
       kColorToolbarBackgroundSubtleEmphasis};
-  mixer[kColorOmniboxResultsBackgroundHovered] = {
-      kColorOmniboxResultsBackgroundSelected};
+  mixer[kColorOmniboxResultsBackgroundHovered] = {ui::kColorNativeHighlight};
   mixer[kColorOmniboxResultsBackgroundSelected] = {ui::kColorNativeHighlight};
   mixer[kColorOmniboxResultsIcon] = {kColorOmniboxText};
   mixer[kColorOmniboxResultsIconSelected] = {kColorOmniboxResultsTextSelected};
