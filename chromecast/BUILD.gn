@@ -668,14 +668,6 @@ buildflag_header("chromecast_buildflags") {
 }
 
 if (is_android) {
-  generate_jni_registration("cast_shell_jni_registration") {
-    targets = [ ":cast_shell_apk" ]
-    if (chromecast_branding != "public") {
-      targets += [ ":cast_browser_generic_bundle_module" ]
-    }
-    manual_jni_registration = true
-  }
-
   android_assets("cast_shell_apk_assets") {
     sources = [ "$root_out_dir/assets/cast_shell.pak" ]
 

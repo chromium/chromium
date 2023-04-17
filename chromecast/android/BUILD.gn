@@ -15,7 +15,6 @@ assert(is_android)
 group("common_apk_deps") {
   public_deps = [
     "//base",
-    "//chromecast:cast_shell_jni_registration",
     "//chromecast:chromecast_buildflags",
     "//chromecast/app",
     "//chromecast/app:cast_crash_client",
