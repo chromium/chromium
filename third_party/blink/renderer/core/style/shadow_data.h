@@ -48,6 +48,19 @@ class CORE_EXPORT ShadowData {
              StyleColor color,
              float opacity = 1.0f)
       : location_(location),
+        blur_(blur, blur),
+        spread_(spread),
+        color_(color),
+        style_(style),
+        opacity_(opacity) {}
+
+  ShadowData(gfx::PointF location,
+             gfx::PointF blur,
+             float spread,
+             ShadowStyle style,
+             StyleColor color,
+             float opacity = 1.0f)
+      : location_(location),
         blur_(blur),
         spread_(spread),
         color_(color),
@@ -62,7 +75,8 @@ class CORE_EXPORT ShadowData {
   float X() const { return location_.x(); }
   float Y() const { return location_.y(); }
   gfx::PointF Location() const { return location_; }
-  float Blur() const { return blur_; }
+  float Blur() const { return blur_.x(); }
+  gfx::PointF BlurXY() const { return blur_; }
   float Spread() const { return spread_; }
   ShadowStyle Style() const { return style_; }
   StyleColor GetColor() const { return color_; }
@@ -76,7 +90,7 @@ class CORE_EXPORT ShadowData {
 
  private:
   gfx::PointF location_;
-  float blur_;
+  gfx::PointF blur_;
   float spread_;
   StyleColor color_;
   ShadowStyle style_;
