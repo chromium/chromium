@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"

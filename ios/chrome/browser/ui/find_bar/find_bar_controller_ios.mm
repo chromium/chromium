@@ -12,7 +12,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/find_in_page/constants.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"

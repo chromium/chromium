@@ -9,7 +9,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
