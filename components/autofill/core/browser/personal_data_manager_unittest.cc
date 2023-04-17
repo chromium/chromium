@@ -571,6 +571,60 @@ TEST_F(PersonalDataManagerTest, GetProfiles) {
               ElementsAre(Pointee(kLocalProfile)));
 }
 
+// Tests the different orderings in which profiles can be retrieved.
+TEST_F(PersonalDataManagerTest, GetProfiles_Order) {
+  base::Time now = AutofillClock::Now();
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.set_use_date(now - base::Hours(2));
+  profile1.set_use_count(1);
+  AutofillProfile profile2 = test::GetFullProfile2();
+  profile2.set_use_date(now);
+  profile2.set_use_count(1);
+  AutofillProfile profile3 = test::GetFullCanadianProfile();
+  profile3.set_use_date(now - base::Hours(1));
+  profile3.set_use_count(1234);
+
+  AddProfileToPersonalDataManager(profile1);
+  AddProfileToPersonalDataManager(profile2);
+  AddProfileToPersonalDataManager(profile3);
+  ResetPersonalDataManager(USER_MODE_NORMAL);
+
+  // kNone doesn't guarantee any order.
+  EXPECT_THAT(
+      personal_data_->GetProfiles(PersonalDataManager::ProfileOrder::kNone),
+      UnorderedElementsAre(Pointee(profile1), Pointee(profile2),
+                           Pointee(profile3)));
+
+  // `profile3` is first, since it has a much higher use count.
+  // `profile1` and `profile2` have the same use count, so `profile2` with later
+  // use date is second.
+  EXPECT_THAT(personal_data_->GetProfiles(
+                  PersonalDataManager::ProfileOrder::kHighestFrecencyDesc),
+              testing::ElementsAre(Pointee(profile3), Pointee(profile2),
+                                   Pointee(profile1)));
+
+  std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles(
+      PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
+  // Ordered by `use_date()`.
+  EXPECT_THAT(profiles,
+              testing::ElementsAre(Pointee(profile2), Pointee(profile3),
+                                   Pointee(profile1)));
+
+  // TODO(crbug.com/1420547): The modification date cannot be set beforehand,
+  // since it is overwritten by the database when the profile is initially
+  // stored. To test the ordering by modification date, update the `profiles`
+  // modification dates such that the order gets reversed. It is necessary to
+  // modify the PDM's profiles directly, since any modification involving the
+  // database will overwrite the modification date.
+  for (int i = 0; i < 3; i++) {
+    profiles[i]->set_modification_date(now - base::Hours(2 - i));
+  }
+  EXPECT_THAT(personal_data_->GetProfiles(
+                  PersonalDataManager::ProfileOrder::kMostRecentlyModifiedDesc),
+              testing::ElementsAre(Pointee(profile1), Pointee(profile3),
+                                   Pointee(profile2)));
+}
+
 // Tests that `GetProfilesForSettings()` orders by descending modification
 // dates.
 // TODO(crbug.com/1420547): The modification date is set in AutofillTable.

@@ -153,6 +153,33 @@ static bool CompareVotes(const std::pair<std::string, int>& a,
                          const std::pair<std::string, int>& b) {
   return a.second < b.second;
 }
+
+// Orders all `profiles` by the specified `order` rule.
+void OrderProfiles(std::vector<AutofillProfile*>& profiles,
+                   PersonalDataManager::ProfileOrder order) {
+  switch (order) {
+    case PersonalDataManager::ProfileOrder::kNone:
+      break;
+    case PersonalDataManager::ProfileOrder::kHighestFrecencyDesc:
+      // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
+      base::ranges::sort(profiles, [comparison_time = AutofillClock::Now()](
+                                       AutofillProfile* a, AutofillProfile* b) {
+        return a->HasGreaterRankingThan(b, comparison_time);
+      });
+      break;
+    case PersonalDataManager::ProfileOrder::kMostRecentlyModifiedDesc:
+      base::ranges::sort(profiles, [](AutofillProfile* a, AutofillProfile* b) {
+        return a->modification_date() > b->modification_date();
+      });
+      break;
+    case PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc:
+      base::ranges::sort(profiles, [](AutofillProfile* a, AutofillProfile* b) {
+        return a->use_date() > b->use_date();
+      });
+      break;
+  }
+}
+
 }  // namespace
 
 // Helper class to abstract the switching between account and profile storage
@@ -1197,24 +1224,28 @@ bool PersonalDataManager::IsDataLoaded() const {
   return is_data_loaded_;
 }
 
-std::vector<AutofillProfile*> PersonalDataManager::GetProfiles() const {
-  std::vector<AutofillProfile*> a =
-      GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable);
-  std::vector<AutofillProfile*> b =
-      GetProfilesFromSource(AutofillProfile::Source::kAccount);
+std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
+    ProfileOrder order) const {
+  std::vector<AutofillProfile*> a = GetProfilesFromSource(
+      AutofillProfile::Source::kLocalOrSyncable, ProfileOrder::kNone);
+  std::vector<AutofillProfile*> b = GetProfilesFromSource(
+      AutofillProfile::Source::kAccount, ProfileOrder::kNone);
   a.reserve(a.size() + b.size());
   base::ranges::move(b, std::back_inserter(a));
+  OrderProfiles(a, order);
   return a;
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesFromSource(
-    AutofillProfile::Source profile_source) const {
+    AutofillProfile::Source profile_source,
+    ProfileOrder order) const {
   const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
       GetProfileStorage(profile_source);
   std::vector<AutofillProfile*> result;
   result.reserve(profiles.size());
   for (const auto& profile : profiles)
     result.push_back(profile.get());
+  OrderProfiles(result, order);
   return result;
 }
 
@@ -1373,32 +1404,14 @@ void PersonalDataManager::Refresh() {
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
     const {
-  if (!IsAutofillProfileEnabled())
-    return std::vector<AutofillProfile*>{};
-
-  // Suggest `kAccount` and `kLocalOrSyncable` profiles.
-  std::vector<AutofillProfile*> profiles = GetProfiles();
-
-  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
-  if (profiles.size() > 1) {
-    // Rank the suggestions by ranking score.
-    const base::Time comparison_time = AutofillClock::Now();
-    base::ranges::sort(profiles, [comparison_time](const AutofillProfile* a,
-                                                   const AutofillProfile* b) {
-      return a->HasGreaterRankingThan(b, comparison_time);
-    });
-  }
-  return profiles;
+  return IsAutofillProfileEnabled()
+             ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
+             : std::vector<AutofillProfile*>{};
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
     const {
-  std::vector<AutofillProfile*> profiles = GetProfiles();
-  base::ranges::sort(profiles,
-                     [](const AutofillProfile* a, const AutofillProfile* b) {
-                       return a->modification_date() > b->modification_date();
-                     });
-  return profiles;
+  return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
 std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(

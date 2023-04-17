@@ -112,7 +112,8 @@ void ProfileImportProcess::DetermineProfileImportType() {
   //   `kAutofillAccountProfileStorage` is enabled.
   // - Silent updates are allowed in any case.
   const std::vector<AutofillProfile*> existing_profiles =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->GetProfiles(
+          PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
 
   // If we have reason to believe that the country was complemented incorrectly,
   // remove it.

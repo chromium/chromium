@@ -126,7 +126,9 @@ class PersonalDataManagerMock : public PersonalDataManager {
 
   // PersonalDataManager:
   std::string SaveImportedProfile(const AutofillProfile& profile) override;
-  std::vector<AutofillProfile*> GetProfiles() const override;
+  std::vector<AutofillProfile*> GetProfiles(
+      PersonalDataManager::ProfileOrder order =
+          PersonalDataManager::ProfileOrder::kNone) const override;
 
  private:
   std::vector<std::unique_ptr<AutofillProfile>> profiles_;
@@ -154,7 +156,8 @@ std::string PersonalDataManagerMock::SaveImportedProfile(
   return merged_guid;
 }
 
-std::vector<AutofillProfile*> PersonalDataManagerMock::GetProfiles() const {
+std::vector<AutofillProfile*> PersonalDataManagerMock::GetProfiles(
+    PersonalDataManager::ProfileOrder) const {
   std::vector<AutofillProfile*> result;
   for (const auto& profile : profiles_)
     result.push_back(profile.get());

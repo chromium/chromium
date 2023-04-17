@@ -86,6 +86,20 @@ class PersonalDataManager : public KeyedService,
                             public signin::IdentityManager::Observer,
                             public AccountInfoGetter {
  public:
+  // Profiles can be retrieved from the PersonalDataManager in different orders.
+  enum class ProfileOrder {
+    // Arbitrary order.
+    kNone,
+    // In descending order of frecency
+    // (`AutofillProfile::HasGreaterRankingThan())`.
+    kHighestFrecencyDesc,
+    // Most recently modified profiles first.
+    kMostRecentlyModifiedDesc,
+    // Most recently used profiles first.
+    kMostRecentlyUsedFirstDesc,
+    kMaxValue = kMostRecentlyUsedFirstDesc
+  };
+
   explicit PersonalDataManager(const std::string& app_locale);
   PersonalDataManager(const std::string& app_locale,
                       const std::string& country_code);
@@ -318,10 +332,12 @@ class PersonalDataManager : public KeyedService,
   // `GetProfiles()` returns all `kAccount` and `kLocalOrSyncable` profiles. By
   // using `GetProfilesFromSource()`, profiles from a single source are be
   // retrieved.
-  // The profiles are returned in unspecified order.
-  virtual std::vector<AutofillProfile*> GetProfiles() const;
+  // The profiles are returned in the specified `order`.
+  virtual std::vector<AutofillProfile*> GetProfiles(
+      ProfileOrder order = ProfileOrder::kNone) const;
   virtual std::vector<AutofillProfile*> GetProfilesFromSource(
-      AutofillProfile::Source profile_source) const;
+      AutofillProfile::Source profile_source,
+      ProfileOrder order = ProfileOrder::kNone) const;
   // Returns just SERVER_PROFILES.
   // TODO(crbug.com/1348294): Server profiles are only accessed in tests and the
   // concept should be removed.
