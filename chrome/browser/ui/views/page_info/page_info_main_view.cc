@@ -65,23 +65,6 @@ enum class AboutThisSiteSeconaryIcon {
   kNoIcon = 3,
 };
 
-// Return a secondary icon for the AboutThisSite row based on finch parameters.
-absl::optional<ui::ImageModel> GetAboutThisSiteSecondaryIcon() {
-  AboutThisSiteSeconaryIcon icon_id = static_cast<AboutThisSiteSeconaryIcon>(
-      page_info::kAboutThisSiteSecondaryIconId.Get());
-  switch (icon_id) {
-    case AboutThisSiteSeconaryIcon::kNewTabIcon:
-      return PageInfoViewFactory::GetLaunchIcon();
-    case AboutThisSiteSeconaryIcon::kArrowIcon:
-      return PageInfoViewFactory::GetOpenSubpageIcon();
-    case AboutThisSiteSeconaryIcon::kSidePanelIcon:
-      return PageInfoViewFactory::GetSidePanelIcon();
-    case AboutThisSiteSeconaryIcon::kNoIcon:
-      return absl::nullopt;
-  }
-  return PageInfoViewFactory::GetLaunchIcon();
-}
-
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
@@ -644,7 +627,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
             std::u16string(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
-            description, GetAboutThisSiteSecondaryIcon()));
+            description, PageInfoViewFactory::GetLaunchIcon()));
     about_this_site_button->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   } else {
