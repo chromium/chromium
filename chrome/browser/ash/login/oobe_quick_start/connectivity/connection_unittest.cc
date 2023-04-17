@@ -4,10 +4,12 @@
 
 #include "connection.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
@@ -33,10 +35,12 @@ constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
 
 class FakeConnection : public Connection {
  public:
-  explicit FakeConnection(NearbyConnection* nearby_connection)
+  explicit FakeConnection(NearbyConnection* nearby_connection,
+                          base::OnceClosure on_connection_closed)
       : Connection(nearby_connection,
                    RandomSessionId(kRandomSessionId),
-                   kSharedSecret) {}
+                   kSharedSecret,
+                   std::move(on_connection_closed)) {}
 
   void SendPayloadAndReadResponseWrapperForTesting(
       const base::Value::Dict& message_payload,
@@ -57,7 +61,8 @@ class ConnectionTest : public testing::Test {
   void SetUp() override {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-    connection_ = std::make_unique<FakeConnection>(nearby_connection);
+    connection_ =
+        std::make_unique<FakeConnection>(nearby_connection, base::DoNothing());
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -93,6 +98,19 @@ TEST_F(ConnectionTest, SendPayloadAndReadResponse) {
   base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();
   EXPECT_EQ(*parsed_json_dict.FindString(kTestMessagePayloadKey),
             kTestMessagePayloadValue);
+}
+
+TEST_F(ConnectionTest, TestDisconnectionTriggersListener) {
+  base::test::TestFuture<void> future;
+  std::unique_ptr<Connection> connection_under_test =
+      std::make_unique<FakeConnection>(fake_nearby_connection_.get(),
+                                       future.GetCallback());
+
+  ASSERT_FALSE(future.IsReady());
+
+  fake_nearby_connection_->Close();
+
+  ASSERT_TRUE(future.IsReady());
 }
 
 }  // namespace ash::quick_start

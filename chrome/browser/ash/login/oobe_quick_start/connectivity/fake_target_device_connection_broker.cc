@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
@@ -90,7 +91,7 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
           nearby_connection,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
-          random_session_id, kSharedSecret);
+          random_session_id, kSharedSecret, base::DoNothing());
   connection_lifecycle_listener_->OnConnectionAuthenticated(
       source_device_id, fake_authenticated_connection->AsWeakPtr());
 

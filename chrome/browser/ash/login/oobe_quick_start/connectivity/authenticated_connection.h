@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -32,7 +33,8 @@ class AuthenticatedConnection : public Connection {
   AuthenticatedConnection(NearbyConnection* nearby_connection,
                           mojo::SharedRemote<mojom::QuickStartDecoder> remote,
                           RandomSessionId session_id,
-                          SharedSecret shared_secret);
+                          SharedSecret shared_secret,
+                          base::OnceClosure on_connection_closed);
 
   AuthenticatedConnection(AuthenticatedConnection&) = delete;
   AuthenticatedConnection& operator=(AuthenticatedConnection&) = delete;

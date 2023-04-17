@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_CONNECTION_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_CONNECTION_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
@@ -17,15 +18,18 @@ class Connection {
  public:
   using SharedSecret = std::array<uint8_t, 32>;
 
-  Connection(NearbyConnection* nearby_connection, RandomSessionId session_id);
+  Connection(NearbyConnection* nearby_connection,
+             RandomSessionId session_id,
+             base::OnceClosure on_connection_closed);
 
   Connection(NearbyConnection* nearby_connection,
              RandomSessionId session_id,
-             SharedSecret shared_secret);
+             SharedSecret shared_secret,
+             base::OnceClosure on_connection_closed);
 
   Connection(const Connection&) = delete;
   Connection& operator=(const Connection&) = delete;
-  virtual ~Connection() = default;
+  virtual ~Connection();
 
  protected:
   friend class ConnectionTest;
@@ -40,10 +44,15 @@ class Connection {
   void SendPayloadAndReadResponse(const base::Value::Dict& message_payload,
                                   PayloadResponseCallback callback);
 
+  void OnConnectionClosed();
+
   NearbyConnection* nearby_connection_;
   RandomSessionId random_session_id_;
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;
+  base::OnceClosure on_connection_closed_;
+
+  base::WeakPtrFactory<Connection> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::quick_start

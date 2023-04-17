@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -80,7 +81,7 @@ class AuthenticatedConnectionTest : public testing::Test {
         nearby_connection,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
-        session_id_, kSharedSecret);
+        session_id_, kSharedSecret, base::DoNothing());
   }
 
   void VerifyAssertionInfo(absl::optional<FidoAssertionInfo> assertion_info) {

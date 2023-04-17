@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -401,8 +402,9 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
   QS_LOG(INFO) << "Incoming Nearby Connection Accepted: endpoint_id="
                << endpoint_id;
 
+  // TODO: Handle Connection Closed in the Connection Broker
   connection_ = std::make_unique<Connection>(
-      nearby_connection, random_session_id_, shared_secret_);
+      nearby_connection, random_session_id_, shared_secret_, base::DoNothing());
 
   // TODO(b/234655072): Mark the connection_ authenticated if
   // |use_pin_authentication_| is true. For pin verification, if the source

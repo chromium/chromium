@@ -29,8 +29,12 @@ AuthenticatedConnection::AuthenticatedConnection(
     NearbyConnection* nearby_connection,
     mojo::SharedRemote<mojom::QuickStartDecoder> remote,
     RandomSessionId session_id,
-    SharedSecret shared_secret)
-    : Connection(nearby_connection, session_id, shared_secret) {
+    SharedSecret shared_secret,
+    base::OnceClosure on_connection_closed)
+    : Connection(nearby_connection,
+                 session_id,
+                 shared_secret,
+                 std::move(on_connection_closed)) {
   decoder_ = std::move(remote);
 }
 

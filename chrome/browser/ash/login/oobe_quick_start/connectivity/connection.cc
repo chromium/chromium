@@ -14,19 +14,30 @@ namespace ash::quick_start {
 
 Connection::Connection(NearbyConnection* nearby_connection,
                        RandomSessionId session_id,
-                       SharedSecret shared_secret)
+                       SharedSecret shared_secret,
+                       base::OnceClosure on_connection_closed)
     : nearby_connection_(nearby_connection),
       random_session_id_(session_id),
-      shared_secret_(shared_secret) {
+      shared_secret_(shared_secret),
+      on_connection_closed_(std::move(on_connection_closed)) {
   crypto::RandBytes(secondary_shared_secret_);
+  nearby_connection->SetDisconnectionListener(base::BindOnce(
+      &Connection::OnConnectionClosed, weak_ptr_factory_.GetWeakPtr()));
 }
 
 Connection::Connection(NearbyConnection* nearby_connection,
-                       RandomSessionId session_id)
-    : nearby_connection_(nearby_connection), random_session_id_(session_id) {
+                       RandomSessionId session_id,
+                       base::OnceClosure on_connection_closed)
+    : nearby_connection_(nearby_connection),
+      random_session_id_(session_id),
+      on_connection_closed_(std::move(on_connection_closed)) {
   crypto::RandBytes(shared_secret_);
   crypto::RandBytes(secondary_shared_secret_);
+  nearby_connection->SetDisconnectionListener(base::BindOnce(
+      &Connection::OnConnectionClosed, weak_ptr_factory_.GetWeakPtr()));
 }
+
+Connection::~Connection() = default;
 
 void Connection::SendPayload(const base::Value::Dict& message_payload) {
   std::string json_serialized_payload;
@@ -41,6 +52,10 @@ void Connection::SendPayloadAndReadResponse(
     PayloadResponseCallback callback) {
   SendPayload(message_payload);
   nearby_connection_->Read(std::move(callback));
+}
+
+void Connection::OnConnectionClosed() {
+  std::move(on_connection_closed_).Run();
 }
 
 }  // namespace ash::quick_start
