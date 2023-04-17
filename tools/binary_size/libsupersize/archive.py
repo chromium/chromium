@@ -957,16 +957,16 @@ def _IsOnDemand(apk_path):
       'AndroidManifest.xml', apk_path
   ]).decode('ascii')
 
-  def parse_attr(name):
-    # http://schemas.android.com/apk/res/android:isFeatureSplit(0x0101055b)=true
-    # http://schemas.android.com/apk/distribution:onDemand=true
-    m = re.search(name + r'(?:\(.*?\))?=(\w+)', output)
+  def parse_attr(namespace, name):
+    # A: http://schemas.android.com/apk/res/android:isFeatureSplit(0x...)=true
+    # A: http://schemas.android.com/apk/distribution:onDemand=true
+    m = re.search(f'A: (?:.*?/{namespace}:)?{name}' + r'(?:\(.*?\))?=(\w+)',
+                  output)
     return m and m.group(1) == 'true'
 
-  is_feature_split = parse_attr('android:isFeatureSplit')
+  is_feature_split = parse_attr('android', 'isFeatureSplit')
   # Can use <dist:on-demand>, or <module dist:onDemand="true">.
-  on_demand = parse_attr(
-      'distribution:onDemand') or 'distribution:on-demand' in output
+  on_demand = parse_attr('distribution', 'onDemand') or 'on-demand' in output
   on_demand = bool(on_demand and is_feature_split)
 
   return on_demand
