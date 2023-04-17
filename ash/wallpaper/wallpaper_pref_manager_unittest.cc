@@ -34,6 +34,16 @@ using testing::Lt;
 constexpr char kUser1[] = "user1@test.com";
 const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
 
+constexpr char kDummyUrl[] = "https://best_wallpaper/1";
+constexpr char kDummyUrl2[] = "https://best_wallpaper/2";
+constexpr char kDummyUrl3[] = "https://best_wallpaper/3";
+constexpr char kDummyUrl4[] = "https://best_wallpaper/4";
+
+const uint64_t kAssetId = 1;
+const uint64_t kAssetId2 = 2;
+const uint64_t kAssetId3 = 3;
+const uint64_t kAssetId4 = 4;
+
 constexpr char kFakeGooglePhotosPhotoId[] = "fake_photo";
 
 WallpaperInfo InfoWithType(WallpaperType type) {
@@ -494,6 +504,42 @@ TEST_F(WallpaperPrefManagerTest,
   pref_manager_->CacheKMeanColor(location, k_mean_color);
 
   EXPECT_FALSE(pref_manager_->GetCachedWallpaperColors(location));
+}
+
+TEST_F(WallpaperPrefManagerTest, ShouldSyncOut) {
+  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncOut(
+      InfoWithType(WallpaperType::kOnline)));
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId3, GURL(kDummyUrl3),
+                        backdrop::Image::IMAGE_TYPE_MORNING_MODE);
+  variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
+                        backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
+  WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
+  info.variants = variants;
+  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncOut(info));
+}
+
+TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
+  WallpaperInfo synced_info = InfoWithType(WallpaperType::kDaily);
+  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info));
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId3, GURL(kDummyUrl3),
+                        backdrop::Image::IMAGE_TYPE_MORNING_MODE);
+  variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
+                        backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
+  local_info.variants = variants;
+  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info));
 }
 
 }  // namespace

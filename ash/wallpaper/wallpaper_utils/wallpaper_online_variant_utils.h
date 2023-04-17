@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 
 namespace ash {
 
@@ -22,6 +23,10 @@ ASH_EXPORT bool IsSuitableOnlineWallpaperVariant(
 ASH_EXPORT const OnlineWallpaperVariant* FirstValidVariant(
     const std::vector<OnlineWallpaperVariant>& variants,
     ScheduleCheckpoint checkpoint);
+
+// Returns whether the given |wallpaper_info| stores the info of a Time of Day
+// wallpaper.
+ASH_EXPORT bool IsTimeOfDayWallpaper(const WallpaperInfo& wallpaper_info);
 
 }  // namespace ash
 

@@ -16,6 +16,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
@@ -36,6 +37,24 @@
 namespace ash {
 
 namespace {
+
+constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kDaily:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kOnline:
+    case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kDailyGooglePhotos:
+      return true;
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      return false;
+  }
+}
 
 // Populates online wallpaper related info in |info|.
 void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
@@ -319,8 +338,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     // Although `WallpaperType::kCustomized` typed wallpapers are syncable, we
     // don't set synced info until the image is stored in drivefs, so we know
     // when to retry saving it on failure.
-    if (IsWallpaperTypeSyncable(info.type) &&
-        info.type != WallpaperType::kCustomized) {
+    if (ShouldSyncOut(info) && info.type != WallpaperType::kCustomized) {
       SetSyncedWallpaperInfo(account_id, info);
     }
 
@@ -595,22 +613,34 @@ const char WallpaperPrefManager::kOnlineWallpaperTypeNodeName[] =
 const char WallpaperPrefManager::kOnlineWallpaperUrlNodeName[] = "url";
 
 // static
-bool WallpaperPrefManager::IsWallpaperTypeSyncable(WallpaperType type) {
-  switch (type) {
-    case WallpaperType::kDaily:
-    case WallpaperType::kCustomized:
-    case WallpaperType::kOnline:
-    case WallpaperType::kOnceGooglePhotos:
-    case WallpaperType::kDailyGooglePhotos:
-      return true;
-    case WallpaperType::kDefault:
-    case WallpaperType::kPolicy:
-    case WallpaperType::kThirdParty:
-    case WallpaperType::kDevice:
-    case WallpaperType::kOneShot:
-    case WallpaperType::kCount:
-      return false;
+bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
+  if (IsTimeOfDayWallpaper(local_info)) {
+    // Time Of Day wallpapers are not syncable.
+    // TODO(b/277804153): Confirm the sync rules for time of day wallpapers.
+    return false;
   }
+  return IsWallpaperTypeSyncable(local_info.type);
+}
+
+// static
+bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
+                                        const WallpaperInfo& local_info) {
+  if (!IsWallpaperTypeSyncable(synced_info.type)) {
+    LOG(ERROR) << " wallpaper type " << static_cast<int>(synced_info.type)
+               << " from remote prefs is not syncable.";
+    return false;
+  }
+  if (synced_info.MatchesSelection(local_info)) {
+    return false;
+  }
+  if (synced_info.date < local_info.date) {
+    return false;
+  }
+  // TODO(b/277804153): Confirm the sync rules for time of day wallpapers.
+  if (IsTimeOfDayWallpaper(local_info)) {
+    return false;
+  }
+  return true;
 }
 
 // static

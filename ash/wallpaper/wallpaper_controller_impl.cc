@@ -1780,7 +1780,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     // Migrate wallpaper info to syncable prefs.
     if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info) &&
         pref_manager_->GetLocalWallpaperInfo(account_id, &local_info) &&
-        WallpaperPrefManager::IsWallpaperTypeSyncable(local_info.type)) {
+        WallpaperPrefManager::ShouldSyncOut(local_info)) {
       if (local_info.type == WallpaperType::kCustomized) {
         base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                     .Append(local_info.location);
@@ -2919,25 +2919,30 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
   // handled it locally.
   WallpaperInfo synced_info;
   WallpaperInfo local_info;
-  if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info))
+  if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info)) {
     return;
+  }
   if (!pref_manager_->GetLocalWallpaperInfo(account_id, &local_info)) {
     HandleWallpaperInfoSyncedIn(account_id, synced_info);
     return;
   }
-  if (synced_info.MatchesSelection(local_info))
-    return;
-  if (synced_info.date >= local_info.date) {
-    // If synced is newer or the same age, it wins.
-    HandleWallpaperInfoSyncedIn(account_id, synced_info);
-  } else if (local_info.type == WallpaperType::kCustomized) {
+  // TODO(b/278096886): Move this sync-out logic for `kCustomized` type
+  // somewhere else.
+  if (!synced_info.MatchesSelection(local_info) &&
+      synced_info.date < local_info.date &&
+      local_info.type == WallpaperType::kCustomized) {
     // Generally, we handle setting synced_info when local_info is updated.
     // But for custom images, we wait until the image is uploaded to Drive,
     // which may not be available at the time of setting the local_info.
     base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                 .Append(local_info.location);
     SaveWallpaperToDriveFsAndSyncInfo(account_id, source);
+    return;
   }
+  if (!WallpaperPrefManager::ShouldSyncIn(synced_info, local_info)) {
+    return;
+  }
+  HandleWallpaperInfoSyncedIn(account_id, synced_info);
 }
 
 bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {

@@ -77,7 +77,13 @@ class ASH_EXPORT WallpaperPrefManager
   static const char kOnlineWallpaperTypeNodeName[];
   static const char kOnlineWallpaperUrlNodeName[];
 
-  static bool IsWallpaperTypeSyncable(WallpaperType type);
+  // Determines whether the wallpaper info is syncable and should be stored in
+  // synced prefs.
+  static bool ShouldSyncOut(const WallpaperInfo& local_info);
+  // Determines whether the local wallpaper info should by overriden by the
+  // synced prefs.
+  static bool ShouldSyncIn(const WallpaperInfo& synced_info,
+                           const WallpaperInfo& local_info);
 
   static std::unique_ptr<WallpaperPrefManager> Create(PrefService* local_state);
 

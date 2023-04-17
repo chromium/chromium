@@ -127,11 +127,15 @@ const std::string kFileName2 = GetDummyFileName(kAccountId2);
 
 constexpr char kChildEmail[] = "child@test.com";
 
-const std::string kDummyUrl = "https://best_wallpaper/1";
-const std::string kDummyUrl2 = "https://best_wallpaper/2";
+constexpr char kDummyUrl[] = "https://best_wallpaper/1";
+constexpr char kDummyUrl2[] = "https://best_wallpaper/2";
+constexpr char kDummyUrl3[] = "https://best_wallpaper/3";
+constexpr char kDummyUrl4[] = "https://best_wallpaper/4";
 
 const uint64_t kAssetId = 1;
 const uint64_t kAssetId2 = 2;
+const uint64_t kAssetId3 = 3;
+const uint64_t kAssetId4 = 4;
 const uint64_t kUnitId = 1;
 const uint64_t kUnitId2 = 2;
 
@@ -4500,6 +4504,78 @@ TEST_F(WallpaperControllerTest, WallpaperCustomization_UnusedForNonDefault) {
   // Verify that we still use the online wallpaper. i.e. did not switch to
   // default.
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+}
+
+TEST_F(WallpaperControllerTest, TimeOfDayWallpapers_NotSyncedIn) {
+  SimulateUserLogin(kAccountId1);
+  ClearWallpaperCount();
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId3, GURL(kDummyUrl3),
+                        backdrop::Image::IMAGE_TYPE_MORNING_MODE);
+  variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
+                        backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
+  WallpaperInfo local_info = WallpaperInfo(params);
+  local_info.unit_id = kUnitId;
+  local_info.date = DayBeforeYesterdayish();
+  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+
+  // synced info tracks a different wallpaper.
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kOnline, base::Time::Now()};
+  pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_TRUE(actual_info.MatchesSelection(local_info));
+  // Verify that no new wallpaper is set.
+  EXPECT_EQ(0, GetWallpaperCount());
+}
+
+TEST_F(WallpaperControllerTest, TimeOfDayWallpapers_NotSyncedOut) {
+  SimulateUserLogin(kAccountId1);
+  ClearWallpaperCount();
+
+  // synced info tracks a different wallpaper.
+  WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kOnline, base::Time::Now()};
+  synced_info.date = DayBeforeYesterdayish();
+  pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId3, GURL(kDummyUrl3),
+                        backdrop::Image::IMAGE_TYPE_MORNING_MODE);
+  variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
+                        backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
+  WallpaperInfo local_info = WallpaperInfo(params);
+  local_info.unit_id = kUnitId;
+  pref_manager_->SetUserWallpaperInfo(kAccountId1, local_info);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_TRUE(actual_info.MatchesSelection(synced_info));
 }
 
 class WallpaperControllerGooglePhotosWallpaperTest
