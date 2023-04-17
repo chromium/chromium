@@ -33,7 +33,7 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
   // then it will be a nullptr so we should assume zero.
   blink::LayoutBox* box = segment->GetLayoutBox();
   if (box) {
-    current_width = box->PixelSnappedWidth();
+    current_width = box->LogicalWidth().ToInt();
     current_left = box->LogicalLeft().ToInt();
   }
 

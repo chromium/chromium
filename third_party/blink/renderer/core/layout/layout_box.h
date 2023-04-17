@@ -246,16 +246,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* FirstInFlowChildBox() const;
   LayoutBox* LastChildBox() const;
 
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedWidth() const {
-    NOT_DESTROYED();
-    return SnapSizeToPixel(Size().Width(), Location().X());
-  }
-  int PixelSnappedHeight() const {
-    NOT_DESTROYED();
-    return SnapSizeToPixel(Size().Height(), Location().Y());
-  }
-
   void SetWidth(LayoutUnit width) {
     NOT_DESTROYED();
     if (width == frame_size_.Width()) {
@@ -312,18 +302,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ConstrainContentBoxLogicalHeightByMinMax(
       LayoutUnit logical_height,
       LayoutUnit intrinsic_content_height) const;
-
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedLogicalHeight() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? PixelSnappedHeight()
-                                                : PixelSnappedWidth();
-  }
-  int PixelSnappedLogicalWidth() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? PixelSnappedWidth()
-                                                : PixelSnappedHeight();
-  }
 
   LayoutUnit LogicalHeightForEmptyLine() const {
     NOT_DESTROYED();

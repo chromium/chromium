@@ -478,7 +478,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
         text && text->HasNonCollapsedText()) {
       return true;
     } else if (const auto* box = DynamicTo<LayoutBox>(o);
-               box && box->PixelSnappedLogicalHeight()) {
+               box && box->LogicalHeight()) {
       return true;
     } else if (const auto* inline_object = DynamicTo<LayoutInline>(o);
                inline_object && IsEmptyInline(*inline_object) &&
