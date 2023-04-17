@@ -1812,7 +1812,7 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
       renderer->SetTextSize(SkIntToScalar(run.font_params.font_size));
       renderer->SetFontRenderParams(run.font_params.render_params,
                                     subpixel_rendering_suppressed());
-      Range glyphs_range = run.CharRangeToGlyphRange(segment.char_range);
+      const Range glyphs_range = run.CharRangeToGlyphRange(segment.char_range);
       std::vector<SkPoint> positions(glyphs_range.length());
       SkScalar offset_x = preceding_segment_widths -
                           ((glyphs_range.GetMin() != 0)
@@ -1838,6 +1838,16 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
         // clipped according to selection bounds. See http://crbug.com/366786
         if (colored_glyphs.is_empty())
           continue;
+
+        const size_t colored_pos =
+            colored_glyphs.start() - glyphs_range.start();
+        const int pos_size = positions.size();
+        base::debug::Alias(&colored_pos);
+        base::debug::Alias(&pos_size);
+        const size_t crash_report_size = 256;
+        DEBUG_ALIAS_FOR_U16CSTR(alias_display_text, display_text.c_str(),
+                                crash_report_size);
+        DEBUG_ALIAS_FOR_U16CSTR(alias_text, text().c_str(), crash_report_size);
 
         renderer->SetForegroundColor(it->second);
         renderer->DrawPosText(
