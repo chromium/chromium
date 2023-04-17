@@ -1769,6 +1769,9 @@
       name: "FormControlRestoreStateIfAutocompleteOff",
     },
     {
+      name: "FormControlsVerticalWritingModeDirectionSupport",
+    },
+    {
       name: "FormControlsVerticalWritingModeSupport",
       status: "experimental",
     },
@@ -2815,6 +2818,12 @@
       public: true,
       status: "stable",
       base_feature: "none",
+    },
+    {
+      // Non-standard appearance values should be removed. This feature removes
+      // slider-vertical.
+      // https://drafts.csswg.org/css-ui-4/#appearance-switching
+      name: "RemoveNonStandardAppearanceValueSliderVertical",
     },
     {
       name: "RenderBlockingStatus",

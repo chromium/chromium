@@ -1804,12 +1804,15 @@ SkRect NativeThemeBase::AlignSliderTrack(
   SkRect aligned_rect;
 
   if (slider.vertical) {
-    const float top = is_value ? slider_rect.y() + slider.thumb_y + kAlignment
-                               : slider_rect.y();
+    const float top = is_value && slider.right_to_left
+                          ? slider_rect.y() + slider.thumb_y + kAlignment
+                          : slider_rect.y();
+    const float bottom = is_value && !slider.right_to_left
+                             ? slider_rect.y() + slider.thumb_y + kAlignment
+                             : slider_rect.bottom();
     aligned_rect.setLTRB(
         std::max(float(slider_rect.x()), mid_x - kAlignment), top,
-        std::min(float(slider_rect.right()), mid_x + kAlignment),
-        slider_rect.bottom());
+        std::min(float(slider_rect.right()), mid_x + kAlignment), bottom);
   } else {
     const float right = is_value && !slider.right_to_left
                             ? slider_rect.x() + slider.thumb_x + kAlignment

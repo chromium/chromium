@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -475,11 +476,23 @@ void LayoutTheme::AdjustSliderContainerStyle(
     ComputedStyleBuilder& builder) const {
   DCHECK(IsSliderContainer(element));
 
-  if (builder.EffectiveAppearance() == kSliderVerticalPart) {
+  if (!RuntimeEnabledFeatures::
+          RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
+      builder.EffectiveAppearance() == kSliderVerticalPart) {
     builder.SetTouchAction(TouchAction::kPanX);
     builder.SetWritingMode(WritingMode::kVerticalRl);
     // It's always in RTL because the slider value increases up even in LTR.
     builder.SetDirection(TextDirection::kRtl);
+  } else if (RuntimeEnabledFeatures::
+                 FormControlsVerticalWritingModeSupportEnabled() &&
+             !IsHorizontalWritingMode(builder.GetWritingMode())) {
+    builder.SetTouchAction(TouchAction::kPanX);
+    // If FormControlsVerticalWritingModeDirectionSupport disabled, then it is
+    // always RTL because the slider value increases up even in LTR.
+    if (!RuntimeEnabledFeatures::
+            FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+      builder.SetDirection(TextDirection::kRtl);
+    }
   } else {
     builder.SetTouchAction(TouchAction::kPanY);
     builder.SetWritingMode(WritingMode::kHorizontalTb);

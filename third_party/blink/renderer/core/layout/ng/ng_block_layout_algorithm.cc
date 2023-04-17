@@ -3305,6 +3305,16 @@ LogicalOffset NGBlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
   const auto* input =
       To<HTMLInputElement>(Node().GetDOMNode()->OwnerShadowHost());
   LayoutUnit offset(input->RatioValue().ToDouble() * available_extent);
+  // While the vertical form controls do not support LTR direction, we need to
+  // position the thumb's offset on the opposite side of the element (similar to
+  // RTL direction).
+  WritingDirectionMode writing_direction =
+      ConstraintSpace().GetWritingDirection();
+  if (!writing_direction.IsHorizontal() && writing_direction.IsLtr() &&
+      !RuntimeEnabledFeatures::
+          FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+    offset = available_extent - offset;
+  }
   return {logical_offset.inline_offset + offset, logical_offset.block_offset};
 }
 
