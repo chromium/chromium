@@ -4899,25 +4899,6 @@
             ]
         }
     ],
-    "EnterpriseReportingConnectorBrowserCrashEvents": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230331",
-                    "enable_features": [
-                        "BrowserCrashEventsEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnterpriseReportingConnectorExtensionEvents": [
         {
             "platforms": [
