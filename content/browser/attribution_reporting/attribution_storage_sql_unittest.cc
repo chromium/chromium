@@ -169,14 +169,17 @@ class AttributionStorageSqlTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
   void OpenDatabase() {
-    storage_.reset();
+    CloseDatabase();
     auto delegate = std::make_unique<ConfigurableStorageDelegate>();
     delegate_ = delegate.get();
     storage_ = std::make_unique<AttributionStorageSql>(
         temp_directory_.GetPath(), std::move(delegate));
   }
 
-  void CloseDatabase() { storage_.reset(); }
+  void CloseDatabase() {
+    delegate_ = nullptr;
+    storage_.reset();
+  }
 
   void AddReportToStorage() {
     storage_->StoreSource(SourceBuilder().Build());
