@@ -76,7 +76,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -110,7 +109,6 @@ using password_manager::PasswordManagerClient;
 using password_manager::metrics_util::LogPasswordDropdownShown;
 using password_manager::metrics_util::PasswordDropdownState;
 using safe_browsing::PasswordReuseDetectionManagerClient;
-using web::WebFrame;
 using web::WebState;
 
 namespace {

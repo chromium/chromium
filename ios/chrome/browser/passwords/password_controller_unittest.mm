@@ -317,8 +317,9 @@ class PasswordControllerTest : public PlatformTest {
 
     // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
-                 intValue] == int{next_available_id};
+      return
+          [ExecuteJavaScriptInFeatureWorld(@"document[__gCrWeb.fill.ID_SYMBOL]")
+              intValue] == int{next_available_id};
     });
   }
 
@@ -383,7 +384,7 @@ class PasswordControllerTest : public PlatformTest {
     NSString* kFormNamingScript =
         @"__gCrWeb.form.getFormIdentifier("
          "    document.querySelectorAll('form')[%d]);";
-    return base::SysNSStringToUTF8(ExecuteJavaScript(
+    return base::SysNSStringToUTF8(ExecuteJavaScriptInFeatureWorld(
         [NSString stringWithFormat:kFormNamingScript, form_number]));
   }
 
@@ -495,6 +496,10 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   id ExecuteJavaScript(NSString* java_script) {
+    return web::test::ExecuteJavaScript(java_script, web_state());
+  }
+
+  id ExecuteJavaScriptInFeatureWorld(NSString* java_script) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     return web::test::ExecuteJavaScriptForFeature(web_state(), java_script,
