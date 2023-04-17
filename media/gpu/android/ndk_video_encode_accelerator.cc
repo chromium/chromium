@@ -536,7 +536,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       uv_plane_size.width() * 2;
 
   if (queued_size > capacity) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
                        base::StringPrintf("Frame doesn't fit into the input "
                                           "buffer. queued_size: %zu capacity: "
                                           "%zu",
@@ -563,7 +563,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
                                   visible_size.width(), visible_size.height());
   } else {
     NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
-                       "Unsupported frame format: " +
+                       "Unexpected frame format: " +
                            VideoPixelFormatToString(frame->format())});
     return;
   }

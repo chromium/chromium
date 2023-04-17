@@ -188,6 +188,8 @@ void VideoEncodeAccelerator::Client::NotifyErrorStatus(
     case EncoderStatus::Codes::kEncoderUnsupportedConfig:
     case EncoderStatus::Codes::kEncoderInitializationError:
     case EncoderStatus::Codes::kUnsupportedFrameFormat:
+    case EncoderStatus::Codes::kInvalidInputFrame:
+    case EncoderStatus::Codes::kInvalidOutputBuffer:
       error = VideoEncodeAccelerator::Error::kInvalidArgumentError;
       break;
     case EncoderStatus::Codes::kEncoderFailedEncode:
@@ -196,6 +198,7 @@ void VideoEncodeAccelerator::Client::NotifyErrorStatus(
     case EncoderStatus::Codes::kScalingError:
     case EncoderStatus::Codes::kFormatConversionError:
     case EncoderStatus::Codes::kEncoderHardwareDriverError:
+    case EncoderStatus::Codes::kSystemAPICallError:
       error = VideoEncodeAccelerator::Error::kPlatformFailureError;
       break;
   }

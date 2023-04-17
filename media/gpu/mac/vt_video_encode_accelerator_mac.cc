@@ -372,14 +372,14 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 
   if (config.input_format != PIXEL_FORMAT_I420 &&
       config.input_format != PIXEL_FORMAT_NV12) {
-    MEDIA_LOG(ERROR, media_log.get())
+    MEDIA_LOG(ERROR, media_log)
         << "Input format not supported= "
         << VideoPixelFormatToString(config.input_format);
     return false;
   }
   if (!base::Contains(kSupportedProfiles, config.output_profile)) {
-    MEDIA_LOG(ERROR, media_log.get()) << "Output profile not supported= "
-                                      << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, media_log) << "Output profile not supported= "
+                                << GetProfileName(config.output_profile);
     return false;
   }
   profile_ = config.output_profile;
@@ -404,13 +404,12 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
 
   if (num_temporal_layers_ > 2) {
-    MEDIA_LOG(ERROR, media_log.get())
-        << "Unsupported number of SVC temporal layers.";
+    MEDIA_LOG(ERROR, media_log) << "Unsupported number of SVC temporal layers.";
     return false;
   }
 
   if (!ResetCompressionSession(codec_)) {
-    MEDIA_LOG(ERROR, media_log.get()) << "Failed creating compression session.";
+    MEDIA_LOG(ERROR, media_log) << "Failed creating compression session.";
     return false;
   }
 
@@ -418,9 +417,10 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 
   // Report whether hardware encode is being used.
   if (!encoder_info.is_hardware_accelerated) {
-    MEDIA_LOG(INFO, media_log.get())
-        << "VideoToolbox selected a software encoder.";
+    MEDIA_LOG(INFO, media_log) << "VideoToolbox selected a software encoder.";
   }
+
+  media_log_ = std::move(media_log);
 
   client_->NotifyEncoderInfoChange(encoder_info);
   client_->RequireBitstreamBuffers(kNumInputBuffers, input_visible_size_,
@@ -514,7 +514,7 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (buffer.size() < bitstream_buffer_size_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
                        "Output BitstreamBuffer isn't big enough: " +
                            base::NumberToString(buffer.size()) + " vs. " +
                            base::NumberToString(bitstream_buffer_size_)});
@@ -993,15 +993,18 @@ void VTVideoEncodeAccelerator::SetEncoderColorSpace() {
 }
 
 void VTVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
+  CHECK(!status.is_ok());
+  LOG(ERROR) << "Call NotifyErrorStatus(): code="
+             << static_cast<int>(status.code())
+             << ", message=" << status.message();
+  if (media_log_) {
+    MEDIA_LOG(ERROR, media_log_) << status.message();
+  }
   // NotifyErrorStatus() can be called without calling Initialize() in the case
   // of GetSupportedProfiles().
   if (!client_) {
     return;
   }
-  CHECK(!status.is_ok());
-  LOG(ERROR) << "Call NotifyErrorStatus(): code="
-             << static_cast<int>(status.code())
-             << ", message=" << status.message();
   client_->NotifyErrorStatus(std::move(status));
 }
 

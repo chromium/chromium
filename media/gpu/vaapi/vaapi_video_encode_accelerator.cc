@@ -528,7 +528,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
             ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
             : frame->IsMappable();
     if (!is_expected_storage_type) {
-      NotifyError({EncoderStatus::Codes::kUnsupportedFrameFormat,
+      NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                    "Unexpected storage: " +
                        VideoFrame::StorageTypeToString(frame->storage_type())});
       return;
@@ -636,7 +636,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
     // the same as the one we requested through
     // Client::RequireBitstreamBuffers().
     NotifyError(
-        {EncoderStatus::Codes::kUnsupportedFrameFormat,
+        {EncoderStatus::Codes::kInvalidInputFrame,
          "Expected frame coded size: " + expected_input_coded_size_.ToString() +
              ", but got: " + frame.coded_size().ToString()});
     return false;
@@ -647,7 +647,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
     // In non-zero copy mode, the client is responsible for scaling and
     // cropping.
     NotifyError(
-        {EncoderStatus::Codes::kUnsupportedFrameFormat,
+        {EncoderStatus::Codes::kInvalidInputFrame,
          "Expected frame visible rectangle: " + visible_rect_.ToString() +
              ", but got: " + frame.visible_rect().ToString()});
     return false;
@@ -960,7 +960,7 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   if (buffer.size() < output_buffer_byte_size_) {
-    NotifyError({EncoderStatus::Codes::kEncoderInitializationError,
+    NotifyError({EncoderStatus::Codes::kInvalidOutputBuffer,
                  "Provided bitstream buffer too small"});
     return;
   }

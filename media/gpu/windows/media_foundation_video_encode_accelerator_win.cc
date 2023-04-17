@@ -747,7 +747,7 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (buffer.size() < bitstream_buffer_size_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
                        "Output BitstreamBuffer isn't big enough: " +
                            base::NumberToString(buffer.size()) + " vs. " +
                            base::NumberToString(bitstream_buffer_size_)});

@@ -782,7 +782,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
             ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
             : frame->IsMappable();
     if (!is_expected_storage_type) {
-      SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
+      SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,
                      "Unexpected storage: " + VideoFrame::StorageTypeToString(
                                                   frame->storage_type())});
       return;
@@ -790,8 +790,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
 
     if (!ReconfigureFormatIfNeeded(*frame)) {
       SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
-                     "Unexpected storage: " + VideoFrame::StorageTypeToString(
-                                                  frame->storage_type())});
+                     "Unsupported frame: " + frame->AsHumanReadableString()});
       return;
     }
 
@@ -986,7 +985,7 @@ void V4L2VideoEncodeAccelerator::UseOutputBitstreamBufferTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
   if (buffer.size() < output_buffer_byte_size_) {
-    SetErrorState({EncoderStatus::Codes::kEncoderInitializationError,
+    SetErrorState({EncoderStatus::Codes::kInvalidOutputBuffer,
                    "Provided bitstream buffer too small"});
     return;
   }
@@ -1408,7 +1407,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
   switch (input_buf.Memory()) {
     case V4L2_MEMORY_USERPTR: {
       if (frame->storage_type() != VideoFrame::STORAGE_SHMEM) {
-        SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
+        SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,
                        "VideoFrame doesn't have shared memory"});
         return false;
       }
@@ -1449,7 +1448,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
     default:
       NOTREACHED();
       SetErrorState(
-          {EncoderStatus::Codes::kUnsupportedFrameFormat,
+          {EncoderStatus::Codes::kEncoderIllegalState,
            "Unknown input memory type: " +
                base::NumberToString(static_cast<int>(input_buf.Memory()))});
       return false;
@@ -1487,7 +1486,7 @@ bool V4L2VideoEncodeAccelerator::StartDevicePoll() {
 
   // Start up the device poll thread and schedule its first DevicePollTask().
   if (!device_poll_thread_.Start()) {
-    SetErrorState({EncoderStatus::Codes::kEncoderInitializationError,
+    SetErrorState({EncoderStatus::Codes::kSystemAPICallError,
                    "StartDevicePoll(): Device thread failed to start"});
     return false;
   }
@@ -1542,7 +1541,7 @@ void V4L2VideoEncodeAccelerator::DevicePollTask(bool poll_device) {
 
   bool event_pending;
   if (!device_->Poll(poll_device, &event_pending)) {
-    SetErrorState({EncoderStatus::Codes::kEncoderInitializationError,
+    SetErrorState({EncoderStatus::Codes::kSystemAPICallError,
                    "Failed to start device polloing"});
     return;
   }
