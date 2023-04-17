@@ -18,9 +18,9 @@
 namespace ash {
 namespace test {
 
-const char kUserAvatarImage1RelativePath[] = "chromeos/avatar1.jpg";
-const char kUserAvatarImage2RelativePath[] = "chromeos/avatar2.jpg";
-const char kUserAvatarImage3RelativePath[] = "chromeos/avatar3.png";
+const char kUserAvatarImage1RelativePath[] = "chromeos/avatars/avatar1.jpg";
+const char kUserAvatarImage2RelativePath[] = "chromeos/avatars/avatar2.jpg";
+const char kUserAvatarImage3RelativePath[] = "chromeos/avatars/avatar3.png";
 
 bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second) {
   if (first.width() != second.width() || first.height() != second.height())
