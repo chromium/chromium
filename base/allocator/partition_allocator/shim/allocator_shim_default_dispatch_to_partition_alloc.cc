@@ -584,6 +584,7 @@ void EnablePartitionAllocMemoryReclaimer() {
 void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableBrpZapping enable_brp_zapping,
+    EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     AddDummyRefCount add_dummy_ref_count,
@@ -691,6 +692,14 @@ void ConfigurePartitions(
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
   PA_CHECK(current_aligned_root == g_original_root);
+
+  if (enable_brp_memory_reclaimer) {
+    partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(new_root);
+    if (new_aligned_root != new_root) {
+      partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
+          new_aligned_root);
+    }
+  }
 
   // Purge memory, now that the traffic to the original partition is cut off.
   current_root->PurgeMemory(
