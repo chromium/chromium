@@ -325,7 +325,7 @@ TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
   // Open another NTP and expect a navigation call.
-  [[mockNTPCoordinator expect] didNavigateToNTPInWebState:GetActiveWebState()];
+  [[mockNTPCoordinator expect] didNavigateToNTP];
   OpenURL(GURL("chrome://newtab/"));
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 

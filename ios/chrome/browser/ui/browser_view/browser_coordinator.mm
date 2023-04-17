@@ -2658,7 +2658,6 @@ enum class ToolbarKind {
 
 #pragma mark - NewTabPageTabHelperDelegate
 
-// TODO(crbug.com/1427128): Have the TabEventsMediator implement this.
 - (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
                                 forWebState:(web::WebState*)webState {
   DCHECK(self.browser);
@@ -2672,15 +2671,16 @@ enum class ToolbarKind {
   }
   NewTabPageCoordinator* NTPCoordinator = self.NTPCoordinator;
   DCHECK(NTPCoordinator);
-  // Handle NTP visibility changes within a web state.
   if (NTPHelper->IsActive()) {
-    if (!NTPCoordinator.started) {
+    // Starting the NTPCoordinator triggers its visibility, so we only
+    // explicitly call `didNavigateToNTP` if the NTP was already started.
+    if (NTPCoordinator.started) {
+      [NTPCoordinator didNavigateToNTP];
+    } else {
       [NTPCoordinator start];
     }
-    [NTPCoordinator didNavigateToNTPInWebState:webState];
   } else {
     [NTPCoordinator didNavigateAwayFromNTP];
-    [NTPCoordinator stopIfNeeded];
   }
   if (self.isActive) {
     [self.viewController displayCurrentTab];

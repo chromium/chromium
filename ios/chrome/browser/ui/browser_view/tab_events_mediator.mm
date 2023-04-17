@@ -111,6 +111,16 @@
 }
 
 - (void)webStateList:(WebStateList*)webStateList
+    didDetachWebState:(web::WebState*)webState
+              atIndex:(int)atIndex {
+  NewTabPageTabHelper* NTPTabHelper =
+      NewTabPageTabHelper::FromWebState(webState);
+  if (NTPTabHelper->IsActive()) {
+    [self stopNTPIfNeeded];
+  }
+}
+
+- (void)webStateList:(WebStateList*)webStateList
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
@@ -123,32 +133,10 @@
 }
 
 - (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  // When an NTP web state is closed, check if the coordinator should be
-  // stopped.
-  NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(webState);
-  if (NTPTabHelper->IsActive()) {
-    [self stopNTPIfNeeded];
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
     didChangeActiveWebState:(web::WebState*)newWebState
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
-  // If the user is leaving an NTP web state, trigger a visibility change.
-  if (oldWebState && _ntpCoordinator.started) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(oldWebState);
-    if (NTPHelper->IsActive()) {
-      [_ntpCoordinator didNavigateAwayFromNTP];
-    }
-  }
-
   if (reason == ActiveWebStateChangeReason::Inserted) {
     [self didInsertActiveWebState:newWebState];
   }
@@ -162,14 +150,6 @@
     // WebState is showing the NTP. BrowserCoordinator's -setActive: only starts
     // the NTP if it is the active view.
     [self startNTPIfNeededForActiveWebState:newWebState];
-
-    // If the user is entering an NTP web state, trigger a visibility change.
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(newWebState);
-    if (NTPHelper->IsActive()) {
-      [_ntpCoordinator didNavigateToNTPInWebState:newWebState];
-    }
-
     [self.consumer webStateSelected];
   }
 }
@@ -228,10 +208,16 @@
     // Remove the helper because it isn't needed anymore.
     NewTabAnimationTabHelper::RemoveFromWebState(newWebState);
   }
+  // Since we share the NTP coordinator across web states, the feed type could
+  // be different from default, so we reset it.
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(newWebState);
-  if (NTPHelper->IsActive()) {
+  if (NTPHelper && NTPHelper->IsActive()) {
     [_ntpCoordinator start];
+    FeedType defaultFeedType = NTPHelper->DefaultFeedType();
+    if (_ntpCoordinator.selectedFeed != defaultFeedType) {
+      [_ntpCoordinator selectFeedType:defaultFeedType];
+    }
   }
   BOOL inBackground =
       (NTPHelper && NTPHelper->ShouldShowStartSurface()) || !animated;
