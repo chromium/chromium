@@ -8,7 +8,6 @@ package web.proto;
 option optimize_for = LITE_RUNTIME;
 
 import "ios/web/public/session/proto/common.proto";
-import "ios/web/public/session/proto/ui.proto";
 
 // The referrer policy.
 enum ReferrerPolicy {
