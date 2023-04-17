@@ -466,7 +466,9 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceParam() {
   seq_param_.seq_profile = 0;
   seq_param_.seq_level_idx = level_idx_;
   seq_param_.seq_tier = 0;
+#if VA_CHECK_VERSION(1, 16, 0)
   seq_param_.hierarchical_flag = 0;
+#endif
 
   // Period between keyframes.
   seq_param_.intra_period = current_params_.intra_period;
@@ -629,7 +631,12 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   for (int i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
     pic_param.ref_frame_idx[i] = 0;
   }
+
+#if VA_CHECK_VERSION(1, 16, 0)
   pic_param.hierarchical_level_plus1 = 0;
+#else
+  pic_param.reserved8bits0 = 0;
+#endif
   pic_param.primary_ref_frame = is_keyframe ? kPrimaryReferenceNone : 0;
 
   pic_param.order_hint = frame_num_ & 0xFF;
