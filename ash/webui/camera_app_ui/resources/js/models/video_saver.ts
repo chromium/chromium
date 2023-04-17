@@ -215,7 +215,7 @@ class TimeLapseFixedSpeedSaver {
 /**
  * Maximum duration for the time-lapse video in seconds.
  */
-const TIME_LAPSE_MAX_DURATION = 60;
+const TIME_LAPSE_MAX_DURATION = 30;
 
 /**
  * Default number of fps in case it's not defined from the original video.
