@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -539,7 +540,8 @@ ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
 HeapVector<Member<ReadableStream>> ReadableStream::tee(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return CallTeeAndReturnBranchArray(script_state, this, exception_state);
+  return CallTeeAndReturnBranchArray(script_state, this, false,
+                                     exception_state);
 }
 
 // Unlike in the standard, this is defined as a separate method from the
@@ -708,13 +710,17 @@ void ReadableStream::Initialize(ReadableStream* stream) {
   DCHECK(!stream->is_disturbed_);
 }
 
-// TODO(domenic): cloneForBranch2 argument from spec not supported yet
 void ReadableStream::Tee(ScriptState* script_state,
                          ReadableStream** branch1,
                          ReadableStream** branch2,
+                         bool clone_for_branch2,
                          ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<TeeEngine>();
-  engine->Start(script_state, this, exception_state);
+  engine->Start(
+      script_state, this,
+      clone_for_branch2 &&
+          RuntimeEnabledFeatures::ReadableStreamTeeCloneForBranch2Enabled(),
+      exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1181,13 +1187,10 @@ bool ReadableStream::HasDefaultReader(const ReadableStream* stream) {
   return reader->IsDefaultReader();
 }
 
-//
-// TODO(ricea): Functions for transferable streams.
-//
-
 HeapVector<Member<ReadableStream>> ReadableStream::CallTeeAndReturnBranchArray(
     ScriptState* script_state,
     ReadableStream* readable,
+    bool clone_for_branch2,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-tee
   ReadableStream* branch1 = nullptr;
@@ -1198,7 +1201,8 @@ HeapVector<Member<ReadableStream>> ReadableStream::CallTeeAndReturnBranchArray(
     readable->ByteStreamTee(script_state, &branch1, &branch2, exception_state);
   } else {
     DCHECK(readable->readable_stream_controller_->IsDefaultController());
-    readable->Tee(script_state, &branch1, &branch2, exception_state);
+    readable->Tee(script_state, &branch1, &branch2, clone_for_branch2,
+                  exception_state);
   }
 
   if (!branch1 || !branch2)

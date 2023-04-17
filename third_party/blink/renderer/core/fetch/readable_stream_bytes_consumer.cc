@@ -36,6 +36,7 @@ class ReadableStreamBytesConsumer::BytesConsumerReadRequest final
       consumer_->OnRejected();
       return;
     }
+    ScriptState::Scope scope(script_state);
     NonThrowableExceptionState exception_state;
     consumer_->OnRead(
         NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(

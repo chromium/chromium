@@ -280,7 +280,7 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
     ReadableStream* stream1 = nullptr;
     ReadableStream* stream2 = nullptr;
 
-    stream_->Tee(script_state_, &stream1, &stream2, exception_state);
+    stream_->Tee(script_state_, &stream1, &stream2, true, exception_state);
     if (exception_state.HadException()) {
       stream_broken_ = true;
       return;

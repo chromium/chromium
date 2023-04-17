@@ -176,10 +176,10 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-tee
   HeapVector<Member<ReadableStream>> tee(ScriptState*, ExceptionState&);
 
-  // TODO(domenic): cloneForBranch2 argument from spec not supported yet
   void Tee(ScriptState*,
            ReadableStream** branch1,
            ReadableStream** branch2,
+           bool clone_for_branch2,
            ExceptionState&);
 
   void ByteStreamTee(ScriptState*,
@@ -342,15 +342,12 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#readable-stream-has-default-reader
   static bool HasDefaultReader(const ReadableStream*);
 
-  //
-  // TODO(ricea): Functions for transferable streams.
-  //
-
   // Calls Tee() on |readable|, converts the two branches to a JavaScript array
   // and returns them.
   static HeapVector<Member<ReadableStream>> CallTeeAndReturnBranchArray(
       ScriptState* script_state,
       ReadableStream* readable,
+      bool clone_for_branch2,
       ExceptionState& exception_state);
 
   bool is_disturbed_ = false;
