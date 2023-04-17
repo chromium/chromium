@@ -46,10 +46,10 @@ class ModelTypeChangeProcessor {
 
   // Sets storage key for the new entity. This function only applies to
   // datatypes that can't generate storage key based on EntityData. Bridge
-  // should call this function when handling MergeSyncData/ApplySyncChanges to
-  // inform the processor about |storage_key| of an entity identified by
-  // |entity_data|. Metadata changes about new entity will be appended to
-  // |metadata_change_list|.
+  // should call this function when handling
+  // MergeFullSyncData/ApplyIncrementalSyncChanges to inform the processor about
+  // |storage_key| of an entity identified by |entity_data|. Metadata changes
+  // about new entity will be appended to |metadata_change_list|.
   virtual void UpdateStorageKey(const EntityData& entity_data,
                                 const std::string& storage_key,
                                 MetadataChangeList* metadata_change_list) = 0;
@@ -94,8 +94,9 @@ class ModelTypeChangeProcessor {
   // error. Ideally ModelReadyToSync() is called as soon as possible during
   // initialization, and must be called before invoking either Put() or
   // Delete(). The bridge needs to be able to synchronously handle
-  // MergeSyncData() and ApplySyncChanges() after calling ModelReadyToSync(). If
-  // an error is encountered, calling ReportError() instead is sufficient.
+  // MergeFullSyncData() and ApplyIncrementalSyncChanges() after calling
+  // ModelReadyToSync(). If an error is encountered, calling ReportError()
+  // instead is sufficient.
   virtual void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) = 0;
 
   // Returns a boolean representing whether the processor's metadata is

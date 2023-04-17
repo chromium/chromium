@@ -65,7 +65,7 @@ SavedTabGroupSyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
@@ -103,7 +103,8 @@ absl::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeSyncData(
   return {};
 }
 
-absl::optional<syncer::ModelError> SavedTabGroupSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =

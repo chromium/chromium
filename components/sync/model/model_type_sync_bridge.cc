@@ -48,7 +48,8 @@ ConflictResolution ModelTypeSyncBridge::ResolveConflict(
 void ModelTypeSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   // Nothing to do if this fails, so just ignore the error it might return.
-  ApplySyncChanges(std::move(delete_metadata_change_list), EntityChangeList());
+  ApplyIncrementalSyncChanges(std::move(delete_metadata_change_list),
+                              EntityChangeList());
 }
 
 void ModelTypeSyncBridge::OnCommitAttemptErrors(

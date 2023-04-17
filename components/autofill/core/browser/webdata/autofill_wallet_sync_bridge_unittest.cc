@@ -517,7 +517,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
 // Tests that when a new wallet card and new wallet address are sent by the
 // server, the client only keeps the new data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewWalletAddressAndCard) {
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_NewWalletAddressAndCard) {
   // Create one profile and one card on the client.
   AutofillProfile address1 = test::GetServerProfile();
   table()->SetServerProfiles({address1});
@@ -578,7 +579,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewWalletAddressAndCard) {
 // Tests that in initial sync, no metrics are recorded for new addresses and
 // cards.
 TEST_F(AutofillWalletSyncBridgeTest,
-       MergeSyncData_NewWalletAddressAndCardNoMetricsInitialSync) {
+       MergeFullSyncData_NewWalletAddressAndCardNoMetricsInitialSync) {
   ResetProcessor();
   ResetBridge(/*initial_sync_done=*/false);
 
@@ -620,7 +621,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
 // Tests that when a new payments customer data is sent by the server, the
 // client only keeps the new data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewPaymentsCustomerData) {
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_NewPaymentsCustomerData) {
   // Create one profile, one card, one customer data and one cloud token data
   // entry on the client.
   AutofillProfile address = test::GetServerProfile();
@@ -664,7 +666,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewPaymentsCustomerData) {
 
 // Tests that when a new credit card cloud token data is sent by the server,
 // the client only keeps the new data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewCloudTokenData) {
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewCloudTokenData) {
   AutofillProfile address = test::GetServerProfile();
   table()->SetServerProfiles({address});
   CreditCard card = test::GetMaskedServerCard();
@@ -707,7 +709,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewCloudTokenData) {
 
 // Tests that when the server sends no cards or address, the client should
 // delete all it's existing data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NoWalletAddressOrCard) {
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletAddressOrCard) {
   // Create one profile and one card on the client.
   AutofillProfile local_profile = test::GetServerProfile();
   table()->SetServerProfiles({local_profile});
@@ -731,7 +733,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NoWalletAddressOrCard) {
 
 // Tests that when the server sends no cloud token data, the client should
 // delete all it's existing cloud token data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NoCloudTokenData) {
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoCloudTokenData) {
   // Create one cloud token data on the client.
   CreditCardCloudTokenData cloud_token_data =
       test::GetCreditCardCloudTokenData1();
@@ -748,8 +750,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NoCloudTokenData) {
 
 // Tests that when the server sends the same data as the client has, nothing
 // changes on the client.
-TEST_F(AutofillWalletSyncBridgeTest,
-       MergeSyncData_SameWalletAddressAndCardAndCustomerDataAndCloudTokenData) {
+TEST_F(
+    AutofillWalletSyncBridgeTest,
+    MergeFullSyncData_SameWalletAddressAndCardAndCustomerDataAndCloudTokenData) {
   // Create one profile and one card on the client.
   AutofillProfile profile = test::GetServerProfile();
   table()->SetServerProfiles({profile});
@@ -795,7 +798,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
 // Tests that when there are multiple changes happening at the same time, the
 // data from the server is what the client ends up with.
 TEST_F(AutofillWalletSyncBridgeTest,
-       MergeSyncData_AddRemoveAndPreserveWalletAddressAndCard) {
+       MergeFullSyncData_AddRemoveAndPreserveWalletAddressAndCard) {
   // Create two profile and one card on the client.
   AutofillProfile profile = test::GetServerProfile();
   AutofillProfile profile2 = test::GetServerProfile2();
@@ -839,7 +842,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
 // Test that all field values for a address sent form the server are copied on
 // the address on the client.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletAddressData) {
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_SetsAllWalletAddressData) {
   // Create a profile to be synced from the server.
   AutofillProfile profile = test::GetServerProfile();
   AutofillWalletSpecifics profile_specifics;
@@ -893,7 +897,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletAddressData) {
 
 // Test that all field values for a card sent from the server are copied on the
 // card on the client.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   // Create a card to be synced from the server.
   CreditCard card = test::GetMaskedServerCard();
   card.SetNickname(u"Grocery card");
@@ -944,7 +948,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
 
 // Test that all field values for a cloud token data sent from the server are
 // copied on the client.
-TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllCloudTokenData) {
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllCloudTokenData) {
   CreditCardCloudTokenData cloud_token_data =
       test::GetCreditCardCloudTokenData1();
   AutofillWalletSpecifics cloud_token_data_specifics;

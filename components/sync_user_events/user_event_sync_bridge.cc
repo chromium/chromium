@@ -83,17 +83,17 @@ UserEventSyncBridge::CreateMetadataChangeList() {
   return WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<ModelError> UserEventSyncBridge::MergeSyncData(
+absl::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
   DCHECK(change_processor()->IsTrackingMetadata());
   DCHECK(!change_processor()->TrackedAccountId().empty());
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
-absl::optional<ModelError> UserEventSyncBridge::ApplySyncChanges(
+absl::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
@@ -105,9 +105,9 @@ absl::optional<ModelError> UserEventSyncBridge::ApplySyncChanges(
         GetEventTimeFromStorageKey(change->storage_key()));
   }
 
-  // Because we receive ApplySyncChanges with deletions when our commits are
-  // confirmed, this is the perfect time to cleanup our in flight objects which
-  // are no longer in flight.
+  // Because we receive ApplyIncrementalSyncChanges with deletions when our
+  // commits are confirmed, this is the perfect time to cleanup our in flight
+  // objects which are no longer in flight.
   base::EraseIf(in_flight_nav_linked_events_,
                 [&deleted_event_times](
                     const std::pair<int64_t, sync_pb::UserEventSpecifics> kv) {

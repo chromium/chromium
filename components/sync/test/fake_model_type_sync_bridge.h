@@ -101,10 +101,10 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
 
   // ModelTypeSyncBridge implementation
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
-  absl::optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override;
-  absl::optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -201,7 +201,7 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
 
   // Whether the bridge supports call to GetStorageKey. If it doesn't, bridge is
   // responsible for calling UpdateStorageKey when processing new entities in
-  // MergeSyncData/ApplySyncChanges.
+  // MergeFullSyncData/ApplyIncrementalSyncChanges.
   bool supports_get_storage_key_ = true;
 
   // Whether the bridge supports call to GetClientTag. If it doesn't, bridge is

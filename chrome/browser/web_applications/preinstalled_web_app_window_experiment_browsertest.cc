@@ -155,8 +155,8 @@ class PreinstalledWebAppWindowExperimentBrowserTest
         .WillByDefault(testing::Return(true));
 
     WebAppSyncBridge& sync_bridge = provider().sync_bridge_unsafe();
-    sync_bridge.MergeSyncData(sync_bridge.CreateMetadataChangeList(),
-                              syncer::EntityChangeList());
+    sync_bridge.MergeFullSyncData(sync_bridge.CreateMetadataChangeList(),
+                                  syncer::EntityChangeList());
   }
 
   PreinstalledWebAppWindowExperiment& experiment() {

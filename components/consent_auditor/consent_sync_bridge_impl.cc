@@ -83,18 +83,18 @@ ConsentSyncBridgeImpl::CreateMetadataChangeList() {
   return WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<ModelError> ConsentSyncBridgeImpl::MergeSyncData(
+absl::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
   DCHECK(change_processor()->IsTrackingMetadata());
   DCHECK(!change_processor()->TrackedAccountId().empty());
   ReadAllDataAndResubmit();
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
-absl::optional<ModelError> ConsentSyncBridgeImpl::ApplySyncChanges(
+absl::optional<ModelError> ConsentSyncBridgeImpl::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
@@ -268,8 +268,8 @@ void ConsentSyncBridgeImpl::OnReadAllMetadata(
     change_processor()->ModelReadyToSync(std::move(metadata_batch));
     if (!change_processor()->TrackedAccountId().empty()) {
       // We resubmit all data in case the client crashed immediately after
-      // MergeSyncData(), where submissions are supposed to happen and
-      // metadata populated. This would be simpler if MergeSyncData() were
+      // MergeFullSyncData(), where submissions are supposed to happen and
+      // metadata populated. This would be simpler if MergeFullSyncData() were
       // asynchronous.
       ReadAllDataAndResubmit();
     }

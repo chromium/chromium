@@ -74,21 +74,22 @@ ContactInfoSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // Since the local storage is cleared when the data type is disabled in
-  // `ApplyDisableSyncChanges()`, `MergeSyncData()` simply becomes an
-  // `ApplySyncChanges()` call.
-  if (auto error = ApplySyncChanges(std::move(metadata_change_list),
-                                    std::move(entity_data))) {
+  // `ApplyDisableSyncChanges()`, `MergeFullSyncData()` simply becomes an
+  // `ApplyIncrementalSyncChanges()` call.
+  if (auto error = ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                               std::move(entity_data))) {
     return error;
   }
   web_data_backend_->NotifyThatSyncHasStarted(syncer::CONTACT_INFO);
   return absl::nullopt;
 }
 
-absl::optional<syncer::ModelError> ContactInfoSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {

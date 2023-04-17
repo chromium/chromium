@@ -78955,7 +78955,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Leaked Credentials"/>
 </enum>
 
-<enum name="PasswordApplySyncChangesState">
+<enum name="PasswordApplyIncrementalSyncChangesState">
   <int value="0" label="Apply OK"/>
   <int value="1" label="Apply ADD failed"/>
   <int value="2" label="Apply UPDATE failed"/>
@@ -92961,19 +92961,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Duplicate"/>
 </enum>
 
-<enum name="SendTabToSelfApplySyncChanges">
-  <obsolete>
-    Removed 05/2020.
-  </obsolete>
-  <int value="0" label="Total number of EntityChanges."/>
-  <int value="1" label="Number of EntityChanges that are deletions."/>
-  <int value="2" label="Number of EntityChanges that are invaled."/>
-  <int value="3" label="Number of EntityChanges that are expired."/>
-  <int value="4" label="Number of EntityChanges that are added."/>
-  <int value="5" label="Number of EntityChanges that are opened."/>
-  <int value="6" label="Number of EntityChanges that are removed."/>
-</enum>
-
 <enum name="SendTabToSelfClickResult">
   <int value="0"
       label="(Obsolete) SendTabToSelf entry point is shown. Removed on
@@ -100002,10 +99989,11 @@ would be helpful to identify which type is being sent.
 
 <enum name="SyncHistoryDatabaseError">
   <int value="0"
-      label="Error in MergeSyncData() or ApplySyncChanges(): writing visit
-             data"/>
+      label="Error in MergeFullSyncData() or ApplyIncrementalSyncChanges():
+             writing visit data"/>
   <int value="1"
-      label="Error in MergeSyncData() or ApplySyncChanges(): writing metadata"/>
+      label="Error in MergeFullSyncData() or ApplyIncrementalSyncChanges():
+             writing metadata"/>
   <int value="2" label="OnDatabaseError() called"/>
   <int value="3" label="Error in LoadMetadata()"/>
   <int value="4"
@@ -100337,11 +100325,12 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncTypedUrlDatabaseError">
-  <int value="0" label="Error in MergeSyncData(): reading"/>
-  <int value="1" label="Error in MergeSyncData(): writing data"/>
-  <int value="2" label="Error in MergeSyncData(): writing metadata"/>
-  <int value="3" label="Error in ApplySyncChanges(): writing data"/>
-  <int value="4" label="Error in ApplySyncChanges(): writing metadata"/>
+  <int value="0" label="Error in MergeFullSyncData(): reading"/>
+  <int value="1" label="Error in MergeFullSyncData(): writing data"/>
+  <int value="2" label="Error in MergeFullSyncData(): writing metadata"/>
+  <int value="3" label="Error in ApplyIncrementalSyncChanges(): writing data"/>
+  <int value="4"
+      label="Error in ApplyIncrementalSyncChanges(): writing metadata"/>
   <int value="5" label="Error in OnURLsDeleted(): reading metadata"/>
   <int value="6" label="OnDatabaseError() called"/>
   <int value="7" label="Error in LoadMetadata(): opening DB"/>

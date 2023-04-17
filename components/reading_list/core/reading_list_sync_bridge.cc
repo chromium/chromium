@@ -97,7 +97,7 @@ ReadingListSyncBridge::CreateMetadataChangeList() {
 // Durable storage writes, if not able to combine all change atomically, should
 // save the metadata after the data changes, so that this merge will be re-
 // driven by sync if is not completely saved during the current run.
-absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -179,7 +179,8 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
 // |metadata_change_list| in case when some of the data changes are filtered
 // out, or even be empty in case when a commit confirmation is processed and
 // only the metadata needs to persisted.
-absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+ReadingListSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -114,8 +114,8 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   }
 
   // Inform the bridge of the new or updated data.
-  return bridge_->ApplySyncChanges(std::move(metadata_changes),
-                                   std::move(entity_changes));
+  return bridge_->ApplyIncrementalSyncChanges(std::move(metadata_changes),
+                                              std::move(entity_changes));
 }
 
 ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(

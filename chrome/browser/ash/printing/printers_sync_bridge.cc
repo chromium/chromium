@@ -194,7 +194,7 @@ PrintersSyncBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> PrintersSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -247,7 +247,8 @@ absl::optional<syncer::ModelError> PrintersSyncBridge::MergeSyncData(
   return {};
 }
 
-absl::optional<syncer::ModelError> PrintersSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+PrintersSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =

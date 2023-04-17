@@ -81,7 +81,7 @@ PasskeySyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> PasskeySyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes,
     syncer::EntityChangeList entity_changes) {
   // Passkeys are read-only for now.
@@ -111,7 +111,8 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeSyncData(
   return absl::nullopt;
 }
 
-absl::optional<syncer::ModelError> PasskeySyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+PasskeySyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =

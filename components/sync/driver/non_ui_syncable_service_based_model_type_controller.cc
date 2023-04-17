@@ -39,13 +39,13 @@ class FakeSyncableServiceBasedBridge : public ModelTypeSyncBridge {
     NOTREACHED();
     return nullptr;
   }
-  absl::optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_data*/) override {
     NOTREACHED();
     return {};
   }
-  absl::optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_changes*/) override {
     NOTREACHED();

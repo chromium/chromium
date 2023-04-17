@@ -28,11 +28,11 @@ class NigoriSyncBridge {
   virtual ~NigoriSyncBridge() = default;
 
   // Perform the initial merge between local and sync data.
-  virtual absl::optional<ModelError> MergeSyncData(
+  virtual absl::optional<ModelError> MergeFullSyncData(
       absl::optional<EntityData> data) = 0;
 
   // Apply changes from the sync server locally.
-  virtual absl::optional<ModelError> ApplySyncChanges(
+  virtual absl::optional<ModelError> ApplyIncrementalSyncChanges(
       absl::optional<EntityData> data) = 0;
 
   // Retrieve Nigori sync data.

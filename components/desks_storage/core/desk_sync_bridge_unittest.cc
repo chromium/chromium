@@ -1530,41 +1530,41 @@ TEST_F(DeskSyncBridgeTest, DeleteAllEntriesLocally) {
   EXPECT_EQ(0ul, bridge()->GetAllEntryUuids().size());
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesEmpty) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {
   InitializeBridge();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(_)).Times(0);
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(_)).Times(0);
 
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          EntityChangeList());
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(), EntityChangeList());
   EXPECT_FALSE(error);
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithTwoAdditions) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithTwoAdditions) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  auto error =
-      bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                 EntityAddList({template1, template2}));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      bridge()->CreateMetadataChangeList(),
+      EntityAddList({template1, template2}));
   EXPECT_FALSE(error);
 
   // We should have two templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithOneUpdate) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({template1, template2}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({template1, template2}));
 
   // We should have seeded two templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
@@ -1578,8 +1578,8 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
       template1.uuid(), MakeEntityData(updated_template1)));
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(update_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(update_changes));
   // We should still have both templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
   // Template 1 should be updated to new content.
@@ -1598,15 +1598,15 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
 }
 
 // Tests that remote desk template can be correctly removed.
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesWithOneDeletion) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             EntityAddList({template1, template2}));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        EntityAddList({template1, template2}));
 
   // Verify that we have seeded two templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
@@ -1616,8 +1616,8 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
   delete_changes.push_back(EntityChange::CreateDelete(template1.uuid()));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(delete_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_changes));
 
   // Verify that we only have template 2.
   EXPECT_EQ(1ul, bridge()->GetAllEntryUuids().size());
@@ -1629,7 +1629,7 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
                 .SerializeAsString());
 }
 
-TEST_F(DeskSyncBridgeTest, ApplySyncChangesDeleteNonexistent) {
+TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesDeleteNonexistent) {
   InitializeBridge();
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(_)).Times(0);
 
@@ -1640,12 +1640,12 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesDeleteNonexistent) {
 
   EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete("no-such-uuid"));
-  auto error = bridge()->ApplySyncChanges(std::move(metadata_changes),
-                                          std::move(entity_change_list));
+  auto error = bridge()->ApplyIncrementalSyncChanges(
+      std::move(metadata_changes), std::move(entity_change_list));
   EXPECT_FALSE(error);
 }
 
-TEST_F(DeskSyncBridgeTest, MergeSyncDataWithTwoEntries) {
+TEST_F(DeskSyncBridgeTest, MergeFullSyncDataWithTwoEntries) {
   InitializeBridge();
 
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
@@ -1653,12 +1653,12 @@ TEST_F(DeskSyncBridgeTest, MergeSyncDataWithTwoEntries) {
 
   auto metadata_change_list = std::make_unique<InMemoryMetadataChangeList>();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          EntityAddList({template1, template2}));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              EntityAddList({template1, template2}));
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 }
 
-TEST_F(DeskSyncBridgeTest, MergeSyncDataUploadsLocalOnlyEntries) {
+TEST_F(DeskSyncBridgeTest, MergeFullSyncDataUploadsLocalOnlyEntries) {
   InitializeBridge();
 
   // Seed two templates.
@@ -1675,13 +1675,13 @@ TEST_F(DeskSyncBridgeTest, MergeSyncDataUploadsLocalOnlyEntries) {
   auto metadata_change_list = std::make_unique<InMemoryMetadataChangeList>();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
 
-  // MergeSyncData should upload the local-only template "template 1".
+  // MergeFullSyncData should upload the local-only template "template 1".
   EXPECT_CALL(*processor(),
               Put(StrEq(MakeTestUuid(TestUuidId(1)).AsLowercaseString()), _, _))
       .Times(1);
 
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          EntityAddList({template1, template2}));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              EntityAddList({template1, template2}));
 
   // Merged data should contain 3 templtes.
   EXPECT_EQ(3ul, bridge()->GetAllEntryUuids().size());

@@ -356,8 +356,8 @@ class TypedURLSyncBridgeTest : public testing::Test {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
     // Set change processor.
     const auto error =
-        bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
-                                CreateEntityChangeList(specifics));
+        bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                                    CreateEntityChangeList(specifics));
 
     EXPECT_FALSE(error);
   }
@@ -425,8 +425,8 @@ class TypedURLSyncBridgeTest : public testing::Test {
     std::unique_ptr<MetadataChangeList> metadata_changes =
         bridge()->CreateMetadataChangeList();
 
-    bridge()->ApplySyncChanges(std::move(metadata_changes),
-                               std::move(entity_changes));
+    bridge()->ApplyIncrementalSyncChanges(std::move(metadata_changes),
+                                          std::move(entity_changes));
     return visits;
   }
 
@@ -1767,7 +1767,7 @@ TEST_F(TypedURLSyncBridgeTest, MergeUrlsAfterExpiration) {
 }
 
 // Create a local typed URL with one expired TYPED visit,
-// MergeSyncData should not pass it to sync. And then add a non
+// MergeFullSyncData should not pass it to sync. And then add a non
 // expired visit, OnURLsModified should only send the non expired visit to sync.
 TEST_F(TypedURLSyncBridgeTest, LocalExpiredTypedUrlDoNotSync) {
   URLRow row;

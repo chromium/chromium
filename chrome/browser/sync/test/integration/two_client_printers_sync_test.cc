@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimultaneousAdd) {
   AddPrinter(GetPrinterStore(1), CreateTestPrinter(2));
 
   // Each store is guaranteed to have 1 printer because the tests run on the UI
-  // thread.  ApplySyncChanges happens after we wait on the checker.
+  // thread.  ApplyIncrementalSyncChanges happens after we wait on the checker.
   ASSERT_EQ(1, GetPrinterCount(0));
   ASSERT_EQ(1, GetPrinterCount(1));
 

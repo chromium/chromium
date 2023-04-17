@@ -242,7 +242,7 @@ TEST_F(UserEventSyncBridgeTest, MultipleRecords) {
   EXPECT_THAT(GetAllData(), SizeIs(2));
 }
 
-TEST_F(UserEventSyncBridgeTest, ApplySyncChanges) {
+TEST_F(UserEventSyncBridgeTest, ApplyIncrementalSyncChanges) {
   WaitUntilModelReadyToSync();
   std::string storage_key1;
   std::string storage_key2;
@@ -256,7 +256,7 @@ TEST_F(UserEventSyncBridgeTest, ApplySyncChanges) {
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete(storage_key1));
-  auto error_on_delete = bridge()->ApplySyncChanges(
+  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
   EXPECT_THAT(GetAllData(), SizeIs(1));
@@ -292,7 +292,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
                                                 1u, third_id, 2u)))));
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete(storage_key));
-  auto error_on_delete = bridge()->ApplySyncChanges(
+  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
   EXPECT_THAT(GetAllData(), IsEmpty());

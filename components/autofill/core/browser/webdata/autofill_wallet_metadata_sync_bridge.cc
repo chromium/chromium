@@ -373,7 +373,7 @@ AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletMetadataSyncBridge::MergeSyncData(
+AutofillWalletMetadataSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -385,7 +385,7 @@ AutofillWalletMetadataSyncBridge::MergeSyncData(
 }
 
 absl::optional<syncer::ModelError>
-AutofillWalletMetadataSyncBridge::ApplySyncChanges(
+AutofillWalletMetadataSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -601,7 +601,8 @@ void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(
   // Strip |local_keys_to_upload| of the keys of data provided by the server.
   for (const std::unique_ptr<EntityChange>& change : entity_data) {
     DCHECK_EQ(change->type(), EntityChange::ACTION_ADD)
-        << "Illegal change; can only be called during initial MergeSyncData()";
+        << "Illegal change; can only be called during initial "
+           "MergeFullSyncData()";
     local_keys_to_upload.erase(change->storage_key());
   }
   // Upload the remaining storage keys

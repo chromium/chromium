@@ -154,11 +154,11 @@ DeskSyncBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> DeskSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // MergeSyncData will be called when Desk Template model type is enabled to
-  // start syncing. There could be local desk templates that user has created
+  // MergeFullSyncData will be called when Desk Template model type is enabled
+  // to start syncing. There could be local desk templates that user has created
   // before enabling sync or during the time when Desk Template sync is
   // disabled. We should merge local and server data. We will send all
   // local-only templates to server and save server templates to local.
@@ -170,11 +170,11 @@ absl::optional<syncer::ModelError> DeskSyncBridge::MergeSyncData(
   // TODO(yzd) We will add a template update timestamp and update this logic to
   // be: for templates that exist on both local and server side, we will keep
   // the one with later update timestamp.
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::vector<const DeskTemplate*> added_or_updated;

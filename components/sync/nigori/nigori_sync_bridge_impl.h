@@ -77,9 +77,9 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   bool SetKeystoreKeys(const std::vector<std::vector<uint8_t>>& keys) override;
 
   // NigoriSyncBridge implementation.
-  absl::optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeFullSyncData(
       absl::optional<EntityData> data) override;
-  absl::optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplyIncrementalSyncChanges(
       absl::optional<EntityData> data) override;
   std::unique_ptr<EntityData> GetData() override;
   void ApplyDisableSyncChanges() override;

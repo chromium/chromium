@@ -231,23 +231,23 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return supports_incremental_updates_;
   }
 
-  absl::optional<ModelError> MergeSyncData(
+  absl::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override {
     merge_call_count_++;
     if (!SupportsIncrementalUpdates()) {
       // If the bridge does not support incremental updates, it should clear
-      // local data in MergeSyncData.
+      // local data in MergeFullSyncData.
       db_->ClearAllData();
     }
-    return FakeModelTypeSyncBridge::MergeSyncData(
+    return FakeModelTypeSyncBridge::MergeFullSyncData(
         std::move(metadata_change_list), std::move(entity_data));
   }
-  absl::optional<ModelError> ApplySyncChanges(
+  absl::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override {
     apply_call_count_++;
-    return FakeModelTypeSyncBridge::ApplySyncChanges(
+    return FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
         std::move(metadata_change_list), std::move(entity_changes));
   }
 
@@ -296,7 +296,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
 
   bool sync_started_ = false;
 
-  // The number of times MergeSyncData has been called.
+  // The number of times MergeFullSyncData has been called.
   int merge_call_count_ = 0;
   int apply_call_count_ = 0;
   int get_storage_key_call_count_ = 0;
@@ -729,7 +729,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldFilterOutInitialTombstones) {
 
   EXPECT_EQ(0, bridge()->merge_call_count());
   // Initial sync with a tombstone. The fake bridge checks that it doesn't get
-  // any tombstones in its MergeSyncData function.
+  // any tombstones in its MergeFullSyncData function.
   worker()->TombstoneFromServer(GetPrefHash(kKey1));
   EXPECT_EQ(1, bridge()->merge_call_count());
 
@@ -754,7 +754,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldFilterOutInitialRootNodes) {
   EXPECT_EQ(0U, ProcessorEntityCount());
 }
 
-// Test that subsequent starts don't call MergeSyncData.
+// Test that subsequent starts don't call MergeFullSyncData.
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldApplyIncrementalUpdates) {
   // This sets initial_sync_done to true.
   InitializeToMetadataLoaded();
@@ -1877,7 +1877,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldStopAndClearMetadata) {
 
 // Test proper handling of disable-sync before initial sync done.
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldNotClearBridgeMetadataPriorToMergeSyncData) {
+       ShouldNotClearBridgeMetadataPriorToMergeFullSyncData) {
   // Populate the bridge's metadata with some non-empty values for us to later
   // check that it hasn't been cleared.
   const std::string kTestEncryptionKeyName = "TestEncryptionKey";
@@ -2126,7 +2126,7 @@ class FullUpdateClientTagBasedModelTypeProcessorTest
 // Tests that ClientTagBasedModelTypeProcessor can do garbage collection by
 // version.
 // Garbage collection by version is used by the server to replace all data on
-// the client, and is implemented by calling MergeSyncData on the bridge.
+// the client, and is implemented by calling MergeFullSyncData on the bridge.
 TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
        ShouldApplyGarbageCollectionByVersionFullUpdate) {
   InitializeToReadyState();
@@ -2308,7 +2308,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUpdateStorageKey) {
   ModelReadyToSync();
   OnSyncStarting();
 
-  // Initial update from server should be handled by MergeSyncData.
+  // Initial update from server should be handled by MergeFullSyncData.
   UpdateResponseDataList updates;
   updates.push_back(worker()->GenerateUpdateData(
       GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1)));
@@ -2333,8 +2333,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUpdateStorageKey) {
   EXPECT_EQ(1U, ProcessorEntityCount());
   EXPECT_EQ(1U, db()->metadata_count());
 
-  // Second update from server should be handled by ApplySyncChanges. Similarly
-  // It should call UpdateStorageKey, not GetStorageKey.
+  // Second update from server should be handled by ApplyIncrementalSyncChanges.
+  // Similarly It should call UpdateStorageKey, not GetStorageKey.
   worker()->UpdateFromServer(GetPrefHash(kKey2),
                              GeneratePrefSpecifics(kKey2, kValue2));
   EXPECT_EQ(1, bridge()->apply_call_count());
@@ -2374,7 +2374,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUntrackEntity) {
   ModelReadyToSync();
   OnSyncStarting();
 
-  // Initial update from server should be handled by MergeSyncData.
+  // Initial update from server should be handled by MergeFullSyncData.
   worker()->UpdateFromServer(GetPrefHash(kKey1),
                              GeneratePrefSpecifics(kKey1, kValue1));
   EXPECT_EQ(1, bridge()->merge_call_count());
@@ -2867,7 +2867,7 @@ TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
   // Even prior to starting sync, the account ID should already be tracked.
   ASSERT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
 
-  // When sync gets started, MergeSyncData() should not be called.
+  // When sync gets started, MergeFullSyncData() should not be called.
   OnSyncStarting("PersistedAccountId");
   ASSERT_EQ(0, bridge()->merge_call_count());
 }

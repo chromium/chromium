@@ -44,11 +44,11 @@ static const int kTypedUrlVisitThrottleMultiple = 10;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SyncTypedUrlDatabaseError {
-  kMergeSyncDataRead = 0,
-  kMergeSyncDataWriteData = 1,
-  kMergeSyncDataWriteMetadata = 2,
-  kApplySyncChangesWriteData = 3,
-  kApplySyncChangesWriteMetadata = 4,
+  kMergeFullSyncDataRead = 0,
+  kMergeFullSyncDataWriteData = 1,
+  kMergeFullSyncDataWriteMetadata = 2,
+  kApplyIncrementalSyncChangesWriteData = 3,
+  kApplyIncrementalSyncChangesWriteMetadata = 4,
   kOnURLsDeletedReadMetadata = 5,
   kOnDatabaseError = 6,
   kLoadMetadataOpen = 7,
@@ -111,7 +111,7 @@ TypedURLSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -123,7 +123,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
   std::map<GURL, std::vector<VisitRow>> local_visit_vectors;
 
   if (!GetValidURLsAndVisits(&local_visit_vectors, &new_db_urls)) {
-    RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeSyncDataRead);
+    RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeFullSyncDataRead);
     return syncer::ModelError(
         FROM_HERE, "Could not get the typed_url entries from HistoryBackend.");
   }
@@ -165,7 +165,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
       WriteToHistoryBackend(&new_synced_urls, &updated_synced_urls, nullptr,
                             &new_synced_visits, nullptr);
   if (error) {
-    RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeSyncDataWriteData);
+    RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeFullSyncDataWriteData);
     return error;
   }
 
@@ -195,12 +195,14 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
   absl::optional<syncer::ModelError> metadata_error =
       change_processor()->GetError();
   if (metadata_error) {
-    RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeSyncDataWriteMetadata);
+    RecordDatabaseError(
+        SyncTypedUrlDatabaseError::kMergeFullSyncDataWriteMetadata);
   }
   return metadata_error;
 }
 
-absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError>
+TypedURLSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -251,7 +253,8 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
       &new_synced_urls, &updated_synced_urls, &pending_deleted_urls,
       &new_synced_visits, &deleted_visits);
   if (error) {
-    RecordDatabaseError(SyncTypedUrlDatabaseError::kApplySyncChangesWriteData);
+    RecordDatabaseError(
+        SyncTypedUrlDatabaseError::kApplyIncrementalSyncChangesWriteData);
     return error;
   }
 
@@ -277,7 +280,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
       change_processor()->GetError();
   if (metadata_error) {
     RecordDatabaseError(
-        SyncTypedUrlDatabaseError::kApplySyncChangesWriteMetadata);
+        SyncTypedUrlDatabaseError::kApplyIncrementalSyncChangesWriteMetadata);
   }
   return metadata_error;
 }

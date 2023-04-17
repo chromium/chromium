@@ -137,10 +137,10 @@ class ProcessorEntityTracker {
   // to use client tag hash. This mapping allows us to convert from storage key
   // to client tag hash. The other direction can use |entities_|.
   // Entity is temporarily not included in this map for the duration of
-  // MergeSyncData/ApplySyncChanges call when the bridge doesn't support
-  // GetStorageKey(). In this case the bridge is responsible for updating
-  // storage key with UpdateStorageKey() call from within
-  // MergeSyncData/ApplySyncChanges.
+  // MergeFullSyncData/ApplyIncrementalSyncChanges call when the bridge doesn't
+  // support GetStorageKey(). In this case the bridge is responsible for
+  // updating storage key with UpdateStorageKey() call from within
+  // MergeFullSyncData/ApplyIncrementalSyncChanges.
   std::map<std::string, ClientTagHash> storage_key_to_tag_hash_;
 };
 

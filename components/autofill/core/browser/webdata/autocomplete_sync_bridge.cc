@@ -123,10 +123,11 @@ AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
                        Time::FromInternalValue(*date_last_used_iter));
 }
 
-// This is used to respond to ApplySyncChanges() and MergeSyncData(). Attempts
-// to lazily load local data, and then react to sync data by maintaining
-// internal state until flush calls are made, at which point the applicable
-// modification should be sent towards local and sync directions.
+// This is used to respond to ApplyIncrementalSyncChanges() and
+// MergeFullSyncData(). Attempts to lazily load local data, and then react to
+// sync data by maintaining internal state until flush calls are made, at which
+// point the applicable modification should be sent towards local and sync
+// directions.
 class SyncDifferenceTracker {
  public:
   explicit SyncDifferenceTracker(AutofillTable* table) : table_(table) {}
@@ -210,10 +211,11 @@ class SyncDifferenceTracker {
         return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
       }
       for (const AutofillEntry& entry : unique_to_local_) {
-        // This should never be true because only ApplySyncChanges should be
-        // calling IncorporateRemoteDelete, while only MergeSyncData should be
-        // passing in true for |include_local_only|. If this requirement
-        // changes, this DCHECK can change to act as a filter.
+        // This should never be true because only ApplyIncrementalSyncChanges
+        // should be calling IncorporateRemoteDelete, while only
+        // MergeFullSyncData should be passing in true for |include_local_only|.
+        // If this requirement changes, this DCHECK can change to act as a
+        // filter.
         DCHECK(delete_from_local_.find(entry.key()) ==
                delete_from_local_.end());
         change_processor->Put(GetStorageKeyFromModel(entry.key()),
@@ -325,7 +327,7 @@ AutocompleteSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
+optional<syncer::ModelError> AutocompleteSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -346,7 +348,7 @@ optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
   return {};
 }
 
-optional<ModelError> AutocompleteSyncBridge::ApplySyncChanges(
+optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   DCHECK(thread_checker_.CalledOnValidThread());

@@ -97,7 +97,7 @@ AutofillProfileSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-optional<syncer::ModelError> AutofillProfileSyncBridge::MergeSyncData(
+optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -131,7 +131,7 @@ optional<syncer::ModelError> AutofillProfileSyncBridge::MergeSyncData(
   return absl::nullopt;
 }
 
-optional<ModelError> AutofillProfileSyncBridge::ApplySyncChanges(
+optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

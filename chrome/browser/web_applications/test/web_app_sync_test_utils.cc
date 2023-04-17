@@ -33,8 +33,8 @@ void AddApps(WebAppSyncBridge& sync_bridge,
     entity_changes.push_back(std::move(entity_change));
   }
 
-  sync_bridge.ApplySyncChanges(std::move(metadata_change_list),
-                               std::move(entity_changes));
+  sync_bridge.ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                          std::move(entity_changes));
 }
 
 void UpdateApps(WebAppSyncBridge& sync_bridge,
@@ -53,8 +53,8 @@ void UpdateApps(WebAppSyncBridge& sync_bridge,
     entity_changes.push_back(std::move(entity_change));
   }
 
-  sync_bridge.ApplySyncChanges(std::move(metadata_change_list),
-                               std::move(entity_changes));
+  sync_bridge.ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                          std::move(entity_changes));
 }
 
 void DeleteApps(WebAppSyncBridge& sync_bridge,
@@ -68,8 +68,8 @@ void DeleteApps(WebAppSyncBridge& sync_bridge,
     entity_changes.push_back(std::move(entity_change));
   }
 
-  sync_bridge.ApplySyncChanges(std::move(metadata_change_list),
-                               std::move(entity_changes));
+  sync_bridge.ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                          std::move(entity_changes));
 }
 
 }  // namespace sync_bridge_test_utils

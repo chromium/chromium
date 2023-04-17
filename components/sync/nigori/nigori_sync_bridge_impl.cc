@@ -526,7 +526,7 @@ bool NigoriSyncBridgeImpl::NeedKeystoreKey() const {
   // if there is no keystore keys yet or remote keybag wasn't decryptable due
   // to absence of some keystore key. In case of key rotation, it's a server
   // responsibility to send updated keystore keys. |keystore_keys_| is expected
-  // to be non-empty before MergeSyncData() call, regardless of passphrase
+  // to be non-empty before MergeFullSyncData() call, regardless of passphrase
   // type.
   return state_.keystore_keys_cryptographer->IsEmpty() ||
          (state_.pending_keystore_decryptor_token.has_value() &&
@@ -575,7 +575,7 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
   return true;
 }
 
-absl::optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
+absl::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
     absl::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!data) {
@@ -611,7 +611,7 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
   return absl::nullopt;
 }
 
-absl::optional<ModelError> NigoriSyncBridgeImpl::ApplySyncChanges(
+absl::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
     absl::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

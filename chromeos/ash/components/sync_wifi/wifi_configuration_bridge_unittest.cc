@@ -305,7 +305,7 @@ TEST_F(WifiConfigurationBridgeTest, InitWithTwoNetworksFromServer) {
       syncer::EntityChange::CreateAdd(woof_network_id().SerializeToString(),
                                       GenerateWifiEntityData(woof_network)));
 
-  bridge()->MergeSyncData(
+  bridge()->MergeFullSyncData(
       std::make_unique<syncer::InMemoryMetadataChangeList>(),
       std::move(remote_input));
 
@@ -322,7 +322,8 @@ TEST_F(WifiConfigurationBridgeTest, InitWithTwoNetworksFromServer) {
   histogram_tester.ExpectTotalCount(kTotalCountHistogram, 1);
 }
 
-TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesAddTwoSpecifics) {
+TEST_F(WifiConfigurationBridgeTest,
+       ApplyIncrementalSyncChangesAddTwoSpecifics) {
   InitializeSyncStore();
 
   const WifiConfigurationSpecifics meow_network =
@@ -330,9 +331,10 @@ TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesAddTwoSpecifics) {
   const WifiConfigurationSpecifics woof_network =
       GenerateTestWifiSpecifics(woof_network_id());
 
-  absl::optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
-      bridge()->CreateMetadataChangeList(),
-      CreateEntityAddList({meow_network, woof_network}));
+  absl::optional<syncer::ModelError> error =
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(),
+          CreateEntityAddList({meow_network, woof_network}));
   EXPECT_FALSE(error);
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(2u, ids.size());
@@ -346,7 +348,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesAddTwoSpecifics) {
   EXPECT_TRUE(VectorContainsProto(networks, meow_network));
 }
 
-TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesOneAdd) {
+TEST_F(WifiConfigurationBridgeTest, ApplyIncrementalSyncChangesOneAdd) {
   InitializeSyncStore();
 
   WifiConfigurationSpecifics entry =
@@ -357,7 +359,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesOneAdd) {
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       meow_network_id().SerializeToString(), GenerateWifiEntityData(entry)));
 
-  bridge()->ApplySyncChanges(
+  bridge()->ApplyIncrementalSyncChanges(
       std::make_unique<syncer::InMemoryMetadataChangeList>(),
       std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
@@ -371,7 +373,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesOneAdd) {
 }
 
 TEST_F(WifiConfigurationBridgeTest,
-       ApplySyncChangesOneDeletion_DeletesDisabled) {
+       ApplyIncrementalSyncChangesOneDeletion_DeletesDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kWifiSyncApplyDeletes);
   InitializeSyncStore();
@@ -385,8 +387,8 @@ TEST_F(WifiConfigurationBridgeTest,
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       id.SerializeToString(), GenerateWifiEntityData(entry)));
 
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(add_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
   EXPECT_TRUE(base::Contains(ids, meow_network_id()));
@@ -400,8 +402,8 @@ TEST_F(WifiConfigurationBridgeTest,
   delete_changes.push_back(
       syncer::EntityChange::CreateDelete(id.SerializeToString()));
 
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(delete_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_changes));
   EXPECT_TRUE(bridge()->GetAllIdsForTesting().empty());
 
   const std::vector<NetworkIdentifier>& removed_networks =
@@ -410,7 +412,7 @@ TEST_F(WifiConfigurationBridgeTest,
 }
 
 TEST_F(WifiConfigurationBridgeTest,
-       ApplySyncChangesOneDeletion_DeletesEnabled) {
+       ApplyIncrementalSyncChangesOneDeletion_DeletesEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kWifiSyncApplyDeletes);
   InitializeSyncStore();
@@ -424,8 +426,8 @@ TEST_F(WifiConfigurationBridgeTest,
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       id.SerializeToString(), GenerateWifiEntityData(entry)));
 
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(add_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
   EXPECT_TRUE(base::Contains(ids, meow_network_id()));
@@ -439,8 +441,8 @@ TEST_F(WifiConfigurationBridgeTest,
   delete_changes.push_back(
       syncer::EntityChange::CreateDelete(id.SerializeToString()));
 
-  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                             std::move(delete_changes));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_changes));
   EXPECT_TRUE(bridge()->GetAllIdsForTesting().empty());
 
   const std::vector<NetworkIdentifier>& removed_networks =
@@ -449,7 +451,7 @@ TEST_F(WifiConfigurationBridgeTest,
   EXPECT_EQ(removed_networks[0], id);
 }
 
-TEST_F(WifiConfigurationBridgeTest, MergeSyncData) {
+TEST_F(WifiConfigurationBridgeTest, MergeFullSyncData) {
   InitializeSyncStore();
 
   base::HistogramTester histogram_tester;
@@ -484,8 +486,8 @@ TEST_F(WifiConfigurationBridgeTest, MergeSyncData) {
   EXPECT_CALL(*processor(), Put(_, _, _))
       .WillOnce(testing::SaveArg<0>(&storage_key));
 
-  bridge()->MergeSyncData(std::move(metadata_change_list),
-                          std::move(entity_data));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              std::move(entity_data));
   base::RunLoop().RunUntilIdle();
 
   // Verify local network was added to sync.
@@ -507,7 +509,8 @@ TEST_F(WifiConfigurationBridgeTest, MergeSyncData) {
   histogram_tester.ExpectTotalCount(kTotalCountHistogram, 1);
 }
 
-TEST_F(WifiConfigurationBridgeTest, ApplyDisableSyncChangesAndMergeSyncData) {
+TEST_F(WifiConfigurationBridgeTest,
+       ApplyDisableSyncChangesAndMergeFullSyncData) {
   InitializeSyncStore();
 
   // Mimic initial sync with single sync network.
@@ -520,8 +523,8 @@ TEST_F(WifiConfigurationBridgeTest, ApplyDisableSyncChangesAndMergeSyncData) {
   entity_data1.push_back(
       syncer::EntityChange::CreateAdd(meow_network_id().SerializeToString(),
                                       GenerateWifiEntityData(meow_sync)));
-  bridge()->MergeSyncData(std::move(metadata_change_list1),
-                          std::move(entity_data1));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list1),
+                              std::move(entity_data1));
   base::RunLoop().RunUntilIdle();
 
   // Verify sync network was added to local stack.
@@ -557,8 +560,8 @@ TEST_F(WifiConfigurationBridgeTest, ApplyDisableSyncChangesAndMergeSyncData) {
   EXPECT_CALL(*processor(), Put(_, _, _))
       .WillOnce(testing::SaveArg<0>(&storage_key));
 
-  bridge()->MergeSyncData(std::move(metadata_change_list2),
-                          std::move(entity_data2));
+  bridge()->MergeFullSyncData(std::move(metadata_change_list2),
+                              std::move(entity_data2));
   base::RunLoop().RunUntilIdle();
 
   // Verify local network was added to sync.

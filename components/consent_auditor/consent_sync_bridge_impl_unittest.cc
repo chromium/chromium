@@ -230,7 +230,7 @@ TEST_F(ConsentSyncBridgeImplTest,
 }
 
 TEST_F(ConsentSyncBridgeImplTest,
-       ShouldDeleteCommitedConsentsAfterApplySyncChanges) {
+       ShouldDeleteCommitedConsentsAfterApplyIncrementalSyncChanges) {
   WaitUntilModelReadyToSync("account_id");
   std::string first_storage_key;
   std::string second_storage_key;
@@ -244,7 +244,7 @@ TEST_F(ConsentSyncBridgeImplTest,
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete(first_storage_key));
-  auto error_on_delete = bridge()->ApplySyncChanges(
+  auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
   EXPECT_THAT(GetAllData(), SizeIs(1));
@@ -262,8 +262,8 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldRecordConsentsBeforeSyncEnabled) {
   ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
   ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return("account_id"));
   EXPECT_CALL(*processor(), Put(_, _, _));
-  bridge()->MergeSyncData(WriteBatch::CreateMetadataChangeList(),
-                          EntityChangeList());
+  bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
+                              EntityChangeList());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -323,8 +323,8 @@ TEST_F(ConsentSyncBridgeImplTest,
   // Reenable sync.
   EXPECT_CALL(*processor(), Put(GetStorageKey(consent), _, _));
   ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return("account_id"));
-  bridge()->MergeSyncData(WriteBatch::CreateMetadataChangeList(),
-                          EntityChangeList());
+  bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
+                              EntityChangeList());
 
   // The bridge may asynchronously query the store to choose what to resubmit.
   base::RunLoop().RunUntilIdle();
@@ -368,8 +368,8 @@ TEST_F(ConsentSyncBridgeImplTest, ShouldReportPersistedConsentsOnSyncEnabled) {
   // Enable sync.
   EXPECT_CALL(*processor(), Put(GetStorageKey(consent), _, _));
   ON_CALL(*processor(), TrackedAccountId()).WillByDefault(Return("account_id"));
-  bridge()->MergeSyncData(WriteBatch::CreateMetadataChangeList(),
-                          EntityChangeList());
+  bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
+                              EntityChangeList());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -396,8 +396,8 @@ TEST_F(ConsentSyncBridgeImplTest,
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   ON_CALL(*processor(), TrackedAccountId())
       .WillByDefault(Return("second_account"));
-  bridge()->MergeSyncData(WriteBatch::CreateMetadataChangeList(),
-                          EntityChangeList());
+  bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
+                              EntityChangeList());
   base::RunLoop().RunUntilIdle();
 
   bridge()->ApplyDisableSyncChanges(WriteBatch::CreateMetadataChangeList());
@@ -408,8 +408,8 @@ TEST_F(ConsentSyncBridgeImplTest,
   EXPECT_CALL(*processor(), Put(GetStorageKey(user_consent_specifics), _, _));
   ON_CALL(*processor(), TrackedAccountId())
       .WillByDefault(Return("first_account"));
-  bridge()->MergeSyncData(WriteBatch::CreateMetadataChangeList(),
-                          EntityChangeList());
+  bridge()->MergeFullSyncData(WriteBatch::CreateMetadataChangeList(),
+                              EntityChangeList());
   // The bridge may asynchronously query the store to choose what to resubmit.
   base::RunLoop().RunUntilIdle();
 }

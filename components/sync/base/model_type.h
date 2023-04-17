@@ -361,8 +361,9 @@ constexpr ModelTypeSet CommitOnlyTypes() {
 
 // Types for which downloaded updates are applied immediately, before all
 // updates are downloaded and the Sync cycle finishes.
-// For these types, ModelTypeSyncBridge::MergeSyncData() will never be called
-// (since without downloading all the data, no initial merge is possible).
+// For these types, ModelTypeSyncBridge::MergeFullSyncData() will never be
+// called (since without downloading all the data, no initial merge is
+// possible).
 constexpr ModelTypeSet ApplyUpdatesImmediatelyTypes() {
   return ModelTypeSet(HISTORY);
 }

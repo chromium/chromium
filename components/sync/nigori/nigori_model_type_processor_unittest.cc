@@ -94,11 +94,11 @@ class MockNigoriSyncBridge : public NigoriSyncBridge {
   MockNigoriSyncBridge() = default;
   ~MockNigoriSyncBridge() override = default;
   MOCK_METHOD(absl::optional<ModelError>,
-              MergeSyncData,
+              MergeFullSyncData,
               (absl::optional<EntityData> data),
               (override));
   MOCK_METHOD(absl::optional<ModelError>,
-              ApplySyncChanges,
+              ApplyIncrementalSyncChanges,
               (absl::optional<EntityData> data),
               (override));
   MOCK_METHOD(std::unique_ptr<EntityData>, GetData, (), (override));
@@ -270,8 +270,10 @@ TEST_F(NigoriModelTypeProcessorTest,
                                        .entity_metadata->server_version() +
                                    1));
 
-  // ApplySyncChanges() should be called to trigger persistence of the metadata.
-  EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
+  // ApplyIncrementalSyncChanges() should be called to trigger persistence of
+  // the metadata.
+  EXPECT_CALL(*mock_nigori_sync_bridge(),
+              ApplyIncrementalSyncChanges(Eq(absl::nullopt)));
   processor()->OnCommitCompleted(
       CreateDummyModelTypeState(), std::move(commit_response_list),
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -299,8 +301,10 @@ TEST_F(NigoriModelTypeProcessorTest,
       base::BindOnce(&CaptureCommitRequest, &commit_request_list));
   ASSERT_EQ(1U, commit_request_list.size());
 
-  // ApplySyncChanges() should be called to trigger persistence of the metadata.
-  EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
+  // ApplyIncrementalSyncChanges() should be called to trigger persistence of
+  // the metadata.
+  EXPECT_CALL(*mock_nigori_sync_bridge(),
+              ApplyIncrementalSyncChanges(Eq(absl::nullopt)));
   processor()->OnCommitCompleted(
       CreateDummyModelTypeState(),
       /*committed_response_list=*/CommitResponseDataList(),
@@ -354,8 +358,10 @@ TEST_F(NigoriModelTypeProcessorTest,
   nigori_specifics->set_encrypt_preferences(true);
   processor()->Put(std::move(entity_data));
 
-  // ApplySyncChanges() should be called to trigger persistence of the metadata.
-  EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
+  // ApplyIncrementalSyncChanges() should be called to trigger persistence of
+  // the metadata.
+  EXPECT_CALL(*mock_nigori_sync_bridge(),
+              ApplyIncrementalSyncChanges(Eq(absl::nullopt)));
   // Receive the commit response of the first request.
   processor()->OnCommitCompleted(
       CreateDummyModelTypeState(), std::move(commit_response_list),
@@ -421,7 +427,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   EXPECT_TRUE(processor()->IsConnectedForTest());
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldMergeSyncData) {
+TEST_F(NigoriModelTypeProcessorTest, ShouldMergeFullSyncData) {
   SimulateModelReadyToSync(/*initial_sync_done=*/false);
 
   const std::string kDecryptorTokenKeyName = "key_name";
@@ -430,14 +436,14 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldMergeSyncData) {
                                                         /*server_version=*/1));
 
   EXPECT_CALL(*mock_nigori_sync_bridge(),
-              MergeSyncData(OptionalEntityDataHasDecryptorTokenKeyName(
+              MergeFullSyncData(OptionalEntityDataHasDecryptorTokenKeyName(
                   kDecryptorTokenKeyName)));
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChanges) {
+TEST_F(NigoriModelTypeProcessorTest, ShouldApplyIncrementalSyncChanges) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true, /*server_version=*/1);
 
   const std::string kDecryptorTokenKeyName = "key_name";
@@ -445,28 +451,32 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChanges) {
   updates.push_back(CreateDummyNigoriUpdateResponseData(kDecryptorTokenKeyName,
                                                         /*server_version=*/2));
 
-  EXPECT_CALL(*mock_nigori_sync_bridge(),
-              ApplySyncChanges(OptionalEntityDataHasDecryptorTokenKeyName(
-                  kDecryptorTokenKeyName)));
+  EXPECT_CALL(
+      *mock_nigori_sync_bridge(),
+      ApplyIncrementalSyncChanges(
+          OptionalEntityDataHasDecryptorTokenKeyName(kDecryptorTokenKeyName)));
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenEmptyUpdates) {
+TEST_F(NigoriModelTypeProcessorTest,
+       ShouldApplyIncrementalSyncChangesWhenEmptyUpdates) {
   const int kServerVersion = 1;
   SimulateModelReadyToSync(/*initial_sync_done=*/true, kServerVersion);
 
-  // ApplySyncChanges() should still be called to trigger persistence of the
-  // metadata.
-  EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
+  // ApplyIncrementalSyncChanges() should still be called to trigger persistence
+  // of the metadata.
+  EXPECT_CALL(*mock_nigori_sync_bridge(),
+              ApplyIncrementalSyncChanges(Eq(absl::nullopt)));
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
                                 UpdateResponseDataList(),
                                 /*gc_directive=*/absl::nullopt);
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenReflection) {
+TEST_F(NigoriModelTypeProcessorTest,
+       ShouldApplyIncrementalSyncChangesWhenReflection) {
   const int kServerVersion = 1;
   SimulateModelReadyToSync(/*initial_sync_done=*/true, kServerVersion);
 
@@ -474,9 +484,10 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenReflection) {
   updates.push_back(CreateDummyNigoriUpdateResponseData(
       /*keystore_decryptor_token_key_name=*/"key_name", kServerVersion));
 
-  // ApplySyncChanges() should still be called to trigger persistence of the
-  // metadata.
-  EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
+  // ApplyIncrementalSyncChanges() should still be called to trigger persistence
+  // of the metadata.
+  EXPECT_CALL(*mock_nigori_sync_bridge(),
+              ApplyIncrementalSyncChanges(Eq(absl::nullopt)));
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
@@ -538,14 +549,15 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
                                                         /*server_version=*/1));
 
   EXPECT_CALL(*mock_nigori_sync_bridge(),
-              MergeSyncData(OptionalEntityDataHasDecryptorTokenKeyName(
+              MergeFullSyncData(OptionalEntityDataHasDecryptorTokenKeyName(
                   kDecryptorTokenKeyName)));
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
+TEST_F(NigoriModelTypeProcessorTest,
+       ShouldDisconnectWhenMergeFullSyncDataFails) {
   SimulateModelReadyToSync(/*initial_sync_done=*/false);
 
   syncer::DataTypeActivationRequest request;
@@ -555,8 +567,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
   processor()->OnSyncStarting(request, base::DoNothing());
   SimulateConnectSync();
 
-  // Simulate returning error at MergeSyncData()
-  ON_CALL(*mock_nigori_sync_bridge(), MergeSyncData)
+  // Simulate returning error at MergeFullSyncData()
+  ON_CALL(*mock_nigori_sync_bridge(), MergeFullSyncData)
       .WillByDefault([&](const absl::optional<EntityData>& data) {
         return ModelError(FROM_HERE, "some error");
       });
@@ -574,7 +586,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
 }
 
 TEST_F(NigoriModelTypeProcessorTest,
-       ShouldDisconnectWhenApplySyncChangesFails) {
+       ShouldDisconnectWhenApplyIncrementalSyncChangesFails) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true, /*server_version=*/1);
 
   syncer::DataTypeActivationRequest request;
@@ -584,8 +596,8 @@ TEST_F(NigoriModelTypeProcessorTest,
   processor()->OnSyncStarting(request, base::DoNothing());
   SimulateConnectSync();
 
-  // Simulate returning error at ApplySyncChanges()
-  ON_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges)
+  // Simulate returning error at ApplyIncrementalSyncChanges()
+  ON_CALL(*mock_nigori_sync_bridge(), ApplyIncrementalSyncChanges)
       .WillByDefault([&](const absl::optional<EntityData>& data) {
         return ModelError(FROM_HERE, "some error");
       });
