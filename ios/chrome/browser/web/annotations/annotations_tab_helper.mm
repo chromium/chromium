@@ -21,7 +21,7 @@
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -144,7 +144,11 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     absl::optional<base::Value> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (GetMainFrame(web_state_) && deferred) {
+  web::ContentWorld content_world =
+      web::AnnotationsTextManager::GetFeatureContentWorld();
+  web::WebFrame* main_frame =
+      web_state_->GetWebFramesManager(content_world)->GetMainWebFrame();
+  if (main_frame && deferred) {
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
     DCHECK(manager);
 

@@ -23,7 +23,7 @@
 #import "ios/chrome/test/wpt/cwt_stderr_logger.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -198,7 +198,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)
       return;
-    web::WebFrame* mainFrame = web::GetMainFrame(webState);
+    web::WebFrame* mainFrame =
+        webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
     if (!mainFrame) {
       return;
     }

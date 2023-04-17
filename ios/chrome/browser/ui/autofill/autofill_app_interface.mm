@@ -210,8 +210,10 @@ class SaveCardInfobarEGTestHelper
   // Access the PaymentsClient.
   static payments::PaymentsClient* GetPaymentsClient() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-    web::WebFrame* main_frame =
-        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
+    web::WebFramesManager* frames_manager =
+        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state);
+    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
     DCHECK(web_state);
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()

@@ -26,6 +26,10 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager> {
   // Overload as the default implementation to create impl.
   static void CreateForWebState(WebState* web_state);
 
+  // Returns the content world associated with the JavaScript called by this
+  // feature.
+  static ContentWorld GetFeatureContentWorld();
+
   AnnotationsTextManager() = default;
 
   AnnotationsTextManager(const AnnotationsTextManager&) = delete;

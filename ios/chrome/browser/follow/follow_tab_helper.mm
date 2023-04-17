@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -242,7 +242,9 @@ void FollowTabHelper::OnDailyVisitQueryResult(
 void FollowTabHelper::UpdateFollowMenuItemWithURL(WebPageURLs* web_page_urls) {
   DCHECK(web_state_);
 
-  web::WebFrame* web_frame = web::GetMainFrame(web_state_);
+  web::WebFrame* web_frame = FollowJavaScriptFeature::GetInstance()
+                                 ->GetWebFramesManager(web_state_)
+                                 ->GetMainWebFrame();
   // Only update the follow menu item when web_page_urls is not null and when
   // webFrame can be retrieved. Otherwise, leave the option disabled.
   if (web_page_urls && web_frame) {

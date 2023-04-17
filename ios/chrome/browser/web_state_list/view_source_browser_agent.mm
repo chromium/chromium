@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -28,7 +28,8 @@ void ViewSourceBrowserAgent::ViewSourceForActiveWebState() {
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   DCHECK(web_state);
 
-  web::WebFrame* web_frame = web::GetMainFrame(web_state);
+  web::WebFrame* web_frame =
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
   static const char16_t kScript[] = u"document.documentElement.outerHTML;";
 
   web_frame->ExecuteJavaScript(

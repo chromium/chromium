@@ -10,7 +10,7 @@
 #import "base/values.h"
 #import "components/ui_metrics/canonical_url_share_metrics_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -84,7 +84,8 @@ void RetrieveCanonicalUrl(web::WebState* web_state,
     return;
   }
 
-  web::WebFrame* main_frame = web::GetMainFrame(web_state);
+  web::WebFrame* main_frame =
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!main_frame) {
     std::move(completion).Run(GURL());
     return;

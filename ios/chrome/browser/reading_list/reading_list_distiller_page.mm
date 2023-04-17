@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/security/ssl_status.h"
@@ -249,7 +249,12 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
 }
 
 void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
-  web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  web::WebState* web_state = CurrentWebState();
+  if (!web_state) {
+    return;
+  }
+  web::WebFrame* web_frame =
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!web_frame) {
     return;
   }
@@ -293,7 +298,12 @@ bool ReadingListDistillerPage::IsWikipediaPage() {
 }
 
 void ReadingListDistillerPage::HandleWikipediaPage() {
-  web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  web::WebState* web_state = CurrentWebState();
+  if (!web_state) {
+    return;
+  }
+  web::WebFrame* web_frame =
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!web_frame) {
     return;
   }

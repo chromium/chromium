@@ -29,6 +29,7 @@ source_set("passwords") {
     "//base",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
+    "//components/password_manager/ios:password_manager_feature_header",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/strings",
     "//components/ukm/ios:ukm_url_recorder",

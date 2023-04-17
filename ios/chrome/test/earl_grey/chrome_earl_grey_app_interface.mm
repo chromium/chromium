@@ -70,7 +70,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/element_selector.h"
 #import "ios/web/public/test/url_test_util.h"
@@ -1028,7 +1028,9 @@ NSString* SerializedValue(const base::Value* value) {
   __block web::WebFrame* main_frame = nullptr;
   bool completed =
       WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-        main_frame = web::GetMainFrame(chrome_test_util::GetCurrentWebState());
+        main_frame = chrome_test_util::GetCurrentWebState()
+                         ->GetPageWorldWebFramesManager()
+                         ->GetMainWebFrame();
         return main_frame != nullptr;
       });
 

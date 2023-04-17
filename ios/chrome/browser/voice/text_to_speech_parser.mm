@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -113,7 +113,8 @@ void ExtractVoiceSearchAudioDataFromWebState(
   NSString* tts_extraction_script = [NSString
       stringWithFormat:kTTSAudioDataExtractorScriptFormat, kTTSStartTag];
 
-  web::WebFrame* web_frame = web::GetMainFrame(webState);
+  web::WebFrame* web_frame =
+      webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!web_frame) {
     completion(nil);
     return;

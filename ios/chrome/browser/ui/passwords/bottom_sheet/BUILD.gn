@@ -17,6 +17,7 @@ source_set("bottom_sheet") {
   deps = [
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//components/password_manager/ios:password_manager_feature_header",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill",
