@@ -87,9 +87,10 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
   }
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  CHECK(!account_info.IsEmpty())
-      << "User must be logged in when address profile is going to be saved to "
-         "user's Google Account";
+  if (account_info.IsEmpty()) {
+    return std::u16string();
+  }
+
   // Notify user that their address is saved only in Chrome and can be migrated
   // to their Google account.
   if (is_migration_to_account_) {
