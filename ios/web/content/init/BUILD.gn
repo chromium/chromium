@@ -12,6 +12,8 @@ source_set("init") {
     "ios_content_client.h",
     "ios_content_main_runner.cc",
     "ios_content_main_runner.h",
+    "ios_content_renderer_client.cc",
+    "ios_content_renderer_client.h",
     "ios_main_delegate.cc",
     "ios_main_delegate.h",
   ]
