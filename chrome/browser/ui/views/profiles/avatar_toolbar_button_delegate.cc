@@ -17,7 +17,9 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/driver/sync_service.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -41,10 +43,11 @@ ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
 
 AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     AvatarToolbarButton* button,
-    Profile* profile)
+    Browser* browser)
     : avatar_toolbar_button_(button),
-      profile_(profile),
-      last_avatar_error_(::GetAvatarSyncErrorType(profile)) {
+      browser_(browser),
+      profile_(browser->profile()),
+      last_avatar_error_(::GetAvatarSyncErrorType(profile_)) {
   profile_observation_.Observe(&GetProfileAttributesStorage());
 
   if (auto* sync_service = SyncServiceFactory::GetForProfile(profile_))
@@ -161,7 +164,9 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   if (identity_animation_state_ == IdentityAnimationState::kShowing)
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
 
-  if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
+  // Web app has limited toolbar space, thus always show kNormal state.
+  if (web_app::AppBrowserController::IsWebApp(browser_) ||
+      !SyncServiceFactory::IsSyncAllowed(profile_)) {
     return AvatarToolbarButton::State::kNormal;
   }
 
