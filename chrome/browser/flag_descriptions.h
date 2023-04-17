@@ -2223,9 +2223,6 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kForceOffTextAutosizingName[];
 extern const char kForceOffTextAutosizingDescription[];
 
-extern const char kHighlightManagedPrefDisclaimerAndroidName[];
-extern const char kHighlightManagedPrefDisclaimerAndroidDescription[];
-
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 

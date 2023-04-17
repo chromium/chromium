@@ -3842,12 +3842,6 @@ const char kFeedDiscoFeedEndpointName[] =
 const char kFeedDiscoFeedEndpointDescription[] =
     "Uses the DiscoFeed endpoint for serving the feed instead of GWS.";
 
-const char kHighlightManagedPrefDisclaimerAndroidName[] =
-    "Highlight managed disclaimer for preferences";
-const char kHighlightManagedPrefDisclaimerAndroidDescription[] =
-    "Enables new Settings UI on Android that makes it more prominent that a "
-    "preference is managed by the administrator or a custodian.";
-
 const char kInfoCardAcknowledgementTrackingName[] =
     "Info card acknowledgement tracking";
 const char kInfoCardAcknowledgementTrackingDescription[] =

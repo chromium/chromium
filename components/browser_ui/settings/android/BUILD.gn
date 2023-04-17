@@ -4,32 +4,30 @@
 
 import("//build/config/android/rules.gni")
 
-_jni_sources = [ "java/src/org/chromium/components/browser_ui/settings/SettingsFeatureList.java" ]
-
 android_library("java") {
   sources = [
-              "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
-              "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsLauncher.java",
-              "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
-              "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
-              "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
-              "java/src/org/chromium/components/browser_ui/settings/SettingsLauncher.java",
-              "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ClickableSpansTextMessagePreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ExpandablePreferenceGroup.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/FaviconViewUtils.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/ImageButtonPreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/LongSummaryTextMessagePreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/PaddedDividerItemDecoration.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/SpinnerPreference.java",
-              "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreference.java",
-            ] + _jni_sources
+    "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
+    "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsLauncher.java",
+    "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
+    "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
+    "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsLauncher.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ClickableSpansTextMessagePreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ExpandablePreferenceGroup.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/FaviconViewUtils.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ImageButtonPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/LongSummaryTextMessagePreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/PaddedDividerItemDecoration.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/SpinnerPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreference.java",
+  ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -197,21 +195,5 @@ android_resources("java_test_resources") {
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java_resources",
-  ]
-}
-
-generate_jni("settings_jni_headers") {
-  sources = _jni_sources
-}
-
-source_set("android") {
-  sources = [
-    "features.cc",
-    "features.h",
-    "settings_feature_list.cc",
-  ]
-  deps = [
-    ":settings_jni_headers",
-    "//base",
   ]
 }

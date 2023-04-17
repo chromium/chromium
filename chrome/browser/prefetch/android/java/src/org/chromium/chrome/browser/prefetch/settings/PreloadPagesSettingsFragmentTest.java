@@ -25,8 +25,6 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -87,20 +85,7 @@ public class PreloadPagesSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"PreloadPages"})
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testOnStartup_EnableHighlight() {
-        testOnStartupImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"PreloadPages"})
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testOnStartup_DisableHighlight() {
-        testOnStartupImpl();
-    }
-
-    private void testOnStartupImpl() {
+    public void testOnStartup() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             @PreloadPagesState
@@ -124,20 +109,7 @@ public class PreloadPagesSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"PreloadPages"})
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testCheckRadioButtons_EnableHighlight() {
-        testCheckRadioButtonsImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"PreloadPages"})
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testCheckRadioButtons_DisableHighlight() {
-        testCheckRadioButtonsImpl();
-    }
-
-    public void testCheckRadioButtonsImpl() {
+    public void testCheckRadioButtons() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
@@ -211,43 +183,19 @@ public class PreloadPagesSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"PreloadPages"})
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
     @Policies.Add({
         @Policies.Item(key = "NetworkPredictionOptions",
                 string = "2" /* NetworkPredictionOptions::kDisabled */)
     })
     public void
-    testPreloadingManaged_EnableHighlight() {
-        testPreloadingManagedImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"PreloadPages"})
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    @Policies.Add({
-        @Policies.Item(key = "NetworkPredictionOptions",
-                string = "2" /* NetworkPredictionOptions::kDisabled */)
-    })
-    public void
-    testPreloadingManaged_DisableHighlight() {
-        testPreloadingManagedImpl();
-    }
-
-    public void testPreloadingManagedImpl() {
+    testPreloadingManaged() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(PreloadPagesSettingsBridge.isNetworkPredictionManaged());
-            if (SettingsFeatureList.isEnabled(
-                        SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-                Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
-                Assert.assertTrue(mManagedDisclaimerText.isVisible());
-            } else {
-                Assert.assertTrue(mManagedTextPreferenceLegacy.isVisible());
-                Assert.assertFalse(mManagedDisclaimerText.isVisible());
-            }
+            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
+            Assert.assertTrue(mManagedDisclaimerText.isVisible());
             Assert.assertFalse(getExtendedPreloadingButton().isEnabled());
             Assert.assertFalse(getStandardPreloadingButton().isEnabled());
             Assert.assertFalse(getNoPreloadingButton().isEnabled());

@@ -53,10 +53,7 @@ public class ManagedPreferenceTestDelegates {
 
                 @Override
                 public @LayoutRes int defaultPreferenceLayoutResource() {
-                    return SettingsFeatureList.isEnabled(
-                                   SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-                            ? R.layout.chrome_managed_preference
-                            : 0;
+                    return R.layout.chrome_managed_preference;
                 }
             };
 
@@ -79,10 +76,7 @@ public class ManagedPreferenceTestDelegates {
 
                 @Override
                 public @LayoutRes int defaultPreferenceLayoutResource() {
-                    return SettingsFeatureList.isEnabled(
-                                   SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-                            ? R.layout.chrome_managed_preference
-                            : 0;
+                    return R.layout.chrome_managed_preference;
                 }
             };
 
@@ -105,10 +99,7 @@ public class ManagedPreferenceTestDelegates {
 
                 @Override
                 public @LayoutRes int defaultPreferenceLayoutResource() {
-                    return SettingsFeatureList.isEnabled(
-                                   SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-                            ? R.layout.chrome_managed_preference
-                            : 0;
+                    return R.layout.chrome_managed_preference;
                 }
             };
 }

@@ -20,9 +20,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 /**
  * Fragment containing Safe Browsing settings.
@@ -89,20 +87,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mSafeBrowsingPreference.setOnPreferenceChangeListener(this);
 
-        Preference managedDisclaimerText = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
-        TextMessagePreference textManagedLegacy = findPreference(PREF_TEXT_MANAGED_LEGACY);
-        boolean managedTextVisible =
-                managedPreferenceDelegate.isPreferenceClickDisabled(mSafeBrowsingPreference);
-
-        if (SettingsFeatureList.isEnabled(
-                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-            textManagedLegacy.setVisible(false);
-            managedDisclaimerText.setVisible(managedTextVisible);
-        } else {
-            textManagedLegacy.setManagedPreferenceDelegate(managedPreferenceDelegate);
-            textManagedLegacy.setVisible(managedTextVisible);
-            managedDisclaimerText.setVisible(false);
-        }
+        findPreference(PREF_TEXT_MANAGED_LEGACY).setVisible(false);
+        findPreference(PREF_MANAGED_DISCLAIMER_TEXT).setVisible(
+                managedPreferenceDelegate.isPreferenceClickDisabled(mSafeBrowsingPreference));
 
         recordUserActionHistogram(UserAction.SHOWED);
     }

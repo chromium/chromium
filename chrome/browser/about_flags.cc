@@ -77,7 +77,6 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/browser_ui/settings/android/features.h"
 #include "components/browser_ui/site_settings/android/features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -9586,14 +9585,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCertDualVerificationEnabledDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kCertDualVerificationTrialFeature)},
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"highlight-managed-pref-disclaimer-android",
-     flag_descriptions::kHighlightManagedPrefDisclaimerAndroidName,
-     flag_descriptions::kHighlightManagedPrefDisclaimerAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(browser_ui::kHighlightManagedPrefDisclaimerAndroid)},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"policy-logs-page-android", flag_descriptions::kPolicyLogsPageAndroidName,

@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -96,20 +94,7 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testOnStartup_EnableHighlight() {
-        testOnStartupImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testOnStartup_DisableHighlight() {
-        testOnStartupImpl();
-    }
-
-    private void testOnStartupImpl() {
+    public void testOnStartup() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             @SafeBrowsingState
@@ -133,20 +118,7 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testCheckRadioButtons_EnableHighlight() {
-        testCheckRadioButtonsImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testCheckRadioButtons_DisableHighlight() {
-        testCheckRadioButtonsImpl();
-    }
-
-    private void testCheckRadioButtonsImpl() {
+    public void testCheckRadioButtons() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
@@ -304,32 +276,14 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingEnabled", string = "true") })
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testSafeBrowsingManaged_EnableHighlight() {
-        testSafeBrowsingManagedImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @Policies.Add({ @Policies.Item(key = "SafeBrowsingEnabled", string = "true") })
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testSafeBrowsingManaged_DisableHighlight() {
-        testSafeBrowsingManagedImpl();
-    }
-
-    private void testSafeBrowsingManagedImpl() {
+    public void testSafeBrowsingManaged() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
-            Assert.assertNotEquals(mManagedTextPreferenceLegacy.isVisible(),
-                    SettingsFeatureList.isEnabled(
-                            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID));
-            Assert.assertEquals(mManagedDisclaimerText.isVisible(),
-                    SettingsFeatureList.isEnabled(
-                            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID));
+            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
+            Assert.assertTrue(mManagedDisclaimerText.isVisible());
             Assert.assertFalse(getEnhancedProtectionButton().isEnabled());
             Assert.assertFalse(getStandardProtectionButton().isEnabled());
             Assert.assertFalse(getNoProtectionButton().isEnabled());
@@ -344,32 +298,14 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "2") })
-    @Features.EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testSafeBrowsingProtectionLevelManagedEnhanced_EnableHighlight() {
-        testSafeBrowsingProtectionLevelManagedEnhancedImpl();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "2") })
-    @Features.DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testSafeBrowsingProtectionLevelManagedEnhanced_DisableHighlight() {
-        testSafeBrowsingProtectionLevelManagedEnhancedImpl();
-    }
-
-    private void testSafeBrowsingProtectionLevelManagedEnhancedImpl() {
+    public void testSafeBrowsingProtectionLevelManagedEnhanced() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
-            Assert.assertNotEquals(mManagedTextPreferenceLegacy.isVisible(),
-                    SettingsFeatureList.isEnabled(
-                            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID));
-            Assert.assertEquals(mManagedDisclaimerText.isVisible(),
-                    SettingsFeatureList.isEnabled(
-                            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID));
+            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
+            Assert.assertTrue(mManagedDisclaimerText.isVisible());
             Assert.assertFalse(getEnhancedProtectionButton().isEnabled());
             Assert.assertFalse(getStandardProtectionButton().isEnabled());
             Assert.assertFalse(getNoProtectionButton().isEnabled());

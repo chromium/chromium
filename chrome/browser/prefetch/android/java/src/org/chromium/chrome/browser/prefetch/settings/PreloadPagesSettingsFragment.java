@@ -1,5 +1,5 @@
 // Copyright 2021 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
+// Use of this source codeTextMessagePreference is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.prefetch.settings;
@@ -13,9 +13,7 @@ import androidx.preference.Preference;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 /**
  * Fragment containing Preload Pages settings.
@@ -64,20 +62,9 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
         mPreloadPagesPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mPreloadPagesPreference.setOnPreferenceChangeListener(this);
 
-        Preference managedDisclaimerText = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
-        TextMessagePreference textManagedLegacy = findPreference(PREF_TEXT_MANAGED_LEGACY);
-        boolean managedTextVisible =
-                managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference);
-
-        if (SettingsFeatureList.isEnabled(
-                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-            textManagedLegacy.setVisible(false);
-            managedDisclaimerText.setVisible(managedTextVisible);
-        } else {
-            textManagedLegacy.setManagedPreferenceDelegate(managedPreferenceDelegate);
-            textManagedLegacy.setVisible(managedTextVisible);
-            managedDisclaimerText.setVisible(false);
-        }
+        findPreference(PREF_TEXT_MANAGED_LEGACY).setVisible(false);
+        findPreference(PREF_MANAGED_DISCLAIMER_TEXT).setVisible(
+               managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference));
     }
 
     @Override

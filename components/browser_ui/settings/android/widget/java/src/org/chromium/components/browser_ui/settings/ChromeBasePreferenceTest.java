@@ -32,23 +32,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Tests of {@link ChromeBasePreference}.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ChromeBasePreferenceTest {
     @ClassRule
@@ -64,25 +57,8 @@ public class ChromeBasePreferenceTest {
     private Activity mActivity;
     private PreferenceScreen mPreferenceScreen;
 
-    private boolean mEnableHighlightManagedPrefDisclaimerAndroid;
-
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams = Arrays.asList(
-            new ParameterSet().value(true).name("EnableHighlightManagedPrefDisclaimerAndroid"),
-            new ParameterSet().value(false).name("DisableHighlightManagedPrefDisclaimerAndroid"));
-
-    public ChromeBasePreferenceTest(boolean enableHighlightManagedPrefDisclaimerAndroid) {
-        mEnableHighlightManagedPrefDisclaimerAndroid = enableHighlightManagedPrefDisclaimerAndroid;
-    }
-
     @Before
     public void setUp() {
-        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(
-                SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID,
-                mEnableHighlightManagedPrefDisclaimerAndroid);
-        FeatureList.setTestValues(testValuesOverride);
-
         mSettingsRule.launchPreference(PlaceholderSettingsForTest.class);
         mActivity = mSettingsRule.getActivity();
         mPreferenceScreen = mSettingsRule.getPreferenceScreen();
@@ -124,19 +100,11 @@ public class ChromeBasePreferenceTest {
         Assert.assertFalse(preference.isEnabled());
 
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            onView(withId(android.R.id.summary)).check(matches(not(isDisplayed())));
-            onView(withId(R.id.managed_disclaimer_text))
-                    .check(matches(allOf(withText(R.string.managed_by_your_organization),
-                            Matchers.hasDrawableStart(), isDisplayed())));
-            onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
-        } else {
-            onView(withId(android.R.id.summary))
-                    .check(matches(
-                            allOf(withText(R.string.managed_by_your_organization), isDisplayed())));
-            onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
-            onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
-        }
+        onView(withId(android.R.id.summary)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.managed_disclaimer_text))
+                .check(matches(allOf(withText(R.string.managed_by_your_organization),
+                        Matchers.hasDrawableStart(), isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -150,22 +118,12 @@ public class ChromeBasePreferenceTest {
         Assert.assertFalse(preference.isEnabled());
 
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            onView(withId(android.R.id.summary))
-                    .check(matches(allOf(withText(SUMMARY), isDisplayed())));
-            onView(withId(R.id.managed_disclaimer_text))
-                    .check(matches(allOf(withText(R.string.managed_by_your_organization),
-                            Matchers.hasDrawableStart(), isDisplayed())));
-            onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
-        } else {
-            onView(withId(android.R.id.summary))
-                    .check(matches(allOf(
-                            withText(stringContainsInOrder(ImmutableList.of(SUMMARY,
-                                    mActivity.getString(R.string.managed_by_your_organization)))),
-                            isDisplayed())));
-            onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
-            onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
-        }
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText(SUMMARY), isDisplayed())));
+        onView(withId(R.id.managed_disclaimer_text))
+                .check(matches(allOf(withText(R.string.managed_by_your_organization),
+                        Matchers.hasDrawableStart(), isDisplayed())));
+        onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
     }
 
     @Test

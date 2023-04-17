@@ -38,7 +38,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -92,34 +91,16 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI,
-            SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
-    public void
-    testRenderCookieFPSSubpage_EnableHighlightManagedPrefDisclaimerAndroid() throws IOException {
-        showCookieFPSSubpage();
-        mRenderTestRule.render(
-                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
-                "settings_cookie_fps_subpage");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
-    @DisableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    public void testRenderCookieFPSSubpage_DisableHighlightManagedPrefDisclaimerAndroid()
-            throws IOException {
-        showCookieFPSSubpage();
-        mRenderTestRule.render(
-                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
-                "settings_cookie_fps_subpage_DisableHighlightManagedPrefDisclaimerAndroid");
-    }
-
-    private void showCookieFPSSubpage() {
+    public void testRenderCookieFPSSubpage() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(allOf(withId(R.id.expand_arrow),
                        isDescendantOfA(withId(R.id.block_third_party_with_aux))))
                 .perform(click());
+
+        mRenderTestRule.render(
+                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
+                "settings_cookie_fps_subpage");
     }
 
     private void setCookiesEnabled(final SettingsActivity settingsActivity, final boolean enabled) {
