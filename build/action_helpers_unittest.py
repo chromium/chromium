@@ -14,7 +14,7 @@ import unittest
 import action_helpers
 
 
-class ActionHelperTest(unittest.TestCase):
+class ActionHelpersTest(unittest.TestCase):
   def test_atomic_output(self):
     tmp_file = pathlib.Path(tempfile.mktemp())
     tmp_file.write_text('test')

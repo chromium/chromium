@@ -184,12 +184,16 @@ def merge_zips(output, input_zips, path_transform=None, compress=None):
     compress: Overrides compression setting from origin zip entries.
   """
   assert not isinstance(input_zips, str)  # Easy mistake to make.
-  out_zip = output
-  if not isinstance(output, zipfile.ZipFile):
+  if isinstance(output, zipfile.ZipFile):
+    out_zip = output
+    out_filename = output.filename
+  else:
+    assert isinstance(output, str), 'Was: ' + repr(output)
     out_zip = zipfile.ZipFile(output, 'w')
+    out_filename = output
 
   # Include paths in the existing zip here to avoid adding duplicate files.
-  added_names = set(out_zip.namelist())
+  crc_by_name = {i.filename: (out_filename, i.CRC) for i in out_zip.infolist()}
 
   try:
     for in_file in input_zips:
@@ -205,18 +209,30 @@ def merge_zips(output, input_zips, path_transform=None, compress=None):
           else:
             dst_name = info.filename
 
-          # TODO(agrieve): Fail if duplicate entry is not identical.
-          already_added = dst_name in added_names
-          if not already_added:
-            if compress is not None:
-              compress_entry = compress
-            else:
-              compress_entry = info.compress_type != zipfile.ZIP_STORED
-            add_to_zip_hermetic(out_zip,
-                                dst_name,
-                                data=in_zip.read(info),
-                                compress=compress_entry)
-            added_names.add(dst_name)
+          data = in_zip.read(info)
+
+          # If there's a duplicate file, ensure contents is the same and skip
+          # adding it multiple times.
+          if dst_name in crc_by_name:
+            orig_filename, orig_crc = crc_by_name[dst_name]
+            new_crc = zipfile.crc32(data)
+            if new_crc == orig_crc:
+              continue
+            msg = f"""File appeared in multiple inputs with differing contents.
+File: {dst_name}
+Input1: {orig_filename}
+Input2: {in_file}"""
+            raise Exception(msg)
+
+          if compress is not None:
+            compress_entry = compress
+          else:
+            compress_entry = info.compress_type != zipfile.ZIP_STORED
+          add_to_zip_hermetic(out_zip,
+                              dst_name,
+                              data=data,
+                              compress=compress_entry)
+          crc_by_name[dst_name] = (in_file, out_zip.getinfo(dst_name).CRC)
   finally:
     if output is not out_zip:
       out_zip.close()
