@@ -2054,6 +2054,22 @@ TEST_P(PaintLayerTest, MAYBE_HitTestScrollbarUnderClip) {
   EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 245));
 }
 
+TEST_P(PaintLayerTest, HitTestPerspectiveBackfaceHiddenNotInverted) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
+    <div style="transform: translate3d(50px, 80px, 200px);
+                transform-style: preserve-3d; perspective: 100px;">
+      <div id="target" style="width: 100px; height: 100px; background: green;
+                              backface-visibility: hidden"></div>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(GetDocument().body(), HitTest(49, 79));
+  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(50, 80));
+  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(149, 179));
+  EXPECT_EQ(GetDocument().documentElement(), HitTest(150, 180));
+}
+
 TEST_P(PaintLayerTest, InlineWithBackdropFilterHasPaintLayer) {
   SetBodyInnerHTML(
       "<map id='target' style='backdrop-filter: invert(1);'></map>");

@@ -1526,9 +1526,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (local_transform_state &&
       layout_object.StyleRef().BackfaceVisibility() ==
           EBackfaceVisibility::kHidden &&
-      local_transform_state->AccumulatedTransform()
-          .InverseOrIdentity()
-          .IsBackFaceVisible()) {
+      local_transform_state->AccumulatedTransform().IsBackFaceVisible()) {
     return nullptr;
   }
 
