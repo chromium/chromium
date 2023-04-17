@@ -231,6 +231,7 @@ js_library("dialog_footer") {
 }
 
 js_library("dialogs") {
+  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
 js_library("directory_tree") {

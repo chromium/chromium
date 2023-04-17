@@ -2188,7 +2188,7 @@ body.files-ng #list-container li .detail-checkmark {
 }
 
 .install-linux-package-details-frame {
-  border: 1px solid var(--cros-separator-color);
+  border: 1px solid var(--cros-sys-separator);
   display: block;
   height: 150px;
   overflow: scroll;
@@ -2205,13 +2205,13 @@ body.files-ng #list-container li .detail-checkmark {
 }
 
 .cr-dialog-container.files-ng .install-linux-package-detail-label {
-  color: var(--cros-text-color-primary);
+  color: var(--cros-sys-on_surface);
   display: inline;
   margin-inline-end: 5px;
 }
 
 .cr-dialog-container.files-ng .install-linux-package-detail-value {
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-sys-secondary);
   display: inline;
   margin-bottom: 5px;
   white-space: pre-wrap;

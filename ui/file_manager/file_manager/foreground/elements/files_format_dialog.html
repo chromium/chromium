@@ -14,29 +14,143 @@ found in the LICENSE file.
 
   [slot='body'] > #disk-format {
     margin-bottom: 0;
-    padding-bottom: 2px;
+    padding: 0 2px 2px; /* Cater the box shadow in focus state. */
   }
 
-  [slot='button-container']  {
+  :host-context([theme='legacy']) [slot='button-container']  {
     padding-top: 32px;
   }
 
-  #warning-icon {
+  :host-context([theme='refresh23']) [slot='button-container'] {
+    --cr-dialog-button-container-padding-bottom: 0;
+    --cr-dialog-button-container-padding-horizontal: 0;
+    padding-top: 32px;
+  }
+
+  :host-context([theme='legacy']) #warning-icon {
     --iron-icon-fill-color: var(--cros-icon-color-alert);
   }
 
-  #warning-message {
+  :host-context([theme='refresh23']) #warning-icon {
+    --iron-icon-fill-color: var(--cros-sys-error);
+  }
+
+  :host-context([theme='legacy']) #warning-message {
     color: var(--cros-text-color-alert);
     display: inline-block;
     margin-inline-start: 8px;
   }
 
-  cr-dialog::part(dialog) {
+  :host-context([theme='refresh23']) #warning-message {
+    color: var(--cros-sys-error);
+    display: inline-block;
+    margin-inline-start: 8px;
+  }
+
+  :host-context([theme='legacy']) cr-dialog::part(dialog) {
     border-radius: 12px;
   }
-  cr-dialog::part(wrapper) {
+
+  :host-context([theme='refresh23']) cr-dialog::part(dialog) {
+    --cr-dialog-background-color: var(--cros-sys-dialog_container);
+    border-radius: 20px;
+  }
+
+  :host-context([theme='refresh23']) cr-dialog::part(dialog)::backdrop {
+    background-color: var(--cros-sys-scrim);
+  }
+
+  :host-context([theme='legacy']) cr-dialog::part(wrapper) {
     /* subtract the internal padding in <cr-dialog> */
     padding: calc(24px - 20px);
+  }
+
+  :host-context([theme='refresh23']) cr-dialog::part(wrapper) {
+      padding: 32px;
+      padding-bottom: 28px;
+  }
+
+  :host-context([theme='refresh23']) [slot='title'] {
+    --cr-dialog-title-slot-padding-bottom: 16px;
+    --cr-dialog-title-slot-padding-end: 0;
+    --cr-dialog-title-slot-padding-start: 0;
+    --cr-dialog-title-slot-padding-top: 0;
+    --cr-primary-text-color: var(--cros-sys-on_surface);
+    font-weight: 500;
+  }
+
+  :host-context([theme='refresh23']) [slot='body'] {
+    --cr-dialog-body-padding-horizontal: 0;
+    --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
+  }
+
+  :host-context([theme='refresh23']) .md-select {
+    --md-select-bg-color: var(--cros-sys-input_field_on_base);
+    --md-select-focus-shadow-color: var(--cros-sys-focus_ring);
+    --md-select-text-color: var(--cros-sys-on_surface);
+    --md-select-side-padding: 16px;
+    border-radius: 8px;
+    height: 36px;
+  }
+
+  :host-context([theme='refresh23']) cr-input {
+    --cr-form-field-label-color: var(--cros-sys-on_surface);
+    --cr-input-background-color: var(--cros-sys-input_field_on_base);
+    --cr-input-border-radius: 8px;
+    --cr-input-color: var(--cros-sys-on_surface);
+    --cr-input-error-color: var(--cros-sys-error);
+    --cr-input-focus-color: var(--cros-sys-primary);
+    --cr-input-min-height: 36px;
+    --cr-input-padding-end: 16px;
+    --cr-input-padding-start: 16px;
+    --cr-input-placeholder-color: var(--cros-sys-secondary);
+  }
+
+  :host-context([theme='refresh23']) cr-button {
+    --active-bg: transparent;
+    --active-shadow: none;
+    --active-shadow-action: none;
+    --bg-action: var(--cros-sys-primary);
+    --cr-button-height: 36px;
+    --disabled-bg-action:
+        var(--cros-sys-disabled_container);
+    --disabled-bg: var(--cros-sys-disabled_container);;
+    --disabled-text-color: var(--cros-sys-disabled);
+    /* Use the default bg color as hover color because we
+        rely on hoverBackground layer below.  */
+    --hover-bg-action: var(--cros-sys-primary);
+    --hover-bg-color: var(--cros-sys-primary_container);
+    --ink-color: var(--cros-sys-ripple_primary);
+    --ripple-opacity-action: 1;
+    --ripple-opacity: 1;
+    --text-color-action: var(--cros-sys-on_primary);
+    --text-color: var(--cros-sys-on_primary_container);
+    border: none;
+    border-radius: 18px;
+    box-shadow: none;
+    position: relative;
+  }
+
+  :host-context([theme='refresh23']) cr-button.cancel-button {
+    background-color: var(--cros-sys-primary_container);
+  }
+
+  :host-context([theme='refresh23'])
+      cr-button.cancel-button:hover::part(hoverBackground) {
+    background-color: var(--cros-sys-hover_on_subtle);
+    display: block;
+  }
+
+  :host-context([theme='refresh23'])
+      cr-button.action-button:hover::part(hoverBackground) {
+    background-color: var(--cros-sys-hover_on_prominent);
+    display: block;
+  }
+
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      cr-button:focus {
+    outline: 2px solid var(--cros-sys-focus_ring);
+    outline-offset: 2px;
   }
 </style>
 
