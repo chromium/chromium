@@ -1103,7 +1103,6 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
     }
     GetDriveFsHost()->RemoveObserver(pin_manager_.get());
     pin_manager_.reset();
-    GetDriveFsHost()->SetAlwaysEnableDocsOffline(false);
   }
 }
 
@@ -1311,11 +1310,7 @@ void DriveIntegrationService::ToggleBulkPinning() {
     return;
   }
 
-  const bool enabled =
-      GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
-  GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
-
-  if (enabled) {
+  if (GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled)) {
     pin_manager_->ShouldPin(true);
     pin_manager_->Start();
   } else {

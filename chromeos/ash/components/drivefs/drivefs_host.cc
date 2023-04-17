@@ -328,11 +328,6 @@ class DriveFsHost::MountState : public DriveFsSession,
       std::move(callback).Run(mojom::DialogResult::kNotDisplayed);
       return;
     }
-    if (error->type == mojom::DialogReason::Type::kEnableDocsOffline &&
-        host_->ShouldAlwaysEnableDocsOffline()) {
-      std::move(callback).Run(mojom::DialogResult::kAccept);
-      return;
-    }
     host_->dialog_handler_.Run(
         *error, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                     std::move(callback), mojom::DialogResult::kNotDisplayed));
