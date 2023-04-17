@@ -91,8 +91,11 @@ void ConfigureInkDropForToolbar(views::Button* host) {
         [](views::Button* host) -> std::unique_ptr<views::InkDropRipple> {
           // TODO(shibalik): Replace with a local color token once theme colors
           // is handled with chrome refresh.
-          const SkColor pressed_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateRippleNeutralOnSubtle);
+          const auto* color_provider = host->GetColorProvider();
+          const SkColor pressed_color =
+              color_provider ? color_provider->GetColor(
+                                   ui::kColorSysStateRippleNeutralOnSubtle)
+                             : gfx::kPlaceholderColor;
           const float pressed_alpha = SkColorGetA(pressed_color);
 
           return std::make_unique<views::FloodFillInkDropRipple>(
@@ -106,8 +109,11 @@ void ConfigureInkDropForToolbar(views::Button* host) {
         [](views::Button* host) {
           // TODO(shibalik): Replace with a local color token once theme colors
           // is handled with chrome refresh.
-          const SkColor hover_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateHoverOnSubtle);
+          const auto* color_provider = host->GetColorProvider();
+          const SkColor hover_color =
+              color_provider
+                  ? color_provider->GetColor(ui::kColorSysStateHoverOnSubtle)
+                  : gfx::kPlaceholderColor;
           const float hover_alpha = SkColorGetA(hover_color);
 
           auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
