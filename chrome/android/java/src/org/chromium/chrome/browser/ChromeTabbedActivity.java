@@ -2410,7 +2410,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void initializeBackPressHandlers() {
         if (mReturnToChromeBackPressHandler == null && !isTablet()) {
             mReturnToChromeBackPressHandler = new ReturnToChromeBackPressHandler(
-                    getActivityTabProvider(), this::returnToOverviewModeOnBackPressed);
+                    getActivityTabProvider(), this::returnToOverviewModeOnBackPressed,
+                    this::getActivityTab, mLayoutStateProviderSupplier);
             mBackPressManager.addHandler(mReturnToChromeBackPressHandler,
                     BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
         }

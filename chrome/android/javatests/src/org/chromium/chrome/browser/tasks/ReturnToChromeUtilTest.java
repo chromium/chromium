@@ -255,7 +255,10 @@ public class ReturnToChromeUtilTest {
                 ()
                         -> new ReturnToChromeBackPressHandler(
                                 mActivityTestRule.getActivity().getActivityTabProvider(),
-                                () -> {}));
+                                ()
+                                        -> {},
+                                mActivityTestRule.getActivity()::getActivityTab,
+                                mActivityTestRule.getActivity()::getLayoutManager));
     }
 
     private void waitTabModelRestoration() {

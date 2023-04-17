@@ -24,6 +24,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
@@ -32,6 +33,8 @@ import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -103,9 +106,12 @@ public final class ReturnToChromeUtil {
         private final Runnable mOnBackPressedCallback;
         private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
         private final ActivityTabProvider mActivityTabProvider;
+        private final Supplier<Tab> mTabSupplier; // for debugging only
+        private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
 
-        public ReturnToChromeBackPressHandler(
-                ActivityTabProvider activityTabProvider, Runnable onBackPressedCallback) {
+        public ReturnToChromeBackPressHandler(ActivityTabProvider activityTabProvider,
+                Runnable onBackPressedCallback, Supplier<Tab> tabSupplier,
+                Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
             mActivityTabProvider = activityTabProvider;
             mActivityTabObserver =
                     new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider, true) {
@@ -115,6 +121,8 @@ public final class ReturnToChromeUtil {
                         }
                     };
             mOnBackPressedCallback = onBackPressedCallback;
+            mTabSupplier = tabSupplier;
+            mLayoutStateProviderSupplier = layoutStateProviderSupplier;
             onBackPressStateChanged();
         }
 
@@ -127,8 +135,16 @@ public final class ReturnToChromeUtil {
         public @BackPressResult int handleBackPress() {
             Tab tab = mActivityTabProvider.get();
             boolean res = tab != null && !tab.canGoBack() && isTabFromStartSurface(tab);
-            assert res
-                : String.format("tab %s; back press state %s", tab, tab != null && tab.canGoBack());
+            if (!res) {
+                var controlTab = mTabSupplier.get();
+                int layoutType = mLayoutStateProviderSupplier.hasValue()
+                        ? mLayoutStateProviderSupplier.get().getActiveLayoutType()
+                        : LayoutType.NONE;
+                assert false
+                    : String.format("tab %s; control tab %s; back press state %s; layout %s", tab,
+                              controlTab, tab != null && tab.canGoBack(), layoutType);
+            }
+
             mOnBackPressedCallback.run();
             return res ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         }

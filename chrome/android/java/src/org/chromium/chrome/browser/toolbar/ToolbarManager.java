@@ -2167,11 +2167,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     : null;
             var tab = mActivityTabProvider.get();
             var t2 = mTabModelSelector != null ? mTabModelSelector.getCurrentTab() : null;
-            var msg = String.format(
-                    "BottomCtrl %s %s; actTab %s, urlBarTab %s, sTab %s, init %s, destroy %s", bc,
+            var layout = mLayoutStateProviderSupplier.hasValue()
+                    ? mLayoutStateProviderSupplier.get().getActiveLayoutType()
+                    : LayoutType.NONE;
+            var msg = String.format("BottomCtrl %s %s; actTab %s, urlBarTab %s, sTab %s, layout %s",
+                    bc,
                     bc != null && Boolean.TRUE.equals(bc.getHandleBackPressChangedSupplier().get()),
-                    tab, mLocationBarModel.getTab(), t2, tab != null && tab.isInitialized(),
-                    tab != null && tab.isDestroyed());
+                    tab, mLocationBarModel.getTab(), t2, layout);
             assert false : msg;
         }
         onBackPressStateChanged();
