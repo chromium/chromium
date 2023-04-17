@@ -38,7 +38,8 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
        attribution_reporting::SuitableOrigin context_origin,
        bool is_within_fenced_frame,
        attribution_reporting::mojom::RegistrationType,
-       GlobalRenderFrameHostId),
+       GlobalRenderFrameHostId,
+       int64_t last_navigation_id),
       (override));
 
   MOCK_METHOD(
@@ -58,7 +59,8 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
                AttributionInputEvent input_event,
                blink::mojom::AttributionNavigationType,
                bool is_within_fenced_frame,
-               GlobalRenderFrameHostId),
+               GlobalRenderFrameHostId,
+               int64_t navigation_id),
               (override));
 
   MOCK_METHOD(void,
@@ -67,7 +69,8 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
                const attribution_reporting::SuitableOrigin& source_origin,
                blink::mojom::AttributionNavigationType,
                bool is_within_fenced_frame,
-               GlobalRenderFrameHostId),
+               GlobalRenderFrameHostId,
+               int64_t navigation_id),
               (override));
 
   MOCK_METHOD(void,

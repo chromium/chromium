@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_IMPL_H_
 
-#include <stddef.h>
+#include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -18,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/common/content_export.h"
@@ -41,7 +43,6 @@ struct TriggerRegistration;
 
 namespace base {
 class TimeDelta;
-class TimeTicks;
 }  // namespace base
 
 namespace content {
@@ -80,7 +81,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin context_origin,
       bool is_within_fenced_frame,
       attribution_reporting::mojom::RegistrationType,
-      GlobalRenderFrameHostId render_frame_id) override;
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t last_navigation_id) override;
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token,
@@ -93,13 +95,15 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       AttributionInputEvent input_event,
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id) override;
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t navigation_id) override;
   void NotifyNavigationStartedForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& source_origin,
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id) override;
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t navigation_id) override;
   void NotifyNavigationFinished(
       const blink::AttributionSrcToken& attribution_src_token) override;
   void NotifyFencedFrameReportingBeaconStarted(
@@ -118,7 +122,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
  private:
   class ReceiverContext;
 
-  struct DelayedTrigger;
+  struct DeferredReceiverTimeout;
+  struct DeferredReceiver;
   struct NavigationDataHost;
 
   // Represents a set of attribution sources which registered in a top-level
@@ -147,9 +152,10 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void OsTriggerDataAvailable(const GURL& registration_url) override;
 #endif
 
-  const ReceiverContext* GetReceiverContextForSource();
+  const ReceiverContext* GetReceiverContext(
+      attribution_reporting::mojom::RegistrationType);
+
   void OnReceiverDisconnected();
-  void OnSourceEligibleDataHostFinished(base::TimeTicks register_time);
 
   struct RegistrarAndHeader;
 
@@ -171,11 +177,10 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void MaybeOnRegistrationsFinished(
       base::flat_set<SourceRegistrations>::const_iterator);
 
-  void HandleTrigger(TriggerPayload, GlobalRenderFrameHostId);
-  void MaybeBufferTrigger(
-      base::FunctionRef<TriggerPayload(const ReceiverContext&)>);
-  void SetTriggerTimer(base::TimeDelta delay);
-  void ProcessDelayedTrigger();
+  void MaybeSetupDeferredReceivers(int64_t navigation_id);
+  void StartDeferredReceiversTimeoutTimer(base::TimeDelta);
+  void ProcessDeferredReceiversTimeout();
+  void MaybeBindDeferredReceivers(int64_t navigation_id, bool due_to_timeout);
 
   // Owns `this`.
   raw_ptr<AttributionManager> attribution_manager_;
@@ -186,20 +191,52 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // Map which stores pending receivers for data hosts which are going to
   // register sources associated with a navigation. These are not added to
   // `receivers_` until the necessary browser process information is available
-  // to validate the attribution sources which is after the navigation finishes.
+  // to validate the attribution sources which is after the navigation starts.
   base::flat_map<blink::AttributionSrcToken, NavigationDataHost>
       navigation_data_host_map_;
 
-  // Stores registrations received for redirects within a navigation or a
-  // beacon.
+  // If eligible, sources can be registered during a navigation. These
+  // registrations can complete after the navigation ends. On the landing page,
+  // we defer the registration of triggers until all the source registrations
+  // initiated during the navigation complete.
+  //
+  // Navigation-linked source registrations can happen via 3 channels:
+  //
+  // 1. Foreground: in the main navigation request, upon receiving a
+  //    redirection, `NotifyNavigationRedirectRegistration`, if it contains
+  //    attribution headers, the source is parsed asynchronously by the
+  //    DataDecoder.
+  // 2. Background: an attribution-specific request can be sent, when the
+  //    navigation starts. It can resolve before or after the navigation ends.
+  //    `RegisterNavigationDataHost` is used to open a pipe which stays
+  //    connected for the duration of the request, including redirections which
+  //    can also register sources.
+  // 3. Fenced Frame: Via `NotifyFencedFrameReportingBeaconStarted` &
+  //    `NotifyFencedFrameReportingBeaconData`. There can be multiple beacons
+  //    for a single navigation.
+  //
+  // Given a navigation, registrations can happen on all channels
+  // simultaneously.
+
+  // Stores deferred receivers. When all ongoing source registrations linked to
+  // a navigation complete, the receivers get bound and removed from the list.
+  base::flat_map<int64_t, std::vector<DeferredReceiver>> deferred_receivers_;
+
+  // Keeps track of ongoing background source registrations.
+  base::flat_set<int64_t> ongoing_background_registrations_;
+  // Stores registrations received on foreground redirects or via a Fenced
+  // Frame Beacon.
   base::flat_set<SourceRegistrations> registrations_;
 
-  // The number of connected receivers that may register a source. Used to
-  // determine whether to buffer triggers. Event receivers are counted here
-  // until they register a trigger.
-  size_t data_hosts_in_source_mode_ = 0;
-  base::OneShotTimer trigger_timer_;
-  base::circular_deque<DelayedTrigger> delayed_triggers_;
+  // Guardrail to ensure a receiver in `deferred_receivers_` always eventually
+  // gets bound. We use a single timer. When we `MaybeSetupDeferredReceivers`
+  // for a navigation, we add a timeout in the queue. If it isn't already
+  // running, we start the timer. When the timer expires, we pop a timeout from
+  // the queue and bind its deferred receivers, if they aren't already. If the
+  // queue is not empty, we re-start the timer for the timeout at the front of
+  // the queue.
+  base::circular_deque<DeferredReceiverTimeout> deferred_receivers_timeouts_;
+  base::OneShotTimer deferred_receivers_timeouts_timer_;
 
   data_decoder::DataDecoder data_decoder_;
 

@@ -3898,21 +3898,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceEligibleDataHostLifeTime" units="ms"
-    expires_after="2023-10-08">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time between the registration and completion of a data host that
-    is eligible to register a source. For trigger data hosts, the completion
-    time is when the trigger data is available for the data host. For source
-    data hosts, the completion time is after the final source data is available
-    for the data host. This can be used as an upper bound to determine the
-    amount of delay a trigger event may receive.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.SourceRegistration.NavigationType.{RequestType}"
     enum="AttributionNavigationType" expires_after="M117">
   <owner>csharrison@chromium.org</owner>
@@ -4093,31 +4078,6 @@ chromium-metrics-reviews@google.com.
     Records the status of the second part of an attestation operation which
     processes the private state issuer's signature to generate an attestation
     token.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.TriggerQueueDelay" units="ms"
-    expires_after="2023-10-08">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the delay between a trigger being received by the
-    AttributionDataHostManagerImpl and it being processed. Only recorded for
-    triggers that are added to the trigger queue, rather than handled
-    immediately or dropped.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.TriggerQueueEvents"
-    enum="ConversionTriggerQueueEvent" expires_after="2023-10-08">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records events for triggers that may be delayed using a queue by
-    AttributionDataHostManagerImpl. A single trigger may emit multiple events if
-    it is part of the queue.
   </summary>
 </histogram>
 

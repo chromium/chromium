@@ -43,13 +43,15 @@ class AttributionDataHostManager
   // Registers a new data host with the browser process for the given context
   // origin. This is only called for events which are not associated with a
   // navigation. Passes the topmost ancestor of the initiator render frame for
-  // obtaining the page access report.
+  // obtaining the page access report. Passes the id  `last_navigation_id` of
+  // the navigation to the frame from which this call originates.
   virtual void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       attribution_reporting::SuitableOrigin context_origin,
       bool is_within_fenced_frame,
       attribution_reporting::mojom::RegistrationType,
-      GlobalRenderFrameHostId render_frame_id) = 0;
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t last_navigation_id) = 0;
 
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in
@@ -73,7 +75,8 @@ class AttributionDataHostManager
       AttributionInputEvent input_event,
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id) = 0;
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t navigation_id) = 0;
 
   // Notifies the manager that we have received a navigation has started for a
   // given data host. This may arrive before or after the attribution
@@ -85,7 +88,8 @@ class AttributionDataHostManager
       const attribution_reporting::SuitableOrigin& source_origin,
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id) = 0;
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t navigation_id) = 0;
 
   // Notifies the manager that a navigation associated with
   // `attribution_src_token` finished and should no longer be tracked.

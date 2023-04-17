@@ -1311,7 +1311,15 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   FrameTreeNode* fenced_frame_root_node =
       AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
 
-  // Perform the reportEvent call, with a unique body.
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager());
+
+  base::RunLoop loop;
+  EXPECT_CALL(observer, OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+      .WillOnce([&]() { loop.Quit(); });
+
   ASSERT_TRUE(ExecJs(fenced_frame_root_node, R"(
         window.fence.reportEvent({
           eventType: 'click',
@@ -1319,6 +1327,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
           destination: ['buyer'],
         });
       )"));
+  loop.Run();
 
   ASSERT_TRUE(ExecJs(root, JsReplace("createAttributionSrcImg($1);",
                                      https_server()->GetURL(
@@ -1331,6 +1340,13 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
                        ReportEventRedirect_BothReportsSent) {
+  MockAttributionObserver attribution_manager_observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &attribution_manager_observer);
+  observation.Observe(attribution_manager());
+
+  base::RunLoop loop;
+
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           https_server(), "/register_source_redirect");
@@ -1399,6 +1415,13 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
           .spec());
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
+
+  // We wait for the 2 sources to be processed before registering triggers.
+  EXPECT_CALL(attribution_manager_observer,
+              OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+      .WillOnce([]() {})
+      .WillOnce([&loop]() { loop.Quit(); });
+  loop.Run();
 
   GURL register_trigger_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_trigger_headers.html");

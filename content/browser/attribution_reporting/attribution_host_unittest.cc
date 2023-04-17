@@ -157,7 +157,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
                   impression.attribution_src_token,
                   *SuitableOrigin::Deserialize("https://secure_impression.com"),
                   impression.nav_type,
-                  /*is_within_fenced_frame=*/false, main_rfh()->GetGlobalId()));
+                  /*is_within_fenced_frame=*/false, main_rfh()->GetGlobalId(),
+                  /*navigation_id=*/_));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -307,11 +308,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(kOriginTrustworthyChecksTestCases));
 
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/false,
-                       RegistrationType::kSource, main_rfh()->GetGlobalId()));
+  EXPECT_CALL(*mock_data_host_manager(),
+              RegisterDataHost(
+                  _, *SuitableOrigin::Deserialize("https://top.example"),
+                  /*is_within_fenced_frame=*/false, RegistrationType::kSource,
+                  main_rfh()->GetGlobalId(), /*last_navigation_id=*/_));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -393,11 +394,11 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
 }
 
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/false,
-                       RegistrationType::kSource, main_rfh()->GetGlobalId()));
+  EXPECT_CALL(*mock_data_host_manager(),
+              RegisterDataHost(
+                  _, *SuitableOrigin::Deserialize("https://top.example"),
+                  /*is_within_fenced_frame=*/false, RegistrationType::kSource,
+                  main_rfh()->GetGlobalId(), /*last_navigation_id=*/_));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
 
@@ -449,11 +450,11 @@ TEST_F(AttributionHostTest,
 }
 
 TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/true,
-                       RegistrationType::kSource, main_rfh()->GetGlobalId()));
+  EXPECT_CALL(*mock_data_host_manager(),
+              RegisterDataHost(
+                  _, *SuitableOrigin::Deserialize("https://top.example"),
+                  /*is_within_fenced_frame=*/true, RegistrationType::kSource,
+                  main_rfh()->GetGlobalId(), /*last_navigation_id=*/_));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   RenderFrameHost* fenced_frame =

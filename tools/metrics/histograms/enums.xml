@@ -19746,14 +19746,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Unable to unblind the the signature"/>
 </enum>
 
-<enum name="ConversionTriggerQueueEvent">
-  <int value="0" label="Skipped queue"/>
-  <int value="1" label="Dropped"/>
-  <int value="2" label="Enqueued"/>
-  <int value="3" label="Processed with delay"/>
-  <int value="4" label="Flushed"/>
-</enum>
-
 <enum name="ConversionTriggerRegistrationError">
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>

@@ -12525,6 +12525,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
     SetInheritedBaseUrl(GURL::EmptyGURL());
   }
 
+  navigation_id_ = navigation_request->GetNavigationId();
+
   // The nonce to use in credentialless iframe is a page scoped attribute. So it
   // needs to change every time the top-level document change.
   // TODO(https://crbug.com1287458): Once the ShadowDom implementation of
