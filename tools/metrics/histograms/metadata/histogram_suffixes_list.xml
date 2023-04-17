@@ -869,26 +869,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.SyncOpenPrefetchMode"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CancelableTaskTrackerDurationTypes" separator="_">
-  <suffix name="CanceledBackgroundOffSequence"
-      label="Background off-sequence task was canceled."/>
-  <suffix name="CanceledBackgroundSameSequence"
-      label="Background same-sequence task was canceled."/>
-  <suffix name="CanceledForegroundOffSequence"
-      label="Foreground off-sequence task was canceled."/>
-  <suffix name="CanceledForegroundSameSequence"
-      label="Foreground same-sequence task was canceled."/>
-  <suffix name="LiveBackgroundOffSequence"
-      label="Background off-sequence task was not canceled."/>
-  <suffix name="LiveBackgroundSameSequence"
-      label="Background same-sequence task was not canceled."/>
-  <suffix name="LiveForegroundOffSequence"
-      label="Foreground off-sequence task was not canceled."/>
-  <suffix name="LiveForegroundSameSequence"
-      label="Foreground same-sequence task was not canceled."/>
-  <affected-histogram name="Scheduler.CancelableTaskTracker.TaskDuration2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CertificateTypeAlgorithms" separator=".">
   <owner>rsleevi@chromium.org</owner>
   <suffix name="DH" label="DH"/>

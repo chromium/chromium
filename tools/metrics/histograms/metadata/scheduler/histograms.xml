@@ -22,30 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Scheduler.CancelableTaskTracker.TaskDuration2" units="ms"
-    expires_after="2021-04-04">
-<!-- Name completed by histogram_suffixes name="CancelableTaskTrackerDurationTypes" -->
-
-  <owner>wez@chromium.org</owner>
-  <owner>scheduler-dev@chromium.org</owner>
-  <summary>
-    Time taken for a task posted to a CancelableTaskTracker to run. Durations
-    are not recorded for tasks skipped due to having been canceled.
-  </summary>
-</histogram>
-
-<histogram name="Scheduler.CancelableTaskTracker.TaskStatus"
-    enum="CancelableTaskStatus" expires_after="2021-04-04">
-  <owner>wez@chromium.org</owner>
-  <owner>scheduler-dev@chromium.org</owner>
-  <summary>
-    Records whether a task posted to CancelableTaskTracker was canceled before
-    it got the chance to run, and whether it was same-sequence or off-sequence.
-    Recorded for every task posted via CancelableTaskTracker, immediately before
-    it would be run.
-  </summary>
-</histogram>
-
 <histogram name="Scheduler.Experimental.CPUTimePerThread"
     enum="SchedulerThreadType" expires_after="M81">
   <owner>altimin@chromium.org</owner>
