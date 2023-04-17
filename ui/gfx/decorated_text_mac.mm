@@ -5,7 +5,9 @@
 #import "ui/gfx/decorated_text_mac.h"
 
 #import <Cocoa/Cocoa.h>
+#include <CoreText/CoreText.h>
 
+#include "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/gfx/decorated_text.h"
@@ -29,8 +31,10 @@ NSAttributedString* GetAttributedStringFromDecoratedText(
     NSMutableDictionary* attrs = [NSMutableDictionary dictionary];
     NSRange range = attribute.range.ToNSRange();
 
-    if (attribute.font.GetNativeFont())
-      attrs[NSFontAttributeName] = attribute.font.GetNativeFont();
+    CTFontRef font = attribute.font.GetCTFont();
+    if (font) {
+      attrs[NSFontAttributeName] = base::mac::CFToNSCast(font);
+    }
 
     // NSFont does not have underline as an attribute. Hence handle it
     // separately.

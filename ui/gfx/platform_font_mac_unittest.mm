@@ -5,6 +5,7 @@
 #include "ui/gfx/platform_font_mac.h"
 
 #include <Cocoa/Cocoa.h>
+#include <CoreText/CoreText.h>
 #include <stddef.h>
 
 #import "base/mac/foundation_util.h"
@@ -41,7 +42,7 @@ TEST(PlatformFontMacTest, DeriveFont) {
   auto CheckExpected = [GetValueFromDictionaryAndWorkAroundMacOS13Bug](
                            const Font& font, int weight_tri, bool isItalic) {
     base::ScopedCFTypeRef<CFDictionaryRef> traits(
-        CTFontCopyTraits(base::mac::NSToCFCast(font.GetNativeFont())));
+        CTFontCopyTraits(font.GetCTFont()));
     DCHECK(traits);
 
     CFNumberRef cf_slant = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
@@ -117,8 +118,8 @@ TEST(PlatformFontMacTest, DeriveFontUnderline) {
                                      base_font.GetWeight()));
 
   // Validate the derived font properties against its native font instance.
-  NSFontTraitMask traits = [[NSFontManager sharedFontManager]
-      traitsOfFont:derived_font.GetNativeFont()];
+  NSFontTraitMask traits = [NSFontManager.sharedFontManager
+      traitsOfFont:base::mac::CFToNSCast(derived_font.GetCTFont())];
   Weight actual_weight =
       (traits & NSFontBoldTrait) ? Weight::BOLD : Weight::NORMAL;
 
@@ -134,38 +135,45 @@ TEST(PlatformFontMacTest, DeriveFontUnderline) {
 // Tests internal methods for extracting Font properties from the
 // underlying CTFont representation.
 TEST(PlatformFontMacTest, ConstructFromNativeFont) {
-  Font light_font([NSFont fontWithName:@"Helvetica-Light" size:12]);
+  NSFont* ns_light_font = [NSFont fontWithName:@"Helvetica-Light" size:12];
+  Font light_font(base::mac::NSToCFCast(ns_light_font));
   EXPECT_EQ(12, light_font.GetFontSize());
   EXPECT_EQ("Helvetica", light_font.GetFontName());
   EXPECT_EQ(Font::NORMAL, light_font.GetStyle());
   EXPECT_EQ(Weight::LIGHT, light_font.GetWeight());
 
-  Font light_italic_font([NSFont fontWithName:@"Helvetica-LightOblique"
-                                         size:14]);
+  NSFont* ns_light_italic_font = [NSFont fontWithName:@"Helvetica-LightOblique"
+                                                 size:14];
+  Font light_italic_font(base::mac::NSToCFCast(ns_light_italic_font));
   EXPECT_EQ(14, light_italic_font.GetFontSize());
   EXPECT_EQ("Helvetica", light_italic_font.GetFontName());
   EXPECT_EQ(Font::ITALIC, light_italic_font.GetStyle());
   EXPECT_EQ(Weight::LIGHT, light_italic_font.GetWeight());
 
-  Font normal_font([NSFont fontWithName:@"Helvetica" size:12]);
+  NSFont* ns_normal_font = [NSFont fontWithName:@"Helvetica" size:12];
+  Font normal_font(base::mac::NSToCFCast(ns_normal_font));
   EXPECT_EQ(12, normal_font.GetFontSize());
   EXPECT_EQ("Helvetica", normal_font.GetFontName());
   EXPECT_EQ(Font::NORMAL, normal_font.GetStyle());
   EXPECT_EQ(Weight::NORMAL, normal_font.GetWeight());
 
-  Font italic_font([NSFont fontWithName:@"Helvetica-Oblique" size:14]);
+  NSFont* ns_italic_font = [NSFont fontWithName:@"Helvetica-Oblique" size:14];
+  Font italic_font(base::mac::NSToCFCast(ns_italic_font));
   EXPECT_EQ(14, italic_font.GetFontSize());
   EXPECT_EQ("Helvetica", italic_font.GetFontName());
   EXPECT_EQ(Font::ITALIC, italic_font.GetStyle());
   EXPECT_EQ(Weight::NORMAL, italic_font.GetWeight());
 
-  Font bold_font([NSFont fontWithName:@"Helvetica-Bold" size:12]);
+  NSFont* ns_bold_font = [NSFont fontWithName:@"Helvetica-Bold" size:12];
+  Font bold_font(base::mac::NSToCFCast(ns_bold_font));
   EXPECT_EQ(12, bold_font.GetFontSize());
   EXPECT_EQ("Helvetica", bold_font.GetFontName());
   EXPECT_EQ(Font::NORMAL, bold_font.GetStyle());
   EXPECT_EQ(Weight::BOLD, bold_font.GetWeight());
 
-  Font bold_italic_font([NSFont fontWithName:@"Helvetica-BoldOblique" size:14]);
+  NSFont* ns_bold_italic_font = [NSFont fontWithName:@"Helvetica-BoldOblique"
+                                                size:14];
+  Font bold_italic_font(base::mac::NSToCFCast(ns_bold_italic_font));
   EXPECT_EQ(14, bold_italic_font.GetFontSize());
   EXPECT_EQ("Helvetica", bold_italic_font.GetFontName());
   EXPECT_EQ(Font::ITALIC, bold_italic_font.GetStyle());
@@ -183,8 +191,8 @@ TEST(PlatformFontMacTest, DerivedFineGrainedFonts) {
     // interesting.
     EXPECT_EQ(static_cast<int>(weight), static_cast<int>(derived.GetWeight()));
 
-    return static_cast<int>(PlatformFontMac::GetFontWeightFromNSFontForTesting(
-        derived.GetNativeFont()));
+    return static_cast<int>(PlatformFontMac::GetFontWeightFromCTFontForTesting(
+        derived.GetCTFont()));
   };
 
   EXPECT_EQ(static_cast<int>(Weight::THIN), DerivedIntWeight(Weight::THIN));
@@ -214,12 +222,12 @@ TEST(PlatformFontMacTest, ValidateFontHeight) {
     for (int delta = -1; delta <= 8; ++delta) {
       Font font = default_font.Derive(delta, style, Weight::NORMAL);
       SCOPED_TRACE(testing::Message() << "FontSize(): " << font.GetFontSize());
-      NSFont* native_font = font.GetNativeFont();
+      NSFont* ns_font = base::mac::CFToNSCast(font.GetCTFont());
 
       // Font height (an integer) should be the sum of these.
-      CGFloat ascender = [native_font ascender];
-      CGFloat descender = [native_font descender];
-      CGFloat leading = [native_font leading];
+      CGFloat ascender = ns_font.ascender;
+      CGFloat descender = ns_font.descender;
+      CGFloat leading = ns_font.leading;
 
       // NSFont always gives a negative value for descender. Others positive.
       EXPECT_GE(0, descender);
@@ -247,16 +255,14 @@ TEST(PlatformFontMacTest, ValidateFontHeight) {
 // system font.
 TEST(PlatformFontMacTest, DerivedSemiboldFontIsNotItalic) {
   Font base_font;
-  {
-    NSFontTraitMask traits = [[NSFontManager sharedFontManager]
-        traitsOfFont:base_font.GetNativeFont()];
-    ASSERT_FALSE(traits & NSItalicFontMask);
-  }
+  NSFontTraitMask base_traits = [NSFontManager.sharedFontManager
+      traitsOfFont:base::mac::CFToNSCast(base_font.GetCTFont())];
+  ASSERT_FALSE(base_traits & NSItalicFontMask);
 
-  Font semibold_font(base_font.Derive(0, Font::NORMAL, Weight::SEMIBOLD));
-  NSFontTraitMask traits = [[NSFontManager sharedFontManager]
-      traitsOfFont:semibold_font.GetNativeFont()];
-  EXPECT_FALSE(traits & NSItalicFontMask);
+  Font semibold_font = base_font.Derive(0, Font::NORMAL, Weight::SEMIBOLD);
+  NSFontTraitMask semibold_traits = [NSFontManager.sharedFontManager
+      traitsOfFont:base::mac::CFToNSCast(semibold_font.GetCTFont())];
+  EXPECT_FALSE(semibold_traits & NSItalicFontMask);
 }
 
 }  // namespace gfx

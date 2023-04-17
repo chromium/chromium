@@ -45,10 +45,11 @@ PlatformFontIOS::PlatformFontIOS() {
   CalculateMetrics();
 }
 
-PlatformFontIOS::PlatformFontIOS(NativeFont native_font) {
-  std::string font_name = base::SysNSStringToUTF8([native_font fontName]);
-  InitWithNameSizeAndStyle(font_name, [native_font pointSize],
-                           Font::NORMAL, Font::Weight::NORMAL);
+PlatformFontIOS::PlatformFontIOS(CTFontRef ct_font) {
+  UIFont* font = base::mac::CFToNSCast(ct_font);
+  std::string font_name = base::SysNSStringToUTF8([font fontName]);
+  InitWithNameSizeAndStyle(font_name, [font pointSize], Font::NORMAL,
+                           Font::Weight::NORMAL);
 }
 
 PlatformFontIOS::PlatformFontIOS(const std::string& font_name, int font_size) {
@@ -107,7 +108,8 @@ const std::string& PlatformFontIOS::GetFontName() const {
 }
 
 std::string PlatformFontIOS::GetActualFontName() const {
-  return base::SysNSStringToUTF8([GetNativeFont() familyName]);
+  UIFont* font = base::mac::CFToNSCast(GetCTFont());
+  return base::SysNSStringToUTF8(font.familyName);
 }
 
 int PlatformFontIOS::GetFontSize() const {
@@ -120,13 +122,14 @@ const FontRenderParams& PlatformFontIOS::GetFontRenderParams() {
   return params;
 }
 
-NativeFont PlatformFontIOS::GetNativeFont() const {
-  return [UIFont fontWithName:base::SysUTF8ToNSString(font_name_)
-                         size:font_size_];
+CTFontRef PlatformFontIOS::GetCTFont() const {
+  UIFont* font = [UIFont fontWithName:base::SysUTF8ToNSString(font_name_)
+                                 size:font_size_];
+  return base::mac::NSToCFCast(font);
 }
 
 sk_sp<SkTypeface> PlatformFontIOS::GetNativeSkTypeface() const {
-  return SkMakeTypefaceFromCTFont(base::mac::NSToCFCast(GetNativeFont()));
+  return SkMakeTypefaceFromCTFont(GetCTFont());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +154,7 @@ void PlatformFontIOS::InitWithNameSizeAndStyle(const std::string& font_name,
 }
 
 void PlatformFontIOS::CalculateMetrics() {
-  UIFont* font = GetNativeFont();
+  UIFont* font = base::mac::CFToNSCast(GetCTFont());
   height_ = font.lineHeight;
   ascent_ = font.ascender;
   cap_height_ = font.capHeight;
@@ -167,8 +170,8 @@ PlatformFont* PlatformFont::CreateDefault() {
 }
 
 // static
-PlatformFont* PlatformFont::CreateFromNativeFont(NativeFont native_font) {
-  return new PlatformFontIOS(native_font);
+PlatformFont* PlatformFont::CreateFromCTFont(CTFontRef ct_font) {
+  return new PlatformFontIOS(ct_font);
 }
 
 // static

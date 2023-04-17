@@ -8,11 +8,13 @@
 #include <set>
 
 #include <Cocoa/Cocoa.h>
+#include <CoreText/CoreText.h>
 
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,16 +35,18 @@ namespace {
 
 // Returns the font style for |font|. Disregards Font::UNDERLINE, since NSFont
 // does not support it as a trait.
-int GetFontStyleFromNSFont(NSFont* font) {
+int GetFontStyleFromCTFont(CTFontRef font) {
   int font_style = Font::NORMAL;
-  NSFontSymbolicTraits traits = [[font fontDescriptor] symbolicTraits];
-  if (traits & NSFontItalicTrait)
+  NSFont* ns_font = base::mac::CFToNSCast(font);
+  NSFontSymbolicTraits traits = ns_font.fontDescriptor.symbolicTraits;
+  if (traits & NSFontItalicTrait) {
     font_style |= Font::ITALIC;
+  }
   return font_style;
 }
 
 // Returns the Font::Weight for |font|.
-Weight GetFontWeightFromNSFont(NSFont* font) {
+Weight GetFontWeightFromCTFont(CTFontRef font) {
   DCHECK(font);
 
   // Map CoreText weights in a manner similar to ct_weight_to_fontstyle() from
@@ -50,7 +54,7 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
   // system fonts. See PlatformFontMacTest.FontWeightAPIConsistency for details.
   // macOS uses specific float values in its constants, but individual fonts can
   // and do specify arbitrary values in the -1.0 to 1.0 range. Therefore, to
-  // accomodate that, and to avoid float comparison issues, use ranges.
+  // accommodate that, and to avoid float comparison issues, use ranges.
   constexpr struct {
     // A range of CoreText weights.
     CGFloat weight_lower;
@@ -89,8 +93,7 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
       {0.60, 1.0, Weight::BLACK},           // NSFontWeightBlack
   };
 
-  base::ScopedCFTypeRef<CFDictionaryRef> traits(
-      CTFontCopyTraits(base::mac::NSToCFCast(font)));
+  base::ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font));
   DCHECK(traits);
   CFNumberRef cf_weight = base::mac::GetValueFromDictionary<CFNumberRef>(
       traits, kCTFontWeightTrait);
@@ -198,15 +201,27 @@ std::string GetFamilyNameFromTypeface(sk_sp<SkTypeface> typeface) {
   return family.c_str();
 }
 
-NSFont* SystemFontForConstructorOfType(PlatformFontMac::SystemFontType type) {
+CTFontRef SystemFontForConstructorOfType(PlatformFontMac::SystemFontType type) {
+  NSFont* font = nil;
   switch (type) {
-    case PlatformFontMac::SystemFontType::kGeneral:
-      return [NSFont systemFontOfSize:[NSFont systemFontSize]];
-    case PlatformFontMac::SystemFontType::kMenu:
-      return [NSFont menuFontOfSize:0];
-    case PlatformFontMac::SystemFontType::kToolTip:
-      return [NSFont toolTipsFontOfSize:0];
+    case PlatformFontMac::SystemFontType::kGeneral: {
+      font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+      break;
+    }
+    case PlatformFontMac::SystemFontType::kMenu: {
+      font = [NSFont menuFontOfSize:0];
+      break;
+    }
+    case PlatformFontMac::SystemFontType::kToolTip: {
+      font = [NSFont toolTipsFontOfSize:0];
+      break;
+    }
+    default: {
+      NOTREACHED_NORETURN();
+    }
   }
+
+  return base::mac::NSToCFCast(font);
 }
 
 absl::optional<PlatformFontMac::SystemFontType>
@@ -264,27 +279,27 @@ PlatformFontMac::PlatformFontMac(SystemFontType system_font_type)
     : PlatformFontMac(SystemFontForConstructorOfType(system_font_type),
                       system_font_type) {}
 
-PlatformFontMac::PlatformFontMac(NativeFont native_font)
-    : PlatformFontMac(native_font, absl::nullopt) {
-  DCHECK(native_font);  // nil should not be passed to this constructor.
+PlatformFontMac::PlatformFontMac(CTFontRef ct_font)
+    : PlatformFontMac(ct_font, absl::nullopt) {
+  DCHECK(ct_font);  // nil should not be passed to this constructor.
 }
 
 PlatformFontMac::PlatformFontMac(const std::string& font_name, int font_size)
     : PlatformFontMac(
-          NSFontWithSpec({font_name, font_size, Font::NORMAL, Weight::NORMAL}),
+          base::mac::NSToCFCast(NSFontWithSpec(
+              {font_name, font_size, Font::NORMAL, Weight::NORMAL})),
           absl::nullopt,
           {font_name, font_size, Font::NORMAL, Weight::NORMAL}) {}
 
 PlatformFontMac::PlatformFontMac(sk_sp<SkTypeface> typeface,
                                  int font_size_pixels,
                                  const absl::optional<FontRenderParams>& params)
-    : PlatformFontMac(
-          base::mac::CFToNSCast(SkTypeface_GetCTFontRef(typeface.get())),
-          SystemFontTypeFromUndocumentedCTFontRefInternals(
-              SkTypeface_GetCTFontRef(typeface.get())),
-          {GetFamilyNameFromTypeface(typeface), font_size_pixels,
-           (typeface->isItalic() ? Font::ITALIC : Font::NORMAL),
-           FontWeightFromInt(typeface->fontStyle().weight())}) {}
+    : PlatformFontMac(SkTypeface_GetCTFontRef(typeface.get()),
+                      SystemFontTypeFromUndocumentedCTFontRefInternals(
+                          SkTypeface_GetCTFontRef(typeface.get())),
+                      {GetFamilyNameFromTypeface(typeface), font_size_pixels,
+                       (typeface->isItalic() ? Font::ITALIC : Font::NORMAL),
+                       FontWeightFromInt(typeface->fontStyle().weight())}) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontMac, PlatformFont implementation:
@@ -319,27 +334,27 @@ Font PlatformFontMac::DeriveFont(int size_delta,
                                         weight:ToNSFontWeight(weight)];
     NSFontTraitMask italic_trait_mask =
         (style & Font::ITALIC) ? NSItalicFontMask : NSUnitalicFontMask;
-    derived = [[NSFontManager sharedFontManager] convertFont:derived
-                                                 toHaveTrait:italic_trait_mask];
+    derived = [NSFontManager.sharedFontManager convertFont:derived
+                                               toHaveTrait:italic_trait_mask];
 
     return Font(new PlatformFontMac(
-        derived, SystemFontType::kGeneral,
+        base::mac::NSToCFCast(derived), SystemFontType::kGeneral,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   } else if (system_font_type_ == SystemFontType::kMenu) {
     NSFont* derived = [NSFont menuFontOfSize:font_spec_.size + size_delta];
     return Font(new PlatformFontMac(
-        derived, SystemFontType::kMenu,
+        base::mac::NSToCFCast(derived), SystemFontType::kMenu,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   } else if (system_font_type_ == SystemFontType::kToolTip) {
     NSFont* derived = [NSFont toolTipsFontOfSize:font_spec_.size + size_delta];
     return Font(new PlatformFontMac(
-        derived, SystemFontType::kToolTip,
+        base::mac::NSToCFCast(derived), SystemFontType::kToolTip,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   } else {
     NSFont* derived = NSFontWithSpec(
         {font_spec_.name, font_spec_.size + size_delta, style, weight});
     return Font(new PlatformFontMac(
-        derived, absl::nullopt,
+        base::mac::NSToCFCast(derived), absl::nullopt,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   }
 }
@@ -366,7 +381,7 @@ int PlatformFontMac::GetExpectedTextWidth(int length) {
     base::scoped_nsobject<NSAttributedString> attr_string(
         [[NSAttributedString alloc]
             initWithString:@"abcdefghijklmnopqrstuvwxyz"
-                attributes:@{NSFontAttributeName : native_font_.get()}]);
+                attributes:@{NSFontAttributeName : ns_font_.get()}]);
     average_width_ = [attr_string size].width / [attr_string length];
     DCHECK_NE(0, average_width_);
   }
@@ -386,7 +401,7 @@ const std::string& PlatformFontMac::GetFontName() const {
 }
 
 std::string PlatformFontMac::GetActualFontName() const {
-  return base::SysNSStringToUTF8([native_font_ familyName]);
+  return base::SysNSStringToUTF8([ns_font_ familyName]);
 }
 
 int PlatformFontMac::GetFontSize() const {
@@ -397,37 +412,38 @@ const FontRenderParams& PlatformFontMac::GetFontRenderParams() {
   return render_params_;
 }
 
-NativeFont PlatformFontMac::GetNativeFont() const {
-  return [[native_font_.get() retain] autorelease];
+CTFontRef PlatformFontMac::GetCTFont() const {
+  return base::mac::NSToCFCast([[ns_font_.get() retain] autorelease]);
 }
 
 sk_sp<SkTypeface> PlatformFontMac::GetNativeSkTypeface() const {
-  return SkMakeTypefaceFromCTFont(base::mac::NSToCFCast(GetNativeFont()));
+  return SkMakeTypefaceFromCTFont(GetCTFont());
 }
 
 // static
-Weight PlatformFontMac::GetFontWeightFromNSFontForTesting(NSFont* font) {
-  return GetFontWeightFromNSFont(font);
+Weight PlatformFontMac::GetFontWeightFromCTFontForTesting(CTFontRef font) {
+  return GetFontWeightFromCTFont(font);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontMac, private:
 
 PlatformFontMac::PlatformFontMac(
-    NativeFont font,
+    CTFontRef ct_font,
     absl::optional<SystemFontType> system_font_type)
     : PlatformFontMac(
-          font,
+          ct_font,
           system_font_type,
-          {base::SysNSStringToUTF8([font familyName]),
-           base::ClampRound([font pointSize]), GetFontStyleFromNSFont(font),
-           GetFontWeightFromNSFont(font)}) {}
+          {base::SysNSStringToUTF8(base::mac::CFToNSCast(ct_font).familyName),
+           base::ClampRound(CTFontGetSize(ct_font)),
+           GetFontStyleFromCTFont(ct_font), GetFontWeightFromCTFont(ct_font)}) {
+}
 
 PlatformFontMac::PlatformFontMac(
-    NativeFont font,
+    CTFontRef ct_font,
     absl::optional<SystemFontType> system_font_type,
     FontSpec spec)
-    : native_font_([font retain]),
+    : ns_font_([base::mac::CFToNSCast(ct_font) retain]),
       system_font_type_(system_font_type),
       font_spec_(spec) {
 #if DCHECK_IS_ON()
@@ -440,11 +456,10 @@ PlatformFontMac::PlatformFontMac(
   CalculateMetricsAndInitRenderParams();
 }
 
-PlatformFontMac::~PlatformFontMac() {
-}
+PlatformFontMac::~PlatformFontMac() = default;
 
 void PlatformFontMac::CalculateMetricsAndInitRenderParams() {
-  NSFont* font = native_font_.get();
+  NSFont* font = ns_font_.get();
   DCHECK(font);
   ascent_ = ceil([font ascender]);
   cap_height_ = ceil([font capHeight]);
@@ -474,7 +489,7 @@ NSFont* PlatformFontMac::NSFontWithSpec(FontSpec font_spec) const {
   //
   // The way that does work is to use the old-style integer weight API.
 
-  NSFontManager* font_manager = [NSFontManager sharedFontManager];
+  NSFontManager* font_manager = NSFontManager.sharedFontManager;
 
   NSFontTraitMask traits = 0;
   if (font_spec.style & Font::ITALIC)
@@ -528,8 +543,8 @@ PlatformFont* PlatformFont::CreateDefault() {
 }
 
 // static
-PlatformFont* PlatformFont::CreateFromNativeFont(NativeFont native_font) {
-  return new PlatformFontMac(native_font);
+PlatformFont* PlatformFont::CreateFromCTFont(CTFontRef ct_font) {
+  return new PlatformFontMac(ct_font);
 }
 
 // static

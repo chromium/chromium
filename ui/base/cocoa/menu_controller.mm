@@ -306,8 +306,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   }
   const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);
   if (font_list) {
+    CTFontRef font = font_list->GetPrimaryFont().GetCTFont();
     NSDictionary* attributes =
-        @{NSFontAttributeName : font_list->GetPrimaryFont().GetNativeFont()};
+        @{NSFontAttributeName : base::mac::CFToNSCast(font)};
     base::scoped_nsobject<NSAttributedString> title([[NSAttributedString alloc]
         initWithString:[(id)item title]
             attributes:attributes]);

@@ -859,11 +859,11 @@ sk_sp<SkTypeface> CreateSkiaTypeface(const Font& font,
 #if BUILDFLAG(IS_APPLE)
   const Font::FontStyle style = italic ? Font::ITALIC : Font::NORMAL;
   Font font_with_style = font.Derive(0, style, weight);
-  if (!font_with_style.GetNativeFont())
+  if (!font_with_style.GetCTFont()) {
     return nullptr;
+  }
 
-  return SkMakeTypefaceFromCTFont(
-      base::mac::NSToCFCast(font_with_style.GetNativeFont()));
+  return SkMakeTypefaceFromCTFont(font_with_style.GetCTFont());
 #else
   SkFontStyle skia_style(
       static_cast<int>(weight), SkFontStyle::kNormal_Width,

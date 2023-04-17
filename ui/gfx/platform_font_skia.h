@@ -63,7 +63,7 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   sk_sp<SkTypeface> GetNativeSkTypeface() const override;
 
 #if BUILDFLAG(IS_APPLE)
-  NativeFont GetNativeFont() const override;
+  CTFontRef GetCTFont() const override;
 #endif
 
  private:

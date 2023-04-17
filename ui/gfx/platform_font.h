@@ -34,7 +34,7 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   // Creates an appropriate PlatformFont implementation.
   static PlatformFont* CreateDefault();
 #if BUILDFLAG(IS_APPLE)
-  static PlatformFont* CreateFromNativeFont(NativeFont native_font);
+  static PlatformFont* CreateFromCTFont(CTFontRef ct_font);
 #endif
   // Creates a PlatformFont implementation with the specified |font_name|
   // (encoded in UTF-8) and |font_size| in pixels.
@@ -97,17 +97,17 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   virtual const FontRenderParams& GetFontRenderParams() = 0;
 
 #if BUILDFLAG(IS_APPLE)
-  // Returns the native font handle.
-  virtual NativeFont GetNativeFont() const = 0;
+  // Returns the underlying CTFontRef.
+  virtual CTFontRef GetCTFont() const = 0;
 #endif
 
   // Returns the underlying Skia typeface. Used in RenderTextHarfBuzz for having
-  // access to the exact Skia typeface returned by  font fallback, as we would
+  // access to the exact Skia typeface returned by font fallback, as we would
   // otherwise lose the handle to the correct platform font instance.
   virtual sk_sp<SkTypeface> GetNativeSkTypeface() const = 0;
 
  protected:
-  virtual ~PlatformFont() {}
+  virtual ~PlatformFont() = default;
 
  private:
   friend class base::RefCounted<PlatformFont>;

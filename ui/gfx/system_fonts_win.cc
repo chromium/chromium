@@ -268,22 +268,6 @@ const Font& GetSystemFont(SystemFont system_font) {
   return SystemFonts::Instance()->GetFont(system_font);
 }
 
-NativeFont AdjustExistingSystemFont(NativeFont existing_font,
-                                    const FontAdjustment& font_adjustment) {
-  LOGFONT logfont;
-  auto result = GetObject(existing_font, sizeof(logfont), &logfont);
-  DCHECK(result);
-
-  // Make the necessary adjustments.
-  SystemFonts::AdjustLOGFONT(font_adjustment, &logfont);
-
-  // Cap at minimum font size.
-  logfont.lfHeight = SystemFonts::AdjustFontSize(logfont.lfHeight, 0);
-
-  // Create the Font object.
-  return ::CreateFontIndirect(&logfont);
-}
-
 int AdjustFontSize(int lf_height, int size_delta) {
   return SystemFonts::AdjustFontSize(lf_height, size_delta);
 }
