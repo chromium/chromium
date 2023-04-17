@@ -212,8 +212,9 @@ bool IsCrossOriginWithAnyParent(content::RenderFrameHost* render_frame_host) {
   return false;
 }
 
-// Helper to get permission policy header policy for the top-level frame that
-// render_frame_host is a descendant of.
+// Helper to get permission policy header policy for the top-level frame.
+// render_frame_host could be the top-level frame or a descendant of top-level
+// frame.
 PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::PermissionsPolicyFeature feature) {
@@ -1539,6 +1540,29 @@ void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
   RecordTopLevelPermissionsHeaderPolicy(
       content_settings_type, base::StrCat({histogram, ".TopLevelHeaderPolicy"}),
       render_frame_host);
+}
+
+// static
+void PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
+  static constexpr ContentSettingsType kContentSettingsTypesForMetrics[] = {
+      ContentSettingsType::GEOLOCATION, ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::MEDIASTREAM_MIC};
+
+  for (const auto content_settings_type : kContentSettingsTypesForMetrics) {
+    const auto feature =
+        PermissionUtil::GetPermissionsPolicyFeature(content_settings_type);
+    DCHECK(feature.has_value());
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Permissions.Experimental.PageLoad.",
+             PermissionUtil::GetPermissionString(content_settings_type),
+             ".TopLevelHeaderPolicy"}),
+        GetTopLevelPermissionHeaderPolicyForUMA(render_frame_host,
+                                                feature.value()),
+        PermissionHeaderPolicyForUMA::NUM);
+  }
 }
 
 }  // namespace permissions

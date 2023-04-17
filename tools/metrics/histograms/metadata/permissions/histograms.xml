@@ -559,6 +559,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.Experimental.PageLoad.{PermissionType}.TopLevelHeaderPolicy"
+    enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a navigation finished in a primary main frame. Records
+    what type of permission header policy the top-level document defined for the
+    feature corresponding to {PermissionType} .
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
+<histogram
     name="Permissions.Experimental.Usage.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
     enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
   <owner>tungnh@chromium.org</owner>

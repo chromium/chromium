@@ -458,7 +458,94 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
                               0);
 }
 
-TEST_P(PermissionsDelegationUmaUtilTest, CrossOriginFrame) {
+TEST_P(PermissionsDelegationUmaUtilTest, TopLevelFrame) {
+  auto type = GetParam().type;
+  std::string permission_string = PermissionUtil::GetPermissionString(type);
+  // The histogram values should match with the ones defined in
+  // |permission_uma_util.cc|
+  std::string kPermissionsPolicyHeaderHistogramName =
+      base::StrCat({"Permissions.Experimental.PageLoad.", permission_string,
+                    ".TopLevelHeaderPolicy"});
+
+  base::HistogramTester histograms;
+  auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
+  auto feature = PermissionUtil::GetPermissionsPolicyFeature(type);
+  blink::ParsedPermissionsPolicy top_policy;
+  if (feature.has_value() &&
+      (GetParam().matches_all_origins || !GetParam().origins.empty())) {
+    top_policy = CreatePermissionsPolicy(
+        GetParam().feature_overriden.has_value()
+            ? GetParam().feature_overriden.value()
+            : feature.value(),
+        GetParam().origins, GetParam().matches_all_origins);
+  }
+
+  if (!top_policy.empty()) {
+    RefreshAndSetPermissionsPolicy(&main_frame, top_policy);
+  }
+
+  histograms.ExpectTotalCount(kPermissionsPolicyHeaderHistogramName, 0);
+
+  PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
+      main_frame);
+  EXPECT_THAT(
+      histograms.GetAllSamples(kPermissionsPolicyHeaderHistogramName),
+      testing::ElementsAre(base::Bucket(
+          static_cast<int>(GetParam().expected_configuration.value()), 1)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TopLevelFrame,
+    PermissionsDelegationUmaUtilTest,
+    testing::Values(
+        PermissionsDelegationTestConfig{
+            ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,
+            /*feature_overriden*/ absl::nullopt,
+            /*matches_all_origins*/ true,
+            /*origins*/ {},
+            PermissionHeaderPolicyForUMA::FEATURE_ALLOWLIST_IS_WILDCARD},
+
+        PermissionsDelegationTestConfig{
+            ContentSettingsType::GEOLOCATION,
+            PermissionAction::GRANTED,
+            /*feature_overriden*/ absl::nullopt,
+            /*matches_all_origins*/ false,
+            {std::string(kTopLevelUrl)},
+            PermissionHeaderPolicyForUMA::
+                FEATURE_ALLOWLIST_EXPLICITLY_MATCHES_ORIGIN},
+
+        PermissionsDelegationTestConfig{
+            ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,
+            /*feature_overriden*/ absl::nullopt,
+            /*matches_all_origins*/ false,
+            /*origins*/ {},
+            PermissionHeaderPolicyForUMA::HEADER_NOT_PRESENT_OR_INVALID},
+
+        PermissionsDelegationTestConfig{
+            ContentSettingsType::GEOLOCATION,
+            PermissionAction::GRANTED,
+            absl::make_optional<blink::mojom::PermissionsPolicyFeature>(
+                blink::mojom::PermissionsPolicyFeature::kCamera),
+            /*matches_all_origins*/ false,
+            {std::string(kTopLevelUrl)},
+            PermissionHeaderPolicyForUMA::FEATURE_NOT_PRESENT},
+
+        PermissionsDelegationTestConfig{
+            ContentSettingsType::GEOLOCATION,
+            PermissionAction::GRANTED,
+            /*feature_overriden*/ absl::nullopt,
+            /*matches_all_origins*/ false,
+            {std::string(kCrossOriginFrameUrl)},
+            PermissionHeaderPolicyForUMA::
+                FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN}));
+
+class CrossFramePermissionsDelegationUmaUtilTest
+    : public PermissionsDelegationUmaUtilTest {
+ public:
+  CrossFramePermissionsDelegationUmaUtilTest() = default;
+};
+
+TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
   auto type = GetParam().type;
   std::string permission_string = PermissionUtil::GetPermissionString(type);
   // The histogram values should match with the ones defined in
@@ -557,7 +644,7 @@ TEST_P(PermissionsDelegationUmaUtilTest, CrossOriginFrame) {
 
 INSTANTIATE_TEST_SUITE_P(
     CrossOriginFrame,
-    PermissionsDelegationUmaUtilTest,
+    CrossFramePermissionsDelegationUmaUtilTest,
     testing::Values(
         PermissionsDelegationTestConfig{
             ContentSettingsType::GEOLOCATION, PermissionAction::GRANTED,

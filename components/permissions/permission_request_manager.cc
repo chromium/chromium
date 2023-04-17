@@ -438,6 +438,10 @@ void PermissionRequestManager::DidFinishNavigation(
     return;
   }
 
+  permissions::PermissionUmaUtil::
+      RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
+          web_contents()->GetPrimaryMainFrame());
+
   if (!pending_permission_requests_.IsEmpty() || IsRequestInProgress()) {
     // |pending_permission_requests_| and |requests_| will be deleted below,
     // which might be a problem for back-forward cache — the page might be
