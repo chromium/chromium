@@ -187,7 +187,7 @@ class VectorIconGallery : public View, public TextfieldController {
   void GenerateAllIconInFolder(const base::FilePath& path) {
     image_view_container_->RemoveAllChildViews();
 
-    int nCols = 18;
+    int nCols = image_view_container_->width() / size_;
     int kColumnWidth = size_;
     views::TableLayout* layout = image_view_container_->SetLayoutManager(
         std::make_unique<views::TableLayout>());
@@ -198,7 +198,7 @@ class VectorIconGallery : public View, public TextfieldController {
                         kColumnWidth);
     }
 
-    int nRows = 10;
+    int nRows = image_view_container_->height() / size_;
     for (int i = 0; i < nRows; ++i) {
       layout->AddRows(1, TableLayout::kFixedSize);
     }
@@ -215,7 +215,6 @@ class VectorIconGallery : public View, public TextfieldController {
         count++;
         std::string file_content;
         base::ReadFileToString(file, &file_content);
-        file = file_iter.Next();
 
         // Skip over comments.
         // This handles very basic cases of // and /*. More complicated edge
@@ -237,6 +236,7 @@ class VectorIconGallery : public View, public TextfieldController {
         icon_view->SetImage(
             gfx::CreateVectorIconFromSource(file_content, size_, color_));
         icon_view->SetTooltipText(file.BaseName().AsUTF16Unsafe());
+        file = file_iter.Next();
       }
     }
     InvalidateLayout();
