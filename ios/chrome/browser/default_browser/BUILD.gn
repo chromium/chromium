@@ -18,7 +18,6 @@ source_set("utils") {
     "//components/sync/driver",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/settings/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/public/features",
   ]
