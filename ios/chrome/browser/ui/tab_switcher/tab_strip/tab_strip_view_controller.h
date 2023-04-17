@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
 
 @class TabStripMediator;
-@protocol TabFaviconDataSource;
 @protocol TabStripConsumerDelegate;
 
 // ViewController for the TabStrip. This ViewController is contained by
@@ -19,7 +18,6 @@
 @interface TabStripViewController
     : UICollectionViewController <TabStripConsumer>
 
-@property(nonatomic, weak) id<TabFaviconDataSource> faviconDataSource;
 @property(nonatomic, weak) id<TabStripConsumerDelegate> delegate;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

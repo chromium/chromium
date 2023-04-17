@@ -18,7 +18,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
-#import "components/favicon/ios/web_favicon_driver.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
@@ -1019,42 +1018,6 @@ void RecordTabGridCloseTabsCount(int count) {
           completion(image);
         });
   }
-}
-
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion {
-  web::WebState* webState =
-      GetWebState(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = identifier,
-                                     });
-  if (!webState) {
-    completion(nil);
-    return;
-  }
-
-  // NTP tabs get no favicon.
-  if (IsUrlNtp(webState->GetVisibleURL())) {
-    completion(nil);
-    return;
-  }
-
-  // Use the page favicon if available.
-  favicon::FaviconDriver* faviconDriver =
-      favicon::WebFaviconDriver::FromWebState(webState);
-  if (faviconDriver) {
-    gfx::Image favicon = faviconDriver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      completion(favicon.ToUIImage());
-      return;
-    }
-  }
-
-  // Otherwise, set a default favicon.
-  UIImage* defaultFavicon =
-      webState->GetBrowserState()->IsOffTheRecord()
-          ? [UIImage imageNamed:@"default_world_favicon_incognito"]
-          : [UIImage imageNamed:@"default_world_favicon_regular"];
-  completion(defaultFavicon);
 }
 
 - (void)preloadSnapshotsForVisibleGridItems:

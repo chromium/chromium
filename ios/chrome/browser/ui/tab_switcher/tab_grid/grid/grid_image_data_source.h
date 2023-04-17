@@ -14,10 +14,6 @@
 // `identifier`. `completion` is called with the image if it exists.
 - (void)snapshotForIdentifier:(NSString*)identifier
                    completion:(void (^)(UIImage*))completion;
-// Requests the receiver to provide a favicon image corresponding to
-// `identifier`. `completion` is called with the image if it exists.
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion;
 
 // Asks the receiver to pre-fetch all of the snapshots for tabs that are
 // currently visible. Visible tabs identifiers are provided via

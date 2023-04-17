@@ -20,6 +20,8 @@ source_set("tab_switcher") {
 
   deps = [
     "//base",
+    "//components/favicon/ios",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/url",
     "//ios/web/public",

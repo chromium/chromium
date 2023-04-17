@@ -162,46 +162,6 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   [self populateConsumerItems];
 }
 
-#pragma mark - TabFaviconDataSource
-
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion {
-  web::WebState* webState = GetWebState(
-      _webStateList,
-      WebStateSearchCriteria{
-          .identifier = identifier,
-          .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
-      });
-  if (!webState) {
-    completion(nil);
-    return;
-  }
-
-  // NTP tabs get no favicon.
-  if (IsUrlNtp(webState->GetVisibleURL())) {
-    completion(nil);
-    return;
-  }
-
-  // Use the page favicon if available.
-  favicon::FaviconDriver* faviconDriver =
-      favicon::WebFaviconDriver::FromWebState(webState);
-  if (faviconDriver) {
-    gfx::Image favicon = faviconDriver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      completion(favicon.ToUIImage());
-      return;
-    }
-  }
-
-  // Otherwise, set a default favicon.
-  UIImage* defaultFavicon =
-      webState->GetBrowserState()->IsOffTheRecord()
-          ? [UIImage imageNamed:@"default_world_favicon_incognito"]
-          : [UIImage imageNamed:@"default_world_favicon_regular"];
-  completion(defaultFavicon);
-}
-
 #pragma mark - TabStripConsumerDelegate
 
 - (void)addNewItem {

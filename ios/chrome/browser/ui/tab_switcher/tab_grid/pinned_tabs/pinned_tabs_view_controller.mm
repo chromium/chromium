@@ -827,15 +827,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (item) {
     cell.itemIdentifier = item.identifier;
     cell.title = item.title;
+    [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
+      // Only update the icon if the cell is not already reused for another
+      // item.
+      if ([cell hasIdentifier:innerItem.identifier]) {
+        cell.icon = icon;
+      }
+    }];
     NSString* itemIdentifier = item.identifier;
-    [self.imageDataSource faviconForIdentifier:itemIdentifier
-                                    completion:^(UIImage* icon) {
-                                      // Only update the icon if the cell is not
-                                      // already reused for another item.
-                                      if ([cell hasIdentifier:itemIdentifier]) {
-                                        cell.icon = icon;
-                                      }
-                                    }];
     [self.imageDataSource
         snapshotForIdentifier:itemIdentifier
                    completion:^(UIImage* snapshot) {

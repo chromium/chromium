@@ -11,22 +11,18 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_multi_source_observation.h"
-#import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
-#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
-#import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -344,47 +340,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
           completion(image);
         });
   }
-}
-
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion {
-  web::WebState* webState =
-      GetWebState(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = identifier,
-                                         .pinned_state = PinnedState::kPinned,
-                                     });
-  if (!webState) {
-    completion(nil);
-    return;
-  }
-
-  // NTP tabs get the Chrome product favicon.
-  if (IsUrlNtp(webState->GetVisibleURL())) {
-    UIImage* chromeProductIcon = CustomSymbolWithPointSize(
-        kChromeProductSymbol, kPinnedCellFaviconSymbolPointSize);
-    completion(chromeProductIcon);
-    return;
-  }
-
-  // Use the page favicon if available.
-  favicon::FaviconDriver* faviconDriver =
-      favicon::WebFaviconDriver::FromWebState(webState);
-  if (faviconDriver) {
-    gfx::Image favicon = faviconDriver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      completion(favicon.ToUIImage());
-      return;
-    }
-  }
-
-  // Otherwise, set a default favicon.
-  NSString* symbolName = kGlobeSymbol;
-  if (@available(iOS 15, *)) {
-    symbolName = kGlobeAmericasSymbol;
-  }
-  UIImage* defaultFavicon =
-      DefaultSymbolWithPointSize(symbolName, kPinnedCellFaviconSymbolPointSize);
-  completion(defaultFavicon);
 }
 
 - (void)preloadSnapshotsForVisibleGridItems:

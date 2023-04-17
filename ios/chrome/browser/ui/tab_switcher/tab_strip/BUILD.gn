@@ -22,7 +22,6 @@ source_set("tab_strip") {
 source_set("tab_strip_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "tab_favicon_data_source.h",
     "tab_strip_cell.h",
     "tab_strip_cell.mm",
     "tab_strip_consumer.h",

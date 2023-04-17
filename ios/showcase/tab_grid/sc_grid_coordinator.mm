@@ -67,11 +67,6 @@
   completion([UIImage imageNamed:@"Sample-screenshot-portrait"]);
 }
 
-- (void)faviconForIdentifier:(NSString*)identifier
-                  completion:(void (^)(UIImage*))completion {
-  completion(nil);
-}
-
 - (void)preloadSnapshotsForVisibleGridItems:
     (NSSet<NSString*>*)visibleGridItems {
   // No-op here.

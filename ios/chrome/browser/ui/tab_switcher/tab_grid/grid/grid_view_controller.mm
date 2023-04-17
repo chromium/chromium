@@ -1694,9 +1694,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Configures `cell`'s title synchronously, and favicon and snapshot
-// asynchronously with information from `item`. Updates the `cell`'s theme to
-// this view controller's theme. This view controller becomes the delegate for
-// the cell.
+// asynchronously from `item`. Updates the `cell`'s theme to this view
+// controller's theme. This view controller becomes the delegate for the cell.
 - (void)configureCell:(GridCell*)cell withItem:(TabSwitcherItem*)item {
   DCHECK(cell);
   DCHECK(item);
@@ -1714,16 +1713,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   } else {
     cell.state = GridCellStateNotEditing;
   }
-  NSString* itemIdentifier = item.identifier;
-  [self.imageDataSource faviconForIdentifier:itemIdentifier
-                                  completion:^(UIImage* icon) {
-                                    // Only update the icon if the cell is not
-                                    // already reused for another item.
-                                    if ([cell hasIdentifier:itemIdentifier])
-                                      cell.icon = icon;
-                                  }];
+  [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
+    // Only update the icon if the cell is not already reused for another item.
+    if ([cell hasIdentifier:innerItem.identifier]) {
+      cell.icon = icon;
+    }
+  }];
 
   __weak __typeof(self) weakSelf = self;
+  NSString* itemIdentifier = item.identifier;
   [self.imageDataSource snapshotForIdentifier:itemIdentifier
                                    completion:^(UIImage* snapshot) {
                                      // Only update the icon if the cell is not
