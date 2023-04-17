@@ -9,10 +9,9 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -179,14 +178,10 @@ class AffordanceView : public views::View {
       bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
     }
 
-    bg_flags.setColor(is_activated
-                          ? DeprecatedGetControlsLayerColor(
-                                AshColorProvider::ControlsLayerType::
-                                    kControlBackgroundColorActive,
-                                kBackgroundColorAfterActivated)
-                          : DeprecatedGetBaseLayerColor(
-                                AshColorProvider::BaseLayerType::kOpaque,
-                                kBackgroundColorBeforeActivated));
+    const auto* color_provider = GetColorProvider();
+    bg_flags.setColor(color_provider->GetColor(
+        is_activated ? kColorAshControlBackgroundColorActive
+                     : kColorAshShieldAndBaseOpaque));
     canvas->DrawCircle(center_point, kBackgroundRadius, bg_flags);
 
     // Draw the arrow.
@@ -199,19 +194,14 @@ class AffordanceView : public views::View {
               is_rtl ? vector_icons::kForwardArrowIcon
                      : vector_icons::kBackArrowIcon,
               kArrowSize,
-              DeprecatedGetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kButtonIconColorPrimary,
-                  kArrowColorAfterActivated)),
+              color_provider->GetColor(kColorAshButtonIconColorPrimary)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     } else {
       canvas->DrawImageInt(
           gfx::CreateVectorIcon(
               is_rtl ? vector_icons::kForwardArrowIcon
                      : vector_icons::kBackArrowIcon,
-              kArrowSize,
-              DeprecatedGetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kButtonIconColor,
-                  kArrowColorBeforeActivated)),
+              kArrowSize, color_provider->GetColor(kColorAshButtonIconColor)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     }
   }

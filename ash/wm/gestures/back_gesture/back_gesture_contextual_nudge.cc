@@ -9,9 +9,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -247,12 +246,13 @@ class BackGestureContextualNudge::ContextualNudgeView
 
     // views::View:
     void OnPaint(gfx::Canvas* canvas) override {
+      const auto* color_provider = GetColorProvider();
       // Draw the circle.
       cc::PaintFlags circle_flags;
       circle_flags.setAntiAlias(true);
       circle_flags.setStyle(cc::PaintFlags::kFill_Style);
-      circle_flags.setColor(DeprecatedGetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kOpaque, kCircleColor));
+      circle_flags.setColor(
+          color_provider->GetColor(kColorAshShieldAndBaseOpaque));
 
       if (!chromeos::features::IsDarkLightModeEnabled()) {
         gfx::ShadowValues shadows;
@@ -286,8 +286,8 @@ class BackGestureContextualNudge::ContextualNudgeView
       cc::PaintFlags round_rect_flags;
       round_rect_flags.setStyle(cc::PaintFlags::kFill_Style);
       round_rect_flags.setAntiAlias(true);
-      round_rect_flags.setColor(DeprecatedGetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kOpaque, kLabelBackgroundColor));
+      round_rect_flags.setColor(
+          color_provider->GetColor(kColorAshShieldAndBaseOpaque));
       gfx::Rect label_bounds(label_->GetMirroredBounds());
       label_bounds.Inset(
           gfx::Insets::VH(-kLabelTopBottomInset, -kLabelCornerRadius));

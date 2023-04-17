@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_bubble.h"
-#include "ash/style/default_colors.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"

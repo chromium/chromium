@@ -14,8 +14,6 @@
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desks_util.h"

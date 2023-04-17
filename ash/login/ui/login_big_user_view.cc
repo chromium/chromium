@@ -7,7 +7,6 @@
 #include "ash/login/ui/login_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "components/account_id/account_id.h"
 #include "ui/compositor/layer.h"
