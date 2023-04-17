@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/display/privacy_screen_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -482,6 +483,33 @@ TEST_F(KeyboardCapabilityTest, TestHasCalculatorKey) {
   fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
                                           kKbdTopRowLayoutUnspecified);
   EXPECT_TRUE(keyboard_capability_->HasCalculatorKey(external_keyboard));
+}
+
+TEST_F(KeyboardCapabilityTest, TestHasPrivacyScreenKey) {
+  ui::InputDevice internal_keyboard_layout1(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  internal_keyboard_layout1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout1,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(
+      keyboard_capability_->HasPrivacyScreenKey(internal_keyboard_layout1));
+
+  ui::InputDevice internal_keyboard_drallion(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard2");
+  internal_keyboard_drallion.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_drallion,
+                                          kKbdTopRowLayoutDrallionTag);
+  EXPECT_FALSE(
+      keyboard_capability_->HasPrivacyScreenKey(internal_keyboard_drallion));
+
+  keyboard_capability_->SetPrivacyScreenSupportedForTesting(
+      /*is_supported=*/true);
+  EXPECT_FALSE(
+      keyboard_capability_->HasPrivacyScreenKey(internal_keyboard_layout1));
+  EXPECT_TRUE(
+      keyboard_capability_->HasPrivacyScreenKey(internal_keyboard_drallion));
 }
 
 class ModifierKeyTest : public KeyboardCapabilityTest,

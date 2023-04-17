@@ -223,6 +223,9 @@ AcceleratorAliasConverter::CreateReversedSixPackAliases(
 std::vector<ui::Accelerator>
 AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     const std::vector<ui::Accelerator>& accelerators) const {
+  const auto* keyboard_capability = Shell::Get()->keyboard_capability();
+  CHECK(keyboard_capability);
+
   std::vector<ui::Accelerator> filtered_accelerators;
   auto priority_keyboard = GetPriorityKeyboard();
 
@@ -230,9 +233,8 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     if (auto action_key = ui::KeyboardCapability::ConvertToTopRowActionKey(
             accelerator.key_code());
         action_key.has_value()) {
-      if (priority_keyboard &&
-          Shell::Get()->keyboard_capability()->HasTopRowActionKey(
-              *priority_keyboard, *action_key)) {
+      if (priority_keyboard && keyboard_capability->HasTopRowActionKey(
+                                   *priority_keyboard, *action_key)) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;
@@ -253,7 +255,7 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     }
 
     if (accelerator.key_code() == ui::VKEY_MODECHANGE) {
-      if (Shell::Get()->keyboard_capability()->HasGlobeKeyOnAnyKeyboard()) {
+      if (keyboard_capability->HasGlobeKeyOnAnyKeyboard()) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;
@@ -262,9 +264,14 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     // VKEY_MEDIA_LAUNCH_APP2 is the "Calculator" button on many external
     // keyboards.
     if (accelerator.key_code() == ui::VKEY_MEDIA_LAUNCH_APP2) {
-      if (Shell::Get()
-              ->keyboard_capability()
-              ->HasCalculatorKeyOnAnyKeyboard()) {
+      if (keyboard_capability->HasCalculatorKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    if (accelerator.key_code() == ui::VKEY_PRIVACY_SCREEN_TOGGLE) {
+      if (keyboard_capability->HasPrivacyScreenKeyOnAnyKeyboard()) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;

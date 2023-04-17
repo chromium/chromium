@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -71,6 +72,8 @@ class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
   void RemoveObserver(KeyboardCapability::Observer* observer) override {}
   bool TopRowKeysAreFKeys() const override { return false; }
   void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) override {}
+  bool IsPrivacyScreenSupported() const override { return false; }
+  void SetPrivacyScreenSupportedForTesting(bool is_supported) override {}
 };
 
 absl::optional<InputDevice> FindKeyboardWithId(int device_id) {
@@ -487,7 +490,14 @@ bool KeyboardCapability::TopRowKeysAreFKeys() const {
 
 void KeyboardCapability::SetTopRowKeysAsFKeysEnabledForTesting(
     bool enabled) const {
+  CHECK_IS_TEST();
   delegate_->SetTopRowKeysAsFKeysEnabledForTesting(enabled);  // IN-TEST
+}
+
+void KeyboardCapability::SetPrivacyScreenSupportedForTesting(
+    bool is_supported) const {
+  CHECK_IS_TEST();
+  delegate_->SetPrivacyScreenSupportedForTesting(is_supported);  // IN-TEST
 }
 
 // static
@@ -818,6 +828,23 @@ bool KeyboardCapability::HasCalculatorKeyOnAnyKeyboard() const {
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (HasCalculatorKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool KeyboardCapability::HasPrivacyScreenKey(
+    const InputDevice& keyboard) const {
+  return GetTopRowLayout(keyboard) ==
+             KeyboardTopRowLayout::kKbdTopRowLayoutDrallion &&
+         delegate_->IsPrivacyScreenSupported();
+}
+
+bool KeyboardCapability::HasPrivacyScreenKeyOnAnyKeyboard() const {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasPrivacyScreenKey(keyboard)) {
       return true;
     }
   }
