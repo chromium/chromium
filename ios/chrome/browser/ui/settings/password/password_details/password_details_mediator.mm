@@ -69,8 +69,8 @@ using base::SysNSStringToUTF16;
   // otherwise.
   BOOL _supportMoveToAccount;
 
-  // Password manager client.
-  raw_ptr<password_manager::PasswordManagerClient> _passwordManagerClient;
+  // Password manager client provider.
+  raw_ptr<PasswordManagerClientProvider> _passwordManagerClientProvider;
 
   // The BrowserState pref service.
   raw_ptr<PrefService> _prefService;
@@ -92,18 +92,18 @@ using base::SysNSStringToUTF16;
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)
-        initWithPasswords:
-            (const std::vector<password_manager::CredentialUIEntry>&)credentials
-              displayName:(NSString*)displayName
-     passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-              prefService:(PrefService*)prefService
-              syncService:(syncer::SyncService*)syncService
-     supportMoveToAccount:(BOOL)supportMoveToAccount
-    passwordManagerClient:
-        (password_manager::PasswordManagerClient*)passwordManagerClient {
+- (instancetype)initWithPasswords:
+                    (const std::vector<password_manager::CredentialUIEntry>&)
+                        credentials
+                      displayName:(NSString*)displayName
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+             supportMoveToAccount:(BOOL)supportMoveToAccount
+    passwordManagerClientProvider:
+        (PasswordManagerClientProvider*)passwordManagerClientProvider {
   DCHECK(manager);
-  DCHECK(passwordManagerClient);
+  DCHECK(passwordManagerClientProvider);
   DCHECK(!credentials.empty());
 
   self = [super init];
@@ -117,7 +117,7 @@ using base::SysNSStringToUTF16;
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, manager);
   _supportMoveToAccount = supportMoveToAccount;
-  _passwordManagerClient = passwordManagerClient;
+  _passwordManagerClientProvider = passwordManagerClientProvider;
   _prefService = prefService;
   _syncService = syncService;
 
@@ -225,7 +225,7 @@ using base::SysNSStringToUTF16;
   MovePasswordsToAccountStore(
       _manager->GetSavedPasswordsPresenter()->GetCorrespondingPasswordForms(
           *it),
-      _passwordManagerClient,
+      _passwordManagerClientProvider->GetAny(),
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
