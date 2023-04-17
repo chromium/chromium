@@ -37,7 +37,6 @@ _CROS_SI_FILE_ALLOWLIST = {
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
         'iostream.cpp:',  # TODO(crbug.com/973554): Remove.
         '000100',   # libc++ uses init_priority 100 for iostreams.
-        'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
     ],
     'nacl_helper_bootstrap': [],
 }
