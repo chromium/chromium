@@ -160,10 +160,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:chromium_afl",
-)
-
-build_recipe(
     name = "recipe:chromium/fuzz",
 )
 

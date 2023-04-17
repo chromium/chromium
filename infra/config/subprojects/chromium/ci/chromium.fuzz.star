@@ -203,7 +203,7 @@ ci.builder(
 
 ci.builder(
     name = "Afl Upload Linux ASan",
-    executable = "recipe:chromium_afl",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
