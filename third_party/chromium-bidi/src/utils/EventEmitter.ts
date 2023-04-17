@@ -30,7 +30,7 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
     type: Key,
     handler: Handler<Events[Key]>
   ): EventEmitter<Events>;
-  on(type: any, handler: any): EventEmitter<Events> {
+  on(type: any, handler: any): this {
     this.#emitter.on(type, handler);
     return this;
   }
@@ -60,7 +60,7 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
     type: Key,
     handler: Handler<Events[Key]>
   ): EventEmitter<Events>;
-  off(type: any, handler: any): EventEmitter<Events> {
+  off(type: any, handler: any): this {
     this.#emitter.off(type, handler);
     return this;
   }

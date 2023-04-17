@@ -124,7 +124,7 @@ export class MapperServer {
   #onDebugMessage = (debugMessageStr: string) => {
     try {
       const debugMessage = JSON.parse(debugMessageStr) as {
-        logType: string;
+        logType: LogType;
         messages: unknown[];
       };
 
@@ -184,9 +184,6 @@ export class MapperServer {
     );
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
-    if (!mapperCdpClient) {
-      throw new Error('Unable to connect to mapper CDP target');
-    }
 
     await mapperCdpClient.sendCommand('Runtime.enable');
 

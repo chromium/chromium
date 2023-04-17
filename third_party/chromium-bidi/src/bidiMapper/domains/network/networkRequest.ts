@@ -223,7 +223,7 @@ export class NetworkRequest {
       case 'parser':
       case 'script':
       case 'preflight':
-        return this.#requestWillBeSentEvent?.initiator.type;
+        return this.#requestWillBeSentEvent.initiator.type;
       default:
         return 'other';
     }

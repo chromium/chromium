@@ -229,12 +229,10 @@ export class SubscriptionManager {
       }
     }
 
-    const eventContextPairs: Array<
-      [
-        eventName: Session.SubscribeParametersEvent,
-        contextId: CommonDataTypes.BrowsingContext | null
-      ]
-    > = cartesianProduct(unrollEvents(events), contextIds);
+    const eventContextPairs: [
+      eventName: Session.SubscribeParametersEvent,
+      contextId: CommonDataTypes.BrowsingContext | null
+    ][] = cartesianProduct(unrollEvents(events), contextIds);
 
     // Assert all unsubscriptions are valid.
     // If any of the unsubscriptions are invalid, do not unsubscribe from anything.

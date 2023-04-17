@@ -56,7 +56,8 @@ module.exports = {
     // https://denar90.github.io/eslint.github.io/docs/rules/
     // Some rules use 'warn' in order to ease local development iteration.
     // keep-sorted start
-    "@typescript-eslint/explicit-member-accessibility": ["warn", {accessibility: 'no-public'}],
+    "@typescript-eslint/explicit-member-accessibility": ['warn', {accessibility: 'no-public'}],
+    '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
@@ -69,9 +70,11 @@ module.exports = {
     '@typescript-eslint/no-unsafe-argument': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-enum-comparison': 'warn',
     '@typescript-eslint/no-unsafe-member-access': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', {argsIgnorePattern: '^_'}],
+    '@typescript-eslint/prefer-return-this-type': 'warn',
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/restrict-template-expressions': 'warn',
     '@typescript-eslint/switch-exhaustiveness-check': 'error',

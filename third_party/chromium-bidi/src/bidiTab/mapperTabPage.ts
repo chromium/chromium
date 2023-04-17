@@ -52,10 +52,10 @@ function findOrCreateTypeLogContainer(logType: string): HTMLElement {
 
 export function generatePage() {
   // If run not in browser (e.g. unit test), do nothing.
-  if (!globalThis.document?.documentElement) {
+  if (!globalThis.document.documentElement) {
     return;
   }
-  window.document.documentElement.innerHTML = mapperPageSource;
+  globalThis.document.documentElement.innerHTML = mapperPageSource;
 
   // Create main log containers in proper order.
   findOrCreateTypeLogContainer(LogType.system);
@@ -66,7 +66,7 @@ export function generatePage() {
 
 export function log(logType: LogType, ...messages: unknown[]) {
   // If run not in browser (e.g. unit test), do nothing.
-  if (!globalThis.document?.documentElement) {
+  if (!globalThis.document.documentElement) {
     return;
   }
 
