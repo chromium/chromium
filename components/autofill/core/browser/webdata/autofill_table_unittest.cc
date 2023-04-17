@@ -173,8 +173,8 @@ class AutofillTableProfileTest
 
   // Creates an `AutofillProfile` with `profile_source()` as its source.
   AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(base::GenerateUuid(), /*origin=*/std::string(),
-                           profile_source());
+    return AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           /*origin=*/std::string(), profile_source());
   }
 
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
@@ -994,10 +994,12 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 // Not part of the `AutofillTableProfileTest` fixture, as it doesn't benefit
 // from parameterization on the `profile_source()`.
 TEST_F(AutofillTableTest, GetAutofillProfiles) {
-  AutofillProfile local_profile(base::GenerateUuid(), "",
-                                AutofillProfile::Source::kLocalOrSyncable);
-  AutofillProfile account_profile(base::GenerateUuid(), "",
-                                  AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), "",
+      AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile account_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), "",
+      AutofillProfile::Source::kAccount);
   EXPECT_TRUE(table_->AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_->AddAutofillProfile(account_profile));
 
@@ -1012,8 +1014,9 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
 
 // Tests that `RemoveAllAutofillProfiles()` cleares all kAccount profiles.
 TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
-  EXPECT_TRUE(table_->AddAutofillProfile(AutofillProfile(
-      base::GenerateUuid(), "", AutofillProfile::Source::kAccount)));
+  EXPECT_TRUE(table_->AddAutofillProfile(
+      AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(), "",
+                      AutofillProfile::Source::kAccount)));
 
   EXPECT_TRUE(
       table_->RemoveAllAutofillProfiles(AutofillProfile::Source::kAccount));
@@ -1027,7 +1030,7 @@ TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
 TEST_F(AutofillTableTest, IBAN) {
   // Add a valid IBAN.
   IBAN iban;
-  std::string guid = base::GenerateUuid();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   iban.set_guid(guid);
   iban.SetRawInfo(IBAN_VALUE, u"IE12 BOFI 9000 0112 3456 78");
   iban.set_nickname(u"My doctor's IBAN");
@@ -1048,7 +1051,7 @@ TEST_F(AutofillTableTest, IBAN) {
 
   // Add another valid IBAN.
   IBAN another_iban;
-  std::string another_guid = base::GenerateUuid();
+  std::string another_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   another_iban.set_guid(another_guid);
   another_iban.SetRawInfo(IBAN_VALUE, u"DE91 1000 0000 0123 4567 89");
   another_iban.set_nickname(u"My brother's IBAN");
