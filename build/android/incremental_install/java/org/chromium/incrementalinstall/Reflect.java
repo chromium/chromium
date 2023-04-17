@@ -4,11 +4,16 @@
 
 package org.chromium.incrementalinstall;
 
+import android.os.Build;
+
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Reflection helper methods.
@@ -79,12 +84,22 @@ final class Reflect {
 
     private static Field findField(Object instance, String name) throws NoSuchFieldException {
         boolean isStatic = instance instanceof Class;
-        Class<?> clazz = isStatic ? (Class<?>) instance :  instance.getClass();
+        Class<?> clazz = isStatic ? (Class<?>) instance : instance.getClass();
         for (; clazz != null; clazz = clazz.getSuperclass()) {
-            try {
-                return clazz.getDeclaredField(name);
-            } catch (NoSuchFieldException e) {
-                // Need to look in the super class.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                try {
+                    return clazz.getDeclaredField(name);
+                } catch (NoSuchFieldException e) {
+                    // Need to look in the super class.
+                }
+            } else {
+                List<Field> fields = isStatic ? HiddenApiBypass.getStaticFields(clazz)
+                                              : HiddenApiBypass.getInstanceFields(clazz);
+                for (Field field : fields) {
+                    if (field.getName().equals(name)) {
+                        return field;
+                    }
+                }
             }
         }
         throw new NoSuchFieldException("Field " + name + " not found in " + instance.getClass());

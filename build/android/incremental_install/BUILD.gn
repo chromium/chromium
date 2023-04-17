@@ -13,6 +13,7 @@ android_library("bootstrap_java") {
     "java/org/chromium/incrementalinstall/Reflect.java",
     "java/org/chromium/incrementalinstall/SecondInstrumentation.java",
   ]
+  deps = [ "third_party/AndroidHiddenApiBypass:hidden_api_bypass_java" ]
   jacoco_never_instrument = true
   no_build_hooks = true
 }

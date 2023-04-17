@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Approved by chrome-security@ only for use by incremental install.
+visibility = [
+  ":*",
+  "//build/android/incremental_install:*",
+]
+
+android_library("stub_java") {
+  sources = [ "stub/src/main/java/dalvik/system/VMRuntime.java" ]
+  jar_excluded_patterns = [ "*" ]
+}
+
+android_library("hidden_api_bypass_java") {
+  sources = [
+    "library/src/main/java/org/lsposed/hiddenapibypass/Helper.java",
+    "library/src/main/java/org/lsposed/hiddenapibypass/HiddenApiBypass.java",
+    "local_modifications/org/lsposed/hiddenapibypass/library/BuildConfig.java",
+  ]
+  deps = [
+    ":stub_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+  ]
+  jacoco_never_instrument = true
+}
