@@ -290,13 +290,10 @@ class BookmarkManagerMediator
             new SyncStateChangedListener() {
                 @Override
                 public void syncStateChanged() {
-                    // If the bookmark model isn't loaded, we will set the top level folders on
-                    // load (see onBookmarkModelLoaded method below).
-                    if (!mBookmarkModel.isBookmarkModelLoaded()) {
-                        return;
+                    // Can only populate when the model is loaded, which will also trigger this.
+                    if (mBookmarkModel.isBookmarkModelLoaded()) {
+                        populateTopLevelFoldersList();
                     }
-                    mTopLevelFolders.clear();
-                    populateTopLevelFoldersList();
                 }
             };
 
@@ -994,6 +991,7 @@ class BookmarkManagerMediator
     }
 
     private void populateTopLevelFoldersList() {
+        mTopLevelFolders.clear();
         mTopLevelFolders.addAll(BookmarkUtils.populateTopLevelFolders(mBookmarkModel));
     }
 
