@@ -4993,7 +4993,7 @@
       },
       'Linux Tests (Wayland)': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
          ],
         'args': [
           '--no-xvfb',

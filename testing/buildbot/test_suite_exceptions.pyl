@@ -1047,6 +1047,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
         ],
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1412588): Move to Jammy.
+              'os': 'Ubuntu-18.04',
+            },
+          ],
           'shards': 20,
           'quickrun_shards': 24,
         },
