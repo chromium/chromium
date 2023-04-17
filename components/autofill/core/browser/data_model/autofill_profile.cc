@@ -222,7 +222,8 @@ AutofillProfile::AutofillProfile(const std::string& guid,
 
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
-    : AutofillDataModel(base::GenerateUuid(), std::string()),
+    : AutofillDataModel(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                        std::string()),
       company_(this),
       phone_number_(this),
       server_id_(server_id),
@@ -233,7 +234,9 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
 }
 
 AutofillProfile::AutofillProfile(Source source)
-    : AutofillProfile(base::GenerateUuid(), std::string(), source) {}
+    : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                      std::string(),
+                      source) {}
 
 AutofillProfile::AutofillProfile()
     : AutofillProfile(Source::kLocalOrSyncable) {}
@@ -1164,7 +1167,7 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   AutofillProfile account_profile = *this;
   // Since GUIDs are assumed to be unique across all profile sources, a new GUID
   // is assigned.
-  account_profile.set_guid(base::GenerateUuid());
+  account_profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   account_profile.source_ = Source::kAccount;
   // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
   account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;

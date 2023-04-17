@@ -107,29 +107,34 @@ TEST(CreditCardTest, LabelSummary) {
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
-  CreditCard credit_card0(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   EXPECT_EQ(std::u16string(), credit_card0.Label());
 
   // Case 00: Empty credit card with empty strings.
-  CreditCard credit_card00(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card00(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
   EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card00.Label());
 
   // Case 1: No credit card number.
-  CreditCard credit_card1(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
   EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card1.Label());
 
   // Case 1.1: No credit card number, but has nickname.
-  CreditCard credit_card11(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card11(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card11.SetNickname(valid_nickname);
   EXPECT_EQ(valid_nickname, credit_card11.Label());
 
   // Case 2: No month.
-  CreditCard credit_card2(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
@@ -138,7 +143,8 @@ TEST(CreditCardTest, LabelSummary) {
             credit_card2.Label());
 
   // Case 3: No year.
-  CreditCard credit_card3(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
@@ -147,7 +153,8 @@ TEST(CreditCardTest, LabelSummary) {
             credit_card3.Label());
 
   // Case 4: Have everything except nickname.
-  CreditCard credit_card4(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
@@ -156,7 +163,8 @@ TEST(CreditCardTest, LabelSummary) {
             credit_card4.Label());
 
   // Case 5: Very long credit card
-  CreditCard credit_card5(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card5(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
@@ -167,7 +175,8 @@ TEST(CreditCardTest, LabelSummary) {
             credit_card5.Label());
 
   // Case 6: Have everything including nickname.
-  CreditCard credit_card6(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card6(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card6, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   credit_card6.SetNickname(valid_nickname);
@@ -182,25 +191,29 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
-  CreditCard credit_card0(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
             credit_card0.NetworkAndLastFourDigits());
 
   // Case 00: Empty credit card with empty strings.
-  CreditCard credit_card00(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card00(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
             credit_card00.NetworkAndLastFourDigits());
 
   // Case 1: No credit card number.
-  CreditCard credit_card1(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
             credit_card1.NetworkAndLastFourDigits());
 
   // Case 1.1: No credit card number, but has nickname.
-  CreditCard credit_card11(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card11(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card11.SetNickname(valid_nickname);
@@ -208,7 +221,8 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
             credit_card11.NetworkAndLastFourDigits());
 
   // Case 2: No month.
-  CreditCard credit_card2(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
@@ -216,7 +230,8 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
             credit_card2.NetworkAndLastFourDigits());
 
   // Case 3: No year.
-  CreditCard credit_card3(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
@@ -224,7 +239,8 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
             credit_card3.NetworkAndLastFourDigits());
 
   // Case 4: Have everything except nickname.
-  CreditCard credit_card4(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
@@ -232,7 +248,8 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
             credit_card4.NetworkAndLastFourDigits());
 
   // Case 5: Very long credit card
-  CreditCard credit_card5(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card5(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
@@ -242,7 +259,8 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
             credit_card5.NetworkAndLastFourDigits());
 
   // Case 6: Have everything including nickname.
-  CreditCard credit_card6(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card6(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card6, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   credit_card6.SetNickname(valid_nickname);
@@ -255,14 +273,16 @@ TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
   std::u16string valid_nickname = u"My Visa Card";
 
   // Case 1: No credit card number but has nickname. Only return nickname.
-  CreditCard credit_card1(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2020",
                           "1");
   credit_card1.SetNickname(valid_nickname);
   EXPECT_EQ(valid_nickname, credit_card1.NicknameAndLastFourDigitsForTesting());
 
   // Case 2: Have everything.
-  CreditCard credit_card2(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2020", "1");
   credit_card2.SetNickname(valid_nickname);
@@ -280,7 +300,8 @@ TEST(CreditCardTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableCardProductName);
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -299,7 +320,8 @@ TEST(
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableCardProductName);
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -320,7 +342,8 @@ TEST(CreditCardTest,
 
   std::u16string product_description = u"ABC bank XYZ card";
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -343,7 +366,8 @@ TEST(
 
   std::u16string product_description = u"ABC bank XYZ card";
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -365,7 +389,8 @@ TEST(CreditCardTest,
 
   std::u16string valid_nickname = u"My Visa Card";
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -387,7 +412,8 @@ TEST(CreditCardTest,
 
   std::u16string customized_nickname = u"My grocery shopping Visa card";
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -410,7 +436,8 @@ TEST(CreditCardTest,
 
   int obfuscation_length = 2;
 
-  CreditCard credit_card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
@@ -422,12 +449,14 @@ TEST(CreditCardTest,
 }
 
 TEST(CreditCardTest, AssignmentOperator) {
-  CreditCard a(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               test::kEmptyOrigin);
   test::SetCreditCardInfo(&a, "John Dillinger", "123456789012", "01", "2010",
                           "1");
 
   // Result of assignment should be logically equal to the original profile.
-  CreditCard b(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               test::kEmptyOrigin);
   b = a;
   EXPECT_EQ(a, b);
 
@@ -557,7 +586,8 @@ class SetExpirationYearFromStringTest
 
 TEST_P(SetExpirationYearFromStringTest, SetExpirationYearFromString) {
   auto test_case = GetParam();
-  CreditCard card(base::GenerateUuid(), "some origin");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "some origin");
   card.SetExpirationYearFromString(ASCIIToUTF16(test_case.expiration_year));
 
   EXPECT_EQ(test_case.expected_year, card.expiration_year())
@@ -589,7 +619,8 @@ class SetExpirationDateFromStringTest
 
 TEST_P(SetExpirationDateFromStringTest, SetExpirationDateFromString) {
   auto test_case = GetParam();
-  CreditCard card(base::GenerateUuid(), "some origin");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "some origin");
   card.SetExpirationDateFromString(ASCIIToUTF16(test_case.expiration_date));
 
   EXPECT_EQ(test_case.expected_month, card.expiration_month());
@@ -634,9 +665,10 @@ INSTANTIATE_TEST_SUITE_P(
         SetExpirationDateFromStringTestCase{"05_2045", 0, 0}));
 
 TEST(CreditCardTest, Copy) {
-  CreditCard a(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               test::kEmptyOrigin);
   test::SetCreditCardInfo(&a, "John Dillinger", "123456789012", "01", "2010",
-                          base::GenerateUuid());
+                          base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   // Clone should be logically equal to the original.
   CreditCard b(a);
@@ -667,14 +699,16 @@ class IsLocalDuplicateOfServerCardTest
 
 TEST_P(IsLocalDuplicateOfServerCardTest, IsLocalDuplicateOfServerCard) {
   auto test_case = GetParam();
-  CreditCard a(base::GenerateUuid(), std::string());
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
   a.set_record_type(test_case.first_card_record_type);
   test::SetCreditCardInfo(
       &a, test_case.first_card_name, test_case.first_card_number,
       test_case.first_card_exp_mo, test_case.first_card_exp_yr,
       test_case.first_billing_address_id);
 
-  CreditCard b(base::GenerateUuid(), std::string());
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
   b.set_record_type(test_case.second_card_record_type);
   test::SetCreditCardInfo(
       &b, test_case.second_card_name, test_case.second_card_number,
@@ -728,8 +762,10 @@ INSTANTIATE_TEST_SUITE_P(
             "2", nullptr, false}));
 
 TEST(CreditCardTest, MatchingCardDetails) {
-  CreditCard a(base::GenerateUuid(), std::string());
-  CreditCard b(base::GenerateUuid(), std::string());
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
 
   // Empty cards have the same empty number.
   EXPECT_TRUE(a.MatchingCardDetails(b));
@@ -821,15 +857,17 @@ TEST(CreditCardTest, MatchingCardDetails) {
 }
 
 TEST(CreditCardTest, Compare) {
-  CreditCard a(base::GenerateUuid(), std::string());
-  CreditCard b(base::GenerateUuid(), std::string());
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
 
   // Empty cards are the same.
   EXPECT_EQ(0, a.Compare(b));
 
   // GUIDs don't count.
-  a.set_guid(base::GenerateUuid());
-  b.set_guid(base::GenerateUuid());
+  a.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_EQ(0, a.Compare(b));
 
   // Origins don't count.
@@ -908,14 +946,15 @@ TEST(CreditCardTest, IconResourceId) {
 TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
 
   // The new card has a different name, expiration date.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
@@ -932,7 +971,8 @@ TEST(CreditCardTest,
      UpdateFromImportedCard_UpdatedWithNameAndInvalidExpirationDateMonth) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -942,7 +982,7 @@ TEST(CreditCardTest,
   // |a| should be updated with |b|'s name and keep its original expiration
   // date.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"0");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
@@ -956,7 +996,8 @@ TEST(CreditCardTest,
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_UpdatedWithNameAndInvalidExpirationDateYear) {
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
 
@@ -967,7 +1008,7 @@ TEST(CreditCardTest,
   // |a| should be updated with |b|'s name and keep its original expiration
   // date.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"09");
@@ -984,7 +1025,8 @@ TEST(CreditCardTest,
      UpdateFromImportedCard_UpdatedWithEmptyNameAndValidExpirationDate) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -993,7 +1035,7 @@ TEST(CreditCardTest,
   // |a| should be updated with |b|'s expiration date and keep its original
   // name.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, std::u16string());
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
@@ -1010,7 +1052,8 @@ TEST(
     UpdateFromImportedCard_VerifiedCardNotUpdatedWithEmptyExpirationDateMonth) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
 
@@ -1019,7 +1062,7 @@ TEST(
   // Empty expiration date month set for |b| and original card verified.
   // |a| should be unchanged.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   a.set_origin("Chrome settings");
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
@@ -1035,7 +1078,8 @@ TEST(
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_VerifiedCardNotUpdatedWithEmptyExpirationDateYear) {
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1043,7 +1087,7 @@ TEST(CreditCardTest,
   // Empty expiration date year set for |b| and original card verified.
   // |a| should be unchanged.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   a.set_origin("Chrome settings");
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
@@ -1059,7 +1103,8 @@ TEST(CreditCardTest,
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_VerifiedCardNotUpdatedWithDifferentName) {
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1067,7 +1112,7 @@ TEST(CreditCardTest,
   // New card is from empty origin and has an different name.
   // |a| should be unchanged.
   CreditCard b = a;
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   a.set_origin(kSettingsOrigin);
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
@@ -1085,7 +1130,8 @@ TEST(CreditCardTest,
      UpdateFromImportedCard_ExpiredVerifiedCardNotUpdatedWithDifferentName) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1096,7 +1142,7 @@ TEST(CreditCardTest,
   CreditCard b = a;
   a.set_origin("Chrome settings");
   a.SetExpirationYear(2010);
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
@@ -1113,7 +1159,8 @@ TEST(CreditCardTest,
      UpdateFromImportedCard_ExpiredVerifiedCardUpdatedWithSameName) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1124,7 +1171,7 @@ TEST(CreditCardTest,
   CreditCard b = a;
   a.set_origin("Chrome settings");
   a.SetExpirationYear(2010);
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
@@ -1138,7 +1185,8 @@ TEST(CreditCardTest,
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_ExpiredOriginalCardVerifiedUpdatedWithExpiredCard) {
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1149,7 +1197,7 @@ TEST(CreditCardTest,
   CreditCard b = a;
   a.set_origin("Chrome settings");
   a.SetExpirationYear(2010);
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_origin(test::kEmptyOrigin);
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2009");
@@ -1165,7 +1213,8 @@ TEST(CreditCardTest,
      UpdateFromImportedCard_VerifiedCardUpdatedWithVerifiedCard) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1175,7 +1224,7 @@ TEST(CreditCardTest,
   // |a|'s expiration date should be updated.
   CreditCard b = a;
   a.set_origin("Chrome settings");
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_origin(kSettingsOrigin);
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
@@ -1191,7 +1240,8 @@ TEST(CreditCardTest,
      UpdateFromImportedCard_VerifiedCardNotUpdatedWithDifferentCard) {
   const std::u16string kYearInFuture = GetYearInTheFuture();
 
-  CreditCard original_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
                           "09", "2017", "1");
   CreditCard a = original_card;
@@ -1201,7 +1251,7 @@ TEST(CreditCardTest,
   // |a|'s expiration date should be updated.
   CreditCard b = a;
   a.set_origin("Chrome settings");
-  b.set_guid(base::GenerateUuid());
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_origin(kSettingsOrigin);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
@@ -1252,7 +1302,8 @@ TEST(CreditCardTest, IsValidCardNumberAndExpiryDate) {
 }
 
 TEST(CreditCardTest, HasNonEmptyValidNickname) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
   test::SetCreditCardInfo(&card, "John Dillinger", "5105 1051 0510 5100", "01",
                           "2020", "1");
 
@@ -1295,7 +1346,8 @@ TEST(CreditCardTest, IsNicknameValid) {
 
 // Verify that we preserve exactly what the user typed for credit card numbers.
 TEST(CreditCardTest, SetRawInfoCreditCardNumber) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
 
   test::SetCreditCardInfo(&card, "Bob Dylan", "4321-5432-6543-xxxx", "07",
                           "2013", "1");
@@ -1304,7 +1356,8 @@ TEST(CreditCardTest, SetRawInfoCreditCardNumber) {
 
 // Verify that we can handle both numeric and named months.
 TEST(CreditCardTest, SetExpirationMonth) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
 
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"05");
   EXPECT_EQ(u"05", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
@@ -1335,7 +1388,8 @@ TEST(CreditCardTest, SetExpirationMonth) {
 // Verify that we set nickname with the processed string. We replace all tabs
 // and newlines with whitespace, and trim leading/trailing whitespace.
 TEST(CreditCardTest, SetNickname) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
 
   // Normal input nickname.
   card.SetNickname(u"Grocery card");
@@ -1359,7 +1413,8 @@ TEST(CreditCardTest, SetNickname) {
 }
 
 TEST(CreditCardTest, CreditCardType) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
 
   // The card type cannot be set directly.
   card.SetRawInfo(CREDIT_CARD_TYPE, u"Visa");
@@ -1371,7 +1426,8 @@ TEST(CreditCardTest, CreditCardType) {
 }
 
 TEST(CreditCardTest, CreditCardVerificationCode) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
 
   // The verification code cannot be set, as Chrome does not store this data.
   card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
@@ -1390,7 +1446,8 @@ TEST(CreditCardTest, IsDeletable) {
                     base::Days(1));
 
   // Created a card that has not been used since over the deletion threshold.
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
   card.set_use_date(kArbitraryTime);
 
   // Set the card to be expired before the threshold.
@@ -1445,7 +1502,8 @@ class CreditCardMatchingTypesTest
 
 TEST_P(CreditCardMatchingTypesTest, Cases) {
   auto test_case = GetParam();
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
   card.set_record_type(test_case.record_type);
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"4012888888881881");
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH,
@@ -1889,7 +1947,8 @@ INSTANTIATE_TEST_SUITE_P(
         GetCardNetworkTestCase{"6550511446391275", kDiscoverCard, true}));
 
 TEST(CreditCardTest, LastFourDigits) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
   ASSERT_EQ(std::u16string(), card.LastFourDigits());
   ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
                 std::u16string(), /*obfuscation_length=*/4),
@@ -1916,7 +1975,8 @@ TEST(CreditCardTest, LastFourDigits) {
 }
 
 TEST(CreditCardTest, FullDigitsForDisplay) {
-  CreditCard card(base::GenerateUuid(), "https://www.example.com/");
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
   ASSERT_EQ(std::u16string(), card.FullDigitsForDisplay());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
@@ -1951,7 +2011,8 @@ TEST(CreditCardTest, FullDigitsForDisplay) {
 }
 
 TEST(CreditCardTest, GetNonEmptyRawTypes) {
-  CreditCard credit_card(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "4234567890123456" /* Visa */, "01", "2999", "");
 

@@ -179,7 +179,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
   all_card_ptrs.reserve(kNumCards);
   for (size_t i = 0; i < kNumCards; ++i) {
     constexpr base::TimeDelta k30Days = base::Days(30);
-    all_card_data.emplace_back(base::GenerateUuid(), "https://example.com");
+    all_card_data.emplace_back(
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
+        "https://example.com");
     if (i < 5) {
       all_card_data.back().set_use_date(kNow - (i + i + 1) * k30Days);
       test::SetCreditCardInfo(&all_card_data.back(), "Clyde Barrow",
@@ -614,7 +616,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   auto MakeIBAN = [](const std::u16string& value,
                      const std::u16string& nickname) {
-    IBAN iban(base::GenerateUuid());
+    IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
     iban.set_value(value);
     if (!nickname.empty())
       iban.set_nickname(nickname);

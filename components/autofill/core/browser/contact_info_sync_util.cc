@@ -216,7 +216,7 @@ CreateContactInfoEntityDataFromAutofillProfile(
   // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
   // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
   // sure that syncing a profile through the wrong sync bridge fails early.
-  if (!base::IsValidUuid(profile.guid()) ||
+  if (!base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid() ||
       profile.source() != AutofillProfile::Source::kAccount) {
     return nullptr;
   }

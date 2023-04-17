@@ -118,7 +118,8 @@ class AutofillProfileComparatorTest : public testing::Test {
                                         const char* middle,
                                         const char* last,
                                         bool finalize = true) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     autofill::test::SetProfileInfo(&profile, first, middle, last, "", "", "",
                                    "", "", "", "", "", "");
     if (finalize)
@@ -128,7 +129,8 @@ class AutofillProfileComparatorTest : public testing::Test {
 
   AutofillProfile CreateProfileWithName(const NameInfo& name,
                                         bool finalize = true) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     profile.SetRawInfoWithVerificationStatus(
         NAME_FULL, name.GetRawInfo(NAME_FULL),
         name.GetVerificationStatus(NAME_FULL));
@@ -148,21 +150,24 @@ class AutofillProfileComparatorTest : public testing::Test {
   }
 
   AutofillProfile CreateProfileWithEmail(const char* email) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     autofill::test::SetProfileInfo(&profile, "", "", "", email, "", "", "", "",
                                    "", "", "", "");
     return profile;
   }
 
   AutofillProfile CreateProfileWithCompanyName(const char* company_name) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     autofill::test::SetProfileInfo(&profile, "", "", "", "", company_name, "",
                                    "", "", "", "", "", "");
     return profile;
   }
 
   AutofillProfile CreateProfileWithPhoneNumber(const char* phone_number) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "",
                                    "", "", phone_number);
     return profile;
@@ -174,7 +179,8 @@ class AutofillProfileComparatorTest : public testing::Test {
                                            const char* state,
                                            const char* zip,
                                            const char* country) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", line1, line2,
                                    city, state, zip, country, "");
     return profile;
@@ -183,7 +189,8 @@ class AutofillProfileComparatorTest : public testing::Test {
   AutofillProfile CreateProfileWithBirthdate(const char* day,
                                              const char* month,
                                              const char* year) {
-    AutofillProfile profile(base::GenerateUuid(), "http://www.example.com/");
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            "http://www.example.com/");
     profile.SetRawInfo(BIRTHDATE_DAY, base::UTF8ToUTF16(day));
     profile.SetRawInfo(BIRTHDATE_MONTH, base::UTF8ToUTF16(month));
     profile.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, base::UTF8ToUTF16(year));
@@ -698,7 +705,8 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableBirthdates) {
 }
 
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
-  AutofillProfile p(base::GenerateUuid(), "https://www.example.com/");
+  AutofillProfile p(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                    "https://www.example.com/");
   autofill::test::SetProfileInfo(&p, "Marion", "Mitchell", "Morrison",
                                  "marion@me.xyz", "Fox", "123 Zoo St.",
                                  "Unit 5", "Hollywood", "CA", "91601", "US",
@@ -1232,8 +1240,9 @@ TEST_F(AutofillProfileComparatorTest, CheckStatesMergeability) {
 // visible value works.
 TEST_F(AutofillProfileComparatorTest,
        ProfilesHaveDifferentSettingsVisibleValues) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1276,8 +1285,9 @@ TEST_F(AutofillProfileComparatorTest,
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1303,8 +1313,9 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1331,8 +1342,9 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1365,8 +1377,9 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
@@ -1398,8 +1411,9 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
 }
 
 TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "the city", "state", "zip", "US", "phone");
@@ -1442,8 +1456,9 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
 
 // Test the correct determination of a merge candidate.
 TEST_F(AutofillProfileComparatorTest, GetMergeCandidate) {
-  AutofillProfile existing_profile(base::GenerateUuid(),
-                                   "http://www.example.com/");
+  AutofillProfile existing_profile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      "http://www.example.com/");
   autofill::test::SetProfileInfo(
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");

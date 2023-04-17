@@ -2156,7 +2156,7 @@ AutofillProfile* BrowserAutofillManager::GetProfile(int unique_id) {
       suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
 
   std::string guid = profile_id.value();
-  if (base::IsValidUuid(guid)) {
+  if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
     return client()->GetPersonalDataManager()->GetProfileByGUID(guid);
   }
   return nullptr;

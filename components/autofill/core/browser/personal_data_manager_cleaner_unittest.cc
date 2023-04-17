@@ -101,24 +101,24 @@ TEST_F(PersonalDataManagerCleanerTest,
        DedupeProfiles_ProfilesToDelete_GuidsMergeMap) {
   // Create the profile for which to find duplicates. It has the highest
   // ranking score.
-  AutofillProfile* profile1 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile* profile1 = new AutofillProfile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetProfileInfo(profile1, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "12345678910");
   profile1->set_use_count(9);
 
   // Create a different profile that should not be deduped (different address).
-  AutofillProfile* profile2 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile* profile2 = new AutofillProfile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetProfileInfo(profile2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "Fox", "1234 Other Street", "",
                        "Springfield", "IL", "91601", "US", "12345678910");
   profile2->set_use_count(7);
 
   // Create a profile similar to profile1 which should be deduped.
-  AutofillProfile* profile3 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile* profile3 = new AutofillProfile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetProfileInfo(profile3, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "US", "12345678910");
@@ -126,8 +126,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create another different profile that should not be deduped (different
   // name).
-  AutofillProfile* profile4 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile* profile4 = new AutofillProfile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetProfileInfo(profile4, "Marjorie", "Jacqueline", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "12345678910");
@@ -136,8 +136,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   // Create another profile similar to profile1. Since that one has the lowest
   // ranking score, the result of the merge should be in this profile at the end
   // of the test.
-  AutofillProfile* profile5 =
-      new AutofillProfile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile* profile5 = new AutofillProfile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetProfileInfo(profile5, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "US", "12345678910");
@@ -199,21 +199,21 @@ TEST_F(PersonalDataManagerCleanerTest, UpdateCardsBillingAddressReference) {
   guids_merge_map.insert(std::pair<std::string, std::string>("D", "E"));
 
   // Create a credit card without a billing address id
-  CreditCard* credit_card0 =
-      new CreditCard(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard* credit_card0 = new CreditCard(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
 
   // Create cards that use A, D, E and F as their billing address id.
-  CreditCard* credit_card1 =
-      new CreditCard(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard* credit_card1 = new CreditCard(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   credit_card1->set_billing_address_id("A");
-  CreditCard* credit_card2 =
-      new CreditCard(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard* credit_card2 = new CreditCard(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   credit_card2->set_billing_address_id("D");
-  CreditCard* credit_card3 =
-      new CreditCard(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard* credit_card3 = new CreditCard(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   credit_card3->set_billing_address_id("E");
-  CreditCard* credit_card4 =
-      new CreditCard(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard* credit_card4 = new CreditCard(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   credit_card4->set_billing_address_id("F");
 
   // Add the credit cards to the database.
@@ -258,7 +258,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create a set of 3 profiles to be merged together.
   // Create a profile with a higher ranking score.
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -266,7 +267,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a medium ranking score.
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -274,7 +276,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a profile with a lower ranking score.
-  AutofillProfile profile3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -283,7 +286,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create a set of two profiles to be merged together.
   // Create a profile with a higher ranking score.
-  AutofillProfile profile4(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile4, "Marge", "B", "Simpson",
                        "marge.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -291,7 +295,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile4.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a lower ranking score.
-  AutofillProfile profile5(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile5(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile5, "Marge", "B", "Simpson",
                        "marge.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -299,7 +304,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile5.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a unique profile.
-  AutofillProfile profile6(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile6(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile6, "Bart", "J", "Simpson",
                        "bart.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -309,18 +315,21 @@ TEST_F(PersonalDataManagerCleanerTest,
   // Add three credit cards. Give them a ranking score so that they are
   // suggested in order (1, 2, 3). This will ensure a deterministic order for
   // verifying results.
-  CreditCard credit_card1(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
   credit_card1.set_use_count(10);
 
-  CreditCard credit_card2(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   credit_card2.set_use_count(5);
 
-  CreditCard credit_card3(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card3, "Bonnie Parker",
                           "5105105105105100" /* Mastercard */, "12", "2999",
                           "1");
@@ -389,7 +398,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
   // Create a profile with a higher ranking score.
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -397,7 +407,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a medium ranking score.
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -405,7 +416,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a profile with a lower ranking score.
-  AutofillProfile profile3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -474,7 +486,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
   // Create a verified profile with a higher ranking score.
-  AutofillProfile profile1(base::GenerateUuid(), kSettingsOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           kSettingsOrigin);
   test::SetProfileInfo(&profile1, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910",
@@ -484,7 +497,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile1.set_use_date(kMuchLaterTime);
 
   // Create a similar non verified profile with a medium ranking score.
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -492,7 +506,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile2.set_use_date(kSomeLaterTime);
 
   // Create a similar non verified profile with a lower ranking score.
-  AutofillProfile profile3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -547,7 +562,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
   // Create a profile to dedupe with a higher ranking score.
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -555,7 +571,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile1.set_use_date(kMuchLaterTime);
 
   // Create a similar non verified profile with a medium ranking score.
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -563,7 +580,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile2.set_use_date(kSomeLaterTime);
 
   // Create a similar verified profile with a lower ranking score.
-  AutofillProfile profile3(base::GenerateUuid(), kSettingsOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           kSettingsOrigin);
   test::SetProfileInfo(&profile3, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910",
@@ -612,7 +630,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
   // Create a profile to dedupe with a higher ranking score.
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -620,7 +639,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile1.set_use_date(kMuchLaterTime);
 
   // Create a similar verified profile with a medium ranking score.
-  AutofillProfile profile2(base::GenerateUuid(), kSettingsOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           kSettingsOrigin);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "",
@@ -631,7 +651,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   profile2.set_use_date(kSomeLaterTime);
 
   // Create a similar verified profile with a lower ranking score.
-  AutofillProfile profile3(base::GenerateUuid(), kSettingsOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           kSettingsOrigin);
   test::SetProfileInfo(&profile3, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910",
@@ -697,7 +718,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a Homer home profile with a higher ranking score than other Homer
   // profiles.
-  AutofillProfile Homer1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile Homer1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetProfileInfo(&Homer1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -706,7 +728,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a Homer home profile with a medium ranking score compared to other
   // Homer profiles.
-  AutofillProfile Homer2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile Homer2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetProfileInfo(&Homer2, "Homer", "Jay", "Simpson",
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -715,7 +738,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a Homer home profile with a lower ranking score than other Homer
   // profiles.
-  AutofillProfile Homer3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile Homer3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetProfileInfo(&Homer3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -723,7 +747,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Homer3.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a Homer work profile (different address).
-  AutofillProfile Homer4(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile Homer4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetProfileInfo(&Homer4, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "12 Nuclear Plant.", "",
                        "Springfield", "IL", "91601", "US", "9876543");
@@ -732,7 +757,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a Marge profile with a lower ranking score that other Marge
   // profiles.
-  AutofillProfile Marge1(base::GenerateUuid(), kSettingsOrigin);
+  AutofillProfile Marge1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kSettingsOrigin);
   test::SetProfileInfo(&Marge1, "Marjorie", "J", "Simpson",
                        "marge.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -741,7 +767,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
 
   // Create a verified Marge home profile with a lower ranking score that the
   // other Marge profile.
-  AutofillProfile Marge2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile Marge2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetProfileInfo(&Marge2, "Marjorie", "Jacqueline", "Simpson",
                        "marge.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
@@ -749,7 +776,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_MultipleDedupes) {
   Marge2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a Barney profile (guest user).
-  AutofillProfile Barney(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile Barney(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         test::kEmptyOrigin);
   test::SetProfileInfo(&Barney, "Barney", "", "Gumble", "barney.gumble@abc.com",
                        "ABC", "123 Other Street", "", "Springfield", "IL",
                        "91601", "", "");
@@ -837,7 +865,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_NopIfOneProfile) {
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
   // Create a profile to dedupe.
-  AutofillProfile profile(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
@@ -856,13 +885,15 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
 
   // Create a profile to dedupe.
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
 
   // Create a similar profile.
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -882,7 +913,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(1U, profiles.size());
 
   // Add another duplicate profile.
-  AutofillProfile profile3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Homer", "J", "Simpson",
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
@@ -909,11 +941,13 @@ TEST_F(PersonalDataManagerCleanerTest,
       features::kAutofillRemoveInaccessibleProfileValuesOnStartup);
 
   // Add a German and a US profile.
-  AutofillProfile profile0(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "DE", "12345678910");
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
                        "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
                        "Orlando", "FL", "32801", "US", "19482937549");
@@ -939,7 +973,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create unverified/disused/not-used-by-valid-credit-card
   // address(deletable).
-  AutofillProfile profile0(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile0, "Alice", "", "Delete", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 6", "Springfield", "IL",
                        "32801", "US", "15151231234");
@@ -947,12 +982,14 @@ TEST_F(PersonalDataManagerCleanerTest,
   AddProfileToPersonalDataManager(profile0);
 
   // Create unverified/disused/used-by-expired-credit-card address(deletable).
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Bob", "", "Delete", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 7", "Springfield", "IL",
                        "32801", "US", "15151231234");
   profile1.set_use_date(now - base::Days(400));
-  CreditCard credit_card0(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card0, "Bob",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
@@ -963,7 +1000,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   WaitForOnPersonalDataChanged();
   // Create verified/disused/not-used-by-valid-credit-card address(not
   // deletable).
-  AutofillProfile profile2(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile2, "Charlie", "", "Keep", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 8", "Springfield", "IL",
                        "32801", "US", "15151231234");
@@ -973,7 +1011,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create unverified/recently-used/not-used-by-valid-credit-card address(not
   // deletable).
-  AutofillProfile profile3(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile3, "Dave", "", "Keep", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 9", "Springfield", "IL",
                        "32801", "US", "15151231234");
@@ -981,7 +1020,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   AddProfileToPersonalDataManager(profile3);
 
   // Create unverified/disused/used-by-valid-credit-card address(not deletable).
-  AutofillProfile profile4(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile4, "Emma", "", "Keep", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 10", "Springfield", "IL",
                        "32801", "US", "15151231234");
@@ -1018,7 +1058,8 @@ TEST_F(PersonalDataManagerCleanerTest,
   auto now = AutofillClock::Now();
 
   // Create a recently used local card, it is expected to remain.
-  CreditCard credit_card1(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "Alice",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -1026,7 +1067,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create a local card that was expired 400 days ago, but recently used.
   // It is expected to remain.
-  CreditCard credit_card2(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card2, "Bob",
                           "378282246310006" /* American Express */, "04",
                           "1999", "1");
@@ -1034,7 +1076,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create a local card expired recently, and last used 400 days ago.
   // It is expected to remain.
-  CreditCard credit_card3(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   base::Time expiry_date = now - base::Days(32);
   base::Time::Exploded exploded;
   expiry_date.UTCExplode(&exploded);
@@ -1046,7 +1089,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 
   // Create a local card expired 400 days ago, and last used 400 days ago.
   // It is expected to be deleted.
-  CreditCard credit_card4(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card4, "David",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
@@ -1108,7 +1152,8 @@ TEST_F(PersonalDataManagerCleanerTest,
 // that the settings origins are untouched.
 TEST_F(PersonalDataManagerCleanerTest, ClearProfileNonSettingsOrigins) {
   // Create three profile with a nonsettings, non-empty origin.
-  AutofillProfile profile0(base::GenerateUuid(), "https://www.example.com");
+  AutofillProfile profile0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "https://www.example.com");
   test::SetProfileInfo(&profile0, "Marion0", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -1116,7 +1161,8 @@ TEST_F(PersonalDataManagerCleanerTest, ClearProfileNonSettingsOrigins) {
   profile0.set_use_count(10000);
   AddProfileToPersonalDataManager(profile0);
 
-  AutofillProfile profile1(base::GenerateUuid(), test::kEmptyOrigin);
+  AutofillProfile profile1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -1124,7 +1170,8 @@ TEST_F(PersonalDataManagerCleanerTest, ClearProfileNonSettingsOrigins) {
   profile1.set_use_count(1000);
   AddProfileToPersonalDataManager(profile1);
 
-  AutofillProfile profile2(base::GenerateUuid(), "1234");
+  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "1234");
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -1133,7 +1180,8 @@ TEST_F(PersonalDataManagerCleanerTest, ClearProfileNonSettingsOrigins) {
   AddProfileToPersonalDataManager(profile2);
 
   // Create a profile with a settings origin.
-  AutofillProfile profile3(base::GenerateUuid(), kSettingsOrigin);
+  AutofillProfile profile3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           kSettingsOrigin);
   test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -1167,21 +1215,24 @@ TEST_F(PersonalDataManagerCleanerTest, ClearProfileNonSettingsOrigins) {
 // but that the settings origins are untouched.
 TEST_F(PersonalDataManagerCleanerTest, ClearCreditCardNonSettingsOrigins) {
   // Create three cards with a non settings origin.
-  CreditCard credit_card0(base::GenerateUuid(), "https://www.example.com");
+  CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "https://www.example.com");
   test::SetCreditCardInfo(&credit_card0, "Bob0",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
   credit_card0.set_use_count(10000);
   personal_data_->AddCreditCard(credit_card0);
 
-  CreditCard credit_card1(base::GenerateUuid(), test::kEmptyOrigin);
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "Bob1",
                           "5105105105105101" /* Mastercard */, "04", "1999",
                           "1");
   credit_card1.set_use_count(1000);
   personal_data_->AddCreditCard(credit_card1);
 
-  CreditCard credit_card2(base::GenerateUuid(), "1234");
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          "1234");
   test::SetCreditCardInfo(&credit_card2, "Bob2",
                           "5105105105105102" /* Mastercard */, "04", "1999",
                           "1");
@@ -1189,7 +1240,8 @@ TEST_F(PersonalDataManagerCleanerTest, ClearCreditCardNonSettingsOrigins) {
   personal_data_->AddCreditCard(credit_card2);
 
   // Create a card with a settings origin.
-  CreditCard credit_card3(base::GenerateUuid(), kSettingsOrigin);
+  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          kSettingsOrigin);
   test::SetCreditCardInfo(&credit_card3, "Bob3",
                           "5105105105105103" /* Mastercard */, "04", "1999",
                           "1");

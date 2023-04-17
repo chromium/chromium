@@ -408,7 +408,7 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
 
 int AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
     const Suggestion::BackendId& cc_or_address_backend_id) {
-  if (!base::IsValidUuid(*cc_or_address_backend_id)) {
+  if (!base::Uuid::ParseCaseInsensitive(*cc_or_address_backend_id).is_valid()) {
     return 0;
   }
 

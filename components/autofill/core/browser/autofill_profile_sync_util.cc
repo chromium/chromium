@@ -75,7 +75,7 @@ ConvertProfileToSpecificsVerificationStatus(VerificationStatus profile_status) {
 
 bool IsAutofillProfileSpecificsValid(
     const AutofillProfileSpecifics& specifics) {
-  return base::IsValidUuid(specifics.guid());
+  return base::Uuid::ParseCaseInsensitive(specifics.guid()).is_valid();
 }
 
 }  // namespace
@@ -83,7 +83,7 @@ bool IsAutofillProfileSpecificsValid(
 std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     const AutofillProfile& entry) {
   // Validity of the guid is guaranteed by the database layer.
-  DCHECK(base::IsValidUuid(entry.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(entry.guid()).is_valid());
 
   // Profiles fall into two categories, kLocalOrSyncable and kAccount.
   // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
@@ -488,7 +488,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
 std::string GetStorageKeyFromAutofillProfile(const AutofillProfile& entry) {
   // Validity of the guid is guaranteed by the database layer.
-  DCHECK(base::IsValidUuid(entry.guid()));
+  DCHECK(base::Uuid::ParseCaseInsensitive(entry.guid()).is_valid());
   return entry.guid();
 }
 
