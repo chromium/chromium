@@ -56,8 +56,9 @@ FeedbackReport::FeedbackReport(
       reports_task_runner_(task_runner) {
   if (reports_path_.empty())
     return;
-  file_ = reports_path_.AppendASCII(kFeedbackReportFilenamePrefix +
-                                    base::GenerateUuid());
+  file_ = reports_path_.AppendASCII(
+      kFeedbackReportFilenamePrefix +
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   reports_task_runner_->PostTask(
       FROM_HERE,
