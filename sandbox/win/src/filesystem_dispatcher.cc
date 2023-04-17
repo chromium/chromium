@@ -90,6 +90,12 @@ bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
                                         uint32_t share_access,
                                         uint32_t create_disposition,
                                         uint32_t create_options) {
+  if ((create_options & FILE_VALID_OPTION_FLAGS) != create_options) {
+    // Do not support brokering calls with special information in
+    // NtCreateFile()'s ea_buffer (FILE_CONTAINS_EXTENDED_CREATE_INFORMATION).
+    ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
+    return false;
+  }
   if (!PreProcessName(name)) {
     // The path requested might contain a reparse point.
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
