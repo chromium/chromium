@@ -1503,9 +1503,9 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   const FrameDamageType damage_type = resolved_frame.GetFrameDamageType();
   if (damage_type == FrameDamageType::kFull) {
     resolved_pass.aggregation().has_damage = true;
-  } else if (damage_type == FrameDamageType::kFrame) {
-    resolved_pass.aggregation().has_damage =
-        render_pass.has_damage_from_contributing_content;
+  } else if (damage_type == FrameDamageType::kFrame &&
+             render_pass.has_damage_from_contributing_content) {
+    resolved_pass.aggregation().has_damage = true;
   }
 
   // The damage on the root render pass of the surface comes from damage
@@ -1599,10 +1599,6 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
                            accumulated_damage_in_child_space, result);
         child_rect = gfx::ScaleToEnclosingRect(child_rect, x_scale, y_scale);
         quad_damage_rect.Union(child_rect);
-      }
-
-      if (!quad_damage_rect.IsEmpty()) {
-        resolved_pass.aggregation().has_damage = true;
       }
 
       // Only check for root render pass on the root surface.
@@ -1702,9 +1698,6 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           PrewalkRenderPass(resolved_frame, child_resolved_pass, gfx::Rect(),
                             child_to_root_transform, &resolved_pass, result);
 
-      if (child_resolved_pass.aggregation().has_damage) {
-        resolved_pass.aggregation().has_damage = true;
-      }
     } else {
       // If this the next frame in sequence from last aggregation then per quad
       // damage_rects are valid so add them here. If not, either this is the
@@ -1746,6 +1739,11 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   }
 
   if (!damage_rect.IsEmpty()) {
+    // There is extra damage for this render pass. This is damage that the
+    // client that submitted this render pass didn't know about and isn't
+    // included in the surface damage or `has_damage_from_contributing_content`.
+    resolved_pass.aggregation().has_damage = true;
+
     if (render_pass.filters.HasFilterThatMovesPixels()) {
       // Expand the damage to cover entire |output_rect| if the |render_pass|
       // has pixel-moving foreground filter.
@@ -1835,12 +1833,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   damage_rect.Union(PrewalkRenderPass(resolved_frame, root_resolved_pass,
                                       damage_from_parent, gfx::Transform(),
                                       parent_pass, result));
-
-  // If this surface has damage from contributing content, then the render pass
-  // embedding this surface does as well.
-  if (parent_pass && root_resolved_pass.aggregation().has_damage) {
-    parent_pass->aggregation().has_damage = true;
-  }
 
   if (!damage_rect.IsEmpty()) {
     auto damage_rect_surface_space = damage_rect;

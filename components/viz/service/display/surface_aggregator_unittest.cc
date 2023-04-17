@@ -6641,67 +6641,81 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   }
 }
 
-// Tests that has_damage_from_contributing_content is aggregated correctly from
-// child surface quads even when the damage rect is empty.
-TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromChildDamageFlag) {
-  auto grand_child_sink = std::make_unique<CompositorFrameSinkSupport>(
-      nullptr, &manager_, kArbitraryMiddleFrameSinkId, /*is_root=*/false);
-  TestSurfaceIdAllocator grand_child_surface_id(
-      grand_child_sink->frame_sink_id());
-  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
-
+// Tests that has_damage_from_contributing_content is aggregated correctly when
+// non-root pass has damage but root pass has no damage due to non-root damage
+// being outside the root passes output_rect.
+TEST_F(SurfaceAggregatorValidSurfaceTest, RootPassNoDamage) {
+  constexpr gfx::Rect render_pass_rect(50, 0, 100, 100);
   {
-    CompositorFrame child_frame =
-        CompositorFrameBuilder()
-            .AddRenderPass(
-                RenderPassBuilder(kSurfaceSize)
-                    .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
-            .Build();
-    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
-                                       std::move(child_frame));
     CompositorFrame root_frame =
         CompositorFrameBuilder()
-            .AddRenderPass(RenderPassBuilder(kSurfaceSize)
-                               .AddSurfaceQuad(gfx::Rect(5, 5),
-                                               SurfaceRange(child_surface_id),
-                                               {.allow_merge = false}))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                       SkColors::kBlue))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                       SkColors::kGreen)
+                    .AddRenderPassQuad(render_pass_rect,
+                                       CompositorRenderPassId{1}))
             .Build();
     root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                       std::move(root_frame));
 
-    // On first frame there is no existing cache texture to worry about
-    // re-using, so we don't worry what this bool is set to.
+    // On first frame there is full damage so just verify the render passes have
+    // the expected quads.
     auto aggregated_frame = AggregateFrame(root_surface_id_);
-  }
-
-  // No Surface changed, so no damage should be given.
-  {
-    auto aggregated_frame = AggregateFrame(root_surface_id_);
-
     ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
-    EXPECT_FALSE(aggregated_frame.render_pass_list[1]
-                     ->has_damage_from_contributing_content);
+
+    auto& pass_list = aggregated_frame.render_pass_list;
+    ASSERT_THAT(pass_list[0]->quad_list,
+                ElementsAre(IsSolidColorQuad(SkColors::kBlue)));
+    ASSERT_THAT(pass_list[1]->quad_list,
+                ElementsAre(IsSolidColorQuad(SkColors::kGreen),
+                            IsAggregatedRenderPassQuad()));
   }
 
-  // A new child frame with HasDamageFromContributingContent set should damage
-  // the root render pass even if there is no damage.
   {
-    CompositorFrame child_frame =
+    // Submit a new CompositorFrame where the non-root render pass has a new
+    // quad and damage from it. This new quad is not going to end up in the
+    // root render pass because of CompositorRenderPassDrawQuad having an
+    // offset. The viz client sets `has_damage_from_contributing_content` false
+    // on the root render pass as a result.
+    gfx::Rect new_quad_rect(60, 60, 20, 20);
+    CompositorFrame root_frame =
         CompositorFrameBuilder()
             .AddRenderPass(
-                RenderPassBuilder(kSurfaceSize)
-                    .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen)
+                RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kBlue)
+                    .AddSolidColorQuad(new_quad_rect, SkColors::kRed)
                     .SetHasDamageFromContributingContent(true)
+                    .SetDamageRect(new_quad_rect))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                       SkColors::kGreen)
+                    .AddRenderPassQuad(render_pass_rect,
+                                       CompositorRenderPassId{1})
+                    .SetHasDamageFromContributingContent(false)
                     .SetDamageRect(gfx::Rect()))
             .Build();
-    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
-                                       std::move(child_frame));
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
 
     auto aggregated_frame = AggregateFrame(root_surface_id_);
-
     ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
-    EXPECT_TRUE(aggregated_frame.render_pass_list[1]
-                    ->has_damage_from_contributing_content);
+
+    // The non-root render pass has an extra quad now and it has damage.
+    auto& pass_list = aggregated_frame.render_pass_list;
+    ASSERT_THAT(pass_list[0]->quad_list,
+                ElementsAre(IsSolidColorQuad(SkColors::kBlue),
+                            IsSolidColorQuad(SkColors::kRed)));
+    EXPECT_TRUE(pass_list[0]->has_damage_from_contributing_content);
+
+    // Verify that the aggregated root render pass is marked as not having
+    // any damage still.
+    EXPECT_FALSE(pass_list[1]->has_damage_from_contributing_content);
   }
 }
 
