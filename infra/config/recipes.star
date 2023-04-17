@@ -116,11 +116,11 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:build_perf",
+    name = "recipe:chrome_build/build_perf",
 )
 
 build_recipe(
-    name = "recipe:build_perf_siso",
+    name = "recipe:chrome_build/build_perf_siso",
 )
 
 build_recipe(
