@@ -8,7 +8,6 @@
 #include <windows.h>
 
 #include "base/atomic_ref_count.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -95,8 +94,6 @@ bool DXGISharedHandleState::BeginAccessD3D11() {
 
   if (acquired_for_d3d12_) {
     DLOG(ERROR) << "Recursive BeginAccess not supported";
-    // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
-    base::debug::DumpWithoutCrashing();
     return false;
   }
   if (acquired_for_d3d11_count_ > 0) {
@@ -107,8 +104,6 @@ bool DXGISharedHandleState::BeginAccessD3D11() {
       dxgi_keyed_mutex_->AcquireSync(kDXGIKeyedMutexAcquireKey, INFINITE);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
-    // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
-    base::debug::DumpWithoutCrashing();
     return false;
   }
   acquired_for_d3d11_count_++;

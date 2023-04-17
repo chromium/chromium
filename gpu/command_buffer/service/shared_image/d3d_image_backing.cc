@@ -6,7 +6,6 @@
 
 #include <d3d11_3.h>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -966,11 +965,8 @@ void D3DImageBacking::EndAccessDawn(WGPUDevice device, WGPUTexture texture) {
 #endif
 
 bool D3DImageBacking::BeginAccessD3D11(bool write_access) {
-  if (!ValidateBeginAccess(write_access)) {
-    // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
-    base::debug::DumpWithoutCrashing();
+  if (!ValidateBeginAccess(write_access))
     return false;
-  }
 
   // If read fences or write fence are present, shared handle should be too.
   DCHECK((read_fences_.empty() && !write_fence_) || dxgi_shared_handle_state_);
@@ -980,8 +976,6 @@ bool D3DImageBacking::BeginAccessD3D11(bool write_access) {
   // no dependency between concurrent reads and instead wait for the last write.
   if (write_fence_ && !write_fence_->WaitD3D11(d3d11_device_)) {
     DLOG(ERROR) << "Failed to wait for write fence";
-    // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
-    base::debug::DumpWithoutCrashing();
     return false;
   }
   if (write_access) {
@@ -989,8 +983,6 @@ bool D3DImageBacking::BeginAccessD3D11(bool write_access) {
     for (const auto& fence : read_fences_) {
       if (!fence->WaitD3D11(d3d11_device_)) {
         DLOG(ERROR) << "Failed to wait for read fence";
-        // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
-        base::debug::DumpWithoutCrashing();
         return false;
       }
     }
