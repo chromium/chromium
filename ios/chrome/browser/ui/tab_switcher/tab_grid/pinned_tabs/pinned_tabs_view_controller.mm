@@ -821,8 +821,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self updateDropOverlayViewVisibility];
 }
 
-// Configures `cell`'s identifier and title synchronously, favicon and snapshot
-// asynchronously with information from `item`.
+// Configures `cell`'s identifier and title synchronously, and favicon and
+// snapshot asynchronously from `item`.
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
     cell.itemIdentifier = item.identifier;
@@ -834,14 +834,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         cell.icon = icon;
       }
     }];
-    NSString* itemIdentifier = item.identifier;
-    [self.imageDataSource
-        snapshotForIdentifier:itemIdentifier
-                   completion:^(UIImage* snapshot) {
-                     if ([cell hasIdentifier:itemIdentifier]) {
-                       cell.snapshot = snapshot;
-                     }
-                   }];
+    [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
+      // Only update the icon if the cell is not already reused for another
+      // item.
+      if ([cell hasIdentifier:innerItem.identifier]) {
+        cell.snapshot = snapshot;
+      }
+    }];
   }
 
   cell.accessibilityIdentifier =

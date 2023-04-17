@@ -28,4 +28,9 @@
   completion(self, nil);
 }
 
+- (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion {
+  // Subclasses should override this method. It is OK not to call super.
+  completion(self, nil);
+}
+
 @end

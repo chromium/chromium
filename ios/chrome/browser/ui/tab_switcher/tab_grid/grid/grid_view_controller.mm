@@ -1105,7 +1105,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 }
 
-#pragma mark-- SuggestedActionsViewControllerDelegate
+#pragma mark - SuggestedActionsViewControllerDelegate
 
 - (void)suggestedActionsViewController:
             (SuggestedActionsViewController*)viewController
@@ -1693,9 +1693,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [self.items indexOfObjectPassingTest:selectedTest];
 }
 
-// Configures `cell`'s title synchronously, and favicon and snapshot
-// asynchronously from `item`. Updates the `cell`'s theme to this view
-// controller's theme. This view controller becomes the delegate for the cell.
+// Configures `cell`'s identifier and title synchronously, and favicon and
+// snapshot asynchronously with information from `item`. Updates the `cell`'s
+// theme to this view controller's theme. This view controller becomes the
+// delegate for the cell.
 - (void)configureCell:(GridCell*)cell withItem:(TabSwitcherItem*)item {
   DCHECK(cell);
   DCHECK(item);

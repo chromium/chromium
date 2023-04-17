@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 
-@protocol GridImageDataSource;
 @class GridTransitionLayout;
 @class PinnedTabsViewController;
 @protocol TabCollectionDragDropHandler;
@@ -62,9 +61,6 @@
 // UICollectionViewController used to display pinned tabs.
 @interface PinnedTabsViewController
     : UICollectionViewController <TabCollectionConsumer>
-
-// Data source for images.
-@property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
 
 // Delegate used to to relay relevant user interactions.
 @property(nonatomic, weak) id<PinnedTabsViewControllerDelegate> delegate;

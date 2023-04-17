@@ -38,6 +38,10 @@ using TabSwitcherImageFetchingCompletionBlock =
 // operation completes.
 - (void)fetchFavicon:(TabSwitcherImageFetchingCompletionBlock)completion;
 
+// Fetches the snapshot, calling `completion` on the calling sequence when the
+// operation completes.
+- (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_SWITCHER_ITEM_H_

@@ -348,7 +348,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didReceiveMemoryWarning {
   [self.regularTabsImageDataSource clearPreloadedSnapshots];
-  [self.pinnedTabsImageDataSource clearPreloadedSnapshots];
   [self.incognitoTabsImageDataSource clearPreloadedSnapshots];
 }
 
@@ -548,7 +547,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // Let image sources know the initial appearance is done.
   [self.regularTabsImageDataSource clearPreloadedSnapshots];
-  [self.pinnedTabsImageDataSource clearPreloadedSnapshots];
   [self.incognitoTabsImageDataSource clearPreloadedSnapshots];
 }
 
@@ -630,14 +628,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (id<TabCollectionConsumer>)regularTabsConsumer {
   return self.regularTabsViewController;
-}
-
-- (void)setPinnedTabsImageDataSource:
-    (id<GridImageDataSource>)pinnedTabsImageDataSource {
-  if (IsPinnedTabsEnabled()) {
-    self.pinnedTabsViewController.imageDataSource = pinnedTabsImageDataSource;
-    _pinnedTabsImageDataSource = pinnedTabsImageDataSource;
-  }
 }
 
 - (void)setRegularTabsImageDataSource:

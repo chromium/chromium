@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/web/public/web_state.h"
@@ -67,6 +68,22 @@
                                 ? [self incognitoDefaultFavicon]
                                 : [self regularDefaultFavicon];
   completion(self, defaultFavicon);
+}
+
+- (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion {
+  web::WebState* webState = _webState.get();
+  if (!webState) {
+    completion(self, nil);
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+      ^(UIImage* snapshot) {
+        if (weakSelf) {
+          completion(weakSelf, snapshot);
+        }
+      });
 }
 
 #pragma mark - Favicons

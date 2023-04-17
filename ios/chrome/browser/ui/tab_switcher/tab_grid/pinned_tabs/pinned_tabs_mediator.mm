@@ -325,32 +325,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 
-#pragma mark - GridImageDataSource
-
-- (void)snapshotForIdentifier:(NSString*)identifier
-                   completion:(void (^)(UIImage*))completion {
-  web::WebState* webState =
-      GetWebState(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = identifier,
-                                         .pinned_state = PinnedState::kPinned,
-                                     });
-  if (webState) {
-    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-        ^(UIImage* image) {
-          completion(image);
-        });
-  }
-}
-
-- (void)preloadSnapshotsForVisibleGridItems:
-    (NSSet<NSString*>*)visibleGridItems {
-  // TODO (crbug.com/1406524): Implement or remove.
-}
-
-- (void)clearPreloadedSnapshots {
-  // TODO (crbug.com/1406524): Implement or remove.
-}
-
 #pragma mark - TabCollectionCommands
 
 - (void)selectItemWithID:(NSString*)itemID {

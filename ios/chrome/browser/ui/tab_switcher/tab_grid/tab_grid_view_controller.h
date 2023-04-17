@@ -144,7 +144,6 @@ enum class TabGridPageConfiguration {
 
 // Data sources provide lazy access to heavy-weight resources.
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;
-@property(nonatomic, weak) id<GridImageDataSource> pinnedTabsImageDataSource;
 @property(nonatomic, weak) id<GridImageDataSource> incognitoTabsImageDataSource;
 
 // Data source for acquiring data which power the PriceCardView

@@ -755,7 +755,6 @@
         initWithConsumer:baseViewController.pinnedTabsConsumer];
     self.pinnedTabsMediator.browser = _regularBrowser;
     baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
-    baseViewController.pinnedTabsImageDataSource = self.pinnedTabsMediator;
   }
 
   if (IsInactiveTabsEnabled()) {
