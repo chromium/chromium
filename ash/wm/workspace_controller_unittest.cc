@@ -151,7 +151,7 @@ TEST_F(WorkspaceControllerTest, AddNormalWindowWhenEmpty) {
 
   EXPECT_FALSE(window_state->HasRestoreBounds());
 
-  ASSERT_TRUE(w1->layer() != NULL);
+  ASSERT_TRUE(w1->layer() != nullptr);
   EXPECT_TRUE(w1->layer()->visible());
 
   EXPECT_EQ("0,0 250x251", w1->bounds().ToString());
@@ -169,7 +169,7 @@ TEST_F(WorkspaceControllerTest, SingleMaximizeWindow) {
 
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 
-  ASSERT_TRUE(w1->layer() != NULL);
+  ASSERT_TRUE(w1->layer() != nullptr);
   EXPECT_TRUE(w1->layer()->visible());
 
   EXPECT_EQ("0,0 250x251", w1->bounds().ToString());
@@ -199,7 +199,7 @@ TEST_F(WorkspaceControllerTest, FullscreenWithNormalWindow) {
   w1->SetBounds(gfx::Rect(0, 0, 250, 251));
   w1->Show();
 
-  ASSERT_TRUE(w1->layer() != NULL);
+  ASSERT_TRUE(w1->layer() != nullptr);
   EXPECT_TRUE(w1->layer()->visible());
 
   w2->SetBounds(gfx::Rect(0, 0, 50, 51));
@@ -589,7 +589,7 @@ namespace {
 class DontCrashOnChangeAndActivateDelegate
     : public aura::test::TestWindowDelegate {
  public:
-  DontCrashOnChangeAndActivateDelegate() : window_(NULL) {}
+  DontCrashOnChangeAndActivateDelegate() = default;
 
   DontCrashOnChangeAndActivateDelegate(
       const DontCrashOnChangeAndActivateDelegate&) = delete;
@@ -603,12 +603,12 @@ class DontCrashOnChangeAndActivateDelegate
                        const gfx::Rect& new_bounds) override {
     if (window_) {
       wm::ActivateWindow(window_);
-      window_ = NULL;
+      window_ = nullptr;
     }
   }
 
  private:
-  aura::Window* window_;
+  aura::Window* window_ = nullptr;
 };
 
 }  // namespace
@@ -1205,7 +1205,8 @@ TEST_F(WorkspaceControllerTest, AnimatedNormToMaxToNormRepositionsRemaining) {
 // (corresponds to the status bubble).
 TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   std::unique_ptr<Window> browser(aura::test::CreateTestWindowWithDelegate(
-      NULL, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 6, 7, 8), NULL));
+      nullptr, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 6, 7, 8),
+      nullptr));
   browser->SetName("browser");
   ParentWindowInPrimaryRootWindow(browser.get());
   browser->Show();
@@ -1218,13 +1219,14 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   status_bubble_delegate->set_can_focus(false);
   Window* status_bubble = aura::test::CreateTestWindowWithDelegate(
       status_bubble_delegate, aura::client::WINDOW_TYPE_POPUP,
-      gfx::Rect(5, 6, 7, 8), NULL);
+      gfx::Rect(5, 6, 7, 8), nullptr);
   ::wm::AddTransientChild(browser.get(), status_bubble);
   ParentWindowInPrimaryRootWindow(status_bubble);
   status_bubble->SetName("status_bubble");
 
   std::unique_ptr<Window> app(aura::test::CreateTestWindowWithDelegate(
-      NULL, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 6, 7, 8), NULL));
+      nullptr, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 6, 7, 8),
+      nullptr));
   app->SetName("app");
   ParentWindowInPrimaryRootWindow(app.get());
 
@@ -1324,7 +1326,7 @@ TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
   delegate.set_window_component(HTCAPTION);
   std::unique_ptr<Window> w1(aura::test::CreateTestWindowWithDelegate(
       &delegate, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 5, 100, 50),
-      NULL));
+      nullptr));
   ParentWindowInPrimaryRootWindow(w1.get());
 
   Shelf* shelf = GetPrimaryShelf();
@@ -1348,12 +1350,12 @@ TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
 TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
   aura::test::TestWindowDelegate d_first, d_second;
   std::unique_ptr<Window> first(aura::test::CreateTestWindowWithDelegate(
-      &d_first, 123, gfx::Rect(20, 10, 100, 50), NULL));
+      &d_first, 123, gfx::Rect(20, 10, 100, 50), nullptr));
   ParentWindowInPrimaryRootWindow(first.get());
   first->Show();
 
   std::unique_ptr<Window> second(aura::test::CreateTestWindowWithDelegate(
-      &d_second, 234, gfx::Rect(30, 40, 40, 10), NULL));
+      &d_second, 234, gfx::Rect(30, 40, 40, 10), nullptr));
   ParentWindowInPrimaryRootWindow(second.get());
   second->Show();
 

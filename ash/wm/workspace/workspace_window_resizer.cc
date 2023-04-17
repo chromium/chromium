@@ -1336,7 +1336,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
       return true;
     }
     window_tracker_.Remove(magnetism_window_);
-    magnetism_window_ = NULL;
+    magnetism_window_ = nullptr;
   }
 
   // Avoid magnetically snapping windows that are not resizable.

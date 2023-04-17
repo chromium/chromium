@@ -1329,7 +1329,7 @@ void SplitViewController::StartResizeWithDivider(
 
   tablet_resize_mode_ = TabletResizeMode::kNormal;
 
-  for (auto* window : {primary_window_, secondary_window_}) {
+  for (aura::Window* window : {primary_window_, secondary_window_}) {
     if (window == nullptr) {
       continue;
     }

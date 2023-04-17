@@ -63,9 +63,9 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override;
 
-  bool visible_;
+  bool visible_ = false;
 
-  views::Widget* widget_;
+  views::Widget* widget_ = nullptr;
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
 };
 

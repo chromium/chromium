@@ -180,14 +180,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
 
 class ShillPropertyHandlerTest : public testing::Test {
  public:
-  ShillPropertyHandlerTest()
-      : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        manager_test_(NULL),
-        device_test_(NULL),
-        service_test_(NULL),
-        profile_test_(NULL) {}
-
+  ShillPropertyHandlerTest() = default;
   ShillPropertyHandlerTest(const ShillPropertyHandlerTest&) = delete;
   ShillPropertyHandlerTest& operator=(const ShillPropertyHandlerTest&) = delete;
 
@@ -286,14 +279,15 @@ class ShillPropertyHandlerTest : public testing::Test {
     AddService(shill::kTypeCellular, "stub_cellular1", shill::kStateIdle);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_ =
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI;
   std::unique_ptr<TestListener> listener_;
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  ShillManagerClient::TestInterface* manager_test_;
-  ShillDeviceClient::TestInterface* device_test_;
-  ShillServiceClient::TestInterface* service_test_;
-  ShillProfileClient::TestInterface* profile_test_;
+  ShillManagerClient::TestInterface* manager_test_ = nullptr;
+  ShillDeviceClient::TestInterface* device_test_ = nullptr;
+  ShillServiceClient::TestInterface* service_test_ = nullptr;
+  ShillProfileClient::TestInterface* profile_test_ = nullptr;
 };
 
 TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerStub) {

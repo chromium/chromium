@@ -317,15 +317,18 @@ State UsageTimeLimitProcessor::GetState() {
   bool current_state_above_usage_limit =
       state.is_time_usage_limit_enabled && state.remaining_usage <= delta_zero;
   bool previous_state_below_usage_limit =
-      previous_state_ && previous_state_->is_time_usage_limit_enabled &&
+      previous_state_.has_value() &&
+      previous_state_->is_time_usage_limit_enabled &&
       previous_state_->remaining_usage > delta_zero;
   bool previous_state_no_usage_limit =
-      previous_state_ && !previous_state_->is_time_usage_limit_enabled;
+      previous_state_.has_value() &&
+      !previous_state_->is_time_usage_limit_enabled;
   bool previous_state_above_usage_limit =
-      previous_state_ && previous_state_->is_time_usage_limit_enabled &&
+      previous_state_.has_value() &&
+      previous_state_->is_time_usage_limit_enabled &&
       previous_state_->remaining_usage <= delta_zero;
   if ((previous_state_below_usage_limit || previous_state_no_usage_limit ||
-       !previous_state_) &&
+       !previous_state_.has_value()) &&
       current_state_above_usage_limit) {
     // Time usage limit just started being enforced.
     state.time_usage_limit_started = usage_timestamp_;
@@ -419,8 +422,9 @@ bool UsageTimeLimitProcessor::IsUsageLimitOverridden(
     return false;
   }
 
-  if (!time_usage_limit_ || !previous_state_)
+  if (!time_usage_limit_ || !previous_state_.has_value()) {
     return false;
+  }
 
   // If there's an override with duration, the usage limit is overridden only
   // if the override is active and duration is not over, since it works
@@ -671,7 +675,8 @@ bool UsageTimeLimitProcessor::HasActiveOverride() {
 
   // Check if the usage time was increased before the override creation, which
   // invalidates it.
-  if (previous_state_ && previous_state_->is_time_usage_limit_enabled &&
+  if (previous_state_.has_value() &&
+      previous_state_->is_time_usage_limit_enabled &&
       previous_state_->remaining_usage <= base::Minutes(0)) {
     if (enabled_time_usage_limit_ &&
         time_limit_override_->created_at() <

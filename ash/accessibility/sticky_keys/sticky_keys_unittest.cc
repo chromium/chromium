@@ -21,7 +21,7 @@ class StickyKeysTest : public AshTestBase {
   StickyKeysTest& operator=(const StickyKeysTest&) = delete;
 
  protected:
-  StickyKeysTest() : target_(NULL), root_window_(NULL) {}
+  StickyKeysTest() = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -35,7 +35,7 @@ class StickyKeysTest : public AshTestBase {
   virtual void OnShortcutPressed() {
     if (target_) {
       delete target_;
-      target_ = NULL;
+      target_ = nullptr;
     }
   }
 
@@ -164,9 +164,9 @@ class StickyKeysTest : public AshTestBase {
 
  private:
   // Owned by root window of shell, but we can still delete |target_| safely.
-  aura::Window* target_;
+  aura::Window* target_ = nullptr;
   // The root window of |target_|. Not owned.
-  aura::Window* root_window_;
+  aura::Window* root_window_ = nullptr;
 };
 
 TEST_F(StickyKeysTest, BasicOneshotScenarioTest) {

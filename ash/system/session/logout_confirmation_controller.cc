@@ -217,7 +217,7 @@ void LogoutConfirmationController::OnLogoutConfirmed() {
 
 void LogoutConfirmationController::OnDialogClosed() {
   logout_time_ = base::TimeTicks();
-  dialog_ = NULL;
+  dialog_ = nullptr;
   logout_timer_.Stop();
 }
 

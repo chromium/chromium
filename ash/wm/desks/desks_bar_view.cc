@@ -1385,7 +1385,10 @@ bool DesksBarView::MaybeScrollByDraggedDesk() {
 
   // If the desk proxy overlaps a scroll button, scroll the bar in the
   // corresponding direction.
-  for (auto* scroll_button : {left_scroll_button_, right_scroll_button_}) {
+  for (ScrollArrowButton* scroll_button : {
+           left_scroll_button_,
+           right_scroll_button_,
+       }) {
     if (scroll_button->GetVisible() &&
         proxy_bounds.Intersects(scroll_button->GetBoundsInScreen())) {
       scroll_button->OnDeskHoverStart();

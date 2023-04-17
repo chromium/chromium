@@ -205,8 +205,11 @@ FloatingAccessibilityView::~FloatingAccessibilityView() {
 
 void FloatingAccessibilityView::Initialize() {
   KeyboardController::Get()->AddObserver(this);
-  for (auto* feature_view :
-       {dictation_button_, select_to_speak_button_, virtual_keyboard_button_}) {
+  for (TrayBackgroundView* feature_view : {
+           dictation_button_,
+           select_to_speak_button_,
+           virtual_keyboard_button_,
+       }) {
     feature_view->Initialize();
     feature_view->CalculateTargetBounds();
     feature_view->UpdateLayout();

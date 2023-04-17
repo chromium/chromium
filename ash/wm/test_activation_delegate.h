@@ -50,12 +50,12 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
       aura::Window* gained_active,
       aura::Window* lost_active) override;
 
-  aura::Window* window_;
-  bool window_was_active_;
-  bool activate_;
-  int activated_count_;
-  int lost_active_count_;
-  mutable int should_activate_count_;
+  aura::Window* window_ = nullptr;
+  bool window_was_active_ = false;
+  bool activate_ = true;
+  int activated_count_ = 0;
+  int lost_active_count_ = 0;
+  mutable int should_activate_count_ = 0;
 };
 
 }  // namespace ash

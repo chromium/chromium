@@ -47,7 +47,7 @@ const char kObjectPath[] = "/object/path";
 
 class ModemMessagingClientTest : public testing::Test {
  public:
-  ModemMessagingClientTest() : response_(NULL) {}
+  ModemMessagingClientTest() = default;
 
   void SetUp() override {
     // Create a mock bus.
@@ -131,7 +131,7 @@ class ModemMessagingClientTest : public testing::Test {
   // Expected argument for Delete method.
   dbus::ObjectPath expected_sms_path_;
   // Response returned by mock methods.
-  dbus::Response* response_;
+  dbus::Response* response_ = nullptr;
 
  private:
   // Used to implement the mock proxy.
