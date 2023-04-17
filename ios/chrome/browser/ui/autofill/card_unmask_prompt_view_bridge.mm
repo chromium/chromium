@@ -27,6 +27,7 @@ CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
 }
 
 CardUnmaskPromptViewBridge::~CardUnmaskPromptViewBridge() {
+  [prompt_view_controller_ disconnectFromBridge];
   if (controller_) {
     controller_->OnUnmaskDialogClosed();
   }
@@ -73,10 +74,17 @@ void CardUnmaskPromptViewBridge::GotVerificationResult(
 }
 
 CardUnmaskPromptController* CardUnmaskPromptViewBridge::GetController() {
+  // This public accessor is used by the view controller, which shouldn't access
+  // the controller after it was released. Adding a CHECK to explicitly catch
+  // any UAF errors.
+  CHECK(controller_);
   return controller_;
 }
 
 void CardUnmaskPromptViewBridge::PerformClose() {
+  // Disconnect the vc from the bride, dismiss it and delete the bridge.
+  [prompt_view_controller_ disconnectFromBridge];
+
   base::WeakPtr<CardUnmaskPromptViewBridge> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   [navigation_controller_
