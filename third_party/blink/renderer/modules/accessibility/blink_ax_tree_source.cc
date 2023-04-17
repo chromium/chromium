@@ -281,7 +281,7 @@ AXObject* BlinkAXTreeSource::GetFocusedObject() const {
 AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {
   AXObject* result = ax_object_cache_->ObjectFromAXID(id);
   DCHECK(result);
-  if (!result->AccessibilityIsIncludedInTree()) {
+  if (result && !result->AccessibilityIsIncludedInTree()) {
     DCHECK(false) << "Should not serialize an unincluded object:"
                   << "\nChild: " << result->ToString(true).Utf8();
     return nullptr;
