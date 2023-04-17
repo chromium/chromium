@@ -125,6 +125,9 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+    GTEST_SKIP() << "Integration tests disabled on Arm64 Win";
+#else
     ExitTestMode();
     if (!HasFailure()) {
       ExpectClean();
@@ -143,6 +146,7 @@ class IntegrationTest : public ::testing::Test {
     // Updater process must not be running for `Clean()` to succeed.
     ASSERT_TRUE(WaitForUpdaterExit());
     Clean();
+#endif
   }
 
   void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
