@@ -4022,8 +4022,6 @@ if (is_win && toolchain_has_rust) {
       "//testing/gtest",
     ]
     data_deps = [ "//build/rust/tests/test_control_flow_guard" ]
-    cfg_exe = rebase_path("${root_out_dir}/test_control_flow_guard.exe")
-    defines = [ "RUST_CFG_WIN_UNITTEST_PATH_TO_RUST_EXE=\"${cfg_exe}\"" ]
     sources = [ "memory/rust_cfg_win_unittest.cc" ]
   }
 }

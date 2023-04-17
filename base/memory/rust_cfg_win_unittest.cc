@@ -18,8 +18,9 @@ namespace {
 TEST(RustCfgWin, CfgCatchesInvalidIndirectCall) {
   base::LaunchOptions o;
   o.start_hidden = true;
+  // From //build/rust/tests/test_control_flow_guard.
   base::CommandLine cmd(base::FilePath(
-      FILE_PATH_LITERAL(RUST_CFG_WIN_UNITTEST_PATH_TO_RUST_EXE)));
+      FILE_PATH_LITERAL("test_control_flow_guard.exe")));
   base::Process proc = base::LaunchProcess(cmd, o);
   int exit_code;
   EXPECT_TRUE(proc.WaitForExit(&exit_code));

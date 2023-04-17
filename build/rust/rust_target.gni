@@ -163,6 +163,8 @@ template("rust_target") {
     }
   }
 
+  _is_data_dep = defined(invoker.is_data_dep) && invoker.is_data_dep
+
   _build_unit_tests = false
   if (defined(invoker.build_native_rust_unit_tests)) {
     _build_unit_tests =
@@ -221,6 +223,7 @@ template("rust_target") {
                  "_cxx_bindings",
                  "_deps",
                  "_aliased_deps",
+                 "_is_data_dep",
                  "_metadata",
                  "_out_dir",
                  "_public_deps",
@@ -241,6 +244,12 @@ template("rust_target") {
       # Both the C++ bindings (if present) and the Rust crate should be treated
       # like direct dependencies, so we expose them both in public_deps.
       public_deps = [ ":${_target_name}${_main_target_suffix}" ]
+
+      # TODO(danakj): This would not be needed if we stopped forwarding through
+      # a group in the common (non-procmacro) case.
+      if (_is_data_dep) {
+        data_deps = [ ":${_target_name}${_main_target_suffix}" ]
+      }
 
       if (_cxx_bindings != []) {
         public_deps += [ ":${_target_name}_cxx_generated" ]
