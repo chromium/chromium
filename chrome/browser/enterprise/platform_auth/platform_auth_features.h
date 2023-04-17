@@ -14,6 +14,10 @@ namespace enterprise_auth {
 // Controls whether ambient authentication using the CloudAP framework is
 // enabled.
 BASE_DECLARE_FEATURE(kCloudApAuth);
+
+// Determines whether authentication data beginning with 'x-ms-' should be added
+// to requests as a header instead of a cookie.
+BASE_DECLARE_FEATURE(kCloudApAuthAttachAsHeader);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace enterprise_auth
