@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -28,7 +28,7 @@ MATCHER(IsEmptyCropId, "") {
 
 MATCHER(IsValidCropId, "") {
   static_assert(std::is_same<decltype(arg), const std::string&>::value, "");
-  return base::GUID::ParseLowercase(arg).is_valid();
+  return base::Uuid::ParseLowercase(arg).is_valid();
 }
 
 }  // namespace
@@ -53,7 +53,7 @@ class CropIdWebContentsHelperTest : public RenderViewHostImplTestHarness {
     return CropIdWebContentsHelper::FromWebContents(web_contents);
   }
 
-  static base::Token GUIDToToken(const base::GUID& guid) {
+  static base::Token GUIDToToken(const base::Uuid& guid) {
     return CropIdWebContentsHelper::GUIDToToken(guid);
   }
 };
@@ -66,7 +66,7 @@ TEST_F(CropIdWebContentsHelperTest,
   ASSERT_NE(helper, nullptr);
 
   // Test focus.
-  const base::GUID unknown_crop_id = base::GUID::GenerateRandomV4();
+  const base::Uuid unknown_crop_id = base::Uuid::GenerateRandomV4();
   EXPECT_FALSE(helper->IsAssociatedWithCropId(GUIDToToken(unknown_crop_id)));
 
   // Extra-test: Ensure the query above did not accidentally record
@@ -101,7 +101,7 @@ TEST_F(CropIdWebContentsHelperTest,
   EXPECT_THAT(crop_id_str, IsValidCropId());
 
   const base::Token crop_id =
-      GUIDToToken(base::GUID::ParseLowercase(crop_id_str));
+      GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
 
   EXPECT_TRUE(helper->IsAssociatedWithCropId(crop_id));
   EXPECT_FALSE(other_helper->IsAssociatedWithCropId(crop_id));
@@ -139,7 +139,7 @@ TEST_F(CropIdWebContentsHelperTest, MaxCropIdsPerWebContentsObserved) {
     for (size_t i = 0; i < CropIdWebContentsHelper::kMaxCropIdsPerWebContents;
          ++i) {
       const base::Token crop_id = GUIDToToken(
-          base::GUID::ParseLowercase(crop_ids_str[web_contents_idx][i]));
+          base::Uuid::ParseLowercase(crop_ids_str[web_contents_idx][i]));
       EXPECT_TRUE(helpers[web_contents_idx]->IsAssociatedWithCropId(crop_id));
 
       // Extra-test: They're also still associated *only* with the relevant WC.
@@ -163,7 +163,7 @@ TEST_F(CropIdWebContentsHelperTest,
   {
     const std::string crop_id_str = helper->ProduceCropId();
     ASSERT_THAT(crop_id_str, IsValidCropId());
-    crop_id_1 = GUIDToToken(base::GUID::ParseLowercase(crop_id_str));
+    crop_id_1 = GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
   }
   ASSERT_TRUE(helper->IsAssociatedWithCropId(crop_id_1));  // Sanity-check.
 
@@ -178,7 +178,7 @@ TEST_F(CropIdWebContentsHelperTest,
     const std::string crop_id_str = helper->ProduceCropId();
     EXPECT_THAT(crop_id_str, IsValidCropId());
     const base::Token crop_id_2 =
-        GUIDToToken(base::GUID::ParseLowercase(crop_id_str));
+        GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
     ASSERT_TRUE(helper->IsAssociatedWithCropId(crop_id_2));  // Sanity-check.
   }
 
@@ -204,7 +204,7 @@ TEST_F(CropIdWebContentsHelperTest,
   const std::string crop_id_str = helper->ProduceCropId();
   ASSERT_THAT(crop_id_str, IsValidCropId());
   const base::Token crop_id =
-      GUIDToToken(base::GUID::ParseLowercase(crop_id_str));
+      GUIDToToken(base::Uuid::ParseLowercase(crop_id_str));
 
   // Test sanity-check.
   ASSERT_TRUE(helper->IsAssociatedWithCropId(crop_id));

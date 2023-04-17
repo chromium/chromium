@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -28,6 +27,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -2372,7 +2372,7 @@ MediaStreamManager::AddRequest(std::unique_ptr<DeviceRequest> request) {
   // Create a label for this request and verify it is unique.
   std::string unique_label;
   do {
-    unique_label = base::GenerateGUID();
+    unique_label = base::Uuid::GenerateRandomV4().AsLowercaseString();
   } while (FindRequest(unique_label) != nullptr);
 
   SendLogMessage(
