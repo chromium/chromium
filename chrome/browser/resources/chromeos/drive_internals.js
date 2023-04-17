@@ -110,8 +110,12 @@ function onBulkPinningProgress(progress) {
   $('bulk-pinning-required-space').innerText = progress.required_space;
   $('bulk-pinning-bytes-to-pin').innerText = progress.bytes_to_pin;
   $('bulk-pinning-pinned-bytes').innerText = progress.pinned_bytes;
+  $('bulk-pinning-pinned-bytes-percent').innerText =
+      progress.pinned_bytes_percent;
   $('bulk-pinning-files-to-pin').innerText = progress.files_to_pin;
   $('bulk-pinning-pinned-files').innerText = progress.pinned_files;
+  $('bulk-pinning-pinned-files-percent').innerText =
+      progress.pinned_files_percent;
   $('bulk-pinning-failed-files').innerText = progress.failed_files;
   $('bulk-pinning-syncing-files').innerText = progress.syncing_files;
   $('bulk-pinning-skipped-items').innerText = progress.skipped_items;
