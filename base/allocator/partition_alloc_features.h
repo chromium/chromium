@@ -90,13 +90,16 @@ enum class BackupRefPtrMode {
   // Same as kEnabled but without zapping quarantined objects.
   kEnabledWithoutZapping,
 
-  // Same as kEnabled but without registering the main partition to memory
-  // reclaimer.
-  kEnabledWithoutMemoryReclaimer,
+  // Same as kEnabled but registers the main partition to memory reclaimer.
+  kEnabledWithMemoryReclaimer,
 
   // BRP is disabled, but the main partition is split out, as if BRP was enabled
   // in the "previous slot" mode.
   kDisabledButSplitPartitions2Way,
+
+  // Same as kDisabledButSplitPartitions2Way but registers the main partition to
+  // memory reclaimer.
+  kDisabledButSplitPartitions2WayWithMemoryReclaimer,
 
   // BRP is disabled, but the main partition *and* aligned partition are split
   // out, as if BRP was enabled in the "before allocation" mode.
