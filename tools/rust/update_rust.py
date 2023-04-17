@@ -32,8 +32,8 @@ sys.path.append(
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
-RUST_REVISION = 'ac4379fea9e83465d814bb05005689f49bd2141e'
-RUST_SUB_REVISION = 7
+RUST_REVISION = '17c11672167827b0dd92c88ef69f24346d1286dd'
+RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
 #
@@ -65,12 +65,12 @@ CRUBIT_SUB_REVISION = 1
 # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
 # include Crubit binaries in the generated package.  See also a TODO comment
 # in BuildCrubit in package_rust.py.
-FALLBACK_REVISION = 'ac4379fea9e83465d814bb05005689f49bd2141e-7-llvmorg-17-init-3874-g93a2fecc-1'
+FALLBACK_REVISION = '17c11672167827b0dd92c88ef69f24346d1286dd-1-llvmorg-17-init-8029-g27f27d15-1'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
-STAGE0_JSON_SHA256 = 'b45d1f388bfe54887d5776937e05a135ec819b6d2190b8794bb87bd7072e5553'
+STAGE0_JSON_SHA256 = '7339c4d847db37e8c0b69b5c037bb708fcce1baf22ac5bf598dc739e559bcbc1'
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))

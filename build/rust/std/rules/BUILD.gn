@@ -138,14 +138,14 @@ cargo_crate("cfg_if") {
 }
 cargo_crate("compiler_builtins") {
   crate_type = "rlib"
-  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.87/src/lib.rs"
+  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.89/src/lib.rs"
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.87/src/lib.rs" ]
+  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.89/src/lib.rs" ]
   edition = "2015"
-  cargo_pkg_version = "0.1.87"
+  cargo_pkg_version = "0.1.89"
   cargo_pkg_authors = "Jorge Aparicio <japaricious@gmail.com>"
   cargo_pkg_name = "compiler_builtins"
   cargo_pkg_description = "Compiler intrinsics used by the Rust compiler. Also available for other targets if necessary!"
