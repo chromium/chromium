@@ -60,23 +60,25 @@ def __step_config(ctx, step_config):
         {
             "name": "nacl_linux/glibc/x86_64-nacl-gcc",
             "action": "glibc_x64_cc",
-            # ELF-32 doesn't work on gVisor,
-            # so will local-fallback if gVisor is used.
             "inputs": [
                 "native_client/toolchain/linux_x86/nacl_x86_glibc/bin/x86_64-nacl-gcc",
             ],
-            "remote": True,
+            # ELF-32 doesn't work on gVisor,
+            # so will local-fallback if gVisor is used.
+            # TODO(b/278485912): remote=True for trusted instance.
+            "remote": False,
             "input_root_absolute_path": True,
         },
         {
             "name": "nacl_linux/glibc/x86_64-nacl-g++",
             "action": "glibc_x64_cxx",
-            # ELF-32 doesn't work on gVisor,
-            # so will local-fallback if gVisor is used.
             "inputs": [
                 "native_client/toolchain/linux_x86/nacl_x86_glibc/bin/x86_64-nacl-g++",
             ],
-            "remote": True,
+            # ELF-32 doesn't work on gVisor,
+            # so will local-fallback if gVisor is used.
+            # TODO(b/278485912): remote=True for trusted instance.
+            "remote": False,
             "input_root_absolute_path": True,
         },
         {
