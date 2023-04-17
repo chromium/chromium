@@ -150,7 +150,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInNoFolder) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
                                                      title:nil
                                                      count:1],
-              @"Bookmark saved in your account, foo1@gmail.com");
+              @"Bookmark saved in your Google Account, foo1@gmail.com");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInNoFolderPlural) {
@@ -159,7 +159,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInNoFolderPlural) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
                                                      title:nil
                                                      count:2],
-              @"Bookmarks saved in your account, foo1@gmail.com");
+              @"Bookmarks saved in your Google Account, foo1@gmail.com");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInDefaultFolder) {
@@ -177,7 +177,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInDefaultFolder) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
                                                      title:@"default folder"
                                                      count:1],
-              @"Bookmark saved in your account, foo1@gmail.com");
+              @"Bookmark saved in your Google Account, foo1@gmail.com");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInDefaultFolderPlural) {
@@ -186,7 +186,7 @@ TEST_F(BookmarkMediatorUnitTest, TestFlagEnabledSignedInDefaultFolderPlural) {
   ASSERT_NSEQ([mediator_ messageForAddingBookmarksInFolder:NO
                                                      title:@"default folder"
                                                      count:2],
-              @"Bookmarks saved in your account, foo1@gmail.com");
+              @"Bookmarks saved in your Google Account, foo1@gmail.com");
 }
 
 TEST_F(BookmarkMediatorUnitTest, TestFlagDisabledSignedInInFolder) {
