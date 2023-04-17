@@ -34,7 +34,7 @@ ScreenObserverDelegate::ScreenObserverDelegate(
 
 void ScreenObserverDelegate::RemoveObserver() {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
-  observer_ = NULL;
+  observer_ = nullptr;
   display_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ScreenObserverDelegate::RemoveObserverOnDisplayThread,
