@@ -273,6 +273,30 @@ void ArcFlossBridge::SendCachedDevices() const {
   }
 }
 
+void ArcFlossBridge::StartLEScanImpl() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!bluetooth_adapter_) {
+    LOG(DFATAL) << "Bluetooth adapter does not exist.";
+    return;
+  }
+
+  if (ble_scan_session_) {
+    LOG(ERROR) << "LE scan already running.";
+    StartLEScanOffTimer();
+    discovery_queue_.Pop();
+    return;
+  }
+
+  ble_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
+      nullptr, weak_factory_.GetWeakPtr());
+}
+
+void ArcFlossBridge::ResetLEScanSession() {
+  if (ble_scan_session_) {
+    ble_scan_session_.reset();
+  }
+}
+
 void ArcFlossBridge::CreateBluetoothListenSocket(
     mojom::BluetoothSocketType type,
     mojom::BluetoothSocketFlagsPtr flags,

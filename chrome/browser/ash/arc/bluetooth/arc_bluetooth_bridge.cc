@@ -987,6 +987,39 @@ void ArcBluetoothBridge::OnNotificationsStop(
                            base::DoNothing(), base::DoNothing());
 }
 
+void ArcBluetoothBridge::OnDeviceFound(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  DeviceAdded(bluetooth_adapter_.get(), device);
+}
+
+void ArcBluetoothBridge::OnDeviceLost(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {}
+
+void ArcBluetoothBridge::OnSessionStarted(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+        error_code) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (error_code) {
+    LOG(WARNING) << "failed to start LE scan, error_code = "
+                 << static_cast<int>(error_code.value());
+    ResetLEScanSession();
+  } else {
+    StartLEScanOffTimer();
+  }
+
+  discovery_queue_.Pop();
+}
+
+void ArcBluetoothBridge::OnSessionInvalidated(
+    device::BluetoothLowEnergyScanSession* scan_session) {
+  LOG(WARNING) << "LE scan session was invalidated";
+  ResetLEScanSession();
+}
+
 void ArcBluetoothBridge::EnableAdapter(EnableAdapterCallback callback) {
   DCHECK(bluetooth_adapter_);
   if (IsPowerChangeInitiatedByLocal(AdapterPowerState::TURN_ON)) {
@@ -1176,10 +1209,7 @@ void ArcBluetoothBridge::StartLEScanImpl() {
 
   if (le_scan_session_) {
     LOG(ERROR) << "Discovery session for LE scan already running.";
-    le_scan_off_timer_.Start(
-        FROM_HERE, kDiscoveryTimeout,
-        base::BindOnce(&ArcBluetoothBridge::StopLEScanByTimer,
-                       weak_factory_.GetWeakPtr()));
+    StartLEScanOffTimer();
     discovery_queue_.Pop();
     return;
   }
@@ -1206,9 +1236,24 @@ void ArcBluetoothBridge::CancelDiscoveryImpl() {
   discovery_queue_.Pop();
 }
 
+void ArcBluetoothBridge::StartLEScanOffTimer() {
+  // TODO(b/152463320): Android expects to stop the LE scan by itself but not by
+  // a timer automatically. We set this timer here due to the potential
+  // complains about the power consumption since we cannot set scan parameters
+  // and filters now.
+  le_scan_off_timer_.Start(
+      FROM_HERE, kDiscoveryTimeout,
+      base::BindOnce(&ArcBluetoothBridge::StopLEScanByTimer,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ArcBluetoothBridge::ResetLEScanSession() {
+  le_scan_session_ = nullptr;
+}
+
 void ArcBluetoothBridge::StopLEScanImpl() {
   le_scan_off_timer_.Stop();
-  le_scan_session_ = nullptr;
+  ResetLEScanSession();
   discovery_queue_.Pop();
 }
 
@@ -1276,14 +1321,7 @@ void ArcBluetoothBridge::OnLEScanStarted(
     std::unique_ptr<BluetoothDiscoverySession> session) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // TODO(b/152463320): Android expects to stop the LE scan by itself but not by
-  // a timer automatically. We set this timer here due to the potential
-  // complains about the power consumption since we cannot set scan parameters
-  // and filters now.
-  le_scan_off_timer_.Start(
-      FROM_HERE, kDiscoveryTimeout,
-      base::BindOnce(&ArcBluetoothBridge::StopLEScanByTimer,
-                     weak_factory_.GetWeakPtr()));
+  StartLEScanOffTimer();
   le_scan_session_ = std::move(session);
 
   // Android doesn't need a callback for discovery started event for a LE scan.

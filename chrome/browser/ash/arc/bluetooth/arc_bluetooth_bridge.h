@@ -58,6 +58,7 @@ class ArcBluetoothBridge
       public device::BluetoothAdapter::Observer,
       public device::BluetoothAdapterFactory::AdapterCallback,
       public device::BluetoothLocalGattService::Delegate,
+      public device::BluetoothLowEnergyScanSession::Delegate,
       public ConnectionObserver<mojom::AppInstance>,
       public ConnectionObserver<mojom::IntentHelperInstance>,
       public mojom::BluetoothHost {
@@ -222,6 +223,21 @@ class ArcBluetoothBridge
       const device::BluetoothDevice* device,
       const device::BluetoothLocalGattCharacteristic* characteristic) override;
 
+  // device::BluetoothLowEnergyScanSession::Delegate:
+  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
+                     device::BluetoothDevice* device) override;
+
+  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
+                    device::BluetoothDevice* device) override;
+
+  void OnSessionStarted(
+      device::BluetoothLowEnergyScanSession* scan_session,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+          error_code) override;
+
+  void OnSessionInvalidated(
+      device::BluetoothLowEnergyScanSession* scan_session) override;
+
   // Bluetooth Mojo host interface
   void EnableAdapter(EnableAdapterCallback callback) override;
   void DisableAdapter(DisableAdapterCallback callback) override;
@@ -368,8 +384,11 @@ class ArcBluetoothBridge
   // StartLEScan() is only for LE devices.
   void StartDiscoveryImpl();
   void CancelDiscoveryImpl();
-  void StartLEScanImpl();
+  virtual void StartLEScanImpl();
   void StopLEScanImpl();
+
+  virtual void ResetLEScanSession();
+  void StartLEScanOffTimer();
 
   // The callback function triggered by le_scan_off_timer_.
   void StopLEScanByTimer();
