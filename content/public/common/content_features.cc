@@ -908,7 +908,7 @@ const base::FeatureParam<base::TimeDelta>
 
 // This feature turns on site isolation support in <webview> guests.
 const base::Feature kSiteIsolationForGuests{"SiteIsolationForGuests",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, OOPIFs will not try to reuse compatible processes from
 // unrelated tabs.
