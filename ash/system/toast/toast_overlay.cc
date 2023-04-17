@@ -62,8 +62,10 @@ gfx::Rect GetUserWorkAreaBounds(aura::Window* window) {
 // the current hotseat state
 void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
                                          const HotseatWidget* hotseat_widget) {
-  if (hotseat_widget->state() == HotseatState::kExtended)
-    bounds.set_height(bounds.height() - hotseat_widget->GetHotseatSize());
+  if (hotseat_widget->state() == HotseatState::kExtended) {
+    bounds.set_height(bounds.height() - hotseat_widget->GetHotseatSize() -
+                      ShelfConfig::Get()->hotseat_bottom_padding());
+  }
   if (hotseat_widget->state() == HotseatState::kShownHomeLauncher)
     bounds.set_height(hotseat_widget->GetTargetBounds().y() - bounds.y());
 }

@@ -15,6 +15,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_toast_style.h"
@@ -39,6 +41,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace {
 
@@ -343,7 +346,8 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtended) {
 
   EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
   EXPECT_EQ(GetPrimaryWorkAreaInsets()->user_work_area_bounds().height() -
-                hotseat->GetHotseatSize() - ToastOverlay::kOffset,
+                hotseat->GetHotseatSize() - ToastOverlay::kOffset -
+                ShelfConfig::Get()->hotseat_bottom_padding(),
             toast_bounds.bottom());
 }
 
@@ -374,13 +378,13 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatShownForMultipleMonitors) {
 }
 
 TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
-  UpdateDisplay("600x400,600x400");
-  Shelf* const shelf =
-      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
-          ->shelf();
+  UpdateDisplay("600x400,700x400");
+  RootWindowController* const secondary_root_window_controller =
+      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id());
+  Shelf* const shelf = secondary_root_window_controller->shelf();
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
-  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+  HotseatWidget* hotseat = shelf->hotseat_widget();
 
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
@@ -390,8 +394,11 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
 
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
+  shelf->hotseat_widget()->set_manually_extended(true);
+  shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
 
-  hotseat->SetState(HotseatState::kExtended);
+  EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
+
   ShowToast("DUMMY", ToastData::kInfiniteDuration);
 
   gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
@@ -400,8 +407,50 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
   EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
   EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
   EXPECT_EQ(hotseat->GetTargetBounds().y() -
-                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                secondary_root_window_controller->work_area_insets()
+                    ->user_work_area_bounds()
+                    .y() -
                 ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnAnotherMonitor) {
+  UpdateDisplay("600x400,700x400");
+  RootWindowController* const secondary_root_window_controller =
+      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id());
+  Shelf* const shelf = secondary_root_window_controller->shelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = shelf->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+
+  // Create two windows, one on each display. The window creation order should
+  // result in the window on the primary display being active.
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
+  std::unique_ptr<aura::Window> primary_display_window(
+      CreateTestWindow(gfx::Rect(0, 100, 200, 200)));
+
+  // Extend the hotseat on the secondary display.
+  shelf->hotseat_widget()->set_manually_extended(true);
+  shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
+  EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
+
+  // Show the toast - should be shown on the primary display (on the display
+  // with the latest active window).
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  const gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  const gfx::Rect primary_work_area_bounds =
+      GetPrimaryWorkAreaInsets()->user_work_area_bounds();
+
+  EXPECT_TRUE(primary_work_area_bounds.Contains(toast_bounds));
+  EXPECT_EQ(primary_work_area_bounds.bottom() - ToastOverlay::kOffset,
             toast_bounds.bottom());
 }
 

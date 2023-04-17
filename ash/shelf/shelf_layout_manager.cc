@@ -1905,8 +1905,9 @@ void ShelfLayoutManager::CalculateTargetBoundsAndUpdateWorkArea() {
   gfx::Insets shelf_insets =
       UpdateTargetBoundsAndCalculateShelfInsets(state_, hotseat_target_state);
 
+  ShelfWidget* shelf_widget = shelf_->shelf_widget();
   gfx::Rect shelf_bounds_for_workarea_calculation =
-      shelf_->shelf_widget()->GetTargetBounds();
+      shelf_widget->GetTargetBounds();
 
   gfx::Insets in_session_shelf_insets = shelf_insets;
 
@@ -1936,6 +1937,8 @@ void ShelfLayoutManager::CalculateTargetBoundsAndUpdateWorkArea() {
   if (Shell::Get()->IsInTabletMode() && IsVisible()) {
     shelf_bounds_for_workarea_calculation =
         GetIdealBoundsForWorkAreaCalculation();
+    wm::ConvertRectToScreen(shelf_widget->GetNativeWindow()->GetRootWindow(),
+                            &shelf_bounds_for_workarea_calculation);
   }
   if (!suspend_work_area_update_) {
     UpdateWorkAreaInsetsAndNotifyObserversInternal(
