@@ -1908,7 +1908,7 @@ void Browser::PortalWebContentsCreated(WebContents* portal_web_contents) {
   TabHelpers::AttachTabHelpers(portal_web_contents);
 
   // Make the portal show up in the task manager.
-  task_manager::WebContentsTags::CreateForPortal(portal_web_contents);
+  WebContentsBecamePortal(portal_web_contents);
 }
 
 void Browser::WebContentsBecamePortal(WebContents* portal_web_contents) {

@@ -77,7 +77,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   void ResetAppId();
 
-  // Runs any logic when the associated app either changes or is removed.
+  // Runs any logic when the associated app is added, changed or removed.
   void OnAssociatedAppChanged(const absl::optional<AppId>& previous_app_id,
                               const absl::optional<AppId>& new_app_id);
 
