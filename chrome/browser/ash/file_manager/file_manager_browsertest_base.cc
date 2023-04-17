@@ -19,7 +19,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -3209,7 +3208,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "isDarkModeEnabled") {
-    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
     *output = ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                   ? "true"
                   : "false";

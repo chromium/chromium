@@ -6,7 +6,6 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
@@ -78,11 +77,6 @@ void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {
 void ClipboardHistoryMainButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  // Use the light mode as default because the light mode is the default mode
-  // of the native theme which decides the context menu's background color.
-  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is
-  // fixed.
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
 }

@@ -8,7 +8,6 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
@@ -129,7 +128,6 @@ class AffordanceView : public views::View {
     cc::PaintFlags ripple_flags;
     ripple_flags.setAntiAlias(true);
     ripple_flags.setStyle(cc::PaintFlags::kFill_Style);
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     ripple_flags.setColor(ColorUtil::GetSecondToneColor(
         AshColorProvider::Get()->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::

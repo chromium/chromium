@@ -15,7 +15,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"

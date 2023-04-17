@@ -13,7 +13,6 @@
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -307,9 +306,6 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
 // Creates the banner view that will show on top of the notification image.
 std::unique_ptr<views::View> CreateBannerView() {
   std::unique_ptr<views::View> banner_view = std::make_unique<views::View>();
-  // Use the light mode as default as notification is still using light
-  // theme as the default theme.
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
 
   auto* layout =
       banner_view->SetLayoutManager(std::make_unique<views::BoxLayout>(

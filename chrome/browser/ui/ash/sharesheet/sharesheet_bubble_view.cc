@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
@@ -215,7 +214,6 @@ void SharesheetBubbleView::ShowBubble(
             IDR_SHARESHEET_EMPTY_STATE_IMAGE));
     image->SetProperty(views::kMarginsKey,
                        gfx::Insets::TLBR(0, 0, kSpacing, 0));
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     auto* color_provider = AshColorProvider::Get();
     body_view_->AddChildView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_PRIMARY_LABEL),
@@ -302,7 +300,6 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
     expanded_view_container->SetOrientation(
         views::BoxLayout::Orientation::kVertical);
 
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
     expanded_view_container
         ->AddChildView(CreateShareLabel(
             l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),

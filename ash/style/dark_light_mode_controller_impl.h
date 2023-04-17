@@ -71,9 +71,6 @@ class ASH_EXPORT DarkLightModeControllerImpl
   void RefreshFeatureState() override;
 
  private:
-  friend class ScopedLightModeAsDefault;
-  friend class ScopedAssistantLightModeAsDefault;
-
   // ScheduledFeature:
   const char* GetFeatureName() const override;
 
@@ -85,14 +82,6 @@ class ASH_EXPORT DarkLightModeControllerImpl
   // changed between creation and getting out of scope.
   base::ScopedClosureRunner GetNotifyOnDarkModeChangeClosure();
   void NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled);
-
-  // The default color is DARK when the DarkLightMode feature is disabled. But
-  // we can also override it to LIGHT through ScopedLightModeAsDefault. This is
-  // done to help keeping some of the UI elements as LIGHT by default before
-  // launching the DarkLightMode feature. Overriding only if the DarkLightMode
-  // feature is disabled. This variable will be removed once fully launched the
-  // DarkLightMode feature.
-  bool override_light_mode_as_default_ = false;
 
   // Temporary field for testing purposes while OOBE WebUI is being migrated.
   absl::optional<bool> is_dark_mode_enabled_in_oobe_for_testing_;

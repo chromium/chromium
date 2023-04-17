@@ -11,7 +11,6 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/typography.h"
@@ -229,7 +228,6 @@ class DragImageItemChipView : public DragImageItemView {
             DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
 
     // Label.
-    ScopedLightModeAsDefault scoped_light_mode;
     auto* label = AddChildView(bubble_utils::CreateLabel(
         TypographyToken::kCrosBody2, item->GetText()));
     // Label created via `bubble_utils::CreateLabel()` has an enabled color id,
@@ -310,10 +308,6 @@ class DragImageOverflowBadge : public views::View {
   }
 
   void InitLayout(size_t count) {
-    // NOTE: If the dark/light mode feature is disabled, the overflow badge
-    // should use light mode to be consistent with the `DragItemImageView`s.
-    ScopedLightModeAsDefault scoped_light_mode;
-
     // Background.
     SetBackground(views::CreateThemedRoundedRectBackground(
         ui::kColorAshFocusRing,

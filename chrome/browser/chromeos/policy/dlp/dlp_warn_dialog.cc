@@ -31,7 +31,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
@@ -327,10 +326,6 @@ void AddGeneralInformation(views::View* upper_panel,
                            DlpWarnDialog::DlpWarnDialogOptions options) {
 // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // When #dark-light-mode flag is disabled (default setting), the color mode is
-  // by default set to dark mode. The warn dialog has white background for the
-  // default setting, so it should use light mode color palette.
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -399,10 +394,6 @@ void AddConfidentialContentRow(views::View* container,
                                const std::u16string& confidential_title) {
 // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // When #dark-light-mode flag is disabled (default setting), the color mode is
-  // by default set to dark mode. The warn dialog has white background for the
-  // default setting, so it should use light mode color palette.
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
