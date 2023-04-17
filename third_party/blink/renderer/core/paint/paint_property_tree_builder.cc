@@ -2107,6 +2107,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       FloatRoundedRect paint_clip_rect =
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
                                                                 box_rect);
+
+      if (pre_paint_info_) {
+        gfx::Vector2dF offset(
+            -OffsetInStitchedFragments(pre_paint_info_->box_fragment));
+        layout_clip_rect.Offset(offset);
+        paint_clip_rect.Move(offset);
+      }
+
       AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
                                              paint_clip_rect);
       ClipPaintPropertyNode::State state(context_.current.transform,
