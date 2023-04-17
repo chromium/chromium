@@ -65,10 +65,6 @@ user_education::FeaturePromoSpecification::StringReplacements
 GetReplacementsForFeature(const base::Feature& feature) {
   if (&feature == &feature_engagement::kIPHDesktopPwaInstallFeature)
     return {u"Placeholder Text"};
-#if BUILDFLAG(IS_CHROMEOS)
-  if (&feature == &feature_engagement::kIPHIntentChipFeature)
-    return {u"Chrome device"};
-#endif
   return {};
 }
 
@@ -288,58 +284,3 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogWebUITabStripTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-// Need a separate fixture to override the feature flag.
-class FeaturePromoDialogIntentChipTest : public FeaturePromoDialogTest {
- public:
-  FeaturePromoDialogIntentChipTest() {
-    feature_list_.InitAndEnableFeature(apps::features::kLinkCapturingUiUpdate);
-  }
-
-  ~FeaturePromoDialogIntentChipTest() override = default;
-
-  std::string InstallWebApp(const std::string& app_name, const GURL& url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->title = base::UTF8ToUTF16(app_name);
-    web_app_info->start_url = url;
-    web_app_info->scope = url;
-    web_app_info->user_display_mode =
-        web_app::mojom::UserDisplayMode::kStandalone;
-    auto app_id = web_app::test::InstallWebApp(browser()->profile(),
-                                               std::move(web_app_info));
-    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
-    return app_id;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(https://crbug.com/1412122): flaky on chromeos.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InvokeUi_IPH_IntentChip DISABLED_InvokeUi_IPH_IntentChip
-#else
-#define MAYBE_InvokeUi_IPH_IntentChip InvokeUi_IPH_IntentChip
-#endif
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogIntentChipTest,
-                       MAYBE_InvokeUi_IPH_IntentChip) {
-  set_baseline("3564824");
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  std::string app_name = "test";
-  GURL test_url(
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
-  InstallWebApp(app_name, test_url);
-
-  IntentChipButton* intent_chip =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetIntentChipButton();
-
-  ASSERT_TRUE(intent_chip);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  ASSERT_TRUE(intent_chip->GetVisible());
-
-  ShowAndVerifyUi();
-}

@@ -134,21 +134,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHIntentChipFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-
-    // Show the IPH once a month if the intent chip hasn't opened any app in
-    // a year.
-    config->trigger =
-        EventConfig("intent_chip_trigger", Comparator(EQUAL, 0), 30, 360);
-    config->used =
-        EventConfig("intent_chip_opened_app", Comparator(EQUAL, 0), 360, 360);
-    return config;
-  }
-
   if (kIPHBatterySaverModeFeature.name == feature->name) {
     // Show promo once a year when the battery saver toolbar icon is visible.
     absl::optional<FeatureConfig> config = FeatureConfig();

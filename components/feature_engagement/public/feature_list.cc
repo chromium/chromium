@@ -164,7 +164,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopPwaInstallFeature,
     &kIPHProfileSwitchFeature,
     &kIPHDesktopSharedHighlightingFeature,
-    &kIPHIntentChipFeature,
     &kIPHWebUiHelpBubbleTestFeature,
     &kIPHPriceTrackingInSidePanelFeature,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||

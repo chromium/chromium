@@ -293,7 +293,6 @@ DEFINE_VARIATION_PARAM(kIPHDesktopPwaInstallFeature, "IPH_DesktopPwaInstall");
 DEFINE_VARIATION_PARAM(kIPHProfileSwitchFeature, "IPH_ProfileSwitch");
 DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
                        "IPH_DesktopSharedHighlighting");
-DEFINE_VARIATION_PARAM(kIPHIntentChipFeature, "IPH_IntentChip");
 DEFINE_VARIATION_PARAM(kIPHWebUiHelpBubbleTestFeature,
                        "IPH_WebUiHelpBubbleTest");
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingInSidePanelFeature,
@@ -464,7 +463,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),
         VARIATION_ENTRY(kIPHProfileSwitchFeature),
         VARIATION_ENTRY(kIPHDesktopSharedHighlightingFeature),
-        VARIATION_ENTRY(kIPHIntentChipFeature),
         VARIATION_ENTRY(kIPHWebUiHelpBubbleTestFeature),
         VARIATION_ENTRY(kIPHPriceTrackingInSidePanelFeature),
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
