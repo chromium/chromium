@@ -19,7 +19,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -30,7 +29,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Field;
 
 /**
  * Generic dialog view for app modal or tab modal alert dialogs.
@@ -256,25 +254,19 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         Button negativeButton = getButton(ModalDialogProperties.ButtonType.NEGATIVE);
         View.OnTouchListener onTouchListener = (View v, MotionEvent ev) -> {
             boolean shouldBlockTouchEvent = false;
-
-            try {
-                Field field = MotionEvent.class.getField("FLAG_WINDOW_IS_PARTIALLY_OBSCURED");
-                if ((ev.getFlags() & field.getInt(null)) != 0) {
-                    shouldBlockTouchEvent = true;
-                }
-                if (ev.getAction() == MotionEvent.ACTION_DOWN && !mFilteredTouchResultRecorded) {
-                    mFilteredTouchResultRecorded = true;
-                    RecordHistogram.recordEnumeratedHistogram(UMA_SECURITY_FILTERED_TOUCH_RESULT,
-                            shouldBlockTouchEvent ? SecurityFilteredTouchResult.BLOCKED
-                                                  : SecurityFilteredTouchResult.HANDLED,
-                            SecurityFilteredTouchResult.NUM_ENTRIES);
-                }
-                if (shouldBlockTouchEvent && mOnTouchFilteredCallback != null
-                        && ev.getAction() == MotionEvent.ACTION_DOWN) {
-                    mOnTouchFilteredCallback.run();
-                }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                Log.e(TAG, "Reflection failure: " + e);
+            if ((ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0) {
+                shouldBlockTouchEvent = true;
+            }
+            if (ev.getAction() == MotionEvent.ACTION_DOWN && !mFilteredTouchResultRecorded) {
+                mFilteredTouchResultRecorded = true;
+                RecordHistogram.recordEnumeratedHistogram(UMA_SECURITY_FILTERED_TOUCH_RESULT,
+                        shouldBlockTouchEvent ? SecurityFilteredTouchResult.BLOCKED
+                                              : SecurityFilteredTouchResult.HANDLED,
+                        SecurityFilteredTouchResult.NUM_ENTRIES);
+            }
+            if (shouldBlockTouchEvent && mOnTouchFilteredCallback != null
+                    && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                mOnTouchFilteredCallback.run();
             }
             return shouldBlockTouchEvent;
         };
