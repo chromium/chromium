@@ -28,9 +28,9 @@ constexpr char kTargetArea[] = "target_area";
 constexpr char kTopLeft[] = "top_left";
 constexpr char kBottomRight[] = "bottom_right";
 
-std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value& value,
+std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value::Dict& dict,
                                                  base::StringPiece key) {
-  auto* point = value.FindDictKey(key);
+  const auto* point = dict.FindDict(key);
   if (!point) {
     LOG(ERROR) << "Apply area in mouse move action requires: " << key;
     return nullptr;
@@ -124,8 +124,9 @@ class ActionMove::ActionMoveKeyView : public ActionView {
                                   radius, allow_reposition_);
     } else {
       DCHECK(labels_.size() == keys.size());
-      for (size_t i = 0; i < keys.size(); i++)
+      for (size_t i = 0; i < keys.size(); i++) {
         labels_[i]->SetTextActionLabel(std::move(GetDisplayText(keys[i])));
+      }
     }
   }
 
@@ -244,19 +245,19 @@ bool ActionMove::InitFromEditor() {
 }
 
 bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
-  auto* keys = value.FindListKey(kKeys);
-  if (!keys) {
+  const auto* list = value.GetDict().FindList(kKeys);
+  if (!list) {
     LOG(ERROR) << "Require key codes for move key action: " << name_ << ".";
     return false;
   }
-  if (keys->GetList().size() != kActionMoveKeysSize) {
+  if (list->size() != kActionMoveKeysSize) {
     LOG(ERROR) << "Not right amount of keys for action move keys. Require {"
-               << kActionMoveKeysSize << "} keys, but got {"
-               << keys->GetList().size() << "} keys.";
+               << kActionMoveKeysSize << "} keys, but got {" << list->size()
+               << "} keys.";
     return false;
   }
   std::vector<ui::DomCode> keycodes;
-  for (const base::Value& val : keys->GetList()) {
+  for (const base::Value& val : *list) {
     DCHECK(val.is_string());
     auto key = ui::KeycodeConverter::CodeStringToDomCode(val.GetString());
     if (key == ui::DomCode::NONE) {
@@ -293,7 +294,7 @@ bool ActionMove::ParseJsonFromMouse(const base::Value& value) {
   original_input_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
   current_input_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
 
-  auto* target_area = value.FindDictKey(kTargetArea);
+  const auto* target_area = value.GetDict().FindDict(kTargetArea);
   if (target_area) {
     auto top_left = ParseApplyAreaPosition(*target_area, kTopLeft);
     if (!top_left) {
@@ -548,10 +549,10 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
   float y = last_touch_root_location_.y();
   last_touch_root_location_.set_x(
       std::clamp(x, content_bounds.x() * display_scale_factor,
-                  content_bounds.right() * display_scale_factor));
+                 content_bounds.right() * display_scale_factor));
   last_touch_root_location_.set_y(
       std::clamp(y, content_bounds.y() * display_scale_factor,
-                  content_bounds.bottom() * display_scale_factor));
+                 content_bounds.bottom() * display_scale_factor));
   if (rotation_transform) {
     last_touch_root_location_ =
         rotation_transform->MapPoint(last_touch_root_location_);

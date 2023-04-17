@@ -39,7 +39,7 @@ constexpr float kHalf = 0.5;
 std::vector<Position> ParseLocation(const base::Value::List& position) {
   std::vector<Position> positions;
   for (const base::Value& val : position) {
-    auto pos = ParsePosition(val);
+    const auto pos = ParsePosition(val.GetDict());
     if (!pos) {
       LOG(ERROR) << "Failed to parse location.";
       positions.clear();
@@ -59,8 +59,8 @@ void InitPositions(std::vector<Position>& positions) {
 
 }  // namespace
 
-std::unique_ptr<Position> ParsePosition(const base::Value& value) {
-  auto* type = value.FindStringKey(kType);
+std::unique_ptr<Position> ParsePosition(const base::Value::Dict& dict) {
+  const auto* type = dict.FindString(kType);
   if (!type) {
     LOG(ERROR) << "There must be type for each position.";
     return nullptr;
@@ -76,8 +76,7 @@ std::unique_ptr<Position> ParsePosition(const base::Value& value) {
     return nullptr;
   }
 
-  DCHECK(value.is_dict());
-  bool succeed = pos->ParseFromJson(value.GetDict());
+  bool succeed = pos->ParseFromJson(dict);
   if (!succeed) {
     LOG(ERROR) << "Position is parsed incorrectly on type: " << *type;
     return nullptr;
