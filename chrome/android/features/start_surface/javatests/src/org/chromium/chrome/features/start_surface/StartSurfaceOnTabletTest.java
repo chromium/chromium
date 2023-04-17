@@ -63,7 +63,7 @@ public class StartSurfaceOnTabletTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(), 1, TAB_URL, false /* expectHomeSurfaceUiShown */);
+                mActivityTestRule.getActivity(), 1, TAB_URL, null /* expectHomeSurfaceUiShown */);
     }
 
     @Test
@@ -116,17 +116,17 @@ public class StartSurfaceOnTabletTest {
         // Verifies that no new NTP is created, and the existing NTP is reused and set as the
         // current Tab.
         verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, modifiedNtpUrl,
-                true /* expectHomeSurfaceUiShown */);
+                false /* expectHomeSurfaceUiShown */);
     }
 
     private void verifyTabCountAndActiveTabUrl(
-            ChromeTabbedActivity cta, int tabCount, String url, boolean expectHomeSurfaceUiShown) {
+            ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
         Tab tab = StartSurfaceTestUtils.getCurrentTabFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec())); });
-        if (expectHomeSurfaceUiShown) {
-            Assert.assertTrue(
+        if (expectHomeSurfaceUiShown != null) {
+            Assert.assertEquals(expectHomeSurfaceUiShown,
                     ((NewTabPage) tab.getNativePage()).isSingleTabCardVisibleForTesting());
         }
     }

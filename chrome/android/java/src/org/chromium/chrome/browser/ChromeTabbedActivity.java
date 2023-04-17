@@ -374,6 +374,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
     private int mWindowId;
 
+    // The URL of the last active Tab read from the Tab metadata file during cold startup.
+    private String mLastActiveTabUrl;
+
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
         public boolean hasIncognitoTabs() {
@@ -1301,6 +1304,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 shouldShowHomeSurfaceAtStartupOnTablet = shouldShowNtpHomeSurfaceOnStartup();
                 if (shouldShowHomeSurfaceAtStartupOnTablet) {
                     onStandardActiveIndexRead = url -> {
+                        mLastActiveTabUrl = url;
                         if (UrlUtilities.isNTPUrl(url)) {
                             assert !mTabModelSelector.isIncognitoSelected();
                             isActiveUrlNTP.set(true);
@@ -1350,14 +1354,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     && !hasTabWaitingForReparenting) {
                 // If a home surface should be shown at startup on tablets and the last active Tab
                 // is a NTP, we will reuse it to show the home surface UI. Otherwise, we'll create
-                // one, and set it as the active Tab.
-                if (isActiveUrlNTP.get()) {
-                    ReturnToChromeUtil.showHomeSurfaceOnNextNtp(
-                            getCurrentTabModel(), mTabModelSelector);
-                } else {
-                    ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(getTabCreator(false));
+                // one, and set it as the active Tab. |mLastActiveTabUrl| is null when there isn't
+                // any Tab.
+                if (!isActiveUrlNTP.get() && mLastActiveTabUrl != null) {
+                    ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(
+                            getTabCreator(false), mTabModelSelector, mLastActiveTabUrl, null);
                     activeTabBeingRestored = false;
                     mCreatedTabOnStartup = true;
+                    mLastActiveTabUrl = null;
                 }
             }
 

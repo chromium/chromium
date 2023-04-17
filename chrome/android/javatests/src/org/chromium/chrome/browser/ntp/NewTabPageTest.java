@@ -864,7 +864,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(mostRecentTab));
 
         View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
         assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
@@ -891,13 +891,15 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testSingleTabCardDestroy() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
+        Tab mostRecentTab = activity.getActivityTab();
         Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(newTab);
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(mostRecentTab));
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -922,13 +924,15 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testSingleTabCardHide() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
+        Tab mostRecentTab = activity.getActivityTab();
         Tab newTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(newTab);
         NewTabPage ntp = (NewTabPage) newTab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(mostRecentTab));
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -968,7 +972,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(originalMostRecentTab));
 
         View singleTabCardView = ntpLayout.findViewById(R.id.single_tab_view);
         assertEquals("The single tab card is still invisible after initialization.", View.VISIBLE,
@@ -985,7 +989,7 @@ public class NewTabPageTest {
             TabModelUtils.setIndex(activity.getCurrentTabModel(),
                     TabModelUtils.getTabIndexById(activity.getCurrentTabModel(), tab.getId()),
                     false);
-            ntp.showHomeSurfaceUi();
+            ntp.showHomeSurfaceUi(newMostRecentTab);
         });
 
         assertEquals("The single tab card is invisible after updating the single tab card.",
@@ -1013,7 +1017,7 @@ public class NewTabPageTest {
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
 
-        TestThreadUtils.runOnUiThreadBlocking(ntp::showHomeSurfaceUi);
+        TestThreadUtils.runOnUiThreadBlocking(() -> ntp.showHomeSurfaceUi(originalMostRecentTab));
 
         ViewGroup singleTabCardViewContainer =
                 ntpLayout.findViewById(R.id.tab_switcher_module_container);
@@ -1029,12 +1033,12 @@ public class NewTabPageTest {
                     originalMostRecentTabTitleForCheck, title.getText());
         });
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        Tab newMostRecentTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabModelUtils.setIndex(activity.getCurrentTabModel(),
                     TabModelUtils.getTabIndexById(activity.getCurrentTabModel(), tab.getId()),
                     false);
-            ntp.showHomeSurfaceUi();
+            ntp.showHomeSurfaceUi(newMostRecentTab);
         });
 
         assertEquals("The single tab card container is still visible after updating with "

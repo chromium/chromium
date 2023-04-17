@@ -506,31 +506,45 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Creates a new Tab.
+     * Creates a new Tab and show Home surface UI. This is called when the last active Tab isn't a
+     * NTP, and we need to create one and show Home surface UI (a module showing the last active
+     * Tab).
      * @param tabCreator The {@link TabCreator} object.
+     * @param tabModelSelector The {@link TabModelSelector} object.
+     * @param lastActiveTabUrl The URL of the last active Tab. It is non-null in cold startup before
+     *                         the Tab is restored.
+     * @param lastActiveTab The object of the last active Tab. It is non-null after TabModel is
+     *                      initialized, e.g., in warm startup.
      */
-    public static Tab createNewTabAndShowHomeSurfaceUi(TabCreator tabCreator) {
-        // Creates a new Tab if doesn't find an existing to reuse.
-        Tab tab = tabCreator.createNewTab(
-                new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
-        showHomeSurfaceUiOnNtp(tab);
-        return tab;
-    }
+    public static Tab createNewTabAndShowHomeSurfaceUi(TabCreator tabCreator,
+            TabModelSelector tabModelSelector, @Nullable String lastActiveTabUrl,
+            @Nullable Tab lastActiveTab) {
+        assert lastActiveTab != null || lastActiveTabUrl != null;
 
-    /**
-     * Shows the home surface UI on the next active NTP.
-     */
-    public static void showHomeSurfaceOnNextNtp(
-            TabModel currentTabModel, TabModelSelector tabModelSelector) {
-        TabModelObserver observer = new TabModelObserver() {
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                assert tab.isNativePage() && tab.getNativePage() instanceof NewTabPage;
-                ReturnToChromeUtil.showHomeSurfaceUiOnNtp(tab);
-                currentTabModel.removeObserver(this);
-            }
-        };
-        tabModelSelector.getModel(false).addObserver(observer);
+        // Creates a new Tab if doesn't find an existing to reuse.
+        Tab ntpTab = tabCreator.createNewTab(
+                new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+
+        // If the last active Tab isn't ready yet, we will listen to the willAddTab() event and find
+        // the Tab instance with the given last active Tab's URL. The last active Tab is always the
+        // first one to be restored.
+        if (lastActiveTab == null) {
+            assert lastActiveTabUrl != null;
+            TabModelObserver observer = new TabModelObserver() {
+                @Override
+                public void willAddTab(Tab tab, int type) {
+                    assert TextUtils.equals(lastActiveTabUrl, tab.getUrl().getSpec())
+                        : "The URL of first Tab restored doesn't match the URL of the last active Tab read from the Tab state metadata file!";
+                    showHomeSurfaceUiOnNtp(ntpTab, tab);
+                    tabModelSelector.getModel(false).removeObserver(this);
+                }
+            };
+            tabModelSelector.getModel(false).addObserver(observer);
+        } else {
+            showHomeSurfaceUiOnNtp(ntpTab, lastActiveTab);
+        }
+
+        return ntpTab;
     }
 
     /**
@@ -548,12 +562,19 @@ public final class ReturnToChromeUtil {
             return;
         }
 
+        int index = currentTabModel.index();
+        Tab lastActiveTab = TabModelUtils.getCurrentTab(currentTabModel);
+        if (lastActiveTab == null) return;
+
         int indexOfFirstNtp = TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
         if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
+            // If the last active Tab is NTP, early return here.
+            if (indexOfFirstNtp == index) return;
+
             TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
-            showHomeSurfaceUiOnNtp(currentTabModel.getTabAt(indexOfFirstNtp));
+            showHomeSurfaceUiOnNtp(currentTabModel.getTabAt(indexOfFirstNtp), lastActiveTab);
         } else {
-            createNewTabAndShowHomeSurfaceUi(tabCreator);
+            createNewTabAndShowHomeSurfaceUi(tabCreator, null, null, lastActiveTab);
         }
     }
 
@@ -692,8 +713,8 @@ public final class ReturnToChromeUtil {
     /**
      * Shows the home surface UI on the given Ntp on tablets.
      */
-    private static void showHomeSurfaceUiOnNtp(Tab ntpTab) {
+    private static void showHomeSurfaceUiOnNtp(Tab ntpTab, Tab lastActiveTab) {
         assert ntpTab.isNativePage();
-        ((NewTabPage) ntpTab.getNativePage()).showHomeSurfaceUi();
+        ((NewTabPage) ntpTab.getNativePage()).showHomeSurfaceUi(lastActiveTab);
     }
 }

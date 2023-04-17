@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -509,7 +510,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
-    public void testShowNtpAsHomeSurfaceAtStartupOnTablet() {
+    public void testShouldShowNtpAsHomeSurfaceAtStartupOnTablet() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
         // Sets main intent from launcher:
@@ -557,11 +558,23 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(mNewTabPage).when(mNtpTab).getNativePage();
         doReturn(mNtpTab).when(mCurrentTabModel).getTabAt(1);
 
+        // Verifies that if the NTP is the last active Tab, we don't call showHomeSurfaceUi().
+        doReturn(1).when(mCurrentTabModel).index();
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+                false, true /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
+        verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
+        verify(mCurrentTabModel, never())
+                .setIndex(anyInt(), eq(TabSelectionType.FROM_USER), eq(false));
+        verify(mNewTabPage, never()).showHomeSurfaceUi(any());
+
+        // Verifies that if the NTP isn't the last active Tab, we reuse it, set index and call
+        // showHomeSurfaceUi() to show the single tab card module.
+        doReturn(0).when(mCurrentTabModel).index();
         ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
                 false, true /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
         verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
         verify(mCurrentTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER), eq(false));
-        verify(mNewTabPage).showHomeSurfaceUi();
+        verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
     }
 
     @Test
@@ -586,10 +599,25 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(mNtpTab)
                 .when(mTabCreater)
                 .createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
+        doReturn(0).when(mCurrentTabModel).index();
         ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
                 false, true /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
         verify(mTabCreater, times(1)).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
-        verify(mNewTabPage).showHomeSurfaceUi();
+        verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    public void testNoAnyTabCase() {
+        Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
+
+        doReturn(0).when(mCurrentTabModel).getCount();
+
+        // Verifies that if there isn't any existing Tab, we don't create a home surface NTP.
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+                false, true /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
+        verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
     }
 
     private Intent createMainIntentFromLauncher() {
