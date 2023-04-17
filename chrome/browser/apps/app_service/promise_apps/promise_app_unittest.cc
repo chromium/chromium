@@ -13,8 +13,6 @@ class PromiseAppsTest : public testing::Test {};
 
 TEST_F(PromiseAppsTest, PromiseStatusEnumToString) {
   EXPECT_EQ(EnumToString(PromiseStatus::kPending), "PromiseStatus::kPending");
-  EXPECT_EQ(EnumToString(PromiseStatus::kDownloading),
-            "PromiseStatus::kDownloading");
   EXPECT_EQ(EnumToString(PromiseStatus::kInstalling),
             "PromiseStatus::kInstalling");
   EXPECT_EQ(EnumToString(PromiseStatus::kUnknown), "PromiseStatus::kUnknown");

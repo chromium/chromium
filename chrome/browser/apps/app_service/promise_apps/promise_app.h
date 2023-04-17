@@ -15,9 +15,8 @@ namespace apps {
 // Indicates the status of the app installation that the promise app represents.
 enum class PromiseStatus {
   kUnknown,
-  kPending,      // Waiting for the installation process to start.
-  kDownloading,  // Downloading app package.
-  kInstalling,   // Installing app package.
+  kPending,     // Waiting for the installation process to start.
+  kInstalling,  // Installing app package.
 };
 
 std::string EnumToString(PromiseStatus);

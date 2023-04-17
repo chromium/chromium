@@ -11,7 +11,7 @@
 
 namespace apps {
 
-APP_ENUM_TO_STRING(PromiseStatus, kUnknown, kPending, kDownloading, kInstalling)
+APP_ENUM_TO_STRING(PromiseStatus, kUnknown, kPending, kInstalling)
 
 PromiseApp::PromiseApp(const apps::PackageId& package_id)
     : package_id(package_id) {}

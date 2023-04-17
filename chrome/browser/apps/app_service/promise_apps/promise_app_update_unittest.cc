@@ -75,7 +75,7 @@ TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
   PromiseApp promise_app_new = PromiseApp(package_id);
   promise_app_new.name = "New name";
   promise_app_new.progress = 0.9;
-  promise_app_new.status = PromiseStatus::kDownloading;
+  promise_app_new.status = PromiseStatus::kInstalling;
   promise_app_new.should_show = true;
 
   PromiseAppUpdate u(&promise_app_old, &promise_app_new);
@@ -90,7 +90,7 @@ TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
   EXPECT_FLOAT_EQ(u.Progress().value(), 0.9);
   EXPECT_EQ(u.ProgressChanged(), true);
 
-  EXPECT_EQ(u.Status(), PromiseStatus::kDownloading);
+  EXPECT_EQ(u.Status(), PromiseStatus::kInstalling);
   EXPECT_EQ(u.StatusChanged(), true);
 
   EXPECT_EQ(u.ShouldShow(), true);
