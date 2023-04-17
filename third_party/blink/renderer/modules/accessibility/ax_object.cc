@@ -5519,9 +5519,10 @@ void AXObject::ClearChildren() const {
   if (slot)
     return;
 
-  // TODO(accessibility) Is this needed? Aren't image children already included?
-  if (Node* map = GetMapForImage(node))
+  Node* map = GetMapForImage(node);
+  if (map) {
     node = map;
+  }
 
   // Detach unincluded children from their parent (this).
   // These are children that were not cleared from first loop, as well as
@@ -5530,15 +5531,26 @@ void AXObject::ClearChildren() const {
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
     // Get the child object that should be detached from this parent.
-    // Do not invalidate from layout, because it nay be  unsafe to check layout
+    // Do not invalidate from layout, because it may be unsafe to check layout
     // at this time. However, do allow invalidations if an object changes its
     // display locking (content-visibility: auto) status, as this may be the
     // only chance to do that, and it's safe to do now.
     AXObject* ax_child_from_node = AXObjectCache().SafeGet(child_node, true);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
-      // Check current parent first. It may be owned by another node.
-      ax_child_from_node->DetachFromParent();
+      if (map) {
+        // Children (and other descendants, recursively) of a <map> need to be
+        // fully removed, because they may no longer have a valid AX parent if
+        // the image is removed. See HTMLMapElement and HTMLImageElement-related
+        // code in AXObject::GetParentNodeForComputeParent.
+        // Since this code only runs when |map| is set, and therefore
+        // |node| is an image outside the map, this only needs to happen for
+        // the map descendants, not the image descendants.
+        AXObjectCache().RemoveSubtreeWithFlatTraversal(ax_child_from_node,
+                                                       false);
+      } else {
+        ax_child_from_node->DetachFromParent();
+      }
     }
   }
 }
