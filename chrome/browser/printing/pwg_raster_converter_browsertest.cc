@@ -40,6 +40,19 @@ constexpr char kPdfToPwgRasterLongEdgeTestFile[] =
     "pdf_to_pwg_raster_long_edge_test_32.pwg";
 constexpr char kPdfToPwgRasterLongEdgeTestSkiaFile[] =
     "pdf_to_pwg_raster_long_edge_test_skia_32.pwg";
+#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+constexpr char kPdfToPwgRasterColorTestFile[] =
+    "pdf_to_pwg_raster_test_mac_arm.pwg";
+constexpr char kPdfToPwgRasterColorTestSkiaFile[] =
+    "pdf_to_pwg_raster_test_skia_mac_arm.pwg";
+constexpr char kPdfToPwgRasterMonoTestFile[] =
+    "pdf_to_pwg_raster_mono_test_mac_arm.pwg";
+constexpr char kPdfToPwgRasterMonoTestSkiaFile[] =
+    "pdf_to_pwg_raster_mono_test_skia_mac_arm.pwg";
+constexpr char kPdfToPwgRasterLongEdgeTestFile[] =
+    "pdf_to_pwg_raster_long_edge_test_mac_arm.pwg";
+constexpr char kPdfToPwgRasterLongEdgeTestSkiaFile[] =
+    "pdf_to_pwg_raster_long_edge_test_skia_mac_arm.pwg";
 #else
 constexpr char kPdfToPwgRasterColorTestFile[] = "pdf_to_pwg_raster_test.pwg";
 constexpr char kPdfToPwgRasterColorTestSkiaFile[] =
