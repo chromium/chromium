@@ -19,7 +19,10 @@
 
   cr-toast {
     justify-content: space-between;
-    margin: 58px 8px;
+    left: 50%;
+    margin: 58px 0;
+    transform: translate(-50%, 0);
+    width: calc(100% - 16px);
   }
 
   cr-toolbar-search-field {
@@ -91,7 +94,7 @@
   }
 
   :host-context([chrome-refresh-2023]) sp-heading {
-    margin: 8px 16px;
+    margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
   }
 
   .icon-button-row {
