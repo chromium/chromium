@@ -30,7 +30,7 @@ export type RealmType = Script.RealmType;
 export class Realm {
   readonly #realmStorage: RealmStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #realmId: string;
+  readonly #realmId: Script.Realm;
   readonly #browsingContextId: string;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
@@ -45,7 +45,7 @@ export class Realm {
   constructor(
     realmStorage: RealmStorage,
     browsingContextStorage: BrowsingContextStorage,
-    realmId: string,
+    realmId: Script.Realm,
     browsingContextId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
@@ -177,7 +177,7 @@ export class Realm {
     };
   }
 
-  get realmId(): string {
+  get realmId(): Script.Realm {
     return this.#realmId;
   }
 
@@ -215,7 +215,7 @@ export class Realm {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership
   ): Promise<Script.CallFunctionResult> {
-    const context = this.#browsingContextStorage.getKnownContext(
+    const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();
@@ -237,7 +237,7 @@ export class Realm {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership
   ): Promise<Script.EvaluateResult> {
-    const context = this.#browsingContextStorage.getKnownContext(
+    const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();

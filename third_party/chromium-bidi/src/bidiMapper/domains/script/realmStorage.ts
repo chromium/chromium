@@ -16,13 +16,13 @@
  */
 import {Protocol} from 'devtools-protocol';
 
-import {Message} from '../../../protocol/protocol.js';
+import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 
 import {Realm, RealmType} from './realm.js';
 
 type RealmFilter = {
-  realmId?: string;
-  browsingContextId?: string;
+  realmId?: Script.Realm;
+  browsingContextId?: CommonDataTypes.BrowsingContext;
   navigableId?: string;
   executionContextId?: Protocol.Runtime.ExecutionContextId;
   origin?: string;
@@ -34,7 +34,9 @@ type RealmFilter = {
 export class RealmStorage {
   /** Tracks handles and their realms sent to the client. */
   readonly #knownHandlesToRealm = new Map<string, string>();
-  readonly #realmMap = new Map<string, Realm>();
+
+  /** Map from realm ID to Realm. */
+  readonly #realmMap = new Map<Script.Realm, Realm>();
 
   get knownHandlesToRealm() {
     return this.#knownHandlesToRealm;

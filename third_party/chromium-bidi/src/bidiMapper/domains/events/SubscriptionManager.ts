@@ -225,7 +225,7 @@ export class SubscriptionManager {
     // Assert all contexts are known.
     for (const contextId of contextIds) {
       if (contextId !== null) {
-        this.#browsingContextStorage.getKnownContext(contextId);
+        this.#browsingContextStorage.getContext(contextId);
       }
     }
 

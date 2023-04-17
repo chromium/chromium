@@ -174,7 +174,7 @@ export class EventManager implements IEventManager {
     for (const contextId of contextIds) {
       if (contextId !== null) {
         // Assert the context is known. Throw exception otherwise.
-        this.#bidiServer.getBrowsingContextStorage().getKnownContext(contextId);
+        this.#bidiServer.getBrowsingContextStorage().getContext(contextId);
       }
     }
 
@@ -223,7 +223,7 @@ export class EventManager implements IEventManager {
       } else {
         await this.#bidiServer
           .getBrowsingContextStorage()
-          .getKnownContext(contextId)
+          .getContext(contextId)
           .cdpTarget.enableNetworkDomain();
       }
     }
@@ -318,9 +318,7 @@ export class EventManager implements IEventManager {
             // Events without context are already in the result.
             _contextId !== null &&
             // Events from deleted contexts should not be sent.
-            this.#bidiServer
-              .getBrowsingContextStorage()
-              .hasKnownContext(_contextId)
+            this.#bidiServer.getBrowsingContextStorage().hasContext(_contextId)
         )
         .map((_contextId) =>
           this.#getBufferedEvents(eventName, _contextId, channel)

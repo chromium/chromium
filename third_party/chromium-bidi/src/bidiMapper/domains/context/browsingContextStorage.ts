@@ -15,43 +15,53 @@
  * limitations under the License.
  */
 
-import {Message} from '../../../protocol/protocol.js';
+import {CommonDataTypes, Message} from '../../../protocol/protocol.js';
 
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 
+/** Container class for browsing contexts.  */
 export class BrowsingContextStorage {
-  readonly #contexts = new Map<string, BrowsingContextImpl>();
+  /** Map from context ID to context implementation. */
+  readonly #contexts = new Map<
+    CommonDataTypes.BrowsingContext,
+    BrowsingContextImpl
+  >();
 
+  /** Gets all top-level contexts, i.e. those with no parent. */
   getTopLevelContexts(): BrowsingContextImpl[] {
-    return Array.from(this.#contexts.values()).filter(
-      (c) => c.parentId === null
-    );
+    return this.getAllContexts().filter((c) => c.isTopLevelContext());
   }
 
+  /** Gets all contexts. */
   getAllContexts(): BrowsingContextImpl[] {
     return Array.from(this.#contexts.values());
   }
 
-  removeContext(contextId: string) {
+  /** Deletes the context with the given ID. */
+  deleteContext(contextId: string) {
     this.#contexts.delete(contextId);
   }
 
+  /** Adds the given context. */
   addContext(context: BrowsingContextImpl) {
     this.#contexts.set(context.contextId, context);
-    if (context.parentId !== null) {
-      this.getKnownContext(context.parentId).addChild(context);
+    if (!context.isTopLevelContext()) {
+      this.getContext(context.parentId!).addChild(context);
     }
   }
 
-  hasKnownContext(contextId: string): boolean {
+  /** Returns true whether there is an existing context with the given ID. */
+  hasContext(contextId: string): boolean {
     return this.#contexts.has(contextId);
   }
 
+  /** Gets the context with the given ID, if any. */
   findContext(contextId: string): BrowsingContextImpl | undefined {
     return this.#contexts.get(contextId);
   }
 
-  getKnownContext(contextId: string): BrowsingContextImpl {
+  /** Gets the context with the given ID, if any, otherwise throws. */
+  getContext(contextId: string): BrowsingContextImpl {
     const result = this.findContext(contextId);
     if (result === undefined) {
       throw new Message.NoSuchFrameException(`Context ${contextId} not found`);

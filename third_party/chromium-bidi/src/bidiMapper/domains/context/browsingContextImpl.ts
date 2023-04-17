@@ -29,6 +29,23 @@ import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {CdpTarget} from './cdpTarget';
 
 export class BrowsingContextImpl {
+  /** The ID of the current context. */
+  readonly #contextId: string;
+
+  /**
+   * The ID of the parent context.
+   * If null, this is a top-level context.
+   */
+  readonly #parentId: string | null;
+
+  /**
+   * Children contexts.
+   * Map from children context ID to context implementation.
+   */
+  readonly #children = new Map<string, BrowsingContextImpl>();
+
+  readonly #browsingContextStorage: BrowsingContextStorage;
+
   readonly #defers = {
     documentInitialized: new Deferred<void>(),
     Page: {
@@ -41,27 +58,13 @@ export class BrowsingContextImpl {
     },
   };
 
-  readonly #contextId: string;
-  readonly #parentId: string | null;
-  readonly #eventManager: IEventManager;
-  readonly #children = new Map<string, BrowsingContextImpl>();
-  readonly #realmStorage: RealmStorage;
-
   #url = 'about:blank';
+  readonly #eventManager: IEventManager;
+  readonly #realmStorage: RealmStorage;
   #loaderId: string | null = null;
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm: Realm | undefined;
-  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #logger?: LoggerFn;
-
-  get #defaultRealm(): Realm {
-    if (this.#maybeDefaultRealm === undefined) {
-      throw new Error(
-        `No default realm for browsing context ${this.#contextId}`
-      );
-    }
-    return this.#maybeDefaultRealm;
-  }
 
   private constructor(
     cdpTarget: CdpTarget,
@@ -91,7 +94,7 @@ export class BrowsingContextImpl {
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
-  ) {
+  ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
       cdpTarget,
       realmStorage,
@@ -111,20 +114,19 @@ export class BrowsingContextImpl {
       },
       context.contextId
     );
+
+    return context;
   }
 
-  // https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
+  /**
+   * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
+   */
   get navigableId(): string | null {
     return this.#loaderId;
   }
 
-  updateCdpTarget(cdpTarget: CdpTarget) {
-    this.#cdpTarget = cdpTarget;
-    this.#initListeners();
-  }
-
   async delete() {
-    await this.#removeChildContexts();
+    await this.#deleteChildren();
 
     this.#realmStorage.deleteRealms({
       browsingContextId: this.contextId,
@@ -132,9 +134,7 @@ export class BrowsingContextImpl {
 
     // Remove context from the parent.
     if (this.parentId !== null) {
-      const parent = this.#browsingContextStorage.getKnownContext(
-        this.parentId
-      );
+      const parent = this.#browsingContextStorage.getContext(this.parentId);
       parent.#children.delete(this.contextId);
     }
 
@@ -145,43 +145,96 @@ export class BrowsingContextImpl {
       },
       this.contextId
     );
-    this.#browsingContextStorage.removeContext(this.contextId);
+    this.#browsingContextStorage.deleteContext(this.contextId);
   }
 
-  async #removeChildContexts() {
-    await Promise.all(this.children.map((child) => child.delete()));
-  }
-
+  /** Returns the ID of this context. */
   get contextId(): string {
     return this.#contextId;
   }
 
+  /** Returns the parent context ID. */
   get parentId(): string | null {
     return this.#parentId;
   }
 
-  get cdpTarget(): CdpTarget {
-    return this.#cdpTarget;
-  }
-
+  /** Returns all children contexts. */
   get children(): BrowsingContextImpl[] {
     return Array.from(this.#children.values());
   }
 
-  get url(): string {
-    return this.#url;
+  /**
+   * Returns true if this is a top-level context.
+   * This is the case whenever the parent context ID is null.
+   */
+  isTopLevelContext(): boolean {
+    return this.#parentId === null;
   }
 
   addChild(child: BrowsingContextImpl) {
     this.#children.set(child.contextId, child);
   }
 
-  async awaitLoaded(): Promise<void> {
+  async #deleteChildren() {
+    await Promise.all(this.children.map((child) => child.delete()));
+  }
+
+  get #defaultRealm(): Realm {
+    if (this.#maybeDefaultRealm === undefined) {
+      throw new Error(
+        `No default realm for browsing context ${this.#contextId}`
+      );
+    }
+    return this.#maybeDefaultRealm;
+  }
+
+  get cdpTarget(): CdpTarget {
+    return this.#cdpTarget;
+  }
+
+  updateCdpTarget(cdpTarget: CdpTarget) {
+    this.#cdpTarget = cdpTarget;
+    this.#initListeners();
+  }
+
+  get url(): string {
+    return this.#url;
+  }
+
+  async awaitLoaded() {
     await this.#defers.Page.lifecycleEvent.load;
   }
 
-  async awaitUnblocked(): Promise<void> {
+  awaitUnblocked(): Promise<void> {
     return this.#cdpTarget.targetUnblocked;
+  }
+
+  async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
+    if (sandbox === undefined || sandbox === '') {
+      return this.#defaultRealm;
+    }
+
+    let maybeSandboxes = this.#realmStorage.findRealms({
+      browsingContextId: this.contextId,
+      sandbox,
+    });
+
+    if (maybeSandboxes.length === 0) {
+      await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
+        frameId: this.contextId,
+        worldName: sandbox,
+      });
+      // `Runtime.executionContextCreated` should be emitted by the time the
+      // previous command is done.
+      maybeSandboxes = this.#realmStorage.findRealms({
+        browsingContextId: this.contextId,
+        sandbox,
+      });
+    }
+    if (maybeSandboxes.length !== 1) {
+      throw Error(`Sandbox ${sandbox} wasn't created.`);
+    }
+    return maybeSandboxes[0]!;
   }
 
   serializeToBidiValue(
@@ -223,7 +276,7 @@ export class BrowsingContextImpl {
         // At the point the page is initiated, all the nested iframes from the
         // previous page are detached and realms are destroyed.
         // Remove context's children.
-        await this.#removeChildContexts();
+        await this.#deleteChildren();
 
         // Remove all the already created realms.
         this.#realmStorage.deleteRealms({browsingContextId: this.contextId});
@@ -444,34 +497,6 @@ export class BrowsingContextImpl {
         url,
       },
     };
-  }
-
-  async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
-    if (sandbox === undefined || sandbox === '') {
-      return this.#defaultRealm;
-    }
-
-    let maybeSandboxes = this.#realmStorage.findRealms({
-      browsingContextId: this.contextId,
-      sandbox,
-    });
-
-    if (maybeSandboxes.length === 0) {
-      await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
-        frameId: this.contextId,
-        worldName: sandbox,
-      });
-      // `Runtime.executionContextCreated` should be emitted by the time the
-      // previous command is done.
-      maybeSandboxes = this.#realmStorage.findRealms({
-        browsingContextId: this.contextId,
-        sandbox,
-      });
-    }
-    if (maybeSandboxes.length !== 1) {
-      throw Error(`Sandbox ${sandbox} wasn't created.`);
-    }
-    return maybeSandboxes[0]!;
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {

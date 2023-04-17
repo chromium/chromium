@@ -59,9 +59,8 @@ export class BrowsingContextProcessor {
   }
 
   /**
-   * `BrowsingContextProcessor` is responsible for creating and destroying all
-   * the targets and browsing contexts. This method is called for each CDP
-   * session.
+   * This method is called for each CDP session, since this class is responsible
+   * for creating and destroying all targets and browsing contexts.
    */
   #setEventListeners(cdpClient: CdpClient) {
     cdpClient.on('Target.attachedToTarget', async (params) => {
@@ -164,10 +163,10 @@ export class BrowsingContextProcessor {
       this.#eventManager
     );
 
-    if (this.#browsingContextStorage.hasKnownContext(targetInfo.targetId)) {
+    if (this.#browsingContextStorage.hasContext(targetInfo.targetId)) {
       // OOPiF.
       this.#browsingContextStorage
-        .getKnownContext(targetInfo.targetId)
+        .getContext(targetInfo.targetId)
         .updateCdpTarget(cdpTarget);
     } else {
       BrowsingContextImpl.create(
@@ -196,13 +195,23 @@ export class BrowsingContextProcessor {
     await this.#browsingContextStorage.findContext(contextId)?.delete();
   }
 
+  async #getRealm(target: Script.Target): Promise<Realm> {
+    if ('realm' in target) {
+      return this.#realmStorage.getRealm({
+        realmId: target.realm,
+      });
+    }
+    const context = this.#browsingContextStorage.getContext(target.context);
+    return context.getOrCreateSandbox(target.sandbox);
+  }
+
   process_browsingContext_getTree(
     params: BrowsingContext.GetTreeParameters
   ): BrowsingContext.GetTreeResult {
     const resultContexts =
       params.root === undefined
         ? this.#browsingContextStorage.getTopLevelContexts()
-        : [this.#browsingContextStorage.getKnownContext(params.root)];
+        : [this.#browsingContextStorage.getContext(params.root)];
 
     return {
       result: {
@@ -219,10 +228,10 @@ export class BrowsingContextProcessor {
     const browserCdpClient = this.#cdpConnection.browserClient();
     let referenceContext = undefined;
     if (params.referenceContext !== undefined) {
-      referenceContext = this.#browsingContextStorage.getKnownContext(
+      referenceContext = this.#browsingContextStorage.getContext(
         params.referenceContext
       );
-      if (referenceContext.parentId !== null) {
+      if (!referenceContext.isTopLevelContext()) {
         throw new Message.InvalidArgumentException(
           `referenceContext should be a top-level context`
         );
@@ -240,7 +249,7 @@ export class BrowsingContextProcessor {
     // are emitted after the next navigation is started.
     // Details: https://github.com/web-platform-tests/wpt/issues/35846
     const contextId = result.targetId;
-    const context = this.#browsingContextStorage.getKnownContext(contextId);
+    const context = this.#browsingContextStorage.getContext(contextId);
     await context.awaitLoaded();
 
     return {
@@ -251,9 +260,7 @@ export class BrowsingContextProcessor {
   async process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const context = this.#browsingContextStorage.getKnownContext(
-      params.context
-    );
+    const context = this.#browsingContextStorage.getContext(params.context);
 
     return context.navigate(
       params.url,
@@ -264,31 +271,15 @@ export class BrowsingContextProcessor {
   async process_browsingContext_captureScreenshot(
     params: BrowsingContext.CaptureScreenshotParameters
   ): Promise<BrowsingContext.CaptureScreenshotResult> {
-    const context = this.#browsingContextStorage.getKnownContext(
-      params.context
-    );
+    const context = this.#browsingContextStorage.getContext(params.context);
     return context.captureScreenshot();
   }
 
   async process_browsingContext_print(
     params: BrowsingContext.PrintParameters
   ): Promise<BrowsingContext.PrintResult> {
-    const context = this.#browsingContextStorage.getKnownContext(
-      params.context
-    );
+    const context = this.#browsingContextStorage.getContext(params.context);
     return context.print(params);
-  }
-
-  async #getRealm(target: Script.Target): Promise<Realm> {
-    if ('realm' in target) {
-      return this.#realmStorage.getRealm({
-        realmId: target.realm,
-      });
-    }
-    const context = this.#browsingContextStorage.getKnownContext(
-      target.context
-    );
-    return context.getOrCreateSandbox(target.sandbox);
   }
 
   async process_script_addPreloadScript(
@@ -300,9 +291,7 @@ export class BrowsingContextProcessor {
     if (params.context) {
       // TODO(#293): Handle edge case with OOPiF. Whenever a frame is moved out
       // of process, we have to add those scripts as well.
-      contexts.push(
-        this.#browsingContextStorage.getKnownContext(params.context)
-      );
+      contexts.push(this.#browsingContextStorage.getContext(params.context));
     } else {
       // Add all contexts.
       // TODO(#293): Add preload scripts to all new browsing contexts as well.
@@ -344,7 +333,7 @@ export class BrowsingContextProcessor {
   ): Script.GetRealmsResult {
     if (params.context !== undefined) {
       // Make sure the context is known.
-      this.#browsingContextStorage.getKnownContext(params.context);
+      this.#browsingContextStorage.getContext(params.context);
     }
     const realms = this.#realmStorage
       .findRealms({
@@ -383,12 +372,12 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
 
-    const context = this.#browsingContextStorage.getKnownContext(
+    const context = this.#browsingContextStorage.getContext(
       commandParams.context
     );
-    if (context.parentId !== null) {
+    if (!context.isTopLevelContext()) {
       throw new Message.InvalidArgumentException(
-        'Not a top-level browsing context cannot be closed.'
+        'A top-level browsing context cannot be closed.'
       );
     }
 
@@ -440,8 +429,7 @@ export class BrowsingContextProcessor {
   process_cdp_getSession(params: CDP.GetSessionParams) {
     const context = params.context;
     const sessionId =
-      this.#browsingContextStorage.getKnownContext(context).cdpTarget
-        .cdpSessionId;
+      this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
     if (sessionId === undefined) {
       return {result: {cdpSession: null}};
     }
