@@ -6,6 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/threading/thread.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/variations_client.h"
@@ -31,10 +33,19 @@ void NotifyAllRenderersOfFieldTrial(const std::string& field_trial_name,
   // need to be on the UI thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Note this in the persistent profile as it will take a while for a new
-  // "complete" profile to be generated.
-  metrics::GlobalPersistentSystemProfile::GetInstance()->AddFieldTrial(
-      field_trial_name, group_name);
+  // Low anonymity field trials must not be written to persistent data,
+  // otherwise they might end up being logged in metrics.
+  //
+  // TODO(crbug.com/1431156): split this out into a separate class that
+  // registers using |FieldTrialList::AddObserver()| (and so doesn't get told
+  // about low anonymity trials at all).
+  base::FieldTrial* trial = base::FieldTrialList::Find(field_trial_name);
+  if (trial && !trial->is_low_anonymity()) {
+    // Note this in the persistent profile as it will take a while for a new
+    // "complete" profile to be generated.
+    metrics::GlobalPersistentSystemProfile::GetInstance()->AddFieldTrial(
+        field_trial_name, group_name);
+  }
 
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
@@ -61,7 +72,10 @@ void FieldTrialSynchronizer::CreateInstance() {
 }
 
 FieldTrialSynchronizer::FieldTrialSynchronizer() {
-  bool success = base::FieldTrialList::AddObserver(this);
+  // TODO(crbug.com/1431156): consider whether there is a need to exclude low
+  // anonymity field trials from non-browser processes (or to plumb through the
+  // anonymity property for more fine-grained access).
+  bool success = base::FieldTrialListIncludingLowAnonymity::AddObserver(this);
   // Ensure the observer was actually registered.
   DCHECK(success);
 

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -25,6 +26,7 @@
 #include "base/test/test_shared_memory_util.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -51,10 +53,12 @@ const char kDefaultGroupName[] = "DefaultGroup";
 scoped_refptr<FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
-    const std::string& default_group_name) {
+    const std::string& default_group_name,
+    bool is_low_anonymity = false) {
   MockEntropyProvider entropy_provider(0.9);
   return FieldTrialList::FactoryGetFieldTrial(
-      trial_name, total_probability, default_group_name, entropy_provider);
+      trial_name, total_probability, default_group_name, entropy_provider, 0,
+      is_low_anonymity);
 }
 
 // A FieldTrialList::Observer implementation which stores the trial name and
@@ -116,6 +120,37 @@ std::string MockEscapeQueryParamValue(const std::string& input) {
 
 }  // namespace
 
+// Same as |TestFieldTrialObserver|, but registers for low anonymity field
+// trials too.
+class TestFieldTrialObserverIncludingLowAnonymity
+    : public FieldTrialList::Observer {
+ public:
+  TestFieldTrialObserverIncludingLowAnonymity() {
+    FieldTrialListIncludingLowAnonymity::AddObserver(this);
+  }
+  TestFieldTrialObserverIncludingLowAnonymity(
+      const TestFieldTrialObserverIncludingLowAnonymity&) = delete;
+  TestFieldTrialObserverIncludingLowAnonymity& operator=(
+      const TestFieldTrialObserverIncludingLowAnonymity&) = delete;
+
+  ~TestFieldTrialObserverIncludingLowAnonymity() override {
+    FieldTrialListIncludingLowAnonymity::RemoveObserver(this);
+  }
+
+  void OnFieldTrialGroupFinalized(const std::string& trial,
+                                  const std::string& group) override {
+    trial_name_ = trial;
+    group_name_ = group;
+  }
+
+  const std::string& trial_name() const { return trial_name_; }
+  const std::string& group_name() const { return group_name_; }
+
+ private:
+  std::string trial_name_;
+  std::string group_name_;
+};
+
 class FieldTrialTest : public ::testing::Test {
  public:
   FieldTrialTest() {
@@ -130,6 +165,13 @@ class FieldTrialTest : public ::testing::Test {
   test::TaskEnvironment task_environment_;
   test::ScopedFeatureList scoped_feature_list_;
 };
+
+MATCHER(CompareActiveGroupToFieldTrial, "") {
+  const base::FieldTrial::ActiveGroup& lhs = ::testing::get<0>(arg);
+  const base::FieldTrial* rhs = ::testing::get<1>(arg).get();
+  return lhs.trial_name == rhs->trial_name() &&
+         lhs.group_name == rhs->group_name_internal();
+}
 
 // Test registration, and also check that destructors are called for trials.
 TEST_F(FieldTrialTest, Registration) {
@@ -762,8 +804,8 @@ TEST_F(FieldTrialTest, FloatBoundariesGiveEqualGroupSizes) {
   for (int i = 0; i < kBucketCount; ++i) {
     const double entropy = i / static_cast<double>(kBucketCount);
 
-    scoped_refptr<FieldTrial> trial(
-        new FieldTrial("test", kBucketCount, "default", entropy));
+    scoped_refptr<FieldTrial> trial(new FieldTrial(
+        "test", kBucketCount, "default", entropy, /*is_low_anonymity=*/false));
     for (int j = 0; j < kBucketCount; ++j)
       trial->AppendGroup(NumberToString(j), 1);
 
@@ -775,8 +817,8 @@ TEST_F(FieldTrialTest, DoesNotSurpassTotalProbability) {
   const double kEntropyValue = 1.0 - 1e-9;
   ASSERT_LT(kEntropyValue, 1.0);
 
-  scoped_refptr<FieldTrial> trial(
-      new FieldTrial("test", 2, "default", kEntropyValue));
+  scoped_refptr<FieldTrial> trial(new FieldTrial(
+      "test", 2, "default", kEntropyValue, /*is_low_anonymity=*/false));
   trial->AppendGroup("1", 1);
   trial->AppendGroup("2", 1);
 
@@ -1277,6 +1319,55 @@ TEST_F(FieldTrialTest, TestAllParamsToString) {
   trial2->Activate();
   EXPECT_EQ(exptected_output,
             FieldTrialList::AllParamsToString(&MockEscapeQueryParamValue));
+}
+
+TEST_F(FieldTrialTest, GetActiveFieldTrialGroups_LowAnonymity) {
+  // Create a field trial with a single winning group.
+  scoped_refptr<FieldTrial> trial_1 = CreateFieldTrial("Normal", 10, "Default");
+  trial_1->AppendGroup("Winner 1", 10);
+  trial_1->Activate();
+
+  // Create a second field trial with a single winning group, marked as
+  // low-anonymity.
+  scoped_refptr<FieldTrial> trial_2 = CreateFieldTrial(
+      "Low anonymity", 10, "Default", /*is_low_anonymity=*/true);
+  trial_2->AppendGroup("Winner 2", 10);
+  trial_2->Activate();
+
+  // Check that |FieldTrialList::GetActiveFieldTrialGroups()| does not include
+  // the low-anonymity trial.
+  FieldTrial::ActiveGroups active_groups_for_metrics;
+  FieldTrialList::GetActiveFieldTrialGroups(&active_groups_for_metrics);
+  EXPECT_THAT(
+      active_groups_for_metrics,
+      testing::UnorderedPointwise(CompareActiveGroupToFieldTrial(), {trial_1}));
+
+  // Check that
+  // |FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups()| includes
+  // both trials.
+  FieldTrial::ActiveGroups active_groups;
+  FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+      &active_groups);
+  EXPECT_THAT(active_groups,
+              testing::UnorderedPointwise(CompareActiveGroupToFieldTrial(),
+                                          {trial_1, trial_2}));
+}
+
+TEST_F(FieldTrialTest, ObserveIncludingLowAnonymity) {
+  TestFieldTrialObserver observer;
+  TestFieldTrialObserverIncludingLowAnonymity low_anonymity_observer;
+
+  // Create a low-anonymity trial with one active group.
+  const char kTrialName[] = "TrialToObserve1";
+  scoped_refptr<FieldTrial> trial = CreateFieldTrial(
+      kTrialName, 100, kDefaultGroupName, /*is_low_anonymity=*/true);
+  trial->Activate();
+
+  // Only the low_anonymity_observer should be notified.
+  EXPECT_EQ("", observer.trial_name());
+  EXPECT_EQ("", observer.group_name());
+  EXPECT_EQ(kTrialName, low_anonymity_observer.trial_name());
+  EXPECT_EQ(kDefaultGroupName, low_anonymity_observer.group_name());
 }
 
 }  // namespace base

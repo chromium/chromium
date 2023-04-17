@@ -9,6 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/variations/active_field_trials.h"
@@ -18,10 +19,12 @@ namespace version_ui {
 
 base::Value::List GetVariationsList() {
   std::vector<std::string> variations;
-#if !defined(NDEBUG)
   base::FieldTrial::ActiveGroups active_groups;
-  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
-
+  // Include low anonymity trial groups in the version string, as it is only
+  // displayed locally (and is useful for diagnostics purposes).
+  base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+      &active_groups);
+#if !defined(NDEBUG)
   const unsigned char kNonBreakingHyphenUTF8[] = {0xE2, 0x80, 0x91, '\0'};
   const std::string kNonBreakingHyphenUTF8String(
       reinterpret_cast<const char*>(kNonBreakingHyphenUTF8));
@@ -33,7 +36,7 @@ base::Value::List GetVariationsList() {
 #else
   // In release mode, display the hashes only.
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
-                                                   &variations);
+                                                   active_groups, &variations);
 #endif
 
   base::Value::List variations_list;

@@ -18,10 +18,12 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,6 +98,34 @@ std::string AssociatedStudyGroup(const base::Feature& feature) {
   return trial ? trial->group_name() : "";
 }
 
+// Create a filterable state for use in these tests.
+// This differs from |CreateDummyClientFilterableState()| by setting membership
+// of a specific google group (which some tests rely on).
+uint64_t kExampleGoogleGroup = 123456;
+std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
+  auto client_state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }), base::BindOnce([] {
+        return base::flat_set<uint64_t>({kExampleGoogleGroup});
+      }));
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::PHONE;
+  return client_state;
+}
+
+// Add a filter to |study| that filters on a Google group which matches the
+// client filterable state.
+void AddGoogleGroupFilter(Study& study) {
+  Study::Filter* filter = study.mutable_filter();
+  filter->add_google_group(kExampleGoogleGroup);
+  // Also add a platform filter that matches both the environments we're
+  // testing in the typed tests.
+  filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_WEBVIEW);
+}
+
 class TestOverrideStringCallback {
  public:
   typedef std::map<uint32_t, std::u16string> OverrideMap;
@@ -137,7 +167,7 @@ class ChromeEnvironment {
       const VariationsSeed& seed,
       base::FeatureList* feature_list,
       const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-    auto client_state = CreateDummyClientFilterableState();
+    auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID;
 
     MockEntropyProviders entropy_providers({
@@ -161,7 +191,7 @@ class WebViewEnvironment {
       const VariationsSeed& seed,
       base::FeatureList* feature_list,
       const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-    auto client_state = CreateDummyClientFilterableState();
+    auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID_WEBVIEW;
 
     MockEntropyProviders entropy_providers({
@@ -203,6 +233,19 @@ class VariationsSeedProcessorTest : public ::testing::Test {
  protected:
   Environment env;
   TestOverrideStringCallback override_callback_;
+};
+
+// This is exposed on the test class rather than called directly from tests
+// because |FieldTrialListIncludingLowAnonymity| needs to friend the call site
+// but |FRIEND_TEST| / |FRIEND_TEST_ALL_PREFIXES| doesn't work with
+// |TYPED_TEST|.
+class VariationsSeedProcessorTestLowAnonymityHelper {
+ public:
+  static void GetActiveFieldTrialGroups(
+      base::FieldTrial::ActiveGroups* active_groups) {
+    base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+        active_groups);
+  }
 };
 
 using EnvironmentTypes =
@@ -289,6 +332,29 @@ TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag1) {
   this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup1Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
+}
+
+// Test that the group for kForcingFlag1 is forced.
+TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag1_LowAnonymity) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
+
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  AddGoogleGroupFilter(*study);
+  this->CreateTrialsFromSeed(seed);
+  EXPECT_EQ(kFlagGroup1Name,
+            base::FieldTrialList::FindFullName(kFlagStudyName));
+
+  // This study should be marked as low anonymity, and therefore only returned
+  // by |FieldTrialListIncludingLowAnonymity|.
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 0u);
+
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
+      &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
 }
 
 // Test that the group for kForcingFlag2 is forced.
@@ -1425,6 +1491,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudiesWithOverlappingEnabledFeatures) {
   server_side_study->set_default_experiment_name("A");
   server_side_study->set_activation_type(
       Study_ActivationType_ACTIVATE_ON_STARTUP);
+  AddGoogleGroupFilter(*server_side_study);
   Study::Experiment* experiment2 =
       AddExperiment("A", /*probability=*/1, server_side_study);
   experiment2->mutable_feature_association()->add_enable_feature(kFeature.name);
@@ -1443,6 +1510,18 @@ TYPED_TEST(VariationsSeedProcessorTest, StudiesWithOverlappingEnabledFeatures) {
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(server_side_study->name()));
   EXPECT_EQ(base::FieldTrialList::Find(server_side_study->name())->group_name(),
             internal::kFeatureConflictGroupName);
+
+  // Only one of the studies is returned by the default field trial list (as
+  // the second is low-anonymity).
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 1u);
+
+  // Both studies are returned by in the full list including low anonymity.
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
+      &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 2u);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest,
@@ -1466,6 +1545,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
   server_side_study->set_default_experiment_name("A");
   server_side_study->set_activation_type(
       Study_ActivationType_ACTIVATE_ON_STARTUP);
+  AddGoogleGroupFilter(*server_side_study);
   Study::Experiment* experiment2 =
       AddExperiment("A", /*probability=*/1, server_side_study);
   experiment2->mutable_feature_association()->add_disable_feature(
@@ -1485,6 +1565,18 @@ TYPED_TEST(VariationsSeedProcessorTest,
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(server_side_study->name()));
   EXPECT_EQ(base::FieldTrialList::Find(server_side_study->name())->group_name(),
             internal::kFeatureConflictGroupName);
+
+  // Only one of the studies is returned by the default field trial list (as
+  // the second is low-anonymity).
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 1u);
+
+  // Both studies are returned by in the full list including low anonymity.
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
+      &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 2u);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, OutOfBoundsLayer) {
@@ -1516,6 +1608,64 @@ TYPED_TEST(VariationsSeedProcessorTest, OutOfBoundsLayer) {
   histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
                                       InvalidLayerReason::kInvalidSlotBounds,
                                       1);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithGoogleGroupFilterIsLowAnonymity) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("A");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("AA", 100, study);
+  AddExperiment("Default", 0, study);
+  AddGoogleGroupFilter(*study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // This study should be marked as low anonymity, and therefore only returned
+  // by |FieldTrialListIncludingLowAnonymity|.
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 0u);
+
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
+      &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithExcludeGoogleGroupFilterIsNotLowAnonymity) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("A");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("AA", 100, study);
+  AddExperiment("Default", 0, study);
+
+  // Add a study filter that excludes a Google group, which this client is not
+  // a member of (i.e. the client does select this study).
+  Study::Filter* filter = study->mutable_filter();
+  filter->add_exclude_google_group(987654);
+  // Also add a platform filter that matches both the environments we're
+  // testing in the typed tests.
+  filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_WEBVIEW);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // This study should not be marked as low anonymity, and therefore is returned
+  // by both APIs.
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 1u);
+
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
+      &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
 }
 
 }  // namespace variations

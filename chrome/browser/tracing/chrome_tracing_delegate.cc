@@ -267,9 +267,13 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 absl::optional<base::Value::Dict>
 ChromeTracingDelegate::GenerateMetadataDict() {
   base::Value::Dict metadata_dict;
+  base::FieldTrial::ActiveGroups active_groups;
+  // Do not include low anonymity field trials, to prevent them from being
+  // included in chrometto reports.
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   std::vector<std::string> variations;
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
-                                                   &variations);
+                                                   active_groups, &variations);
 
   base::Value::List variations_list;
   for (const auto& it : variations)

@@ -215,6 +215,12 @@ bool ShouldForceExperiment(const Study::Experiment& experiment,
   return false;
 }
 
+bool StudyIsLowAnonymity(const Study& study) {
+  // Studies which are set based on Google group membership are potentially low
+  // anonymity (as the groups could in theory have a small number of members).
+  return study.filter().google_group_size() > 0;
+}
+
 // Creates a placeholder trial that indicates the feature conflict.
 //
 // This forcibly associates |trial_name| with the |kFeatureConflictGroupName|
@@ -224,9 +230,10 @@ bool ShouldForceExperiment(const Study::Experiment& experiment,
 // Trials may be associated with this group due to toggling flags in
 // chrome://flags that are associated with the trial's features, or if there
 // are different trials associated with the same feature.
-void CreateTrialWithFeatureConflictGroup(const std::string& trial_name) {
+void CreateTrialWithFeatureConflictGroup(const Study& study) {
   base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
-      trial_name, internal::kFeatureConflictGroupName);
+      study.name(), internal::kFeatureConflictGroupName,
+      StudyIsLowAnonymity(study));
   DCHECK(trial);
   // Activate immediately to make the conflict obvious in metrics logs.
   trial->Activate();
@@ -300,13 +307,13 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       const auto& features = experiment.feature_association();
       for (const std::string& feature_name : features.enable_feature()) {
         if (feature_list->HasAssociatedFieldTrialByFeatureName(feature_name)) {
-          CreateTrialWithFeatureConflictGroup(study.name());
+          CreateTrialWithFeatureConflictGroup(study);
           return;
         }
       }
       for (const std::string& feature_name : features.disable_feature()) {
         if (feature_list->HasAssociatedFieldTrialByFeatureName(feature_name)) {
-          CreateTrialWithFeatureConflictGroup(study.name());
+          CreateTrialWithFeatureConflictGroup(study);
           return;
         }
       }
@@ -319,7 +326,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   for (const auto& experiment : study.experiment()) {
     if (ShouldForceExperiment(experiment, *command_line, *feature_list)) {
       base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
-          study.name(), experiment.name());
+          study.name(), experiment.name(), StudyIsLowAnonymity(study));
       // If |trial| is null, then there might already be a trial forced to a
       // different group (e.g. via --force-fieldtrials). Break out of the loop,
       // but don't return, so that variation ids and params for the selected
@@ -353,7 +360,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       base::FieldTrialList::FactoryGetFieldTrial(
           study.name(), processed_study.total_probability(),
           processed_study.GetDefaultExperimentName(), entropy_provider,
-          study.randomization_seed()));
+          study.randomization_seed(), StudyIsLowAnonymity(study)));
 
   bool has_overrides = false;
   bool enables_or_disables_features = false;

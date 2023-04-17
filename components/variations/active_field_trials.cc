@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -22,7 +22,10 @@ namespace variations {
 
 namespace {
 
-base::LazyInstance<std::string>::Leaky g_seed_version;
+std::string& GetSeedVersionInternal() {
+  static base::NoDestructor<std::string> seed_version;
+  return *seed_version;
+}
 
 void AppendActiveGroupIdsAsStrings(
     const std::vector<ActiveGroupId> name_group_ids,
@@ -55,23 +58,22 @@ void GetFieldTrialActiveGroupIdsForActiveGroups(
   }
 }
 
-void GetFieldTrialActiveGroupIds(base::StringPiece suffix,
-                                 std::vector<ActiveGroupId>* name_group_ids) {
+void GetFieldTrialActiveGroupIds(
+    base::StringPiece suffix,
+    const base::FieldTrial::ActiveGroups& active_groups,
+    std::vector<ActiveGroupId>* name_group_ids) {
   DCHECK(name_group_ids->empty());
-  // A note on thread safety: Since GetActiveFieldTrialGroups() is thread
-  // safe, and we operate on a separate list of that data, this function is
-  // technically thread safe as well, with respect to the FieldTrialList data.
-  base::FieldTrial::ActiveGroups active_groups;
-  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   GetFieldTrialActiveGroupIdsForActiveGroups(suffix, active_groups,
                                              name_group_ids);
 }
 
-void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
-                                          std::vector<std::string>* output) {
+void GetFieldTrialActiveGroupIdsAsStrings(
+    base::StringPiece suffix,
+    const base::FieldTrial::ActiveGroups& active_groups,
+    std::vector<std::string>* output) {
   DCHECK(output->empty());
   std::vector<ActiveGroupId> name_group_ids;
-  GetFieldTrialActiveGroupIds(suffix, &name_group_ids);
+  GetFieldTrialActiveGroupIds(suffix, active_groups, &name_group_ids);
   AppendActiveGroupIdsAsStrings(name_group_ids, output);
 }
 
@@ -103,11 +105,11 @@ bool IsInSyntheticTrialGroup(const std::string& trial_name,
 }
 
 void SetSeedVersion(const std::string& seed_version) {
-  g_seed_version.Get() = seed_version;
+  GetSeedVersionInternal() = seed_version;
 }
 
 const std::string& GetSeedVersion() {
-  return g_seed_version.Get();
+  return GetSeedVersionInternal();
 }
 
 namespace testing {

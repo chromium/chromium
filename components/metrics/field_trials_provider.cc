@@ -35,7 +35,12 @@ FieldTrialsProvider::~FieldTrialsProvider() = default;
 
 void FieldTrialsProvider::GetFieldTrialIds(
     std::vector<ActiveGroupId>* field_trial_ids) const {
-  variations::GetFieldTrialActiveGroupIds(suffix_, field_trial_ids);
+  base::FieldTrial::ActiveGroups active_groups;
+  // As the trial groups are included in metrics reports, we must not include
+  // the low anonymity trials.
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  variations::GetFieldTrialActiveGroupIds(suffix_, active_groups,
+                                          field_trial_ids);
 }
 
 void FieldTrialsProvider::ProvideSystemProfileMetrics(

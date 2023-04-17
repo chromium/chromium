@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/debug/leak_annotations.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,6 +56,8 @@ crash_reporter::CrashKeyString<kVariationsKeySize> g_variations_crash_key(
 std::string ActiveGroupToString(const ActiveGroupId& active_group) {
   return base::StringPrintf("%x-%x,", active_group.name, active_group.group);
 }
+
+}  // namespace
 
 class VariationsCrashKeys final : public base::FieldTrialList::Observer {
  public:
@@ -114,7 +117,8 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
 
 VariationsCrashKeys::VariationsCrashKeys() {
   base::FieldTrial::ActiveGroups active_groups;
-  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+      &active_groups);
   for (const auto& entry : active_groups) {
     AppendFieldTrial(entry.trial_name, entry.group_name);
   }
@@ -126,11 +130,11 @@ VariationsCrashKeys::VariationsCrashKeys() {
   UpdateCrashKeys();
 
   ui_thread_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-  base::FieldTrialList::AddObserver(this);
+  base::FieldTrialListIncludingLowAnonymity::AddObserver(this);
 }
 
 VariationsCrashKeys::~VariationsCrashKeys() {
-  base::FieldTrialList::RemoveObserver(this);
+  base::FieldTrialListIncludingLowAnonymity::RemoveObserver(this);
   g_num_variations_crash_key.Clear();
   g_variations_crash_key.Clear();
 }
@@ -223,8 +227,6 @@ void VariationsCrashKeys::OnSyntheticTrialsChanged(
 // intentionally leaked since it needs to live for the duration of the process
 // there's no benefit in cleaning it up at exit.
 VariationsCrashKeys* g_variations_crash_keys = nullptr;
-
-}  // namespace
 
 const char kNumExperimentsKey[] = "num-experiments";
 const char kExperimentListKey[] = "variations";

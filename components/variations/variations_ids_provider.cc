@@ -302,6 +302,11 @@ void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
   DCHECK(success);
 
   base::FieldTrial::ActiveGroups initial_groups;
+  // These field trial group IDs may be sent to Google servers for web-visible
+  // studies.
+  // Low anonymity trials cannot be web-visible (enforced server-side), but as
+  // an additional safeguard we do not include them in the list of field trials
+  // we fetch here.
   base::FieldTrialList::GetActiveFieldTrialGroups(&initial_groups);
 
   for (const auto& entry : initial_groups) {
