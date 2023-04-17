@@ -57,4 +57,13 @@
                                       completion:nil];
 }
 
+- (void)stop {
+  [super stop];
+  [_mediator disconnect];
+  _mediator.consumer = nil;
+  _mediator = nil;
+  _viewController.delegate = nil;
+  _viewController = nil;
+}
+
 @end

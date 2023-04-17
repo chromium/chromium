@@ -29,6 +29,9 @@ class WebStateList;
                               params:
                                   (const autofill::FormActivityParams&)params;
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 // The bottom sheet suggestions consumer.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetConsumer> consumer;
 
