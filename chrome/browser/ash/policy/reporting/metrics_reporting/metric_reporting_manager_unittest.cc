@@ -219,6 +219,8 @@ const MetricReportingSettingData network_telemetry_settings = {
     ::ash::kReportDeviceNetworkStatus, true,
     ::ash::kReportDeviceNetworkTelemetryCollectionRateMs, 1};
 const MetricReportingSettingData network_event_settings = {
+    ::ash::kDeviceReportNetworkEvents, false, "", 0};
+const MetricReportingSettingData https_latency_event_settings = {
     ::ash::kReportDeviceNetworkStatus, true,
     ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs, 1};
 const MetricReportingSettingData audio_metric_settings = {
@@ -555,7 +557,7 @@ INSTANTIATE_TEST_SUITE_P(
          {"HttpsLatencyEvent_Default",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
-          /*is_affiliated=*/true, network_event_settings,
+          /*is_affiliated=*/true, https_latency_event_settings,
           /*has_init_delay=*/true,
           /*expected_count_before_login=*/0,
           /*expected_count_after_login=*/1},

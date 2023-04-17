@@ -54,6 +54,9 @@ constexpr bool kReportDeviceAudioStatusDefaultValue = true;
 // Default value for reporting device network status.
 constexpr bool kReportDeviceNetworkStatusDefaultValue = true;
 
+// Default value for reporting device network events.
+constexpr bool kDeviceReportNetworkEventsDefaultValue = false;
+
 // Default value for reporting device peripheral status.
 constexpr bool kReportDevicePeripheralsDefaultValue = false;
 

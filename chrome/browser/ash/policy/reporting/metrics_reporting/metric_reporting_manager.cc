@@ -293,8 +293,8 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
   // Network health events observer.
   InitEventObserverManager(
       std::make_unique<NetworkEventsObserver>(), event_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      metrics::kReportDeviceNetworkStatusDefaultValue,
+      /*enable_setting_path=*/::ash::kDeviceReportNetworkEvents,
+      metrics::kDeviceReportNetworkEventsDefaultValue,
       /*init_delay=*/base::TimeDelta());
   InitPeripheralsCollectors();
 

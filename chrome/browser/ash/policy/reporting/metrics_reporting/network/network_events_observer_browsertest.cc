@@ -117,12 +117,7 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
 
   void EnablePolicy() {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceNetworkStatus, true);
-  }
-
-  void DisablePolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceNetworkStatus, false);
+        ash::kDeviceReportNetworkEvents, true);
   }
 
   void SetWifiSignalEventDrivenPolicy() {
