@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
