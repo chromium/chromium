@@ -9,46 +9,12 @@
 namespace media {
 
 AudioSessionEventListener::AudioSessionEventListener(
-    IAudioClient* client,
     base::OnceClosure device_change_cb)
     : device_change_cb_(std::move(device_change_cb)) {
   DCHECK(device_change_cb_);
-
-  HRESULT hr = client->GetService(IID_PPV_ARGS(&audio_session_control_));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get IAudioSessionControl service.";
-    return;
-  }
-
-  audio_session_control_->RegisterAudioSessionNotification(this);
 }
 
-AudioSessionEventListener::~AudioSessionEventListener() {
-  if (!audio_session_control_)
-    return;
-
-  HRESULT hr = audio_session_control_->UnregisterAudioSessionNotification(this);
-  DLOG_IF(ERROR, FAILED(hr))
-      << "UnregisterAudioSessionNotification() failed: " << std::hex << hr;
-}
-
-ULONG AudioSessionEventListener::AddRef() {
-  return 1;  // Class is owned in Chromium code and should have no outside refs.
-}
-
-ULONG AudioSessionEventListener::Release() {
-  return 1;  // Class is owned in Chromium code and should have no outside refs.
-}
-
-HRESULT AudioSessionEventListener::QueryInterface(REFIID iid, void** object) {
-  if (iid == IID_IUnknown || iid == __uuidof(IAudioSessionEvents)) {
-    *object = static_cast<IAudioSessionEvents*>(this);
-    return S_OK;
-  }
-
-  *object = nullptr;
-  return E_NOINTERFACE;
-}
+AudioSessionEventListener::~AudioSessionEventListener() = default;
 
 HRESULT AudioSessionEventListener::OnChannelVolumeChanged(
     DWORD channel_count,
