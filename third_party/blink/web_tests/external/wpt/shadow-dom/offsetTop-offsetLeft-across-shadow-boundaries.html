@@ -82,8 +82,8 @@
 <script>
 // TODO delete this when all browsers support declarative shadowdom
 (function attachShadowRoots(root) {
-  root.querySelectorAll("template[shadowroot]").forEach(template => {
-    const mode = template.getAttribute("shadowroot");
+  root.querySelectorAll("template[shadowrootmode]").forEach(template => {
+    const mode = template.getAttribute("shadowrootmode");
     const shadowRoot = template.parentNode.attachShadow({ mode });
     shadowRoot.appendChild(template.content);
     template.remove();
