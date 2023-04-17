@@ -107949,7 +107949,7 @@ others/histograms.xml -->
   <int value="5" label="Server error"/>
   <int value="6" label="Request timed out"/>
   <int value="7" label="Request invalid"/>
-  <int value="8" label="No enough space"/>
+  <int value="8" label="Not enough space"/>
   <int value="9" label="Download icon and hash error"/>
 </enum>
 
