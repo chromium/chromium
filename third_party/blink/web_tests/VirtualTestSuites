@@ -1930,7 +1930,15 @@
       "http/tests/inspector-protocol/network/is-same-site.js",
       "http/tests/priority-hints/image-initial-load.html"
     ],
-    "args": ["--enable-features=BoostImagePriority"],
+    "args": ["--enable-features=BoostImagePriority"]
+  },
+  {
+    "prefix": "html-pattern-regexp-unicodesets",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["fast/forms/text/pattern.html"],
+    "args": [
+      "--enable-blink-features=HTMLPatternRegExpUnicodeSets"
+    ],
     "expires": "Dec 1, 2023"
   }
 ]

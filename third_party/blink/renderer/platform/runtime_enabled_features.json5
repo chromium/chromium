@@ -1896,6 +1896,10 @@
       status: "stable",
     },
     {
+      // TODO(crbug.com/1412729): Enables the `v` flag for `pattern` RegExps.
+      name: "HTMLPatternRegExpUnicodeSets"
+    },
+    {
       // TODO(crbug.com/1307772): Enables the Popover API.
       name: "HTMLPopoverAttribute",
       status: "stable",
