@@ -4012,7 +4012,7 @@ Connect your device to power.
       </message>
       <!-- Ambient Accelerator Action -->
       <message name="IDS_AMBIENT_ACCELERATOR_GO_TO_TAB_IN_RANGE" translateable="false" desc="Action for accelerator action - Go to tabs 1 through 8.">
-        <ph name="MODIFIER">$1<ex>ctrl</ex></ph> <ph name="DELIMITER">$2<ex>+</ex></ph> <ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
+        <ph name="MODIFIER">$1<ex>ctrl</ex></ph><ph name="DELIMITER">$2<ex>+</ex></ph><ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_NEW_TAB" translateable="false" desc="Action for accelerator action - Open the link in a new tab.">
         Drag link to blank area on the tab strip
@@ -4042,7 +4042,7 @@ Connect your device to power.
         Drag link to bookmarks bar
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_LAUNCH_NUMBERED_APP" translateable="false" desc="Action for accelerator action - Click icons 1-8 on your shelf.">
-        <ph name="MODIFIER">$1<ex>alt</ex></ph> <ph name="DELIMITER">$2<ex>+</ex></ph> <ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
+        <ph name="MODIFIER">$1<ex>alt</ex></ph><ph name="DELIMITER">$2<ex>+</ex></ph><ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_OPEN_FILE" translateable="false" desc="Action for accelerator action - Preview a file in the Files app.">
         Select the file, then press <ph name="KEY">$1<ex>space</ex></ph>
@@ -4069,7 +4069,7 @@ Connect your device to power.
         <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph><ph name="MODIFIER_TWO">$2<ex>shift</ex></ph> then <ph name="KEY_ONE">$3<ex>left</ex></ph> or <ph name="KEY_TWO">$4<ex>right</ex></ph> or <ph name="KEY_THREE">$5<ex>up</ex></ph> or <ph name="KEY_FOUR">$6<ex>down</ex></ph>
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_ACTIVATE_INDEXED_DESK" translateable="false" desc="Action for accelerator action - Go to desk 1 to 8.">
-        <ph name="MODIFIER_ONE">$1<ex>shift</ex></ph><ph name="MODIFIER_TWO">$2<ex>search</ex></ph> <ph name="DELIMITER">$3<ex>+</ex></ph> <ph name="KEY_ONE">$4<ex>1</ex></ph> through <ph name="KEY_TWO">$5<ex>8</ex></ph>
+        <ph name="MODIFIER_ONE">$1<ex>shift</ex></ph><ph name="MODIFIER_TWO">$2<ex>search</ex></ph><ph name="DELIMITER">$3<ex>+</ex></ph><ph name="KEY_ONE">$4<ex>1</ex></ph> through <ph name="KEY_TWO">$5<ex>8</ex></ph>
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_STOP_DRAG_TAB" translateable="false" desc="Action for accelerator action - Return the tab to its original position.">
         While dragging the tab, press <ph name="KEY_ONE">$1<ex>esc</ex></ph>
