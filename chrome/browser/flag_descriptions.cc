@@ -1917,6 +1917,12 @@ const char kJourneysIncludeSyncedVisitsName[] =
 const char kJourneysIncludeSyncedVisitsDescription[] =
     "Enabled synced visits to be included in History Journeys clusters.";
 
+const char kJourneysZeroStateFilteringName[] =
+    "History Journeys Zero-State Filtering";
+const char kJourneysZeroStateFilteringDescription[] =
+    "Enables filtering of clusters in the zero state of the History Journeys "
+    "WebUI.";
+
 const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[] =
     "Extract Related Searches from Prefetched ZPS Response";
 const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[] =

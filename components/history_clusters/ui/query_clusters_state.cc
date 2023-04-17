@@ -21,6 +21,26 @@
 
 namespace history_clusters {
 
+namespace {
+
+QueryClustersFilterParams GetZeroStateFilterParamsFromFlags() {
+  // Only set special filter params if context clustering is on and the zero
+  // state filtering flag is applied.
+  if (!ShouldUseNavigationContextClustersFromPersistence() ||
+      !GetConfig().apply_zero_state_filtering) {
+    return QueryClustersFilterParams();
+  }
+
+  QueryClustersFilterParams filter_params;
+  filter_params.is_search_initiated = true;
+  filter_params.has_related_searches = true;
+  filter_params.is_shown_on_prominent_ui_surfaces = true;
+  // TODO(b/277528165): Apply category filtering only for eligible users.
+  return filter_params;
+}
+
+}  // namespace
+
 // Helper class that lives and is destroyed on the `sequenced_task_runner`,
 // although it's created on the main thread. It allows us to store state that
 // is only accessed on `sequenced_task_runner` that persists between batches.
@@ -72,6 +92,8 @@ QueryClustersState::QueryClustersState(
     bool recluster)
     : service_(service),
       query_(query),
+      filter_params_(query_.empty() ? GetZeroStateFilterParamsFromFlags()
+                                    : QueryClustersFilterParams()),
       recluster_(recluster),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
@@ -87,7 +109,7 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
 
   base::TimeTicks query_start_time = base::TimeTicks::Now();
   query_clusters_task_ = service_->QueryClusters(
-      ClusteringRequestSource::kJourneysPage, QueryClustersFilterParams(),
+      ClusteringRequestSource::kJourneysPage, filter_params_,
       /*begin_time=*/base::Time(), continuation_params_, recluster_,
       base::BindOnce(&QueryClustersState::OnGotRawClusters,
                      weak_factory_.GetWeakPtr(), query_start_time,

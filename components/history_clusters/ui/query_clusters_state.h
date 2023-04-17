@@ -100,6 +100,9 @@ class QueryClustersState {
   // The string query the user entered into the searchbox.
   const std::string query_;
 
+  // The filter params to use for `query_`.
+  const QueryClustersFilterParams filter_params_;
+
   // If true, forces reclustering as if `persist_clusters_in_history_db` were
   // false.
   bool recluster_;

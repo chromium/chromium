@@ -5929,6 +5929,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kJourneysHideVisitsVariations,
                                     "JourneysHide")},
 
+    {"history-journeys-zero-state-filtering",
+     flag_descriptions::kJourneysZeroStateFilteringName,
+     flag_descriptions::kJourneysZeroStateFilteringDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         history_clusters::internal::kJourneysZeroStateFiltering)},
+
     {"extract-related-searches-from-prefetched-zps-response",
      flag_descriptions::kExtractRelatedSearchesFromPrefetchedZPSResponseName,
      flag_descriptions::

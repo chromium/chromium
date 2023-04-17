@@ -4403,6 +4403,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "history-journeys-zero-state-filtering",
+    "owners": [ "sophiechang", "chrome-journeys@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "hotspot",
     "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 120

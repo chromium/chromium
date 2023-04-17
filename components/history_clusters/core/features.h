@@ -83,6 +83,9 @@ BASE_DECLARE_FEATURE(kHideVisits);
 // formatter.
 BASE_DECLARE_FEATURE(kUseUrlForDisplayCache);
 
+// Enables filtering of the zero-state Journeys WebUI.
+BASE_DECLARE_FEATURE(kJourneysZeroStateFiltering);
+
 // Order consistently with config.h.
 
 }  // namespace internal

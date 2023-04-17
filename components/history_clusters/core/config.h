@@ -366,6 +366,10 @@ struct Config {
   // The max number of URLs that should be stored in the URL for display cache.
   int url_for_display_cache_size = 100;
 
+  // The `kJourneysZeroStateFiltering` feature and child params.
+
+  bool apply_zero_state_filtering = false;
+
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

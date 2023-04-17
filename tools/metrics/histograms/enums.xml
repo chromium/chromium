@@ -60942,6 +60942,7 @@ from previous Chrome versions.
   <int value="-606898702" label="MaterialDesignSettings:disabled"/>
   <int value="-606696801" label="TabGroupsUiImprovementsAndroid:enabled"/>
   <int value="-606431158" label="DrawVerticallyEdgeToEdge:enabled"/>
+  <int value="-605720512" label="JourneysZeroStateFiltering:enabled"/>
   <int value="-604814313" label="enable-pinch"/>
   <int value="-604269405"
       label="ContentSuggestionsFaviconsFromNewServer:enabled"/>
@@ -62535,6 +62536,7 @@ from previous Chrome versions.
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>
   <int value="277565405" label="ContextualSearchDefinitions:disabled"/>
+  <int value="277769727" label="JourneysZeroStateFiltering:disabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
   <int value="280459238" label="ChromeSharingHubLaunchAdjacent:disabled"/>
   <int value="280644887" label="mash"/>
