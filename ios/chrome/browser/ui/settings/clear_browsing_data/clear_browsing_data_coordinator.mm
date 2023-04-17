@@ -57,6 +57,9 @@
 }
 
 - (void)stop {
+  [self.viewController prepareForDismissal];
+  self.viewController.delegate = nil;
+  self.viewController.dispatcher = nil;
   self.viewController = nil;
 }
 
