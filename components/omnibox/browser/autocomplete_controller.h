@@ -298,9 +298,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
-  // Annotates the final set of suggestions (open tab match, pedals, keyword
-  // info, etc.) and fires notifications that the result and potentially the
-  // default match has changed.
+  // Annotates the final set of suggestions (with open tab match, pedals,
+  // keyword info, etc.), and notifies the listeners that the result and
+  // potentially the default match has changed.
   void AnnotateResultAndNotifyChanged(
       const absl::optional<AutocompleteMatch>& last_default_match,
       const std::u16string& last_default_associated_keyword,
@@ -374,12 +374,11 @@ class AutocompleteController : public AutocompleteProviderListener,
       std::vector<std::pair<absl::optional<float>, size_t>>
           outputs_and_match_indices);
 
-  // If ML Relevance Scoring is not enabled returns false. Otherwise runs the
-  // model asynchronously for all the eligible matches in `results_.matches_`
-  // and returns true. Passes `completion_callback` to `OnUrlScoringModelDone()`
-  // callback which is called once the scoring is done for all the eligible
-  // matches, whether successfully or not.
-  bool MaybeRunUrlScoringModel(base::OnceClosure completion_callback);
+  // Runs the ML scoring model asynchronously for all the eligible matches in
+  // `results_.matches_`. Passes `completion_callback` to
+  // `OnUrlScoringModelDone()` callback which is called once the scoring is done
+  // for all the eligible matches, whether successfully or not.
+  void RunUrlScoringModel(base::OnceClosure completion_callback);
 
   base::ObserverList<Observer> observers_;
 

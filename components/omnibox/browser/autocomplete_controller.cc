@@ -1014,19 +1014,23 @@ void AutocompleteController::UpdateResult(
     result_.SortAndCull(
         input_, template_url_service_,
         preserve_default_after_transfer ? preserve_default_match : nullptr);
-  } else {
+  } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     // The async ML scoring is only run once all the providers are done. Use a
     // WeakPtr since the model is not owned and `this` may no longer be alive.
+    // `AnnotateResultAndNotifyChanged()` is called when the async ML scoring
+    // is done.
+    // TODO(crbug.com/1405555): Deduplicate the matches before running the
+    //  model in order to combine the signals. Optionally also trim the matches
+    //  prior to running the model.
+    // TODO(crbug.com/1405555): Investigate preserving the default match when
+    //  reranking the matches using the model.
     scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-    if (MaybeRunUrlScoringModel(base::BindOnce(
-            &AutocompleteController::AnnotateResultAndNotifyChanged,
-            scoring_model_weak_ptr_, last_default_match,
-            last_default_associated_keyword,
-            force_notify_default_match_changed))) {
-      // When the ML scoring model is run, processing the output and sorting
-      // and trimming of the matches happens in `OnUrlScoringModelDone()`.
-      return;
-    }
+    RunUrlScoringModel(base::BindOnce(
+        &AutocompleteController::AnnotateResultAndNotifyChanged,
+        scoring_model_weak_ptr_, last_default_match,
+        last_default_associated_keyword, force_notify_default_match_changed));
+    return;
+  } else {
     // Sort the matches and trim them to a small number of "best" matches.
     result_.SortAndCull(input_, template_url_service_, preserve_default_match);
   }
@@ -1578,26 +1582,16 @@ void AutocompleteController::OnUrlScoringModelDone(
       output_and_match_index_heap.pop();
     }
 
-    result_.SortAndCull(input, template_url_service_);
+    result_.SortAndCull(input, template_url_service_,
+                        /*preserve_default_match=*/nullptr);
   }
 
   std::move(completion_callback).Run();
 }
 
-bool AutocompleteController::MaybeRunUrlScoringModel(
+void AutocompleteController::RunUrlScoringModel(
     base::OnceClosure completion_callback) {
-  TRACE_EVENT0("omnibox", "AutocompleteController::MaybeRunUrlScoringModel");
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
-    return false;
-  }
-
-  AutocompleteScoringModelService* scoring_model_service =
-      provider_client_->GetAutocompleteScoringModelService();
-  if (!scoring_model_service) {
-    return false;
-  }
+  TRACE_EVENT0("omnibox", "AutocompleteController::RunUrlScoringModel");
 
   auto barrier_callback =
       base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
@@ -1618,11 +1612,9 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
       continue;
     }
 
-    scoring_model_service->ScoreAutocompleteUrlMatch(
-        &scoring_model_task_tracker_, match->scoring_signals, match_index,
-        barrier_callback);
+    provider_client_->GetAutocompleteScoringModelService()
+        ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
+                                    match->scoring_signals, match_index,
+                                    barrier_callback);
   }
-
-  return true;
-#endif // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
