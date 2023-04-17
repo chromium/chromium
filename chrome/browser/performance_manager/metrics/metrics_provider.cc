@@ -19,6 +19,10 @@ namespace {
 MetricsProvider* g_metrics_provider = nullptr;
 
 uint64_t kBytesPerMb = 1024 * 1024;
+
+#if BUILDFLAG(IS_MAC)
+uint64_t kKilobytesPerMb = 1024;
+#endif
 }
 
 // static
@@ -135,11 +139,14 @@ void MetricsProvider::RecordAvailableMemoryMetrics() {
 #if BUILDFLAG(IS_MAC)
   base::SystemMemoryInfoKB info;
   if (base::GetSystemMemoryInfo(&info)) {
-    base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacFileBackedMemoryMB",
-                                    info.file_backed / kBytesPerMb);
+    base::UmaHistogramMemoryLargeMB(
+        "Memory.Experimental.MacFileBackedMemoryMB2",
+        info.file_backed / kKilobytesPerMb);
+    // `info.file_backed` is in kb, so multiply it by 1024 to get the amount of
+    // bytes
     base::UmaHistogramPercentage(
-        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache",
-        (available_bytes + info.file_backed) * 100 / total_bytes);
+        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
+        (available_bytes + (info.file_backed * 1024)) * 100 / total_bytes);
   }
 #endif
 }
