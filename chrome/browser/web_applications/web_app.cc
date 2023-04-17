@@ -717,7 +717,7 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
 bool WebApp::operator==(const WebApp& other) const {
   auto AsTuple = [](const WebApp& app) {
     // Keep in order declared in web_app.h.
-    return std::make_tuple(
+    return std::tie(
         // Disable clang-format so diffs are clearer when fields are added.
         // clang-format off
         app.app_id_,
@@ -782,12 +782,12 @@ bool WebApp::operator==(const WebApp& other) const {
         app.management_to_external_config_map_,
         app.tab_strip_,
         app.always_show_toolbar_in_fullscreen_,
-        app.current_os_integration_states_.SerializeAsString(),
+        app.current_os_integration_states_,
         app.isolation_data_
         // clang-format on
     );
   };
-  return (AsTuple(*this) == AsTuple(other));
+  return AsTuple(*this) == AsTuple(other);
 }
 
 bool WebApp::operator!=(const WebApp& other) const {
@@ -1123,6 +1123,21 @@ bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2) {
   return !(management_config1 == management_config2);
 }
+
+namespace proto {
+
+bool operator==(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2) {
+  return os_integration_state1.SerializeAsString() ==
+         os_integration_state2.SerializeAsString();
+}
+
+bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2) {
+  return !(os_integration_state1 == os_integration_state2);
+}
+
+}  // namespace proto
 
 std::vector<std::string> GetSerializedAllowedOrigins(
     const blink::ParsedPermissionsPolicyDeclaration

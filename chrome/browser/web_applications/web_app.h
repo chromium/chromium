@@ -595,6 +595,16 @@ bool operator==(const WebApp::ExternalManagementConfig& management_config1,
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2);
 
+namespace proto {
+
+bool operator==(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2);
+
+bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
+                const WebAppOsIntegrationState& os_integration_state2);
+
+}  // namespace proto
+
 std::vector<std::string> GetSerializedAllowedOrigins(
     const blink::ParsedPermissionsPolicyDeclaration
         permissions_policy_declaration);
