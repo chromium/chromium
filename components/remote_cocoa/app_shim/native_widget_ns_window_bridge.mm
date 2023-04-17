@@ -941,6 +941,14 @@ void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
   }
   immersive_mode_controller_->Enable();
 
+  // It is possible for the fullscreen transition to complete before the
+  // immersive mode controller is created. Mark the transition as complete as
+  // needed here.
+  if (!fullscreen_controller_.IsInFullscreenTransition() &&
+      fullscreen_controller_.GetTargetFullscreenState()) {
+    immersive_mode_controller_->FullscreenTransitionCompleted();
+  }
+
   // Reveal locks can outlive immersive_mode_controller_, re-establish any
   // outstanding locks.
   for (int i = 0; i < immersive_fullscreen_reveal_lock_count_; ++i) {
