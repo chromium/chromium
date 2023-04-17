@@ -901,4 +901,14 @@ TEST_F(KeyCommandsProviderTest, ValidateBookmarkCommand) {
   }
 }
 
+// Checks that clearing the Browser doesn't lead to a crash.
+TEST_F(KeyCommandsProviderTest, ClearingBrowserDoesntCrash) {
+  InsertNewWebState(0);
+  EXPECT_TRUE(CanPerform(@"keyCommand_showNextTab"));
+
+  browser_.reset();
+
+  EXPECT_FALSE(CanPerform(@"keyCommand_showNextTab"));
+}
+
 }  // namespace
