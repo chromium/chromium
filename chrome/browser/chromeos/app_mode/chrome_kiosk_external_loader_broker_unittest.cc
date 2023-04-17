@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 
-#include "base/check_deref.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -67,7 +66,8 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
       base::Value::Dict()  //
           .Set("the-app-id", base::Value::Dict()
                                  .Set("external_crx", "the-app-location")
-                                 .Set("external_version", "the-app-version")));
+                                 .Set("external_version", "the-app-version")
+                                 .Set("is_from_webstore", false)));
 }
 
 TEST_F(ChromeKioskExternalLoaderBrokerTest,
@@ -112,7 +112,8 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
                 .Set("a-very-long-app-id-to-cause-crashes-if-used-after-delete",
                      base::Value::Dict()
                          .Set("external_crx", "the-app-location")
-                         .Set("external_version", "the-app-version")));
+                         .Set("external_version", "the-app-version")
+                         .Set("is_from_webstore", false)));
 }
 
 TEST_F(ChromeKioskExternalLoaderBrokerTest,
