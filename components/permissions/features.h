@@ -129,6 +129,10 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<base::TimeDelta>
     kPermissionPromptSurveyIgnoredPromptsMaximumAge;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<std::string>
+    kPermissionPromptSurveyOneTimePromptsDecidedBucket;
 #endif
 
 }  // namespace feature_params

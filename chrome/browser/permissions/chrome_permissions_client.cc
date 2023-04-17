@@ -263,20 +263,22 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     absl::optional<base::TimeDelta> prompt_display_duration,
     bool is_post_prompt,
     base::OnceCallback<void()> hats_shown_callback) {
+  Profile* profile = Profile::FromBrowserContext(context);
+
   auto prompt_parameters =
       permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
           request_type, action, prompt_disposition, prompt_disposition_reason,
           gesture_type, version_info::GetChannelString(chrome::GetChannel()),
           is_post_prompt ? permissions::kOnPromptResolved
                          : permissions::kOnPromptAppearing,
-          prompt_display_duration);
+          prompt_display_duration,
+          permissions::PermissionHatsTriggerHelper::
+              GetOneTimePromptsDecidedBucket(profile->GetPrefs()));
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
     return;
   }
-
-  Profile* profile = Profile::FromBrowserContext(context);
 
   auto* hats_service =
       HatsServiceFactory::GetForProfile(profile,
@@ -359,6 +361,13 @@ void ChromePermissionsClient::OnPromptResolved(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
+  auto content_setting_type = RequestTypeToContentSettingsType(request_type);
+  if (content_setting_type.has_value()) {
+    permissions::PermissionHatsTriggerHelper::
+        IncrementOneTimePermissionPromptsDecidedIfApplicable(
+            content_setting_type.value(), profile->GetPrefs());
+  }
+
   TriggerPromptHatsSurveyIfEnabled(
       web_contents->GetBrowserContext(), request_type,
       absl::make_optional(action), prompt_disposition,

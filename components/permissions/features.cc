@@ -247,6 +247,16 @@ const base::FeatureParam<base::TimeDelta>
         &permissions::features::kPermissionsPromptSurvey,
         "ignored_prompts_maximum_age", base::Minutes(10)};
 
+// We count the number of one time permission prompt impressions that a user has
+// seen. This parameter specifies the buckets to which a user needs to belong to
+// in order for a HaTS survey to be triggered. Multiple values can be configured
+// by providing a comma separated list. Valid values are the return values of
+// `PermissionUtil::GetOneTimePromptsDecidedBucketString`. An empty value will
+// result in all buckets matching (no filtering).
+const base::FeatureParam<std::string>
+    kPermissionPromptSurveyOneTimePromptsDecidedBucket{
+        &permissions::features::kPermissionsPromptSurvey,
+        "one_time_prompts_decided_bucket", ""};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_params

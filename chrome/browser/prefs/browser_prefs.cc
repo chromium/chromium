@@ -287,6 +287,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/user_notes/user_notes_prefs.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1777,6 +1778,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kHighEfficiencyChipExpandedCount, 0);
+  permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
