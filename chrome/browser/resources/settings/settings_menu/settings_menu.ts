@@ -21,8 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PageVisibility} from '../page_visibility.js';
-import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router, SettingsRoutes} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
 
@@ -64,9 +63,16 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   pageVisibility: PageVisibility;
   private performanceFeaturesAvailable_: boolean;
+  private routes_: SettingsRoutes;
+
+  override ready() {
+    super.ready();
+    this.routes_ = Router.getInstance().getRoutes();
+  }
 
   override currentRouteChanged(newRoute: Route) {
-    if (this.performanceFeaturesAvailable_ && newRoute === routes.PERFORMANCE) {
+    if (this.performanceFeaturesAvailable_ &&
+        newRoute === this.routes_.PERFORMANCE) {
       // Add special handling for the Performance section, since the
       // corresponding menu entry resides in a dom-if and is normally not
       // present in the DOM during initial load. Force-render the dom-if
@@ -82,7 +88,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     // <if expr="_google_chrome">
-    if (newRoute === routes.GET_MOST_CHROME) {
+    if (loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
+        newRoute === this.routes_.GET_MOST_CHROME) {
       const about =
           this.shadowRoot!.querySelector<HTMLAnchorElement>('#about-menu');
       assert(about);
