@@ -29,7 +29,8 @@ bool Event::MetricValue::operator==(const Event::MetricValue& rhs) const {
 Event::MetricValue::~MetricValue() = default;
 
 Event::EventSequenceMetadata::EventSequenceMetadata(int reset_counter)
-    : reset_counter(reset_counter), event_unique_id(base::GenerateUuid()) {}
+    : reset_counter(reset_counter),
+      event_unique_id(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 Event::EventSequenceMetadata::EventSequenceMetadata(
     const Event::EventSequenceMetadata& other) = default;
