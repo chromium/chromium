@@ -74,6 +74,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate) override;
   void Destroy() override;
+  void Flush(FlushCallback flush_callback) override;
+  bool IsFlushSupported() override;
   bool IsGpuFrameResizeSupported() override;
 
   // IMFAsyncCallback implementation
@@ -103,7 +105,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     kUninitialized,
     kInitializing,
     kEncoding,
-    kDraining,
     kFlushing,
     kClosing,
     kError,
@@ -134,10 +135,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void SetState(State state);
 
   // Processes the input video frame for the encoder.
-  HRESULT ProcessInput(PendingInput input);
+  HRESULT ProcessInput(const PendingInput& input);
+
+  // Feed as many frames from |pending_input_queue_| to ProcessInput()
+  // as possible.
+  void FeedInputs();
 
   // Populates input sample buffer with contents of a video frame
-  HRESULT PopulateInputSampleBuffer(scoped_refptr<VideoFrame> frame);
+  HRESULT PopulateInputSampleBuffer(const PendingInput& input);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
   HRESULT CopyInputSampleBufferFromGpu(const VideoFrame& frame);
 
@@ -157,6 +162,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Asynchronous event handler
   void MediaEventHandler(MediaEventType event_type);
+
+  // Sends MFT_MESSAGE_COMMAND_DRAIN to the encoder to make it
+  // process all inputs, produce all outputs and tell us when it's done.
+  void DrainEncoder();
 
   // Releases resources encoder holds.
   void ReleaseEncoderResources();
@@ -232,9 +241,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Microsoft::WRL::ComPtr<IMFMediaType> imf_input_media_type_;
   Microsoft::WRL::ComPtr<IMFMediaType> imf_output_media_type_;
 
-  bool input_required_ = false;
-
   Microsoft::WRL::ComPtr<IMFSample> input_sample_;
+  // True if `input_sample_` has been populated with data/metadata
+  // of the next frame to be encoded.
+  bool has_prepared_input_sample_ = false;
+
   Microsoft::WRL::ComPtr<IMFSample> output_sample_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
@@ -262,6 +273,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // A buffer used as a scratch space for I420 to NV12 conversion
   std::vector<uint8_t> resize_buffer_;
+
+  FlushCallback flush_callback_;
 
   // Bitrate controller for CBR encoding.
   std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
