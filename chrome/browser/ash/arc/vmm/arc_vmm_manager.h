@@ -51,10 +51,6 @@ class ArcVmmManager : public KeyedService {
 
   static void EnsureFactoryBuilt();
 
-  ArcSystemStateObservation* system_state_observation_for_testing() {
-    return arc_system_state_observation_.get();
-  }
-
  private:
   // Accelerator target for experimental usage. Ctrl + Alt + Shift + O / P for
   // enable or disable vmm swap.
@@ -75,8 +71,6 @@ class ArcVmmManager : public KeyedService {
   // Swap request scheduler for experimental usage. Always behind the feature
   // flag and parameters.
   std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
-
-  std::unique_ptr<ArcSystemStateObservation> arc_system_state_observation_;
 
   std::string user_id_hash_;
 

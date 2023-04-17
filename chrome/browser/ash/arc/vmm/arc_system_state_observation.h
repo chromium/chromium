@@ -14,7 +14,14 @@ class BrowserContext;
 
 namespace arc {
 
-class ArcSystemStateObservation : public ash::ThrottleService {
+class PeaceDurationProvider {
+ public:
+  virtual ~PeaceDurationProvider() = default;
+  virtual absl::optional<base::TimeDelta> GetPeaceDuration() = 0;
+};
+
+class ArcSystemStateObservation : public ash::ThrottleService,
+                                  public PeaceDurationProvider {
  public:
   explicit ArcSystemStateObservation(content::BrowserContext* context);
 
@@ -24,7 +31,7 @@ class ArcSystemStateObservation : public ash::ThrottleService {
 
   ~ArcSystemStateObservation() override;
 
-  absl::optional<base::TimeDelta> GetPeaceDuration();
+  absl::optional<base::TimeDelta> GetPeaceDuration() override;
 
   base::WeakPtr<ArcSystemStateObservation> GetWeakPtr();
 

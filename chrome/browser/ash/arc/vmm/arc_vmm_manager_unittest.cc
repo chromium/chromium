@@ -129,34 +129,6 @@ TEST_F(ArcVmmManagerTest, SwapSuccess) {
   EXPECT_EQ(0, client()->disable_count());
 }
 
-TEST_F(ArcVmmManagerTest, ObservationAndScheduler) {
-  base::test::ScopedFeatureList features_;
-  // The feature companion with some paremeter. Although the test will use
-  // the default value, keep the empty parameter here for better readability.
-  features_.InitAndEnableFeatureWithParameters(kVmmSwapPolicy, {{}});
-  InitVmmManager();
-
-  // Should enabled observation.
-  EXPECT_NE(manager()->system_state_observation_for_testing(), nullptr);
-
-  base::RunLoop().RunUntilIdle();
-  // Mark ARC is inactive.
-  manager()->system_state_observation_for_testing()->ThrottleInstance(true);
-
-  // Haven't start swap out.
-  task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(0, client()->enable_count());
-  EXPECT_EQ(0, client()->swap_out_count());
-  EXPECT_EQ(0, client()->disable_count());
-
-  // Should trigger the swap enable state after 1 hour. The swap "out" state is
-  // expected set by concierge.
-  task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_EQ(1, client()->enable_count());
-  EXPECT_EQ(0, client()->swap_out_count());
-  EXPECT_EQ(0, client()->disable_count());
-}
-
 // This test verify the weak ptr safety in scheduler.
 TEST_F(ArcVmmManagerTest, WeakPtrRef) {
   class TestClass {

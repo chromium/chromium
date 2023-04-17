@@ -13,7 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace arc {
@@ -62,20 +64,8 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
     accelerator_ = std::make_unique<AcceleratorTarget>(this);
   }
   if (base::FeatureList::IsEnabled(kVmmSwapPolicy)) {
-    arc_system_state_observation_ =
-        std::make_unique<ArcSystemStateObservation>(context);
     swap_out_delay_ = base::Seconds(kVmmSwapOutDelaySecond.Get());
     scheduler_ = std::make_unique<ArcVmmSwapScheduler>(
-        base::Seconds(kVmmSwapOutTimeIntervalSecond.Get()),
-        base::Seconds(kVmmSwapArcSilenceIntervalSecond.Get()),
-        base::BindRepeating(
-            [](base::WeakPtr<ArcSystemStateObservation> observation) {
-              return observation &&
-                     observation->GetPeaceDuration() >
-                         base::Seconds(kVmmSwapArcSilenceIntervalSecond.Get() /
-                                       2);
-            },
-            arc_system_state_observation_->GetWeakPtr()),
         base::BindRepeating(
             [](base::WeakPtr<ArcVmmManager> manager, bool enable) {
               if (manager) {
@@ -83,8 +73,12 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                                              : SwapState::DISABLE);
               }
             },
-            weak_ptr_factory_.GetWeakPtr()));
-    scheduler_->Start();
+            weak_ptr_factory_.GetWeakPtr()),
+        /* minimum_swapout_interval= */
+        base::Seconds(kVmmSwapOutTimeIntervalSecond.Get()),
+        /* swappable_checking_period= */
+        base::Seconds(kVmmSwapArcSilenceIntervalSecond.Get()),
+        std::make_unique<ArcSystemStateObservation>(context));
   }
 }
 
