@@ -93,7 +93,7 @@ suite('OSSettingsSearchBox', () => {
     field.$.searchInput.value = term;
     field.onSearchTermInput();
     field.onSearchTermSearch();
-    if (term) {
+    if (term && term.trim().length !== 0) {
       // search-results-fetched only fires on a non-empty search term.
       await waitForResultsFetched();
     }
@@ -832,6 +832,19 @@ suite('OSSettingsSearchBox', () => {
         return browserProxy.whenCalled(
             'openSearchFeedbackDialog', descriptionTemplate);
       });
+
+      test(
+          'feedback button does not appear when searching for only whitespace',
+          async () => {
+            settingsSearchHandler.setFakeResults(['']);
+            await simulateSearch('    ');
+            const noSearchResult =
+                searchBox.shadowRoot.querySelector('#noSearchResultsContainer');
+            assertTrue(!!noSearchResult);
+            const feedbackReportResults =
+                searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+            assertTrue(feedbackReportResults.hidden);
+          });
     });
 
     suite('when feature flag is disabled', () => {
