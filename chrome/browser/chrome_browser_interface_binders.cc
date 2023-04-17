@@ -1264,6 +1264,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::eche_app::mojom::SystemInfoProvider, ash::eche_app::EcheAppUI>(map);
 
+  RegisterWebUIControllerInterfaceBinder<
+      ash::eche_app::mojom::AccessibilityProvider, ash::eche_app::EcheAppUI>(
+      map);
+
   RegisterWebUIControllerInterfaceBinder<ash::eche_app::mojom::UidGenerator,
                                          ash::eche_app::EcheAppUI>(map);
 

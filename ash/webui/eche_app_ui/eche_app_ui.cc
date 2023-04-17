@@ -25,6 +25,7 @@ EcheAppUI::EcheAppUI(
     content::WebUI* web_ui,
     BindSignalingMessageExchangerCallback exchanger_callback,
     BindSystemInfoProviderCallback system_info_callback,
+    BindAccessibilityProviderCallback bind_accessibility_callback,
     BindUidGeneratorCallback generator_callback,
     BindNotificationGeneratorCallback notification_callback,
     BindDisplayStreamHandlerCallback stream_handler_callback,
@@ -33,6 +34,7 @@ EcheAppUI::EcheAppUI(
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
       bind_system_info_callback_(std::move(system_info_callback)),
+      bind_accessibility_callback(std::move(bind_accessibility_callback)),
       bind_generator_callback_(std::move(generator_callback)),
       bind_notification_callback_(std::move(notification_callback)),
       bind_stream_handler_callback_(std::move(stream_handler_callback)),
@@ -113,6 +115,11 @@ void EcheAppUI::BindInterface(
 void EcheAppUI::BindInterface(
     mojo::PendingReceiver<mojom::SystemInfoProvider> receiver) {
   bind_system_info_callback_.Run(std::move(receiver));
+}
+
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::AccessibilityProvider> receiver) {
+  bind_accessibility_callback.Run(std::move(receiver));
 }
 
 void EcheAppUI::BindInterface(

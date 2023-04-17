@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
@@ -89,6 +90,9 @@ class EcheAppManager : public KeyedService {
   void BindSystemInfoProviderInterface(
       mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
 
+  void BindAccessibilityProviderInterface(
+      mojo::PendingReceiver<mojom::AccessibilityProvider> receiver);
+
   void BindNotificationGeneratorInterface(
       mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
@@ -135,6 +139,7 @@ class EcheAppManager : public KeyedService {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
+  std::unique_ptr<AccessibilityProvider> accessibility_provider_;
   std::unique_ptr<AppsAccessManager> apps_access_manager_;
   std::unique_ptr<EcheTrayStreamStatusObserver>
       eche_tray_stream_status_observer_;

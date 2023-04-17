@@ -552,6 +552,15 @@ void BindSystemInfoProvider(
   }
 }
 
+void BindEcheAccessibilityProvider(
+    ash::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<ash::eche_app::mojom::AccessibilityProvider>
+        receiver) {
+  if (manager) {
+    manager->BindAccessibilityProviderInterface(std::move(receiver));
+  }
+}
+
 void BindEcheUidGenerator(
     ash::eche_app::EcheAppManager* manager,
     mojo::PendingReceiver<ash::eche_app::mojom::UidGenerator> receiver) {
@@ -605,6 +614,7 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
   return new ash::eche_app::EcheAppUI(
       web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger, manager),
       base::BindRepeating(&BindSystemInfoProvider, manager),
+      base::BindRepeating(&BindEcheAccessibilityProvider, manager),
       base::BindRepeating(&BindEcheUidGenerator, manager),
       base::BindRepeating(&BindEcheNotificationGenerator, manager),
       base::BindRepeating(&BindEcheDisplayStreamHandler, manager),

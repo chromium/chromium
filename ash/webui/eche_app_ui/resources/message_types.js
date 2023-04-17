@@ -114,4 +114,6 @@
   // Message for notifying Chrome OS about a change in the status of the WebRTC
   // connection.
   CONNECTION_STATUS_CHANGED: 'connection_status_changed',
+  // Message for sending accessibility event data.
+  ACCESSIBILITY_EVENT_DATA: 'accessibility_event_data',
 };

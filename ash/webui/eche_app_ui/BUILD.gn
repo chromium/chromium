@@ -64,6 +64,8 @@ static_library("system_info_provider") {
 
 static_library("eche_app_ui") {
   sources = [
+    "accessibility_provider.cc",
+    "accessibility_provider.h",
     "accessibility_tree_converter.cc",
     "accessibility_tree_converter.h",
     "apps_access_manager.cc",

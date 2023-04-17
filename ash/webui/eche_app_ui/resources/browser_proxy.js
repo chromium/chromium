@@ -41,6 +41,8 @@ const systemInfoObserverRouter =
 // Set up a message pipe to the browser process to monitor screen state.
 systemInfo.setSystemInfoObserver(
     systemInfoObserverRouter.$.bindNewPipeAndPassRemote());
+// Returns the remote for AccessibilityProvider.
+const accessibility = ash.echeApp.mojom.AccessibilityProvider.getRemote();
 
 const notificationGenerator =
     ash.echeApp.mojom.NotificationGenerator.getRemote();
@@ -77,6 +79,12 @@ guestMessagePipe.registerHandler(Message.SEND_SIGNAL, async (signal) => {
   console.log('echeapi browser_proxy.js sendSignalingMessage');
   signalMessageExchanger.sendSignalingMessage(signal);
 });
+
+guestMessagePipe.registerHandler(
+    Message.ACCESSIBILITY_EVENT_DATA, async (event_data) => {
+      console.log('echeapi browser_proxy.js handleAccessibilityEventReceived');
+      accessibility.handleAccessibilityEventReceived(event_data);
+    });
 
 signalingMessageObserverRouter.onReceivedSignalingMessage.addListener(
     (signal) => {
