@@ -897,7 +897,10 @@ source_set("app_service_browser_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
 
-  sources = [ "web_app_notifications_interactive_uitest.cc" ]
+  sources = [
+    "isolated_web_apps/isolated_web_app_interactive_uitest.cc",
+    "web_app_notifications_interactive_uitest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
