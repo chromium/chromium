@@ -2839,8 +2839,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityPortal) 
   RunHtmlTest(FILE_PATH_LITERAL("portal.html"));
 }
 
+// TODO(crbug.com/1367886): Flaky on multiple platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityPortalNameFromText) {
+                       DISABLED_AccessibilityPortalNameFromText) {
   RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-text.html"));
 }
 
