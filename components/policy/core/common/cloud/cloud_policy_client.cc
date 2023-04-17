@@ -257,7 +257,9 @@ void CloudPolicyClient::SetupRegistration(
 // Reusing IDs would mean the server could track clients by their registration
 // attempts.
 void CloudPolicyClient::SetClientId(const std::string& client_id) {
-  client_id_ = client_id.empty() ? base::GenerateUuid() : client_id;
+  client_id_ = client_id.empty()
+                   ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+                   : client_id;
 }
 
 void CloudPolicyClient::Register(const RegistrationParameters& parameters,
