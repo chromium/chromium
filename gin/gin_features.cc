@@ -186,6 +186,11 @@ BASE_FEATURE(kJavaScriptArrayBufferTransfer,
              "JavaScriptArrayBufferTransfer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the experiment with compile hints as magic comments.
+BASE_FEATURE(kJavaScriptCompileHintsMagic,
+             "JavaScriptCompileHintsMagic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:

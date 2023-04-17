@@ -365,6 +365,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--use-libm-trig-functions",
                          "--no-use-libm-trig-functions");
 
+  SetV8FlagsIfOverridden(features::kJavaScriptCompileHintsMagic,
+                         "--compile-hints-magic", "--no-compile-hints-magic");
+
   // WebAssembly features.
 
   SetV8FlagsIfOverridden(features::kWebAssemblyTailCall,
