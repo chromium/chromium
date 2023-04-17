@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+PASS no buyers => no winners
+PASS seller is not an https URL
+PASS decisionLogicUrl is invalid
+PASS decisionLogicUrl is cross-origin with seller
+PASS trustedScoringSignalsUrl is invalid
+PASS trustedScoringSignalsUrl is cross-origin with seller
+PASS interestGroupBuyer is invalid
+PASS interestGroupBuyer is not https
+PASS only one interestGroupBuyer is invalid
+PASS only one interestGroupBuyer is not https
+PASS auctionSignals is invalid as JSON
+PASS sellerSignals is invalid as JSON
+PASS directFromSellerSignals is invalid
+PASS directFromSellerSignals is cross-origin with seller
+PASS directFromSellerSignals has nonempty query
+PASS perBuyerSignals has invalid URL in a key
+PASS perBuyerSignals value is invalid as JSON
+PASS perBuyerGroupLimits has invalid URL in a key
+PASS perBuyerExperimentGroupIds has invalid URL in a key
+PASS perBuyerPrioritySignals has invalid URL in a key
+PASS perBuyerPrioritySignals has a value with a key with prefix "browserSignals"
+PASS component auctions are not allowed within component auctions
+PASS component auctions are not allowed with interestGroupBuyers
+Harness: the test ran to completion.
+
