@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_util.h"
+#import "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -90,6 +91,7 @@ bool ExtractFormsData(NSString* forms_json,
                       const std::u16string& form_name,
                       const GURL& main_frame_url,
                       const GURL& frame_origin,
+                      const FieldDataManager& field_data_manager,
                       std::vector<FormData>* forms_data) {
   DCHECK(forms_data);
   std::unique_ptr<base::Value> forms_value = ParseJson(forms_json);
@@ -105,8 +107,9 @@ bool ExtractFormsData(NSString* forms_json,
   for (const auto& form_dict : forms_value->GetList()) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
-                        frame_origin, &form))
+                        frame_origin, field_data_manager, &form)) {
       forms_data->push_back(std::move(form));
+    }
   }
   return true;
 }
@@ -116,6 +119,7 @@ bool ExtractFormData(const base::Value& form_value,
                      const std::u16string& form_name,
                      const GURL& main_frame_url,
                      const GURL& form_frame_origin,
+                     const FieldDataManager& field_data_manager,
                      autofill::FormData* form_data) {
   DCHECK(form_data);
   // Each form should be a JSON dictionary.
@@ -183,7 +187,8 @@ bool ExtractFormData(const base::Value& form_value,
   for (const auto& field_dict : *fields_list) {
     autofill::FormFieldData field_data;
     if (field_dict.is_dict() &&
-        ExtractFormFieldData(field_dict.GetDict(), &field_data)) {
+        ExtractFormFieldData(field_dict.GetDict(), field_data_manager,
+                             &field_data)) {
       form_data->fields.push_back(std::move(field_data));
     } else {
       return false;
@@ -193,6 +198,7 @@ bool ExtractFormData(const base::Value& form_value,
 }
 
 bool ExtractFormFieldData(const base::Value::Dict& field,
+                          const FieldDataManager& field_data_manager,
                           autofill::FormFieldData* field_data) {
   const std::string* name;
   const std::string* form_control_type;
@@ -276,6 +282,14 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
       ++value_it;
       ++content_it;
     }
+  }
+
+  // Fill user input and properties mask.
+  if (field_data_manager.HasFieldData(field_data->unique_renderer_id)) {
+    field_data->user_input =
+        field_data_manager.GetUserInput(field_data->unique_renderer_id);
+    field_data->properties_mask = field_data_manager.GetFieldPropertiesMask(
+        field_data->unique_renderer_id);
   }
 
   return true;

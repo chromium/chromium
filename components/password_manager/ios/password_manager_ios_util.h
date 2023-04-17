@@ -15,6 +15,7 @@ class WebState;
 
 namespace autofill {
 struct FormData;
+class FieldDataManager;
 }
 
 namespace password_manager {
@@ -27,7 +28,8 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state);
 // whether the xtraction was successful.
 bool JsonStringToFormData(NSString* json_string,
                           autofill::FormData* form_data,
-                          GURL page_url);
+                          const GURL& page_url,
+                          const autofill::FieldDataManager& field_data_manager);
 
 // Whether the |origin| matches the last committed URl in the |web_state|.
 bool OriginMatchesLastCommittedURLOrigin(web::WebState* web_state,

@@ -45,16 +45,18 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state) {
   return security_state::IsSslCertificateValid(security_level);
 }
 
-bool JsonStringToFormData(NSString* json_string,
-                          autofill::FormData* form_data,
-                          GURL page_url) {
+bool JsonStringToFormData(
+    NSString* json_string,
+    autofill::FormData* form_data,
+    const GURL& page_url,
+    const autofill::FieldDataManager& field_data_manager) {
   std::unique_ptr<base::Value> formValue = autofill::ParseJson(json_string);
   if (!formValue)
     return false;
 
   return autofill::ExtractFormData(
       *formValue, false, std::u16string(), page_url,
-      page_url.DeprecatedGetOriginAsURL(), form_data);
+      page_url.DeprecatedGetOriginAsURL(), field_data_manager, form_data);
 }
 
 bool IsCrossOriginIframe(web::WebState* web_state,
