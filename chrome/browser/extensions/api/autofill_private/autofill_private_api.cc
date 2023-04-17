@@ -169,8 +169,8 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // Note: overriding address profile source only if test feature is enabled.
     source = autofill::AutofillProfile::Source::kAccount;
   }
-  if (country_code &&
-      personal_data->IsCountryEligibleForAccountStorage(country_code.value())) {
+  if (country_code && !personal_data->IsCountryEligibleForAccountStorage(
+                          country_code.value())) {
     // Note: addresses from unsupported countries can't be saved in account.
     // TODO(crbug.com/1432505): remove temporary unsupported countries
     // filtering.
