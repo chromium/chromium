@@ -125,7 +125,6 @@ NSString* const kInactiveTabsUserEducationShownOnce =
                 snapshotAgent:snapshotBrowserAgent
             tabRestoreService:tabRestoreService];
 
-  self.viewController.gridViewController.imageDataSource = self.mediator;
   self.viewController.gridViewController.menuProvider = _menuProvider;
 }
 

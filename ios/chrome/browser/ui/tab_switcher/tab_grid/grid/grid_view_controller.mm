@@ -1722,19 +1722,30 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }];
 
   __weak __typeof(self) weakSelf = self;
+  TabSwitcherImageFetchingCompletionBlock completion =
+      ^(TabSwitcherItem* innerItem, UIImage* snapshot) {
+        // Only update the icon if the cell is not already reused for another
+        // item.
+        if ([cell hasIdentifier:innerItem.identifier]) {
+          if (weakSelf.thumbStripEnabled) {
+            [cell fadeInSnapshot:snapshot];
+          } else {
+            cell.snapshot = snapshot;
+          }
+        }
+      };
+  if (_mode == TabGridModeInactive) {
+    [item fetchSnapshot:completion];
+  } else {
+    // TODO(crbug.com/1421321): Migrate to using
+    // `-[TabSwitcherItem fetchSnapshot:]`.
+    [self.imageDataSource snapshotForIdentifier:item.identifier
+                                     completion:^(UIImage* snapshot) {
+                                       completion(item, snapshot);
+                                     }];
+  }
+
   NSString* itemIdentifier = item.identifier;
-  [self.imageDataSource snapshotForIdentifier:itemIdentifier
-                                   completion:^(UIImage* snapshot) {
-                                     // Only update the icon if the cell is not
-                                     // already reused for another item.
-                                     if ([cell hasIdentifier:itemIdentifier]) {
-                                       if (weakSelf.thumbStripEnabled) {
-                                         [cell fadeInSnapshot:snapshot];
-                                       } else {
-                                         cell.snapshot = snapshot;
-                                       }
-                                     }
-                                   }];
   [self.priceCardDataSource
       priceCardForIdentifier:itemIdentifier
                   completion:^(PriceCardItem* priceCardItem) {
