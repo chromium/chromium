@@ -58,7 +58,7 @@ try_.builder(
 try_.builder(
     name = "win-libfuzzer-asan-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
-    executable = "recipe:chromium/fuzz",
+    executable = "recipe:chromium_libfuzzer_trybot",
     builderless = False,
     os = os.WINDOWS_ANY,
     main_list_view = "try",
