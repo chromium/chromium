@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
 }
 
 // TODO(crbug.com/1433000): Flaky on win-asan
-#if defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_PeekAndDeclineSignIn DISABLED_PeekAndDeclineSignIn
 #else
 #define MAYBE_PeekAndDeclineSignIn PeekAndDeclineSignIn
