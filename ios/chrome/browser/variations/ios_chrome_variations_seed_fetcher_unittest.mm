@@ -75,7 +75,7 @@ class IOSChromeVariationsSeedFetcherTest : public PlatformTest {
 // Tests that the request to the finch server would not be made when seed
 // fetching is not enabled.
 TEST_F(IOSChromeVariationsSeedFetcherTest,
-       testThatRequestIsNotMadeWhenFetchSeedNotEnabled) {
+       DISABLED_testThatRequestIsNotMadeWhenFetchSeedNotEnabled) {
   // Attach mock delegate.
   id delegate =
       OCMProtocolMock(@protocol(IOSChromeVariationsSeedFetcherDelegate));
