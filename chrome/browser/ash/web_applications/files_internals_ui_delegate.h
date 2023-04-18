@@ -30,8 +30,14 @@ class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
   bool GetOfficeSetupComplete() const override;
   void SetOfficeSetupComplete(bool complete) override;
 
-  bool GetAlwaysMoveOfficeFiles() const override;
-  void SetAlwaysMoveOfficeFiles(bool always_move) override;
+  bool GetMoveConfirmationShownForDrive() const override;
+  bool GetMoveConfirmationShownForOneDrive() const override;
+
+  bool GetAlwaysMoveOfficeFilesToDrive() const override;
+  void SetAlwaysMoveOfficeFilesToDrive(bool always_move) override;
+
+  bool GetAlwaysMoveOfficeFilesToOneDrive() const override;
+  void SetAlwaysMoveOfficeFilesToOneDrive(bool always_move) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.

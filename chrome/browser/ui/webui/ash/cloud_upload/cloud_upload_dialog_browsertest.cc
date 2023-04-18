@@ -852,17 +852,17 @@ class MoveConfirmationDialogBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
-// `kMoveConfirmationGoogleDrive` dialog and True afterwards.
+// Tests that the preference |kOfficeMoveConfirmationShownForDrive| is False
+// before the `kMoveConfirmationGoogleDrive` dialog and True afterwards.
 IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
                        MoveConfirmationGoogleDriveSetsPref) {
-  ASSERT_FALSE(
-      file_manager::file_tasks::OfficeMoveConfirmationShown(profile()));
+  ASSERT_FALSE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+      profile()));
   {
     base::RunLoop run_loop;
     PrefChangeRegistrar change_observer;
     change_observer.Init(profile()->GetPrefs());
-    change_observer.Add(prefs::kOfficeMoveConfirmationShown,
+    change_observer.Add(prefs::kOfficeMoveConfirmationShownForDrive,
                         run_loop.QuitClosure());
     mojom::DialogArgsPtr args = mojom::DialogArgs::New();
     args->dialog_page = mojom::DialogPage::kMoveConfirmationGoogleDrive;
@@ -876,17 +876,18 @@ IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
   }
 }
 
-// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
-// `kMoveConfirmationOneDrive` dialog and True afterwards.
+// Tests that the preference |kOfficeMoveConfirmationShownForOneDrive| is False
+// before the `kMoveConfirmationOneDrive` dialog and True afterwards.
 IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
                        MoveConfirmationOneDriveSetsPref) {
   ASSERT_FALSE(
-      file_manager::file_tasks::OfficeMoveConfirmationShown(profile()));
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+          profile()));
   {
     base::RunLoop run_loop;
     PrefChangeRegistrar change_observer;
     change_observer.Init(profile()->GetPrefs());
-    change_observer.Add(prefs::kOfficeMoveConfirmationShown,
+    change_observer.Add(prefs::kOfficeMoveConfirmationShownForOneDrive,
                         run_loop.QuitClosure());
     mojom::DialogArgsPtr args = mojom::DialogArgs::New();
     args->dialog_page = mojom::DialogPage::kMoveConfirmationOneDrive;

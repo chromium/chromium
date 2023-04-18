@@ -155,6 +155,12 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_URL_MESSAGE},
       {"smbShareAddedInvalidSSOURLMessage",
        IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE},
+      {"officeLabel", IDS_SETTINGS_OFFICE_LABEL},
+      {"officeSubpageTitle", IDS_SETTINGS_OFFICE_SUBPAGE_TITLE},
+      {"alwaysMoveToDrivePreferenceLabel",
+       IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL},
+      {"alwaysMoveToOneDrivePreferenceLabel",
+       IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

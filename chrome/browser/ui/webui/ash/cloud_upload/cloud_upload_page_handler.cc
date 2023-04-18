@@ -131,18 +131,39 @@ void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
-void CloudUploadPageHandler::SetAlwaysMoveOfficeFiles(bool always_move) {
-  file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile_, always_move);
+void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToDrive(bool always_move) {
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile_,
+                                                            always_move);
 }
 
-void CloudUploadPageHandler::SetOfficeMoveConfirmationShownTrue() {
-  file_manager::file_tasks::SetOfficeMoveConfirmationShown(profile_, true);
+void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToOneDrive(
+    bool always_move) {
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile_,
+                                                               always_move);
 }
 
-void CloudUploadPageHandler::OfficeMoveConfirmationShown(
-    OfficeMoveConfirmationShownCallback callback) {
+void CloudUploadPageHandler::SetOfficeMoveConfirmationShownForDriveTrue() {
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForDrive(profile_,
+                                                                   true);
+}
+
+void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForDrive(
+    GetOfficeMoveConfirmationShownForDriveCallback callback) {
   std::move(callback).Run(
-      file_manager::file_tasks::OfficeMoveConfirmationShown(profile_));
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+          profile_));
+}
+
+void CloudUploadPageHandler::SetOfficeMoveConfirmationShownForOneDriveTrue() {
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive(profile_,
+                                                                      true);
+}
+
+void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForOneDrive(
+    GetOfficeMoveConfirmationShownForOneDriveCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+          profile_));
 }
 
 }  // namespace ash::cloud_upload

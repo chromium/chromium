@@ -32,28 +32,15 @@ export class MoveConfirmationPageElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'});
 
     shadowRoot.innerHTML = getTemplate();
-    const moveButton = shadowRoot.querySelector<HTMLElement>('.action-button')!;
-    const cancelButton =
-        shadowRoot.querySelector<HTMLElement>('.cancel-button')!;
+    const moveButton = this.$('.action-button')!;
+    const cancelButton = this.$('.cancel-button')!;
 
     moveButton.addEventListener('click', () => this.onMoveButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
-    this.init();
   }
 
   $<T extends HTMLElement>(query: string): T {
     return this.shadowRoot!.querySelector(query)!;
-  }
-
-  async init() {
-    const {moveConfirmationShown: officeMoveConfirmationShown} =
-        await this.proxy.handler.officeMoveConfirmationShown();
-
-    // Only show checkbox if the confirmation has been shown before.
-    if (!officeMoveConfirmationShown) {
-      this.$<CrCheckboxElement>('#always-move-checkbox')!.remove();
-      this.proxy.handler.setOfficeMoveConfirmationShownTrue();
-    }
   }
 
   private getProviderText(cloudProvider: CloudProvider) {
@@ -77,7 +64,9 @@ export class MoveConfirmationPageElement extends HTMLElement {
     }
   }
 
-  setCloudProvider(cloudProvider: CloudProvider) {
+  // Sets the text and animation based on the |cloudProvider|. Only show the
+  // checkbox if the dialog has been shown before for the |cloudProvider|.
+  async setCloudProvider(cloudProvider: CloudProvider) {
     this.cloudProvider = cloudProvider;
 
     const {name} = this.getProviderText(this.cloudProvider);
@@ -85,19 +74,37 @@ export class MoveConfirmationPageElement extends HTMLElement {
 
     const bodyText = this.$('#body-text');
     const checkbox = this.$<CrCheckboxElement>('#always-move-checkbox');
-    if (cloudProvider === CloudProvider.ONE_DRIVE) {
+    if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
       bodyText.innerText =
           'Microsoft 365 requires files to be stored in OneDrive. ' +
           'You can move files to OneDrive at any time.';
-      if (checkbox) {
+
+      const {moveConfirmationShown: officeMoveConfirmationShownForOneDrive} =
+          await this.proxy.handler.getOfficeMoveConfirmationShownForOneDrive();
+
+      // Only show checkbox if the confirmation has been shown before for
+      // OneDrive.
+      if (officeMoveConfirmationShownForOneDrive) {
         checkbox.innerText = 'Move to OneDrive without asking each time';
+      } else {
+        checkbox!.remove();
+        this.proxy.handler.setOfficeMoveConfirmationShownForOneDriveTrue();
       }
     } else {
       bodyText.innerText =
           'Google Docs, Sheets, and Slides require files to be stored in ' +
           'Google Drive. You can move files to Google Drive at any time.';
-      if (checkbox) {
+
+      const {moveConfirmationShown: officeMoveConfirmationShownForDrive} =
+          await this.proxy.handler.getOfficeMoveConfirmationShownForDrive();
+
+      // Only show checkbox if the confirmation has been shown before for
+      // Drive.
+      if (officeMoveConfirmationShownForDrive) {
         checkbox.innerText = 'Move to Google Drive without asking each time';
+      } else {
+        checkbox!.remove();
+        this.proxy.handler.setOfficeMoveConfirmationShownForDriveTrue();
       }
     }
 
@@ -121,13 +128,13 @@ export class MoveConfirmationPageElement extends HTMLElement {
 
   private onMoveButtonClick(): void {
     const checkbox = this.$<CrCheckboxElement>('#always-move-checkbox');
-    if (checkbox) {
-      this.proxy.handler.setAlwaysMoveOfficeFiles(checkbox.checked);
-    }
+    const setAlwaysMove = !!(checkbox && checkbox.checked);
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
+      this.proxy.handler.setAlwaysMoveOfficeFilesToOneDrive(setAlwaysMove);
       this.proxy.handler.respondWithUserActionAndClose(
           UserAction.kUploadToOneDrive);
     } else {
+      this.proxy.handler.setAlwaysMoveOfficeFilesToDrive(setAlwaysMove);
       this.proxy.handler.respondWithUserActionAndClose(
           UserAction.kUploadToGoogleDrive);
     }

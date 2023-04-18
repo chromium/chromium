@@ -410,7 +410,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Files page.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  (*s_allowlist)[::prefs::kOfficeFilesAlwaysMove] =
+  (*s_allowlist)[::prefs::kOfficeFilesAlwaysMoveToDrive] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kOfficeFilesAlwaysMoveToOneDrive] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 

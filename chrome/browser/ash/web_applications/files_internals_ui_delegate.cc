@@ -58,26 +58,45 @@ void ChromeFilesInternalsUIDelegate::SetOfficeSetupComplete(bool complete) {
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (profile) {
     file_manager::file_tasks::SetOfficeSetupComplete(profile, complete);
+    // If setup complete is set to false, also update the preferences to signal
+    // that the move confirmation dialog has never been shown.
     if (!complete) {
-      file_manager::file_tasks::SetOfficeMoveConfirmationShown(profile,
-                                                               complete);
+      file_manager::file_tasks::SetOfficeMoveConfirmationShownForDrive(profile,
+                                                                       false);
+      file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive(
+          profile, false);
     }
   }
 }
 
-bool ChromeFilesInternalsUIDelegate::GetAlwaysMoveOfficeFiles() const {
+bool ChromeFilesInternalsUIDelegate::GetMoveConfirmationShownForDrive() const {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  return profile && file_manager::file_tasks::AlwaysMoveOfficeFiles(profile);
+  return profile &&
+         file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+             profile);
 }
 
-void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFiles(
+bool ChromeFilesInternalsUIDelegate::GetMoveConfirmationShownForOneDrive()
+    const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile &&
+         file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+             profile);
+}
+
+bool ChromeFilesInternalsUIDelegate::GetAlwaysMoveOfficeFilesToDrive() const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile &&
+         file_manager::file_tasks::AlwaysMoveOfficeFilesToDrive(profile);
+}
+
+void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFilesToDrive(
     bool always_move) {
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (profile) {
-    file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile, always_move);
+    file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile,
+                                                              always_move);
     // Also clear up the timestamp for when files are moved to the Cloud.
-    file_manager::file_tasks::SetOfficeFileMovedToOneDrive(profile,
-                                                           base::Time());
     file_manager::file_tasks::SetOfficeFileMovedToGoogleDrive(profile,
                                                               base::Time());
     // Spawn the Files app Window so it clears up its localStorage.
@@ -86,5 +105,24 @@ void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFiles(
     params.url = url;
     ::ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                    params);
+  }
+}
+
+bool ChromeFilesInternalsUIDelegate::GetAlwaysMoveOfficeFilesToOneDrive()
+    const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile &&
+         file_manager::file_tasks::AlwaysMoveOfficeFilesToOneDrive(profile);
+}
+
+void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFilesToOneDrive(
+    bool always_move) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (profile) {
+    file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile,
+                                                                 always_move);
+    // Also clear up the timestamp for when files are moved to the Cloud.
+    file_manager::file_tasks::SetOfficeFileMovedToOneDrive(profile,
+                                                           base::Time());
   }
 }

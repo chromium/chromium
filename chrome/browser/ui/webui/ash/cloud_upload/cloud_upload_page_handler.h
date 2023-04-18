@@ -58,10 +58,14 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   void RespondWithUserActionAndClose(mojom::UserAction action) override;
   void RespondWithLocalTaskAndClose(int task_position) override;
   void SetOfficeAsDefaultHandler() override;
-  void SetAlwaysMoveOfficeFiles(bool always_move) override;
-  void SetOfficeMoveConfirmationShownTrue() override;
-  void OfficeMoveConfirmationShown(
-      OfficeMoveConfirmationShownCallback callback) override;
+  void SetAlwaysMoveOfficeFilesToDrive(bool always_move) override;
+  void SetAlwaysMoveOfficeFilesToOneDrive(bool always_move) override;
+  void SetOfficeMoveConfirmationShownForDriveTrue() override;
+  void GetOfficeMoveConfirmationShownForDrive(
+      GetOfficeMoveConfirmationShownForDriveCallback callback) override;
+  void SetOfficeMoveConfirmationShownForOneDriveTrue() override;
+  void GetOfficeMoveConfirmationShownForOneDrive(
+      GetOfficeMoveConfirmationShownForOneDriveCallback callback) override;
 
  private:
   Profile* profile_;

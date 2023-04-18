@@ -1830,12 +1830,23 @@ const char kDefaultHandlersForFileExtensions[] =
 // Whether the office files setup flow has ever been completed by the user.
 const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
 
-// Whether we should always move office files without prompting the user first.
-const char kOfficeFilesAlwaysMove[] = "filebrowser.office.always_move";
+// Whether we should always move office files to Google Drive without prompting
+// the user first.
+const char kOfficeFilesAlwaysMoveToDrive[] =
+    "filebrowser.office.always_move_to_drive";
 
-// Whether the move confirmation dialog has been shown before.
-const char kOfficeMoveConfirmationShown[] =
-    "filebrowser.office.move_confirmation_shown";
+// Whether we should always move office files to OneDrive without prompting the
+// user first.
+const char kOfficeFilesAlwaysMoveToOneDrive[] =
+    "filebrowser.office.always_move_to_onedrive";
+
+// Whether the move confirmation dialog has been shown before for Google Drive.
+const char kOfficeMoveConfirmationShownForDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_drive";
+
+// Whether the move confirmation dialog has been shown before for OneDrive.
+const char kOfficeMoveConfirmationShownForOneDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_onedrive";
 
 // The timestamp of the latest office file automatically moved to OneDrive.
 const char kOfficeFileMovedToOneDrive[] =

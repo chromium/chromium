@@ -603,8 +603,10 @@ extern const char kDefaultTasksBySuffix[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDefaultHandlersForFileExtensions[];
 extern const char kOfficeSetupComplete[];
-extern const char kOfficeFilesAlwaysMove[];
-extern const char kOfficeMoveConfirmationShown[];
+extern const char kOfficeFilesAlwaysMoveToDrive[];
+extern const char kOfficeFilesAlwaysMoveToOneDrive[];
+extern const char kOfficeMoveConfirmationShownForDrive[];
+extern const char kOfficeMoveConfirmationShownForOneDrive[];
 extern const char kOfficeFileMovedToOneDrive[];
 extern const char kOfficeFileMovedToGoogleDrive[];
 #endif

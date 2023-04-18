@@ -16,8 +16,19 @@ interface PageHandler {
   // Sets the filebrowser.office.setup_complete pref.
   SetOfficeSetupComplete(bool complete);
 
-  // Gets the filebrowser.office.setup_complete pref.
-  GetAlwaysMoveOfficeFiles() => (bool always_move);
-  // Sets the filebrowser.office.setup_complete pref.
-  SetAlwaysMoveOfficeFiles(bool always_move);
+  // Gets the filebrowser.office.move_confirmation_shown_for_drive pref.
+  GetMoveConfirmationShownForDrive() => (bool confirmation_shown);
+
+  // Gets the filebrowser.office.move_confirmation_shown_for_onedrive pref.
+  GetMoveConfirmationShownForOneDrive() =>(bool confirmation_shown);
+
+  // Gets the filebrowser.office.always_move_to_drive pref.
+  GetAlwaysMoveOfficeFilesToDrive() => (bool always_move);
+  // Sets the filebrowser.office.always_move_to_drive pref.
+  SetAlwaysMoveOfficeFilesToDrive(bool always_move);
+
+  // Gets the filebrowser.office.always_move_to_onedrive pref.
+  GetAlwaysMoveOfficeFilesToOneDrive() => (bool always_move);
+  // Sets the filebrowser.office.always_move_to_onedrive pref.
+  SetAlwaysMoveOfficeFilesToOneDrive(bool always_move);
 };
