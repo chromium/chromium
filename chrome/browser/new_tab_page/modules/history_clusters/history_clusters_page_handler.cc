@@ -225,7 +225,9 @@ HistoryClustersPageHandler::HistoryClustersPageHandler(
       filter_params_(GetFilterParamsFromFeatureFlags()),
       cart_service_(CartServiceFactory::GetForProfile(profile_)) {}
 
-HistoryClustersPageHandler::~HistoryClustersPageHandler() = default;
+HistoryClustersPageHandler::~HistoryClustersPageHandler() {
+  receiver_.reset();
+}
 
 void HistoryClustersPageHandler::CallbackWithClusterData(
     GetClustersCallback callback,
