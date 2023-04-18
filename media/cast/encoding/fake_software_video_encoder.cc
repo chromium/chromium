@@ -9,7 +9,6 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "media/base/video_frame.h"
-#include "media/cast/common/encoded_frame.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
@@ -19,8 +18,7 @@
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 FakeSoftwareVideoEncoder::FakeSoftwareVideoEncoder(
     const FrameSenderConfig& video_config)
@@ -59,11 +57,13 @@ void FakeSoftwareVideoEncoder::Encode(
       ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
   encoded_frame->reference_time = reference_time;
 
-  base::Value values(base::Value::Type::DICT);
-  values.SetBoolKey("key", encoded_frame->dependency == Dependency::kKeyFrame);
-  values.SetIntKey("ref", encoded_frame->referenced_frame_id.lower_32_bits());
-  values.SetIntKey("id", encoded_frame->frame_id.lower_32_bits());
-  values.SetIntKey("size", frame_size_);
+  const auto values =
+      base::Value::Dict()
+          .Set("key", encoded_frame->dependency == Dependency::kKeyFrame)
+          .Set("ref", static_cast<int>(
+                          encoded_frame->referenced_frame_id.lower_32_bits()))
+          .Set("id", static_cast<int>(encoded_frame->frame_id.lower_32_bits()))
+          .Set("size", frame_size_);
   base::JSONWriter::Write(values, &encoded_frame->data);
   encoded_frame->data.resize(
       std::max<size_t>(encoded_frame->data.size(), frame_size_), ' ');
@@ -85,5 +85,4 @@ void FakeSoftwareVideoEncoder::GenerateKeyFrame() {
   next_frame_is_key_ = true;
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
