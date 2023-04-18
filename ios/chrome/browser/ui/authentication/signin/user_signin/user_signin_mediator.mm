@@ -174,10 +174,6 @@
       NOTREACHED_NORETURN();
     }
   }
-
-  // All codepaths above clear the sync-requested bit, either because the user
-  // is signed out or because SyncService::StopAndClear() does the job.
-  CHECK(!self.syncService->GetUserSettings()->IsSyncRequested());
 }
 
 - (void)signinWithIdentityOnStartAfterSignout {
