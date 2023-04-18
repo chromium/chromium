@@ -69,11 +69,19 @@ void CompanionPageHandler::ShowUI() {
         companion::CompanionTabHelper::FromWebContents(active_web_contents);
     helper->SetCompanionPageHandler(weak_ptr_factory_.GetWeakPtr());
     std::string initial_text_query = helper->GetTextQuery();
-    if (initial_text_query.empty()) {
-      NotifyURLChanged(/*is_full_reload=*/true);
-    } else {
+    if (!initial_text_query.empty()) {
       OnSearchTextQuery(initial_text_query);
+      return;
     }
+
+    std::unique_ptr<side_panel::mojom::ImageQuery> image_query =
+        helper->GetImageQuery();
+    if (image_query) {
+      OnImageQuery(*image_query);
+      return;
+    }
+
+    NotifyURLChanged(/*is_full_reload=*/true);
   }
 }
 
@@ -101,6 +109,11 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
   }
 }
 
+void CompanionPageHandler::OnImageQuery(
+    side_panel::mojom::ImageQuery image_query) {
+  page_->OnImageQuery(image_query.Clone());
+}
+
 void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
     side_panel::mojom::PromoAction promo_action) {
@@ -108,21 +121,9 @@ void CompanionPageHandler::OnPromoAction(
 }
 
 void CompanionPageHandler::OnRegionSearchClicked() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Start a region search here.
-  // TODO(shaktisahu): Pass a UI entry point for accurate metrics.
-  if (!lens_region_search_controller_) {
-    lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(GetBrowser());
-  }
-  auto* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  bool is_google_default_search_provider =
-      search::DefaultSearchProviderIsGoogle(profile);
-  lens_region_search_controller_->Start(web_contents(),
-                                        /*use_fullscreen_capture=*/false,
-                                        is_google_default_search_provider);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
+  CHECK(helper);
+  helper->StartRegionSearch(web_contents(), /*use_fullscreen_capture=*/false);
 }
 
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {

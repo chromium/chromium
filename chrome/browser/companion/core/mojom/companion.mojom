@@ -48,6 +48,22 @@ enum PromoAction {
   kRejected = 3,
 };
 
+// Data for uploading an image query.
+struct ImageQuery {
+  // URL to upload the image query to.
+  url.mojom.Url upload_url;
+  // URL of the image if it exists.
+  url.mojom.Url image_url;
+  // Content type representing the image to pass in the POST form.
+  string content_type;
+  // Array of image bytes to query.
+  array<uint8> image_bytes;
+  // Height of the image before transformations.
+  uint32 height;
+  // Width of the image before transformations.
+  uint32 width;
+};
+
 // Factory method for creating a new WebUI page handler.
 interface CompanionPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -82,4 +98,8 @@ interface CompanionPage {
   // Results in a postmessage() call to the companion with the encoded protobuf
   // representation of the update params.
   UpdateCompanionPage(string companion_update_proto);
+
+  // Pass a new companion URL needed along with a byte string representing the
+  // image bytes that should be used for the query.
+  OnImageQuery(ImageQuery image_query);
 };

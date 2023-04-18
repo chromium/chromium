@@ -17,10 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#endif
-
 class Browser;
 class CompanionSidePanelUntrustedUI;
 class Profile;
@@ -55,6 +51,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   // Informs the page handler that a new text query to initialize / reload the
   // page with was sent from client.
   void OnSearchTextQuery(const std::string& text_query);
+  void OnImageQuery(side_panel::mojom::ImageQuery image_query);
 
  private:
   // MsbbDelegate overrides.
@@ -77,10 +74,6 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
   std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  std::unique_ptr<lens::LensRegionSearchController>
-      lens_region_search_controller_;
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   std::unique_ptr<PromoHandler> promo_handler_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};

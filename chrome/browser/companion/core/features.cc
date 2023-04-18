@@ -19,6 +19,11 @@ BASE_FEATURE(kSidePanelCompanion,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
     &kSidePanelCompanion, "companion-homepage-url", "https://www.example.com"};
+constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
+    &kSidePanelCompanion, "companion-image-upload-url",
+    "https://www.example.com"};
+constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
+    &kSidePanelCompanion, "open-companion-for-image-search", true};
 
 }  // namespace features
 

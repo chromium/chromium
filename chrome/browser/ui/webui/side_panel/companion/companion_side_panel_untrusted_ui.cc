@@ -41,8 +41,12 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
           : companion::features::kHomepageURLForCompanion.Get();
   std::string frameSrcDirective =
       std::string("frame-src ") + frameSrcString + ";";
+  std::string formActionDirective =
+      std::string("form-action ") + frameSrcString + ";";
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, frameSrcDirective);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FormAction, formActionDirective);
   html_source->AddString("companion_origin", frameSrcString);
 }
 

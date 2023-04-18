@@ -17,6 +17,13 @@ namespace lens {
 
 // Query parameter for the payload.
 constexpr char kPayloadQueryParameter[] = "p";
+// Query parameter for the translate source language.
+constexpr char kTranslateSourceQueryParameter[] = "sourcelang";
+// Query parameter for the translate target language.
+constexpr char kTranslateTargetQueryParameter[] = "targetlang";
+// Query parameter for the filter type.
+constexpr char kFilterTypeQueryParameter[] = "filtertype";
+constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
 
 // Appends logs to query param as a string
 extern void AppendLogsQueryParam(
@@ -36,7 +43,9 @@ extern GURL AppendOrReplaceQueryParametersForLensRequest(
 extern std::string GetQueryParametersForLensRequest(
     lens::EntryPoint ep,
     bool is_side_panel_request,
-    bool is_full_screen_region_search_request);
+    bool is_full_screen_region_search_request,
+    bool is_companion_request = false);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_URL_UTILS_H_

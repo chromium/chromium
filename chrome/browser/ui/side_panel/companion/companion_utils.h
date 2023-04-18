@@ -9,9 +9,17 @@ class Browser;
 
 namespace companion {
 
+// Returns true if browser is valid, DSE is Google, and the side panel companion
+// feature is enabled.
+bool IsSearchInCompanionSidePanelSupported(const Browser* browser);
+
 // Returns true if necessary flags are enabled, browser is valid and default
 // search engine is Google.
 bool IsSearchWebInCompanionSidePanelSupported(const Browser* browser);
+
+// Returns true if necessary flags are enabled, browser is valid, and DSE is
+// Google.
+bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser);
 
 }  // namespace companion
 
