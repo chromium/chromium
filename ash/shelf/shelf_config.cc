@@ -473,10 +473,6 @@ SkColor ShelfConfig::GetShelfControlButtonColor(
       session_state == session_manager::SessionState::ACTIVE) {
     return is_in_app_ ? SK_ColorTRANSPARENT : GetDefaultShelfColor(widget);
   }
-  if (!features::IsDarkLightModeEnabled() &&
-      session_state == session_manager::SessionState::OOBE) {
-    return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
-  }
   return widget->GetColorProvider()->GetColor(
       kColorAshControlBackgroundColorInactive);
 }

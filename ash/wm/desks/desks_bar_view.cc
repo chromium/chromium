@@ -7,7 +7,6 @@
 #include <iterator>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -514,13 +513,11 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        /*corner_radius=*/0,
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2));
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      /*corner_radius=*/0,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder2));
 
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   // Use layer scrolling so that the contents will paint on top of the parent,

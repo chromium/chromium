@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
@@ -36,13 +35,11 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
   });
   focus_ring->SetColorId(ui::kColorAshFocusRing);
 
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kSaveDeskCornerRadius,
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder2));
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kSaveDeskCornerRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder2));
 }
 
 SavedDeskSaveDeskButton::~SavedDeskSaveDeskButton() = default;

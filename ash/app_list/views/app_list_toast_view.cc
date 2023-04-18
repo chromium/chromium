@@ -397,12 +397,9 @@ void AppListToastView::UpdateIconImage() {
     return;
   }
 
-  // Default to dark_icon_ if dark/light mode feature is not enabled.
   const gfx::VectorIcon* themed_icon =
-      !features::IsDarkLightModeEnabled() ||
-              DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-          ? dark_icon_
-          : light_icon_;
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? dark_icon_
+                                                              : light_icon_;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *themed_icon, ui::kColorAshSystemUIMenuIcon,
       icon_size_.value_or(gfx::GetDefaultSizeOfVectorIcon(*themed_icon))));

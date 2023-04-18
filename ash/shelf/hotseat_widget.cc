@@ -516,12 +516,8 @@ void HotseatWidget::DelegateView::Init(
   background_container_view->SetEnabled(false);
   translucent_background_ =
       background_container_view->AddChildView(std::make_unique<views::View>());
-  if (features::IsDarkLightModeEnabled()) {
-    translucent_background_->SetPaintToLayer();
-    translucent_background_->layer()->SetFillsBoundsOpaquely(false);
-  } else {
-    translucent_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  }
+  translucent_background_->SetPaintToLayer();
+  translucent_background_->layer()->SetFillsBoundsOpaquely(false);
   translucent_background_->layer()->SetName("hotseat/Background");
 
   // Create a shadow and stack at the bottom.
@@ -606,12 +602,8 @@ void HotseatWidget::DelegateView::SetTranslucentBackground(
     ui::ScopedLayerAnimationSettings color_animation_setter(animator);
     DoScopedAnimationSetting(&color_animation_setter);
     target_color_ = ShelfConfig::Get()->GetDefaultShelfColor(widget);
-    if (features::IsDarkLightModeEnabled()) {
-      translucent_background_->SetBackground(
-          views::CreateSolidBackground(target_color_));
-    } else {
-      translucent_background_->layer()->SetColor(target_color_);
-    }
+    translucent_background_->SetBackground(
+        views::CreateSolidBackground(target_color_));
   }
 
   // Animate the bounds change if there's a change of width (for instance when

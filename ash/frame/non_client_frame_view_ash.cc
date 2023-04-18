@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -297,9 +296,6 @@ void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
 }
 
 void NonClientFrameViewAsh::AddedToWidget() {
-  if (!features::IsDarkLightModeEnabled())
-    return;
-
   if (highlight_border_overlay_ ||
       !GetWidget()->GetNativeWindow()->GetProperty(
           chromeos::kShouldHaveHighlightBorderOverlay)) {
@@ -320,15 +316,9 @@ void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
   if (!frame_window->GetProperty(kTrackDefaultFrameColors))
     return;
 
-  // Use the light mode colors when the DarkLightMode feature is disabled. Do
-  // this because we use dark mode colors by default when the feature is
-  // disabled currently (see crbug.com/1291354).
-  const bool is_dark_light_enabled = features::IsDarkLightModeEnabled();
   auto* color_provider = frame_->GetColorProvider();
   const SkColor dialog_title_bar_color =
-      is_dark_light_enabled
-          ? color_provider->GetColor(cros_tokens::kDialogTitleBarColor)
-          : color_provider->GetColor(cros_tokens::kDialogTitleBarColorLight);
+      color_provider->GetColor(cros_tokens::kDialogTitleBarColor);
 
   frame_window->SetProperty(kFrameActiveColorKey, dialog_title_bar_color);
   frame_window->SetProperty(kFrameInactiveColorKey, dialog_title_bar_color);

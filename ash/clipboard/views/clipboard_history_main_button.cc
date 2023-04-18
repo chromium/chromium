@@ -102,11 +102,6 @@ void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
 
-  // Use the color in light mode when dark/light mode is not enabled. As the
-  // background color of the context menu is from NativeTheme when the feature
-  // is not enabled, and light mode is the default color of NativeTheme. If
-  // dark/light mode is enabled, the background color of the context menus
-  // inside SystemUI will be overridden to align with current system color mode.
   const auto color_id =
       chromeos::features::IsJellyEnabled()
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)

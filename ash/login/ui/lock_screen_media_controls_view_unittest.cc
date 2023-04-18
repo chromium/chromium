@@ -686,7 +686,6 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   const bool should_use_dark_color =
-      features::IsDarkLightModeEnabled() &&
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
       message_center::kProductIcon, kAppIconSize,
