@@ -41,6 +41,10 @@ export class PowerBookmarkRowElement extends PolymerElement {
         type: String,
         value: '',
       },
+      forceHover: {
+        type: Boolean,
+        value: false,
+      },
       hasCheckbox: {
         type: Boolean,
         reflectToAttribute: true,
@@ -78,6 +82,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
   checkboxDisabled: boolean;
   compact: boolean;
   description: string;
+  forceHover: boolean;
   hasCheckbox: boolean;
   hasInput: boolean;
   rowAriaDescription: string;

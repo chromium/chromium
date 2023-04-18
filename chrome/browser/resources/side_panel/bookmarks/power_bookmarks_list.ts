@@ -214,6 +214,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private renamingId_: string;
   private deletionDescription_: string;
   private shownBookmarksResizeObserver_?: ResizeObserver;
+  private contextMenuBookmark_: chrome.bookmarks.BookmarkTreeNode|undefined;
 
   constructor() {
     super();
@@ -498,6 +499,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     return imageUrls;
   }
 
+  private getBookmarkForceHover_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return bookmark === this.contextMenuBookmark_;
+  }
+
   private getActiveFolderLabel_(): string {
     return this.getFolderLabel_(this.getActiveFolder_());
   }
@@ -749,13 +755,14 @@ export class PowerBookmarksListElement extends PolymerElement {
     const priceTracked = this.isPriceTracked(event.detail.bookmark);
     const priceTrackingEligible =
         this.isPriceTrackingEligible_(event.detail.bookmark);
+    this.contextMenuBookmark_ = event.detail.bookmark;
     if (event.detail.event.button === 0) {
       this.$.contextMenu.showAt(
-          event.detail.event, [event.detail.bookmark], priceTracked,
+          event.detail.event, [this.contextMenuBookmark_], priceTracked,
           priceTrackingEligible);
     } else {
       this.$.contextMenu.showAtPosition(
-          event.detail.event, [event.detail.bookmark], priceTracked,
+          event.detail.event, [this.contextMenuBookmark_], priceTracked,
           priceTrackingEligible);
     }
   }
@@ -831,6 +838,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     // Context menu delete is expected to only be called on a single bookmark.
     this.showDeletionToastWithCount_(1);
     this.editing_ = false;
+  }
+
+  private onContextMenuClosed_() {
+    this.contextMenuBookmark_ = undefined;
   }
 
   private showDeletionToastWithCount_(deletionCount: number) {

@@ -84,6 +84,12 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
         type: Boolean,
         value: false,
       },
+
+      forceHover: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -99,6 +105,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   url?: string;
   imageUrls: string[];
   private firstImageLoaded_: boolean;
+  forceHover: boolean;
 
   override ready() {
     super.ready();

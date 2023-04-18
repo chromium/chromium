@@ -243,7 +243,9 @@
               row-aria-description="[[getBookmarkA11yDescription_(item)]]"
               tabindex$="[[tabIndex]]"
               image-urls="[[getBookmarkImageUrls_(
-                            item, item.*, imageUrls_.*)]]">
+                            item, item.*, imageUrls_.*)]]"
+              force-hover="[[getBookmarkForceHover_(
+                            item, contextMenuBookmark_)]]">
             <template is="dom-if" restamp
                 if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
               <sp-list-item-badge slot="badges"
@@ -349,7 +351,8 @@
     on-delete-clicked="onContextMenuDeleteClicked_"
     on-disabled-feature="showDisabledFeatureDialog_"
     on-edit-clicked="onContextMenuEditClicked_"
-    on-rename-clicked="setRenamingId_">
+    on-rename-clicked="setRenamingId_"
+    on-close="onContextMenuClosed_">
 </power-bookmarks-context-menu>
 
 <cr-lazy-render id="deletionToast">
