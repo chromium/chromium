@@ -179,7 +179,7 @@
     }
   },
   "chromeos-jacuzzi64-chrome-skylab": {
-    "args_file": "//build/args/chromeos/jacuzzi.gni",
+    "args_file": "//build/args/chromeos/jacuzzi64.gni",
     "gn_args": {
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
