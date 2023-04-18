@@ -127,10 +127,13 @@ void VEAEncoder::BitstreamBufferReady(
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
 
-void VEAEncoder::NotifyError(media::VideoEncodeAccelerator::Error error) {
+void VEAEncoder::NotifyErrorStatus(const media::EncoderStatus& status) {
   DVLOG(3) << __func__;
-  UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.VEAError", error,
-                            media::VideoEncodeAccelerator::kErrorMax + 1);
+  CHECK(!status.is_ok());
+  UMA_HISTOGRAM_ENUMERATION(
+      "Media.MediaRecorder.VEAError",
+      media::ConvertStatusToVideoEncodeAcceleratorError(status),
+      media::VideoEncodeAccelerator::kErrorMax + 1);
   on_error_cb_.Run();
   error_notified_ = true;
 }
@@ -230,7 +233,8 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
         input_buffer->mapping.GetMemoryAsSpan<uint8_t>().data(),
         input_buffer->mapping.size(), frame->timestamp());
     if (!video_frame) {
-      NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
+                         "Failed to create VideoFrame"});
       return;
     }
     libyuv::I420Copy(
@@ -310,7 +314,8 @@ void VEAEncoder::ConfigureEncoder(const gfx::Size& size,
   if (!video_encoder_ ||
       !video_encoder_->Initialize(config, this,
                                   std::make_unique<media::NullMediaLog>())) {
-    NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
+                       "Failed to initialize"});
   }
 }
 

@@ -171,38 +171,7 @@ void VideoEncodeAccelerator::Client::NotifyError(Error error) {
 
 void VideoEncodeAccelerator::Client::NotifyErrorStatus(
     const EncoderStatus& status) {
-  CHECK(!status.is_ok());
-  VideoEncodeAccelerator::Error error =
-      VideoEncodeAccelerator::Error::kPlatformFailureError;
-  switch (status.code()) {
-    case EncoderStatus::Codes::kOk:
-      NOTREACHED();
-      break;
-    case EncoderStatus::Codes::kEncoderInitializeNeverCompleted:
-    case EncoderStatus::Codes::kEncoderInitializeTwice:
-    case EncoderStatus::Codes::kEncoderIllegalState:
-      error = VideoEncodeAccelerator::Error::kIllegalStateError;
-      break;
-    case EncoderStatus::Codes::kEncoderUnsupportedProfile:
-    case EncoderStatus::Codes::kEncoderUnsupportedCodec:
-    case EncoderStatus::Codes::kEncoderUnsupportedConfig:
-    case EncoderStatus::Codes::kEncoderInitializationError:
-    case EncoderStatus::Codes::kUnsupportedFrameFormat:
-    case EncoderStatus::Codes::kInvalidInputFrame:
-    case EncoderStatus::Codes::kInvalidOutputBuffer:
-      error = VideoEncodeAccelerator::Error::kInvalidArgumentError;
-      break;
-    case EncoderStatus::Codes::kEncoderFailedEncode:
-    case EncoderStatus::Codes::kEncoderFailedFlush:
-    case EncoderStatus::Codes::kEncoderMojoConnectionError:
-    case EncoderStatus::Codes::kScalingError:
-    case EncoderStatus::Codes::kFormatConversionError:
-    case EncoderStatus::Codes::kEncoderHardwareDriverError:
-    case EncoderStatus::Codes::kSystemAPICallError:
-      error = VideoEncodeAccelerator::Error::kPlatformFailureError;
-      break;
-  }
-  NotifyError(error);
+  NotifyError(ConvertStatusToVideoEncodeAcceleratorError(status));
 }
 
 void VideoEncodeAccelerator::Client::NotifyEncoderInfoChange(
@@ -328,6 +297,38 @@ bool operator==(const VideoEncodeAccelerator::Config& l,
          l.storage_type == r.storage_type && l.content_type == r.content_type &&
          l.spatial_layers == r.spatial_layers &&
          l.inter_layer_pred == r.inter_layer_pred;
+}
+
+VideoEncodeAccelerator::Error ConvertStatusToVideoEncodeAcceleratorError(
+    const EncoderStatus& status) {
+  CHECK(!status.is_ok());
+  switch (status.code()) {
+    case EncoderStatus::Codes::kOk:
+      NOTREACHED();
+      break;
+    case EncoderStatus::Codes::kEncoderInitializeNeverCompleted:
+    case EncoderStatus::Codes::kEncoderInitializeTwice:
+    case EncoderStatus::Codes::kEncoderIllegalState:
+      return VideoEncodeAccelerator::Error::kIllegalStateError;
+    case EncoderStatus::Codes::kEncoderUnsupportedProfile:
+    case EncoderStatus::Codes::kEncoderUnsupportedCodec:
+    case EncoderStatus::Codes::kEncoderUnsupportedConfig:
+    case EncoderStatus::Codes::kEncoderInitializationError:
+    case EncoderStatus::Codes::kUnsupportedFrameFormat:
+    case EncoderStatus::Codes::kInvalidInputFrame:
+    case EncoderStatus::Codes::kInvalidOutputBuffer:
+      return VideoEncodeAccelerator::Error::kInvalidArgumentError;
+    case EncoderStatus::Codes::kEncoderFailedEncode:
+    case EncoderStatus::Codes::kEncoderFailedFlush:
+    case EncoderStatus::Codes::kEncoderMojoConnectionError:
+    case EncoderStatus::Codes::kScalingError:
+    case EncoderStatus::Codes::kFormatConversionError:
+    case EncoderStatus::Codes::kEncoderHardwareDriverError:
+    case EncoderStatus::Codes::kSystemAPICallError:
+      return VideoEncodeAccelerator::Error::kPlatformFailureError;
+  }
+  NOTREACHED();
+  return VideoEncodeAccelerator::Error::kPlatformFailureError;
 }
 }  // namespace media
 

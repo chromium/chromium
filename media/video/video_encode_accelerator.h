@@ -491,6 +491,10 @@ operator&=(VideoEncodeAccelerator::SupportedRateControlMode& lhs,
   return lhs;
 }
 
+// TODO(b/275663480): Remove this function once we replace UMAs in client
+// with UKM.
+MEDIA_EXPORT VideoEncodeAccelerator::Error
+ConvertStatusToVideoEncodeAcceleratorError(const EncoderStatus& status);
 }  // namespace media
 
 namespace std {

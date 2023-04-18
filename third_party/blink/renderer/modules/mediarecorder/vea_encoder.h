@@ -51,7 +51,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
   void BitstreamBufferReady(
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
-  void NotifyError(media::VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const media::EncoderStatus& status) override;
 
   base::WeakPtr<Encoder> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
