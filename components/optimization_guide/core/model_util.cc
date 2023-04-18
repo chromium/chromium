@@ -96,6 +96,9 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationAdaptiveToolbar";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
       return "SegmentationTabletProductivityUser";
+    case proto::
+        OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING:
+      return "NewTabPageHistoryClustersModuleRanking";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
