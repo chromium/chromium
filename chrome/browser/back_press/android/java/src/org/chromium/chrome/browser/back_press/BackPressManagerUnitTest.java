@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import android.os.Build;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -38,6 +41,13 @@ public class BackPressManagerUnitTest {
         public CallbackHelper getCallbackHelper() {
             return mCallbackHelper;
         }
+    }
+
+    @Test
+    @Before
+    public void setup() {
+        MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(Build.VERSION_CODES.TIRAMISU);
+        MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK.setForTesting(true);
     }
 
     @Test
@@ -257,6 +267,23 @@ public class BackPressManagerUnitTest {
         h1.getHandleBackPressChangedSupplier().set(null);
         Assert.assertFalse("Callback should be disabled if no handler is enabled",
                 manager.getCallback().isEnabled());
+    }
+
+    // Test callback is always enabled to trigger fallbacks for groups without system back.
+    @Test
+    public void testAlwaysEnabledCallback() {
+        MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK.setForTesting(false);
+        BackPressManager manager = new BackPressManager();
+        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
+        EmptyBackPressHandler h2 = new EmptyBackPressHandler();
+        manager.addHandler(h1, 0);
+        manager.addHandler(h2, 1);
+        h1.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+                manager.getCallback().isEnabled());
+        h1.getHandleBackPressChangedSupplier().set(false);
+        Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
+        Assert.assertTrue("Callback is always enabled", manager.getCallback().isEnabled());
     }
 
     private int getHandlerCount(BackPressManager manager) {
