@@ -65,7 +65,7 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_path_mappings =
-      [ "chrome://bookmarks-side-panel.top-chrome/shared/*|" +
+      [ "//bookmarks-side-panel.top-chrome/shared/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
