@@ -652,8 +652,17 @@ TEST_F(AcceleratorControllerTest, WindowSnap) {
     EXPECT_FALSE(window_state->IsFullscreen());
   }
   {
+    // Tests that window snap doesn't work while the window is minimized.
     controller_->PerformActionIfEnabled(WINDOW_MINIMIZE, {});
     EXPECT_TRUE(window_state->IsMinimized());
+    controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+    EXPECT_TRUE(window_state->IsMinimized());
+
+    // Unminimize the window. Now window snap should work.
+    controller_->PerformActionIfEnabled(WINDOW_MINIMIZE, {});
+    EXPECT_FALSE(window_state->IsMinimized());
+    controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+    EXPECT_TRUE(window_state->IsSnapped());
   }
 }
 

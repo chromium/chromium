@@ -399,16 +399,13 @@ chromeos::FrameSizeButton* GetFrameSizeButton(aura::Window* window) {
       frame_view->GetHeaderView()->caption_button_container()->size_button());
 }
 
-// Gets the top window, or active window if there is none. Returns nullptr if
-// neither exist.
-aura::Window* GetCandidateWindowForAction() {
+// Gets the target window for accelerator action. This can be the top visible
+// window, or active window if the accelerator is pressed during a window drag.
+// Returns nullptr if neither exist.
+aura::Window* GetTargetWindow() {
   aura::Window* window = window_util::GetTopWindow();
-  if (!window) {
-    // Attempt to toggle the active window if there is no top window. This can
-    // happen when the accelerator is pressed during a window drag.
-    window = window_util::GetActiveWindow();
-  }
-  return window;
+  return window && window->IsVisible() ? window
+                                       : window_util::GetActiveWindow();
 }
 
 }  // namespace
@@ -509,14 +506,14 @@ bool CanToggleFloatingWindow() {
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return false;
   }
-  return window_util::GetTopWindow() != nullptr;
+  return GetTargetWindow() != nullptr;
 }
 
 bool CanToggleGameDashboard() {
   if (!features::IsGameDashboardEnabled()) {
     return false;
   }
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   return window && GameDashboardController::Get()->IsSupported(window);
 }
 
@@ -524,7 +521,7 @@ bool CanToggleMultitaskMenu() {
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return false;
   }
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   if (!window) {
     return false;
   }
@@ -568,7 +565,7 @@ bool CanToggleProjectorMarker() {
 }
 
 bool CanToggleResizeLockMenu() {
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   if (!window) {
     return false;
   }
@@ -585,7 +582,7 @@ bool CanUnpinWindow() {
 }
 
 bool CanWindowSnap() {
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   if (!window) {
     return false;
   }
@@ -813,7 +810,7 @@ void MoveActiveItem(bool going_left) {
     window_to_move =
         overview_controller->overview_session()->GetHighlightedWindow();
   } else {
-    window_to_move = window_util::GetTopWindow();
+    window_to_move = GetTargetWindow();
   }
 
   if (!window_to_move || !desks_util::BelongsToActiveDesk(window_to_move))
@@ -959,7 +956,7 @@ void RestoreTab() {
 }
 
 void RotateActiveWindow() {
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   if (!window) {
     return;
   }
@@ -1088,7 +1085,7 @@ void ToggleAmbientMode() {
 }
 
 void ToggleAssignToAllDesk() {
-  auto* window = window_util::GetTopWindow();
+  auto* window = GetTargetWindow();
   if (!window) {
     return;
   }
@@ -1263,7 +1260,7 @@ void ToggleDockedMagnifier() {
 
 void ToggleFloating() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   DCHECK(window);
   // `CanFloatWindow` check is placed here rather than
   // `CanToggleFloatingWindow` as otherwise the bounce would not behave
@@ -1282,7 +1279,7 @@ void ToggleFullscreen() {
   // http://crbug.com/1094739
   if (overview_controller->IsInStartAnimation())
     return;
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   if (!window) {
     return;
   }
@@ -1332,7 +1329,7 @@ void ToggleFullscreenMagnifier() {
 
 void ToggleGameDashboard() {
   DCHECK(features::IsGameDashboardEnabled());
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   DCHECK(window);
   // TODO(phshah): Connect to Game Dashboard.
 }
@@ -1415,7 +1412,7 @@ void ToggleKeyboardBacklight() {
 }
 
 void ToggleMaximized() {
-  aura::Window* window = GetCandidateWindowForAction();
+  aura::Window* window = GetTargetWindow();
   if (!window) {
     return;
   }
@@ -1425,7 +1422,7 @@ void ToggleMaximized() {
 }
 
 bool ToggleMinimized() {
-  aura::Window* window = GetCandidateWindowForAction();
+  aura::Window* window = window_util::GetTopWindow();
   if (!window) {
     return false;
   }
@@ -1444,7 +1441,7 @@ bool ToggleMinimized() {
 }
 
 void ToggleResizeLockMenu() {
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   auto* frame_view = NonClientFrameViewAsh::Get(window);
   frame_view->GetToggleResizeLockMenuCallback().Run();
 }
@@ -1483,7 +1480,7 @@ void ToggleMirrorMode() {
 
 void ToggleMultitaskMenu() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   DCHECK(window);
   if (auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
       tablet_mode_controller->InTabletMode()) {
@@ -1545,7 +1542,7 @@ void ToggleWifi() {
 }
 
 void TopWindowMinimizeOnBack() {
-  WindowState::Get(window_util::GetTopWindow())->Minimize();
+  WindowState::Get(GetTargetWindow())->Minimize();
 }
 
 void TouchHudClear() {
@@ -1640,7 +1637,7 @@ void WindowSnap(AcceleratorAction action) {
   const WMEvent event(action == WINDOW_CYCLE_SNAP_LEFT
                           ? WM_EVENT_CYCLE_SNAP_PRIMARY
                           : WM_EVENT_CYCLE_SNAP_SECONDARY);
-  aura::Window* window = window_util::GetTopWindow();
+  aura::Window* window = GetTargetWindow();
   DCHECK(window);
 
   auto* window_state = WindowState::Get(window);
