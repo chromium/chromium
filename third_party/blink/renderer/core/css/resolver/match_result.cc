@@ -44,10 +44,6 @@ MatchedProperties::MatchedProperties() {
   memset(&types_, 0, sizeof(types_));
 }
 
-RecordReplayMatchedProperties::RecordReplayMatchedProperties() {
-  memset(&types_, 0, sizeof(types_));
-}
-
 void MatchedProperties::Trace(Visitor* visitor) const {
   visitor->Trace(properties);
 }
@@ -67,21 +63,6 @@ void MatchResult::AddMatchedProperties(
   new_properties.types_.is_inline_style = options.IsInlineStyle();
   new_properties.types_.origin = current_origin_;
   new_properties.types_.tree_order = current_tree_order_;
-
-  // Create a duplicate entry for our record/replay, array, that does _not_
-  // have the properties pointer, so we avoid non-deterministic hashing values.
-  record_replay_matched_properties_.Grow(record_replay_matched_properties_.size() + 1);
-  RecordReplayMatchedProperties& new_rr_properties = record_replay_matched_properties_.back();
-  new_rr_properties.record_replay_id_properties = recordreplay::PointerId(properties);
-  new_rr_properties.types_.link_match_type = options.GetLinkMatchType();
-  new_rr_properties.types_.valid_property_filter =
-      static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          options.GetValidPropertyFilter());
-  new_rr_properties.types_.layer_order =
-      ClampTo<uint16_t>(options.GetLayerOrder());
-  new_rr_properties.types_.is_inline_style = options.IsInlineStyle();
-  new_rr_properties.types_.origin = current_origin_;
-  new_rr_properties.types_.tree_order = current_tree_order_;
 }
 
 void MatchResult::FinishAddingUARules() {
