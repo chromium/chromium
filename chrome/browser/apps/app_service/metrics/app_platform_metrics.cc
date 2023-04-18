@@ -1219,6 +1219,17 @@ void AppPlatformMetrics::UpdateUsageTime(
     const std::string& app_id,
     AppTypeName app_type_name,
     const base::TimeDelta& running_time) {
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnAppUsage(app_id, GetAppType(profile_, app_id), instance_id,
+                        running_time);
+  }
+  if (!ShouldRecordUkm(profile_)) {
+    // Avoid incrementing app usage counters if it cannot be reported. This
+    // ensures we only track usage for the period the user has sync enabled.
+    return;
+  }
+
   auto usage_time_it = usage_time_per_two_hours_.find(instance_id);
   if (usage_time_it == usage_time_per_two_hours_.end()) {
     auto source_id = GetSourceId(profile_, app_id);
@@ -1231,12 +1242,6 @@ void AppPlatformMetrics::UpdateUsageTime(
   if (usage_time_it != usage_time_per_two_hours_.end()) {
     usage_time_it->second.app_type_name = app_type_name;
     usage_time_it->second.running_time += running_time;
-  }
-
-  // Also notify registered observers.
-  for (auto& observer : observers_) {
-    observer.OnAppUsage(app_id, GetAppType(profile_, app_id), instance_id,
-                        running_time);
   }
 }
 

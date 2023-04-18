@@ -1285,19 +1285,23 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkm) {
   sync_service()->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 
+  // Fast forward by 2 hours and verify no usage data is reported to UKM.
   task_environment_.FastForwardBy(base::Hours(2));
-
   VerifyNoAppUsageTimeUkm();
 
   // Set sync is allowed by setting an empty disable reason set.
   sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
 
-  task_environment_.FastForwardBy(base::Hours(1));
+  static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
+  task_environment_.FastForwardBy(kAppUsageDuration);
   ModifyInstance(app_constants::kChromeAppId,
                  browser->window()->GetNativeWindow(), kInactiveInstanceState);
 
-  task_environment_.FastForwardBy(base::Hours(1));
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, /*duration=*/10800000,
+  // Fast forward by 2 hours and verify usage data reported to UKM only includes
+  // usage data since sync was last enabled.
+  task_environment_.FastForwardBy(base::Hours(2));
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId,
+                        (int)kAppUsageDuration.InMilliseconds(),
                         AppTypeName::kChromeBrowser);
 }
 
