@@ -3898,7 +3898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.MemoryCache.EntryStatus"
-    enum="NetworkServiceMemoryCacheEntryStatus" expires_after="2023-04-16">
+    enum="NetworkServiceMemoryCacheEntryStatus" expires_after="2023-07-18">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
