@@ -88,7 +88,6 @@ missing_new_fields,chrome/browser/ash/printing/server_printers_fetcher.cc
 missing_new_fields,chrome/browser/ash/remote_apps/remote_apps_manager.cc
 missing_new_fields,chrome/browser/ash/smb_client/discovery/netbios_client.cc
 missing_new_fields,chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc
-missing_new_fields,chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.cc
 missing_new_fields,chrome/browser/autofill/autofill_gstatic_reader.cc
 missing_new_fields,chrome/browser/autofill/autofill_image_fetcher_impl.cc
 missing_new_fields,chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc
