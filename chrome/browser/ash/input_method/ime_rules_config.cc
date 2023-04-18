@@ -27,6 +27,7 @@ const char* kDefaultAutocorrectDomainDenylist[] = {
     "outlook.live",
     "outlook.office",
     "quizlet",
+    "twitter",
     "whatsapp",
     "youtube",
 };
