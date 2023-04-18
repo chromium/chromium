@@ -182,6 +182,11 @@ void ProjectorClientImpl::StartSpeechRecognition() {
 }
 
 void ProjectorClientImpl::StopSpeechRecognition() {
+  if (!speech_recognizer_) {
+    LOG(ERROR) << "Stop was called on a destroyed speech recognizer.";
+    return;
+  }
+
   speech_recognizer_->Stop();
 }
 
