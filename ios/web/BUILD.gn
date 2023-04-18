@@ -52,7 +52,6 @@ source_set("web") {
     "//ios/web/security",
     "//ios/web/session",
     "//ios/web/thread",
-    "//ios/web/ui",
     "//ios/web/web_state",
     "//ios/web/web_state:web_view_internal_creation_util",
     "//services/network:network_service",
@@ -418,7 +417,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
-    "web_state/page_display_state_unittest.mm",
     "web_state/page_viewport_state_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
     "web_state/web_state_context_menu_bridge_unittest.mm",
