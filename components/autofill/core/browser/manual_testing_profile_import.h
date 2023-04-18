@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_PROFILE_IMPORT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_PROFILE_IMPORT_H_
 
-#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -18,10 +17,11 @@ namespace autofill {
 
 // Command line flags that enable importing AutofillProfiles for manual testing:
 //   --autofill-profiles-content-for-manual-testing
-//       Expects profile descriptions as a string in JSON format.
+//       Expects profile and credit card descriptions as a string in JSON
+//       format.
 //   --autofill-profiles-for-manual-testing
 //       The same as above, but instead of the JSON content, expects the path
-//       to a file with profile descriptions in JSON format.
+//       to a file with profile and credit card descriptions in JSON format.
 // The following format is expected:
 // {
 //   "profiles" : [
@@ -32,6 +32,13 @@ namespace autofill {
 //       ...
 //     },
 //     ...
+//   ],
+//   "credit-cards" : [
+//     {
+//       "nickname" : "...",
+//       "field-type" : "value",
+//       ...
+//     }
 //   ]
 // }
 // The "source" is optional and can either be "account" or "localOrSyncable".
@@ -39,44 +46,60 @@ namespace autofill {
 // default to "localOrSyncable".
 // The "initial_creator_id" is an optional int value which sets the profile's
 // property of the same name.
-// "field-type" corresponds to ServerFieldTypes like "NAME_FULL".
-// All profiles specified in the file are imported. They replace any existing
-// profiles.
-// The profiles are expected to be fully structured
-constexpr char kManualProfileImportForTestingFlag[] =
+// The "nickname" in credit cards optional as well.
+// "field-type" corresponds to ServerFieldTypes like "NAME_FULL". For profiles
+// and credit cards, only field types valid for AutofillProfile or CreditCard
+// are accepted.
+// All profiles and credit cards specified in the file are imported. They
+// replace any existing data.
+// The profiles are expected to be fully structured.
+// TODO(crbug/1413177): remove `profiles` from flags' name.
+constexpr char kManualFileImportForTestingFlag[] =
     "autofill-profiles-for-manual-testing";
-constexpr char kManualProfileContentImportForTestingFlag[] =
+constexpr char kManualContentImportForTestingFlag[] =
     "autofill-profiles-content-for-manual-testing";
 
 // Reads the contents of `file`, parses it as a JSON file and converts its
-// content into AutofillProfiles.
+// content into a list of AutofillProfiles.
 // If any step fails, an error message is logged and absl::nullopt is returned.
 absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
     base::FilePath file);
 
-// Given a description of fully structured profiles in the aforementioned
-// JSON format, converts it to a vector of AutofillProfiles. If the JSON
-// doesn't adhere to the above format, or if any of the profiles is not
-// fully structured, an error is logged and absl::nullopt is returned. A
-// profile is considered "fully structured" if `FinalizeAfterImport()`
-// doesn't change it. This condition exists to prevent profiles from
-// silently changing, since `FinalizeAfterImport()` is called when
-// retrieving a profile from the database. For example, if the structure is
-// invalid because the last name is not part of the full name, the routine
-// will clear this information.
-absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
-    const base::Value& json);
+// Reads the contents of `file`, parses it as a JSON file and converts its
+// content into a list of CreditCards.
+// If any step fails, an error message is logged and absl::nullopt is returned.
+absl::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
+    base::FilePath file);
 
-// Checks if the `kManualProfileImportForTestingFlag` flag is present. If so,
-// reads the specified file, parses the profile description and imports the
-// profiles into the `pdm`.
+// Given the array of descriptions of fully structured profiles in the
+// aforementioned JSON format, converts it to a vector of AutofillProfiles.
+// If the JSON list doesn't adhere to the above format, or if any of the
+// profiles is not fully structured, an error is logged and absl::nullopt is
+// returned. A profile is considered "fully structured" if
+// `FinalizeAfterImport()` doesn't change it. This condition exists to prevent
+// profiles from silently changing, since `FinalizeAfterImport()` is called when
+// retrieving a profile from the database. For example, if the structure is
+// invalid because the last name is not part of the full name, the routine will
+// clear this information.
+absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
+    const base::Value::List* const profiles_json);
+
+// Given the array of valid credit cards in the aforementioned JSON format,
+// converts it to a vector of CreditCards.
+// If the JSON list doesn't adhere to the above format, an error message is
+// logged and absl::nullopt is returned.
+absl::optional<std::vector<CreditCard>> CreditCardsFromJSON(
+    const base::Value::List* const cards_json);
+
+// Checks if the `kManualImportForTestingFlag` flag is present. If so,
+// reads the specified file, parses the profiles and credit cards description
+// and imports them into the `pdm`.
 // In case the import fails, an error message is logged and the browser
-// intentionally exist ungracefully. This is to prevent manual testing with
+// intentionally exits ungracefully. This is to prevent manual testing with
 // incorrect data.
 // Since importing is done in a separate thread, the `pdm` is passed as a weak
 // ptr. It is updated once the import has finished.
-void MaybeImportProfilesForManualTesting(
-    base::WeakPtr<PersonalDataManager> pdm);
+void MaybeImportDataForManualTesting(base::WeakPtr<PersonalDataManager> pdm);
 
 }  // namespace autofill
 

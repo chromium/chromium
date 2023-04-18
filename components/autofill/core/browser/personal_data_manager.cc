@@ -380,7 +380,7 @@ void PersonalDataManager::Init(
   // Potentially import profiles for testing. `Init()` is called whenever the
   // corresponding Chrome profile is created. This is either during start-up or
   // when the Chrome profile is changed (including incognito mode).
-  MaybeImportProfilesForManualTesting(weak_factory_.GetWeakPtr());
+  MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
 PersonalDataManager::~PersonalDataManager() {
