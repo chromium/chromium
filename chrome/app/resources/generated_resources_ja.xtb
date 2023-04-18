@@ -1943,7 +1943,7 @@
 <translation id="2693176596243495071">不明なエラーが発生しました。後でもう一度お試しになるか、問題が解決しない場合は管理者にお問い合わせください。</translation>
 <translation id="2698147581454716013">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
 <translation id="2699911226086014512">PIN の操作に失敗しました。コード: <ph name="RETRIES" /></translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有しました</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有されました</translation>
 <translation id="2701737434167469065">ログイン（<ph name="EMAIL" />）</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
 <translation id="270414148003105978">モバイル ネットワーク</translation>
@@ -2576,7 +2576,7 @@
 <translation id="3277214528693754078">テキスト カーソルを使って移動する（カーソル ブラウジング）</translation>
 <translation id="3277594800340743211">大きいシャドウ</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
-<translation id="3279092821516760512">近くにいる選択した連絡先が共有できます。許可するまで転送は行われません。</translation>
+<translation id="3279092821516760512">近くにいる連絡先のうち、選択した人があなたと共有できます。許可するまで転送は行われません。</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
 <translation id="3280237271814976245">名前を付けて保存(&amp;A)...</translation>
 <translation id="3280243678470289153">Chrome に留まる</translation>
