@@ -52,7 +52,7 @@
 #endif
 
 #define EXPECT_AUDIO_HASH(expected)                        \
-  EXPECT_TRUE(GetAudioHash().IsEquivalent(expected, 0.04)) \
+  EXPECT_TRUE(GetAudioHash().IsEquivalent(expected, 0.03)) \
       << "Audio hashes differ. Expected: " << expected     \
       << " Actual: " << GetAudioHash().ToString()
 
@@ -98,9 +98,6 @@ constexpr char kOpusSmallCodecDelayHash_1[] =
 
 // The above hash, plus an additional playthrough starting from T=1.414s.
 constexpr char kOpusSmallCodecDelayHash_2[] = "0.31,0.15,-0.18,0.25,0.70,0.84,";
-
-// For BasicPlaybackOpusWebmHashed_MonoOutput test case.
-constexpr char kOpusMonoOutputHash[] = "-2.36,-1.64,0.84,1.55,1.51,-0.90,";
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 constexpr int k1280IsoFileDurationMs = 2736;
@@ -1126,16 +1123,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
   EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
 }
 
-// TODO(https://crbug.com/1434236): Test consistently failing on multiple
-// builders.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput \
-  DISABLED_BasicPlaybackOpusWebmHashed_MonoOutput
-#else
-#define MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput \
-  BasicPlaybackOpusWebmHashed_MonoOutput
-#endif
-TEST_F(PipelineIntegrationTest, MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackOpusWebmHashed_MonoOutput) {
   ASSERT_EQ(PIPELINE_OK,
             Start("bunny-opus-intensity-stereo.webm", kHashed | kMonoOutput));
 
@@ -1151,8 +1139,11 @@ TEST_F(PipelineIntegrationTest, MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput) {
 
   ASSERT_TRUE(WaitUntilOnEnded());
 
-  // Hash has very slight differences when phase inversion is enabled.
-  EXPECT_AUDIO_HASH(kOpusMonoOutputHash);
+#if defined(OPUS_FIXED_POINT)
+  EXPECT_AUDIO_HASH("-2.41,-1.66,0.79,1.53,1.46,-0.91,");
+#else
+  EXPECT_AUDIO_HASH("-2.36,-1.64,0.84,1.55,1.51,-0.90,");
+#endif
 }
 
 TEST_F(PipelineIntegrationTest, BasicPlaybackOpusPrerollExceedsCodecDelay) {
