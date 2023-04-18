@@ -67,15 +67,8 @@ ViewportDescription ViewportStyleResolver::ResolveViewportDescription(
   }
 
   switch (viewport_style) {
-    case mojom::blink::ViewportStyle::kDefault: {
-      // kDefault is currently only used by the desktop browser where the
-      // viewport description doesn't need resolving. However, set the default
-      // width to device-width in case Android based browsers want to simulate
-      // desktop behavior where the default layout width comes from the window
-      // size.
-      description.min_width = Length::DeviceWidth();
+    case mojom::blink::ViewportStyle::kDefault:
       return description;
-    }
     // We only want to use the device scale portion of the zoom factor, because
     // the page layout size should remain fixed relative to page zoom in order
     // to reflow into it.

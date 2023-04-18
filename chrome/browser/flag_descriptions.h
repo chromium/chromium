@@ -2168,9 +2168,6 @@ extern const char kContextualSearchSuppressShortViewDescription[];
 extern const char kCormorantName[];
 extern const char kCormorantDescription[];
 
-extern const char kDefaultViewportIsDeviceWidthName[];
-extern const char kDefaultViewportIsDeviceWidthDescription[];
-
 extern const char kDrawEdgeToEdgeName[];
 extern const char kDrawEdgeToEdgeDescription[];
 
