@@ -158,8 +158,8 @@ BASE_FEATURE(kDynamicSchedulerForClients,
 // * If this feature is disabled, then the default limit is 128 quads,
 //   unless there are 5 or more video elements present, in which case
 //   the limit is 300.
-// * If this feature is enabled, then these limits are 512 and 300 quads
-//   respectively, and can be overridden by the "default" and "many-videos"
+// * If this feature is enabled, then these limits are 512, and can be
+// overridden by the "default" and "many-videos"
 //   feature parameters.
 BASE_FEATURE(kCALayerNewLimit,
              "CALayerNewLimit",

@@ -34,14 +34,17 @@ namespace {
 // disabled.
 constexpr size_t kLayerLimitDefault = 128;
 
-// The default CALayer number allowed with many videos (video conferencing). It
-// can be overriden by the "many-videos" feature parameters if kCALayerNewLimit
-// is enabled.
-constexpr size_t kLayerLimitWithManyVideos = 300;
-
 // The new limit if kCALayerNewLimit is enabled. It can be overriden by the
 // "default" feature parameters.
 constexpr size_t kLayerNewLimitDefault = 512;
+
+// The default CALayer number allowed for CoreAnimation with many videos (video
+// count >= kMaxNumVideos) when kCALayerNewLimit is disabled.
+constexpr size_t kLayerLimitWithManyVideos = 300;
+
+// The new limit with many videos if kCALayerNewLimit is enabled. It can be
+// overriden by the "many-video" feature parameters.
+constexpr size_t kLayerNewLimitWithManyVideos = 512;
 
 // If there are too many RenderPassDrawQuads, we shouldn't use Core
 // Animation to present them as individual layers, since that potentially
@@ -388,6 +391,7 @@ CALayerOverlayProcessor::CALayerOverlayProcessor()
 
     const int layer_limit_with_many_videos_field_trial =
         features::kCALayerNewLimitManyVideos.Get();
+    layer_limit_with_many_videos_ = kLayerNewLimitWithManyVideos;
     if (layer_limit_with_many_videos_field_trial > 0) {
       layer_limit_with_many_videos_ = layer_limit_with_many_videos_field_trial;
     }
