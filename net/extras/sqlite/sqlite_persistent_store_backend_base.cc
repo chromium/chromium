@@ -102,6 +102,19 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
       &SQLitePersistentStoreBackendBase::DatabaseErrorCallback,
       base::Unretained(this)));
 
+  bool has_been_preloaded = false;
+  // It is not possible to preload a database opened with exclusive access,
+  // because the file cannot be opened again to preload it. In this case,
+  // preload before opening the database.
+  if (enable_exclusive_access_) {
+    // See coments in Database::Preload for explanation of these values.
+    constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
+    // TODO(crbug.com/1434166): Consider moving preload behind a database
+    // option.
+    base::PreReadFile(path_, /*is_executable=*/false, kPreReadSize);
+    has_been_preloaded = true;
+  }
+
   if (!db_->Open(path_)) {
     DLOG(ERROR) << "Unable to open " << histogram_tag_ << " DB.";
     RecordOpenDBProblem();
@@ -109,9 +122,8 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     return false;
   }
 
-  // It is not possible to preload a database opened with exclusive access,
-  // because the file cannot be re-opened by the preloader.
-  if (!enable_exclusive_access_) {
+  // Only attempt a preload if the database hasn't already been preloaded above.
+  if (!has_been_preloaded) {
     db_->Preload();
   }
 
