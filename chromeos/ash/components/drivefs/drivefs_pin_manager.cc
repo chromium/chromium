@@ -132,19 +132,44 @@ ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
-  return out << "{id: " << PinManager::Id(q.value.target_stable_id)
-             << ", status: " << Quote(q.value.target_lookup_status) << "}";
+  out << "{" << PinManager::Id(q.value.target_stable_id);
+
+  if (q.value.target_lookup_status != LookupStatus::kOk) {
+    out << " " << Quote(q.value.target_lookup_status);
+  }
+
+  return out << "}";
 }
 
 ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
   const FileMetadata& md = q.value;
-  out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id)
-      << ", size: " << HumanReadableSize(md.size) << ", pinned: " << md.pinned
-      << ", can_pin: " << (md.can_pin == FileMetadata::CanPinStatus::kOk)
-      << ", available_offline: " << md.available_offline;
-  if (md.shortcut_details) {
-    out << ", shortcut_details: " << Quote(*md.shortcut_details);
+
+  out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id);
+
+  if (md.size != 0) {
+    out << " of " << HumanReadableSize(md.size);
   }
+
+  if (md.trashed) {
+    out << ", trashed";
+  }
+
+  if (md.can_pin != FileMetadata::CanPinStatus::kOk) {
+    out << ", not pinnable";
+  }
+
+  if (md.pinned) {
+    out << ", pinned";
+  }
+
+  if (md.available_offline) {
+    out << ", available offline";
+  }
+
+  if (md.shortcut_details) {
+    out << ", shortcut to " << Quote(*md.shortcut_details);
+  }
+
   return out << "}";
 }
 
@@ -759,7 +784,9 @@ void PinManager::HandleQueryItem(Id dir_id,
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id)
-              << " has lookup error: " << Quote(md);
+              << " has lookup error "
+              << Quote(md.shortcut_details->target_lookup_status) << ": "
+              << Quote(md);
       return;
     }
 
