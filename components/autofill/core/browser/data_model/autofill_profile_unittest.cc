@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -672,6 +673,19 @@ TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
 }
 
+TEST(AutofillProfileTest, IsSubsetOf) {
+  AutofillProfileComparator comparator("en-US");
+  const AutofillProfile standard_profile = test::StandardProfile();
+  const AutofillProfile subset_profile = test::SubsetOfStandardProfile();
+
+  EXPECT_FALSE(standard_profile.IsSubsetOf(comparator, subset_profile));
+  EXPECT_TRUE(subset_profile.IsSubsetOf(comparator, standard_profile));
+
+  // Profiles are subsets of themselves.
+  EXPECT_TRUE(standard_profile.IsSubsetOf(comparator, standard_profile));
+  EXPECT_TRUE(subset_profile.IsSubsetOf(comparator, subset_profile));
+}
+
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
   AutofillProfile profile1 = AutofillProfile(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
@@ -692,35 +706,35 @@ TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
 
   // When a form has a NAME_FULL field rather than a NAME_MIDDLE field, consider
   // whether one profile's full name can be derived from the other's.
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                             {NAME_FULL}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                             {NAME_FULL}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile3, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
   // True because Genevieve M Fox can be derived from Genevieve Marie Fox.
-  EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                             {NAME_FULL}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FULL}));
+  EXPECT_TRUE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile3, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
 
   // When a form has a NAME_MIDDLE field rather than a NAME_FULL field, consider
   // a name's constituent parts.
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                             {NAME_MIDDLE}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_MIDDLE}));
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                             {NAME_MIDDLE}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_MIDDLE}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_MIDDLE}));
+  EXPECT_TRUE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile3, {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile1, {NAME_MIDDLE}));
   // False because the middle name M doesn't equal the middle name Marie.
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile3, "en-US",
-                                              {NAME_MIDDLE}));
-  EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile3, {NAME_MIDDLE}));
+  EXPECT_FALSE(
+      profile3.IsSubsetOfForFieldSet(comparator, profile2, {NAME_MIDDLE}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
@@ -736,14 +750,14 @@ TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
 
   const AutofillProfileComparator comparator("en-US");
 
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FIRST}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FIRST}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FIRST}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FIRST}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentLastNames) {
@@ -759,14 +773,14 @@ TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentLastNames) {
 
   const AutofillProfileComparator comparator("en-US");
 
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_FULL}));
-  EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-US",
-                                              {NAME_LAST}));
-  EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-US",
-                                              {NAME_LAST}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_FULL}));
+  EXPECT_FALSE(
+      profile1.IsSubsetOfForFieldSet(comparator, profile2, {NAME_LAST}));
+  EXPECT_FALSE(
+      profile2.IsSubsetOfForFieldSet(comparator, profile1, {NAME_LAST}));
 }
 
 TEST(AutofillProfileTest,
@@ -784,9 +798,9 @@ TEST(AutofillProfileTest,
   const AutofillProfileComparator comparator("en-US");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
+      comparator, profile2, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
+      comparator, profile1, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
 }
 
 TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
@@ -803,10 +817,10 @@ TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
   const AutofillProfileComparator comparator("en-US");
 
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US",
+      comparator, profile2,
       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US",
+      comparator, profile1,
       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY}));
 }
 
@@ -824,9 +838,9 @@ TEST(AutofillProfileTest,
 
   const AutofillProfileComparator comparator("en-CA");
 
-  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2, "en-CA",
+  EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(comparator, profile2,
                                              {NAME_FULL, ADDRESS_HOME_ZIP}));
-  EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile1, "en-CA",
+  EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(comparator, profile1,
                                              {NAME_FULL, ADDRESS_HOME_ZIP}));
 }
 
@@ -845,13 +859,13 @@ TEST(AutofillProfileTest,
   const AutofillProfileComparator comparator("en-CA");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-CA", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-CA", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-CA", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-CA", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
 TEST(AutofillProfileTest,
@@ -877,30 +891,30 @@ TEST(AutofillProfileTest,
   const AutofillProfileComparator comparator("en-US");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "en-US", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
 TEST(AutofillProfileTest,
@@ -926,30 +940,30 @@ TEST(AutofillProfileTest,
   const AutofillProfileComparator comparator("pt-BR");
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_WHOLE_NUMBER}));
 
   EXPECT_TRUE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_TRUE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile1.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile1, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile1, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
-      comparator, profile3, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile3, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
   EXPECT_FALSE(profile3.IsSubsetOfForFieldSet(
-      comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
+      comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
 TEST(AutofillProfileTest, TestFinalizeAfterImport) {

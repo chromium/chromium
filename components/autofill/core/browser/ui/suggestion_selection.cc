@@ -172,8 +172,7 @@ std::vector<Suggestion> GetUniqueSuggestions(
       if (i == j ||
           !comparator.Compare(suggestions[i].main_text.value,
                               suggestions[j].main_text.value) ||
-          !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b, app_locale,
-                                            types)) {
+          !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b, types)) {
         continue;
       }
 
@@ -186,8 +185,8 @@ std::vector<Suggestion> GetUniqueSuggestions(
           profile_a->source() == profile_b->source()
               ? i < j
               : profile_a->source() == AutofillProfile::Source::kAccount;
-      if (prefer_a_over_b && profile_b->IsSubsetOfForFieldSet(
-                                 comparator, *profile_a, app_locale, types)) {
+      if (prefer_a_over_b &&
+          profile_b->IsSubsetOfForFieldSet(comparator, *profile_a, types)) {
         continue;
       }
 

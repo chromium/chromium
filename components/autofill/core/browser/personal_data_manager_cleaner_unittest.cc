@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -63,6 +64,34 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
       personal_data_->Shutdown();
     personal_data_.reset();
     TearDownTest();
+  }
+
+  // Runs the deduplication routine on a set of `profiles` and returns the
+  // result. For simplicity, this function skips updating the `personal_data_`
+  // and just operates on the `profiles`.
+  std::vector<AutofillProfile> DeduplicateProfiles(
+      const std::vector<AutofillProfile>& profiles) {
+    // `DedupeProfilesForTesting()` takes a vector of unique_ptrs. This
+    // function's interface uses regular AutofillProfiles instead, since this
+    // simplifies testing. So convert back and forth.
+    std::vector<std::unique_ptr<AutofillProfile>> profile_ptrs;
+    for (const AutofillProfile& profile : profiles) {
+      profile_ptrs.push_back(std::make_unique<AutofillProfile>(profile));
+    }
+    std::unordered_set<std::string> profiles_to_delete;
+    std::unordered_map<std::string, std::string> guids_merge_map;
+    personal_data_manager_cleaner_->DedupeProfilesForTesting(
+        &profile_ptrs, &profiles_to_delete, &guids_merge_map);
+    // Convert back and remove all `profiles_to_delete`, since
+    // `DedupeProfilesForTesting()` doesn't modify `profile_ptrs`.
+    std::vector<AutofillProfile> deduped_profiles;
+    for (const std::unique_ptr<AutofillProfile>& profile : profile_ptrs) {
+      deduped_profiles.push_back(*profile);
+    }
+    base::EraseIf(deduped_profiles, [&](const AutofillProfile& profile) {
+      return profiles_to_delete.contains(profile.guid());
+    });
+    return deduped_profiles;
   }
 
  protected:
@@ -930,6 +959,68 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
 
   // The two duplicate profiles should still be present.
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
+}
+
+// Tests that `kAccount` profiles are not deduplicated against each other.
+TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountPairs) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillAccountProfilesUnionView,
+       features::kAutofillAccountProfileStorage},
+      /*disabled_features=*/{});
+  AutofillProfile account_profile1 = test::StandardProfile();
+  account_profile1.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile account_profile2 = test::StandardProfile();
+  account_profile2.set_source_for_testing(AutofillProfile::Source::kAccount);
+  EXPECT_THAT(
+      DeduplicateProfiles({account_profile1, account_profile2}),
+      testing::UnorderedElementsAre(account_profile1, account_profile2));
+}
+
+// Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
+// profile are deduplicated. The result is a Chrome account profile.
+TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSuperset) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillAccountProfilesUnionView,
+       features::kAutofillAccountProfileStorage},
+      /*disabled_features=*/{});
+  // Create a non-Chrome account profile and a local profile.
+  AutofillProfile account_profile = test::StandardProfile();
+  const int non_chrome_service =
+      AutofillProfile::kInitialCreatorOrModifierChrome + 1;
+  account_profile.set_initial_creator_id(non_chrome_service);
+  account_profile.set_last_modifier_id(non_chrome_service);
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile = test::SubsetOfStandardProfile();
+
+  // Expect that only the account profile remains and that it became a Chrome-
+  // originating profile.
+  std::vector<AutofillProfile> deduped_profiles =
+      DeduplicateProfiles({account_profile, local_profile});
+  EXPECT_THAT(deduped_profiles, testing::UnorderedElementsAre(account_profile));
+  EXPECT_EQ(deduped_profiles[0].initial_creator_id(),
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+  EXPECT_EQ(deduped_profiles[0].last_modifier_id(),
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+}
+
+// Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
+// profile are not deduplicated.
+TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSubset) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillAccountProfilesUnionView,
+       features::kAutofillAccountProfileStorage},
+      /*disabled_features=*/{});
+  AutofillProfile account_profile = test::SubsetOfStandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile = test::StandardProfile();
+  EXPECT_THAT(DeduplicateProfiles({account_profile, local_profile}),
+              testing::UnorderedElementsAre(account_profile, local_profile));
 }
 
 // Tests that settings-inaccessible profile values are removed from every stored
