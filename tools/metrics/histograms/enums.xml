@@ -63528,6 +63528,7 @@ from previous Chrome versions.
       label="GetDisplayMediaSetAutoSelectAllScreens:disabled"/>
   <int value="792307132"
       label="KeyboardBasedDisplayArrangementInSettings:enabled"/>
+  <int value="792840942" label="BorealisDGPU:enabled"/>
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
   <int value="793287900" label="VerifyDidCommitParams:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
@@ -63784,6 +63785,7 @@ from previous Chrome versions.
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
+  <int value="948682684" label="BorealisDGPU:disabled"/>
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
   <int value="952558794" label="enable-remote-assistance"/>

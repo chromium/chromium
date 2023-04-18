@@ -254,6 +254,9 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
   if (base::FeatureList::IsEnabled(ash::features::kBorealisStorageBallooning)) {
     request.set_storage_ballooning(true);
   }
+  if (base::FeatureList::IsEnabled(ash::features::kBorealisDGPU)) {
+    request.set_enable_dgpu_passthrough(true);
+  }
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
   disk_image->set_path(context->disk_path().AsUTF8Unsafe());

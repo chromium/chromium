@@ -845,6 +845,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "borealis-dgpu",
+    "owners": [ "dbehr@google.com", "chromeos-gfx-gpu@google.com", "buganizer-system+995569@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "borealis-disk-management",
     "owners": [ "danielng@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 120

@@ -369,6 +369,9 @@ extern const char kFailFastQuietChipDescription[];
 extern const char kBorealisBigGlName[];
 extern const char kBorealisBigGlDescription[];
 
+extern const char kBorealisDGPUName[];
+extern const char kBorealisDGPUDescription[];
+
 extern const char kBorealisDiskManagementName[];
 extern const char kBorealisDiskManagementDescription[];
 

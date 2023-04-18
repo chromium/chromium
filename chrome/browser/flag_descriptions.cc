@@ -675,6 +675,9 @@ const char kFailFastQuietChipDescription[] =
 const char kBorealisBigGlName[] = "Borealis Big GL";
 const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 
+const char kBorealisDGPUName[] = "Borealis dGPU";
+const char kBorealisDGPUDescription[] = "Enable dGPU when running Borealis.";
+
 const char kBorealisDiskManagementName[] = "Borealis Disk management";
 const char kBorealisDiskManagementDescription[] =
     "Enable experimental disk management settings.";
