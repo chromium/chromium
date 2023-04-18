@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -106,7 +105,6 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_request.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -3015,49 +3013,14 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
   EXPECT_EQ(*guid, "wpa-psk-network-guid");
 }
 
-class WizardControllerThemeSelectionDefaultSettingsTest
-    : public WizardControllerTest {
- public:
-  WizardControllerThemeSelectionDefaultSettingsTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{chromeos::features::kDarkLightMode});
-  }
-
+class WizardControllerThemeSelectionTest : public WizardControllerTest {
  protected:
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
   FakeGaiaMixin gaia_mixin_{&mixin_host_};
   LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
                                  &gaia_mixin_};
-  AccountId user_{
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionDefaultSettingsTest,
-                       SkipThemeSelection) {
-  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
-  login_mixin_.LoginAsNewRegularUser();
-  WizardController::default_controller()->AdvanceToScreen(
-      GestureNavigationScreenView::kScreenId);
-  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
-}
-
-class WizardControllerThemeSelectionEnabledTest
-    : public WizardControllerThemeSelectionDefaultSettingsTest {
- public:
-  WizardControllerThemeSelectionEnabledTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kDarkLightMode},
-        /*disabled_features=*/{});
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionEnabledTest,
+IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
                        TransitionToMarketingOptIn) {
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
@@ -3067,7 +3030,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionEnabledTest,
   OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionEnabledTest,
+IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
                        TransitionToThemeSelection) {
   login_mixin_.LoginAsNewRegularUser();
   WizardController::default_controller()->AdvanceToScreen(

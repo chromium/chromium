@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
@@ -257,26 +256,21 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
       },
       *info);
 
-  if (ash::features::IsDarkLightModeEnabled()) {
-    info->theme_color = cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
-    info->dark_mode_theme_color = cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
-    info->background_color = info->theme_color;
-    info->dark_mode_background_color = info->dark_mode_theme_color;
-  } else {
-    info->theme_color = 0xff202124;
-    info->background_color = 0xff3c4043;
-  }
+  info->theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+  info->dark_mode_theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
 
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   // Add handlers for image+video and audio. We keep them separate since their
-  // UX are sufficiently different (we don't want audio files to have a carousel
-  // since this would be a second layer of navigation in conjunction with the
-  // play queue). Order matters here; the Files app will prefer earlier
-  // handlers.
+  // UX are sufficiently different (we don't want audio files to have a
+  // carousel since this would be a second layer of navigation in conjunction
+  // with the play queue). Order matters here; the Files app will prefer
+  // earlier handlers.
   apps::FileHandler image_video_handler;
   image_video_handler.action = GURL(ash::kChromeUIMediaAppURL);
   image_video_handler.accept = MakeFileHandlerAccept(kFileHandlers);
@@ -290,8 +284,8 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   apps::FileHandler pdf_handler;
   pdf_handler.action = GURL(ash::kChromeUIMediaAppURL);
   pdf_handler.accept = MakeFileHandlerAccept(kPdfFileHandlers);
-  // Note setting `apps::FileHandler::LaunchType::kMultipleClients` here has no
-  // effect for system web apps (see comments in
+  // Note setting `apps::FileHandler::LaunchType::kMultipleClients` here has
+  // no effect for system web apps (see comments in
   // WebAppPublisherHelper::OnFileHandlerDialogCompleted()). The PDF-specifc
   // behavior to spawn multiple launches occurs in an override of
   // LaunchAndNavigateSystemWebApp().

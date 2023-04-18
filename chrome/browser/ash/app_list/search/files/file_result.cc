@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/files/file.h"
@@ -250,24 +249,13 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 }
 
 void FileResult::UpdateIcon() {
-  // Launcher search results UI is dark by default, so use icons for dark
-  // background if dark/light mode feature is not enabled.
-  const bool is_dark_light_enabled = ash::features::IsDarkLightModeEnabled();
   // DarkLightModeController might be nullptr in tests.
   auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
-  const bool is_dark_mode_enabled =
-      dark_light_mode_controller &&
-      dark_light_mode_controller->IsDarkModeEnabled();
-  const bool dark_background = !is_dark_light_enabled || is_dark_mode_enabled;
+  const bool dark_background = dark_light_mode_controller &&
+                               dark_light_mode_controller->IsDarkModeEnabled();
 
   if (display_type() == DisplayType::kContinue) {
-    // For Continue Section, if dark/light mode is disabled, we should use the
-    // icon and not the chip icon with a dark background as default.
-    const gfx::ImageSkia chip_icon =
-        is_dark_light_enabled
-            ? chromeos::GetChipIconForPath(filepath_, dark_background)
-            : chromeos::GetIconForPath(filepath_, /*dark_background=*/true);
-    SetChipIcon(chip_icon);
+    SetChipIcon(chromeos::GetChipIconForPath(filepath_, dark_background));
   } else {
     switch (type_) {
       case Type::kFile:

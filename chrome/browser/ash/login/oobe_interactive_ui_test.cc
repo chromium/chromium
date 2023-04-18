@@ -659,10 +659,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     HandleGestureNavigationScreen();
   }
 
-  if (features::IsDarkLightModeEnabled()) {
-    HandleThemeSelectionScreen();
-  }
-
+  HandleThemeSelectionScreen();
   HandleMarketingOptInScreen();
 }
 
@@ -974,10 +971,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
     HandleAppDownloadingScreen();
   }
 
-  if (features::IsDarkLightModeEnabled()) {
-    HandleThemeSelectionScreen();
-  }
-
+  HandleThemeSelectionScreen();
   WaitForActiveSession();
 }
 
