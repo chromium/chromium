@@ -4489,7 +4489,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
         Something went wrong
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_FOOTER" desc="Footer message for the Password Checkup Homepage explaining the purpose of Password Checkup. [iOS only]">
-        Password Checkup reviews your saved passwords and warns you of any online breaches. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more.<ph name="END_LINK">END_LINK</ph>
+        Make sure your passwords are safe, find out if they’ve been compromised, and get advice to help protect yourself online. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more.<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ITEM_ACCOUNT_ERROR_BADGE_ACCESSIBILITY_HINT" desc="Accessibility hint to let the user know that there is an error badge associated with the listed item. The hint is appended to the a11y message that describes the item. For example, the 'settings' message will become 'settings, account error' when there is an account error badge on the item. [iOS only]">
         Account error
