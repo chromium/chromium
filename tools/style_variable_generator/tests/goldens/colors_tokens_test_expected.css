@@ -29,6 +29,8 @@ html:not(body) {
   --cros-sys-disabled_opacity: 0.38;
 
   --cros-sys-reference_opacity: var(--cros-sys-disabled_opacity);
+
+  --cros-color-primary: var(--cros-sys-primary_container);
 }
 
 @media (prefers-color-scheme: dark) {
