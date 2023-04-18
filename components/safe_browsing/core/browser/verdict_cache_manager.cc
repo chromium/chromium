@@ -612,7 +612,6 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
 }
 
 void VerdictCacheManager::CacheRealTimeUrlVerdict(
-    const GURL& url,
     const RTLookupResponse& verdict,
     const base::Time& receive_time) {
   if (is_shut_down_) {
@@ -1095,7 +1094,7 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict() {
       RTLookupResponse::ThreatInfo::EXACT_MATCH);
   RemoveContentSettingsOnURLsDeleted(/*all_history=*/false,
                                      {history::URLRow(artificial_unsafe_url)});
-  CacheRealTimeUrlVerdict(artificial_unsafe_url, response, base::Time::Now());
+  CacheRealTimeUrlVerdict(response, base::Time::Now());
 }
 
 void VerdictCacheManager::CacheArtificialPhishGuardVerdict() {

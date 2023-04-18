@@ -210,9 +210,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
       const GURL& url);
 
-  // Called to post a task to store the response keyed by the |url| in
-  // |cache_manager|.
-  void MayBeCacheRealTimeUrlVerdict(const GURL& url, RTLookupResponse response);
+  // Called to post a task to store the response in |cache_manager|.
+  void MayBeCacheRealTimeUrlVerdict(RTLookupResponse response);
 
   // Get a resource request with URL, load_flags and method set.
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
@@ -220,7 +219,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   void SendRequestInternal(
       std::unique_ptr<network::ResourceRequest> resource_request,
       const std::string& req_data,
-      const GURL& url,
       absl::optional<std::string> access_token_string,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -230,11 +228,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Called when the response from the real-time lookup remote endpoint is
   // received. |url_loader| is the unowned loader that was used to send the
   // request. |request_start_time| is the time when the request was sent.
-  // |response_body| is the response received. |url| is used for calling
-  // |MayBeCacheRealTimeUrlVerdict|. |access_token_string| is used for calling
-  // |OnResponseUnauthorized| in case the response code is HTTP_UNAUTHORIZED.
+  // |response_body| is the response received. |access_token_string| is used for
+  // calling |OnResponseUnauthorized| in case the response code is
+  // HTTP_UNAUTHORIZED.
   void OnURLLoaderComplete(
-      const GURL& url,
       absl::optional<std::string> access_token_string,
       network::SimpleURLLoader* url_loader,
       ChromeUserPopulation::UserPopulation user_population,

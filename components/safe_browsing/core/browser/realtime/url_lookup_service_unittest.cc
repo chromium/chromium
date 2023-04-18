@@ -147,7 +147,6 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void MayBeCacheRealTimeUrlVerdict(
-      GURL url,
       RTLookupResponse::ThreatInfo::VerdictType verdict_type,
       RTLookupResponse::ThreatInfo::ThreatType threat_type,
       int cache_duration_sec,
@@ -162,7 +161,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     new_threat_info->set_cache_expression_using_match_type(cache_expression);
     new_threat_info->set_cache_expression_match_type(
         cache_expression_match_type);
-    rt_service_->MayBeCacheRealTimeUrlVerdict(url, response);
+    rt_service_->MayBeCacheRealTimeUrlVerdict(response);
   }
 
   void SetUpRTLookupResponse(
@@ -427,7 +426,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCacheNotInCacheManager) {
 
 TEST_F(RealTimeUrlLookupServiceTest, TestCacheInCacheManager) {
   GURL url("https://a.example.test/path1/path2");
-  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "a.example.test/path1/path2",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
@@ -445,7 +444,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCacheInCacheManager) {
 TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   base::HistogramTester histograms;
   GURL url(kTestUrl);
-  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "example.test/",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
@@ -901,8 +900,6 @@ TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CacheManagerReset) {
-  GURL url("https://a.example.test/path1/path2");
-
   // Shutdown and delete depending objects.
   rt_service()->Shutdown();
   cache_manager_.reset();
@@ -910,7 +907,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CacheManagerReset) {
   content_setting_map_.reset();
 
   // Post a task to cache_manager_ to cache the verdict.
-  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "a.example.test/path1/path2",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);

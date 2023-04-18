@@ -281,12 +281,11 @@ RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
 }
 
 void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
-    const GURL& url,
     RTLookupResponse response) {
   if (cache_manager_ && response.threat_info_size() > 0) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
-                                  cache_manager_->GetWeakPtr(), url, response,
+                                  cache_manager_->GetWeakPtr(), response,
                                   base::Time::Now()));
   }
 }
@@ -378,7 +377,7 @@ void RealTimeUrlLookupServiceBase::SendRequest(
   // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
   // just below.
   SendRequestInternal(
-      std::move(resource_request), req_data, url, access_token_string,
+      std::move(resource_request), req_data, access_token_string,
       std::move(response_callback), callback_task_runner,
       request->population().user_population(), is_sampled_report);
 
@@ -390,7 +389,6 @@ void RealTimeUrlLookupServiceBase::SendRequest(
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& req_data,
-    const GURL& url,
     absl::optional<std::string> access_token_string,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -408,15 +406,14 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
   owned_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&RealTimeUrlLookupServiceBase::OnURLLoaderComplete,
-                     GetWeakPtr(), url, access_token_string, loader,
-                     user_population, base::TimeTicks::Now(), is_sampled_report,
+                     GetWeakPtr(), access_token_string, loader, user_population,
+                     base::TimeTicks::Now(), is_sampled_report,
                      std::move(callback_task_runner)));
 
   pending_requests_[owned_loader.release()] = std::move(response_callback);
 }
 
 void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
-    const GURL& url,
     absl::optional<std::string> access_token_string,
     network::SimpleURLLoader* url_loader,
     ChromeUserPopulation::UserPopulation user_population,
@@ -463,7 +460,7 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   is_rt_lookup_successful ? backoff_operator_->ReportSuccess()
                           : backoff_operator_->ReportError();
 
-  MayBeCacheRealTimeUrlVerdict(url, *response);
+  MayBeCacheRealTimeUrlVerdict(*response);
 
   RecordCount100WithAndWithoutSuffix("SafeBrowsing.RT.ThreatInfoSize",
                                      GetMetricSuffix(),

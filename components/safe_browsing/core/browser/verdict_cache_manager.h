@@ -77,10 +77,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   size_t GetStoredPhishGuardVerdictCount(
       LoginReputationClientRequest::TriggerType trigger_type);
 
-  // Stores |verdict| in |content_settings_| based on its |url|, |verdict| and
+  // Stores |verdict| in |content_settings_| based on its |verdict| and
   // |receive_time|.
-  void CacheRealTimeUrlVerdict(const GURL& url,
-                               const RTLookupResponse& verdict,
+  void CacheRealTimeUrlVerdict(const RTLookupResponse& verdict,
                                const base::Time& receive_time);
 
   // Looks up |content_settings_| to find the cached verdict response. If

@@ -153,7 +153,6 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void MayBeCacheRealTimeUrlVerdict(
-      GURL url,
       RTLookupResponse::ThreatInfo::VerdictType verdict_type,
       RTLookupResponse::ThreatInfo::ThreatType threat_type,
       int cache_duration_sec,
@@ -168,7 +167,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     new_threat_info->set_cache_expression_using_match_type(cache_expression);
     new_threat_info->set_cache_expression_match_type(
         cache_expression_match_type);
-    enterprise_rt_service_->MayBeCacheRealTimeUrlVerdict(url, response);
+    enterprise_rt_service_->MayBeCacheRealTimeUrlVerdict(response);
   }
 
   void SetUpRTLookupResponse(
@@ -212,7 +211,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_ResponseIsAlreadyCached) {
   GURL url("http://example.test/");
-  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "example.test/",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
