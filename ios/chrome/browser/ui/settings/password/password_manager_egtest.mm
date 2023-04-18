@@ -816,6 +816,75 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
 }
 
+// Tests that the detail view is dismissed when the last password is deleted
+// after the user had edited the password.
+- (void)testSavedFormDeletionInDetailViewAfterEditingFields {
+  // Save form to be deleted later.
+  SaveExamplePasswordForm();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+
+  // Edit password field.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"")];
+
+  // Delete password.
+  [[EarlGrey selectElementWithMatcher:[self groupingEnabled]
+                                          ? DeleteButtonForUsernameAndPassword(
+                                                @"concrete username",
+                                                @"concrete password")
+                                          : DeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:[self groupingEnabled]
+                                   ? DeleteConfirmationButtonForGrouping()
+                                   : DeleteConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Wait until the alert and the detail view are dismissed.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Check that the current view is now the list view, by locating
+  // PasswordTableViewController.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the deletion was propagated to the PasswordStore.
+  GREYAssertEqual(0, [PasswordSettingsAppInterface passwordStoreResultsCount],
+                  @"Stored password was not removed from PasswordStore.");
+
+  // Also verify that the removed password is no longer in the list.
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Finally, verify that the Add button is visible and enabled, because there
+  // are no other password entries left for deletion via the "Edit" mode.
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
 // Checks that deleting a saved password from password details view goes back
 // to the list-of-passwords showing only previously saved blocked sites.
 - (void)testSavedFormDeletionInDetailViewWithBlockedSites {

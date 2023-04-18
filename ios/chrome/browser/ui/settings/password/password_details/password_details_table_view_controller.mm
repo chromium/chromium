@@ -710,17 +710,18 @@ int GetPasswordIndex(int section) {
   _passwords = passwords;
   _pageTitle = title;
 
+  [self updateNavigationTitle];
+  // Update the model even if all passwords are deleted and the view controller
+  // will be dismissed. UIKit could still trigger events that execute CHECK in
+  // this file that would fail if `_passwords` and the model are not in sync.
+  [self reloadData];
+
   if (![passwords count]) {
     // onAllPasswordsDeleted() mustn't be called twice.
     if (hadPasswords) {
       [self.handler onAllPasswordsDeleted];
     }
-    return;
   }
-
-  [self updateNavigationTitle];
-
-  [self reloadData];
 }
 
 - (void)setIsBlockedSite:(BOOL)isBlockedSite {
@@ -1093,8 +1094,10 @@ int GetPasswordIndex(int section) {
 
 // Updates the title displayed in the navigation bar.
 - (void)updateNavigationTitle {
-  if (!self.pageTitle || self.pageTitle.length == 0) {
-    self.pageTitle = self.passwords[0].origins[0];
+  if (self.pageTitle.length == 0) {
+    // When no pageTitle is supplied, use origin of first password.
+    PasswordDetails* firstPassword = self.passwords.firstObject;
+    self.pageTitle = firstPassword.origins.firstObject;
   }
   _titleLabel.text = self.pageTitle;
 }
