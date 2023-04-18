@@ -25,10 +25,11 @@ namespace safe_browsing {
 
 namespace {
 constexpr char kTestOhttpKey[] = "TestOhttpKey";
+constexpr char kEncodedTestOhttpKey[] = "VGVzdE9odHRwS2V5";
 constexpr char kTestOldOhttpKey[] = "OldOhttpKey";
 constexpr char kTestNewOhttpKey[] = "NewOhttpKey";
 constexpr char kExpectedKeyFetchServerUrl[] =
-    "https://safebrowsingohttpgateway.googleapis.com/key";
+    "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig";
 
 scoped_refptr<net::HttpResponseHeaders> CreateSuccessHeaders() {
   return net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
@@ -112,7 +113,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(7));
   EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
   EXPECT_EQ(pref_service_.GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey),
-            kTestOhttpKey);
+            kEncodedTestOhttpKey);
   EXPECT_EQ(pref_service_.GetTime(
                 prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime),
             base::Time::Now() + base::Days(7));
@@ -220,7 +221,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Disabled) {
 
 TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
   pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
-                          kTestOhttpKey);
+                          kEncodedTestOhttpKey);
   pref_service_.SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
                         base::Time::Now() + base::Days(10));
 

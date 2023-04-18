@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/prefs/pref_service.h"
@@ -21,9 +22,9 @@
 namespace {
 
 constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
-// TODO(crbug.com/1407283): Update the endpoint when it is finalized.
+
 constexpr char kKeyFetchServerUrl[] =
-    "https://safebrowsingohttpgateway.googleapis.com/key";
+    "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig";
 // Key older than 7 days is considered expired and should be refetched.
 constexpr base::TimeDelta kKeyExpirationDuration = base::Days(7);
 
@@ -336,14 +337,18 @@ void OhttpKeyService::PopulateKeyFromPref() {
   base::Time expiration_time = pref_service_->GetTime(
       prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime);
   if (!key.empty() && expiration_time > base::Time::Now()) {
-    ohttp_key_ = {key, expiration_time};
+    std::string decoded_key;
+    base::Base64Decode(key, &decoded_key);
+    ohttp_key_ = {decoded_key, expiration_time};
   }
 }
 
 void OhttpKeyService::StoreKeyToPref() {
   if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
+    std::string base64_encoded_key;
+    base::Base64Encode(ohttp_key_->key, &base64_encoded_key);
     pref_service_->SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
-                             ohttp_key_->key);
+                             base64_encoded_key);
     pref_service_->SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
                            ohttp_key_->expiration);
   }
