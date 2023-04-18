@@ -527,6 +527,9 @@ class VIEWS_EXPORT Textfield : public View,
   // Update the cursor position in the text field.
   void UpdateCursorViewPosition();
 
+  // A callback function to periodically update the cursor node_data.
+  void UpdateCursorVisibility();
+
  private:
   friend class TextfieldTestApi;
 
@@ -576,9 +579,6 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Updates cursor visibility and blinks the cursor if needed.
   void ShowCursor();
-
-  // A callback function to periodically update the cursor node_data.
-  void UpdateCursorVisibility();
 
   // Gets the style::TextStyle that should be used.
   int GetTextStyle() const;
