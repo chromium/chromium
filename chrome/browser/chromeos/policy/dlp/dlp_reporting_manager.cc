@@ -366,6 +366,7 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   }
   report_queue_->Enqueue(std::make_unique<DlpPolicyEvent>(std::move(event)),
                          reporting::Priority::SLOW_BATCH, std::move(callback));
+  VLOG(1) << "DLP event sent to reporting infrastructure.";
 }
 
 }  // namespace policy
