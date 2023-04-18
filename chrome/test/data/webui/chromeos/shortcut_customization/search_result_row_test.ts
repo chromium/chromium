@@ -175,4 +175,29 @@ suite('searchResultRowTest', function() {
             '#description', searchResultRowElement.shadowRoot, HTMLDivElement)
             .innerHTML);
   });
+
+  test('Aria labels are correct', async () => {
+    searchResultRowElement = initSearchResultRowElement();
+    await flush();
+
+    // Standard accelerator info
+    searchResultRowElement.focusRowIndex = 2;
+    searchResultRowElement.listLength = 4;
+    searchResultRowElement.searchResult = SnapWindowLeftSearchResult;
+    await flush();
+    assertEquals(
+        'Search result 3 of 4: Snap Window Left, alt [. ' +
+            'Press Enter to navigate to shortcut.',
+        searchResultRowElement.ariaLabel);
+
+    // Text accelerator info
+    searchResultRowElement.focusRowIndex = 1;
+    searchResultRowElement.listLength = 5;
+    searchResultRowElement.searchResult = CycleTabsTextSearchResult;
+    await flush();
+    assertEquals(
+        'Search result 2 of 5: Click or tap shelf icons 1-8, ctrl + 1 through' +
+            ' 8. Press Enter to navigate to shortcut.',
+        searchResultRowElement.ariaLabel);
+  });
 });
