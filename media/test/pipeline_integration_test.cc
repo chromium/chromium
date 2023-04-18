@@ -1126,7 +1126,16 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
   EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackOpusWebmHashed_MonoOutput) {
+// TODO(https://crbug.com/1434236): Test consistently failing on multiple
+// builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput \
+  DISABLED_BasicPlaybackOpusWebmHashed_MonoOutput
+#else
+#define MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput \
+  BasicPlaybackOpusWebmHashed_MonoOutput
+#endif
+TEST_F(PipelineIntegrationTest, MAYBE_BasicPlaybackOpusWebmHashed_MonoOutput) {
   ASSERT_EQ(PIPELINE_OK,
             Start("bunny-opus-intensity-stereo.webm", kHashed | kMonoOutput));
 
