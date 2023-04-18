@@ -219,9 +219,19 @@ void WebAppUninstallCommand::Uninstall(
     webapps::WebappUninstallSource uninstall_source) {
   QueueSubAppsForUninstallIfAny(app_id);
 
+  auto* web_app = lock_->registrar().GetAppById(app_id);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<base::FilePath> app_profile_path;
+  if (web_app->chromeos_data().has_value()) {
+    app_profile_path = web_app->chromeos_data()->app_profile_path;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   auto uninstall_job = WebAppUninstallJob::CreateAndStart(
-      app_id,
-      url::Origin::Create(lock_->registrar().GetAppById(app_id)->start_url()),
+      app_id, url::Origin::Create(web_app->start_url()),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       base::BindOnce(&WebAppUninstallCommand::OnSingleUninstallComplete,
                      weak_factory_.GetWeakPtr(), app_id, uninstall_source),
       lock_->os_integration_manager(), lock_->sync_bridge(),

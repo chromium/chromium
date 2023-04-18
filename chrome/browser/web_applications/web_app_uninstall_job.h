@@ -14,6 +14,11 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class PrefService;
 
 namespace webapps {
@@ -46,6 +51,9 @@ class WebAppUninstallJob {
   static std::unique_ptr<WebAppUninstallJob> CreateAndStart(
       const AppId& app_id,
       const url::Origin& app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      const absl::optional<base::FilePath>& app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       UninstallCallback callback,
       OsIntegrationManager& os_integration_manager,
       WebAppSyncBridge& sync_bridge,
@@ -61,6 +69,9 @@ class WebAppUninstallJob {
  private:
   WebAppUninstallJob(const AppId& app_id,
                      const url::Origin& app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                     const absl::optional<base::FilePath>& app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
                      UninstallCallback callback,
                      OsIntegrationManager& os_integration_manager,
                      WebAppSyncBridge& sync_bridge,
@@ -75,6 +86,9 @@ class WebAppUninstallJob {
   // This modifies the app to set `is_uninstalling()` to true, and delete the
   // app from the registry after uninstallation is complete.
   void Start(const url::Origin& app_origin,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             const absl::optional<base::FilePath>& app_profile_path,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
              OsIntegrationManager& os_integration_manager,
              WebAppIconManager& icon_manager,
              WebAppTranslationManager& translation_manager,

@@ -68,6 +68,11 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/strings/strcat.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
@@ -310,8 +315,16 @@ bool AreWebAppsEnabled(const Profile* profile) {
       !base::FeatureList::IsEnabled(features::kKioskEnableAppService))
     return false;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing)
+  // Disable web apps in the profile unless one of the following is true:
+  // * the profile is the main one
+  // * the testing condition is set
+  // * it is an app profile.
+  if (!(profile->IsMainProfile() || g_skip_main_profile_check_for_testing ||
+        (base::FeatureList::IsEnabled(
+             chromeos::features::kExperimentalWebAppProfileIsolation) &&
+         Profile::IsWebAppProfilePath(profile->GetPath())))) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return true;
@@ -551,6 +564,36 @@ void SetSkipMainProfileCheckForTesting(bool skip_check) {
 
 bool IsMainProfileCheckSkippedForTesting() {
   return g_skip_main_profile_check_for_testing;
+}
+
+base::FilePath GenerateWebAppProfilePath(const std::string& app_id) {
+  CHECK(base::FeatureList::IsEnabled(
+      chromeos::features::kExperimentalWebAppProfileIsolation));
+  auto* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath& user_data_dir = profile_manager->user_data_dir();
+
+  // We are not allowed to reuse a deleted profile path before chrome restart.
+  // To deal with the case where a user re-install an app after deleting it in
+  // the same session, we will use a loop to search for the next available
+  // profile name. Limiting the loop to 1k times is more than enough.
+  //
+  // TODO(https://crbug.com/1425284): a better way is to do some proper cleanup
+  // after deleting the profile so that we can just reuse the path.
+  for (int i = 0; i < 1000; ++i) {
+    auto path = user_data_dir.Append(base::StrCat(
+        {chrome::kWebAppProfilePrefix, app_id, "-", base::NumberToString(i)}));
+    if (profile_manager->CanCreateProfileAtPath(path)) {
+      // We don't allow installing a web app twice, so the web app profile
+      // shouldn't exist.
+      CHECK(!profile_manager->GetProfileAttributesStorage()
+                 .GetProfileAttributesWithPath(path))
+          << "profile at " << path << " already exists";
+      return path;
+    }
+  }
+
+  // Reaching here is extremely unlikely. Something else must be wrong.
+  NOTREACHED_NORETURN();
 }
 #endif
 

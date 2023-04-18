@@ -48,6 +48,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 using ImageData = std::vector<unsigned char>;
@@ -297,7 +303,15 @@ ProfileAttributesStorage::ProfileAttributesStorage(
 
     // `info` may become invalid after this call.
     // Profiles loaded from disk can never be omitted.
-    InitEntryWithKey(kv.first, /*is_omitted=*/false);
+    bool is_omitted = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Lacros has one exception to the above rule: web app profiles are
+    // persisted on disk and hidden from the UI.
+    is_omitted = base::FeatureList::IsEnabled(
+                     chromeos::features::kExperimentalWebAppProfileIsolation) &&
+                 Profile::IsWebAppProfileName(kv.first);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    InitEntryWithKey(kv.first, is_omitted);
   }
 
   // A profile name can depend on other profile names. Do an additional pass to

@@ -133,6 +133,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -1038,14 +1041,42 @@ void WebAppPublisherHelper::LaunchAppWithParams(
   // Create the FullRestoreSaveHandler instance before launching the app to
   // observe the browser window.
   full_restore::FullRestoreSaveHandler::GetInstance();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  auto launch_web_app_callback = base::BindOnce(
+      &WebAppPublisherHelper::OnLaunchCompleted, weak_ptr_factory_.GetWeakPtr(),
+      std::move(params_for_restore), is_system_web_app, override_url,
+      std::move(on_complete));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppProfileIsolation)) {
+    WebAppRegistrar& registrar = provider_->registrar_unsafe();
+    const WebApp* web_app = registrar.GetAppById(params.app_id);
+    const auto& chromeos_data = web_app->chromeos_data();
+    if (chromeos_data.has_value() &&
+        chromeos_data->app_profile_path.has_value()) {
+      // Redirect the launch to the app profile.
+      g_browser_process->profile_manager()->LoadProfileByPath(
+          chromeos_data->app_profile_path.value(),
+          /*incognito=*/false,
+          base::BindOnce(
+              [](apps::AppLaunchParams params, LaunchWebAppCallback on_complete,
+                 Profile* profile) {
+                WebAppProvider::GetForWebApps(profile)
+                    ->scheduler()
+                    .LaunchAppWithCustomParams(std::move(params),
+                                               std::move(on_complete));
+              },
+              std::move(params), std::move(launch_web_app_callback)));
+
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   provider_->scheduler().LaunchAppWithCustomParams(
-      std::move(params),
-      base::BindOnce(&WebAppPublisherHelper::OnLaunchCompleted,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(params_for_restore), is_system_web_app,
-                     override_url, std::move(on_complete)));
+      std::move(params), std::move(launch_web_app_callback));
 }
 
 void WebAppPublisherHelper::SetPermission(const std::string& app_id,

@@ -147,6 +147,10 @@ bool IsWebAppsCrosapiEnabled();
 void SetSkipMainProfileCheckForTesting(bool skip_check);
 
 bool IsMainProfileCheckSkippedForTesting();
+
+// Generates an appropriate path for a new web app profile. This does not create
+// the profile.
+base::FilePath GenerateWebAppProfilePath(const AppId& app_id);
 #endif
 
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =

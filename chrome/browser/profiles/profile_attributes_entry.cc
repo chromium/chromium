@@ -37,6 +37,12 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
@@ -962,7 +968,15 @@ void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
 
 void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {
   if (is_omitted) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    DCHECK(IsEphemeral() ||
+           (base::FeatureList::IsEnabled(
+                chromeos::features::kExperimentalWebAppProfileIsolation) &&
+            Profile::IsWebAppProfilePath(profile_path_)))
+        << "Only ephemeral or web app profiles can be omitted.";
+#else
     DCHECK(IsEphemeral()) << "Only ephemeral profiles can be omitted.";
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   is_omitted_ = is_omitted;
