@@ -6928,10 +6928,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kGaiaIdCacheInAccountManagerFacade)},
 
-    {"gainmap-hdr-images", flag_descriptions::kGainmapHdrImagesName,
-     flag_descriptions::kGainmapHdrImagesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kGainmapHdrImages)},
-
     {"tangible-sync", flag_descriptions::kTangibleSyncName,
      flag_descriptions::kTangibleSyncDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kTangibleSync,
@@ -6943,6 +6939,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIdentityStatusConsistencyDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kIdentityStatusConsistency)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"gainmap-hdr-images", flag_descriptions::kGainmapHdrImagesName,
+     flag_descriptions::kGainmapHdrImagesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kGainmapHdrImages)},
 
     {"autofill-use-improved-label-disambiguation",
      flag_descriptions::kAutofillUseImprovedLabelDisambiguationName,
