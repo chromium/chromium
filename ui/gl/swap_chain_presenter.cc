@@ -321,20 +321,6 @@ bool IsWithinMargin(int i, int j) {
   return (std::abs(i - j) < kFullScreenMargin);
 }
 
-// TODO(sunnyps): Move to DCLayerOverlayType header and make consistent with the
-// type names after changing trace tests which depend on this.
-std::string OverlayTypeToString(DCLayerOverlayType overlay_type) {
-  std::string overlay_type_str;
-  if (overlay_type == gl::DCLayerOverlayType::kDCompVisualContent) {
-    overlay_type_str = "swap chain";
-  } else if (overlay_type == gl::DCLayerOverlayType::kNV12Texture) {
-    overlay_type_str = "hardware video frame";
-  } else {
-    overlay_type_str = "software video frame";
-  }
-  return overlay_type_str;
-}
-
 void DumpWithoutCrashingForToggleVpSuperResolutionError(HRESULT hr,
                                                         UINT gpu_vendor_id) {
   // ToggleVpSuperResolution() is called for all GPUs unless a flag disables it.
@@ -1211,7 +1197,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   TRACE_EVENT2("gpu", "SwapChainPresenter::PresentToSwapChain", "image_type",
-               OverlayTypeToString(overlay_type), "size",
+               DCLayerOverlayTypeToString(overlay_type), "size",
                content_size.ToString());
 
   // Swap chain image already has a swap chain that's presented by the client

@@ -15,6 +15,21 @@
 
 namespace gl {
 
+const char* DCLayerOverlayTypeToString(DCLayerOverlayType overlay_type) {
+  switch (overlay_type) {
+    case DCLayerOverlayType::kNV12Texture:
+      return "NV12Texture";
+    case DCLayerOverlayType::kNV12Pixmap:
+      return "NV12Pixmap";
+    case DCLayerOverlayType::kDCompVisualContent:
+      return "DCompVisualContent";
+    case DCLayerOverlayType::kDCompSurfaceProxy:
+      return "DCompSurfaceProxy";
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 DCLayerOverlayImage::DCLayerOverlayImage(
     const gfx::Size& size,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> nv12_texture,

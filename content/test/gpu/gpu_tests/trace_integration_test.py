@@ -884,7 +884,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       if event.name != _PRESENT_TO_SWAP_CHAIN_EVENT_NAME:
         continue
       image_type = event.args.get('image_type', None)
-      if image_type == 'swap chain':
+      if image_type == 'DCompVisualContent':
         found_overlay = True
         break
     if expect_overlay and not found_overlay:
