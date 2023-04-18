@@ -47,16 +47,16 @@
     },
 
     'chrome.pgo': {
-      'android-arm32-pgo': 'official_reclient_android_arm32_pgo',
-      'android-arm64-pgo': 'official_reclient_android_arm64_pgo',
-      'lacros-amd64-generic-pgo': 'official_reclient_lacros_amd64_pgo',
-      'lacros-arm-generic-pgo': 'official_reclient_lacros_arm_pgo',
-      'lacros-arm64-generic-pgo': 'official_reclient_lacros_arm64_pgo',
-      'linux-pgo': 'official_reclient_linux_pgo',
-      'mac-arm-pgo': 'official_reclient_mac_arm_pgo',
-      'mac-pgo': 'official_reclient_mac_pgo',
-      'win32-pgo': 'official_reclient_x86_pgo',
-      'win64-pgo': 'official_reclient_x64_pgo',
+      'android-arm32-pgo': 'official_android_arm32_pgo',
+      'android-arm64-pgo': 'official_android_arm64_pgo',
+      'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
+      'lacros-arm-generic-pgo': 'official_lacros_arm_pgo',
+      'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
+      'linux-pgo': 'official_linux_pgo',
+      'mac-arm-pgo': 'official_mac_arm_pgo',
+      'mac-pgo': 'official_mac_pgo',
+      'win32-pgo': 'official_x86_pgo',
+      'win64-pgo': 'official_x64_pgo',
     },
 
     # Take care when changing any of these builders to ensure that you do not
@@ -995,16 +995,16 @@
     },
 
     'tryserver.chrome.pgo': {
-      'android-arm32-pgo': 'official_goma_android_arm32_pgo',
-      'android-arm64-pgo': 'official_goma_android_arm64_pgo',
-      'lacros-amd64-generic-pgo': 'official_reclient_lacros_amd64_pgo',
-      'lacros-arm-generic-pgo': 'official_reclient_lacros_arm_pgo',
-      'lacros-arm64-generic-pgo': 'official_reclient_lacros_arm64_pgo',
-      'linux-pgo': 'official_goma_linux_pgo',
-      'mac-arm-pgo': 'official_goma_mac_arm_pgo',
-      'mac-pgo': 'official_goma_mac_pgo',
-      'win32-pgo': 'official_goma_x86_pgo',
-      'win64-pgo': 'official_goma_x64_pgo',
+      'android-arm32-pgo': 'official_android_arm32_pgo',
+      'android-arm64-pgo': 'official_android_arm64_pgo',
+      'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
+      'lacros-arm-generic-pgo': 'official_lacros_arm_pgo',
+      'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
+      'linux-pgo': 'official_linux_pgo',
+      'mac-arm-pgo': 'official_mac_arm_pgo',
+      'mac-pgo': 'official_mac_pgo',
+      'win32-pgo': 'official_x86_pgo',
+      'win64-pgo': 'official_x64_pgo',
     },
 
     'tryserver.chromium': {
@@ -3176,6 +3176,14 @@
       'msan', 'release_bot_reclient',
     ],
 
+    'official_android_arm32_pgo': [
+      'official', 'reclient', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+    ],
+
+    'official_android_arm64_pgo': [
+      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+    ],
+
     'official_celab_release_bot': [
       'official', 'release_bot_reclient', 'minimal_symbols',
     ],
@@ -3186,14 +3194,6 @@
 
     'official_fuchsia_x64': [
       'fuchsia', 'official', 'x64', 'custom_args',
-    ],
-
-    'official_goma_android_arm32_pgo': [
-      'official', 'goma', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
-    ],
-
-    'official_goma_android_arm64_pgo': [
-      'official', 'goma', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_goma_fuchsia_arm64_perf': [
@@ -3212,10 +3212,6 @@
       'official', 'goma', 'no_gnome_keyring', 'minimal_symbols',
     ],
 
-    'official_goma_linux_pgo': [
-      'official', 'goma', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
     'official_goma_mac_arm_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0',
     ],
@@ -3224,20 +3220,12 @@
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64',
     ],
 
-    'official_goma_mac_arm_pgo': [
-      'official', 'goma', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
     'official_goma_mac_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_goma_mac_perf_pgo': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
-    ],
-
-    'official_goma_mac_pgo': [
-      'official', 'goma', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_goma_minimal_symbols_android': [
@@ -3272,12 +3260,28 @@
       'official', 'goma', 'minimal_symbols',
     ],
 
-    'official_goma_x64_pgo': [
-      'official', 'goma', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
+   'official_lacros_amd64_pgo': [
+      'official', 'release', 'lacros', 'amd64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
     ],
 
-    'official_goma_x86_pgo': [
-      'official', 'goma', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
+    'official_lacros_arm64_pgo': [
+      'official', 'release', 'lacros', 'arm64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
+    ],
+
+    'official_lacros_arm_pgo': [
+      'official', 'release', 'lacros', 'arm-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
+    ],
+
+    'official_linux_pgo': [
+      'official', 'reclient', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_mac_arm_pgo': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_mac_pgo': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_optimize_minimal_symbols_reclient': [
@@ -3296,14 +3300,6 @@
       'official', 'reclient',
     ],
 
-    'official_reclient_android_arm32_pgo': [
-      'official', 'reclient', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
-    ],
-
-    'official_reclient_android_arm64_pgo': [
-      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
-    ],
-
     'official_reclient_chromeos_include_unwind_tables': [
       'official', 'reclient', 'chromeos', 'minimal_symbols', 'include_unwind_tables',
     ],
@@ -3316,27 +3312,11 @@
       'official', 'reclient', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
     ],
 
-    'official_reclient_lacros_amd64_pgo': [
-      'official', 'release', 'lacros', 'amd64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
-    ],
-
-    'official_reclient_lacros_arm64_pgo': [
-      'official', 'release', 'lacros', 'arm64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
-    ],
-
-    'official_reclient_lacros_arm_pgo': [
-      'official', 'release', 'lacros', 'arm-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
-    ],
-
     'official_reclient_linux_perf': [
       'official', 'reclient', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
     ],
     'official_reclient_linux_perf_pgo': [
       'official', 'reclient', 'no_gnome_keyring', 'minimal_symbols',
-    ],
-
-    'official_reclient_linux_pgo': [
-      'official', 'reclient', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_reclient_mac': [
@@ -3355,19 +3335,11 @@
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64',
     ],
 
-    'official_reclient_mac_arm_pgo': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
     'official_reclient_mac_perf': [
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
     ],
     'official_reclient_mac_perf_pgo': [
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
-    ],
-
-    'official_reclient_mac_pgo': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_reclient_minimal_symbols_android': [
@@ -3412,15 +3384,15 @@
       'official', 'reclient', 'x64',
     ],
 
-    'official_reclient_x64_pgo': [
-      'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
     'official_reclient_x86': [
       'official', 'reclient', 'x86',
     ],
 
-    'official_reclient_x86_pgo': [
+    'official_x64_pgo': [
+      'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_x86_pgo': [
       'official', 'reclient', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 

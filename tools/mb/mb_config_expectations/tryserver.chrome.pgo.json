@@ -12,7 +12,7 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-arm64-pgo": {
@@ -28,7 +28,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-pgo": {
@@ -94,7 +94,7 @@
       "is_official_build": true,
       "is_on_release_branch": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-arm-pgo": {
@@ -109,7 +109,7 @@
       "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-pgo": {
@@ -123,7 +123,7 @@
       "is_official_build": true,
       "is_on_release_branch": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win32-pgo": {
@@ -136,7 +136,7 @@
       "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win64-pgo": {
@@ -149,7 +149,7 @@
       "is_on_release_branch": true,
       "symbol_level": 0,
       "target_cpu": "x64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }
