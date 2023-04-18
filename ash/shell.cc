@@ -1362,7 +1362,8 @@ void Shell::Init(
   user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
 
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
-  AddPreTargetHandler(control_v_histogram_recorder_.get());
+  AddPreTargetHandler(control_v_histogram_recorder_.get(),
+                      ui::EventTarget::Priority::kAccessibility);
 
   // AcceleratorTracker should be placed before AcceleratorFilter to make sure
   // the accelerators won't be filtered out before getting AcceleratorTracker.
