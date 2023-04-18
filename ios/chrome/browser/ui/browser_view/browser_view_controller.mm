@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
@@ -428,17 +427,15 @@ enum HeaderBehaviour {
 
 #pragma mark - Object lifecycle
 
-- (instancetype)initWithBrowser:(Browser*)browser
-    browserContainerViewController:
+- (instancetype)
+    initWithBrowserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-               keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
-                      dependencies:
-                          (BrowserViewControllerDependencies)dependencies {
+                       keyCommandsProvider:
+                           (KeyCommandsProvider*)keyCommandsProvider
+                              dependencies:(BrowserViewControllerDependencies)
+                                               dependencies {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
-    DCHECK(browser);
-
-    self.browser = browser;
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -503,11 +500,6 @@ enum HeaderBehaviour {
 
 - (UIView*)contentArea {
   return self.browserContainerViewController.view;
-}
-
-// TODO(crbug.com/1329093): Remove this property. Also not a public property.
-- (ChromeBrowserState*)browserState {
-  return self.browser ? self.browser->GetBrowserState() : nullptr;
 }
 
 - (void)setInfobarBannerOverlayContainerViewController:
@@ -916,8 +908,6 @@ enum HeaderBehaviour {
   }
 
   _bubblePresenter = nil;
-
-  self.browser = nullptr;
 
   [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
 

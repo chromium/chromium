@@ -35,7 +35,6 @@
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 @protocol ApplicationCommands;
-class Browser;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @protocol BrowserCoordinatorCommands;
@@ -125,17 +124,16 @@ typedef struct {
                         BrowserCommands>
 
 // Initializes a new BVC.
-// `browser` is the browser whose tabs this BVC will display.
 // `browserContainerViewController` is the container object this BVC will exist
 // inside.
-// TODO(crbug.com/992582): Remove references to model objects -- including
-//   `browser` -- from this class.
-- (instancetype)initWithBrowser:(Browser*)browser
-    browserContainerViewController:
+// TODO(crbug.com/992582): Remove references to model objects from this class.
+- (instancetype)
+    initWithBrowserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-               keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
-                      dependencies:
-                          (BrowserViewControllerDependencies)dependencies
+                       keyCommandsProvider:
+                           (KeyCommandsProvider*)keyCommandsProvider
+                              dependencies:(BrowserViewControllerDependencies)
+                                               dependencies
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

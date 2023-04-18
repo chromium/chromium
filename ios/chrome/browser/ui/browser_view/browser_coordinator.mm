@@ -658,11 +658,10 @@ enum class ToolbarKind {
   DCHECK(self.browserContainerCoordinator.viewController);
 
   _viewController = [[BrowserViewController alloc]
-                     initWithBrowser:self.browser
-      browserContainerViewController:self.browserContainerCoordinator
-                                         .viewController
-                 keyCommandsProvider:_keyCommandsProvider
-                        dependencies:_viewControllerDependencies];
+      initWithBrowserContainerViewController:self.browserContainerCoordinator
+                                                 .viewController
+                         keyCommandsProvider:_keyCommandsProvider
+                                dependencies:_viewControllerDependencies];
   self.tabLifecycleMediator.baseViewController = self.viewController;
   self.tabLifecycleMediator.delegate = self.viewController;
   _viewController.readingListBrowserAgent =

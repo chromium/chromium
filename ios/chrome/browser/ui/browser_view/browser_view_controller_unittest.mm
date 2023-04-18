@@ -287,10 +287,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
 
-    bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
-                           browserContainerViewController:container_
-                                      keyCommandsProvider:key_commands_provider_
-                                             dependencies:dependencies];
+    bvc_ = [[BrowserViewController alloc]
+        initWithBrowserContainerViewController:container_
+                           keyCommandsProvider:key_commands_provider_
+                                  dependencies:dependencies];
     bvc_.webUsageEnabled = YES;
 
     id NTPCoordinator_ = [[NewTabPageCoordinator alloc]
