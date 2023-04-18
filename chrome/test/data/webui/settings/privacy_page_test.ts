@@ -192,6 +192,39 @@ suite('PrivacyPage', function() {
   test('privacySandboxRestricted', function() {
     assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
   });
+
+  test('LearnMoreHid', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_HID_DEVICES);
+    await flushTasks();
+
+    const settingsSubpage = page.shadowRoot!.querySelector('settings-subpage')!;
+    assertTrue(isVisible(settingsSubpage));
+    assertEquals(
+        settingsSubpage.learnMoreUrl,
+        'https://support.google.com/chrome?p=webhid&hl=en-US');
+  });
+
+  test('LearnMoreSerial', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SERIAL_PORTS);
+    await flushTasks();
+
+    const settingsSubpage = page.shadowRoot!.querySelector('settings-subpage')!;
+    assertTrue(isVisible(settingsSubpage));
+    assertEquals(
+        settingsSubpage.learnMoreUrl,
+        'https://support.google.com/chrome?p=webserial&hl=en-US');
+  });
+
+  test('LearnMoreUsb', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_USB_DEVICES);
+    await flushTasks();
+
+    const settingsSubpage = page.shadowRoot!.querySelector('settings-subpage')!;
+    assertTrue(isVisible(settingsSubpage));
+    assertEquals(
+        settingsSubpage.learnMoreUrl,
+        'https://support.google.com/chrome?p=webusb&hl=en-US');
+  });
 });
 
 // TODO(crbug.com/1378703): Remove once PrivacySandboxSettings4 has been rolled
@@ -734,5 +767,58 @@ suite('NotificationPermissionReview', function() {
         oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
+  });
+});
+
+suite('enableWebBluetoothNewPermissionsBackend', function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+      enableWebBluetoothNewPermissionsBackend: true,
+    });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
+    ClearBrowsingDataBrowserProxyImpl.setInstance(
+        testClearBrowsingDataBrowserProxy);
+    const testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('LearnMoreBluetooth', async function() {
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS.createChild('bluetoothDevices'));
+    await flushTasks();
+
+    const settingsSubpage = page.shadowRoot!.querySelector('settings-subpage')!;
+    assertTrue(isVisible(settingsSubpage));
+    assertEquals(
+        settingsSubpage.learnMoreUrl,
+        'https://support.google.com/chrome?p=bluetooth&hl=en-US');
   });
 });

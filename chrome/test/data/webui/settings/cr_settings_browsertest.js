@@ -596,6 +596,12 @@ TEST_F(
     });
 GEN('#endif');
 
+TEST_F(
+    'CrSettingsPrivacyPageTest', 'enableWebBluetoothNewPermissionsBackendTests',
+    function() {
+      runMochaSuite('enableWebBluetoothNewPermissionsBackend');
+    });
+
 var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

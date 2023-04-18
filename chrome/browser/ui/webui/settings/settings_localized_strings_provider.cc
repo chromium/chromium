@@ -2180,6 +2180,30 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI));
+
+  html_source->AddString("bluetoothAdapterOffHelpURL",
+                         google_util::AppendGoogleLocaleParam(
+                             GURL(chrome::kBluetoothAdapterOffHelpURL),
+                             g_browser_process->GetApplicationLocale())
+                             .spec());
+
+  html_source->AddString("chooserHidOverviewUrl",
+                         google_util::AppendGoogleLocaleParam(
+                             GURL(chrome::kChooserHidOverviewUrl),
+                             g_browser_process->GetApplicationLocale())
+                             .spec());
+
+  html_source->AddString("chooserSerialOverviewUrl",
+                         google_util::AppendGoogleLocaleParam(
+                             GURL(chrome::kChooserSerialOverviewUrl),
+                             g_browser_process->GetApplicationLocale())
+                             .spec());
+
+  html_source->AddString("chooserUsbOverviewURL",
+                         google_util::AppendGoogleLocaleParam(
+                             GURL(chrome::kChooserUsbOverviewURL),
+                             g_browser_process->GetApplicationLocale())
+                             .spec());
 }
 
 void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
