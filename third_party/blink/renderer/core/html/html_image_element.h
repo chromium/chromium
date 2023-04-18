@@ -203,6 +203,8 @@ class CORE_EXPORT HTMLImageElement final
   static bool SupportedImageType(const String& type,
                                  const HashSet<String>* disabled_image_types);
 
+  bool is_lazy_loaded() const { return is_lazy_loaded_; }
+
  protected:
   // Controls how an image element appears in the layout. See:
   // https://html.spec.whatwg.org/C/#image-request

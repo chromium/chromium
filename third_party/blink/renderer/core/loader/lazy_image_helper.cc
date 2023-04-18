@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -18,6 +20,16 @@
 namespace blink {
 
 namespace {
+
+// Records |bytes| to |histogram_name| in kilobytes (i.e., bytes / 1024).
+// https://almanac.httparchive.org/en/2022/page-weight#fig-12 reports the 90th
+// percentile of jpeg images is 213KB with a max of ~64MB. The max bucket size
+// has been set at 64MB to capture this range with as much granularity as
+// possible.
+#define IMAGE_BYTES_HISTOGRAM(histogram_name, bytes)                        \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(histogram_name,                               \
+                              base::saturated_cast<int>((bytes) / 1024), 1, \
+                              64 * 1024, 50)
 
 // Returns true if absolute dimension is specified in the width and height
 // attributes or in the inline style.
@@ -149,6 +161,19 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
 
 void LazyImageHelper::RecordMetricsOnLoadFinished(
     HTMLImageElement* image_element) {
+  if (image_element->is_lazy_loaded()) {
+    if (ImageResourceContent* content = image_element->CachedImage()) {
+      int64_t response_size = content->GetResponse().EncodedDataLength();
+      IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImage.Size", response_size);
+      if (Document* document = GetRootDocumentOrNull(image_element)) {
+        if (!document->LoadEventFinished()) {
+          IMAGE_BYTES_HISTOGRAM(
+              "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", response_size);
+        }
+      }
+    }
+  }
+
   if (!RuntimeEnabledFeatures::LazyImageVisibleLoadTimeMetricsEnabled())
     return;
   if (Document* document = GetRootDocumentOrNull(image_element)) {
