@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
@@ -60,7 +60,7 @@ class CONTENT_EXPORT CropIdWebContentsHelper final
   // process. It should be made visible to the browser process and reused
   // rather than redefined. It is defined as protected so that unit tests
   // can use it, too.
-  static base::Token GUIDToToken(const base::GUID& guid);
+  static base::Token GUIDToToken(const base::Uuid& guid);
 
  private:
   friend class WebContentsUserData<CropIdWebContentsHelper>;
