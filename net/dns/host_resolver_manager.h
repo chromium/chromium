@@ -236,6 +236,10 @@ class NET_EXPORT HostResolverManager
   // mocking time, if expiration would pose a problem.
   void SetLastIPv6ProbeResultForTesting(bool last_ipv6_probe_result);
 
+  void ResetIPv6ProbeTimeForTesting() {
+    last_ipv6_probe_time_ = base::TimeTicks();
+  }
+
   // Allows the tests to catch slots leaking out of the dispatcher.  One
   // HostResolverManager::Job could occupy multiple PrioritizedDispatcher job
   // slots.

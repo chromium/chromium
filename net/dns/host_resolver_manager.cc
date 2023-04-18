@@ -3926,10 +3926,11 @@ void HostResolverManager::FinishIPv6ReachabilityCheck(
   SetLastIPv6ProbeResult((rv == OK) ? true : false);
   std::move(callback).Run(OK);
   if (!ipv6_request_callbacks_.empty()) {
-    for (auto& request_callback : ipv6_request_callbacks_) {
+    std::vector<CompletionOnceCallback> tmp_request_callbacks;
+    ipv6_request_callbacks_.swap(tmp_request_callbacks);
+    for (auto& request_callback : tmp_request_callbacks) {
       std::move(request_callback).Run(OK);
     }
-    ipv6_request_callbacks_.clear();
   }
 }
 

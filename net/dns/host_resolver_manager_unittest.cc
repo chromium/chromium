@@ -1110,6 +1110,74 @@ TEST_F(HostResolverManagerTest, NumericIPv6AddressWithSchemeSync) {
   NumericIPv6AddressWithSchemeTest(false);
 }
 
+// Regression test for https://crbug.com/1432508.
+//
+// Tests that if a new request is made while the loop within
+// FinishIPv6ReachabilityCheck is still running, and the new request needs to
+// wait on a new IPv6 probe to complete, the new request does not try to modify
+// the same vector that FinishIPv6ReachabilityCheck is iterating over.
+TEST_F(HostResolverManagerTest, AddRequestDuringFinishIPv6ReachabilityCheck) {
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    true /* ipv6_reachable */,
+                                    true /* check_ipv6_on_wifi */, true);
+
+  // Reset `last_ipv6_probe_time_` if `reset_ipv6_probe_time` true so a new
+  // request kicks off a new reachability probe.
+  auto custom_callback_template = base::BindLambdaForTesting(
+      [&](bool reset_ipv6_probe_time, const HostPortPair& next_host,
+          std::unique_ptr<ResolveHostResponseHelper>* next_response,
+          CompletionOnceCallback completion_callback, int error) {
+        if (reset_ipv6_probe_time) {
+          resolver_->ResetIPv6ProbeTimeForTesting();
+        }
+        *next_response = std::make_unique<ResolveHostResponseHelper>(
+            resolver_->CreateRequest(next_host, NetworkAnonymizationKey(),
+                                     NetLogWithSource(), absl::nullopt,
+                                     resolve_context_.get(),
+                                     resolve_context_->host_cache()));
+        std::move(completion_callback).Run(error);
+      });
+
+  std::vector<std::unique_ptr<ResolveHostResponseHelper>> next_responses(3);
+
+  ResolveHostResponseHelper response0(
+      resolver_->CreateRequest(HostPortPair("2001:db8::1", 5555),
+                               NetworkAnonymizationKey(), NetLogWithSource(),
+                               absl::nullopt, resolve_context_.get(),
+                               resolve_context_->host_cache()),
+      base::BindOnce(custom_callback_template, true, HostPortPair("zzz", 80),
+                     &next_responses[0]));
+
+  // New requests made by response1 and response2 will wait for a new
+  // reachability probe to complete.
+  ResolveHostResponseHelper response1(
+      resolver_->CreateRequest(HostPortPair("2001:db8::1", 5555),
+                               NetworkAnonymizationKey(), NetLogWithSource(),
+                               absl::nullopt, resolve_context_.get(),
+                               resolve_context_->host_cache()),
+      base::BindOnce(custom_callback_template, false, HostPortPair("aaa", 80),
+                     &next_responses[1]));
+
+  ResolveHostResponseHelper response2(
+      resolver_->CreateRequest(HostPortPair("2001:db8::1", 5555),
+                               NetworkAnonymizationKey(), NetLogWithSource(),
+                               absl::nullopt, resolve_context_.get(),
+                               resolve_context_->host_cache()),
+      base::BindOnce(custom_callback_template, false, HostPortPair("eee", 80),
+                     &next_responses[2]));
+
+  // Unblock all calls to proc.
+  proc_->SignalMultiple(6u);
+
+  // All requests should return OK.
+  EXPECT_THAT(response0.result_error(), IsOk());
+  EXPECT_THAT(response1.result_error(), IsOk());
+  EXPECT_THAT(response2.result_error(), IsOk());
+  EXPECT_THAT(next_responses[0]->result_error(), IsOk());
+  EXPECT_THAT(next_responses[1]->result_error(), IsOk());
+  EXPECT_THAT(next_responses[2]->result_error(), IsOk());
+}
+
 TEST_F(HostResolverManagerTest, EmptyHost) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(std::string(), 5555), NetworkAnonymizationKey(),
