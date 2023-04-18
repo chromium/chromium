@@ -44,6 +44,7 @@
 
     'chrome.gpu.fyi': {
       'Lacros FYI Release (jacuzzi)': 'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient',
+      'Lacros FYI Release (octopus)': 'gpu_fyi_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient',
     },
 
     'chrome.pgo': {
@@ -2632,6 +2633,11 @@
     'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient': [
       'chromeos', 'jacuzzi', 'official', 'release_bot_reclient', 'no_symbols',
       'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_arm',
+    ],
+
+    'gpu_fyi_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient': [
+      'chromeos', 'octopus', 'official', 'release_bot_reclient', 'no_symbols',
+      'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'gpu_fyi_tests_release_trybot_arm64_reclient': [

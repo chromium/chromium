@@ -1,4 +1,0 @@
-# Small test suite due to limited capacity to run Lacros on devices.
-
-conformance/attribs/*
-conformance2/attribs/*

@@ -375,6 +375,22 @@
         },
         'skip_merge_script': True,
       },
+      'Lacros FYI Release (octopus)': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'os_type': 'chromeos',
+        'browser_config': 'lacros-chrome',
+        'mixins': [
+          'limited_capacity_bot',
+          'chromeos-octopus',
+          'chrome-swarming-pool',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fyi_lacros_device_release_telemetry_tests',
+        },
+        'skip_merge_script': True,
+      },
     }
   },
   {

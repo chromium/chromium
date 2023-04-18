@@ -13,5 +13,20 @@
       "target_os": "chromeos",
       "use_remoteexec": true
     }
+  },
+  "Lacros FYI Release (octopus)": {
+    "args_file": "//build/args/chromeos/octopus.gni",
+    "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
+      "dcheck_always_on": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_official_build": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_remoteexec": true
+    }
   }
 }
