@@ -171,8 +171,6 @@ export class MapperServer {
   ): Promise<CdpClient> {
     debugInternal('Connection opened.');
 
-    // await browserClient.Log.enable();
-
     const browserClient = cdpConnection.browserClient();
 
     const {targetId} = await browserClient.sendCommand('Target.createTarget', {

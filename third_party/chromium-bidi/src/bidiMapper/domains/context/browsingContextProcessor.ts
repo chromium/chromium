@@ -257,7 +257,7 @@ export class BrowsingContextProcessor {
     };
   }
 
-  async process_browsingContext_navigate(
+  process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
     const context = this.#browsingContextStorage.getContext(params.context);

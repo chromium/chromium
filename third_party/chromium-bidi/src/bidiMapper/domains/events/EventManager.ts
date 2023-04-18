@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-import type {
+import {
   CommonDataTypes,
+  Log,
   Message,
   Session,
 } from '../../../protocol/protocol.js';
@@ -84,8 +85,8 @@ export interface IEventManager {
 /**
  * Maps event name to a desired buffer length.
  */
-const eventBufferLength: ReadonlyMap<string, number> = new Map([
-  ['log.entryAdded', 100],
+const eventBufferLength: ReadonlyMap<Message.EventNames, number> = new Map([
+  [Log.EventNames.LogEntryAddedEvent, 100],
 ]);
 
 export class EventManager implements IEventManager {

@@ -477,14 +477,11 @@ export class ScriptEvaluator {
   }
 
   async #flattenKeyValuePairs(
-    value: CommonDataTypes.MappingLocalValue,
+    mapping: CommonDataTypes.MappingLocalValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
     const keyValueArray: Protocol.Runtime.CallArgument[] = [];
-    for (const pair of value) {
-      const key = pair[0];
-      const value = pair[1];
-
+    for (const [key, value] of mapping) {
       let keyArg;
       if (typeof key === 'string') {
         // Key is a string.
@@ -506,13 +503,9 @@ export class ScriptEvaluator {
     list: CommonDataTypes.ListLocalValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument[]> {
-    const result: Protocol.Runtime.CallArgument[] = [];
-
-    for (const value of list) {
-      result.push(await this.#deserializeToCdpArg(value, realm));
-    }
-
-    return result;
+    return Promise.all(
+      list.map((value) => this.#deserializeToCdpArg(value, realm))
+    );
   }
 
   async #initChannelListener(

@@ -196,7 +196,7 @@ export function getRemoteValuesText(
     return logMessageFormatter(args);
   }
 
-  // if args[0] is not a format specifier, just join the args with \u0020
+  // if args[0] is not a format specifier, just join the args with \u0020 (unicode 'SPACE')
   return args
     .map((arg) => {
       return stringFromArg(arg);
