@@ -183,18 +183,8 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
-
-            // Populate card details.
-            ChromeImageView cardIconView = (ChromeImageView) mMainView.findViewById(R.id.card_icon);
-            cardIconView.setImageDrawable(AutofillUiUtils.getCardIcon(context, cardArtUrl,
-                    cardIconId, getCardIconWidthId(), getCardIconHeightId(),
-                    R.dimen.card_art_corner_radius,
-                    isVirtualCard
-                            || ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
-            ((TextView) mMainView.findViewById(R.id.card_name)).setText(cardName);
-            ((TextView) mMainView.findViewById(R.id.card_last_four)).setText(cardLastFourDigits);
-            ((TextView) mMainView.findViewById(R.id.card_expiration)).setText(cardExpiration);
+            addCardDetails(context, cardName, cardLastFourDigits, cardExpiration, cardArtUrl,
+                    cardIconId, isVirtualCard);
         } else {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         }
@@ -645,6 +635,38 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
     @VisibleForTesting
     public String getErrorMessage() {
         return mErrorMessage.getText().toString();
+    }
+
+    /*
+     * Adds card details to the dialog.
+     * @param context to get the resources.
+     * @param cardName Card's nickname/product name/network name.
+     * @param cardLastFourDigits Card's obfuscated last 4 digits.
+     * @param cardExpiration Card's expiration.
+     * @param cardArtUrl URL to fetch card's product icon.
+     * @param cardIconId Resource id for the card's icon.
+     * @param isVirtualCard Boolean to inform if the card is enrolled into virtual card.
+     */
+    public void addCardDetails(Context context, String cardName, String cardLastFourDigits,
+            String cardExpiration, GURL cardArtUrl, int cardIconId, boolean isVirtualCard) {
+        ChromeImageView cardIconView = (ChromeImageView) mMainView.findViewById(R.id.card_icon);
+        cardIconView.setImageDrawable(AutofillUiUtils.getCardIcon(context, cardArtUrl, cardIconId,
+                getCardIconWidthId(), getCardIconHeightId(), R.dimen.card_art_corner_radius,
+                isVirtualCard
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
+
+        TextView cardNameView = mMainView.findViewById(R.id.card_name);
+        cardNameView.setText(cardName);
+        cardNameView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+
+        TextView cardLastFourDigitsView = mMainView.findViewById(R.id.card_last_four);
+        cardLastFourDigitsView.setText(cardLastFourDigits);
+        cardLastFourDigitsView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+
+        TextView cardExpirationView = mMainView.findViewById(R.id.card_expiration);
+        cardExpirationView.setText(cardExpiration);
+        cardExpirationView.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
     }
 
     public static int getCardIconWidthId() {
