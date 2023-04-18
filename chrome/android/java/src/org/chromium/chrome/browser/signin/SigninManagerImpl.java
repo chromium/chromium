@@ -168,7 +168,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     public boolean isSigninAllowed() {
         return mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
-                && isSigninSupported();
+                && isSigninSupported(/*requireUpdatedPlayServices=*/false);
     }
 
     /**
@@ -178,7 +178,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     public boolean isSyncOptInAllowed() {
         return mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null
-                && isSigninSupported();
+                && isSigninSupported(/*requireUpdatedPlayServices=*/false);
     }
 
     /** Returns true if sign out can be started now. */
@@ -198,12 +198,20 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
-     * @return Whether true if the current user is not demo user and the user has a reasonable
-     *         Google Play Services installed.
+     * Returns whether the user can sign-in (maybe after an update to Google Play services).
+     * @param requireUpdatedPlayServices Indicates whether an updated version of play services is
+     *         required or not.
      */
     @Override
-    public boolean isSigninSupported() {
-        return !ApiCompatibilityUtils.isDemoUser() && isGooglePlayServicesPresent();
+    public boolean isSigninSupported(boolean requireUpdatedPlayServices) {
+        if (ApiCompatibilityUtils.isDemoUser()) {
+            return false;
+        }
+        if (requireUpdatedPlayServices) {
+            return ExternalAuthUtils.getInstance().canUseGooglePlayServices();
+        }
+        return !ExternalAuthUtils.getInstance().isGooglePlayServicesMissing(
+                ContextUtils.getApplicationContext());
     }
 
     /**
