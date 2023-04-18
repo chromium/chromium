@@ -8,12 +8,15 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -33,6 +36,18 @@
 
 namespace ash {
 
+namespace {
+
+constexpr gfx::Insets kFocusInsets(2);
+constexpr gfx::Insets kImageInsets(4);
+constexpr auto kLabelInsets = gfx::Insets::TLBR(0, 8, 0, 0);
+constexpr int kCornerRadius = 12;
+constexpr int kChevronIconSize = 16;
+constexpr int kJellyChevronIconSize = 20;
+constexpr int kLabelFontSize = 12;
+
+}  // namespace
+
 BEGIN_METADATA(AshNotificationExpandButton, views::Button)
 END_METADATA
 
@@ -44,24 +59,24 @@ AshNotificationExpandButton::AshNotificationExpandButton(
 
   auto label = std::make_unique<views::Label>();
   label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                   kNotificationExpandButtonLabelFontSize,
-                                   gfx::Font::Weight::MEDIUM));
-  label->SetProperty(views::kMarginsKey, kNotificationExpandButtonLabelInsets);
+                                   kLabelFontSize, gfx::Font::Weight::MEDIUM));
+
+  label->SetProperty(views::kMarginsKey, kLabelInsets);
   label->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
   label->SetText(base::NumberToString16(total_grouped_notifications_));
   label->SetVisible(ShouldShowLabel());
   label_ = AddChildView(std::move(label));
-
-  UpdateIcons();
+  if (chromeos::features::IsJellyEnabled()) {
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosAnnotation1, *label_);
+  }
 
   auto image = std::make_unique<views::ImageView>();
-  image->SetProperty(views::kMarginsKey, kNotificationExpandButtonImageInsets);
-  image->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
+  image->SetProperty(views::kMarginsKey, kImageInsets);
   image_ = AddChildView(std::move(image));
 
-  views::InstallRoundRectHighlightPathGenerator(
-      this, kNotificationExpandButtonFocusInsets,
-      kNotificationExpandButtonCornerRadius);
+  views::InstallRoundRectHighlightPathGenerator(this, kFocusInsets,
+                                                kCornerRadius);
 
   SetAccessibleName(l10n_util::GetStringUTF16(
       expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
@@ -112,16 +127,20 @@ void AshNotificationExpandButton::UpdateGroupedNotificationsCount(int count) {
 }
 
 void AshNotificationExpandButton::UpdateIcons() {
-  expanded_image_ = gfx::CreateVectorIcon(
-      kUnifiedMenuExpandIcon, kNotificationExpandButtonChevronIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
+  SkColor icon_color =
+      chromeos::features::IsJellyEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  int icon_size = chromeos::features::IsJellyEnabled() ? kJellyChevronIconSize
+                                                       : kChevronIconSize;
+
+  expanded_image_ =
+      gfx::CreateVectorIcon(kUnifiedMenuExpandIcon, icon_size, icon_color);
 
   collapsed_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-      gfx::CreateVectorIcon(
-          kUnifiedMenuExpandIcon, kNotificationExpandButtonChevronIconSize,
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)),
+      gfx::CreateVectorIcon(kUnifiedMenuExpandIcon, icon_size, icon_color),
       SkBitmapOperations::ROTATION_180_CW);
 }
 
@@ -199,9 +218,12 @@ void AshNotificationExpandButton::OnThemeChanged() {
   UpdateIcons();
   image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
 
-  SkColor background_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  layer()->SetColor(background_color);
+  layer()->SetColor(
+      chromeos::features::IsJellyEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase1)
+          : AshColorProvider::Get()->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::
+                    kControlBackgroundColorInactive));
 }
 
 gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
@@ -212,7 +234,7 @@ gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
   // performed correctly.
   if (label_fading_out_) {
     return gfx::Size(size.width() - label_->GetPreferredSize().width() -
-                         kNotificationExpandButtonLabelInsets.width(),
+                         kLabelInsets.width(),
                      size.height());
   }
 

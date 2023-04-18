@@ -46,14 +46,6 @@ constexpr auto kNotificationSwipeControlPadding = gfx::Insets::VH(0, 20);
 // The width of notification that displayed inside the message center.
 constexpr int kNotificationInMessageCenterWidth = 344;
 
-constexpr gfx::Insets kNotificationExpandButtonFocusInsets(2);
-constexpr gfx::Insets kNotificationExpandButtonImageInsets(4);
-constexpr auto kNotificationExpandButtonLabelInsets =
-    gfx::Insets::TLBR(0, 8, 0, 0);
-constexpr int kNotificationExpandButtonCornerRadius = 12;
-constexpr int kNotificationExpandButtonChevronIconSize = 16;
-constexpr int kNotificationExpandButtonLabelFontSize = 12;
-
 constexpr int kProgressBarWithActionButtonsBottomPadding = 16;
 constexpr int kProgressBarExpandedBottomPadding =
     24 - kNotificationViewPadding.bottom();
