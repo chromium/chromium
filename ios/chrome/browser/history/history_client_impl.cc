@@ -65,12 +65,13 @@ HistoryClientImpl::CreateBackendClient() {
       bookmark_model_ ? bookmark_model_->model_loader() : nullptr);
 }
 
-void HistoryClientImpl::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
-                                                   base::Time time) {
+void HistoryClientImpl::UpdateBookmarkLastUsedTime(
+    const base::Uuid& bookmark_node_uuid,
+    base::Time time) {
   if (!bookmark_model_)
     return;
   const bookmarks::BookmarkNode* node =
-      GetBookmarkNodeByID(bookmark_model_, bookmark_node_id);
+      bookmarks::GetBookmarkNodeByUuid(bookmark_model_, bookmark_node_uuid);
   // This call is async so the BookmarkNode could have already been deleted.
   if (!node)
     return;

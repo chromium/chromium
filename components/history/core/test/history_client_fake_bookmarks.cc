@@ -170,7 +170,7 @@ HistoryClientFakeBookmarks::CreateBackendClient() {
 }
 
 void HistoryClientFakeBookmarks::UpdateBookmarkLastUsedTime(
-    int64_t bookmark_node_id,
+    const base::Uuid& bookmark_node_guid,
     base::Time time) {}
 
 }  // namespace history

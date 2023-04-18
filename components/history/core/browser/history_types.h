@@ -18,6 +18,7 @@
 #include "base/containers/stack_container.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -1083,7 +1084,7 @@ struct HistoryAddPageArgs {
                      bool consider_for_ntp_most_visited,
                      absl::optional<std::u16string> title = absl::nullopt,
                      absl::optional<Opener> opener = absl::nullopt,
-                     absl::optional<int64_t> bookmark_id = absl::nullopt,
+                     absl::optional<base::Uuid> bookmark_id = absl::nullopt,
                      absl::optional<VisitContextAnnotations::OnVisitFields>
                          context_annotations = absl::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
@@ -1106,7 +1107,7 @@ struct HistoryAddPageArgs {
   bool consider_for_ntp_most_visited;
   absl::optional<std::u16string> title;
   absl::optional<Opener> opener;
-  absl::optional<int64_t> bookmark_id;
+  absl::optional<base::Uuid> bookmark_id;
   absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations;
 };
 
