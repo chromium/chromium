@@ -50,27 +50,52 @@ namespace bookmark_utils_ios {
 
 NSString* const kBookmarksSnackbarCategory = @"BookmarksSnackbarCategory";
 
-absl::optional<NodeSet> FindNodesByIds(bookmarks::BookmarkModel* model,
-                                       const std::set<int64_t>& ids) {
-  DCHECK(model);
+BookmarkNodeReference::BookmarkNodeReference(
+    const base::Uuid& uuid,
+    bookmarks::BookmarkModel* bookmark_model)
+    : uuid(uuid), bookmark_model(bookmark_model) {}
+
+BookmarkNodeReference::BookmarkNodeReference(
+    const BookmarkNodeReference& other) = default;
+
+BookmarkNodeReference::~BookmarkNodeReference() = default;
+
+bool BookmarkNodeReference::operator<(
+    const BookmarkNodeReference reference) const {
+  return (bookmark_model == reference.bookmark_model)
+             ? (uuid < reference.uuid)
+             : (bookmark_model < reference.bookmark_model);
+}
+
+NodeReferenceSet FindNodeReferenceByNodes(
+    NodeSet nodes,
+    bookmarks::BookmarkModel* profile_bookmark_model,
+    bookmarks::BookmarkModel* account_bookmark_model) {
+  NodeReferenceSet references;
+  for (const BookmarkNode* node : nodes) {
+    bookmarks::BookmarkModel* model = GetBookmarkModelForNode(
+        node, profile_bookmark_model, account_bookmark_model);
+    references.insert(BookmarkNodeReference(node->uuid(), model));
+  }
+  return references;
+}
+
+const bookmarks::BookmarkNode* FindNodeByNodeReference(
+    BookmarkNodeReference reference) {
+  if (!reference.bookmark_model) {
+    return nullptr;
+  }
+  return FindNodeByUuid(reference.bookmark_model, reference.uuid);
+}
+
+NodeSet FindNodesByNodeReferences(NodeReferenceSet references) {
   NodeSet nodes;
-  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
-  while (iterator.has_next()) {
-    const BookmarkNode* node = iterator.Next();
-    if (ids.find(node->id()) == ids.end()) {
-      continue;
-    }
-
-    nodes.insert(node);
-    if (ids.size() == nodes.size()) {
-      break;
+  for (BookmarkNodeReference reference : references) {
+    const BookmarkNode* node = FindNodeByNodeReference(reference);
+    if (node) {
+      nodes.insert(node);
     }
   }
-
-  if (ids.size() != nodes.size()) {
-    return absl::nullopt;
-  }
-
   return nodes;
 }
 
@@ -83,7 +108,19 @@ const BookmarkNode* FindNodeById(bookmarks::BookmarkModel* model, int64_t id) {
       return node;
     }
   }
+  return nullptr;
+}
 
+const bookmarks::BookmarkNode* FindNodeByUuid(bookmarks::BookmarkModel* model,
+                                              const base::Uuid& uuid) {
+  CHECK(model);
+  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
+  while (iterator.has_next()) {
+    const BookmarkNode* node = iterator.Next();
+    if (node->uuid() == uuid) {
+      return node;
+    }
+  }
   return nullptr;
 }
 
@@ -325,14 +362,15 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 
 void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
                      bookmarks::BookmarkModel* model) {
-  DCHECK(model->loaded());
+  CHECK(model && model->loaded()) << "Model: " << model;
   DeleteBookmarks(bookmarks, model, model->root_node());
 }
 
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const BookmarkNode*>& nodes,
-    bookmarks::BookmarkModel* model,
+    const std::vector<bookmarks::BookmarkModel*> bookmark_models,
     ChromeBrowserState* browser_state) {
+  CHECK_GT(bookmark_models.size(), 0u);
   size_t node_count = nodes.size();
   DCHECK_GT(node_count, 0u);
 
@@ -341,7 +379,9 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
 
   // Delete the selected bookmarks.
   [wrapper startGroupingActions];
-  bookmark_utils_ios::DeleteBookmarks(nodes, model);
+  for (auto* model : bookmark_models) {
+    bookmark_utils_ios::DeleteBookmarks(nodes, model);
+  }
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
 

@@ -381,7 +381,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
     [self.snackbarCommandsHandler
         showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                                nodes, [self.mutator bookmarkModel],
+                                nodes, {[self.mutator bookmarkModel]},
                                 self.browserState)];
     [self.mutator setBookmark:nil];
   }

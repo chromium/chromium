@@ -90,6 +90,8 @@
 #error "This file requires ARC support."
 #endif
 
+using bookmark_utils_ios::BookmarkNodeReference;
+using bookmark_utils_ios::FindNodeReferenceByNodes;
 using bookmarks::BookmarkNode;
 using l10n_util::GetNSString;
 
@@ -98,6 +100,7 @@ using l10n_util::GetNSString;
 using IntegerPair = std::pair<NSInteger, NSInteger>;
 
 namespace {
+
 typedef NS_ENUM(NSInteger, BookmarksContextBarState) {
   BookmarksContextBarNone,            // No state.
   BookmarksContextBarDefault,         // No selection is possible in this state.
@@ -679,11 +682,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - Action sheet callbacks
 
 // Returns contextual menu for a bookmark node with `nodeID` at `indexPath`.
-- (UIMenu*)bookmarkNodeContextualMenuWithID:(int64_t)nodeID
-                                  indexPath:(NSIndexPath*)indexPath
-                                canEditNode:(BOOL)canEditNode {
+- (UIMenu*)bookmarkNodeContextualMenuWithReference:
+               (BookmarkNodeReference)nodeReference
+                                         indexPath:(NSIndexPath*)indexPath
+                                       canEditNode:(BOOL)canEditNode {
   const BookmarkNode* bookmarkNode = [self nodeAtIndexPath:indexPath];
-  DCHECK_EQ(bookmarkNode->id(), nodeID);
+  DCHECK_EQ(bookmarkNode, FindNodeByNodeReference(nodeReference));
   DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
   GURL nodeURL = bookmarkNode->url();
   // Record that this context menu was shown to the user.
@@ -728,21 +732,21 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // Add edit menu item.
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
-    [strongSelf editBookmarkNodeWithID:nodeID];
+    [strongSelf editBookmarkNodeWithReference:nodeReference];
   }];
   [menuElements addObject:editAction];
   // Add share menu item.
   [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                   __strong __typeof(weakSelf) strongSelf = weakSelf;
-                  [strongSelf shareBookmarkNodeWithID:nodeID
-                                            indexPath:indexPath];
+                  [strongSelf shareBookmarkNodeWithReference:nodeReference
+                                                   indexPath:indexPath];
                 }]];
   // Add delete menu item.
   UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
-    std::set<int64_t> nodeIDs{nodeID};
-    [strongSelf deleteBookmarkNodesWithIDs:nodeIDs
-                                userAction:"MobileBookmarkManagerEntryDeleted"];
+    [strongSelf
+        deleteBookmarkNodeWithReference:nodeReference
+                             userAction:"MobileBookmarkManagerEntryDeleted"];
   }];
   [menuElements addObject:deleteAction];
   // Disable Edit and Delete if the node cannot be edited.
@@ -754,12 +758,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 // Returns contextual menu for a folder node with `nodeID` at `indexPath`.
-- (UIMenu*)folderNodeContextualMenuWithID:(int64_t)nodeID
-                                indexPath:(NSIndexPath*)indexPath
-                              canEditNode:(BOOL)canEditNode {
+- (UIMenu*)folderNodeContextualMenuWithReference:
+               (BookmarkNodeReference)nodeReference
+                                       indexPath:(NSIndexPath*)indexPath
+                                     canEditNode:(BOOL)canEditNode {
   const BookmarkNode* folderNode = [self nodeAtIndexPath:indexPath];
+  DCHECK_EQ(folderNode, FindNodeByNodeReference(nodeReference));
   DCHECK_EQ(folderNode->type(), BookmarkNode::FOLDER);
-  DCHECK_EQ(folderNode->id(), nodeID);
   // Record that this context menu was shown to the user.
   RecordMenuShown(MenuScenarioHistogram::kBookmarkFolder);
   ActionFactory* actionFactory = [[ActionFactory alloc]
@@ -769,15 +774,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
-    [strongSelf editFolderNodeWithID:nodeID];
+    [strongSelf editFolderNodeWithReference:nodeReference];
   }];
   [menuElements addObject:editAction];
   // Add move menu item.
   UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
-    std::set<int64_t> nodeIDs{nodeID};
-    [strongSelf moveBookmarkNodeWithIDs:nodeIDs
-                             userAction:"MobileBookmarkManagerMoveToFolder"];
+    bookmark_utils_ios::NodeReferenceSet nodeReferences = {nodeReference};
+    [strongSelf
+        moveBookmarkNodeWithReferences:nodeReferences
+                            userAction:"MobileBookmarkManagerMoveToFolder"];
   }];
   [menuElements addObject:moveAction];
   // Disable Edit and Move if the node cannot be edited.
@@ -789,52 +795,55 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 // Opens the folder move editor for the given node IDs.
-- (void)moveBookmarkNodeWithIDs:(std::set<int64_t>)nodeIDs
-                     userAction:(const char*)userAction {
+- (void)moveBookmarkNodeWithReferences:
+            (bookmark_utils_ios::NodeReferenceSet)nodeReferences
+                            userAction:(const char*)userAction {
   DCHECK(!_folderChooserCoordinator);
-  DCHECK(nodeIDs.size() > 0);
-  absl::optional<std::set<const BookmarkNode*>> nodesFromIDs =
-      bookmark_utils_ios::FindNodesByIds(self.profileBookmarkModel, nodeIDs);
-  if (!nodesFromIDs) {
+  DCHECK(nodeReferences.size() > 0);
+  bookmark_utils_ios::NodeSet nodes =
+      bookmark_utils_ios::FindNodesByNodeReferences(nodeReferences);
+  if (nodes.size() == 0) {
     // While the contextual menu was opened, the nodes might have been removed.
     // If the nodes don't exist anymore, there nothing to do.
     return;
   }
-  DCHECK(nodesFromIDs->size() > 0);
   base::RecordAction(base::UserMetricsAction(userAction));
-  const BookmarkNode* editedNode = *(nodesFromIDs->begin());
+  const BookmarkNode* editedNode = *(nodes.begin());
   const BookmarkNode* selectedFolder = editedNode->parent();
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:_browser
-                     hiddenNodes:*nodesFromIDs];
+                     hiddenNodes:nodes];
   [_folderChooserCoordinator setSelectedFolder:selectedFolder];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
 }
 
 // Deletes the `nodeIDs` if they still exist and records `userAction`.
-- (void)deleteBookmarkNodesWithIDs:(std::set<int64_t>)nodeIDs
-                        userAction:(const char*)userAction {
-  absl::optional<std::set<const BookmarkNode*>> nodesFromIDs =
-      bookmark_utils_ios::FindNodesByIds(self.profileBookmarkModel, nodeIDs);
-  if (!nodesFromIDs) {
+- (void)deleteBookmarkNodeWithReference:(BookmarkNodeReference)nodeReference
+                             userAction:(const char*)userAction {
+  const bookmarks::BookmarkNode* node = FindNodeByNodeReference(nodeReference);
+  if (!node) {
     // While the contextual menu was opened, the nodes might have been removed.
     // If the nodes don't exist anymore, there nothing to do.
     return;
   }
-  [self deleteBookmarkNodes:*nodesFromIDs userAction:userAction];
+  bookmark_utils_ios::NodeSet nodes = {node};
+  [self deleteBookmarkNodes:nodes userAction:userAction];
 }
 
 // Deletes the `nodes` and records `userAction`.
-- (void)deleteBookmarkNodes:(const std::set<const BookmarkNode*>&)nodes
+- (void)deleteBookmarkNodes:(const bookmark_utils_ios::NodeSet&)nodes
                  userAction:(const char*)userAction {
   DCHECK_GE(nodes.size(), 1u);
   base::RecordAction(base::UserMetricsAction(userAction));
+  std::vector<bookmarks::BookmarkModel*> models = {self.profileBookmarkModel};
+  if (self.accountBookmarkModel) {
+    models.push_back(self.accountBookmarkModel);
+  }
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              nodes, self.profileBookmarkModel,
-                              self.browserState)];
+                              nodes, models, self.browserState)];
   [self setTableViewEditing:NO];
 }
 
@@ -850,36 +859,36 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
 // a bookmark node.
-- (void)editBookmarkNodeWithID:(int64_t)nodeID {
-  const bookmarks::BookmarkNode* bookmarkNodeFromID =
-      bookmark_utils_ios::FindNodeById(self.profileBookmarkModel, nodeID);
-  if (!bookmarkNodeFromID) {
+- (void)editBookmarkNodeWithReference:(BookmarkNodeReference)nodeReference {
+  const bookmarks::BookmarkNode* bookmarkNode =
+      bookmark_utils_ios::FindNodeByNodeReference(nodeReference);
+  if (!bookmarkNode) {
     // While the contextual menu was opened, the node might has been removed.
     // If the node doesn't exist anymore, there nothing to do.
     return;
   }
-  DCHECK_EQ(bookmarkNodeFromID->type(), BookmarkNode::URL);
+  DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEditBookmark"));
   [self ensureBookmarksCoordinator];
-  [self.bookmarksCoordinator presentEditorForURLNode:bookmarkNodeFromID];
+  [self.bookmarksCoordinator presentEditorForURLNode:bookmarkNode];
 }
 
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
 // a folder node.
-- (void)editFolderNodeWithID:(int64_t)folderNodeID {
-  const bookmarks::BookmarkNode* folderNodeFromID =
-      bookmark_utils_ios::FindNodeById(self.profileBookmarkModel, folderNodeID);
-  if (!folderNodeFromID) {
+- (void)editFolderNodeWithReference:(BookmarkNodeReference)nodeReference {
+  const bookmarks::BookmarkNode* bookmarkNode =
+      bookmark_utils_ios::FindNodeByNodeReference(nodeReference);
+  if (!bookmarkNode) {
     // While the contextual menu was opened, the node might has been removed.
     // If the node doesn't exist anymore, there nothing to do.
     return;
   }
-  DCHECK_EQ(folderNodeFromID->type(), BookmarkNode::FOLDER);
+  DCHECK_EQ(bookmarkNode->type(), BookmarkNode::FOLDER);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEditFolder"));
   [self ensureBookmarksCoordinator];
-  [self.bookmarksCoordinator presentEditorForFolderNode:folderNodeFromID];
+  [self.bookmarksCoordinator presentEditorForFolderNode:bookmarkNode];
 }
 
 - (void)openAllURLs:(std::vector<GURL>)urls
@@ -1232,6 +1241,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 #pragma mark - private
+
+// Returns a bookmark node reference for `bookmarkNode`.
+- (BookmarkNodeReference)bookmarkNodeReferenceWithNode:
+    (const bookmarks::BookmarkNode*)bookmarkNode {
+  bookmarks::BookmarkModel* bookmarkModel =
+      bookmark_utils_ios::GetBookmarkModelForNode(
+          bookmarkNode, self.profileBookmarkModel, self.accountBookmarkModel);
+  BookmarkNodeReference bookmarkNodeReference(bookmarkNode->uuid(),
+                                              bookmarkModel);
+  return bookmarkNodeReference;
+}
 
 - (BOOL)isDisplayingBookmarkRoot {
   return self.displayedFolderNode == self.profileBookmarkModel->root_node();
@@ -1618,20 +1638,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 // Triggers the URL sharing flow for `bookmarkNodeID` node, if it still exists.
-- (void)shareBookmarkNodeWithID:(int64_t)bookmarkNodeID
-                      indexPath:(NSIndexPath*)indexPath {
-  const bookmarks::BookmarkNode* bookmarkNodeFromID =
-      bookmark_utils_ios::FindNodeById(self.profileBookmarkModel,
-                                       bookmarkNodeID);
-  if (!bookmarkNodeFromID) {
+- (void)shareBookmarkNodeWithReference:(BookmarkNodeReference)nodeReference
+                             indexPath:(NSIndexPath*)indexPath {
+  const bookmarks::BookmarkNode* bookmarkNode =
+      FindNodeByNodeReference(nodeReference);
+  if (!bookmarkNode) {
     // While the contextual menu was opened, the node might has been removed.
     // If the node doesn't exist anymore, there nothing to do.
     return;
   }
-  DCHECK(bookmarkNodeFromID->is_url());
-  GURL bookmarkURL = bookmarkNodeFromID->url();
-  NSString* title =
-      bookmark_utils_ios::TitleForBookmarkNode(bookmarkNodeFromID);
+  DCHECK(bookmarkNode->is_url());
+  GURL bookmarkURL = bookmarkNode->url();
+  NSString* title = bookmark_utils_ios::TitleForBookmarkNode(bookmarkNode);
   SharingParams* params =
       [[SharingParams alloc] initWithURL:bookmarkURL
                                    title:title
@@ -2020,20 +2038,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                  style:UIAlertActionStyleDefault
                enabled:[self isIncognitoAvailable]];
 
-  std::set<int64_t> nodeIds;
-  for (const BookmarkNode* node : nodes) {
-    nodeIds.insert(node->id());
-  }
-
+  bookmark_utils_ios::NodeReferenceSet nodeReferences =
+      FindNodeReferenceByNodes(nodes, self.profileBookmarkModel,
+                               self.accountBookmarkModel);
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
   [coordinator
       addItemWithTitle:titleString
                 action:^{
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   [strongSelf
-                      moveBookmarkNodeWithIDs:nodeIds
-                                   userAction:
-                                       "MobileBookmarkManagerMoveToFolderBulk"];
+                      moveBookmarkNodeWithReferences:nodeReferences
+                                          userAction:"MobileBookmarkManagerMove"
+                                                     "ToFolderBulk"];
                 }
                  style:UIAlertActionStyleDefault];
 }
@@ -2045,7 +2061,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarksHomeContextMenuIdentifier;
 
-  int64_t nodeId = node->id();
+  BookmarkNodeReference bookmarkNodeReference =
+      [self bookmarkNodeReferenceWithNode:node];
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT);
   // Disable the edit menu option if the node is not editable by user, or if
   // editing bookmarks is not allowed.
@@ -2055,7 +2072,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarksHomeViewController* strongSelf = weakSelf;
-                           [strongSelf editBookmarkNodeWithID:nodeId];
+                           [strongSelf editBookmarkNodeWithReference:
+                                           bookmarkNodeReference];
                          }
                           style:UIAlertActionStyleDefault
                         enabled:editEnabled];
@@ -2123,7 +2141,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarksHomeContextMenuIdentifier;
 
-  int64_t nodeId = node->id();
+  BookmarkNodeReference bookmarkNodeReference =
+      [self bookmarkNodeReferenceWithNode:node];
   NSString* titleString =
       GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
   // Disable the edit and move menu options if the folder is not editable by
@@ -2134,7 +2153,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarksHomeViewController* strongSelf = weakSelf;
-                           [strongSelf editFolderNodeWithID:nodeId];
+                           [strongSelf editFolderNodeWithReference:
+                                           bookmarkNodeReference];
                          }
                           style:UIAlertActionStyleDefault
                         enabled:editEnabled];
@@ -2144,11 +2164,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       addItemWithTitle:titleString
                 action:^{
                   BookmarksHomeViewController* strongSelf = weakSelf;
-                  std::set<int64_t> nodeIDs{nodeId};
+                  bookmark_utils_ios::NodeReferenceSet nodeReferences = {
+                      bookmarkNodeReference};
                   [strongSelf
-                      moveBookmarkNodeWithIDs:nodeIDs
-                                   userAction:
-                                       "MobileBookmarkManagerMoveToFolder"];
+                      moveBookmarkNodeWithReferences:nodeReferences
+                                          userAction:"MobileBookmarkManagerMove"
+                                                     "ToFolder"];
                 }
                  style:UIAlertActionStyleDefault
                enabled:editEnabled];
@@ -2161,20 +2182,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   coordinator.alertController.view.accessibilityIdentifier =
       kBookmarksHomeContextMenuIdentifier;
 
-  std::set<int64_t> nodeIds;
-  for (const bookmarks::BookmarkNode* node : nodes) {
-    nodeIds.insert(node->id());
-  }
-
+  bookmark_utils_ios::NodeReferenceSet nodeReferences =
+      FindNodeReferenceByNodes(nodes, self.profileBookmarkModel,
+                               self.accountBookmarkModel);
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
   [coordinator
       addItemWithTitle:titleString
                 action:^{
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   [strongSelf
-                      moveBookmarkNodeWithIDs:nodeIds
-                                   userAction:
-                                       "MobileBookmarkManagerMoveToFolderBulk"];
+                      moveBookmarkNodeWithReferences:nodeReferences
+                                          userAction:"MobileBookmarkManagerMove"
+                                                     "ToFolderBulk"];
                 }
                  style:UIAlertActionStyleDefault];
 }
@@ -2523,19 +2542,20 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
   UIContextMenuActionProvider actionProvider;
 
-  int64_t nodeId = node->id();
+  BookmarkNodeReference nodeReference =
+      [self bookmarkNodeReferenceWithNode:node];
   __weak BookmarksHomeViewController* weakSelf = self;
   if (node->is_url()) {
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
-      return [weakSelf bookmarkNodeContextualMenuWithID:nodeId
-                                              indexPath:indexPath
-                                            canEditNode:canEditNode];
+      return [weakSelf bookmarkNodeContextualMenuWithReference:nodeReference
+                                                     indexPath:indexPath
+                                                   canEditNode:canEditNode];
     };
   } else if (node->is_folder()) {
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
-      return [weakSelf folderNodeContextualMenuWithID:nodeId
-                                            indexPath:indexPath
-                                          canEditNode:canEditNode];
+      return [weakSelf folderNodeContextualMenuWithReference:nodeReference
+                                                   indexPath:indexPath
+                                                 canEditNode:canEditNode];
     };
   }
   return
