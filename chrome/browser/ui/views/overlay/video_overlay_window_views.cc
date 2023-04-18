@@ -46,7 +46,6 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
@@ -918,8 +917,7 @@ void VideoOverlayWindowViews::SetUpViews() {
 void VideoOverlayWindowViews::OnRootViewReady() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
-  if (ash::features::IsDarkLightModeEnabled())
-    highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
+  highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);

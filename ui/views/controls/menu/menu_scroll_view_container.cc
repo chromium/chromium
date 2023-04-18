@@ -41,10 +41,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace views {
 
 namespace {
@@ -493,14 +489,11 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     background_view_->layer()->SetRoundedCornerRadius(GetRoundedCorners());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (ash::features::IsDarkLightModeEnabled()) {
-      background_view_->SetBorder(std::make_unique<HighlightBorder>(
-          GetRoundedCorners(),
-          // corner_radius_,
-          chromeos::features::IsJellyrollEnabled()
-              ? HighlightBorder::Type::kHighlightBorderOnShadow
-              : HighlightBorder::Type::kHighlightBorder1));
-    }
+    background_view_->SetBorder(std::make_unique<HighlightBorder>(
+        GetRoundedCorners(),
+        chromeos::features::IsJellyrollEnabled()
+            ? HighlightBorder::Type::kHighlightBorderOnShadow
+            : HighlightBorder::Type::kHighlightBorder1));
 #endif
   } else {
     SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
