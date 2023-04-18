@@ -31,9 +31,8 @@ class MockUntrustedProjectorPageJs
       delete;
   ~MockUntrustedProjectorPageJs() override = default;
 
-  MOCK_METHOD1(
-      OnNewScreencastPreconditionChanged,
-      void(ash::projector::mojom::NewScreencastPreconditionPtr precondition));
+  MOCK_METHOD1(OnNewScreencastPreconditionChanged,
+               void(const NewScreencastPrecondition& precondition));
   MOCK_METHOD1(OnSodaInstallProgressUpdated, void(int32_t));
   MOCK_METHOD0(OnSodaInstalled, void());
   MOCK_METHOD0(OnSodaInstallError, void());
@@ -100,19 +99,17 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, CanStartProjectorSession) {
   ON_CALL(controller(), GetNewScreencastPrecondition)
       .WillByDefault(testing::Return(precondition));
 
-  base::test::TestFuture<projector::mojom::NewScreencastPreconditionPtr>
+  base::test::TestFuture<const NewScreencastPrecondition&>
       new_screencast_precondition_future;
 
   page().page_handler()->GetNewScreencastPrecondition(
       new_screencast_precondition_future.GetCallback());
 
-  const projector::mojom::NewScreencastPreconditionPtr& result =
-      new_screencast_precondition_future.Get();
-  EXPECT_EQ(result->state,
-            projector::mojom::NewScreencastPreconditionState::kEnabled);
-  EXPECT_EQ(result->reasons.size(), 1u);
-  EXPECT_EQ(result->reasons[0],
-            projector::mojom::NewScreencastPreconditionReason::kEnabledBySoda);
+  const auto& result = new_screencast_precondition_future.Get();
+  EXPECT_EQ(result.state, ash::NewScreencastPreconditionState::kEnabled);
+  EXPECT_EQ(result.reasons.size(), 1u);
+  EXPECT_EQ(result.reasons[0],
+            ash::NewScreencastPreconditionReason::kEnabledBySoda);
 }
 
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest,

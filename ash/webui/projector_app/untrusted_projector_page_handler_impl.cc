@@ -12,22 +12,6 @@
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 
 namespace ash {
-namespace {
-
-// TODO(b/237337607) Add type mapping from NewScreencastPrecondition
-// to projector::mojom::NewScreencastPrecondition.
-projector::mojom::NewScreencastPreconditionPtr ToMojom(
-    const NewScreencastPrecondition& precondition) {
-  auto result = projector::mojom::NewScreencastPrecondition::New();
-  result->state = static_cast<projector::mojom::NewScreencastPreconditionState>(
-      precondition.state);
-  for (const auto& reason : precondition.reasons) {
-    result->reasons.push_back(
-        static_cast<projector::mojom::NewScreencastPreconditionReason>(reason));
-  }
-  return result;
-}
-}  // namespace
 
 UntrustedProjectorPageHandlerImpl::UntrustedProjectorPageHandlerImpl(
     mojo::PendingReceiver<projector::mojom::UntrustedProjectorPageHandler>
@@ -45,7 +29,7 @@ UntrustedProjectorPageHandlerImpl::~UntrustedProjectorPageHandlerImpl() {
 
 void UntrustedProjectorPageHandlerImpl::OnNewScreencastPreconditionChanged(
     const NewScreencastPrecondition& precondition) {
-  projector_remote_->OnNewScreencastPreconditionChanged(ToMojom(precondition));
+  projector_remote_->OnNewScreencastPreconditionChanged(precondition);
 }
 
 void UntrustedProjectorPageHandlerImpl::OnSodaProgress(int progress) {
@@ -64,7 +48,7 @@ void UntrustedProjectorPageHandlerImpl::GetNewScreencastPrecondition(
     projector::mojom::UntrustedProjectorPageHandler::
         GetNewScreencastPreconditionCallback callback) {
   std::move(callback).Run(
-      ToMojom(ProjectorController::Get()->GetNewScreencastPrecondition()));
+      ProjectorController::Get()->GetNewScreencastPrecondition());
 }
 
 void UntrustedProjectorPageHandlerImpl::ShouldDownloadSoda(

@@ -17,4 +17,29 @@ mojom("annotator_mojo_bindings") {
 mojom("projector_mojo_bindings") {
   sources = [ "projector_types.mojom" ]
   webui_module_path = "/$cur_dir"
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.projector.mojom.NewScreencastPreconditionState"
+          cpp = "::ash::NewScreencastPreconditionState"
+        },
+
+        {
+          mojom = "ash.projector.mojom.NewScreencastPreconditionReason"
+          cpp = "::ash::NewScreencastPreconditionReason"
+        },
+
+        {
+          mojom = "ash.projector.mojom.NewScreencastPrecondition"
+          cpp = "::ash::NewScreencastPrecondition"
+        },
+      ]
+
+      traits_headers = [ "projector_types_mojo_traits.h" ]
+      traits_sources = [ "projector_types_mojo_traits.cc" ]
+      traits_public_deps = [ "//ash/public/cpp" ]
+    },
+  ]
 }
