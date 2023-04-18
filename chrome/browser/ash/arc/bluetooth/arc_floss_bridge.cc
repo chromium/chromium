@@ -45,7 +45,9 @@ floss::BluetoothAdapterFloss* ArcFlossBridge::GetAdapter() const {
 }
 
 void ArcFlossBridge::HandlePoweredOn() {
-  floss::FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
+  if (!floss::FlossDBusManager::Get()->GetAdapterClient()->HasObserver(this)) {
+    floss::FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
+  }
 }
 
 void ArcFlossBridge::OnSdpSearchResult(mojom::BluetoothAddressPtr remote_addr,
