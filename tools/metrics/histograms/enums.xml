@@ -49199,6 +49199,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="18" label="Error: Pending profile"/>
   <int value="19" label="Error: Send APDU failure"/>
   <int value="20" label="Error: Send HTTPS failure"/>
+  <int value="21" label="Error: Unexpected modem manager state"/>
+  <int value="22" label="Error: Modem message processing"/>
 </enum>
 
 <enum name="HIDContinueScenarioType">

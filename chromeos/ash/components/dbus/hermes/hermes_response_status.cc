@@ -70,6 +70,12 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
   if (error_name == hermes::kErrorSendHttpsFailure) {
     return HermesResponseStatus::kErrorSendHttpsFailure;
   }
+  if (error_name == hermes::kErrorUnexpectedModemManagerState) {
+    return HermesResponseStatus::kErrorUnexpectedModemManagerState;
+  }
+  if (error_name == hermes::kErrorModemMessageProcessing) {
+    return HermesResponseStatus::kErrorModemMessageProcessing;
+  }
 
   return HermesResponseStatus::kErrorUnknown;
 }
@@ -118,6 +124,10 @@ std::ostream& operator<<(std::ostream& stream, HermesResponseStatus status) {
       return stream << "[kErrorSendApduFailure]";
     case HermesResponseStatus::kErrorSendHttpsFailure:
       return stream << "[kErrorSendHttpsFailure]";
+    case HermesResponseStatus::kErrorUnexpectedModemManagerState:
+      return stream << "[kErrorUnexpectedModemManagerState]";
+    case HermesResponseStatus::kErrorModemMessageProcessing:
+      return stream << "[kErrorModemMessageProcessing]";
   }
   return stream << (static_cast<int>(status));
 }
