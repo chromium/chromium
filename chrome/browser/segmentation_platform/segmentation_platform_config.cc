@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/embedder/default_model/resume_heavy_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
+#include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -132,6 +133,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(PowerUserSegment::GetConfig());
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
   configs.emplace_back(DeviceTierSegment::GetConfig());
+  configs.emplace_back(TabletProductivityUserModel::GetConfig());
 #endif
 
   configs.emplace_back(LowUserEngagementModel::GetConfig());

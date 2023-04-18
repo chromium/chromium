@@ -439,7 +439,8 @@ bool HasMigratedToMultiOutput(Config* config) {
   base::flat_set<SegmentId> migrated_config_ids{
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR,
-      SegmentId::DEVICE_TIER_SEGMENT};
+      SegmentId::DEVICE_TIER_SEGMENT,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER};
 
   return (config->segments.size() == 1 &&
           migrated_config_ids.contains(config->segments.begin()->first));

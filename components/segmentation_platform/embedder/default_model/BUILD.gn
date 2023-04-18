@@ -44,6 +44,8 @@ static_library("default_model") {
       "power_user_segment.h",
       "query_tiles_model.cc",
       "query_tiles_model.h",
+      "tablet_productivity_user_model.cc",
+      "tablet_productivity_user_model.h",
     ]
     deps += [ "//components/query_tiles:public" ]
   }
@@ -73,6 +75,7 @@ source_set("unit_tests") {
       "intentional_user_model_unittest.cc",
       "power_user_segment_unittest.cc",
       "query_tiles_model_unittest.cc",
+      "tablet_productivity_user_model_unittest.cc",
     ]
   }
 
