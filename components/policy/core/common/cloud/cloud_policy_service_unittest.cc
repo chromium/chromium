@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
@@ -73,7 +72,6 @@ TEST_F(CloudPolicyServiceTest, PolicyUpdateSuccess) {
 }
 
 TEST_F(CloudPolicyServiceTest, PolicyUpdateClientFailure) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   client_.SetStatus(DM_STATUS_REQUEST_FAILED);
   EXPECT_CALL(store_, Store(_)).Times(0);
   client_.NotifyPolicyFetched();
@@ -138,7 +136,6 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicyClientError) {
 
 TEST_F(CloudPolicyServiceTest, RefreshPolicyStoreError) {
   testing::InSequence seq;
-  base::test::SingleThreadTaskEnvironment task_environment;
 
   EXPECT_CALL(*this, OnPolicyRefresh(_)).Times(0);
   client_.SetDMToken("fake token");

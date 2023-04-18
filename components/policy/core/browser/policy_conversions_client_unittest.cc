@@ -4,7 +4,6 @@
 
 #include "components/policy/core/browser/policy_conversions_client.h"
 
-#include "base/test/task_environment.h"
 #include "components/policy/core/common/policy_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,7 +65,6 @@ class PolicyConversionsClientTest : public ::testing::Test {
 
 // Verify dropping default values option is working.
 TEST_F(PolicyConversionsClientTest, SetDropDefaultValues) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   policy::PolicyMap policy_map;
   policy_map.Set(kPolicyName1, CreateEntry(false /* set_is_default */));
   policy_map.Set(kPolicyName2, CreateEntry(true /* set_is_default */));
