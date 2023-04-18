@@ -1339,15 +1339,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.BackspaceOnLayout"
-    enum="IMEVKLayout" expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The layout type of the virtual keyboard, recorded when backspace is pressed.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.BackwardsMovesPerSwipe"
     units="moves" expires_after="M95">
   <owner>shend@chromium.org</owner>
@@ -1678,16 +1669,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The count of user actions to switch keyboard mode (floating, docked).
     Recorded when the user clicks in the docked/floating keyboard menu option.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.TapCount" units="units"
-    expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of times the virtual keyboard was tapped while the virtual
-    keyboard was alive. Recorded when the virtual keyboard is closed.
   </summary>
 </histogram>
 

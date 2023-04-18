@@ -1062,12 +1062,6 @@ Controller.prototype.handlePointerAction_ = function(view, e) {
     }
   }
 
-  // Listen for DOUBLE_CLICK as well to capture secondary taps on the spacebar.
-  if (e.type == EventType.POINTER_UP || e.type == EventType.DOUBLE_CLICK) {
-    this.recordStatsForClosing_(
-        'InputMethod.VirtualKeyboard.TapCount', 1, 4095, 4096);
-  }
-
   if (e.type == EventType.SWIPE) {
     e =  /** @type {!i18n.input.chrome.inputview.events.SwipeEvent} */ (e);
     this.handleSwipeAction_(view, e);
@@ -1763,11 +1757,7 @@ Controller.prototype.backspaceDown_ = function() {
     this.adapter_.sendKeyDownEvent('\u0008', KeyCodes.BACKSPACE);
   }
   this.recordStatsForClosing_(
-      'InputMethod.VirtualKeyboard.BackspaceCount', 1, 4095, 4096);
-  this.statistics_.recordEnum('InputMethod.VirtualKeyboard.BackspaceOnLayout',
-      this.statistics_.getLayoutType(this.currentKeyset_,
-          this.adapter_.isA11yMode),
-      Statistics.LayoutTypes.MAX);
+    'InputMethod.VirtualKeyboard.BackspaceCount', 1, 4095, 4096);
 };
 
 

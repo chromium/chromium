@@ -33,3 +33,5 @@ Modified chrome/os/inputview/common.css to use Noto Serif/Sans CJK instead of
 the proprietary fonts that do not exist on Chrome OS anymore.
 
 Modified chrome/os/inputview/common.css to fix language codes and update fonts.
+
+Modified chrome/os/inputview/controller.js to remove expired histograms.
