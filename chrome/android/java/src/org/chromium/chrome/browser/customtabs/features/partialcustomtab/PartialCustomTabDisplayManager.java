@@ -211,7 +211,7 @@ public class PartialCustomTabDisplayManager
         mStrategy.destroy();
     }
 
-    private int calculateBreakPoint(int unclampedBreakPointDp) {
+    private static int calculateBreakPoint(int unclampedBreakPointDp) {
         return Math.max(unclampedBreakPointDp, WINDOW_WIDTH_COMPACT_CUTOFF_DP);
     }
 
@@ -268,7 +268,7 @@ public class PartialCustomTabDisplayManager
         @PartialCustomTabType
         int type = calculatePartialCustomTabType(activity, provider.getInitialActivityWidth(),
                 provider.getInitialActivityHeight(), displayWidthDpSupplier,
-                provider.getActivityBreakPoint());
+                calculateBreakPoint(provider.getActivityBreakPoint()));
 
         @AnimRes
         int start_anim_id = defaultResId;

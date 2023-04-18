@@ -539,5 +539,12 @@ public class PartialCustomTabDisplayManagerTest {
         LocalizationUtils.setRtlForTesting(true);
         assertEquals(R.anim.slide_in_left,
                 PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
+
+        // BOTTOM_SHEET -> slide up (with height and width set, compact portrait)
+        mPCCTTestRule.configCompactDevice_Portrait();
+        when(provider.getInitialActivityWidth()).thenReturn(500);
+        when(provider.getActivityBreakPoint()).thenReturn(50);
+        assertEquals(R.anim.slide_in_up,
+                PartialCustomTabDisplayManager.getStartAnimationOverride(act, provider, defId));
     }
 }
