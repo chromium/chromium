@@ -461,7 +461,6 @@ LayoutBoxRareData::LayoutBoxRareData()
       // TODO(rego): We should store these based on physical direction.
       has_override_containing_block_content_logical_width_(false),
       has_override_containing_block_content_logical_height_(false),
-      has_override_percentage_resolution_block_size_(false),
       has_previous_content_box_rect_(false),
       snap_container_(nullptr) {}
 
@@ -508,7 +507,6 @@ void LayoutBox::WillBeDestroyed() {
   NOT_DESTROYED();
   ClearOverrideSize();
   ClearOverrideContainingBlockContentSize();
-  ClearOverridePercentageResolutionBlockSize();
 
   if (IsOutOfFlowPositioned())
     LayoutBlock::RemovePositionedObject(this);
@@ -2277,34 +2275,6 @@ void LayoutBox::ClearOverrideContainingBlockContentSize() {
       false;
 }
 
-LayoutUnit LayoutBox::OverridePercentageResolutionBlockSize() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverridePercentageResolutionBlockSize());
-  return rare_data_->override_percentage_resolution_block_size_;
-}
-
-bool LayoutBox::HasOverridePercentageResolutionBlockSize() const {
-  NOT_DESTROYED();
-  return rare_data_ &&
-         rare_data_->has_override_percentage_resolution_block_size_;
-}
-
-void LayoutBox::SetOverridePercentageResolutionBlockSize(
-    LayoutUnit logical_height) {
-  NOT_DESTROYED();
-  DCHECK_GE(logical_height, LayoutUnit(-1));
-  auto& rare_data = EnsureRareData();
-  rare_data.override_percentage_resolution_block_size_ = logical_height;
-  rare_data.has_override_percentage_resolution_block_size_ = true;
-}
-
-void LayoutBox::ClearOverridePercentageResolutionBlockSize() {
-  NOT_DESTROYED();
-  if (!rare_data_)
-    return;
-  EnsureRareData().has_override_percentage_resolution_block_size_ = false;
-}
-
 LayoutUnit LayoutBox::OverrideAvailableInlineSize() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideAvailableInlineSize());
@@ -3948,7 +3918,6 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
 
   return !containing_block->IsTableCell() &&
          !containing_block->IsOutOfFlowPositioned() &&
-         !containing_block->HasOverridePercentageResolutionBlockSize() &&
          !containing_block->IsLayoutNGGrid() &&
          !containing_block->IsFlexibleBoxIncludingNG() &&
          !containing_block->IsLayoutNGCustom();
@@ -3985,13 +3954,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
   }
 
   LayoutUnit available_height(-1);
-  if (containing_block_child->HasOverridePercentageResolutionBlockSize()) {
-    available_height =
-        containing_block_child->OverridePercentageResolutionBlockSize();
-  } else if (cb->HasOverridePercentageResolutionBlockSize()) {
-    available_height = cb->OverridePercentageResolutionBlockSize();
-  } else if (HasOverrideContainingBlockContentLogicalWidth() &&
-             IsHorizontalWritingMode() != real_cb->IsHorizontalWritingMode()) {
+  if (HasOverrideContainingBlockContentLogicalWidth() &&
+      IsHorizontalWritingMode() != real_cb->IsHorizontalWritingMode()) {
     available_height = OverrideContainingBlockContentLogicalWidth();
   } else if (HasOverrideContainingBlockContentLogicalHeight() &&
              IsHorizontalWritingMode() == real_cb->IsHorizontalWritingMode()) {
@@ -4110,9 +4074,9 @@ bool LayoutBox::LogicalHeightComputesAsNone(SizeType size_type) const {
 
   // CustomLayout items can resolve their percentages against an available or
   // percentage size override.
-  if (IsCustomItem() && (HasOverrideContainingBlockContentLogicalHeight() ||
-                         HasOverridePercentageResolutionBlockSize()))
+  if (IsCustomItem() && HasOverrideContainingBlockContentLogicalHeight()) {
     return false;
+  }
 
   if (LayoutBlock* cb = ContainingBlockForAutoHeightDetection(logical_height))
     return cb->HasAutoHeightOrContainingBlockWithAutoHeight();
@@ -4174,8 +4138,6 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
             To<LayoutBoxModelObject>(cb));
       } else if (stretched_height != -1) {
         available_height = stretched_height;
-      } else if (HasOverridePercentageResolutionBlockSize()) {
-        available_height = OverridePercentageResolutionBlockSize();
       } else {
         available_height = has_perpendicular_containing_block
                                ? ContainingBlockLogicalWidthForContent()

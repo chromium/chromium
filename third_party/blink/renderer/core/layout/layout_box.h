@@ -103,12 +103,10 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   bool has_override_containing_block_content_logical_width_ : 1;
   bool has_override_containing_block_content_logical_height_ : 1;
-  bool has_override_percentage_resolution_block_size_ : 1;
   bool has_previous_content_box_rect_ : 1;
 
   LayoutUnit override_containing_block_content_logical_width_;
   LayoutUnit override_containing_block_content_logical_height_;
-  LayoutUnit override_percentage_resolution_block_size_;
 
   // For snap area, the owning snap container.
   Member<LayoutBox> snap_container_;
@@ -902,14 +900,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
   void SetOverrideContainingBlockContentLogicalHeight(LayoutUnit);
   void ClearOverrideContainingBlockContentSize();
-
-  // When a percentage resolution block size override has been set, we'll use
-  // that size to resolve block-size percentages on this box, rather than
-  // deducing it from the containing block.
-  LayoutUnit OverridePercentageResolutionBlockSize() const;
-  bool HasOverridePercentageResolutionBlockSize() const;
-  void SetOverridePercentageResolutionBlockSize(LayoutUnit);
-  void ClearOverridePercentageResolutionBlockSize();
 
   // When an available inline size override has been set, we'll use that to fill
   // available inline size, rather than deducing it from the containing block

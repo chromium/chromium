@@ -556,9 +556,9 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
     }
   }
   if (this_box && this_box->IsCustomItem() &&
-      (this_box->HasOverrideContainingBlockContentLogicalHeight() ||
-       this_box->HasOverridePercentageResolutionBlockSize()))
+      (this_box->HasOverrideContainingBlockContentLogicalHeight())) {
     return false;
+  }
 
   if ((logical_height_length.IsAutoOrContentOrIntrinsic() ||
        logical_height_length.IsFillAvailable()) &&
