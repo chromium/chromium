@@ -562,13 +562,12 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
   // Make sure we can use Web Bluetooth after the tab crashes.
   // Set up adapter with one device.
   adapter_->SetIsPresent(false);
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_.get(),
-      "navigator.bluetooth.requestDevice({filters: [{services: [0x180d]}]})"
-      "  .catch(e => domAutomationController.send(e.toString()));",
-      &result));
-  EXPECT_EQ("NotFoundError: Bluetooth adapter not available.", result);
+  EXPECT_EQ(
+      "NotFoundError: Bluetooth adapter not available.",
+      content::EvalJs(
+          web_contents_.get(),
+          "navigator.bluetooth.requestDevice({filters: [{services: [0x180d]}]})"
+          "  .catch(e => e.toString());"));
 
   // Crash the renderer process.
   content::RenderProcessHost* process =
@@ -584,14 +583,12 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
       browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Use Web Bluetooth again.
-  std::string result_after_crash;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_.get(),
-      "navigator.bluetooth.requestDevice({filters: [{services: [0x180d]}]})"
-      "  .catch(e => domAutomationController.send(e.toString()));",
-      &result_after_crash));
-  EXPECT_EQ("NotFoundError: Bluetooth adapter not available.",
-            result_after_crash);
+  EXPECT_EQ(
+      "NotFoundError: Bluetooth adapter not available.",
+      content::EvalJs(
+          web_contents_.get(),
+          "navigator.bluetooth.requestDevice({filters: [{services: [0x180d]}]})"
+          "  .catch(e => e.toString());"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTest, KillSwitchShouldBlock) {
@@ -610,15 +607,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, KillSwitchShouldBlock) {
       permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
       "TestGroup");
 
-  std::string rejection;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_.get(),
-      "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})"
-      "  .then(() => { domAutomationController.send('Success'); },"
-      "        reason => {"
-      "      domAutomationController.send(reason.name + ': ' + reason.message);"
-      "  });",
-      &rejection));
+  std::string rejection =
+      content::EvalJs(
+          web_contents_.get(),
+          "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})"
+          "  .then(() => 'Success',"
+          "        reason => reason.name + ': ' + reason.message"
+          "  );")
+          .ExtractString();
   EXPECT_THAT(rejection,
               testing::MatchesRegex("NotFoundError: .*globally disabled.*"));
 }
@@ -651,15 +647,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, BlocklistShouldBlock) {
                                            "TestGroup");
   }
 
-  std::string rejection;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_.get(),
-      "navigator.bluetooth.requestDevice({filters: [{services: [0xed5f25a4]}]})"
-      "  .then(() => { domAutomationController.send('Success'); },"
-      "        reason => {"
-      "      domAutomationController.send(reason.name + ': ' + reason.message);"
-      "  });",
-      &rejection));
+  std::string rejection =
+      content::EvalJs(web_contents_.get(),
+                      "navigator.bluetooth.requestDevice({filters: [{services: "
+                      "[0xed5f25a4]}]})"
+                      "  .then(() => 'Success',"
+                      "        reason => reason.name + ': ' + reason.message"
+                      "  );")
+          .ExtractString();
   EXPECT_THAT(rejection,
               testing::MatchesRegex("SecurityError: .*blocklisted UUID.*"));
 }
