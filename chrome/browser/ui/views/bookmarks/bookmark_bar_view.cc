@@ -269,15 +269,26 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
   void MayRecordHoverDuration(bool taken) {
-    if (!mouse_entered_time_.has_value()) {
+    // Record once. `moouse_entered_time_` should not be set if
+    // `OnButtonPressed` is called for keyboard events. We are not interested
+    // in such cases.
+    if (hover_duration_recorded_ || !mouse_entered_time_.has_value()) {
       return;
     }
+    hover_duration_recorded_ = true;
     base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
-    mouse_entered_time_ = absl::nullopt;
     base::UmaHistogramTimes(
         taken ? "Prerender.Experimental.BookmarkBar.HoverDuration.Taken"
               : "Prerender.Experimental.BookmarkBar.HoverDuration.NotTaken",
         duration);
+    CHECK(mouse_move_time_.has_value());
+    base::TimeDelta duration_from_last_move =
+        base::TimeTicks::Now() - *mouse_move_time_;
+    base::UmaHistogramTimes(taken ? "Prerender.Experimental.BookmarkBar."
+                                    "HoverDuration.FromLastMouseMove.Taken"
+                                  : "Prerender.Experimental.BookmarkBar."
+                                    "HoverDuration.FromLastMouseMove.NotTaken",
+                            duration_from_last_move);
   }
 
   // views::View:
@@ -318,6 +329,8 @@ class BookmarkButton : public BookmarkButtonBase {
   void OnMouseEntered(const ui::MouseEvent& event) override {
     // Reset source information for taking metrics for following mouse events.
     mouse_entered_time_ = base::TimeTicks::Now();
+    mouse_move_time_ = *mouse_entered_time_;
+    hover_duration_recorded_ = false;
     mouse_has_been_pressed_ = false;
 
     base::UmaHistogramEnumeration(
@@ -338,8 +351,9 @@ class BookmarkButton : public BookmarkButtonBase {
                                     PreloadBookmarkMetricsEvent::kMouseDown);
     }
     // Record duration if the event happens before PressedCallback invocation.
-    if (!mouse_has_been_pressed_ && mouse_entered_time_.has_value()) {
+    if (!mouse_has_been_pressed_) {
       mouse_has_been_pressed_ = true;
+      CHECK(mouse_entered_time_.has_value());
       base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
       base::UmaHistogramTimes(
           "Prerender.Experimental.BookmarkBar.EnterToPressDuration", duration);
@@ -366,6 +380,11 @@ class BookmarkButton : public BookmarkButtonBase {
     return result;
   }
 
+  void OnMouseMoved(const ui::MouseEvent& event) override {
+    mouse_move_time_ = base::TimeTicks::Now();
+    return BookmarkButtonBase::OnMouseMoved(event);
+  }
+
  private:
   // A cached value of maximum width for tooltip to skip generating
   // new tooltip text.
@@ -373,12 +392,13 @@ class BookmarkButton : public BookmarkButtonBase {
   mutable std::u16string tooltip_text_;
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
+  const raw_ptr<Browser> browser_;
 
   // Information for metrics.
   absl::optional<base::TimeTicks> mouse_entered_time_;
+  absl::optional<base::TimeTicks> mouse_move_time_;
+  bool hover_duration_recorded_ = false;
   bool mouse_has_been_pressed_ = false;
-
-  const raw_ptr<Browser> browser_;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)

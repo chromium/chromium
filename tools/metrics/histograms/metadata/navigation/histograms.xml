@@ -1624,9 +1624,8 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
-    The metrics for preload boomark to understand the distribution of delay to
-    press {ButtonType}. It records duration time from entering to to pressing
-    the button.
+    The metrics for preload bookmark to understand the distribution of delay to
+    press {ButtonType}. Recorded when the mouse {ButtonType} is pressed.
   </summary>
   <token key="ButtonType">
     <variant name="" summary="any button"/>
@@ -1635,17 +1634,21 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.BookmarkBar.HoverDuration.{ConversionResultType}"
+    name="Prerender.Experimental.BookmarkBar.HoverDuration{OriginType}.{ConversionResultType}"
     units="ms" expires_after="2023-09-24">
   <owner>robertlin@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     The metrics for preload boomark to understand the distribution of mouse
-    hovering duration. It records mouse hovering duration time when mouse leaves
-    the bookmark button areas without using it as NotTaken, or when the bookmark
-    is actually clicked as Taken.
+    hovering duration from {OriginType}. It records mouse hovering duration time
+    when mouse leaves the bookmark button areas without using it as NotTaken, or
+    when the bookmark is actually clicked as Taken.
   </summary>
+  <token key="OriginType">
+    <variant name="" summary="the time mouse entering to the button"/>
+    <variant name=".FromLastMouseMove" summary="the last time mouse move"/>
+  </token>
   <token key="ConversionResultType">
     <variant name="NotTaken"/>
     <variant name="Taken"/>

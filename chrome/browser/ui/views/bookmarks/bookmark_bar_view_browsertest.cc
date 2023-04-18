@@ -390,12 +390,16 @@ class PrerenderBookmarkBarNavigationTest : public BookmarkBarNavigationTest {
     views::LabelButton* button = GetBookmarkButton(0);
 
     gfx::Point center(10, 10);
-    button->OnMousePressed(ui::MouseEvent(ui::ET_MOUSE_PRESSED, center, center,
-                                          ui::EventTimeForNow(),
-                                          ui::EF_LEFT_MOUSE_BUTTON, 0));
-    button->OnMouseReleased(ui::MouseEvent(ui::ET_MOUSE_RELEASED, center,
-                                           center, ui::EventTimeForNow(),
-                                           ui::EF_LEFT_MOUSE_BUTTON, 0));
+    button->OnMouseEntered(ui::MouseEvent(
+        ui::ET_MOUSE_ENTERED, center, center, ui::EventTimeForNow(),
+        /*flags=*/ui::EF_NONE,
+        /*changed_button_flags=*/ui::EF_NONE));
+    button->OnMousePressed(ui::MouseEvent(
+        ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+    button->OnMouseReleased(ui::MouseEvent(
+        ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
     prerender_observer.WaitForActivation();
   }
 
