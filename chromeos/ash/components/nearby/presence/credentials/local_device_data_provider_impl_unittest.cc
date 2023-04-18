@@ -86,13 +86,20 @@ TEST_F(LocalDeviceDataProviderImplTest, AccountName) {
             local_device_data_provider_->GetAccountName());
 }
 
+TEST_F(LocalDeviceDataProviderImplTest, SaveUserRegistrationInfo) {
+  CreateDataProvider();
+
+  // Simulate first time registration has occurred.
+  local_device_data_provider_->SaveUserRegistrationInfo(kUserName, kProfileUrl);
+
+  EXPECT_TRUE(local_device_data_provider_->IsUserRegistrationInfoSaved());
+}
+
 TEST_F(LocalDeviceDataProviderImplTest, Metadata) {
   CreateDataProvider();
 
-  // Assume that first time registration has already occurred.
-  pref_service_.SetString(prefs::kNearbyPresenceUserNamePrefName, kUserName);
-  pref_service_.SetString(prefs::kNearbyPresenceProfileUrlPrefName,
-                          kProfileUrl);
+  // Simulate first time registration has occurred.
+  local_device_data_provider_->SaveUserRegistrationInfo(kUserName, kProfileUrl);
 
   // Assume that without the given name, the device name is just the
   // device type.

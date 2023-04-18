@@ -47,6 +47,10 @@ class LocalDeviceDataProvider {
   // to Prefs to be accessed during Metadata construction
   virtual void SaveUserRegistrationInfo(const std::string& display_name,
                                         const std::string& image_url) = 0;
+
+  // Checks if the first time registration information returned from the
+  // server is persisted to prefs.
+  virtual bool IsUserRegistrationInfoSaved() = 0;
 };
 
 }  // namespace ash::nearby::presence

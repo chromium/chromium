@@ -147,6 +147,23 @@ std::string LocalDeviceDataProviderImpl::GetAccountName() {
 
 void LocalDeviceDataProviderImpl::SaveUserRegistrationInfo(
     const std::string& display_name,
-    const std::string& image_url) {}
+    const std::string& image_url) {
+  pref_service_->SetString(prefs::kNearbyPresenceUserNamePrefName,
+                           display_name);
+  pref_service_->SetString(prefs::kNearbyPresenceProfileUrlPrefName, image_url);
+}
+
+bool LocalDeviceDataProviderImpl::IsUserRegistrationInfoSaved() {
+  // The user name pref and image url are set during first time registration
+  // flow with the server. If they are not set, that means that the first time
+  // registration flow (and therefore Nearby Presence initialization) has not
+  // occurred. These fields are both set in the same step via
+  // |SaveUserRegistrationInfo|.
+  std::string user_name =
+      pref_service_->GetString(prefs::kNearbyPresenceUserNamePrefName);
+  std::string image_url =
+      pref_service_->GetString(prefs::kNearbyPresenceProfileUrlPrefName);
+  return (!user_name.empty() && !image_url.empty());
+}
 
 }  // namespace ash::nearby::presence
