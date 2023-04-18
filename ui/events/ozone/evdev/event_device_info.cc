@@ -937,5 +937,42 @@ EventDeviceInfo::ProbeLegacyAbsoluteDevice() const {
 
   return LegacyAbsoluteDeviceType::NONE;
 }
+std::ostream& operator<<(std::ostream& os, const EventDeviceType value) {
+  switch (value) {
+    case EventDeviceType::DT_KEYBOARD:
+      return os << "ui::EventDeviceType::DT_KEYBOARD";
+    case EventDeviceType::DT_MOUSE:
+      return os << "ui::EventDeviceType::DT_MOUSE";
+    case EventDeviceType::DT_POINTING_STICK:
+      return os << "ui::EventDeviceType::DT_POINTING_STICK";
+    case EventDeviceType::DT_TOUCHPAD:
+      return os << "ui::EventDeviceType::DT_TOUCHPAD";
+    case EventDeviceType::DT_TOUCHSCREEN:
+      return os << "ui::EventDeviceType::DT_TOUCHSCREEN";
+    case EventDeviceType::DT_MULTITOUCH:
+      return os << "ui::EventDeviceType::DT_MULTITOUCH";
+    case EventDeviceType::DT_MULTITOUCH_MOUSE:
+      return os << "ui::EventDeviceType::DT_MULTITOUCH_MOUSE";
+    case EventDeviceType::DT_ALL:
+      return os << "ui::EventDeviceType::DT_ALL";
+  }
+  return os << "ui::EventDeviceType::unknown_value("
+            << static_cast<unsigned int>(value) << ")";
+}
+
+std::ostream& operator<<(std::ostream& os, const KeyboardType value) {
+  switch (value) {
+    case KeyboardType::NOT_KEYBOARD:
+      return os << "ui::KeyboardType::NOT_KEYBOARD";
+    case KeyboardType::IN_BLOCKLIST:
+      return os << "ui::KeyboardType::IN_BLOCKLIST";
+    case KeyboardType::STYLUS_BUTTON_DEVICE:
+      return os << "ui::KeyboardType::STYLUS_BUTTON_DEVICE";
+    case KeyboardType::VALID_KEYBOARD:
+      return os << "ui::KeyboardType::VALID_KEYBOARD";
+  }
+  return os << "ui::KeyboardType::unknown_value("
+            << static_cast<unsigned int>(value) << ")";
+}
 
 }  // namespace ui

@@ -518,4 +518,47 @@ TEST(EventDeviceInfoTest, DeviceOnKeyboardBlocklist) {
   EXPECT_FALSE(devinfo.IsSemiMultitouch());
 }
 
+TEST(EventDeviceInfoTest, EventDeviceTypeDescriptions) {
+  auto fmt = [](auto value) {
+    std::stringstream s;
+    s << value;
+    return s.str();
+  };
+  EXPECT_EQ("ui::EventDeviceType::DT_KEYBOARD",
+            fmt(ui::EventDeviceType::DT_KEYBOARD));
+  EXPECT_EQ("ui::EventDeviceType::DT_MOUSE",
+            fmt(ui::EventDeviceType::DT_MOUSE));
+  EXPECT_EQ("ui::EventDeviceType::DT_POINTING_STICK",
+            fmt(ui::EventDeviceType::DT_POINTING_STICK));
+  EXPECT_EQ("ui::EventDeviceType::DT_TOUCHPAD",
+            fmt(ui::EventDeviceType::DT_TOUCHPAD));
+  EXPECT_EQ("ui::EventDeviceType::DT_TOUCHSCREEN",
+            fmt(ui::EventDeviceType::DT_TOUCHSCREEN));
+  EXPECT_EQ("ui::EventDeviceType::DT_MULTITOUCH",
+            fmt(ui::EventDeviceType::DT_MULTITOUCH));
+  EXPECT_EQ("ui::EventDeviceType::DT_MULTITOUCH_MOUSE",
+            fmt(ui::EventDeviceType::DT_MULTITOUCH_MOUSE));
+  EXPECT_EQ("ui::EventDeviceType::DT_ALL", fmt(ui::EventDeviceType::DT_ALL));
+  EXPECT_EQ("ui::EventDeviceType::unknown_value(1234)",
+            fmt(static_cast<ui::EventDeviceType>(1234)));
+}
+
+TEST(EventDeviceInfoTest, KeyboardTypeDescriptions) {
+  auto fmt = [](auto value) {
+    std::stringstream s;
+    s << value;
+    return s.str();
+  };
+  EXPECT_EQ("ui::KeyboardType::NOT_KEYBOARD",
+            fmt(ui::KeyboardType::NOT_KEYBOARD));
+  EXPECT_EQ("ui::KeyboardType::IN_BLOCKLIST",
+            fmt(ui::KeyboardType::IN_BLOCKLIST));
+  EXPECT_EQ("ui::KeyboardType::STYLUS_BUTTON_DEVICE",
+            fmt(ui::KeyboardType::STYLUS_BUTTON_DEVICE));
+  EXPECT_EQ("ui::KeyboardType::VALID_KEYBOARD",
+            fmt(ui::KeyboardType::VALID_KEYBOARD));
+  EXPECT_EQ("ui::KeyboardType::unknown_value(2345)",
+            fmt(static_cast<ui::KeyboardType>(2345)));
+}
+
 }  // namespace ui

@@ -53,6 +53,10 @@ enum COMPONENT_EXPORT(EVDEV) KeyboardType {
   VALID_KEYBOARD,
 };
 
+std::ostream& operator<<(std::ostream& os, const KeyboardType value);
+
+std::ostream& operator<<(std::ostream& os, const EventDeviceType value);
+
 // Device information for Linux input devices
 //
 // This stores and queries information about input devices; in
