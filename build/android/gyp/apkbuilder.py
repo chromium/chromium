@@ -36,6 +36,7 @@ def _ParseArgs(args):
   parser = argparse.ArgumentParser()
   action_helpers.add_depfile_arg(parser)
   parser.add_argument('--assets',
+                      action='append',
                       help='GYP-list of files to add as assets in the form '
                       '"srcPath:zipPath", where ":zipPath" is optional.')
   parser.add_argument(
