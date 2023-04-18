@@ -7,7 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/pending_task.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -38,8 +38,9 @@ class SequencedTaskSource {
                  QueueName task_queue_name);
     ~SelectedTask();
 
-    // TODO(crbug.com/1409100): breaks base_unittests.
-    const raw_ref<Task, DisableDanglingPtrDetection> task;
+    // `task` is not a raw_ref<> for performance reasons: based on this sampling
+    // profiler result on Mac. go/brp-mac-prof-diff-20230403
+    RAW_PTR_EXCLUSION Task& task;
     // Callback to fill trace event arguments associated with the task
     // execution. Can be null
     TaskExecutionTraceLogger task_execution_trace_logger =
