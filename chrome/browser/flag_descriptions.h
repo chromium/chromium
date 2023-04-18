@@ -4037,6 +4037,12 @@ extern const char kSigninInterceptBubbleV2Name[];
 extern const char kSigninInterceptBubbleV2Description[];
 #endif
 
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+extern const char kDataRetentionPoliciesDisableSyncTypesNeededName[];
+extern const char kDataRetentionPoliciesDisableSyncTypesNeededDescription[];
+#endif
+
 #if defined(WEBRTC_USE_PIPEWIRE)
 extern const char kWebrtcPipeWireCapturerName[];
 extern const char kWebrtcPipeWireCapturerDescription[];

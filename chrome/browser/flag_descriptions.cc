@@ -6962,6 +6962,17 @@ const char kSigninInterceptBubbleV2Description[] =
     "illustration, strings and an enterprise disclaimer.";
 #endif
 
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+const char kDataRetentionPoliciesDisableSyncTypesNeededName[] =
+    "Data Retention Policies Disable Sync Types";
+const char kDataRetentionPoliciesDisableSyncTypesNeededDescription[] =
+    "Relaxes the requirements for setting BrowsingDataLifetime, "
+    "ClearBrowsingDataOnExit and IdleTimeout. Setting any of these will "
+    "disable sync for the respective browsing data types that need to be "
+    "cleared if neither sync nor browser sign in is disabled by policy.";
+#endif
+
 #if defined(WEBRTC_USE_PIPEWIRE)
 const char kWebrtcPipeWireCapturerName[] = "WebRTC PipeWire support";
 const char kWebrtcPipeWireCapturerDescription[] =
