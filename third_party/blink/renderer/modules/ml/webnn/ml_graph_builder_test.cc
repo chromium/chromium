@@ -3695,7 +3695,8 @@ class FakeMLGraphBackend final : public MLGraph {
   // MLGraph::ComputeAsync().
   void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                         const MLNamedArrayBufferViews& outputs,
-                        ScriptPromiseResolver* resolver) override {
+                        ScriptPromiseResolver* resolver,
+                        ExceptionState& exception_state) override {
     resolver->Resolve();
   }
 

@@ -113,7 +113,8 @@ MLGraph* MLGraphCrOS::BuildSyncImpl(const MLNamedOperands& named_outputs,
 
 void MLGraphCrOS::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                    const MLNamedArrayBufferViews& outputs,
-                                   ScriptPromiseResolver* resolver) {
+                                   ScriptPromiseResolver* resolver,
+                                   ExceptionState& exception_state) {
   // TODO(crbug.com/1273291): Support async compute.
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Not implemented."));
