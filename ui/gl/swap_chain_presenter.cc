@@ -335,6 +335,18 @@ std::string OverlayTypeToString(DCLayerOverlayType overlay_type) {
   return overlay_type_str;
 }
 
+void DumpWithoutCrashingForToggleVpSuperResolutionError(HRESULT hr,
+                                                        UINT gpu_vendor_id) {
+  // ToggleVpSuperResolution() is called for all GPUs unless a flag disables it.
+  // Only generate dump for GPUs that supports VP Super Resolution.
+  if (gpu_vendor_id != 0x8086 && gpu_vendor_id != 0x10de) {
+    return;
+  }
+  SCOPED_CRASH_KEY_STRING256("", "vp_super_resolution_ext_error",
+                             base::NumberToString(hr));
+  base::debug::DumpWithoutCrashing();
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -1678,6 +1690,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
                                   video_processor.Get(), !is_on_battery_power_);
       if (FAILED(hr)) {
         force_vp_super_resolution_off_ = true;
+        // TODO(crbug.com/1318380): Temporary only. Remove the crash dump once
+        // GPU data is collected.
+        DumpWithoutCrashingForToggleVpSuperResolutionError(hr, gpu_vendor_id_);
       }
       use_vp_super_resolution = !is_on_battery_power_ && SUCCEEDED(hr);
     }
