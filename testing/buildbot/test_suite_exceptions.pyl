@@ -2899,12 +2899,6 @@
       },
     },
   },
-  'leveldb_unittests': {
-    'remove_from': [
-      # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
-      'android-nougat-x86-rel',
-    ],
-  },
   'mac_signing_tests': {
     'remove_from': [
       # This is intentional and explained in the waterfalls.pyl comment for

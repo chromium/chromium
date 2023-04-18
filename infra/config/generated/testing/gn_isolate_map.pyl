@@ -753,10 +753,6 @@
     "label": "//testing:empty_main",
     "type": "additional_compile_target",
   },
-  "env_chromium_unittests": {
-    "label": "//third_party/leveldatabase:env_chromium_unittests",
-    "type": "console_test_launcher",
-  },
   "events_unittests": {
     "label": "//ui/events:events_unittests",
     "type": "windowed_test_launcher",
@@ -1065,10 +1061,6 @@
   },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
-    "type": "console_test_launcher",
-  },
-  "leveldb_unittests": {
-    "label": "//third_party/leveldatabase:leveldb_unittests",
     "type": "console_test_launcher",
   },
   "libcups_unittests": {

@@ -1021,9 +1021,6 @@
       },
       'crashpad_tests': {},
       'crypto_unittests': {},
-      'env_chromium_unittests': {
-        'ci_only': True,
-      },
       'events_unittests': {},
       'gcm_unit_tests': {},
       'gin_unittests': {},
@@ -1032,9 +1029,6 @@
       'gwp_asan_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},
-      'leveldb_unittests': {
-        'ci_only': True,
-      },
       'libjingle_xmpp_unittests': {},
       'liburlpattern_unittests': {},
       'media_unittests': {},
