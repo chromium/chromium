@@ -16,9 +16,13 @@
 
 namespace autofill {
 
-// Command line flag that enables importing AutofillProfiles for manual testing.
-// It expects the path to a file as a value, which contains profile descriptions
-// in JSON format. The following format is expected:
+// Command line flags that enable importing AutofillProfiles for manual testing:
+//   --autofill-profiles-content-for-manual-testing
+//       Expects profile descriptions as a string in JSON format.
+//   --autofill-profiles-for-manual-testing
+//       The same as above, but instead of the JSON content, expects the path
+//       to a file with profile descriptions in JSON format.
+// The following format is expected:
 // {
 //   "profiles" : [
 //     {
@@ -41,6 +45,8 @@ namespace autofill {
 // The profiles are expected to be fully structured
 constexpr char kManualProfileImportForTestingFlag[] =
     "autofill-profiles-for-manual-testing";
+constexpr char kManualProfileContentImportForTestingFlag[] =
+    "autofill-profiles-content-for-manual-testing";
 
 // Given a description of fully structured profiles in the aforementioned JSON
 // format, converts it to a vector of AutofillProfiles.

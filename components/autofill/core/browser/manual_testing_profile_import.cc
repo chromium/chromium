@@ -128,6 +128,17 @@ absl::optional<AutofillProfile> MakeProfile(
   return profile;
 }
 
+// Parses AutofillProfiles from the JSON `content` string.
+// If parsing fails the error is logged and absl::nullopt is returned.
+absl::optional<std::vector<AutofillProfile>> LoadProfilesFromJSONContent(
+    std::string content) {
+  if (absl::optional<base::Value> json = base::JSONReader::Read(content)) {
+    return AutofillProfilesFromJSON(*json);
+  }
+  LOG(ERROR) << "Failed to parse JSON file.";
+  return absl::nullopt;
+}
+
 // Reads the contents of `file`, parses it as a JSON file and converts its
 // content into AutofillProfiles.
 // If any step fails, an error message is logged and absl::nullopt is returned.
@@ -138,11 +149,7 @@ absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
     LOG(ERROR) << "Failed to read file " << file.MaybeAsASCII() << ".";
     return absl::nullopt;
   }
-  if (absl::optional<base::Value> json = base::JSONReader::Read(file_content)) {
-    return AutofillProfilesFromJSON(*json);
-  }
-  LOG(ERROR) << "Failed to parse JSON file.";
-  return absl::nullopt;
+  return LoadProfilesFromJSONContent(file_content);
 }
 
 // Sets all of the `pdm`'s profiles to `profiles`, if the `pdm` still exists.
@@ -196,6 +203,11 @@ void MaybeImportProfilesForManualTesting(
                        kCommandLine->GetSwitchValuePath(
                            kManualProfileImportForTestingFlag)),
         base::BindOnce(&SetProfiles, pdm));
+  } else if (kCommandLine->HasSwitch(
+                 kManualProfileContentImportForTestingFlag)) {
+    SetProfiles(pdm,
+                LoadProfilesFromJSONContent(kCommandLine->GetSwitchValueASCII(
+                    kManualProfileContentImportForTestingFlag)));
   }
 }
 
