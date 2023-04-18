@@ -6579,6 +6579,24 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Scroll with two fingers on your touchpad in this area
   </message>
 
+  <!-- Display Size -->
+  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_DISPLAY_SIZE_TITLE" desc="Title of the display size screen." translateable="false">
+    Change text size
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION" desc="Description of the display size screen." translateable="false">
+    Adjust the display size to make items on your screen, including text, larger or smaller.
+  </message>
+   <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION_ADDITIONAL" desc="Additional description of the display size screen." translateable="false">
+    You can also find this later in Settings &gt; Device &gt; Displays.
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE" desc="Title of the zoom levels slider in the display size screen." translateable="false">
+    Display Size
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION" desc="Description of the zoom levels slider in the display size screen." translateable="false">
+    Make everything bigger or smaller
+  </message>
+
   <!-- Strings for the locale switch notification inside the OOBE. -->
   <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">
     Switch device language?

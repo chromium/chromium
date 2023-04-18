@@ -64,6 +64,7 @@
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
+#include "chrome/browser/ash/login/screens/display_size_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
@@ -143,6 +144,7 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
@@ -876,7 +878,12 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnTouchpadScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
-
+  if (features::IsOobeChoobeEnabled() && features::IsOobeDisplaySizeEnabled()) {
+    append(std::make_unique<DisplaySizeScreen>(
+        oobe_ui->GetView<DisplaySizeScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnDisplaySizeScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
   return result;
 }
 
@@ -1111,6 +1118,10 @@ void WizardController::ShowChoobeScreen() {
 
 void WizardController::ShowTouchpadScrollScreen() {
   SetCurrentScreen(GetScreen(TouchpadScrollScreenView::kScreenId));
+}
+
+void WizardController::ShowDisplaySizeScreen() {
+  SetCurrentScreen(GetScreen(DisplaySizeScreenView::kScreenId));
 }
 
 void WizardController::ShowCryptohomeRecoverySetupScreen() {
@@ -1502,6 +1513,14 @@ void WizardController::OnTouchpadScreenExit(
       ShowThemeSelectionScreen();
       break;
   }
+}
+
+void WizardController::OnDisplaySizeScreenExit(
+    DisplaySizeScreen::Result result) {
+  OnScreenExit(DisplaySizeScreenView::kScreenId,
+               DisplaySizeScreen::GetResultString(result));
+  // TODO(b/275556512): Include the screen In CHOOBE flow.
+  NOTIMPLEMENTED();
 }
 
 void WizardController::SkipToLoginForTesting() {

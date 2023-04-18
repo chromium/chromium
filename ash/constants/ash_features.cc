@@ -1537,6 +1537,10 @@ BASE_FEATURE(kOobeTouchpadScroll,
              "OobeTouchpadScrollDirection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOobeDisplaySize,
+             "OobeDisplaySize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the ChromeOS OOBE HID Detection Revamp, which updates
 // the OOBE HID detection screen UI and related infrastructure. See
 // https://crbug.com/1299099.
@@ -3071,6 +3075,10 @@ bool IsOobeQuickStartEnabled() {
 
 bool IsOobeTouchpadScrollEnabled() {
   return base::FeatureList::IsEnabled(kOobeTouchpadScroll);
+}
+
+bool IsOobeDisplaySizeEnabled() {
+  return base::FeatureList::IsEnabled(kOobeDisplaySize);
 }
 
 bool IsOsSettingsAppBadgingToggleEnabled() {

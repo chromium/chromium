@@ -1,0 +1,36 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles">
+</style>
+
+<oobe-adaptive-dialog id="displaySizeDialog">
+  <iron-icon slot="icon" icon="oobe-32:display"></iron-icon>
+  <h1 slot="title" id="display-size-title">
+    [[i18nDynamic(locale, 'DisplaySizeTitle')]]
+  </h1>
+  <div slot="subtitle" id="display-size-subtitle">
+    <p>
+      [[i18nDynamic(locale, 'DisplaySizeDescription')]]
+    </p>
+    <p>
+      [[i18nDynamic(locale,'DisplaySizeAdditionalDescription')]]
+    </p>
+  </div>
+
+  <div slot="content" class="layout vertical center-justified">
+    <p>
+      [[i18nDynamic(locale,'DisplaySizeSliderTitle')]]
+    </p>
+    <p>
+      [[i18nDynamic(locale,'DisplaySizeSliderDescription')]]
+    </p>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" class="focus-on-show"
+      on-click="onNextClicked_">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

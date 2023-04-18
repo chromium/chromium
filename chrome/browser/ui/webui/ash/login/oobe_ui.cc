@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
@@ -302,6 +303,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
       "printFrontendTimings",
       command_line->HasSwitch(switches::kOobePrintFrontendLoadTimings));
 
+  source->AddBoolean("isDisplaySizeEnabled",
+                     (features::IsOobeChoobeEnabled() &&
+                      features::IsOobeDisplaySizeEnabled()));
+
   // Configure shared resources
   AddProductLogoResources(source);
   AddProjectSimonResources(source);
@@ -493,6 +498,10 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::IsOobeChoobeEnabled() &&
       features::IsOobeTouchpadScrollEnabled()) {
     AddScreenHandler(std::make_unique<TouchpadScrollScreenHandler>());
+  }
+
+  if (features::IsOobeChoobeEnabled() && features::IsOobeDisplaySizeEnabled()) {
+    AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
   }
 
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());

@@ -1738,6 +1738,8 @@ source_set("ash") {
     "login/screens/demo_setup_screen.h",
     "login/screens/device_disabled_screen.cc",
     "login/screens/device_disabled_screen.h",
+    "login/screens/display_size_screen.cc",
+    "login/screens/display_size_screen.h",
     "login/screens/edu_coexistence_login_screen.cc",
     "login/screens/edu_coexistence_login_screen.h",
     "login/screens/enable_adb_sideloading_screen.cc",
