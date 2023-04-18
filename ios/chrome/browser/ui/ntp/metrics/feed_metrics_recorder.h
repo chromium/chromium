@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_refresh_state_tracker.h"
@@ -271,6 +272,8 @@ class Time;
 // are able to follow a website.
 - (void)recordFollowRecommendationIPHShown;
 
+#pragma mark - Sign-in Promo
+
 // Record metrics for when a user tapped on "Continue" of the Sign-in promo
 // UI.
 - (void)recordSignInPromoUIContinueTapped;
@@ -282,6 +285,10 @@ class Time;
 // feed. `hasUserId` is YES when the user has one or more device-level
 // identities.
 - (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId;
+
+// Record metrics for sign-in related UI from Discover feed personalization
+// controls.
+- (void)recordShowSignInRelatedUIWithType:(feed::FeedSignInUI)type;
 
 @end
 

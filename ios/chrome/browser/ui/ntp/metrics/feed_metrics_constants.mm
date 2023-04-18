@@ -96,6 +96,7 @@ const char kDiscoverIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.CardIndexOnSwitch";
 const char kFollowingIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.WebFeed.CardIndexOnSwitch";
+const char kFeedSignInUI[] = "ContentSuggestions.Feed.FeedSignInUI";
 
 #pragma mark - User Actions
 
@@ -193,3 +194,9 @@ const char kShowFeedSignInOnlyUIWithUserId[] =
     "ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithUserId";
 const char kShowFeedSignInOnlyUIWithoutUserId[] =
     "ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithoutUserId";
+const char kShowSyncHalfSheetFromFeed[] =
+    "ContentSuggestions.Feed.SignIn.ShowSyncHalfSheetFromFeed";
+const char kShowSignInOnlyFlowFromFeed[] =
+    "ContentSuggestions.Feed.SignIn.ShowSignInOnlyFlowFromFeed";
+const char kShowSignInDisableToastFromFeed[] =
+    "ContentSuggestions.Feed.SignIn.ShowSignInDisableToastFromFeed";
