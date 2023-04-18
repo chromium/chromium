@@ -158,8 +158,7 @@ using GLTextureImageBackingFactoryWithReadbackTest =
     GLTextureImageBackingFactoryWithUploadTest;
 
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
-  auto format = viz::SharedImageFormat::SinglePlane(
-      viz::ResourceFormat::YUV_420_BIPLANAR);
+  auto format = viz::LegacyMultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   bool supported = backing_factory_->CanCreateSharedImage(

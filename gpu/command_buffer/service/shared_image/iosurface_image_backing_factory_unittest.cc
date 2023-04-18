@@ -772,8 +772,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
 
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::SharedImageFormat::SinglePlane(
-      viz::ResourceFormat::YUV_420_BIPLANAR);
+  auto format = viz::LegacyMultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;

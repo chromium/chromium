@@ -800,7 +800,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   // multiplanar mailbox and actual_format could report multiplanar format
   // correctly.
   if (IOSurfaceGetPixelFormat(io_surface_) == '420v') {
-    actual_format = viz::SharedImageFormat::SinglePlane(viz::YUV_420_BIPLANAR);
+    actual_format = viz::LegacyMultiPlaneFormat::kNV12;
   }
 
   absl::optional<WGPUTextureFormat> wgpu_format = ToWGPUFormat(actual_format);
