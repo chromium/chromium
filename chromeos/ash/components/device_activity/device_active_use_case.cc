@@ -162,6 +162,15 @@ void DeviceActiveUseCase::SetPsmIdentifiersToQuery() {
   for (auto kv : psm_id_to_date_) {
     psm_rlwe::RlwePlaintextId psm_rlwe_id;
     psm_rlwe_id.set_sensitive_id(kv.first);
+
+    if (GetPsmUseCase() != psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY) {
+      VLOG(1) << "Daily use case should not attach the non sensitive id "
+              << "apart of the hashed query plaintext id. "
+              << "Import and Query must be consistent when sending "
+              << "sensitive_id and non_sensitive_id.";
+      psm_rlwe_id.set_non_sensitive_id(GenerateWindowIdentifier(kv.second));
+    }
+
     psm_ids_to_query_.push_back(psm_rlwe_id);
   }
 }
