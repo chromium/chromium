@@ -3,70 +3,88 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+js_files = [
+  "iron-a11y-announcer/iron-a11y-announcer.js",
+  "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
+  "iron-a11y-keys/iron-a11y-keys.js",
+  "iron-behaviors/iron-button-state.js",
+  "iron-behaviors/iron-control-state.js",
+  "iron-collapse/iron-collapse.js",
+  "iron-fit-behavior/iron-fit-behavior.js",
+  "iron-flex-layout/iron-flex-layout-classes.js",
+  "iron-icon/iron-icon.js",
+  "iron-iconset-svg/iron-iconset-svg.js",
+  "iron-list/iron-list.js",
+  "iron-location/iron-location.js",
+  "iron-location/iron-query-params.js",
+  "iron-media-query/iron-media-query.js",
+  "iron-meta/iron-meta.js",
+  "iron-pages/iron-pages.js",
+  "iron-range-behavior/iron-range-behavior.js",
+  "iron-resizable-behavior/iron-resizable-behavior.js",
+  "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
+  "iron-scroll-threshold/iron-scroll-threshold.js",
+  "iron-selector/iron-multi-selectable.js",
+  "iron-selector/iron-selectable.js",
+  "iron-selector/iron-selection.js",
+  "iron-selector/iron-selector.js",
+  "iron-test-helpers/mock-interactions.js",
+  "paper-behaviors/paper-inky-focus-behavior.js",
+  "paper-behaviors/paper-ripple-behavior.js",
+  "paper-progress/paper-progress.js",
+  "paper-ripple/paper-ripple.js",
+  "paper-spinner/paper-spinner-behavior.js",
+  "paper-spinner/paper-spinner-lite.js",
+  "paper-spinner/paper-spinner-styles.js",
+  "paper-styles/color.js",
+  "paper-styles/shadow.js",
+  "paper-tooltip/paper-tooltip.js",
+]
+
+if (is_chromeos_ash) {
+  js_files += [
+    "iron-dropdown/iron-dropdown.js",
+    "iron-dropdown/iron-dropdown-scroll-manager.js",
+    "iron-overlay-behavior/iron-focusables-helper.js",
+    "iron-overlay-behavior/iron-overlay-backdrop.js",
+    "iron-overlay-behavior/iron-overlay-behavior.js",
+    "iron-overlay-behavior/iron-overlay-manager.js",
+    "iron-overlay-behavior/iron-scroll-manager.js",
+    "neon-animation/animations/fade-in-animation.js",
+    "neon-animation/animations/fade-out-animation.js",
+    "neon-animation/neon-animatable-behavior.js",
+    "neon-animation/neon-animatable.js",
+    "neon-animation/neon-animated-pages.js",
+    "neon-animation/neon-animation-behavior.js",
+    "neon-animation/neon-animation-runner-behavior.js",
+  ]
+}
+
+if (optimize_webui) {
+  minify_js("build_min_js") {
+    in_files = js_files
+    in_folder = "./components-chromium/"
+    out_folder = "$target_gen_dir/minfied"
+  }
+}
 
 generate_grd("build_grdp") {
   grd_prefix = "polymer_3_0"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-  input_files = [
-    "iron-a11y-announcer/iron-a11y-announcer.js",
-    "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
-    "iron-a11y-keys/iron-a11y-keys.js",
-    "iron-behaviors/iron-button-state.js",
-    "iron-behaviors/iron-control-state.js",
-    "iron-collapse/iron-collapse.js",
-    "iron-fit-behavior/iron-fit-behavior.js",
-    "iron-flex-layout/iron-flex-layout-classes.js",
-    "iron-icon/iron-icon.js",
-    "iron-iconset-svg/iron-iconset-svg.js",
-    "iron-list/iron-list.js",
-    "iron-location/iron-location.js",
-    "iron-location/iron-query-params.js",
-    "iron-media-query/iron-media-query.js",
-    "iron-meta/iron-meta.js",
-    "iron-pages/iron-pages.js",
-    "iron-range-behavior/iron-range-behavior.js",
-    "iron-resizable-behavior/iron-resizable-behavior.js",
-    "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
-    "iron-scroll-threshold/iron-scroll-threshold.js",
-    "iron-selector/iron-multi-selectable.js",
-    "iron-selector/iron-selectable.js",
-    "iron-selector/iron-selection.js",
-    "iron-selector/iron-selector.js",
-    "iron-test-helpers/mock-interactions.js",
-    "paper-behaviors/paper-inky-focus-behavior.js",
-    "paper-behaviors/paper-ripple-behavior.js",
-    "paper-progress/paper-progress.js",
-    "paper-ripple/paper-ripple.js",
-    "paper-spinner/paper-spinner-behavior.js",
-    "paper-spinner/paper-spinner-lite.js",
-    "paper-spinner/paper-spinner-styles.js",
-    "paper-styles/color.js",
-    "paper-styles/shadow.js",
-    "paper-tooltip/paper-tooltip.js",
-    "polymer/polymer_bundled.min.js",
-  ]
-
-  if (is_chromeos_ash) {
-    input_files += [
-      "iron-dropdown/iron-dropdown.js",
-      "iron-dropdown/iron-dropdown-scroll-manager.js",
-      "iron-overlay-behavior/iron-focusables-helper.js",
-      "iron-overlay-behavior/iron-overlay-backdrop.js",
-      "iron-overlay-behavior/iron-overlay-behavior.js",
-      "iron-overlay-behavior/iron-overlay-manager.js",
-      "iron-overlay-behavior/iron-scroll-manager.js",
-      "neon-animation/animations/fade-in-animation.js",
-      "neon-animation/animations/fade-out-animation.js",
-      "neon-animation/neon-animatable-behavior.js",
-      "neon-animation/neon-animatable.js",
-      "neon-animation/neon-animated-pages.js",
-      "neon-animation/neon-animation-behavior.js",
-      "neon-animation/neon-animation-runner-behavior.js",
-    ]
-  }
+  input_files = [ "polymer/polymer_bundled.min.js" ]
   input_files_base_dir = rebase_path("./components-chromium/", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build_min_js" ]
+    manifest_files = [ "$target_gen_dir/minify_js_manifest.json" ]
+  } else {
+    input_files += js_files
+  }
   resource_path_prefix = "polymer/v3_0"
 }
 
