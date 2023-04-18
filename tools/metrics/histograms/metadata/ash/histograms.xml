@@ -3226,9 +3226,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent" units="ms"
-    expires_after="2023-06-01">
+    expires_after="2024-04-16">
+  <owner>xiyuan@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
-  <owner>mukai@chromium.org</owner>
   <summary>
     Time between when the size of a window changes during an interactive window
     resize and the results are drawn (presented) on screen. This is recorded for
@@ -3237,9 +3237,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-04-16">
+  <owner>xiyuan@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
-  <owner>mukai@chromium.org</owner>
   <summary>
     Maximum time between when the size of a window changes during an interactive
     window resize and the results are drawn (presented) on screen. This is
@@ -4312,23 +4312,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.WindowDrag.PresentationTime"
-    units="ms" expires_after="2023-05-30">
+    units="ms" expires_after="2024-04-16">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>Presentation time for dragging a window in overview mode.</summary>
 </histogram>
 
 <histogram base="true"
     name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2023-05-30">
+    expires_after="2024-04-16">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Maximum latency of the presentation time for dragging a window in overview
     mode.
@@ -4888,9 +4888,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"
-    expires_after="2023-06-01">
-  <owner>oshima@chromium.org</owner>
-  <owner>wutao@chromium.org</owner>
+    expires_after="2024-04-16">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
   <summary>
     Relative smoothness of animations when rotating screen. 100% represents
     ideally smooth 60 frames per second. 50% represents only 30 frames per
