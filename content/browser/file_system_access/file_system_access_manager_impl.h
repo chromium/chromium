@@ -9,7 +9,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
@@ -18,6 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -311,9 +311,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessPermissionContext::UserAction user_action);
 
-  // Return a stable unique ID of the FileSystemHandle in GUID version 4 format.
-  base::GUID GetUniqueId(const FileSystemAccessFileHandleImpl& file);
-  base::GUID GetUniqueId(const FileSystemAccessDirectoryHandleImpl& directory);
+  // Return a stable unique ID of the FileSystemHandle in UUID version 4 format.
+  base::Uuid GetUniqueId(const FileSystemAccessFileHandleImpl& file);
+  base::Uuid GetUniqueId(const FileSystemAccessDirectoryHandleImpl& directory);
 
   // Creates a FileSystemURL which corresponds `path`, which must
   // correspond to a "real" file path and not a virtual path in a sandboxed file
@@ -596,11 +596,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // that works behind a flag. Persist handle IDs such that they're stable
   // across browsing sessions.
   std::map<storage::FileSystemURL,
-           base::GUID,
+           base::Uuid,
            storage::FileSystemURL::Comparator>
       file_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::map<storage::FileSystemURL,
-           base::GUID,
+           base::Uuid,
            storage::FileSystemURL::Comparator>
       directory_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
 
