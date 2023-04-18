@@ -36,7 +36,7 @@ suite('NewTabPageModulesModulesTest', () => {
   async function createModulesElement(modules: Module[]):
       Promise<ModulesElement> {
     const modulesPromise = Promise.resolve(modules);
-    moduleRegistry.setResultFor('initializeModules', modulesPromise);
+    moduleRegistry.setResultFor('initializeModulesHavingIds', modulesPromise);
     const modulesElement = new ModulesElement();
     document.body.appendChild(modulesElement);
     await modulesPromise;
@@ -49,8 +49,14 @@ suite('NewTabPageModulesModulesTest', () => {
       const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
       const barDescriptor = new ModuleDescriptor('bar', initNullModule);
       const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
-      moduleRegistry.setResultFor(
-          'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+          {id: bazDescriptor.id, name: bazDescriptor.id},
+        ],
+      });
+
       // Act.
       const modulesElement = await createModulesElement([
         {
@@ -107,8 +113,14 @@ suite('NewTabPageModulesModulesTest', () => {
         const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
         const barDescriptor = new ModuleDescriptor('bar', initNullModule);
         const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
-        moduleRegistry.setResultFor(
-            'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
+        handler.setResultFor('getModulesIdNames', {
+          data: [
+            {id: fooDescriptor.id, name: fooDescriptor.id},
+            {id: barDescriptor.id, name: barDescriptor.id},
+            {id: bazDescriptor.id, name: bazDescriptor.id},
+          ],
+        });
+
         // Act.
         const modulesElement = await createModulesElement([
           {
@@ -157,7 +169,9 @@ suite('NewTabPageModulesModulesTest', () => {
     test(`clicking customize chrome link sends event`, async () => {
       // Arrange.
       const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+      handler.setResultFor(
+          'getModulesIdNames',
+          {data: [{id: fooDescriptor.id, name: fooDescriptor.id}]});
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
@@ -181,9 +195,12 @@ suite('NewTabPageModulesModulesTest', () => {
       // Arrange.
       const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
       const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-
-      moduleRegistry.setResultFor(
-          'getDescriptors', [fooDescriptor, barDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+        ],
+      });
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
@@ -254,9 +271,14 @@ suite('NewTabPageModulesModulesTest', () => {
           'baz', ModuleHeight.SHORT, async () => createElement());
       const quzDescriptor = new ModuleDescriptorV2(
           'quz', ModuleHeight.TALL, async () => createElement());
-      moduleRegistry.setResultFor(
-          'getDescriptors',
-          [fooDescriptor, barDescriptor, bazDescriptor, quzDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+          {id: bazDescriptor.id, name: bazDescriptor.id},
+          {id: quzDescriptor.id, name: quzDescriptor.id},
+        ],
+      });
 
       // Act.
       const modulesElement = await createModulesElement([
@@ -321,8 +343,13 @@ suite('NewTabPageModulesModulesTest', () => {
           'bar', ModuleHeight.SHORT, async () => createElement());
       const bazDescriptor = new ModuleDescriptorV2(
           'baz', ModuleHeight.SHORT, async () => createElement());
-      moduleRegistry.setResultFor(
-          'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+          {id: bazDescriptor.id, name: bazDescriptor.id},
+        ],
+      });
 
       // Act.
       const modulesElement = await createModulesElement([
@@ -465,7 +492,11 @@ suite('NewTabPageModulesModulesTest', () => {
 
   test('modules can be dismissed with no restore action', async () => {
     const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+      ],
+    });
 
     // Act.
     const modulesElement = await createModulesElement([
@@ -514,7 +545,11 @@ suite('NewTabPageModulesModulesTest', () => {
     // Arrange.
     let restoreCalled = false;
     const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+      ],
+    });
 
     // Act.
     const modulesElement = await createModulesElement([
@@ -578,7 +613,11 @@ suite('NewTabPageModulesModulesTest', () => {
     // Arrange.
     let restoreCalled = false;
     const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+      ],
+    });
 
     // Act.
     const modulesElement = await createModulesElement([{
@@ -664,8 +703,12 @@ suite('NewTabPageModulesModulesTest', () => {
     // Arrange.
     const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
     const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-    moduleRegistry.setResultFor(
-        'getDescriptors', [fooDescriptor, barDescriptor]);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+        {id: barDescriptor.id, name: barDescriptor.id},
+      ],
+    });
     await createModulesElement([
       {
         descriptor: fooDescriptor,
@@ -687,8 +730,12 @@ suite('NewTabPageModulesModulesTest', () => {
     // Arrange.
     const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
     const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-    moduleRegistry.setResultFor(
-        'getDescriptors', [fooDescriptor, barDescriptor]);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+        {id: barDescriptor.id, name: barDescriptor.id},
+      ],
+    });
     await createModulesElement([
       {
         descriptor: fooDescriptor,
@@ -729,8 +776,13 @@ suite('NewTabPageModulesModulesTest', () => {
       const fooBarDescriptor = new ModuleDescriptorV2(
           'foo bar', ModuleHeight.TALL, async () => createElement());
 
-      moduleRegistry.setResultFor(
-          'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+          {id: fooBarDescriptor.id, name: fooBarDescriptor.id},
+        ],
+      });
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
@@ -897,8 +949,13 @@ suite('NewTabPageModulesModulesTest', () => {
       const fooBarDescriptor = new ModuleDescriptorV2(
           'foo bar', ModuleHeight.SHORT, async () => createElement());
 
-      moduleRegistry.setResultFor(
-          'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+          {id: fooBarDescriptor.id, name: fooBarDescriptor.id},
+        ],
+      });
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
@@ -982,8 +1039,13 @@ suite('NewTabPageModulesModulesTest', () => {
       const fooBarDescriptor = new ModuleDescriptorV2(
           'foo bar', ModuleHeight.SHORT, async () => createElement());
 
-      moduleRegistry.setResultFor(
-          'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: fooDescriptor.id, name: fooDescriptor.id},
+          {id: barDescriptor.id, name: barDescriptor.id},
+          {id: fooBarDescriptor.id, name: fooBarDescriptor.id},
+        ],
+      });
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,

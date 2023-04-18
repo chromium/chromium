@@ -12,7 +12,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {OptInStatus} from '../new_tab_page.mojom-webui.js';
+import {ModuleIdName, OptInStatus} from '../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {Module, ModuleHeight} from './module_descriptor.js';
@@ -143,6 +143,7 @@ export class ModulesElement extends PolymerElement {
   private disabledModules_: {all: boolean, ids: string[]};
   private dragEnabled_: boolean;
   private moduleImpressionDetected_: boolean;
+  private modulesIdNames_: ModuleIdName[];
   private modulesFreRemoved_: boolean;
   private modulesFreShown: boolean;
   private modulesFreVisible_: boolean;
@@ -255,8 +256,12 @@ export class ModulesElement extends PolymerElement {
 
   private async renderModules_(): Promise<void> {
     this.moduleImpressionDetected_ = false;
-    const modules = await ModuleRegistry.getInstance().initializeModules(
-        loadTimeData.getInteger('modulesLoadTimeout'));
+    this.modulesIdNames_ =
+        (await NewTabPageProxy.getInstance().handler.getModulesIdNames()).data;
+    const modules =
+        await ModuleRegistry.getInstance().initializeModulesHavingIds(
+            this.modulesIdNames_.map(m => m.id),
+            loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       NewTabPageProxy.getInstance().handler.onModulesLoadedWithData(
           modules.map(module => module.descriptor.id));
@@ -342,7 +347,7 @@ export class ModulesElement extends PolymerElement {
 
   private onModulesLoadedAndVisibilityDeterminedChange_() {
     if (this.modulesLoadedAndVisibilityDetermined_) {
-      ModuleRegistry.getInstance().getDescriptors().forEach(({id}) => {
+      this.modulesIdNames_.forEach(({id}) => {
         chrome.metricsPrivate.recordBoolean(
             `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
             !this.disabledModules_.all &&
