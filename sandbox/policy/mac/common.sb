@@ -203,6 +203,7 @@
 ; Reads from /usr.
 (allow file-read-data
   (subpath "/usr/share/icu")
+  (subpath "/usr/share/locale")
 )
 
 ; Access to the home directory.
