@@ -125,11 +125,7 @@ public class AddressEditorTest {
     // initializes Android library dependencies.
     private final List<DropdownKeyValue> mSupportedCountries =
             List.of(new DropdownKeyValue("US", "United States"),
-                    new DropdownKeyValue("DE", "Germany"), new DropdownKeyValue("CU", "Cuba"),
-                    new DropdownKeyValue("IR", "Iran"), new DropdownKeyValue("KP", "North Korea"),
-                    new DropdownKeyValue("SD", "Sudan"), new DropdownKeyValue("SY", "Syria"));
-    private final List<DropdownKeyValue> mNonSactionedCountries = List.of(
-            new DropdownKeyValue("US", "United States"), new DropdownKeyValue("DE", "Germany"));
+                    new DropdownKeyValue("DE", "Germany"), new DropdownKeyValue("CU", "Cuba"));
 
     private Callback<AutofillAddress> mDoneCallback;
     @Nullable
@@ -167,6 +163,7 @@ public class AddressEditorTest {
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
         SyncService.overrideForTests(mSyncService);
 
+        when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString())).thenReturn(true);
         PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
 
         setUpSupportedCountries(mSupportedCountries);
@@ -821,13 +818,14 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void accountSavingDisallowedForSanctionedCountry() {
+    public void accountSavingDisallowedForUnsupportedCountry() {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+        when(mPersonalDataManager.isCountryEligibleForAccountStorage(eq("CU"))).thenReturn(false);
         mAddressEditor = new AddressEditor(
                 /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         setUpAddressUiComponents(sSupportedAddressFields, "US");
-        setUpAddressUiComponents(sSupportedAddressFields, "SY");
+        setUpAddressUiComponents(sSupportedAddressFields, "CU");
         mAddressEditor.edit(null, mDoneCallback);
 
         EditorModel editorModel = mEditorModelCapture.getValue();
@@ -836,7 +834,7 @@ public class AddressEditorTest {
         Assert.assertEquals(13, editorFields.size());
 
         EditorFieldModel countryDropdown = editorFields.get(0);
-        countryDropdown.setDropdownKey("SY", () -> {});
+        countryDropdown.setDropdownKey("CU", () -> {});
 
         // Set values of the required fields.
         editorFields.get(2).setValue("New Name");
@@ -853,7 +851,8 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void countryDropDownExcludesSanctionedCountries_saveInAccountFlow() {
+    public void countryDropDownExcludesUnsupportedCountries_saveInAccountFlow() {
+        when(mPersonalDataManager.isCountryEligibleForAccountStorage(eq("CU"))).thenReturn(false);
         mAddressEditor = new AddressEditor(
                 /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -871,7 +870,8 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void countryDropDownExcludesSanctionedCountries_MigrationFlow() {
+    public void countryDropDownExcludesUnsupportedCountries_MigrationFlow() {
+        when(mPersonalDataManager.isCountryEligibleForAccountStorage(eq("CU"))).thenReturn(false);
         mAddressEditor = new AddressEditor(
                 /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/true);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -889,7 +889,8 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void countryDropDownExcludesSanctionedCountries_editExistingAccountProfile() {
+    public void countryDropDownExcludesUnsupportedCountries_editExistingAccountProfile() {
+        when(mPersonalDataManager.isCountryEligibleForAccountStorage(eq("CU"))).thenReturn(false);
         mAddressEditor = new AddressEditor(
                 /*saveToDisk=*/false, /*isUpdate=*/true, /*isMigrationToAccount=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
