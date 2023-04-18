@@ -494,7 +494,7 @@ class SingleTestRunner(object):
     def _compare_text(self, expected_driver_output, driver_output):
 
         if expected_driver_output.text:
-            driver_output.test_type = 'text'
+            driver_output.test_type.add('text')
         if not expected_driver_output.text or not driver_output.text:
             return []
 
@@ -577,7 +577,7 @@ class SingleTestRunner(object):
 
     def _compare_audio(self, expected_driver_output, driver_output):
         if expected_driver_output.audio:
-            driver_output.test_type = 'audio'
+            driver_output.test_type.add('audio')
         if not expected_driver_output.audio or not driver_output.audio:
             return []
         if self._port.do_audio_results_differ(expected_driver_output.audio,
@@ -600,7 +600,7 @@ class SingleTestRunner(object):
 
     def _compare_image(self, expected_driver_output, driver_output):
         if expected_driver_output.image and expected_driver_output.image_hash:
-            driver_output.test_type = 'image'
+            driver_output.test_type.add('image')
         if not expected_driver_output.image or not expected_driver_output.image_hash:
             return []
         # The presence of an expected image, but a lack of an outputted image
@@ -721,8 +721,7 @@ class SingleTestRunner(object):
                 break
 
         assert expected_output
-        # TODO(crbug.com/1396136): Update the test_type to use a string array.
-        test_output.test_type = 'image'
+        test_output.test_type.add('image')
 
         # Combine compare_text_result and test_result
         expected_output.text = expected_text_output.text

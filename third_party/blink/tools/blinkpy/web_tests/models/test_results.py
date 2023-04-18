@@ -80,7 +80,7 @@ class TestResult(object):
         self.retry_attempt = retry_attempt
         self.command = command
         self.image_diff_stats = image_diff_stats
-        self.test_type = test_type
+        self.test_type = test_type or set()
 
         results = set([f.result for f in self.failures] or [ResultType.Pass])
         assert len(results) <= 2, (

@@ -286,7 +286,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertEqual(sent_data['tags'], expected_tags)
 
     def test_sink_with_test_type(self):
-        actual_test_type = 'image'
+        actual_test_type = {'image', 'text'}
         tr = test_results.TestResult(test_name='test-name',
                                      test_type=actual_test_type)
         tr.type = ResultType.Crash
@@ -314,6 +314,10 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_test_type',
                 'value': 'image'
+            },
+            {
+                'key': 'web_tests_test_type',
+                'value': 'text'
             },
             {
                 'key': 'web_tests_used_expectations_file',
