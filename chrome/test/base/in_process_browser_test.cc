@@ -917,7 +917,8 @@ void InProcessBrowserTest::StartUniqueAshChrome(
 
   std::vector<std::string> all_enabled_features = {
       "LacrosSupport", "LacrosPrimary", "LacrosOnly"};
-  all_enabled_features.insert(enabled_features.end(), enabled_features.begin(),
+  all_enabled_features.insert(all_enabled_features.end(),
+                              enabled_features.begin(),
                               enabled_features.end());
   ash_cmdline.AppendSwitchASCII(switches::kEnableFeatures,
                                 base::JoinString(all_enabled_features, ","));

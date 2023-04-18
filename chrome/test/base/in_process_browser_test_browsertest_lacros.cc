@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/in_process_browser_test.h"
 
+#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,12 +14,20 @@ class StartUniqueAshBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     // Need to put this before starting lacros.
-    StartUniqueAshChrome({}, {}, {"random-unused-example-cmdline"},
-                         "Reason:Test");
+    StartUniqueAshChrome({"ClipboardHistoryRefresh", "Jelly"},
+                         {"DisableLacrosTtsSupport"},
+                         {"random-unused-example-cmdline"}, "Reason:Test");
     InProcessBrowserTest::SetUp();
   }
 
-  void CheckExpectations() { EXPECT_TRUE(ash_process_.IsValid()); }
+  void CheckExpectations() {
+    EXPECT_TRUE(ash_process_.IsValid());
+
+    // Verify that Lacros Tts support is enabled in Lacros. This feature is
+    // disabled by default in Ash, and is enabled by the unique ash in this
+    // test, and passed to Lacros via mojom::crosapi::BrowserInitParams.
+    EXPECT_TRUE(tts_crosapi_util::ShouldEnableLacrosTtsSupport());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(StartUniqueAshBrowserTest, StartAshChrome) {
