@@ -1,5 +1,5 @@
 // Copyright 2021 The Chromium Authors
-// Use of this source codeTextMessagePreference is governed by a BSD-style license that can be
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.prefetch.settings;
@@ -24,8 +24,6 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
                    Preference.OnPreferenceChangeListener {
     @VisibleForTesting
     static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
-    @VisibleForTesting
-    static final String PREF_TEXT_MANAGED_LEGACY = "text_managed_legacy";
     @VisibleForTesting
     static final String PREF_PRELOAD_PAGES = "preload_pages_radio_button_group";
 
@@ -62,7 +60,6 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
         mPreloadPagesPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mPreloadPagesPreference.setOnPreferenceChangeListener(this);
 
-        findPreference(PREF_TEXT_MANAGED_LEGACY).setVisible(false);
         findPreference(PREF_MANAGED_DISCLAIMER_TEXT).setVisible(
                managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference));
     }
@@ -93,7 +90,7 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             String key = preference.getKey();
-            assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_TEXT_MANAGED_LEGACY.equals(key)
+            assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key)
                     || PREF_PRELOAD_PAGES.equals(key) : "Wrong preference key: " + key;
             return PreloadPagesSettingsBridge.isNetworkPredictionManaged();
         };

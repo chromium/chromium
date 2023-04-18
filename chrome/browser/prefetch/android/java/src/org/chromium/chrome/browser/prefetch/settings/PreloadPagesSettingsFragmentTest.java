@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -57,7 +56,6 @@ public class PreloadPagesSettingsFragmentTest {
 
     private PreloadPagesSettingsFragment mPreloadPagesSettingsFragment;
     private RadioButtonGroupPreloadPagesSettings mPreloadPagesPreference;
-    private TextMessagePreference mManagedTextPreferenceLegacy;
     private Preference mManagedDisclaimerText;
 
     @Before
@@ -70,14 +68,10 @@ public class PreloadPagesSettingsFragmentTest {
         mPreloadPagesSettingsFragment = mTestRule.getFragment();
         mPreloadPagesPreference = mPreloadPagesSettingsFragment.findPreference(
                 PreloadPagesSettingsFragment.PREF_PRELOAD_PAGES);
-        mManagedTextPreferenceLegacy = mPreloadPagesSettingsFragment.findPreference(
-                PreloadPagesSettingsFragment.PREF_TEXT_MANAGED_LEGACY);
         mManagedDisclaimerText = mPreloadPagesSettingsFragment.findPreference(
                 PreloadPagesSettingsFragment.PREF_MANAGED_DISCLAIMER_TEXT);
         Assert.assertNotNull(
                 "Preload Pages preference should not be null.", mPreloadPagesPreference);
-        Assert.assertNotNull(
-                "Legacy text managed preference should not be null.", mManagedTextPreferenceLegacy);
         Assert.assertNotNull(
                 "Managed disclaimer text preference should not be null.", mManagedDisclaimerText);
     }
@@ -101,7 +95,6 @@ public class PreloadPagesSettingsFragmentTest {
                     getStandardPreloadingButton().isChecked());
             Assert.assertEquals(ASSERT_RADIO_BUTTON_CHECKED, no_preloading_checked,
                     getNoPreloadingButton().isChecked());
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertFalse(mManagedDisclaimerText.isVisible());
         });
     }
@@ -112,7 +105,6 @@ public class PreloadPagesSettingsFragmentTest {
     public void testCheckRadioButtons() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertFalse(mManagedDisclaimerText.isVisible());
             // Click the Extended Preloading button.
             getExtendedPreloadingButton().onClick(null);
@@ -194,7 +186,6 @@ public class PreloadPagesSettingsFragmentTest {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(PreloadPagesSettingsBridge.isNetworkPredictionManaged());
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertTrue(mManagedDisclaimerText.isVisible());
             Assert.assertFalse(getExtendedPreloadingButton().isEnabled());
             Assert.assertFalse(getStandardPreloadingButton().isEnabled());

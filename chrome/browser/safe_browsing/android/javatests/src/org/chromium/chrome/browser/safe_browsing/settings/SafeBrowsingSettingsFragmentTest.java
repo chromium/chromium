@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -66,7 +65,6 @@ public class SafeBrowsingSettingsFragmentTest {
 
     private SafeBrowsingSettingsFragment mSafeBrowsingSettingsFragment;
     private RadioButtonGroupSafeBrowsingPreference mSafeBrowsingPreference;
-    private TextMessagePreference mManagedTextPreferenceLegacy;
     private Preference mManagedDisclaimerText;
 
     @Before
@@ -79,14 +77,10 @@ public class SafeBrowsingSettingsFragmentTest {
         mSafeBrowsingSettingsFragment = mTestRule.getFragment();
         mSafeBrowsingPreference = mSafeBrowsingSettingsFragment.findPreference(
                 SafeBrowsingSettingsFragment.PREF_SAFE_BROWSING);
-        mManagedTextPreferenceLegacy = mSafeBrowsingSettingsFragment.findPreference(
-                SafeBrowsingSettingsFragment.PREF_TEXT_MANAGED_LEGACY);
         mManagedDisclaimerText = mSafeBrowsingSettingsFragment.findPreference(
                 SafeBrowsingSettingsFragment.PREF_MANAGED_DISCLAIMER_TEXT);
         Assert.assertNotNull(
                 "Safe Browsing preference should not be null.", mSafeBrowsingPreference);
-        Assert.assertNotNull(
-                "Text managed preference should not be null.", mManagedTextPreferenceLegacy);
         Assert.assertNotNull(
                 "Managed disclaimer text preference should not be null.", mManagedDisclaimerText);
     }
@@ -110,7 +104,6 @@ public class SafeBrowsingSettingsFragmentTest {
                     getStandardProtectionButton().isChecked());
             Assert.assertEquals(ASSERT_RADIO_BUTTON_CHECKED, no_protection_checked,
                     getNoProtectionButton().isChecked());
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertFalse(mManagedDisclaimerText.isVisible());
         });
     }
@@ -121,7 +114,6 @@ public class SafeBrowsingSettingsFragmentTest {
     public void testCheckRadioButtons() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertFalse(mManagedDisclaimerText.isVisible());
             // Click the Enhanced Protection button.
             getEnhancedProtectionButton().onClick(null);
@@ -282,7 +274,6 @@ public class SafeBrowsingSettingsFragmentTest {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertTrue(mManagedDisclaimerText.isVisible());
             Assert.assertFalse(getEnhancedProtectionButton().isEnabled());
             Assert.assertFalse(getStandardProtectionButton().isEnabled());
@@ -304,7 +295,6 @@ public class SafeBrowsingSettingsFragmentTest {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
-            Assert.assertFalse(mManagedTextPreferenceLegacy.isVisible());
             Assert.assertTrue(mManagedDisclaimerText.isVisible());
             Assert.assertFalse(getEnhancedProtectionButton().isEnabled());
             Assert.assertFalse(getStandardProtectionButton().isEnabled());

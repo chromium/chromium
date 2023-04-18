@@ -32,8 +32,6 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     @VisibleForTesting
     static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
     @VisibleForTesting
-    static final String PREF_TEXT_MANAGED_LEGACY = "text_managed_legacy";
-    @VisibleForTesting
     static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
     public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
 
@@ -87,7 +85,6 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mSafeBrowsingPreference.setOnPreferenceChangeListener(this);
 
-        findPreference(PREF_TEXT_MANAGED_LEGACY).setVisible(false);
         findPreference(PREF_MANAGED_DISCLAIMER_TEXT).setVisible(
                 managedPreferenceDelegate.isPreferenceClickDisabled(mSafeBrowsingPreference));
 
@@ -121,8 +118,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             String key = preference.getKey();
-            if (PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_TEXT_MANAGED_LEGACY.equals(key)
-                    || PREF_SAFE_BROWSING.equals(key)) {
+            if (PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_SAFE_BROWSING.equals(key)) {
                 return SafeBrowsingBridge.isSafeBrowsingManaged();
             } else {
                 assert false : "Should not be reached.";
