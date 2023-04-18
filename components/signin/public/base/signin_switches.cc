@@ -15,6 +15,15 @@ namespace switches {
 BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
              "GaiaIdCacheInAccountManagerFacade",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIdentityStatusConsistency,
+             "IdentityStatusConsistency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIdentityStatusConsistency,
+             "IdentityStatusConsistency",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the
@@ -39,9 +48,6 @@ BASE_FEATURE(kForceDisableExtendedSyncPromos,
 // Features to trigger the startup sign-in promo at boot.
 BASE_FEATURE(kForceStartupSigninPromo,
              "ForceStartupSigninPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIdentityStatusConsistency,
-             "IdentityStatusConsistency",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
