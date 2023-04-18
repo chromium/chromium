@@ -11,11 +11,14 @@
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/passwords/password_manager_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -23,6 +26,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/base/mac/url_conversions.h"
@@ -71,6 +75,33 @@ BOOL WaitForKeyboardToAppear() {
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
+// Returns the matcher for the Credential Provider Promo's subtitle.
+id<GREYMatcher> SubtitleMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertSubtitleAccessibilityIdentifier);
+}
+
+// Returns the matcher for the Credential Provider Promo's primary action
+// button.
+id<GREYMatcher> PrimaryActionButtonMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+}
+
+// Returns the matcher for the Credential Provider Promo's secondary action
+// button.
+id<GREYMatcher> SecondaryActionButtonMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+}
+
+// Returns the matcher for the Credential Provider Promo's tertiary action
+// button.
+id<GREYMatcher> TertiaryActionButtonMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertTertiaryActionAccessibilityIdentifier);
+}
+
 }  // namespace
 
 @interface PasswordControllerEGTest : WebHttpServerChromeTestCase
@@ -106,6 +137,15 @@ BOOL WaitForKeyboardToAppear() {
     config.features_enabled.push_back(
         password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
   }
+  if ([self isRunningTest:@selector
+            (testCredentialProviderPromoAppearsOnPasswordSave)]) {
+    config.additional_args.push_back(
+        std::string("--enable-features=CredentialProviderExtensionPromo:enable_"
+                    "promo_on_password_saved/true"));
+    // Without relaunch, the credential provider promo meets its impression
+    // limit and does not display in subsequent runs.
+    config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  }
   return config;
 }
 
@@ -118,13 +158,8 @@ BOOL WaitForKeyboardToAppear() {
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
-#pragma mark - Tests
-
-// Tests that save password prompt is shown on new login.
-// TODO(crbug.com/1192446): Reenable this test.
-- (void)DISABLED_testSavePromptAppearsOnFormSubmission {
-  [self loadLoginPage];
-
+// Logs into a website and taps on the resultant "save password" prompt.
+- (void)loginAndSavePassword {
   // Simulate user interacting with fields.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
@@ -142,6 +177,28 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
                                           IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON)]
       performAction:grey_tap()];
+}
+
+// Checks that the Credential Provider Promo subtitle text and buttons are
+// interactable.
+void CheckThatCredentialPromoElementsAreInteractable() {
+  [[EarlGrey selectElementWithMatcher:SubtitleMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:PrimaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:SecondaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:TertiaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+}
+
+#pragma mark - Tests
+
+// Tests that save password prompt is shown on new login.
+// TODO(crbug.com/1192446): Reenable this test.
+- (void)DISABLED_testSavePromptAppearsOnFormSubmission {
+  [self loadLoginPage];
+  [self loginAndSavePassword];
 
   // Wait until the save password infobar disappears.
   [ChromeEarlGrey
@@ -150,6 +207,33 @@ BOOL WaitForKeyboardToAppear() {
 
   int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+}
+
+// Tests that the Credential Provider Extension Promo is shown after a password
+// is saved through the Save Password prompt.
+- (void)testCredentialProviderPromoAppearsOnPasswordSave {
+  [self loadLoginPage];
+  [self loginAndSavePassword];
+
+  // Check that the inital promo is visible.
+  id<GREYMatcher> initialTitleLabelMatcher = grey_text(
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE));
+  [[EarlGrey selectElementWithMatcher:initialTitleLabelMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckThatCredentialPromoElementsAreInteractable();
+
+  // Tap the primary action button to display the `learn more` promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimaryActionButtonMatcher(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Check that the `learn more` promo is visible.
+  id<GREYMatcher> learnMoreTitleLabelMatcher = grey_text(l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE));
+  [[EarlGrey selectElementWithMatcher:learnMoreTitleLabelMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckThatCredentialPromoElementsAreInteractable();
 }
 
 - (void)testShowAccountStorageNoticeBeforeSaving {

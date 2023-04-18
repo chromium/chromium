@@ -28,8 +28,10 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -429,6 +431,46 @@ id<GREYMatcher> EditDoneButton() {
   return SettingToolbarEditDoneButton();
 }
 
+// Returns the matcher for the Credential Provider Promo's subtitle.
+id<GREYMatcher> SubtitleMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertSubtitleAccessibilityIdentifier);
+}
+
+// Returns the matcher for the Credential Provider Promo's primary action
+// button.
+id<GREYMatcher> PrimaryActionButtonMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+}
+
+// Returns the matcher for the Credential Provider Promo's secondary action
+// button.
+id<GREYMatcher> SecondaryActionButtonMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+}
+
+// Returns the matcher for the Credential Provider Promo's tertiary action
+// button.
+id<GREYMatcher> TertiaryActionButtonMatcher() {
+  return grey_accessibilityID(
+      kConfirmationAlertTertiaryActionAccessibilityIdentifier);
+}
+
+// Checks that the Credential Provider Promo subtitle text and buttons are
+// interactable.
+void CheckThatCredentialPromoElementsAreInteractable() {
+  [[EarlGrey selectElementWithMatcher:SubtitleMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:PrimaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:SecondaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:TertiaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+}
+
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -556,7 +598,15 @@ id<GREYMatcher> EditDoneButton() {
       [self isRunningTest:@selector(testShowHidePasswordWithNotesEnabled)]) {
     config.features_enabled.push_back(syncer::kPasswordNotesWithBackup);
   }
-
+  if ([self isRunningTest:@selector
+            (testCredentialProviderPromoDisplayOnPasswordCopied)]) {
+    config.additional_args.push_back(
+        std::string("--enable-features=CredentialProviderExtensionPromo:enable_"
+                    "promo_on_password_copied/true"));
+    // Without relaunch, the credential provider promo meets its impression
+    // limit and does not display in subsequent runs.
+    config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  }
   return config;
 }
 
@@ -630,6 +680,57 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Checks that the Credential Provider Promo is displayed after a password is
+// copied.
+- (void)testCredentialProviderPromoDisplayOnPasswordCopied {
+  if (![self groupingEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"This test isn't implemented with grouped passwords disabled.");
+  }
+
+  // Saving a form is needed for using the "password details" view.
+  SaveExamplePasswordForm();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      performAction:grey_tap()];
+
+  // Check the snackbar in case of successful reauthentication.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  CopyPasswordDetailWithID(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
+
+  // Check that the inital promo is visible.
+  id<GREYMatcher> initialTitleLabelMatcher = grey_text(
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE));
+  [[EarlGrey selectElementWithMatcher:initialTitleLabelMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckThatCredentialPromoElementsAreInteractable();
+
+  // Close the snackbar.
+  NSString* snackbarLabel =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+      performAction:grey_tap()];
+
+  // Tap the primary action button to display the `learn more` promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimaryActionButtonMatcher(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Check that the `learn more` promo is visible.
+  id<GREYMatcher> learnMoreTitleLabelMatcher = grey_text(l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE));
+  [[EarlGrey selectElementWithMatcher:learnMoreTitleLabelMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckThatCredentialPromoElementsAreInteractable();
 }
 
 // Checks that an attempt to show a password provides an appropriate feedback
