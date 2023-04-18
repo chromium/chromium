@@ -313,14 +313,16 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage(bool* is_hlg) const {
   if (paint_worklet_input_)
     return gfx::ContentColorUsage::kSRGB;
 
+  // Gainmap images are always HDR.
+  if (HasGainmap()) {
+    return gfx::ContentColorUsage::kHDR;
+  }
+
   const auto* color_space = GetSkImageInfo().colorSpace();
 
   // Assume the image will be sRGB if we don't know yet.
-  if (!color_space || color_space->isSRGB())
+  if (!color_space || color_space->isSRGB()) {
     return gfx::ContentColorUsage::kSRGB;
-
-  if (HasGainmap()) {
-    return gfx::ContentColorUsage::kHDR;
   }
 
   skcms_TransferFunction fn;

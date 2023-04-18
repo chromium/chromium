@@ -542,6 +542,17 @@ absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
   return original_yuva_pixmap_info;
 }
 
+bool NeedsToneMapping(sk_sp<SkColorSpace> image_color_space, bool has_gainmap) {
+  if (has_gainmap) {
+    return true;
+  }
+  if (image_color_space &&
+      gfx::ColorSpace(*image_color_space).IsToneMappedByDefault()) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 // Extract the information to uniquely identify a DrawImage for the purposes of
@@ -2517,8 +2528,10 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   // have happened at decode time.
   sk_sp<SkColorSpace> decoded_target_colorspace =
       ColorSpaceForImageDecode(draw_image, image_data->mode);
+  const bool needs_tone_mapping = NeedsToneMapping(
+      decoded_target_colorspace, draw_image.paint_image().HasGainmap());
   if (target_color_space && decoded_target_colorspace) {
-    if (!gfx::ColorSpace(*decoded_target_colorspace).IsToneMappedByDefault() &&
+    if (!needs_tone_mapping &&
         SkColorSpace::Equals(target_color_space.get(),
                              decoded_target_colorspace.get())) {
       target_color_space = nullptr;
@@ -2544,11 +2557,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
       // Do not color convert YUVA images unless the the color conversion also
       // performs tone mapping.
       if (image_data->info.yuva.has_value()) {
-        const bool needs_tone_mapping =
-            (decoded_target_colorspace &&
-             gfx::ColorSpace(*decoded_target_colorspace)
-                 .IsToneMappedByDefault()) ||
-            draw_image.paint_image().HasGainmap();
         if (!needs_tone_mapping) {
           target_color_params = absl::nullopt;
         }
@@ -3287,10 +3295,8 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
   sk_sp<SkColorSpace> decoded_target_colorspace =
       ColorSpaceForImageDecode(draw_image, image_data->mode);
-  const bool needs_tone_mapping =
-      (decoded_target_colorspace &&
-       gfx::ColorSpace(*decoded_target_colorspace).IsToneMappedByDefault()) ||
-      draw_image.paint_image().HasGainmap();
+  const bool needs_tone_mapping = NeedsToneMapping(
+      decoded_target_colorspace, draw_image.paint_image().HasGainmap());
 
   bool color_is_compatible = false;
   if (!needs_tone_mapping) {

@@ -142,13 +142,11 @@ PaintImage BitmapImage::CreatePaintImage() {
   SkGainmapInfo gainmap_info;
   if (decoder_->CreateGainmapGenerator(gainmap_generator, gainmap_info)) {
     DCHECK(gainmap_generator);
-    return builder
-        .set_gainmap_paint_image_generator(std::move(gainmap_generator),
-                                           gainmap_info)
-        .TakePaintImage();
-  } else {
-    return builder.TakePaintImage();
+    builder = builder.set_gainmap_paint_image_generator(
+        std::move(gainmap_generator), gainmap_info);
   }
+
+  return builder.TakePaintImage();
 }
 
 void BitmapImage::UpdateSize() const {

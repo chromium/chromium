@@ -37,6 +37,8 @@ PaintImageBuilder::PaintImageBuilder(PaintImage image, bool clear_contents)
   }
 }
 PaintImageBuilder::PaintImageBuilder(PaintImageBuilder&& other) = default;
+PaintImageBuilder& PaintImageBuilder::operator=(PaintImageBuilder&& other) =
+    default;
 PaintImageBuilder::~PaintImageBuilder() = default;
 
 PaintImage PaintImageBuilder::TakePaintImage() {
