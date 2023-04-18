@@ -93,9 +93,9 @@ void ConfigureInkDropForToolbar(views::Button* host) {
           // is handled with chrome refresh.
           const auto* color_provider = host->GetColorProvider();
           const SkColor pressed_color =
-              color_provider ? color_provider->GetColor(
-                                   ui::kColorSysStateRippleNeutralOnSubtle)
-                             : gfx::kPlaceholderColor;
+              color_provider
+                  ? color_provider->GetColor(kColorToolbarInkDropRipple)
+                  : gfx::kPlaceholderColor;
           const float pressed_alpha = SkColorGetA(pressed_color);
 
           return std::make_unique<views::FloodFillInkDropRipple>(
@@ -112,7 +112,7 @@ void ConfigureInkDropForToolbar(views::Button* host) {
           const auto* color_provider = host->GetColorProvider();
           const SkColor hover_color =
               color_provider
-                  ? color_provider->GetColor(ui::kColorSysStateHoverOnSubtle)
+                  ? color_provider->GetColor(kColorToolbarInkDropHover)
                   : gfx::kPlaceholderColor;
           const float hover_alpha = SkColorGetA(hover_color);
 

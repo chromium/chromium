@@ -96,8 +96,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarButtonText] = {ui::kColorSysOnSurfaceSecondary};
   mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSysOutline};
   mixer[kColorToolbarFeaturePromoHighlight] = {ui::kColorSysPrimary};
-  mixer[kColorToolbarInkDrop] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorToolbarInkDropHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorToolbarInkDropRipple] = {ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorToolbarExtensionSeparatorEnabled] = {ui::kColorSysSurfaceVariant};
+  mixer[kColorToolbarExtensionSeparatorDisabled] = {
+      kColorToolbarButtonIconInactive};
   mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};
   mixer[kColorToolbarSeparatorDefault] =
       ui::AlphaBlend(kColorToolbarButtonIcon, kColorToolbar, 0x3A);

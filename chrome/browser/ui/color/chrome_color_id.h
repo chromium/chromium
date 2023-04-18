@@ -467,8 +467,11 @@
   E_CPONLY(kColorToolbarButtonIconPressed) \
   E_CPONLY(kColorToolbarButtonText) \
   E_CPONLY(kColorToolbarContentAreaSeparator) \
+  E_CPONLY(kColorToolbarExtensionSeparatorDisabled) \
+  E_CPONLY(kColorToolbarExtensionSeparatorEnabled) \
   E_CPONLY(kColorToolbarFeaturePromoHighlight) \
   E_CPONLY(kColorToolbarInkDrop) \
+  E_CPONLY(kColorToolbarInkDropHover) \
   E_CPONLY(kColorToolbarInkDropRipple) \
   E_CPONLY(kColorToolbarSeparator) \
   E_CPONLY(kColorToolbarSeparatorDefault) \

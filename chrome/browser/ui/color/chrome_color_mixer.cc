@@ -687,6 +687,13 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::PickGoogleColor(ui::kColorAccent, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorToolbarInkDrop] = ui::GetColorWithMaxContrast(kColorToolbar);
+  mixer[kColorToolbarInkDropHover] =
+      ui::SetAlpha(kColorToolbarInkDrop, kToolbarInkDropHighlightVisibleAlpha);
+  mixer[kColorToolbarInkDropRipple] =
+      ui::SetAlpha(kColorToolbarInkDrop, std::ceil(0.06f * 255.0f));
+  mixer[kColorToolbarExtensionSeparatorEnabled] = {kColorToolbarButtonIcon};
+  mixer[kColorToolbarExtensionSeparatorDisabled] = {
+      kColorToolbarButtonIconInactive};
   mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};
   mixer[kColorToolbarSeparatorDefault] =
       ui::SetAlpha(kColorToolbarButtonIcon, 0x4D);
