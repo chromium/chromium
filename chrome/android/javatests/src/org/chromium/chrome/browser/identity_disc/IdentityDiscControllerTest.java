@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -377,7 +377,7 @@ public class IdentityDiscControllerTest {
 
         // If the button is tapped before native is initialized, the click shouldn't be recorded.
         identityDiscController.onClick();
-        verifyZeroInteractions(mTracker);
+        verifyNoMoreInteractions(mTracker);
     }
 
     private void leaveNTP() {

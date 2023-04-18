@@ -12,7 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -354,7 +354,7 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Assert.assertNull("Preview clip data should be null.", intent.getClipData());
-        verifyZeroInteractions(mMockFaviconHelperJni);
+        verifyNoMoreInteractions(mMockFaviconHelperJni);
     }
 
     @Test

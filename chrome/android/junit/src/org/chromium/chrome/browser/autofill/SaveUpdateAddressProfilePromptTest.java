@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -123,11 +123,9 @@ public class SaveUpdateAddressProfilePromptTest {
         mModalDialogManager.clickPositiveButton();
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
         verify(mPromptControllerJni, times(1))
-                .onUserAccepted(
-                        eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), anyObject());
+                .onUserAccepted(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
         verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(
-                        eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), anyObject());
+                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
     }
 
     @Test
@@ -139,11 +137,9 @@ public class SaveUpdateAddressProfilePromptTest {
         mModalDialogManager.clickNegativeButton();
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
         verify(mPromptControllerJni, times(1))
-                .onUserDeclined(
-                        eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), anyObject());
+                .onUserDeclined(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
         verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(
-                        eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), anyObject());
+                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
     }
 
     @Test
@@ -156,8 +152,7 @@ public class SaveUpdateAddressProfilePromptTest {
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
         // Check that callback was still called when the dialog is dismissed.
         verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(
-                        eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), anyObject());
+                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
     }
 
     @Test
@@ -298,13 +293,12 @@ public class SaveUpdateAddressProfilePromptTest {
         View dialog = mPrompt.getDialogViewForTesting();
         ImageButton editButton = dialog.findViewById(R.id.edit_button);
         editButton.performClick();
-        verify(mAddressEditor).edit(anyObject(), mCallbackCaptor.capture(), anyObject());
+        verify(mAddressEditor).edit(any(), mCallbackCaptor.capture(), any());
 
         AutofillAddress autofillAddress = new AutofillAddress(mActivity, new AutofillProfile());
         mCallbackCaptor.getValue().onResult(autofillAddress);
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
         verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(
-                        eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), anyObject());
+                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER), any());
     }
 }
