@@ -168,11 +168,10 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
 
   const auto& text = search_match.contents;
 
-  const auto url_string = base::StringPrintf(
+  match.destination_url = GURL(base::UTF8ToUTF16(base::StringPrintf(
       "chrome://history/journeys?q=%s",
       base::EscapeQueryParamValue(base::UTF16ToUTF8(text), /*use_plus=*/false)
-          .c_str());
-  match.destination_url = GURL(url_string);
+          .c_str())));
 
   match.fill_into_edit = text;
 
@@ -181,8 +180,9 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
       FindTermMatches(input_.text(), text), text.length(),
       ACMatchClassification::MATCH, ACMatchClassification::NONE);
 
-  match.contents = base::UTF8ToUTF16(url_string);
-  match.contents_class = {{0, ACMatchClassification::URL}};
+  match.contents = l10n_util::GetStringUTF16(
+      IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT);
+  match.contents_class = {{0, ACMatchClassification::DIM}};
 
   CompleteHistoryClustersMatch(base::UTF16ToUTF8(text),
                                std::move(matched_keyword_data), &match);

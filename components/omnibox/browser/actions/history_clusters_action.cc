@@ -101,9 +101,6 @@ HistoryClustersAction::HistoryClustersAction(
     const history::ClusterKeywordData& matched_keyword_data,
     bool takes_over_match)
     : OmniboxAction(
-          // TODO(manukh:) this is the only use case of
-          //   IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT. Remove it when
-          //   removing journey actions.
           OmniboxAction::LabelStrings(
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
