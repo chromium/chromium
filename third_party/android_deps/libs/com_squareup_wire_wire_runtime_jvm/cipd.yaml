@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@4.4.3.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@4.5.1.cr1
 package: chromium/third_party/android_deps/libs/com_squareup_wire_wire_runtime_jvm
 description: "wire-runtime"
 data:
-- file: wire-runtime-jvm-4.4.3.jar
+- file: wire-runtime-jvm-4.5.1.jar

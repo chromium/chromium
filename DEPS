@@ -3257,7 +3257,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_squareup_wire_wire_runtime_jvm',
-              'version': 'version:2@4.4.3.cr1',
+              'version': 'version:2@4.5.1.cr1',
           },
       ],
       'condition': 'checkout_android',
