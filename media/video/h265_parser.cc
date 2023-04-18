@@ -988,6 +988,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
         shdr->curr_rps_idx = shdr->short_term_ref_pic_set_idx;
 
       if (sps->long_term_ref_pics_present_flag) {
+        off_t bits_left_prior = br_.NumBitsLeft();
+        size_t num_epb_prior = br_.NumEmulationPreventionBytesRead();
         if (sps->num_long_term_ref_pics_sps > 0) {
           READ_UE_OR_RETURN(&shdr->num_long_term_sps);
           IN_RANGE_OR_RETURN(shdr->num_long_term_sps, 0,
@@ -1037,6 +1039,9 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
             }
           }
         }
+        shdr->lt_rps_bits =
+            (bits_left_prior - br_.NumBitsLeft()) -
+            8 * (br_.NumEmulationPreventionBytesRead() - num_epb_prior);
       }
       if (sps->sps_temporal_mvp_enabled_flag)
         READ_BOOL_OR_RETURN(&shdr->slice_temporal_mvp_enabled_flag);
