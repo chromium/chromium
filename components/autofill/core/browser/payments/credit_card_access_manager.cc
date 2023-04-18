@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
@@ -1064,6 +1065,10 @@ void CreditCardAccessManager::FetchVirtualCard() {
       .last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_origin;
   virtual_card_unmask_request_details_.card = *card_;
+  if (ShouldShowCardMetadata(*card_)) {
+    virtual_card_unmask_request_details_.client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
+  }
   virtual_card_unmask_request_details_.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
 

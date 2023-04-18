@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -152,6 +153,11 @@ void FullCardRequest::GetFullCardImpl(
   }
 
   request_->fido_assertion_info = std::move(fido_assertion_info);
+
+  if (ShouldShowCardMetadata(card)) {
+    request_->client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
+  }
 
   // If there is a UI delegate, then perform a CVC check.
   // Otherwise, continue and use |fido_assertion_info| to unmask.

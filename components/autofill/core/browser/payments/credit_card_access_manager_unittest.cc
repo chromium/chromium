@@ -3013,4 +3013,70 @@ TEST_F(CreditCardAccessManagerTest,
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
+// Params of the CreditCardAccessManagerCardMetadataTest:
+// -- bool card_name_available;
+// -- bool card_art_available;
+// -- bool metadata_enabled;
+class CreditCardAccessManagerCardMetadataTest
+    : public CreditCardAccessManagerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  CreditCardAccessManagerCardMetadataTest() = default;
+  ~CreditCardAccessManagerCardMetadataTest() override = default;
+
+  bool CardNameAvailable() { return std::get<0>(GetParam()); }
+  bool CardArtAvailable() { return std::get<1>(GetParam()); }
+  bool MetadataEnabled() { return std::get<2>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardAccessManagerCardMetadataTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
+TEST_P(CreditCardAccessManagerCardMetadataTest, MetadataSignal) {
+  base::test::ScopedFeatureList metadata_feature_list;
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
+  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  if (MetadataEnabled()) {
+    metadata_feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableCardProductName,
+                              features::kAutofillEnableCardArtImage},
+        /*disabled_features=*/{});
+  } else {
+    metadata_feature_list.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kAutofillEnableCardProductName,
+                               features::kAutofillEnableCardArtImage});
+  }
+  if (CardNameAvailable()) {
+    virtual_card->set_product_description(u"Fake card product name");
+  }
+  if (CardArtAvailable()) {
+    virtual_card->set_card_art_url(GURL("https://www.example.com"));
+  }
+
+  credit_card_access_manager_->FetchCreditCard(virtual_card,
+                                               accessor_->GetWeakPtr());
+
+  // Ensures the UnmaskRequestDetails is populated with correct contents.
+  EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
+  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_TRUE(payments_client_->unmask_request()
+                  ->last_committed_primary_main_frame_origin.has_value());
+  std::vector<ClientBehaviorConstants> signals =
+      payments_client_->unmask_request()->client_behavior_signals;
+  if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
+    EXPECT_NE(
+        signals.end(),
+        base::ranges::find(
+            signals,
+            ClientBehaviorConstants::kShowingCardArtImageAndCardProductName));
+  } else {
+    EXPECT_TRUE(signals.empty());
+  }
+}
+
 }  // namespace autofill

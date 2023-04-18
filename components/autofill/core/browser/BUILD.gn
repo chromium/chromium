@@ -313,6 +313,8 @@ static_library("browser") {
     "payments/autofill_error_dialog_context.h",
     "payments/autofill_offer_manager.cc",
     "payments/autofill_offer_manager.h",
+    "payments/autofill_payments_feature_availability.cc",
+    "payments/autofill_payments_feature_availability.h",
     "payments/autofill_wallet_model_type_controller.cc",
     "payments/autofill_wallet_model_type_controller.h",
     "payments/card_unmask_challenge_option.cc",

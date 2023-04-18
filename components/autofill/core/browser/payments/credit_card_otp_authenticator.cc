@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 
@@ -31,6 +32,10 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   unmask_request_->billing_customer_number = billing_customer_number_;
   unmask_request_->context_token = context_token_;
   unmask_request_->otp = otp_;
+  if (ShouldShowCardMetadata(*card_)) {
+    unmask_request_->client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
+  }
 
   if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
     absl::optional<GURL> last_committed_primary_main_frame_origin;

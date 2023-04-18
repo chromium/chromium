@@ -21,6 +21,11 @@ enum class ClientBehaviorConstants {
   // from M113 onwards as this retrieves the correct TOS footer for
   // FasterAndProtected bubble.
   kUsingFasterAndProtectedUi = 1,
+
+  // From M114 onwards, this enum is added to the client_behavior_signals in the
+  // UnmaskCardRequest when a selected suggestion contains the credit card's
+  // metadata (both card art image AND card product name to be shown).
+  kShowingCardArtImageAndCardProductName = 2,
 };
 }  // namespace autofill
 

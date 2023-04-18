@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,7 @@ namespace autofill::payments {
 // tested in Payments Client tests, but they should be tested here as well.
 class UnmaskCardRequestTest : public testing::Test {
  public:
-  UnmaskCardRequestTest() = default;
+  UnmaskCardRequestTest() { SetUpUnmaskCardRequest(); }
   UnmaskCardRequestTest(const UnmaskCardRequestTest&) = delete;
   UnmaskCardRequestTest& operator=(const UnmaskCardRequestTest&) = delete;
   ~UnmaskCardRequestTest() override = default;
@@ -45,7 +46,51 @@ class UnmaskCardRequestTest : public testing::Test {
   // The `request_` that is created for each specific test instance. Set in the
   // initial test set up.
   std::unique_ptr<UnmaskCardRequest> request_;
+
+ private:
+  void SetUpUnmaskCardRequest() {
+    PaymentsClient::UnmaskRequestDetails request_details;
+    request_details.billing_customer_number = 111222333444;
+    request_details.card = test::GetMaskedServerCard();
+    request_details.card.set_server_id("test server id");
+    request_details.user_response.exp_month =
+        base::UTF8ToUTF16(test::NextMonth());
+    request_details.user_response.exp_year =
+        base::UTF8ToUTF16(test::NextYear());
+    request_details.user_response.cvc = u"123";
+    request_details.risk_data = "some risk data";
+    request_details.client_behavior_signals = {
+        ClientBehaviorConstants::kShowingCardArtImageAndCardProductName};
+    request_ = std::make_unique<UnmaskCardRequest>(
+        request_details, /*full_sync_enabled=*/true,
+        /*callback=*/base::DoNothing());
+  }
 };
+
+// Test to ensure that the request content is correctly populated for a regular
+// unmask request.
+TEST_F(UnmaskCardRequestTest, GetRequestContent) {
+  EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
+            "payments/apis-secure/creditcardservice/"
+            "getrealpan?s7e_suffix=chromewallet");
+  ASSERT_TRUE(!GetRequest()->GetRequestContentType().empty());
+  EXPECT_TRUE(IsIncludedInRequestContent("customer_context"));
+  EXPECT_TRUE(IsIncludedInRequestContent("credit_card_id"));
+  EXPECT_TRUE(IsIncludedInRequestContent("risk_data_encoded"));
+  EXPECT_TRUE(IsIncludedInRequestContent("billable_service"));
+  EXPECT_TRUE(IsIncludedInRequestContent("full_sync_enabled"));
+  EXPECT_TRUE(IsIncludedInRequestContent("chrome_user_context"));
+  EXPECT_TRUE(IsIncludedInRequestContent("expiration_month"));
+  EXPECT_TRUE(IsIncludedInRequestContent("expiration_year"));
+  EXPECT_TRUE(IsIncludedInRequestContent("opt_in_fido_auth"));
+  EXPECT_TRUE(IsIncludedInRequestContent("encrypted_cvc"));
+  EXPECT_TRUE(IsIncludedInRequestContent("&s7e_13_cvc=123"));
+  EXPECT_TRUE(IsIncludedInRequestContent("client_behavior_signals"));
+  EXPECT_TRUE(IsIncludedInRequestContent(
+      "%5B2%5D"));  // '[2]' here stands for the
+                    // kShowingCardArtImageAndCardProductName in the
+                    // client_behavior_signals.
+}
 
 // Params of the VirtualCardUnmaskCardRequestTest:
 // -- autofill::CardUnmaskChallengeOptionType challenge_option_type
@@ -85,8 +130,10 @@ class VirtualCardUnmaskCardRequestTest
     request_details.billing_customer_number = 111222333444;
     request_details.card = test::GetVirtualCard();
     request_details.card.set_server_id("test server id");
-    request_details.user_response.exp_month = u"10";
-    request_details.user_response.exp_year = u"2025";
+    request_details.user_response.exp_month =
+        base::UTF8ToUTF16(test::NextMonth());
+    request_details.user_response.exp_year =
+        base::UTF8ToUTF16(test::NextYear());
     request_details.user_response.cvc = u"123";
     request_details.risk_data = "some risk data";
     request_details.last_committed_primary_main_frame_origin =
@@ -124,6 +171,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
     EXPECT_TRUE(IsIncludedInRequestContent("challenge_id"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_length"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_position"));
+    EXPECT_FALSE(IsIncludedInRequestContent("client_behavior_signals"));
   }
 }
 

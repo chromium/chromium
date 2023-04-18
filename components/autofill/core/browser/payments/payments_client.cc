@@ -119,6 +119,7 @@ PaymentsClient::UnmaskRequestDetails::operator=(
   last_committed_primary_main_frame_origin =
       other.last_committed_primary_main_frame_origin;
   selected_challenge_option = other.selected_challenge_option;
+  client_behavior_signals = other.client_behavior_signals;
   return *this;
 }
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
