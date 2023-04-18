@@ -372,8 +372,8 @@ class AutocompleteController : public AutocompleteProviderListener,
       AutocompleteInput input,
       const base::ElapsedTimer elapsed_timer,
       base::OnceClosure completion_callback,
-      std::vector<std::pair<absl::optional<float>, size_t>>
-          outputs_and_match_indices);
+      std::vector<std::tuple<absl::optional<float>, size_t, GURL>>
+          outputs_and_match_info);
 
   // Runs the ML scoring model asynchronously for all the eligible matches in
   // `results_.matches_`. Passes `completion_callback` to

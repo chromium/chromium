@@ -1526,19 +1526,24 @@ void AutocompleteController::OnUrlScoringModelDone(
     AutocompleteInput input,
     const base::ElapsedTimer elapsed_timer,
     base::OnceClosure completion_callback,
-    std::vector<std::pair<absl::optional<float>, size_t>>
-        outputs_and_match_indices) {
+    std::vector<std::tuple<absl::optional<float>, size_t, GURL>>
+        outputs_and_match_info) {
   TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
   // The goal is to redistribute the existing relevance scores among the URL
   // suggestions according to the ML model output values. Construct two max
   // heaps for the (legacy) relevance score and the output scores.
   std::priority_queue<int> relevance_heap;
   std::priority_queue<std::pair<float, size_t>> output_and_match_index_heap;
-  for (auto output_and_index : outputs_and_match_indices) {
-    const auto& output = output_and_index.first;
-    auto index = output_and_index.second;
-
+  for (auto& [output, index, destination_url] : outputs_and_match_info) {
+    // If the index is out of bounds or the match destination url for that index
+    // doesn't match the url at the time scoring was called, this is likely a
+    // stale result. In that case, discard this entire set of scores.
     if (index >= result_.matches_.size()) {
+      NOTREACHED();
+      return;
+    }
+    auto* match = result_.match_at(index);
+    if (match->destination_url != destination_url) {
       NOTREACHED();
       return;
     }
@@ -1549,7 +1554,7 @@ void AutocompleteController::OnUrlScoringModelDone(
       continue;
     }
 
-    relevance_heap.emplace(result_.match_at(index)->relevance);
+    relevance_heap.emplace(match->relevance);
     output_and_match_index_heap.emplace(output.value(), index);
   }
 
@@ -1596,7 +1601,7 @@ void AutocompleteController::RunUrlScoringModel(
   TRACE_EVENT0("omnibox", "AutocompleteController::RunUrlScoringModel");
 
   auto barrier_callback =
-      base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
+      base::BarrierCallback<std::tuple<absl::optional<float>, size_t, GURL>>(
           result_.size(),
           base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
                          scoring_model_weak_ptr_, input_, base::ElapsedTimer(),
@@ -1610,13 +1615,14 @@ void AutocompleteController::RunUrlScoringModel(
     // any other match type.
     if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
         omnibox::GROUP_OTHER_NAVS) {
-      barrier_callback.Run(std::make_pair(absl::nullopt, match_index));
+      barrier_callback.Run(
+          std::make_tuple(absl::nullopt, match_index, match->destination_url));
       continue;
     }
 
     provider_client_->GetAutocompleteScoringModelService()
         ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
                                     match->scoring_signals, match_index,
-                                    barrier_callback);
+                                    match->destination_url, barrier_callback);
   }
 }
