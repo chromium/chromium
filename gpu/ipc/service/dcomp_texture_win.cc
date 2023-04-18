@@ -11,8 +11,6 @@
 #include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/win/windows_types.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -67,16 +65,15 @@ class DCOMPTextureBacking : public ClearTrackingSharedImageBacking {
   DCOMPTextureBacking(scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy,
                       const Mailbox& mailbox,
                       const gfx::Size& size)
-      : ClearTrackingSharedImageBacking(
-            mailbox,
-            viz::SharedImageFormat::SinglePlane(viz::BGRA_8888),
-            size,
-            gfx::ColorSpace::CreateSRGB(),
-            kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType,
-            gpu::SHARED_IMAGE_USAGE_SCANOUT,
-            /*estimated_size=*/0,
-            /*is_thread_safe=*/false),
+      : ClearTrackingSharedImageBacking(mailbox,
+                                        viz::SinglePlaneFormat::kBGRA_8888,
+                                        size,
+                                        gfx::ColorSpace::CreateSRGB(),
+                                        kTopLeft_GrSurfaceOrigin,
+                                        kPremul_SkAlphaType,
+                                        gpu::SHARED_IMAGE_USAGE_SCANOUT,
+                                        /*estimated_size=*/0,
+                                        /*is_thread_safe=*/false),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {
     SetCleared();
   }
