@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -122,11 +123,11 @@ class TestTabModel : public TabModel {
   }
   void RemoveObserver(TabModelObserver* observer) override {}
 
-  TabModelObserver* observer_;
-  TestingProfile* profile_;
+  raw_ptr<TabModelObserver> observer_;
+  raw_ptr<TestingProfile> profile_;
   // A fake value for the current number of tabs.
   int tab_count_{0};
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(ChromeTailoredSecurityServiceTest,

@@ -2018,7 +2018,7 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
  private:
   const std::string fido_opt_in_not_offered_histogram =
       "Autofill.BetterAuth.OptInPromoNotOfferedReason";
-  CreditCard* card_;
+  raw_ptr<CreditCard> card_;
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
