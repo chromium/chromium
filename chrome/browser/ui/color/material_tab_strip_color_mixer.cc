@@ -11,6 +11,14 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 
+namespace {
+/* 70% opacity */
+constexpr SkAlpha kWebUiTabStripScrollbarThumbAlpha = 0.7 * 255;
+
+/* 16% opacity */
+constexpr SkAlpha kWebUiTabStripTabSeparatorAlpha = 0.16 * 255;
+}  // namespace
+
 void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
                                    const ui::ColorProviderManager::Key& key) {
   if (!ShouldApplyChromeMaterialOverrides(key)) {
@@ -37,4 +45,17 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundHoverFrameActive] = {ui::kColorSysStateHeaderHover};
   mixer[kColorTabBackgroundHoverFrameInactive] = {
       ui::kColorSysStateHoverOnSubtle};
+
+  /* WebUI Tab Strip colors. */
+  mixer[kColorWebUiTabStripBackground] = {ui::kColorSysHeader};
+  mixer[kColorWebUiTabStripFocusOutline] = {ui::kColorSysPrimary};
+  mixer[kColorWebUiTabStripScrollbarThumb] =
+      ui::SetAlpha(ui::GetColorWithMaxContrast(ui::kColorSysHeader),
+                   kWebUiTabStripScrollbarThumbAlpha);
+  mixer[kColorWebUiTabStripTabActiveTitleBackground] = {ui::kColorSysPrimary};
+  mixer[kColorWebUiTabStripTabActiveTitleContent] = {ui::kColorSysOnPrimary};
+  mixer[kColorWebUiTabStripTabBackground] = {ui::kColorSysSurface};
+  mixer[kColorWebUiTabStripTabSeparator] =
+      ui::SetAlpha(ui::kColorSysOnSurface, kWebUiTabStripTabSeparatorAlpha);
+  mixer[kColorWebUiTabStripTabText] = {ui::kColorSysOnSurface};
 }
