@@ -41,7 +41,7 @@ void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
   if (relayout_children && GetDocument().SvgExtensions()) {
     GetDocument()
         .AccessSVGExtensions()
-        .InvalidateSVGRootsWithRelativeLengthDescendents(nullptr);
+        .InvalidateSVGRootsWithRelativeLengthDescendents();
   }
 
   NGConstraintSpace constraint_space =

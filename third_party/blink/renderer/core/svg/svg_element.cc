@@ -526,8 +526,7 @@ void SVGElement::UpdateRelativeLengthsInformation(
   }
 }
 
-void SVGElement::InvalidateRelativeLengthClients(
-    SubtreeLayoutScope* layout_scope) {
+void SVGElement::InvalidateRelativeLengthClients() {
   if (!isConnected())
     return;
 
@@ -541,17 +540,16 @@ void SVGElement::InvalidateRelativeLengthClients(
     if (HasRelativeLengths() && layout_object->IsSVGResourceContainer()) {
       To<LayoutSVGResourceContainer>(layout_object)
           ->InvalidateCacheAndMarkForLayout(
-              layout_invalidation_reason::kSizeChanged, layout_scope);
+              layout_invalidation_reason::kSizeChanged);
     } else if (SelfHasRelativeLengths()) {
       layout_object->SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kUnknown, kMarkContainerChain,
-          layout_scope);
+          layout_invalidation_reason::kUnknown, kMarkContainerChain);
     }
   }
 
   for (SVGElement* element : elements_with_relative_lengths_) {
     if (element != this)
-      element->InvalidateRelativeLengthClients(layout_scope);
+      element->InvalidateRelativeLengthClients();
   }
 }
 

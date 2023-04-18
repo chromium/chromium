@@ -42,7 +42,6 @@ class Document;
 class ElementSMILAnimations;
 class ExecutionContext;
 class SVGAnimatedPropertyBase;
-class SubtreeLayoutScope;
 class SVGAnimatedString;
 class SVGElement;
 class SVGElementRareData;
@@ -179,7 +178,7 @@ class CORE_EXPORT SVGElement : public Element {
   virtual void BuildPendingResource() {}
   virtual bool HaveLoadedRequiredResources();
 
-  void InvalidateRelativeLengthClients(SubtreeLayoutScope* = nullptr);
+  void InvalidateRelativeLengthClients();
 
   void AddToPropertyMap(SVGAnimatedPropertyBase*);
 

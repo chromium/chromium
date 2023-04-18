@@ -565,8 +565,6 @@ blink_core_sources_layout = [
   "shapes/shape_outside_info.h",
   "style_retain_scope.cc",
   "style_retain_scope.h",
-  "subtree_layout_scope.cc",
-  "subtree_layout_scope.h",
   "svg/layout_svg_block.cc",
   "svg/layout_svg_block.h",
   "svg/layout_svg_container.cc",

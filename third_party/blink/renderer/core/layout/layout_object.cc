@@ -1422,14 +1422,12 @@ void LayoutObject::SetChildNeedsCollectInlines() {
   } while (object);
 }
 
-void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
-                                               SubtreeLayoutScope* layouter) {
+void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   DCHECK(!IsSetNeedsLayoutForbidden());
   DCHECK(!GetDocument().InPostLifecycleSteps());
 #endif
-  DCHECK(!layouter || this != layouter->Root());
   // When we're in layout, we're marking a descendant as needing layout with
   // the intention of visiting it during this layout. We shouldn't be
   // scheduling it to be laid out later. Also, scheduleRelayout() must not be
@@ -1485,16 +1483,6 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout,
 #endif
 
     object->MarkSelfPaintingLayerForVisualOverflowRecalc();
-
-    if (layouter) {
-      layouter->RecordObjectMarkedForLayout(object);
-
-      if (object == layouter->Root()) {
-        if (auto* painting_layer = PaintingLayer())
-          painting_layer->SetNeedsVisualOverflowRecalc();
-        return;
-      }
-    }
 
     last = object;
     if (schedule_relayout && ObjectIsRelayoutBoundary(last))

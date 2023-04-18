@@ -299,34 +299,33 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
 
 void LayoutView::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
-  SubtreeLayoutScope layout_scope(*this);
 
-  // Use calcWidth/Height to get the new width/height, since this will take the
-  // full page zoom factor into account.
   relayout_children |=
       !ShouldUsePrintingLayout() &&
       (!frame_view_ || LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
        LogicalHeight() != ViewLogicalHeightForBoxSizing());
 
   if (relayout_children) {
-    layout_scope.SetChildNeedsLayout(this);
+    SetChildNeedsLayout();
     for (LayoutObject* child = FirstChild(); child;
          child = child->NextSibling()) {
       if (child->IsSVGRoot())
         continue;
 
+      // TODO(1229581): Is this really necessary?
       if ((child->IsBox() &&
            To<LayoutBox>(child)->HasRelativeLogicalHeight()) ||
           child->StyleRef().LogicalHeight().IsPercentOrCalc() ||
           child->StyleRef().LogicalMinHeight().IsPercentOrCalc() ||
           child->StyleRef().LogicalMaxHeight().IsPercentOrCalc())
-        layout_scope.SetChildNeedsLayout(child);
+        child->SetChildNeedsLayout();
     }
 
-    if (GetDocument().SvgExtensions())
+    if (GetDocument().SvgExtensions()) {
       GetDocument()
           .AccessSVGExtensions()
-          .InvalidateSVGRootsWithRelativeLengthDescendents(&layout_scope);
+          .InvalidateSVGRootsWithRelativeLengthDescendents();
+    }
   }
 
   if (!NeedsLayout())

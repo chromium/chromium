@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/layout/outline_rect_collector.h"
-#include "third_party/blink/renderer/core/layout/subtree_layout_scope.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
@@ -1960,24 +1960,20 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetNeedsCollectInlines(b);
   }
 
-  void MarkContainerChainForLayout(bool schedule_relayout = true,
-                                   SubtreeLayoutScope* = nullptr);
+  void MarkContainerChainForLayout(bool schedule_relayout = true);
   void MarkParentForSpannerOrOutOfFlowPositionedChange();
   void SetNeedsLayout(LayoutInvalidationReasonForTracing,
-                      MarkingBehavior = kMarkContainerChain,
-                      SubtreeLayoutScope* = nullptr);
+                      MarkingBehavior = kMarkContainerChain);
   void SetNeedsLayoutAndFullPaintInvalidation(
       LayoutInvalidationReasonForTracing,
-      MarkingBehavior = kMarkContainerChain,
-      SubtreeLayoutScope* = nullptr);
+      MarkingBehavior = kMarkContainerChain);
 
   void ClearNeedsLayoutWithoutPaintInvalidation();
   // |ClearNeedsLayout()| calls |SetShouldCheckForPaintInvalidation()|.
   void ClearNeedsLayout();
   void ClearNeedsLayoutWithFullPaintInvalidation();
 
-  void SetChildNeedsLayout(MarkingBehavior = kMarkContainerChain,
-                           SubtreeLayoutScope* = nullptr);
+  void SetChildNeedsLayout(MarkingBehavior = kMarkContainerChain);
   void SetNeedsPositionedMovementLayout();
   void SetIntrinsicLogicalWidthsDirty(MarkingBehavior = kMarkContainerChain);
   void ClearIntrinsicLogicalWidthsDirty();
@@ -4342,7 +4338,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
  private:
   friend class LineLayoutItem;
   friend class LocalFrameView;
-  friend class SubtreeLayoutScope;
 
   scoped_refptr<const ComputedStyle> style_;
 
@@ -4405,8 +4400,7 @@ inline bool LayoutObject::IsBeforeOrAfterContent() const {
 // identical.
 inline void LayoutObject::SetNeedsLayout(
     LayoutInvalidationReasonForTracing reason,
-    MarkingBehavior mark_parents,
-    SubtreeLayoutScope* layouter) {
+    MarkingBehavior mark_parents) {
 #if DCHECK_IS_ON()
   DCHECK(!IsSetNeedsLayoutForbidden());
 #endif
@@ -4420,17 +4414,16 @@ inline void LayoutObject::SetNeedsLayout(
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
         "LayoutInvalidationTracking",
         inspector_layout_invalidation_tracking_event::Data, this, reason);
-    if (mark_parents == kMarkContainerChain &&
-        (!layouter || layouter->Root() != this))
-      MarkContainerChainForLayout(!layouter, layouter);
+    if (mark_parents == kMarkContainerChain) {
+      MarkContainerChainForLayout();
+    }
   }
 }
 
 inline void LayoutObject::SetNeedsLayoutAndFullPaintInvalidation(
     LayoutInvalidationReasonForTracing reason,
-    MarkingBehavior mark_parents,
-    SubtreeLayoutScope* layouter) {
-  SetNeedsLayout(reason, mark_parents, layouter);
+    MarkingBehavior mark_parents) {
+  SetNeedsLayout(reason, mark_parents);
   SetShouldDoFullPaintInvalidation();
 }
 
@@ -4475,19 +4468,16 @@ inline void LayoutObject::ClearNeedsLayoutWithFullPaintInvalidation() {
   SetShouldDoFullPaintInvalidation();
 }
 
-inline void LayoutObject::SetChildNeedsLayout(MarkingBehavior mark_parents,
-                                              SubtreeLayoutScope* layouter) {
+inline void LayoutObject::SetChildNeedsLayout(MarkingBehavior mark_parents) {
 #if DCHECK_IS_ON()
   DCHECK(!IsSetNeedsLayoutForbidden());
 #endif
   bool already_needed_layout = NormalChildNeedsLayout();
   SetNeedsOverflowRecalc();
   SetNormalChildNeedsLayout(true);
-  // FIXME: Replace MarkOnlyThis with the SubtreeLayoutScope code path and
-  // remove the MarkingBehavior argument entirely.
-  if (!already_needed_layout && mark_parents == kMarkContainerChain &&
-      (!layouter || layouter->Root() != this))
-    MarkContainerChainForLayout(!layouter, layouter);
+  if (!already_needed_layout && mark_parents == kMarkContainerChain) {
+    MarkContainerChainForLayout();
+  }
 }
 
 inline void LayoutObject::SetNeedsPositionedMovementLayout() {
