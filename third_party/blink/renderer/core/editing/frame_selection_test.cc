@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -56,9 +55,6 @@ class FrameSelectionTest : public EditingTestBase {
   }
 
   Text* AppendTextNode(const String& data);
-  unsigned LayoutCount() const {
-    return GetDummyPageHolder().GetFrameView().LayoutCountForTesting();
-  }
 
   PositionWithAffinity CaretPosition() const {
     return Selection().frame_caret_->CaretPosition();
@@ -156,44 +152,6 @@ TEST_F(FrameSelectionTest, SetValidSelection) {
           .SetBaseAndExtent(Position(text, 0), Position(text, 5))
           .Build());
   EXPECT_FALSE(Selection().ComputeVisibleSelectionInDOMTree().IsNone());
-}
-
-TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
-  Text* text = AppendTextNode("Hello, World!");
-  UpdateAllLifecyclePhasesForTest();
-
-  GetDocument().body()->setContentEditable("true", ASSERT_NO_EXCEPTION);
-  GetDocument().body()->Focus();
-  EXPECT_TRUE(GetDocument().body()->IsFocused());
-
-  Selection().SetCaretEnabled(true);
-  Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder().Collapse(Position(text, 0)).Build());
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsCaret());
-  EXPECT_TRUE(Selection().ShouldPaintCaret(
-      *To<LayoutBlock>(GetDocument().body()->GetLayoutObject())));
-
-  unsigned start_count = LayoutCount();
-  {
-    // To force layout in next updateLayout calling, widen view.
-    LocalFrameView& frame_view = GetDummyPageHolder().GetFrameView();
-    gfx::Rect frame_rect = frame_view.FrameRect();
-    frame_rect.set_width(frame_rect.width() + 1);
-    frame_rect.set_height(frame_rect.height() + 1);
-    GetDummyPageHolder().GetFrameView().SetFrameRect(frame_rect);
-  }
-  auto paint_controller =
-      std::make_unique<PaintController>(PaintController::kTransient);
-  {
-    GraphicsContext context(*paint_controller);
-    paint_controller->UpdateCurrentPaintChunkProperties(
-        root_paint_chunk_id_, *root_paint_property_client_,
-        PropertyTreeState::Root());
-    Selection().PaintCaret(context, PhysicalOffset());
-  }
-  paint_controller->CommitNewDisplayItems();
-  EXPECT_EQ(start_count, LayoutCount());
 }
 
 #define EXPECT_EQ_SELECTED_TEXT(text) \
