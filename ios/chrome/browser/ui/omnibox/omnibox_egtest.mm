@@ -461,6 +461,23 @@ void FocusFakebox() {
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 }
+// Tests that a security info icon is visible on a web page.
+- (void)testSecurityInfoIcon {
+  [self openPage1];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PageSecurityInfoIndicator()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that location bar shows the current URL in a short form.
+- (void)testLocationBarUrl {
+  [self openPage1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            _URL1.host())];
+}
 
 - (void)testCopyPaste {
   [self openPage1];
