@@ -12,6 +12,11 @@
  * #css_wrapper_metadata_end */
 
  :host {
+    --chart-system-line-color: var(--cros-color-warning);
+    --chart-system-gradient-color: var(--google-yellow-50);
+    --chart-user-line-color: var(--cros-color-prominent);
+    --chart-user-gradient-color: var(--google-blue-50);
+
     --diagnostics-box-shadow: var(--cros-elevation-1-shadow);
     --diagnostics-box-shadow-elevation-2: var(--cros-elevation-2-shadow);
 
@@ -26,6 +31,11 @@
   }
 
   :host-context(body.jelly-enabled) {
+    --chart-system-line-color: var(--cros-sys-tertiary);
+    --chart-system-gradient-color: var(--cros-sys-tertiary_container);
+    --chart-user-line-color: var(--cros-sys-primary);
+    --chart-user-gradient-color: var(--cros-sys-primary_container);
+
     --diagnostics-box-shadow:
         0 1px 2px var(--cros-shadow-color-key),
         0 1px 3px var(--cros-shadow-color-ambient);
@@ -287,6 +297,9 @@
 
   @media (prefers-color-scheme: dark) {
     :host {
+      --chart-system-gradient-color: rgba(var(--google-yellow-300-rgb), 0.2);
+      --chart-user-gradient-color: rgba(var(--google-blue-300-rgb), 0.2);
+
       --diagnostics-card-bg-color: var(--cros-bg-color-elevation-1);
       --diagnostics-chip-bg-color: var(--cros-bg-color-elevation-3);
     }

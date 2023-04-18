@@ -29,23 +29,23 @@
   .user-area {
     fill: url(#user-gradient);
     shape-render: optimizeSpeed;
-    stroke: var(--cros-color-prominent);
+    stroke: var(--chart-user-line-color);
     stroke-width: 1.5px;
   }
 
   .system-area {
     fill: url(#system-gradient);
     shape-render: optimizeSpeed;
-    stroke: var(--cros-color-warning);
+    stroke: var(--chart-system-line-color);
     stroke-width: 1.5px;
   }
 
   .gradient-blue {
-    stop-color: var(--google-blue-50);
+    stop-color: var(--chart-user-gradient-color);
   }
 
   .gradient-yellow {
-    stop-color: var(--google-yellow-50);
+    stop-color: var(--chart-system-gradient-color);
   }
 
   .gradient-opacity {
@@ -91,21 +91,11 @@
   }
 
   #legend-bar.user {
-    background-color: var(--cros-color-prominent);
+    background-color: var(--user-line-color);
   }
 
   #legend-bar.system {
-    background-color: var(--cros-color-warning);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .gradient-blue {
-      stop-color: rgba(var(--google-blue-300-rgb), 0.2);
-    }
-
-    .gradient-yellow {
-      stop-color: rgba(var(--google-yellow-300-rgb), 0.2);
-    }
+    background-color: var(--system-line-color);
   }
 </style>
 <svg id="chart" width$="[[width_]]" height$="[[height_]]" aria-hidden="true">
