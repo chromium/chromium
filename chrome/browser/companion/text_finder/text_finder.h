@@ -26,10 +26,11 @@ namespace companion {
 // See crbug.com/1430306.
 class TextFinder : public blink::mojom::AnnotationAgentHost {
  public:
-  // The callback type invoked when text search in the renderer is finished.
-  // A boolean parameter, indicating the result of text search (true if
-  // found), is passed to the callback from the caller.
-  using FinishedCallback = base::OnceCallback<void(bool)>;
+  // The callback type invoked when text search in the renderer is finished. The
+  // input param is a pair of a text string and its bool search result (true if
+  // found).
+  using FinishedCallback =
+      base::OnceCallback<void(std::pair<std::string, bool>)>;
   using AgentDisconnectHandler = base::OnceClosure;
 
   TextFinder(

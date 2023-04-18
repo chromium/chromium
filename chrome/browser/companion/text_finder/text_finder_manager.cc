@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/companion/text_finder/text_finder.h"
@@ -38,6 +39,17 @@ base::UnguessableToken TextFinderManager::CreateTextFinder(
               base::BindOnce(&TextFinderManager::RemoveTextFinder,
                              weak_ptr_factory_.GetWeakPtr(), id)));
   return id;
+}
+
+void TextFinderManager::CreateTextFinders(
+    const std::vector<std::string>& text_directives,
+    AllDoneCallback all_done_callback) {
+  const auto finished_callback =
+      base::BarrierCallback<std::pair<std::string, bool>>(
+          text_directives.size(), std::move(all_done_callback));
+  for (const auto& text_directive : text_directives) {
+    CreateTextFinder(text_directive, finished_callback);
+  }
 }
 
 void TextFinderManager::RemoveTextFinder(base::UnguessableToken id) {

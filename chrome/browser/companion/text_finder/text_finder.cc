@@ -47,7 +47,8 @@ void TextFinder::DidFinishAttachment(const gfx::Rect& rect) {
   is_found_ = !rect.IsEmpty();
 
   if (did_finish_callback_) {
-    std::move(did_finish_callback_).Run(is_found_);
+    std::move(did_finish_callback_)
+        .Run(std::make_pair(text_directive_, is_found_));
   }
 
   // Close the mojo binding to remove the annotation agent in the renderer

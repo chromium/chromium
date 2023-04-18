@@ -15,7 +15,9 @@ class TextFinderTest : public testing::Test {
   TextFinderTest() = default;
   ~TextFinderTest() override = default;
 
-  void SetFindingState(bool found) { is_found_ = found; }
+  void SetFindingState(std::pair<std::string, bool> text_found) {
+    is_found_ = text_found.second;
+  }
 
  protected:
   bool is_found_ = false;
