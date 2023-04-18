@@ -76,8 +76,11 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     return std::move(*this);
   }
   PaintImageBuilder&& set_gainmap_paint_image_generator(
-      sk_sp<PaintImageGenerator> generator) {
+      sk_sp<PaintImageGenerator> generator,
+      absl::optional<SkGainmapInfo> gainmap_info) {
+    DCHECK_EQ(generator != nullptr, gainmap_info.has_value());
     paint_image_.gainmap_paint_image_generator_ = std::move(generator);
+    paint_image_.gainmap_info_ = gainmap_info;
     return std::move(*this);
   }
   PaintImageBuilder&& set_completion_state(PaintImage::CompletionState state) {

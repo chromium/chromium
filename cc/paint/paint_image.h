@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -346,7 +347,15 @@ class CC_PAINT_EXPORT PaintImage {
   }
 
   bool IsOpaque() const;
-  bool HasGainmap() const { return gainmap_paint_image_generator_.get(); }
+  bool HasGainmap() const {
+    DCHECK_EQ(gainmap_paint_image_generator_ != nullptr,
+              gainmap_info_.has_value());
+    return gainmap_paint_image_generator_.get();
+  }
+  const SkGainmapInfo& GetGainmapInfo() const {
+    DCHECK(HasGainmap());
+    return gainmap_info_.value();
+  }
 
   std::string ToString() const;
 
@@ -390,6 +399,8 @@ class CC_PAINT_EXPORT PaintImage {
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
+  absl::optional<SkGainmapInfo> gainmap_info_;
+
   sk_sp<TextureBacking> texture_backing_;
 
   Id id_ = 0;

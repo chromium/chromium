@@ -2655,7 +2655,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
       has_gainmap
           ? ClientImageTransferCacheEntry(
                 image[kAuxImageIndexDefault], image[kAuxImageIndexGainmap],
-                SkGainmapInfo(), image_data->needs_mips, target_color_params)
+                draw_image.paint_image().GetGainmapInfo(),
+                image_data->needs_mips, target_color_params)
           : ClientImageTransferCacheEntry(image[kAuxImageIndexDefault],
                                           image_data->needs_mips,
                                           target_color_params);
