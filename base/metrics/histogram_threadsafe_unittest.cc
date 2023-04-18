@@ -181,6 +181,8 @@ class HistogramThreadsafeTest : public testing::Test {
   }
 
   void TearDown() override {
+    histograms_.clear();
+    allocator_view_.reset();
     GlobalHistogramAllocator::ReleaseForTesting();
     ASSERT_FALSE(GlobalHistogramAllocator::Get());
   }
@@ -332,11 +334,11 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     // later on.
     constexpr size_t kNumThreads = 2;
     constexpr size_t kNumEmissions = 2000;
-    std::unique_ptr<SnapshotDeltaThread> threads[kNumThreads];
     subtle::Atomic32 real_total_samples_count = 0;
     std::vector<subtle::Atomic32> real_bucket_counts(kHistogramMax, 0);
     subtle::Atomic32 snapshots_total_samples_count = 0;
     std::vector<subtle::Atomic32> snapshots_bucket_counts(kHistogramMax, 0);
+    std::unique_ptr<SnapshotDeltaThread> threads[kNumThreads];
     for (size_t i = 0; i < kNumThreads; ++i) {
       threads[i] = std::make_unique<SnapshotDeltaThread>(
           StringPrintf("SnapshotDeltaThread.%zu.%zu", iteration, i),
