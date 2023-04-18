@@ -215,7 +215,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
   base::PlatformThreadId GetIOThreadId() const override;
-  attribution_reporting::mojom::OsSupport GetOsSupportForAttributionReporting()
+  network::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
       override;
   scoped_refptr<base::SingleThreadTaskRunner> VideoFrameCompositorTaskRunner()
       override;

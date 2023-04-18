@@ -36,6 +36,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/filter/source_stream.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink-forward.h"
 #include "services/network/public/mojom/cors.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -551,6 +552,16 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
   bool GetHasStorageAccess() const { return has_storage_access_; }
 
+  network::mojom::AttributionOsSupport GetAttributionReportingOsSupport()
+      const {
+    return attribution_reporting_os_support_;
+  }
+
+  void SetAttributionReportingOsSupport(
+      network::mojom::AttributionOsSupport os_support) {
+    attribution_reporting_os_support_ = os_support;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -670,6 +681,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
       devtools_accepted_stream_types_;
 
   bool has_storage_access_ = false;
+
+  network::mojom::AttributionOsSupport attribution_reporting_os_support_ =
+      network::mojom::AttributionOsSupport::kDisabled;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

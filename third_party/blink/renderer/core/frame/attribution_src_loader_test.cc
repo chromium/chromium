@@ -12,19 +12,19 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -57,6 +57,8 @@ namespace {
 using blink::url_test_helpers::RegisterMockedErrorURLLoad;
 using blink::url_test_helpers::RegisterMockedURLLoad;
 using blink::url_test_helpers::ToKURL;
+
+const char kAttributionReportingSupport[] = "Attribution-Reporting-Support";
 
 class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
  public:
@@ -488,7 +490,7 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   EXPECT_TRUE(dict->contains("trigger"));
 
   EXPECT_TRUE(client_->request_head()
-                  .HttpHeaderField(http_names::kAttributionReportingSupport)
+                  .HttpHeaderField(kAttributionReportingSupport)
                   .IsNull());
 }
 
@@ -513,7 +515,7 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   EXPECT_TRUE(dict->contains("navigation-source"));
 
   EXPECT_TRUE(client_->request_head()
-                  .HttpHeaderField(http_names::kAttributionReportingSupport)
+                  .HttpHeaderField(kAttributionReportingSupport)
                   .IsNull());
 }
 
@@ -538,13 +540,13 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
 
 class AttributionTestingPlatformSupport : public TestingPlatformSupport {
  public:
-  attribution_reporting::mojom::OsSupport GetOsSupportForAttributionReporting()
+  network::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
       override {
     return os_support;
   }
 
-  attribution_reporting::mojom::OsSupport os_support =
-      attribution_reporting::mojom::OsSupport::kDisabled;
+  network::mojom::AttributionOsSupport os_support =
+      network::mojom::AttributionOsSupport::kDisabled;
 };
 
 class AttributionSrcLoaderCrossAppWebEnabledTest
@@ -554,13 +556,15 @@ class AttributionSrcLoaderCrossAppWebEnabledTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kAttributionReportingCrossAppWeb};
+      network::features::kAttributionReportingCrossAppWeb};
 
  protected:
   ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
 };
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
+  platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
+
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
@@ -568,19 +572,14 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  const AtomicString& support = client_->request_head().HttpHeaderField(
-      http_names::kAttributionReportingSupport);
-  EXPECT_EQ(support, "web");
-
-  absl::optional<net::structured_headers::Dictionary> dict =
-      net::structured_headers::ParseDictionary(support.Utf8());
-  ASSERT_TRUE(dict);
-  ASSERT_EQ(dict->size(), 1u);
-  EXPECT_TRUE(dict->contains("web"));
+  EXPECT_EQ(client_->request_head().GetAttributionReportingOsSupport(),
+            network::mojom::AttributionOsSupport::kEnabled);
 }
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        SupportHeader_RegisterNavigation) {
+  platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
+
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
@@ -590,20 +589,13 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  const AtomicString& support = client_->request_head().HttpHeaderField(
-      http_names::kAttributionReportingSupport);
-  EXPECT_EQ(support, "web");
-
-  absl::optional<net::structured_headers::Dictionary> dict =
-      net::structured_headers::ParseDictionary(support.Utf8());
-  ASSERT_TRUE(dict);
-  ASSERT_EQ(dict->size(), 1u);
-  EXPECT_TRUE(dict->contains("web"));
+  EXPECT_EQ(client_->request_head().GetAttributionReportingOsSupport(),
+            network::mojom::AttributionOsSupport::kEnabled);
 }
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
-  platform_->os_support = attribution_reporting::mojom::OsSupport::kEnabled;
+  platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 

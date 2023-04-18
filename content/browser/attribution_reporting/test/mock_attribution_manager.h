@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

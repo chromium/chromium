@@ -5,7 +5,6 @@
 #include "components/attribution_reporting/os_registration.h"
 
 #include "base/strings/string_piece.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -28,15 +27,6 @@ GURL ParseOsSourceOrTriggerHeader(
   }
 
   return GURL(item.item.GetString());
-}
-
-base::StringPiece GetSupportHeader(mojom::OsSupport os_support) {
-  switch (os_support) {
-    case mojom::OsSupport::kDisabled:
-      return "web";
-    case mojom::OsSupport::kEnabled:
-      return "web, os";
-  }
 }
 
 }  // namespace attribution_reporting

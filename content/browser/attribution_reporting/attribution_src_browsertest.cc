@@ -20,7 +20,6 @@
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -47,10 +46,10 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
@@ -58,6 +57,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #endif
 
 namespace content {
@@ -1024,7 +1024,7 @@ class AttributionSrcCrossAppWebEnabledBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list{
-      blink::features::kAttributionReportingCrossAppWeb};
+      network::features::kAttributionReportingCrossAppWeb};
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
@@ -1075,9 +1075,26 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(
-    AttributionSrcCrossAppWebEnabledBrowserTest,
-    OsLevelEnabledPriorToRendererInitialization_SetsSupportHeader) {
+class AttributionSrcCrossAppWebEnabledSubresourceBrowserTest
+    : public AttributionSrcCrossAppWebEnabledBrowserTest,
+      public ::testing::WithParamInterface<
+          std::pair<std::string, std::string>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
+    ::testing::Values(
+        std::make_pair("attributionsrcimg", "createAttributionSrcImg($1)"),
+        std::make_pair("attributionsrcscript",
+                       "createAttributionSrcScript($1)"),
+        std::make_pair("img", "createAttributionEligibleImgSrc($1)"),
+        std::make_pair("script", "createAttributionSrcScript($1)"),
+        std::make_pair("fetch", "doAttributionEligibleFetch($1)"),
+        std::make_pair("xhr", "doAttributionEligibleXHR($1)")),
+    [](const auto& info) { return info.param.first; });  // test name generator
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
+                       Register) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
   auto https_server = std::make_unique<net::EmbeddedTestServer>(
@@ -1097,16 +1114,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_server->Start());
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  GURL register_url = https_server->GetURL("d.test", "/register_source1");
-  ASSERT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
+  const std::string& js_template = GetParam().second;
+
+  GURL register_url = https_server->GetURL("b.test", "/register_source1");
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace(js_template, register_url)));
 
   register_response1->WaitForRequest();
   ASSERT_EQ(register_response1->http_request()->headers.at(
@@ -1152,8 +1169,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   GURL register_url = https_server->GetURL("d.test", "/register_source1");
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -1235,8 +1251,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(https_server->Start());
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");

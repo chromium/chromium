@@ -144,6 +144,12 @@ BASE_FEATURE(kAttributionReportingTriggerAttestation,
              "AttributionReportingTriggerAttestation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Gate access to Attribution Reporting cross app and web APIs that allow
+// registering with a native attribution API.
+BASE_FEATURE(kAttributionReportingCrossAppWeb,
+             "AttributionReportingCrossAppWeb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables preprocessing requests with the Private State Tokens API Fetch flags
 // set, and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)

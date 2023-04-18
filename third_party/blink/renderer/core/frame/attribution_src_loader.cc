@@ -21,7 +21,6 @@
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/eligibility_error.mojom-shared.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
@@ -29,10 +28,11 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
@@ -120,7 +120,7 @@ struct AttributionSrcLoader::AttributionHeaders {
         web_trigger(map.Get(http_names::kAttributionReportingRegisterTrigger)),
         request_id(request_id) {
     if (base::FeatureList::IsEnabled(
-            blink::features::kAttributionReportingCrossAppWeb)) {
+            network::features::kAttributionReportingCrossAppWeb)) {
       os_source = map.Get(http_names::kAttributionReportingRegisterOSSource);
       os_trigger = map.Get(http_names::kAttributionReportingRegisterOSTrigger);
     }
@@ -448,14 +448,13 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
   return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
 }
 
-AtomicString AttributionSrcLoader::GetSupportHeader() const {
-  return AtomicString(String::FromUTF8(attribution_reporting::GetSupportHeader(
-      Platform::Current()->GetOsSupportForAttributionReporting())));
+bool AttributionSrcLoader::HasOsSupport() const {
+  return GetOsSupport() == network::mojom::AttributionOsSupport::kEnabled;
 }
 
-bool AttributionSrcLoader::HasOsSupport() const {
-  return Platform::Current()->GetOsSupportForAttributionReporting() ==
-         attribution_reporting::mojom::OsSupport::kEnabled;
+network::mojom::AttributionOsSupport AttributionSrcLoader::GetOsSupport()
+    const {
+  return Platform::Current()->GetOsSupportForAttributionReporting();
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(

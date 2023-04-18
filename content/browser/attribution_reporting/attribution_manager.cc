@@ -30,7 +30,7 @@ AttributionManager* AttributionManager::FromBrowserContext(
 }
 
 // static
-attribution_reporting::mojom::OsSupport AttributionManager::GetOsSupport() {
+network::mojom::AttributionOsSupport AttributionManager::GetOsSupport() {
   return AttributionManagerImpl::GetOsSupport();
 }
 

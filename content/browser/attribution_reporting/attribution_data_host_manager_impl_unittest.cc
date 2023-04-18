@@ -52,20 +52,20 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #endif
 
 namespace content {
@@ -1085,11 +1085,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAttributionReportingCrossAppWeb);
+      network::features::kAttributionReportingCrossAppWeb);
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -1117,11 +1116,10 @@ TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectOsSource_InvalidOsHeader) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAttributionReportingCrossAppWeb);
+      network::features::kAttributionReportingCrossAppWeb);
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -1143,11 +1141,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAttributionReportingCrossAppWeb);
+      network::features::kAttributionReportingCrossAppWeb);
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -1201,7 +1198,7 @@ TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectOsSource_WebAndOsHeaders) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAttributionReportingCrossAppWeb);
+      network::features::kAttributionReportingCrossAppWeb);
 
   const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -2005,11 +2002,10 @@ TEST_F(AttributionDataHostManagerImplTest,
        NavigationBeaconOsSource_ParsingFinishesBeforeAndAfterNav) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kAttributionReportingCrossAppWeb);
+      network::features::kAttributionReportingCrossAppWeb);
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");

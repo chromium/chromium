@@ -28,6 +28,8 @@ namespace network {
 class AttributionAttestationMediator;
 class TrustTokenKeyCommitmentGetter;
 
+struct ResourceRequest;
+
 // Class AttributionRequestHelper handles attribution-reporting-api related
 // operations (https://github.com/WICG/attribution-reporting-api) that must
 // happen in the network service. It is meant to be optionally hooked to a
@@ -146,6 +148,10 @@ class AttributionRequestHelper {
 
   base::WeakPtrFactory<AttributionRequestHelper> weak_ptr_factory_{this};
 };
+
+// Sets the Attribution Reporting request headers on attribution eligible
+// requests. See https://github.com/WICG/attribution-reporting-api.
+void SetAttributionReportingHeaders(net::URLRequest&, const ResourceRequest&);
 
 }  // namespace network
 

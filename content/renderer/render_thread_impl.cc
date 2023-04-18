@@ -926,7 +926,7 @@ void RenderThreadImpl::InitializeRenderer(
     const std::string& reduced_user_agent,
     const blink::UserAgentMetadata& user_agent_metadata,
     const std::vector<std::string>& cors_exempt_header_list,
-    attribution_reporting::mojom::OsSupport attribution_os_support) {
+    network::mojom::AttributionOsSupport attribution_os_support) {
   DCHECK(user_agent_.IsNull());
   DCHECK(reduced_user_agent_.IsNull());
   DCHECK(full_user_agent_.IsNull());
@@ -1830,14 +1830,14 @@ gfx::ColorSpace RenderThreadImpl::GetRenderingColorSpace() {
   return rendering_color_space_;
 }
 
-attribution_reporting::mojom::OsSupport
+network::mojom::AttributionOsSupport
 RenderThreadImpl::GetOsSupportForAttributionReporting() {
   return attribution_os_support_;
 }
 
 #if BUILDFLAG(IS_ANDROID)
 void RenderThreadImpl::SetOsSupportForAttributionReporting(
-    attribution_reporting::mojom::OsSupport attribution_os_support) {
+    network::mojom::AttributionOsSupport attribution_os_support) {
   attribution_os_support_ = attribution_os_support;
 }
 #endif

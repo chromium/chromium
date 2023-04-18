@@ -660,6 +660,8 @@ URLLoader::URLLoader(
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_);
 
+  SetAttributionReportingHeaders(*url_request_, request);
+
   if (request.update_first_party_url_on_redirect) {
     url_request_->set_first_party_url_policy(
         net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);

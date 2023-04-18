@@ -329,7 +329,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
 #if BUILDFLAG(IS_ANDROID)
   void SetOsSupportForAttributionReporting(
-      attribution_reporting::mojom::OsSupport os_support) override;
+      network::mojom::AttributionOsSupport os_support) override;
 #endif
 
   // IPC::Sender via RenderProcessHost.

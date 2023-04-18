@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
@@ -372,6 +373,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static bool has_storage_access(const network::ResourceRequest& request) {
     return request.has_storage_access;
+  }
+
+  static network::mojom::AttributionOsSupport attribution_reporting_os_support(
+      const network::ResourceRequest& request) {
+    return request.attribution_reporting_os_support;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

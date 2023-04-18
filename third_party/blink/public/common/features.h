@@ -19,7 +19,6 @@ namespace blink {
 namespace features {
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnonymousIframeOriginTrial);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAttributionReportingCrossAppWeb);
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillDetectRemovedFormControls);
 BLINK_COMMON_EXPORT

@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cors.mojom";
@@ -493,6 +494,9 @@ struct URLRequest {
   // assumption, the browser process has already determined that this access is
   // ok.
   bool has_storage_access;
+
+ // Indicates whether the OS-level attribution is enabled.
+  AttributionOsSupport attribution_reporting_os_support;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

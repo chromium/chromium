@@ -14,6 +14,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -55,6 +57,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -64,6 +67,10 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#endif
 
 namespace content {
 
@@ -5776,7 +5783,7 @@ class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
  public:
   FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kAttributionReportingCrossAppWeb);
+        network::features::kAttributionReportingCrossAppWeb);
   }
 
  private:
@@ -5786,6 +5793,11 @@ class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
     ReportEventSameOriginSetsSupportHeader) {
+#if BUILDFLAG(IS_ANDROID)
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+#endif
+
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       kReportingURL);
   ASSERT_TRUE(https_server()->Start());
@@ -5857,9 +5869,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       response.http_request()->headers.at("Attribution-Reporting-Eligible"),
       "event-source");
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(
+      response.http_request()->headers.at("Attribution-Reporting-Support"),
+      "web, os");
+#else
   EXPECT_EQ(
       response.http_request()->headers.at("Attribution-Reporting-Support"),
       "web");
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(

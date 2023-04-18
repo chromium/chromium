@@ -33,7 +33,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -73,10 +72,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -449,11 +449,11 @@ AttributionManagerImpl::CreateForTesting(
 }
 
 // static
-attribution_reporting::mojom::OsSupport AttributionManagerImpl::GetOsSupport() {
+network::mojom::AttributionOsSupport AttributionManagerImpl::GetOsSupport() {
 #if BUILDFLAG(IS_ANDROID)
   return AttributionOsLevelManagerAndroid::GetOsSupport();
 #else
-  return attribution_reporting::mojom::OsSupport::kDisabled;
+  return network::mojom::AttributionOsSupport::kDisabled;
 #endif
 }
 
@@ -518,7 +518,7 @@ AttributionManagerImpl::AttributionManagerImpl(
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb)) {
+          network::features::kAttributionReportingCrossAppWeb)) {
     attribution_os_level_manager_ =
         std::make_unique<AttributionOsLevelManagerAndroid>();
   }

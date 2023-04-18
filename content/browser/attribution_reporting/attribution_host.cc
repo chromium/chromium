@@ -34,6 +34,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -94,7 +95,7 @@ AttributionHost::AttributionHost(WebContents* web_contents)
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb)) {
+          network::features::kAttributionReportingCrossAppWeb)) {
     input_event_tracker_android_ =
         std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
   }

@@ -27,7 +27,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -48,7 +47,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -379,7 +380,7 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
     std::string os_source;
     const bool has_os =
         base::FeatureList::IsEnabled(
-            blink::features::kAttributionReportingCrossAppWeb) &&
+            network::features::kAttributionReportingCrossAppWeb) &&
         headers->GetNormalizedHeader(
             kAttributionReportingRegisterOsSourceHeader, &os_source);
 
@@ -519,7 +520,7 @@ void AttributionDataHostManagerImpl::ParseSource(
       break;
     case Registrar::kOs:
       if (AttributionManager::GetOsSupport() ==
-          attribution_reporting::mojom::OsSupport::kDisabled) {
+          network::mojom::AttributionOsSupport::kDisabled) {
         // TODO: Report a DevTools issue.
         MaybeOnRegistrationsFinished(it);
         break;

@@ -44,11 +44,11 @@
 #include "build/build_config.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
-#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
+#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -774,9 +774,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Returns whether OS-level support is enabled for Attribution Reporting API.
   // See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual attribution_reporting::mojom::OsSupport
+  virtual network::mojom::AttributionOsSupport
   GetOsSupportForAttributionReporting() {
-    return attribution_reporting::mojom::OsSupport::kDisabled;
+    return network::mojom::AttributionOsSupport::kDisabled;
   }
 
 #if BUILDFLAG(IS_ANDROID)

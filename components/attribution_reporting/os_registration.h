@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "net/http/structured_headers.h"
 
 class GURL;
@@ -32,9 +31,6 @@ GURL ParseOsSourceOrTriggerHeader(base::StringPiece);
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 GURL ParseOsSourceOrTriggerHeader(
     const net::structured_headers::ParameterizedItem&);
-
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::StringPiece GetSupportHeader(mojom::OsSupport);
 
 }  // namespace attribution_reporting
 

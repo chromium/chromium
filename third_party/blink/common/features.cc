@@ -26,12 +26,6 @@ BASE_FEATURE(kAnonymousIframeOriginTrial,
              "AnonymousIframeOriginTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Gate access to Attribution Reporting cross app and web APIs that allow
-// registering with a native attribution API.
-BASE_FEATURE(kAttributionReportingCrossAppWeb,
-             "AttributionReportingCrossAppWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of
 // forms.

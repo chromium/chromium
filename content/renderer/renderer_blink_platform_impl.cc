@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
@@ -80,6 +79,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "storage/common/database/database_identifier.h"
@@ -995,12 +995,12 @@ base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
   return io_thread_id_;
 }
 
-attribution_reporting::mojom::OsSupport
+network::mojom::AttributionOsSupport
 RendererBlinkPlatformImpl::GetOsSupportForAttributionReporting() {
   auto* render_thread = RenderThreadImpl::current();
   // RenderThreadImpl is null in some tests.
   if (!render_thread)
-    return attribution_reporting::mojom::OsSupport::kDisabled;
+    return network::mojom::AttributionOsSupport::kDisabled;
   return render_thread->GetOsSupportForAttributionReporting();
 }
 

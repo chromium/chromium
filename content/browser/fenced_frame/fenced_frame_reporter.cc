@@ -374,13 +374,8 @@ bool FencedFrameReporter::SendReportInternal(
                                attribution_reporting_data->is_automatic_beacon
                                    ? "navigation-source"
                                    : "event-source");
-
-    if (base::FeatureList::IsEnabled(
-            blink::features::kAttributionReportingCrossAppWeb)) {
-      request->headers.SetHeader("Attribution-Reporting-Support",
-                                 attribution_reporting::GetSupportHeader(
-                                     AttributionManager::GetOsSupport()));
-    }
+    request->attribution_reporting_os_support =
+        AttributionManager::GetOsSupport();
   }
 
   // Create and configure `SimpleURLLoader` instance.

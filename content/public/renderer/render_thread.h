@@ -13,9 +13,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
@@ -116,7 +116,7 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Returns whether OS-level support is enabled for Attribution Reporting API.
   // See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual attribution_reporting::mojom::OsSupport
+  virtual network::mojom::AttributionOsSupport
   GetOsSupportForAttributionReporting() = 0;
 
  private:

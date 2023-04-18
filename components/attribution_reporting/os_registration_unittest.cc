@@ -5,7 +5,6 @@
 #include "components/attribution_reporting/os_registration.h"
 
 #include "base/strings/string_piece.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -49,20 +48,6 @@ TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
     EXPECT_EQ(ParseOsSourceOrTriggerHeader(test_case.header),
               test_case.expected)
         << test_case.description;
-  }
-}
-
-TEST(OsSupport, GetSupportHeader) {
-  const struct {
-    mojom::OsSupport os_support;
-    const char* expected;
-  } kTestCases[] = {
-      {mojom::OsSupport::kDisabled, "web"},
-      {mojom::OsSupport::kEnabled, "web, os"},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(GetSupportHeader(test_case.os_support), test_case.expected);
   }
 }
 

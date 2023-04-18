@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -192,6 +193,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
   bool has_storage_access = false;
+  network::mojom::AttributionOsSupport attribution_reporting_os_support =
+      network::mojom::AttributionOsSupport::kDisabled;
 };
 
 // This does not accept |kDefault| referrer policy.

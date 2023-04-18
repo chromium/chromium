@@ -36,8 +36,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #endif
 
 namespace blink {
@@ -289,7 +289,7 @@ class MockRenderProcessHost : public RenderProcessHost {
 
 #if BUILDFLAG(IS_ANDROID)
   void SetOsSupportForAttributionReporting(
-      attribution_reporting::mojom::OsSupport os_support) override {}
+      network::mojom::AttributionOsSupport os_support) override {}
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

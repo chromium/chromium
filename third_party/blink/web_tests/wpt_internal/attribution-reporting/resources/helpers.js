@@ -93,7 +93,7 @@ const getFetchParams = (origin, cookie) => {
     });
     headers.push({
       name: allowHeadersHeader,
-      value: `${eligibleHeader}, ${supportHeader}`,
+      value: `${eligibleHeader}`,
     })
   } else {
     headers.push({
@@ -115,7 +115,6 @@ const getDefaultReportingOrigin = () => {
 };
 
 const eligibleHeader = 'Attribution-Reporting-Eligible';
-const supportHeader = 'Attribution-Reporting-Support';
 
 const registerAttributionSrc = async (t, {
   source,

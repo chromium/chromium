@@ -13,3 +13,10 @@ struct TriggerAttestation {
   // TODO(https://crbug.com/1240405): replace with `guid` once a type-mapping exists.
   string aggregatable_report_id;
 };
+
+// Indicates whether OS-level attribution is enabled.
+// See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
+enum AttributionOsSupport {
+  kDisabled,
+  kEnabled,
+};

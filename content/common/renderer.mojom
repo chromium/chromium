@@ -4,13 +4,13 @@
 
 module content.mojom;
 
-import "components/attribution_reporting/os_support.mojom";
 import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
@@ -187,11 +187,10 @@ interface Renderer {
                      string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     attribution_reporting.mojom.OsSupport attribution_os_support);
+                     network.mojom.AttributionOsSupport attribution_os_support);
 
   // Set the OS-level support for Attribution Reporting indicating whether
   // OS-level attribution is enabled.
   [EnableIf=is_android]
-  SetOsSupportForAttributionReporting(
-      attribution_reporting.mojom.OsSupport os_support);
+  SetOsSupportForAttributionReporting(network.mojom.AttributionOsSupport os_support);
 };

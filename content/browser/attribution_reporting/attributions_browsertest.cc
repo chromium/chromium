@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -64,6 +63,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,6 +79,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #endif
 
 namespace content {
@@ -1117,7 +1118,7 @@ class AttributionsCrossAppWebEnabledBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kAttributionReportingCrossAppWeb};
+      network::features::kAttributionReportingCrossAppWeb};
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebEnabledBrowserTest,
@@ -1179,8 +1180,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_server()->Start());
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   GURL impression_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/page_with_impression_creator.html");

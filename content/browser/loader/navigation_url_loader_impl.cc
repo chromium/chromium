@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
 #include "content/browser/about_url_loader_factory.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -324,6 +325,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
 
   new_request->has_storage_access =
       request_info.begin_params->has_storage_access;
+
+  new_request->attribution_reporting_os_support =
+      AttributionManager::GetOsSupport();
 
   return new_request;
 }

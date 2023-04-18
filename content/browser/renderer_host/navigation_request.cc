@@ -40,9 +40,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/os_support.mojom.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -464,13 +461,6 @@ void AddAdditionalRequestHeaders(
 
   if (has_attribution_src_token) {
     headers->SetHeader("Attribution-Reporting-Eligible", "navigation-source");
-
-    if (base::FeatureList::IsEnabled(
-            blink::features::kAttributionReportingCrossAppWeb)) {
-      headers->SetHeader("Attribution-Reporting-Support",
-                         attribution_reporting::GetSupportHeader(
-                             AttributionManager::GetOsSupport()));
-    }
   }
 }
 

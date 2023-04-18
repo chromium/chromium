@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -84,10 +85,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   void Trace(Visitor* visitor) const;
 
-  // Returns proper value to populate `Attribution-Reporting-Support` request
-  // header. If OS-level attribution is supported, returns "web, os", otherwise
-  // returns "web".
-  AtomicString GetSupportHeader() const;
+  network::mojom::AttributionOsSupport GetOsSupport() const;
 
  private:
   class ResourceClient;

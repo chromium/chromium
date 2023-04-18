@@ -47,7 +47,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -292,21 +291,6 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   if (GetResourceFetcherProperties().IsDetached())
     return;
-
-  // TODO(crbug.com/1375791): Consider overriding Attribution-Reporting-Support
-  // header.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb) &&
-      !request.HttpHeaderField(http_names::kAttributionReportingEligible)
-           .IsNull() &&
-      request.HttpHeaderField(http_names::kAttributionReportingSupport)
-          .IsNull()) {
-    if (AttributionSrcLoader* attribution_src_loader =
-            GetFrame()->GetAttributionSrcLoader()) {
-      request.AddHttpHeaderField(http_names::kAttributionReportingSupport,
-                                 attribution_src_loader->GetSupportHeader());
-    }
-  }
 }
 
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set
@@ -377,6 +361,12 @@ void FrameFetchContext::PrepareRequest(
 
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
+
+  if (AttributionSrcLoader* attribution_src_loader =
+          GetFrame()->GetAttributionSrcLoader()) {
+    request.SetAttributionReportingOsSupport(
+        attribution_src_loader->GetOsSupport());
+  }
 
   GetLocalFrameClient()->DispatchWillSendRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();

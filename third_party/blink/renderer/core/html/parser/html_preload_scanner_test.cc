@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 
 #include <memory>
+
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -104,7 +106,8 @@ struct AttributionSrcTestCase {
   const char* base_url;
   const char* input_html;
   const char* expected_eligible_header;
-  const char* expected_support_header;
+  network::mojom::AttributionOsSupport os_support =
+      network::mojom::AttributionOsSupport::kDisabled;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -246,9 +249,10 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     }
   }
 
-  void AttributionSrcRequestVerification(Document* document,
-                                         const char* expected_eligible_header,
-                                         const char* expected_support_header) {
+  void AttributionSrcRequestVerification(
+      Document* document,
+      const char* expected_eligible_header,
+      network::mojom::AttributionOsSupport expected_os_support) {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
@@ -256,9 +260,9 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     EXPECT_EQ(expected_eligible_header,
               resource->GetResourceRequest().HttpHeaderField(
                   http_names::kAttributionReportingEligible));
-    EXPECT_EQ(expected_support_header,
-              resource->GetResourceRequest().HttpHeaderField(
-                  http_names::kAttributionReportingSupport));
+    EXPECT_EQ(
+        expected_os_support,
+        resource->GetResourceRequest().GetAttributionReportingOsSupport());
   }
 
  protected:
@@ -434,6 +438,10 @@ class HTMLPreloadScannerTest : public PageTestBase {
 
   void Test(AttributionSrcTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
+
+    ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform;
+    platform->os_support = test_case.os_support;
+
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
@@ -441,10 +449,21 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.TakePreloadData(std::move(preload_data));
     preloader.AttributionSrcRequestVerification(
         &GetDocument(), test_case.expected_eligible_header,
-        test_case.expected_support_header);
+        test_case.os_support);
   }
 
  private:
+  class AttributionTestingPlatformSupport : public TestingPlatformSupport {
+   public:
+    network::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
+        override {
+      return os_support;
+    }
+
+    network::mojom::AttributionOsSupport os_support =
+        network::mojom::AttributionOsSupport::kDisabled;
+  };
+
   std::unique_ptr<HTMLPreloadScanner> scanner_;
 };
 
@@ -1098,9 +1117,6 @@ TEST_F(HTMLPreloadScannerTest, testNonce) {
 }
 
 TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kAttributionReportingCrossAppWeb};
-
   static constexpr bool kSecureDocumentUrl = true;
   static constexpr bool kInsecureDocumentUrl = false;
 
@@ -1110,29 +1126,31 @@ TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
   AttributionSrcTestCase test_cases[] = {
       // Insecure context
       {kInsecureDocumentUrl, kSecureBaseURL,
-       "<img src='/image' attributionsrc>", nullptr, nullptr},
+       "<img src='/image' attributionsrc>", nullptr},
       {kInsecureDocumentUrl, kSecureBaseURL,
-       "<script src='/script' attributionsrc></script>", nullptr, nullptr},
+       "<script src='/script' attributionsrc></script>", nullptr},
       // No attributionsrc attribute
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr,
-       nullptr},
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr},
       {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
-       nullptr, nullptr},
+       nullptr},
       // Irrelevant element type
       {kSecureDocumentUrl, kSecureBaseURL,
-       "<video poster='/image' attributionsrc>", nullptr, nullptr},
+       "<video poster='/image' attributionsrc>", nullptr},
       // Not potentially trustworthy reporting origin
       {kSecureDocumentUrl, kInsecureBaseURL,
-       "<img src='/image' attributionsrc>", nullptr, nullptr},
+       "<img src='/image' attributionsrc>", nullptr},
       {kSecureDocumentUrl, kInsecureBaseURL,
-       "<script src='/script' attributionsrc></script>", nullptr, nullptr},
+       "<script src='/script' attributionsrc></script>", nullptr},
       // Secure context, potentially trustworthy reporting origin,
       // attributionsrc attribute
       {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-       kAttributionEligibleEventSourceAndTrigger, "web"},
+       kAttributionEligibleEventSourceAndTrigger},
       {kSecureDocumentUrl, kSecureBaseURL,
        "<script src='/script' attributionsrc></script>",
-       kAttributionEligibleEventSourceAndTrigger, "web"},
+       kAttributionEligibleEventSourceAndTrigger},
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
+       kAttributionEligibleEventSourceAndTrigger,
+       network::mojom::AttributionOsSupport::kEnabled},
   };
 
   for (const auto& test_case : test_cases) {

@@ -26,7 +26,6 @@
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -52,6 +51,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -241,7 +241,7 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAttributionReportingDebugMode);
   bool has_os_support = AttributionManager::GetOsSupport() ==
-                        attribution_reporting::mojom::OsSupport::kEnabled;
+                        network::mojom::AttributionOsSupport::kEnabled;
   std::move(callback).Run(attribution_reporting_enabled, debug_mode,
                           has_os_support);
 }

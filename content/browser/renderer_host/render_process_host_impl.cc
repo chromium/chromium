@@ -65,7 +65,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -184,6 +183,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -5487,7 +5487,7 @@ void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
 }
 
 void RenderProcessHostImpl::SetOsSupportForAttributionReporting(
-    attribution_reporting::mojom::OsSupport os_support) {
+    network::mojom::AttributionOsSupport os_support) {
   GetRendererInterface()->SetOsSupportForAttributionReporting(os_support);
 }
 

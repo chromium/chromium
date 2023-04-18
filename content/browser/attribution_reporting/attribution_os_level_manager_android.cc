@@ -21,13 +21,13 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/render_process_host.h"
+#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -40,7 +40,7 @@ namespace {
 using ScopedOsSupportForTesting =
     ::content::AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting;
 
-using attribution_reporting::mojom::OsSupport;
+using network::mojom::AttributionOsSupport;
 
 #if DCHECK_IS_ON()
 const base::SequenceChecker& GetSequenceChecker() {
@@ -52,12 +52,14 @@ const base::SequenceChecker& GetSequenceChecker() {
 // This flag is per device and can only be changed by the OS. Currently we don't
 // observe setting changes on the device and the flag is only initialized once
 // on startup. The value may vary in tests.
-absl::optional<OsSupport> g_os_support GUARDED_BY_CONTEXT(GetSequenceChecker());
+absl::optional<AttributionOsSupport> g_os_support
+    GUARDED_BY_CONTEXT(GetSequenceChecker());
 
-void SetOsSupport(OsSupport os_support) {
+void SetOsSupport(AttributionOsSupport os_support) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
 
-  OsSupport previous = AttributionOsLevelManagerAndroid::GetOsSupport();
+  AttributionOsSupport previous =
+      AttributionOsLevelManagerAndroid::GetOsSupport();
 
   g_os_support = os_support;
 
@@ -97,7 +99,7 @@ int GetMatchBehavior(BrowsingDataFilterBuilder::Mode mode) {
   }
 }
 
-OsSupport ConvertToOsSupport(int value) {
+AttributionOsSupport ConvertToOsSupport(int value) {
   // See
   // https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/measurement/MeasurementManager
   // for constant values.
@@ -106,11 +108,11 @@ OsSupport ConvertToOsSupport(int value) {
 
   switch (value) {
     case kMeasurementApiStateDisabled:
-      return OsSupport::kDisabled;
+      return AttributionOsSupport::kDisabled;
     case kMeasurementApiStateEnabled:
-      return OsSupport::kEnabled;
+      return AttributionOsSupport::kEnabled;
     default:
-      return OsSupport::kDisabled;
+      return AttributionOsSupport::kDisabled;
   }
 }
 
@@ -122,7 +124,8 @@ static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
   SetOsSupport(ConvertToOsSupport(state));
 }
 
-ScopedOsSupportForTesting::ScopedOsSupportForTesting(OsSupport os_support)
+ScopedOsSupportForTesting::ScopedOsSupportForTesting(
+    AttributionOsSupport os_support)
     : previous_(GetOsSupport()) {
   SetOsSupport(os_support);
 }
@@ -132,9 +135,9 @@ ScopedOsSupportForTesting::~ScopedOsSupportForTesting() {
 }
 
 // static
-OsSupport AttributionOsLevelManagerAndroid::GetOsSupport() {
+AttributionOsSupport AttributionOsLevelManagerAndroid::GetOsSupport() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
-  return g_os_support.value_or(OsSupport::kDisabled);
+  return g_os_support.value_or(AttributionOsSupport::kDisabled);
 }
 
 AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
@@ -219,7 +222,7 @@ void AttributionOsLevelManagerAndroid::InitializeOsSupport() {
   }
 
   // Only make the async call once.
-  g_os_support.emplace(OsSupport::kDisabled);
+  g_os_support.emplace(AttributionOsSupport::kDisabled);
 
   Java_AttributionOsLevelManager_getMeasurementApiStatus(
       base::android::AttachCurrentThread(), jobj_);

@@ -60,11 +60,11 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #endif
 
 namespace content {
@@ -572,8 +572,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
   AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(
-          attribution_reporting::mojom::OsSupport::kEnabled);
+      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
