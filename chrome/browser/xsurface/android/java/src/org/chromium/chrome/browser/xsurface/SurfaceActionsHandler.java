@@ -12,10 +12,7 @@ import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-
 /**
- * Implemented in Chromium.
- *
  * Interface to provide chromium calling points for an external surface.
  */
 public interface SurfaceActionsHandler {

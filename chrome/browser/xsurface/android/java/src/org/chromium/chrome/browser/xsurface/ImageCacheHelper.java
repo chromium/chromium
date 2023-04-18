@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.xsurface;
 
 /**
- * Implemented internally.
- *
  * Interface for managing the image cache. This allows
  * native code to call to the image loader across the
  * xsurface.

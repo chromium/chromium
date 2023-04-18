@@ -4,8 +4,6 @@
 package org.chromium.chrome.browser.xsurface;
 
 /**
- * Implemented internally.
- *
  * Interface providing helper methods to layout list items in an external surface-controlled
  * RecyclerView.
  */

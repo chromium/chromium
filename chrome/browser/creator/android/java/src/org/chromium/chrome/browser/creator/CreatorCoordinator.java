@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
 import org.chromium.chrome.browser.feed.FeedListContentManager;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
 import org.chromium.chrome.browser.feed.FeedStream;
-import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl;
+import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
@@ -92,7 +92,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private ViewGroup mLayoutView;
     private HybridListRenderer mHybridListRenderer;
     private SurfaceScope mSurfaceScope;
-    private FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
+    private FeedSurfaceScopeDependencyProvider mDependencyProvider;
     private PropertyModel mCreatorModel;
     private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
             mCreatorProfileModelChangeProcessor;
@@ -288,7 +288,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 
         if (processScope != null) {
-            mDependencyProvider = new FeedSurfaceScopeDependencyProviderImpl(
+            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
                     mActivity, mActivity, ColorUtils.inNightMode(mActivity));
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
         } else {

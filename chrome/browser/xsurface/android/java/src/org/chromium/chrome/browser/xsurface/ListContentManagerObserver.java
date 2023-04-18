@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.xsurface;
 
-/**
- * Implemented in Chromium.
- *
- * Interface to observe a list.
- */
+/** Interface to observe a list. */
 public interface ListContentManagerObserver {
     /** Called when range from startIndex to startIndex+count has been inserted. */
     default void onItemRangeInserted(int startIndex, int count) {}

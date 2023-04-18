@@ -136,7 +136,7 @@ public class FeedSurfaceCoordinator
     private @Nullable FeedListContentManager mContentManager;
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable SurfaceScope mSurfaceScope;
-    private @Nullable FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
+    private @Nullable FeedSurfaceScopeDependencyProvider mDependencyProvider;
     private @Nullable HybridListRenderer mHybridListRenderer;
 
     // Used to handle things related to the main scrollable container of NTP surface.
@@ -679,7 +679,7 @@ public class FeedSurfaceCoordinator
         mContentManager = new FeedListContentManager();
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
-            mDependencyProvider = new FeedSurfaceScopeDependencyProviderImpl(
+            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
                     mActivity, mActivity, mShowDarkBackground);
 
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);

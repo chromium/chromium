@@ -9,8 +9,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-// Moving to ./feed/
-@Deprecated
+/** Type of stream being launched (the "For you","Following", or "SingleWebFeed" feed). */
 @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED,
         StreamType.SINGLE_WEB_FEED})
 @Retention(RetentionPolicy.SOURCE)

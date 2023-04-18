@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.xsurface;
 import androidx.annotation.Nullable;
 
-// TODO(b/269234249): Decide what to do with this class. Some of these things are feed specific.
 /**
- * Implemented in Chromium.
- *
  * The set of parameters necessary for logging.
  */
 public interface LoggingParameters {
