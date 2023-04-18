@@ -9486,11 +9486,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"battery-saver-mode-available",
-     flag_descriptions::kBatterySaverModeAvailableName,
-     flag_descriptions::kBatterySaverModeAvailableDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kBatterySaverModeAvailable)},
     {"heuristic-memory-saver-mode",
      flag_descriptions::kHeuristicMemorySaverName,
      flag_descriptions::kHeuristicMemorySaverDescription, kOsDesktop,

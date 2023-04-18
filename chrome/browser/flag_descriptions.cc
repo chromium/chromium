@@ -4403,11 +4403,6 @@ const char kMediaRouterOtrInstanceDescription[] =
     "When enabled, a separate Media Router instance will be created for "
     "off-the-record (\"incognito\") profiles.";
 
-extern const char kBatterySaverModeAvailableName[] =
-    "Enable the battery saver mode feature in the settings";
-extern const char kBatterySaverModeAvailableDescription[] =
-    "When enabled, shows the battery section in the performance settings page";
-
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "
