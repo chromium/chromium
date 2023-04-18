@@ -3781,7 +3781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}.{ShowType}"
-    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2023-09-01">
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2023-09-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
