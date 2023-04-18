@@ -25,19 +25,20 @@ class EventDelegate : public EventObservationCrosapi::Delegate {
   ~EventDelegate() override = default;
 
   // EventManager::Delegate:
-  void OnAudioJackEvent(const extensions::ExtensionId& extension_id,
-                        api::os_events::AudioJackEventInfo info) override {
+  void OnEvent(const extensions::ExtensionId& extension_id,
+               crosapi::mojom::TelemetryEventInfoPtr info) override {
     future_.AddValue(std::make_tuple(extension_id, std::move(info)));
   }
 
-  std::tuple<extensions::ExtensionId, api::os_events::AudioJackEventInfo>
+  std::tuple<extensions::ExtensionId, crosapi::mojom::TelemetryEventInfoPtr>
   WaitAndGetData() {
     return future_.Take();
   }
 
  private:
   base::test::RepeatingTestFuture<
-      std::tuple<extensions::ExtensionId, api::os_events::AudioJackEventInfo>>
+      std::tuple<extensions::ExtensionId,
+                 crosapi::mojom::TelemetryEventInfoPtr>>
       future_;
 };
 
@@ -97,8 +98,10 @@ TEST_F(TelemetryExtensionEventObservationCrosapiTest, CanObserveEvent) {
   auto result = GetEventDelegate()->WaitAndGetData();
 
   EXPECT_EQ(std::get<0>(result), extension()->id());
-  EXPECT_EQ(std::get<1>(result).event,
-            api::os_events::AudioJackEvent::kConnected);
+  EXPECT_EQ(std::get<1>(result),
+            crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
+                crosapi::mojom::TelemetryAudioJackEventInfo::New(
+                    crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd)));
 }
 
 }  // namespace chromeos

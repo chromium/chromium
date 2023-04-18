@@ -22,8 +22,8 @@ class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
    public:
     virtual ~Delegate() = default;
 
-    virtual void OnAudioJackEvent(const extensions::ExtensionId& extension_id,
-                                  api::os_events::AudioJackEventInfo info) = 0;
+    virtual void OnEvent(const extensions::ExtensionId& extension_id,
+                         crosapi::mojom::TelemetryEventInfoPtr info) = 0;
   };
 
   explicit EventObservationCrosapi(const extensions::ExtensionId& extension_id,
