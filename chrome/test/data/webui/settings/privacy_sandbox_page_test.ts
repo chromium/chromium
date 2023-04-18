@@ -6,7 +6,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxFledgeSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrLinkRowElement, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -44,41 +44,47 @@ suite('PrivacySandboxPageTests', function() {
   });
 
   test('privacySandboxLinkRowsVisible', function() {
-    assertTrue(isVisible(page.$.privacySandboxTopicsLinkRow));
-    assertTrue(isVisible(page.$.privacySandboxFledgeLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
+    assertTrue(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
     assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
   });
 
   test('privacySandboxTopicsRowSublabel', async function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxTopicsLinkRow));
+    const topicsRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxTopicsLinkRow');
+    assertTrue(!!topicsRow);
+    assertTrue(isVisible(topicsRow));
     assertEquals(
         loadTimeData.getString('adPrivacyPageTopicsLinkRowSubLabelEnabled'),
-        page.$.privacySandboxTopicsLinkRow.subLabel);
+        topicsRow.subLabel);
 
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxTopicsLinkRow));
+    assertTrue(isVisible(topicsRow));
     assertEquals(
         loadTimeData.getString('adPrivacyPageTopicsLinkRowSubLabelDisabled'),
-        page.$.privacySandboxTopicsLinkRow.subLabel);
+        topicsRow.subLabel);
   });
 
   test('privacySandboxFledgeRowSublabel', async function() {
     page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxFledgeLinkRow));
+    const fledgeRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxFledgeLinkRow');
+    assertTrue(!!fledgeRow);
+    assertTrue(isVisible(fledgeRow));
     assertEquals(
         loadTimeData.getString('adPrivacyPageFledgeLinkRowSubLabelEnabled'),
-        page.$.privacySandboxFledgeLinkRow.subLabel);
+        fledgeRow.subLabel);
 
     page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxFledgeLinkRow));
+    assertTrue(isVisible(fledgeRow));
     assertEquals(
         loadTimeData.getString('adPrivacyPageFledgeLinkRowSubLabelDisabled'),
-        page.$.privacySandboxFledgeLinkRow.subLabel);
+        fledgeRow.subLabel);
   });
 
   test('privacySandboxAdMeasurementRowSublabel', async function() {
@@ -100,7 +106,10 @@ suite('PrivacySandboxPageTests', function() {
   });
 
   test('clickPrivacySandboxTopicsLinkRow', async function() {
-    page.$.privacySandboxTopicsLinkRow.click();
+    const topicsRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxTopicsLinkRow');
+    assertTrue(!!topicsRow);
+    topicsRow.click();
     assertEquals(
         'Settings.PrivacySandbox.Topics.Opened',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -109,7 +118,10 @@ suite('PrivacySandboxPageTests', function() {
   });
 
   test('clickPrivacySandboxFledgeLinkRow', async function() {
-    page.$.privacySandboxFledgeLinkRow.click();
+    const fledgeRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxFledgeLinkRow');
+    assertTrue(!!fledgeRow);
+    fledgeRow.click();
     assertEquals(
         'Settings.PrivacySandbox.Fledge.Opened',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -125,6 +137,40 @@ suite('PrivacySandboxPageTests', function() {
     assertEquals(
         routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
         Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('PrivacySandboxNoticeRestrictedEnabledTests', function() {
+  let page: SettingsPrivacySandboxPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+      isPrivacySandboxRestrictedNoticeEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  // When the restricted notice is configured, ensure only measurement is shown.
+  test('privacySandboxLinkRowsNotVisible', function() {
+    assertFalse(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
+    assertFalse(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
+    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
   });
 });
 

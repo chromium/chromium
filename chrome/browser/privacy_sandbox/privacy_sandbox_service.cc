@@ -424,6 +424,10 @@ bool PrivacySandboxService::IsPrivacySandboxRestricted() {
   return privacy_sandbox_settings_->IsPrivacySandboxRestricted();
 }
 
+bool PrivacySandboxService::IsRestrictedNoticeEnabled() {
+  return privacy_sandbox_settings_->IsRestrictedNoticeEnabled();
+}
+
 void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlledV2, true);
   privacy_sandbox_settings_->SetPrivacySandboxEnabled(enabled);

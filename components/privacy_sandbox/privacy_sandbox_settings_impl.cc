@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -516,6 +517,10 @@ void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
   return delegate_->IsPrivacySandboxRestricted();
+}
+
+bool PrivacySandboxSettingsImpl::IsRestrictedNoticeEnabled() const {
+  return privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get();
 }
 
 void PrivacySandboxSettingsImpl::OnCookiesCleared() {

@@ -11,21 +11,23 @@
   <img id="banner" alt=""
       src="chrome://settings/images/ad_privacy_banner.svg">
 </picture>
-<cr-link-row
-    id="privacySandboxTopicsLinkRow"
-    start-icon="settings20:interests"
-    label="$i18n{adPrivacyPageTopicsLinkRowLabel}"
-    sub-label="[[computePrivacySandboxTopicsSublabel_(
-        prefs.privacy_sandbox.m1.topics_enabled.value)]]"
-    on-click="onPrivacySandboxTopicsClick_"></cr-link-row>
-<cr-link-row
-    id="privacySandboxFledgeLinkRow"
-    start-icon="settings20:checklist"
-    class="hr"
-    label="$i18n{adPrivacyPageFledgeLinkRowLabel}"
-    sub-label="[[computePrivacySandboxFledgeSublabel_(
-        prefs.privacy_sandbox.m1.fledge_enabled.value)]]"
-    on-click="onPrivacySandboxFledgeClick_"></cr-link-row>
+<template is="dom-if" if="[[!isPrivacySandboxRestrictedNoticeEnabled_]]">
+  <cr-link-row
+      id="privacySandboxTopicsLinkRow"
+      start-icon="settings20:interests"
+      label="$i18n{adPrivacyPageTopicsLinkRowLabel}"
+      sub-label="[[computePrivacySandboxTopicsSublabel_(
+          prefs.privacy_sandbox.m1.topics_enabled.value)]]"
+      on-click="onPrivacySandboxTopicsClick_"></cr-link-row>
+  <cr-link-row
+      id="privacySandboxFledgeLinkRow"
+      start-icon="settings20:checklist"
+      class="hr"
+      label="$i18n{adPrivacyPageFledgeLinkRowLabel}"
+      sub-label="[[computePrivacySandboxFledgeSublabel_(
+          prefs.privacy_sandbox.m1.fledge_enabled.value)]]"
+      on-click="onPrivacySandboxFledgeClick_"></cr-link-row>
+</template>
 <cr-link-row
     id="privacySandboxAdMeasurementLinkRow"
     start-icon="settings20:bar-chart"

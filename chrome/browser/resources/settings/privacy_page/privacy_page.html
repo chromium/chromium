@@ -67,7 +67,10 @@
           </cr-link-row>
         </template>
         <template is="dom-if" if=
-            "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
+            "[[isPrivacySandboxSettings4Enabled_(
+                isPrivacySandboxRestricted_,
+                isPrivacySandboxRestrictedNoticeEnabled_,
+                isPrivacySandboxSettings4_)]]">
           <cr-link-row id="privacySandboxLinkRow"
               start-icon="settings20:ads-click"
               class="hr"
@@ -155,7 +158,10 @@
       </template>
 
       <template is="dom-if" if=
-          "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
+          "[[isPrivacySandboxSettings4Enabled_(
+              isPrivacySandboxRestricted_,
+              isPrivacySandboxRestrictedNoticeEnabled_,
+              isPrivacySandboxSettings4_)]]">
         <template is="dom-if" route-path="/adPrivacy">
           <settings-subpage id="privacy-sandbox"
               page-title="$i18n{adPrivacyPageTitle}"

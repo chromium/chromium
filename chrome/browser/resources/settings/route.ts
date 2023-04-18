@@ -35,6 +35,13 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
     r.PRIVACY_SANDBOX_AD_MEASUREMENT =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
+  } else if (loadTimeData.getBoolean(
+                 'isPrivacySandboxRestrictedNoticeEnabled')) {
+    r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
+    // When the view is restricted, but the notice is configured to show, allow
+    // measurement settings only.
+    r.PRIVACY_SANDBOX_AD_MEASUREMENT =
+        r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
   }
 
   // <if expr="use_nss_certs">

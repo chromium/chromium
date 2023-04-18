@@ -472,15 +472,20 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   // Privacy Sandbox
+  PrivacySandboxService* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(profile);
   bool is_privacy_sandbox_restricted =
-      PrivacySandboxServiceFactory::GetForProfile(profile)
-          ->IsPrivacySandboxRestricted();
+      privacy_sandbox_service->IsPrivacySandboxRestricted();
   bool is_privacy_sandbox_settings_4 =
       base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4);
+  bool is_restricted_notice_enabled =
+      privacy_sandbox_service->IsRestrictedNoticeEnabled();
   html_source->AddBoolean("isPrivacySandboxRestricted",
                           is_privacy_sandbox_restricted);
   html_source->AddBoolean("isPrivacySandboxSettings4",
                           is_privacy_sandbox_settings_4);
+  html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
+                          is_restricted_notice_enabled);
   if (!is_privacy_sandbox_restricted && !is_privacy_sandbox_settings_4) {
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);

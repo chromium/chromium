@@ -207,6 +207,10 @@ class PrivacySandboxService : public KeyedService {
   // Privacy Sandbox related UI is updated appropriately.
   virtual bool IsPrivacySandboxRestricted();
 
+  // Returns whether the Privacy Sandbox is configured to show a restricted
+  // notice.
+  virtual bool IsRestrictedNoticeEnabled();
+
   // Called when the V2 Privacy Sandbox preference is changed.
   void OnPrivacySandboxV2PrefChanged();
 

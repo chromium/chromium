@@ -623,6 +623,12 @@ TEST_F(
       runMochaSuite('PrivacySandboxPageTests');
     });
 
+TEST_F(
+    'CrSettingsPrivacySandboxPageTest',
+    'PrivacySandboxNoticeRestrictedEnabledTests', function() {
+      runMochaSuite('PrivacySandboxNoticeRestrictedEnabledTests');
+    });
+
 TEST_F('CrSettingsPrivacySandboxPageTest', 'TopicsSubpageTests', function() {
   runMochaSuite('PrivacySandboxTopicsSubpageTests');
 });

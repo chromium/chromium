@@ -188,6 +188,10 @@ class PrivacySandboxSettings : public KeyedService {
   // Virtual to allow mocking in tests.
   virtual bool IsPrivacySandboxRestricted() const = 0;
 
+  // Returns whether the Privacy Sandbox is partially enabled based on
+  // restrictions.
+  virtual bool IsRestrictedNoticeEnabled() const = 0;
+
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
   // Clear-Site-Data header, as it's restricted to a specific site.

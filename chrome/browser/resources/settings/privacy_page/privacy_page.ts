@@ -166,6 +166,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
 
+      isPrivacySandboxRestrictedNoticeEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
+      },
+
       isPrivacySandboxSettings4_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
@@ -280,6 +286,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
+  private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private isPrivacySandboxSettings4_: boolean;
   private privateStateTokensEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
@@ -473,7 +480,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private isPrivacySandboxSettings4Enabled_(): boolean {
-    return !this.isPrivacySandboxRestricted_ && this.isPrivacySandboxSettings4_;
+    return (!this.isPrivacySandboxRestricted_ ||
+            this.isPrivacySandboxRestrictedNoticeEnabled_) &&
+        this.isPrivacySandboxSettings4_;
   }
 }
 
