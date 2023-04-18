@@ -822,26 +822,18 @@ void FloatController::FloatImpl(aura::Window* window) {
     return;
 
   // If a floated window already exists at current desk, unfloat it before
-  // floating `window`, unless it is pinned to all desks.
+  // floating `window`.
   auto* desk_controller = DesksController::Get();
   // Get the desk where the window belongs to before moving it to float
   // container.
   const Desk* desk = desks_util::GetDeskForContext(window);
   DCHECK(desk);
 
+  // TODO(b/267363112): Allow a floated window to be assigned to all desks.
+  // If window is visible to all desks, unset it.
   if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
-    // Restore all other floated windows on other desks.
-    // We want to use a `for` loop rather than a range, as we are modifying the
-    // map.
-    for (auto it = floated_window_info_map_.cbegin();
-         it != floated_window_info_map_.cend();
-         /* manual increment */) {
-      if (it->second->desk() != desk) {
-        ResetFloatedWindow(it->first);
-      } else {
-        it++;
-      }
-    }
+    window->SetProperty(aura::client::kWindowWorkspaceKey,
+                        aura::client::kWindowWorkspaceUnassignedWorkspace);
   }
 
   auto* previously_floated_window = FindFloatedWindowOfDesk(desk);
@@ -859,9 +851,9 @@ void FloatController::FloatImpl(aura::Window* window) {
       window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
   DCHECK_NE(window->parent(), floated_container);
   floated_container->AddChild(window);
-  if (!desk->is_active()) {
+
+  if (!desk->is_active())
     HideFloatedWindow(window);
-  }
 
   // Update floated window counts.
   // Note that if the same window gets floated 2 times in the same session, it's

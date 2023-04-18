@@ -152,9 +152,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   // Floats/Unfloats `window`. Only one floating window is allowed per desk,
   // floating a new window on the same desk or moving a floated window to that
-  // desk will unfloat the other floated window (if any). Floating a window that
-  // is pinned to all desks will unfloat all other floated windows on other
-  // desks.
+  // desk will unfloat the other floated window (if any).
   // Note: currently window can only be floated from an active desk.
   void FloatImpl(aura::Window* window);
   void UnfloatImpl(aura::Window* window);
