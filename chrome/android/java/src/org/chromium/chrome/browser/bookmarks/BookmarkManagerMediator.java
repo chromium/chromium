@@ -248,7 +248,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             clearHighlight();
 
             mSearchText = EMPTY_QUERY;
-            mCurrentFolder = folder;
             mDragReorderableRecyclerViewAdapter.enableDrag();
 
             if (topLevelFoldersShowing()) {
@@ -356,7 +355,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID.
     private @ViewType int mPromoHeaderType = ViewType.INVALID;
     private String mSearchText;
-    private BookmarkId mCurrentFolder;
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
 
@@ -520,7 +518,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
     public void setOrder() {
         assert !topLevelFoldersShowing() : "Cannot reorder top-level folders!";
-        assert mCurrentFolder.getType()
+        assert getCurrentFolderId().getType()
                 != BookmarkType.PARTNER : "Cannot reorder partner bookmarks!";
         assert getCurrentUiMode()
                 == BookmarkUiMode.FOLDER : "Can only reorder items from folder mode!";
@@ -535,7 +533,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             assert bookmarkItem != null;
             newOrder[i - startIndex] = bookmarkItem.getId().getId();
         }
-        mBookmarkModel.reorderBookmarks(mCurrentFolder, newOrder);
+        mBookmarkModel.reorderBookmarks(getCurrentFolderId(), newOrder);
         if (mDragStateDelegate.getDragActive()) {
             RecordUserAction.record("MobileBookmarkManagerDragReorder");
         }
@@ -567,7 +565,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     @Override
     public void simulateSignInForTesting() {
         mSyncStateChangedListener.syncStateChanged();
-        mBookmarkUiObserver.onFolderStateSet(mCurrentFolder);
+        mBookmarkUiObserver.onFolderStateSet(getCurrentFolderId());
     }
 
     // BookmarkDelegate implementation.
@@ -736,6 +734,10 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
     // Private methods.
 
+    private @Nullable BookmarkId getCurrentFolderId() {
+        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
+    }
+
     /**
      * Puts all UI elements to loading state. This state might be overridden synchronously by
      * {@link #updateForUrl(String)}, if the bookmark model is already loaded.
@@ -855,7 +857,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         // TODO(https://crbug.com/1413463): Rework promo/header methods to simplify initial index.
         int index = hasPromoHeader() ? 1 : 0;
 
-        if (BookmarkId.SHOPPING_FOLDER.equals(mCurrentFolder)) {
+        if (BookmarkId.SHOPPING_FOLDER.equals(getCurrentFolderId())) {
             filterForPriceTrackingCategory(bookmarks);
         }
 
@@ -869,8 +871,8 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             entryList.add(bookmarkListEntry);
         }
 
-        if (mCurrentFolder.getType() == BookmarkType.READING_LIST
-                && getCurrentUiMode() != BookmarkUiMode.SEARCHING) {
+        if (getCurrentUiMode() != BookmarkUiMode.SEARCHING
+                && getCurrentFolderId().getType() == BookmarkType.READING_LIST) {
             ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(entryList);
         }
 
@@ -1024,7 +1026,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
      *         (which is true iff the top-level folders are showing)
      */
     private boolean topLevelFoldersShowing() {
-        return mCurrentFolder.equals(mBookmarkModel.getRootFolderId());
+        return Objects.equals(getCurrentFolderId(), mBookmarkModel.getRootFolderId());
     }
 
     /** Clears the highlighted bookmark, if there is one. */
@@ -1058,7 +1060,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_ID, bookmarkId);
         propertyModel.set(BookmarkManagerProperties.IS_FROM_FILTER_VIEW,
-                BookmarkId.SHOPPING_FOLDER.equals(mCurrentFolder));
+                BookmarkId.SHOPPING_FOLDER.equals(getCurrentFolderId()));
 
         boolean isHighlighted = Objects.equals(bookmarkId, mHighlightedBookmark);
         propertyModel.set(BookmarkManagerProperties.IS_HIGHLIGHTED, isHighlighted);
