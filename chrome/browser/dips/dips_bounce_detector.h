@@ -9,10 +9,13 @@
 #include <string>
 #include <variant>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -62,18 +65,25 @@ class DIPSRedirectContext {
                       const GURL& initial_url);
   ~DIPSRedirectContext();
 
-  // Immediately calls the DIPSRedirectChainHandler for the uncommitted
+  // Immediately calls the `DIPSRedirectChainHandler` for the uncommitted
   // navigation. It will take into account the length and initial URL of the
   // current chain (without modifying it).
   void HandleUncommitted(DIPSNavigationStart navigation_start,
                          std::vector<DIPSRedirectInfoPtr> server_redirects,
                          GURL final_url);
-  // Either terminates the current redirect chain (and starts a new one) or
-  // extends it, according to the value of `navigation_start`.
+
+  // Either calls for termination of the in-progress redirect chain, with a
+  // start of a new one, or extends it, according to the value of
+  // `navigation_start`.
   void AppendCommitted(DIPSNavigationStart navigation_start,
                        std::vector<DIPSRedirectInfoPtr> server_redirects);
-  // Terminates the current redirect chain, ending it with the given URL.
-  void EndChain(GURL url);
+
+  // Terminates the in-progress redirect chain, ending it with `final_url`, and
+  // parsing it to the `DIPSRedirectChainHandler` iff the chain is valid. It
+  // also starts a fresh redirect chain with `final_url` whilst clearing the
+  // state of the terminated chain.
+  // NOTE: A chain is valid if it has a non-empty `initial_url_`.
+  void EndChain(GURL final_url);
 
   [[nodiscard]] bool AddLateCookieAccess(GURL url, CookieOperation op);
 
@@ -90,6 +100,8 @@ class DIPSRedirectContext {
   void AppendServerRedirects(std::vector<DIPSRedirectInfoPtr> server_redirects);
 
   DIPSRedirectChainHandler handler_;
+  // Represents the start of a chain and also indicates the presence of a valid
+  // chain.
   GURL initial_url_;
   std::vector<DIPSRedirectInfoPtr> redirects_;
   // The index of the last redirect to have a known cookie access. When adding
@@ -190,13 +202,17 @@ class DIPSBounceDetector {
   // Only records a new user activation event once per
   // |kTimestampUpdateInterval| for a given page.
   void OnUserActivation();
+  // Makes a call to process the current chain before its state is destroyed by
+  // the tab closure.
   void BeforeDestruction();
-
   // Use the passed handler instead of
   // DIPSBounceDetectorDelegate::HandleRedirect().
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
+  // Makes a call to process the current chain on
+  // `client_bounce_detection_timer_`'s timeout.
+  void OnClientBounceDetectionTimeout();
 
  private:
   // Whether or not the `last_time` timestamp should be updated yet. This is
@@ -217,6 +233,7 @@ class DIPSBounceDetector {
   raw_ptr<DIPSBounceDetectorDelegate> delegate_;
   absl::optional<ClientBounceDetectionState> client_detection_state_;
   DIPSRedirectContext redirect_context_;
+  base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
 
 // A thin wrapper around DIPSBounceDetector to use it as a WebContentsObserver.

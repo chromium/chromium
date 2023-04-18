@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -157,10 +158,6 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   std::vector<std::string> reported_sites_;
 };
 
-// If you wait this long, even a navigation without user gesture is not
-// considered to be a bounce.
-const base::TimeDelta kTooLongForRedirect = base::Seconds(10);
-
 class FakeNavigation : public DIPSNavigationHandle {
  public:
   FakeNavigation(DIPSBounceDetector* detector,
@@ -219,6 +216,9 @@ class FakeNavigation : public DIPSNavigationHandle {
 
 class DIPSBounceDetectorTest : public ::testing::Test {
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   FakeNavigation StartNavigation(const std::string& url,
                                  UserGestureStatus status) {
     return FakeNavigation(&detector_, &delegate_, GURL(url),
@@ -239,15 +239,15 @@ class DIPSBounceDetectorTest : public ::testing::Test {
 
   void ActivatePage() { detector_.OnUserActivation(); }
 
-  void EndRedirectChain() {
-    // Committing a new navigation that began with a user gesture will terminate
-    // any previous redirect chain.
-    NavigateTo("http://endchain", kWithUserGesture);
+  void AdvanceDIPSTime(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+    task_environment_.RunUntilIdle();
   }
 
-  void AdvanceDIPSTime(base::TimeDelta delta) {
-    test_clock_.Advance(delta);
-    test_tick_clock_.Advance(delta);
+  // Advances the mocked clock by `dips::kClientBounceDetectionTimeout` to
+  // trigger the closure of the pending redirect chain.
+  void EndPendingRedirectChain() {
+    AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get());
   }
 
   const std::string& URLForNavigationSourceId(ukm::SourceId source_id) {
@@ -282,7 +282,9 @@ class DIPSBounceDetectorTest : public ::testing::Test {
     return delegate_.GetReportedSites();
   }
 
-  base::Time GetCurrentTime() { return test_clock_.Now(); }
+  base::Time GetCurrentTime() {
+    return task_environment_.GetMockClock()->Now();
+  }
 
   const std::vector<std::string>& redirects() const {
     return delegate_.redirects();
@@ -290,10 +292,101 @@ class DIPSBounceDetectorTest : public ::testing::Test {
 
  private:
   TestBounceDetectorDelegate delegate_;
-  base::SimpleTestTickClock test_tick_clock_;
-  base::SimpleTestClock test_clock_;
-  DIPSBounceDetector detector_{&delegate_, &test_tick_clock_, &test_clock_};
+  DIPSBounceDetector detector_{&delegate_, task_environment_.GetMockTickClock(),
+                               task_environment_.GetMockClock()};
 };
+
+// Ensures that for every navigation, a client redirect occurring before
+// `dips:kClientBounceDetectionTimeout` is considered a bounce whilst leaving
+// Server redirects unaffected.
+TEST_F(DIPSBounceDetectorTest,
+       DetectStatefulRedirects_Before_ClientBounceDetectionTimeout) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  auto mocked_bounce_time_1 = GetCurrentTime();
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://c.test")
+      .RedirectTo("http://d.test")
+      .Finish(true);
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  auto mocked_bounce_time_2 = GetCurrentTime();
+  StartNavigation("http://e.test", kNoUserGesture)
+      .RedirectTo("http://f.test")
+      .RedirectTo("http://g.test")
+      .Finish(true);
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  auto mocked_bounce_time_3 = GetCurrentTime();
+  StartNavigation("http://h.test", kWithUserGesture)
+      .RedirectTo("http://i.test")
+      .RedirectTo("http://j.test")
+      .Finish(true);
+
+  EndPendingRedirectChain();
+
+  EXPECT_THAT(redirects(), testing::ElementsAre(
+                               ("[1/5] a.test/ -> b.test/ (None) -> g.test/"),
+                               ("[2/5] a.test/ -> c.test/ (None) -> g.test/"),
+                               ("[3/5] a.test/ -> d.test/ (None) -> g.test/"),
+                               ("[4/5] a.test/ -> e.test/ (None) -> g.test/"),
+                               ("[5/5] a.test/ -> f.test/ (None) -> g.test/"),
+                               ("[1/2] g.test/ -> h.test/ (None) -> j.test/"),
+                               ("[2/2] g.test/ -> i.test/ (None) -> j.test/")));
+
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(
+                  MakeBounceTuple("http://b.test", mocked_bounce_time_1,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time_1,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://d.test", mocked_bounce_time_2,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://e.test", mocked_bounce_time_2,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://f.test", mocked_bounce_time_2,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://h.test", mocked_bounce_time_3,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://i.test", mocked_bounce_time_3,
+                                  /*stateful=*/false)));
+}
+
+// Ensures that for every navigation, a client redirect occurring after
+// `dips:kClientBounceDetectionTimeout` is not considered a bounce whilst server
+// redirects are unaffected.
+TEST_F(DIPSBounceDetectorTest,
+       DetectStatefulRedirects_After_ClientBounceDetectionTimeout) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get());
+  auto mocked_bounce_time_1 = GetCurrentTime();
+  StartNavigation("http://b.test", kWithUserGesture)
+      .RedirectTo("http://c.test")
+      .RedirectTo("http://d.test")
+      .Finish(true);
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get());
+  auto mocked_bounce_time_2 = GetCurrentTime();
+  StartNavigation("http://e.test", kNoUserGesture)
+      .RedirectTo("http://f.test")
+      .RedirectTo("http://g.test")
+      .Finish(true);
+
+  EndPendingRedirectChain();
+
+  EXPECT_THAT(redirects(), testing::ElementsAre(
+                               ("[1/2] a.test/ -> b.test/ (None) -> d.test/"),
+                               ("[2/2] a.test/ -> c.test/ (None) -> d.test/"),
+                               ("[1/2] d.test/ -> e.test/ (None) -> g.test/"),
+                               ("[2/2] d.test/ -> f.test/ (None) -> g.test/")));
+
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(
+                  MakeBounceTuple("http://b.test", mocked_bounce_time_1,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time_1,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://e.test", mocked_bounce_time_2,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://f.test", mocked_bounce_time_2,
+                                  /*stateful=*/false)));
+}
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
   NavigateTo("http://a.test", kWithUserGesture);
@@ -307,7 +400,9 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
       .RedirectTo("http://e.test")
       .Finish(true);
 
-  EndRedirectChain();
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(),
               testing::ElementsAre(
@@ -317,11 +412,11 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
 
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
-                  MakeBounceTuple("http://b.test", GetCurrentTime(),
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://c.test", GetCurrentTime(),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
                                   /*stateful=*/true),
-                  MakeBounceTuple("http://d.test", GetCurrentTime(),
+                  MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/true)));
 }
 
@@ -340,7 +435,9 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_LateNotification) {
   LateAccessClientCookie("http://e.test", CookieOperation::kRead);
   LateAccessClientCookie("http://e.test", CookieOperation::kChange);
 
-  EndRedirectChain();
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   EXPECT_THAT(
       redirects(),
@@ -350,26 +447,29 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_LateNotification) {
 
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
-                  MakeBounceTuple("http://b.test", GetCurrentTime(),
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/true),
-                  MakeBounceTuple("http://c.test", GetCurrentTime(),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://d.test", GetCurrentTime(),
+                  MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/true)));
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client) {
   NavigateTo("http://a.test", kWithUserGesture);
   NavigateTo("http://b.test", kWithUserGesture);
-  AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
   NavigateTo("http://c.test", kNoUserGesture);
-  EndRedirectChain();
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(), testing::ElementsAre(
                                ("[1/1] a.test/ -> b.test/ (None) -> c.test/")));
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(MakeBounceTuple(
-                  "http://b.test", GetCurrentTime(), /*stateful=*/false)));
+                  "http://b.test", mocked_bounce_time, /*stateful=*/false)));
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_MergeCookies) {
@@ -379,9 +479,14 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_MergeCookies) {
       .AccessCookie(CookieOperation::kRead)
       .Finish(true);
   // Client cookie write:
+  // NOTE: This navigation's client redirect will always be considered a bounce
+  // because of the (frozen) mocked clock.
   AccessClientCookie(CookieOperation::kChange);
   NavigateTo("http://c.test", kNoUserGesture);
-  EndRedirectChain();
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   // Redirect cookie access is reported as ReadWrite.
   EXPECT_THAT(redirects(),
@@ -389,19 +494,7 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_MergeCookies) {
                   ("[1/1] a.test/ -> b.test/ (ReadWrite) -> c.test/")));
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(MakeBounceTuple(
-                  "http://b.test", GetCurrentTime(), /*stateful=*/true)));
-}
-
-TEST_F(DIPSBounceDetectorTest,
-       DetectStatefulRedirect_Client_LongDelayNotRedirect) {
-  NavigateTo("http://a.test", kWithUserGesture);
-  NavigateTo("http://b.test", kWithUserGesture);
-  AdvanceDIPSTime(kTooLongForRedirect);
-  NavigateTo("http://c.test", kNoUserGesture);
-  EndRedirectChain();
-
-  EXPECT_THAT(redirects(), testing::IsEmpty());
-  EXPECT_THAT(GetRecordedBounces(), testing::IsEmpty());
+                  "http://b.test", mocked_bounce_time, /*stateful=*/true)));
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_ServerClientServer) {
@@ -412,7 +505,10 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_ServerClientServer) {
   StartNavigation("http://d.test", kNoUserGesture)
       .RedirectTo("http://e.test")
       .Finish(true);
-  EndRedirectChain();
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(), testing::ElementsAre(
                                ("[1/3] a.test/ -> b.test/ (None) -> e.test/"),
@@ -420,11 +516,11 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_ServerClientServer) {
                                ("[3/3] a.test/ -> d.test/ (None) -> e.test/")));
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
-                  MakeBounceTuple("http://b.test", GetCurrentTime(),
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://c.test", GetCurrentTime(),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://d.test", GetCurrentTime(),
+                  MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/false)));
 }
 
@@ -439,7 +535,10 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_Uncommitted) {
   StartNavigation("http://e.test", kWithUserGesture)
       .RedirectTo("http://f.test")
       .Finish(true);
-  EndRedirectChain();
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(), testing::ElementsAre(
                                ("[1/2] a.test/ -> b.test/ (None) -> d.test/"),
@@ -447,11 +546,11 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_Uncommitted) {
                                ("[1/1] a.test/ -> e.test/ (None) -> f.test/")));
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
-                  MakeBounceTuple("http://b.test", GetCurrentTime(),
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://c.test", GetCurrentTime(),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://e.test", GetCurrentTime(),
+                  MakeBounceTuple("http://e.test", mocked_bounce_time,
                                   /*stateful=*/false)));
 }
 
@@ -466,7 +565,10 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
   StartNavigation("http://e.test", kNoUserGesture)
       .RedirectTo("http://f.test")
       .Finish(true);
-  EndRedirectChain();
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(), testing::ElementsAre(
                                ("[1/2] a.test/ -> b.test/ (None) -> d.test/"),
@@ -475,11 +577,11 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
                                ("[2/2] a.test/ -> e.test/ (None) -> f.test/")));
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
-                  MakeBounceTuple("http://b.test", GetCurrentTime(),
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://c.test", GetCurrentTime(),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
                                   /*stateful=*/false),
-                  MakeBounceTuple("http://e.test", GetCurrentTime(),
+                  MakeBounceTuple("http://e.test", mocked_bounce_time,
                                   /*stateful=*/false)));
 }
 
@@ -744,7 +846,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
       .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://d.test")
       .Finish(true);
-  EndRedirectChain();
+  EndPendingRedirectChain();
 
   base::HistogramTester::CountsMap expected_counts;
   expected_counts["Privacy.DIPS.BounceCategoryClient.Standard"] = 1;
@@ -773,7 +875,6 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
 }
 
 TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetSiteHasInteraction("http://c.test");
@@ -786,7 +887,8 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
       .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://d.test")
       .Finish(true);
-  EndRedirectChain();
+
+  EndPendingRedirectChain();
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
       ukm_recorder.GetEntries("DIPS.Redirect", GetAllRedirectMetrics());

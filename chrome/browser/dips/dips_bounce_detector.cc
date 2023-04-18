@@ -5,14 +5,21 @@
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
 #include <cmath>
+#include <cstddef>
+#include <memory>
 #include <vector>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
@@ -25,6 +32,7 @@
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+#include "url/gurl.h"
 
 using content::NavigationHandle;
 
@@ -97,7 +105,14 @@ DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
       redirect_context_(
           base::BindRepeating(&DIPSBounceDetectorDelegate::HandleRedirectChain,
                               base::Unretained(delegate)),
-          /*initial_url=*/GURL::EmptyGURL()) {}
+          /*initial_url=*/GURL::EmptyGURL()),
+      client_bounce_detection_timer_(
+          FROM_HERE,
+          dips::kClientBounceDetectionTimeout.Get(),
+          base::BindRepeating(
+              &DIPSBounceDetector::OnClientBounceDetectionTimeout,
+              base::Unretained(this)),
+          tick_clock) {}
 
 DIPSBounceDetector::~DIPSBounceDetector() = default;
 
@@ -144,17 +159,22 @@ void DIPSRedirectContext::HandleUncommitted(
       base::Overloaded{
           [&](DIPSRedirectInfoPtr client_redirect) {
             // The uncommitted navigation began with a client redirect, so its
-            // chain is considered an extension of the in-progress chain
-            // (without modifying it).
+            // chain is considered an extension of *this*
+            // `DIPSRedirectContext`'s in-progress chain within the temp
+            // `DIPSRedirectContext`, whilst leaving *this*
+            // `DIPSRedirectContext`'s in-progress chain unchanged.
             DIPSRedirectContext temp_context(handler_, initial_url_);
             temp_context.AppendClientRedirect(std::move(client_redirect));
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.EndChain(std::move(final_url));
           },
-          [&](GURL client_url) {
+          [&](GURL previous_nav_last_committed_url) {
             // The uncommitted navigation began *without* a client redirect, so
-            // it started a new chain (the in-progress chain is irrelevant.)
-            DIPSRedirectContext temp_context(handler_, client_url);
+            // a new redirect chain within a new `DIPSRedirectContext` and
+            // process it immediately (the in-progress chain in *this*
+            // `DIPSRedirectContext` is irrelevant).
+            DIPSRedirectContext temp_context(handler_,
+                                             previous_nav_last_committed_url);
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.EndChain(std::move(final_url));
           },
@@ -165,18 +185,20 @@ void DIPSRedirectContext::HandleUncommitted(
 void DIPSRedirectContext::AppendCommitted(
     DIPSNavigationStart navigation_start,
     std::vector<DIPSRedirectInfoPtr> server_redirects) {
-  // If there was a client-side redirect, grow the chain. Otherwise, end it.
+  // If there was a client-side redirect before
+  // `DIPSBounceDetector::client_bounce_detection_timer_` timedout, grow the
+  // chain. Otherwise, end it.
   absl::visit(  //
       base::Overloaded{
           [this](DIPSRedirectInfoPtr client_redirect) {
             // The committed navigation began with a client redirect, so extend
-            // the in-progress chain.
+            // the in-progress redirect chain.
             AppendClientRedirect(std::move(client_redirect));
           },
-          [this](GURL client_url) {
+          [this](GURL previous_nav_last_committed_url) {
             // The committed navigation began *without* a client redirect, so
-            // end the old chain and start a new one.
-            EndChain(std::move(client_url));
+            // end the in-progress redirect chain and start a new one.
+            EndChain(previous_nav_last_committed_url);
           },
       },
       std::move(navigation_start));
@@ -185,19 +207,19 @@ void DIPSRedirectContext::AppendCommitted(
   AppendServerRedirects(std::move(server_redirects));
 }
 
-void DIPSRedirectContext::EndChain(GURL url) {
+void DIPSRedirectContext::EndChain(GURL final_url) {
   if (!initial_url_.is_empty()) {
     // Uncommitted chains may omit earlier (committed) redirects in the chain,
     // so |redirects_.size()| may not tell us the correct chain length. Instead,
     // use the index of the last item in the chain (since it was generated based
     // on the committed chain length).
     int length = redirects_.empty() ? 0 : redirects_.back()->index + 1;
-    auto chain =
-        std::make_unique<DIPSRedirectChainInfo>(initial_url_, url, length);
+    auto chain = std::make_unique<DIPSRedirectChainInfo>(initial_url_,
+                                                         final_url, length);
     handler_.Run(std::move(redirects_), std::move(chain));
   }
 
-  initial_url_ = std::move(url);
+  initial_url_ = std::move(final_url);
   redirects_.clear();
   update_offset_ = 0;
 }
@@ -326,23 +348,37 @@ void DIPSWebContentsObserver::DidStartNavigation(
 
 void DIPSBounceDetector::DidStartNavigation(
     DIPSNavigationHandle* navigation_handle) {
-  base::TimeTicks now = tick_clock_->NowTicks();
+  // These resources need to be collected as soon as possible, although some
+  // might not be used:
+  bool timedout = !client_bounce_detection_timer_.IsRunning();
+  client_bounce_detection_timer_.Stop();
+  auto now = tick_clock_->NowTicks();
 
-  DIPSRedirectInfoPtr client_redirect;
-  if (client_detection_state_.has_value()) {
-    base::TimeDelta bounce_delay =
-        now - client_detection_state_->page_load_time;
+  auto* server_bounce_detection_state = navigation_handle->GetServerState();
 
-    if (!navigation_handle->HasUserGesture() &&
-        (bounce_delay < dips::kBounceTimeout.Get())) {
-      // Time between page load and client-side redirect starting is only
-      // tracked for stateful bounces.
-      if (client_detection_state_->cookie_access_type >
-          CookieAccessType::kNone) {
-        UmaHistogramTimeToBounce(bounce_delay);
-      }
+  // A user gesture indicates no client-redirect. And, we won't consider a
+  // client-redirect to be a bounce if we timedout on the
+  // `client_bounce_detection_timer_ `.
+  if (navigation_handle->HasUserGesture() || timedout ||
+      !client_detection_state_.has_value()) {
+    server_bounce_detection_state->navigation_start =
+        delegate_->GetLastCommittedURL();
+    return;
+  }
 
-      client_redirect = std::make_unique<DIPSRedirectInfo>(
+  base::TimeDelta client_bounce_delay =
+      now - client_detection_state_->page_load_time;
+  // The delay between the previous navigation commit and the current
+  // client-redirect is only tracked for stateful bounces.
+  if (client_detection_state_->cookie_access_type > CookieAccessType::kNone) {
+    UmaHistogramTimeToBounce(client_bounce_delay);
+  }
+
+  // We cannot append this client-redirect to |redirect_context_| immediately,
+  // because we don't know if the navigation will commit. We must wait until
+  // DidFinishNavigation() is triggered.
+  server_bounce_detection_state->navigation_start =
+      std::make_unique<DIPSRedirectInfo>(
           /*url=*/delegate_->GetLastCommittedURL(),
           /*redirect_type=*/DIPSRedirectType::kClient,
           /*access_type=*/client_detection_state_->cookie_access_type,
@@ -350,27 +386,9 @@ void DIPSBounceDetector::DidStartNavigation(
           /*source_id=*/
           delegate_->GetPageUkmSourceId(),
           /*time=*/clock_->Now(),
-          /*client_bounce_delay=*/bounce_delay,
+          /*client_bounce_delay=*/client_bounce_delay,
           /*has_sticky_activation=*/
           client_detection_state_->last_activation_time.has_value());
-      // We cannot append |client_redirect| to |redirect_context_| immediately,
-      // because we don't know if the navigation will commit. We must wait until
-      // DidFinishNavigation().
-    }
-    // Similarly, we can't call redirect_context_->EndChain() yet even if this
-    // navigation isn't a redirect. (Technically, if more than
-    // kBounceThresholdSeconds time has passed, we can be certain that the chain
-    // has ended; but for code simplicity, we ignore that.)
-  }
-
-  ServerBounceDetectionState* server_state =
-      navigation_handle->GetServerState();
-
-  if (client_redirect) {
-    server_state->navigation_start = std::move(client_redirect);
-  } else {
-    server_state->navigation_start = delegate_->GetLastCommittedURL();
-  }
 }
 
 void DIPSWebContentsObserver::OnCookiesAccessed(
@@ -461,6 +479,10 @@ void DIPSWebContentsObserver::DidFinishNavigation(
 void DIPSBounceDetector::DidFinishNavigation(
     DIPSNavigationHandle* navigation_handle) {
   base::TimeTicks now = tick_clock_->NowTicks();
+
+  // Starts the timer.
+  client_bounce_detection_timer_.Reset();
+
   // Iff the primary page changed, reset the client detection state while
   // storing the page load time and previous_url. A primary page change is
   // verified by checking IsInPrimaryMainFrame, !IsSameDocument, and
@@ -604,7 +626,10 @@ void DIPSWebContentsObserver::WebContentsDestroyed() {
 }
 
 void DIPSBounceDetector::BeforeDestruction() {
-  // Handle the current chain before the tab closes and the state is lost.
+  redirect_context_.EndChain(delegate_->GetLastCommittedURL());
+}
+
+void DIPSBounceDetector::OnClientBounceDetectionTimeout() {
   redirect_context_.EndChain(delegate_->GetLastCommittedURL());
 }
 
