@@ -6194,27 +6194,6 @@
             ]
         }
     ],
-    "HatsBluetoothRevamp": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "prob": "0.01",
-                        "survey_cycle_length": "90",
-                        "survey_start_date_ms": "1642608000000",
-                        "trigger_id": "FvkCS2uJU0jBnuKU19R0UrXtnAdP"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSystemBluetoothRevamp"
-                    ]
-                }
-            ]
-        }
-    ],
     "HatsGeneralCamera": [
         {
             "platforms": [
