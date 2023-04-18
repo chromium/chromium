@@ -149,15 +149,16 @@ def main():
       print('You have removed one or more static initializers. Thanks!')
       print('To fix the build, update the expectation in:')
       print('    //chrome/android/static_initializers.gni')
-    else:
-      print('Dumping static initializers via dump-static-initializers.py:')
-      sys.stdout.flush()
-      _AnalyzeStaticInitializers(args.apk_or_aab, args.tool_prefix, True, '.',
-                                 ignored_libs, no_initializers_libs)
       print()
-      print('For more information:')
-      print('    https://chromium.googlesource.com/chromium/src/+/main/docs/'
-            'static_initializers.md')
+
+    print('Dumping static initializers via dump-static-initializers.py:')
+    sys.stdout.flush()
+    _AnalyzeStaticInitializers(args.apk_or_aab, args.tool_prefix, True, '.',
+                               ignored_libs, no_initializers_libs)
+    print()
+    print('For more information:')
+    print('    https://chromium.googlesource.com/chromium/src/+/main/docs/'
+          'static_initializers.md')
     sys.exit(1)
 
   if args.touch:
