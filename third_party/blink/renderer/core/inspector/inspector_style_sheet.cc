@@ -2286,7 +2286,7 @@ void InspectorStyleSheet::UpdateText() {
   if (!success)
     success = InlineStyleSheetText(&text);
   if (!success) {
-    bool loadingFailed = true;
+    bool loadingFailed = false;
     success = ResourceStyleSheetText(&text, &loadingFailed);
     request_failed_to_load_ = loadingFailed;
   }
