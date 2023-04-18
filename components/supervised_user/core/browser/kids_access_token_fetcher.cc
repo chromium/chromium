@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_access_token_fetcher.h"
+#include "components/supervised_user/core/browser/kids_access_token_fetcher.h"
 
 #include <memory>
 #include <utility>

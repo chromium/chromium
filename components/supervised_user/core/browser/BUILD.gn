@@ -8,6 +8,8 @@ if (is_android) {
 
 static_library("browser") {
   sources = [
+    "kids_access_token_fetcher.cc",
+    "kids_access_token_fetcher.h",
     "kids_chrome_management_client.cc",
     "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
@@ -65,6 +67,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "kids_access_token_fetcher_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
     "supervised_user_error_page_unittest.cc",

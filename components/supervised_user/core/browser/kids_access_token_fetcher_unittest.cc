@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_access_token_fetcher.h"
+#include "components/supervised_user/core/browser/kids_access_token_fetcher.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/signin/public/base/consent_level.h"
@@ -13,7 +14,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,7 @@ using ::base::OnceCallback;
 using ::base::Time;
 using ::base::unexpected;
 using ::base::Unretained;
-using ::content::BrowserTaskEnvironment;
+using ::base::test::TaskEnvironment;
 using ::signin::AccessTokenFetcher;
 using ::signin::AccessTokenInfo;
 using ::signin::ConsentLevel;
@@ -51,7 +51,7 @@ class KidsAccessTokenFetcherTest : public Test {
     FetchResultType fetch_result_ = unexpected(GoogleServiceAuthError());
   };
 
-  BrowserTaskEnvironment task_environment_;
+  TaskEnvironment task_environment_;
   IdentityTestEnvironment identity_test_env_;
 };
 

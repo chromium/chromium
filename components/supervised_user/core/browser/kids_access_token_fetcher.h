@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_ACCESS_TOKEN_FETCHER_H_
-#define CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_ACCESS_TOKEN_FETCHER_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_ACCESS_TOKEN_FETCHER_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_ACCESS_TOKEN_FETCHER_H_
 
 #include <memory>
 
@@ -13,7 +13,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "content/public/browser/browser_context.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -44,4 +43,4 @@ class KidsAccessTokenFetcher {
       primary_account_access_token_fetcher_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_ACCESS_TOKEN_FETCHER_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_ACCESS_TOKEN_FETCHER_H_
