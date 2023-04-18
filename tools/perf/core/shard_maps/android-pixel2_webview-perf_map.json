@@ -206,9 +206,6 @@
             "speedometer2-future": {
                 "abridged": false
             },
-            "speedometer2-pcscan": {
-                "abridged": false
-            },
             "startup.mobile": {
                 "abridged": false
             },
@@ -270,9 +267,6 @@
         "benchmarks": {
             "system_health.memory_mobile": {
                 "begin": 71,
-                "abridged": false
-            },
-            "system_health.pcscan": {
                 "abridged": false
             },
             "system_health.webview_startup": {

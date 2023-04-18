@@ -271,29 +271,3 @@ class WebviewStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   @classmethod
   def Name(cls):
     return 'system_health.webview_startup'
-
-
-@benchmark.Info(emails=['tmrts@chromium.org', 'mlippautz@chromium.org'],
-                component='Blink',
-                documentation_url='https://bit.ly/36XBtpn')
-class PCScanSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
-  """PCScan feature benchmark
-
-  Benchmark that enables PCScan feature.
-  """
-  options = {'pageset_repeat': 20}
-  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP, platforms.MOBILE]
-  SUPPORTED_PLATFORMS = [
-      story.expectations.ALL_DESKTOP, story.expectations.ALL_MOBILE
-  ]
-
-  def CreateStorySet(self, options):
-    return page_sets.SystemHealthPCScanStorySet()
-
-  @classmethod
-  def Name(cls):
-    return 'system_health.pcscan'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-        '--enable-features=PartitionAllocPCScanBrowserOnly')

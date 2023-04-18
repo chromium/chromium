@@ -29,15 +29,12 @@ class TestSystemHealthBenchmarks(unittest.TestCase):
   def testNamePrefix(self):
     for b in _GetAllSystemHealthBenchmarks():
       self.assertTrue(
-          b.Name().startswith('system_health.')
-          or b.Name().startswith('UNSCHEDULED_system_health.'),
+          b.Name().startswith('system_health.'),
           '%r must have name starting with "system_health." prefix' % b)
 
   def testSystemHealthStorySetIsUsed(self):
     for b in _GetAllSystemHealthBenchmarks():
       if b is system_health_benchmark.WebviewStartupSystemHealthBenchmark:
-        continue
-      if b is system_health_benchmark.PCScanSystemHealthBenchmark:
         continue
       self.assertIsInstance(
           b().CreateStorySet(None),

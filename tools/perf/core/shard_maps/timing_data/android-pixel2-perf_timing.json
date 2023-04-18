@@ -3832,10 +3832,6 @@
         "name": "speedometer2-future/Speedometer2"
     },
     {
-        "duration": "57.0",
-        "name": "speedometer2-pcscan/Speedometer2"
-    },
-    {
         "duration": "58.0",
         "name": "speedometer2/Speedometer2"
     },
@@ -4450,10 +4446,6 @@
     {
         "duration": "5.0",
         "name": "system_health.memory_mobile/long_running:tools:gmail-foreground"
-    },
-    {
-        "duration": "0.0",
-        "name": "system_health.pcscan/browse:news:cnn:2021"
     },
     {
         "duration": "10.0",

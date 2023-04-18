@@ -311,9 +311,6 @@
             "speedometer2-future": {
                 "abridged": false
             },
-            "speedometer2-pcscan": {
-                "abridged": false
-            },
             "system_health.common_desktop": {
                 "end": 11,
                 "abridged": false
@@ -354,9 +351,6 @@
         "benchmarks": {
             "system_health.memory_desktop": {
                 "begin": 72,
-                "abridged": false
-            },
-            "system_health.pcscan": {
                 "abridged": false
             },
             "tab_switching.typical_25": {

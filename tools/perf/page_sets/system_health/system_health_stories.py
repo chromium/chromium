@@ -4,7 +4,7 @@
 
 import os
 
-from page_sets.system_health import browsing_stories, chrome_stories
+from page_sets.system_health import chrome_stories
 from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 from page_sets.system_health import system_health_story
@@ -101,11 +101,3 @@ def IterAllSystemHealthStoryClasses():
       top_level_dir=os.path.dirname(start_dir),
       base_class=system_health_story.SystemHealthStory).items()):
     yield cls
-
-
-class SystemHealthPCScanStorySet(story.StorySet):
-  """A story set containing stories for benchmarking PCScan feature."""
-
-  def __init__(self, take_memory_measurement=False):
-    super(SystemHealthPCScanStorySet, self).__init__()
-    self.AddStory(browsing_stories.CnnStory2021(self, take_memory_measurement))

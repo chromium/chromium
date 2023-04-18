@@ -3852,10 +3852,6 @@
         "name": "speedometer2-minormc/Speedometer2"
     },
     {
-        "duration": "50.0",
-        "name": "speedometer2-pcscan/Speedometer2"
-    },
-    {
         "duration": "47.0",
         "name": "speedometer2/Speedometer2"
     },
@@ -4506,10 +4502,6 @@
     {
         "duration": "40.0",
         "name": "system_health.memory_desktop/play:media:soundcloud:2018"
-    },
-    {
-        "duration": "0.0",
-        "name": "system_health.pcscan/browse:news:cnn:2021"
     },
     {
         "duration": "0.0",

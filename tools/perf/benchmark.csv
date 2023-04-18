@@ -69,14 +69,12 @@ speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,al
 speedometer2,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer2-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
-speedometer2-pcscan,tmrts@chromium.org,Blink>JavaScript,,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 sync_performance_tests,mastiz@chromium.org,Services>Sync,https://chromium.googlesource.com/chromium/src/+/HEAD/components/sync/README.md,
 system_health.common_desktop,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.common_mobile,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
-system_health.pcscan,"tmrts@chromium.org, mlippautz@chromium.org",Blink,https://bit.ly/36XBtpn,"2021,health_check,javascript_heavy"
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org, changwan@chromium.org",Mobile>WebView>Perf,,2016
 tab_switching.typical_25,vovoy@chromium.org,OS>Performance,,"2016,tabs_switching"
 tracing.tracing_with_background_memory_infra,ssid@chromium.org,,,

@@ -20,7 +20,6 @@ UNDOCUMENTED_BENCHMARKS = {
     'speedometer2',
     'speedometer2-future',
     'speedometer2-minormc',
-    'speedometer2-pcscan',
     'startup.mobile',
     'system_health.webview_startup',
     'tab_switching.typical_25',
