@@ -79,6 +79,9 @@ public interface AppMenuPropertiesDelegate {
      */
     void loadingStateChanged(boolean isLoading);
 
+    /** Notify the delegate that menu was shown. */
+    void onMenuShown();
+
     /**
      * Notify the delegate that menu was dismissed.
      */

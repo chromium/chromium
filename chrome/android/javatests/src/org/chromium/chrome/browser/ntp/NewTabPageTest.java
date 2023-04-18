@@ -235,7 +235,6 @@ public class NewTabPageTest {
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mMvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
         Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getChildCount());
-        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
     }
 
     @After
@@ -647,6 +646,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testSettingOmniboxStubAddsUrlFocusChangeListener() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.setOmniboxStub(mOmniboxStub);
             verify(mOmniboxStub).addUrlFocusChangeListener(eq(mFeedReliabilityLogger));
@@ -657,6 +658,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingFocusOmnibox() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/false, /*pastedText=*/"");
@@ -668,6 +671,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingVoiceSearch() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/true, /*pastedText=*/"");
@@ -679,6 +684,8 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingHideWithBack() throws IOException {
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeTabbedActivity activity = (ChromeTabbedActivity) mActivityTestRule.getActivity();
             activity.handleBackPressed();
@@ -847,6 +854,20 @@ public class NewTabPageTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> logoCoordinator.onLogoClickedForTesting(true));
         histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
                 + " is not recorded correctly when click on Logo with doodle enabled.");
+    }
+
+    /**
+     * Test whether the clicking action on the menu button in {@link NewTabPage} is been
+     * recorded in histogram correctly.
+     */
+    @Test
+    @SmallTest
+    public void testRecordHistogramMenuButtonClick_Ntp() {
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.MENU_BUTTON);
+        onView(withId(R.id.menu_button_wrapper)).perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                + " is not recorded correctly when click on the menu button.");
     }
 
     /**

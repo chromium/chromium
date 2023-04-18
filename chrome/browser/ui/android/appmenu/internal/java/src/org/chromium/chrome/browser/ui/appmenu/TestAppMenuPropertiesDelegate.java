@@ -169,4 +169,7 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     public boolean isMenuIconAtStart() {
         return false;
     }
+
+    @Override
+    public void onMenuShown() {}
 }
