@@ -16,6 +16,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -24,6 +25,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace aura {
 class Window;
@@ -38,6 +40,7 @@ namespace ash {
 class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
+class ClipboardManagerBubbleView;
 class ClipboardNudgeController;
 class ScopedClipboardHistoryPause;
 
@@ -48,7 +51,8 @@ constexpr char kClipboardCopyToastId[] = "CopiedToClipboard";
 class ASH_EXPORT ClipboardHistoryControllerImpl
     : public ClipboardHistoryController,
       public ClipboardHistory::Observer,
-      public ClipboardHistoryResourceManager::Observer {
+      public ClipboardHistoryResourceManager::Observer,
+      public views::WidgetObserver {
  public:
   // Source and plain vs. rich text info for each paste. These values are used
   // in the Ash.ClipboardHistory.PasteType histogram and therefore cannot be
@@ -173,6 +177,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void OnCachedImageModelUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
+
   // Invoked by `GetHistoryValues()` once all clipboard instances with images
   // have been encoded into PNGs. Calls `callback` with the clipboard history
   // list, which tracks what has been copied to the clipboard. If clipboard
@@ -226,20 +233,28 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;
 
-  // The menu being shown.
-  std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;
   // Used to keep track of what is being copied to the clipboard.
   std::unique_ptr<ClipboardHistory> clipboard_history_;
   // Manages resources for clipboard history.
   std::unique_ptr<ClipboardHistoryResourceManager> resource_manager_;
   // Detects the search+v key combo.
   std::unique_ptr<AcceleratorTarget> accelerator_target_;
-  // Handles events on the contextual menu.
-  std::unique_ptr<MenuDelegate> menu_delegate_;
   // Controller that shows contextual nudges for multipaste.
   std::unique_ptr<ClipboardNudgeController> nudge_controller_;
 
-  // How the user last caused `context_menu_` to show.
+  // Context menu displayed by `ShowMenu()` when the clipboard history refresh
+  // feature is disabled. Null when `MenuIsShowing()` is false.
+  std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;
+  // Handles events on the `context_menu_`.
+  std::unique_ptr<MenuDelegate> menu_delegate_;
+  // Bubble view displayed by `ShowMenu()` when the clipboard history refresh
+  // feature is enabled. Null when `MenuIsShowing()` is false.
+  base::raw_ptr<ClipboardManagerBubbleView> clipboard_manager_ = nullptr;
+
+  // The timestamp when the clipboard history menu was last shown.
+  base::TimeTicks last_menu_show_time_;
+
+  // How the user last caused the clipboard history menu to show.
   crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
 
   // Whether a paste is currently being performed.
