@@ -26,7 +26,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/display/screen_base.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -69,7 +68,15 @@ class PopupBrowserTest : public InProcessBrowserTest {
     Browser* popup = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_NE(popup, browser);
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
+    // The popup's bounds are initialized after the synchronous window.open().
+    // Ideally, this might wait for browser->renderer window bounds init via:
+    // blink::mojom::Widget.UpdateVisualProperties, but it seems sufficient to
+    // wait for WebContents to load the URL after the initial about:blank doc,
+    // and then for that Document's readyState to be 'complete'. Anecdotally,
+    // initial bounds seem settled once outerWidth and outerHeight are non-zero.
+    EXPECT_TRUE(WaitForLoadStop(popup_contents));
     EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
+    EXPECT_NE("0x0", EvalJs(popup_contents, "outerWidth + 'x' + outerHeight"));
     return popup;
   }
 };
@@ -185,39 +192,25 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, OpenLeftAndTopZeroCoordinates) {
 }
 
 // Ensure popups are opened in the available space of the opener's display.
-// TODO(crbug.com/1211516): Flaky.
-IN_PROC_BROWSER_TEST_F(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {
+IN_PROC_BROWSER_TEST_F(PopupBrowserTest, OpenClampedToCurrentDisplay) {
   const auto display = GetDisplayNearestBrowser(browser());
-  EXPECT_TRUE(display.work_area().Contains(browser()->window()->GetBounds()))
+  ASSERT_TRUE(display.work_area().Contains(browser()->window()->GetBounds()))
       << "The browser window should be contained by its display's work area";
 
-  // Attempt to open a popup outside the bounds of the opener's display.
-  const char* const open_scripts[] = {
-      "open('.', '', 'left=' + (screen.availLeft - 50));",
-      "open('.', '', 'left=' + (screen.availLeft + screen.availWidth + 50));",
-      "open('.', '', 'top=' + (screen.availTop - 50));",
-      "open('.', '', 'top=' + (screen.availTop + screen.availHeight + 50));",
-      "open('.', '', 'left=' + (screen.availLeft - 50) + "
-      "',top=' + (screen.availTop - 50));",
-      "open('.', '', 'left=' + (screen.availLeft - 50) + "
-      "',top=' + (screen.availTop - 50) + "
-      "',width=300,height=300');",
-      "open('.', '', 'left=' + (screen.availLeft + screen.availWidth + 50) + "
-      "',top=' + (screen.availTop + screen.availHeight + 50) + "
-      "',width=300,height=300');",
-      "open('.', '', 'left=' + screen.availLeft + ',top=' + screen.availTop + "
-      "',width=' + (screen.availWidth + 300) + ',height=300');",
-      "open('.', '', 'left=' + screen.availLeft + ',top=' + screen.availTop + "
-      "',width=300,height='+ (screen.availHeight + 300));",
-      "open('.', '', 'left=' + screen.availLeft + ',top=' + screen.availTop + "
-      "',width=' + (screen.availWidth + 300) + "
-      "',height='+ (screen.availHeight + 300));",
+  // Attempt to open popups outside the bounds of the opener's display.
+  const char* const open_features[] = {
+      ("left=${screen.availLeft-50},top=${screen.availTop-50}"
+       ",width=200,height=200"),
+      ("left=${screen.availLeft+screen.availWidth+50}"
+       ",top=${screen.availTop+screen.availHeight+50},width=200,height=200"),
+      ("left=${screen.availLeft+screen.availWidth-50}"
+       ",top=${screen.availTop+screen.availHeight-50},width=500,height=500,"),
+      "width=${screen.availWidth+300},height=${screen.availHeight+300}",
   };
-  for (auto* const script : open_scripts) {
+  for (auto* const features : open_features) {
+    const std::string script = "open('.', '', `" + std::string(features) + "`)";
     Browser* popup = OpenPopup(browser(), script);
     // The popup should be constrained to the opener's available display space.
-    // TODO(crbug.com/897300): Wait for the final window placement to occur;
-    // this is flakily checking initial or intermediate window placement bounds.
     EXPECT_EQ(display, GetDisplayNearestBrowser(popup));
     EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
         << " script: " << script
@@ -227,32 +220,20 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {
 }
 
 // Ensure popups cannot be moved beyond the available display space by script.
-// TODO(crbug.com/1228795): Flaking on Linux Ozone
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
-#define MAYBE_MoveClampedToCurrentDisplay DISABLED_MoveClampedToCurrentDisplay
-#else
-#define MAYBE_MoveClampedToCurrentDisplay MoveClampedToCurrentDisplay
-#endif
-IN_PROC_BROWSER_TEST_F(PopupBrowserTest, MAYBE_MoveClampedToCurrentDisplay) {
+IN_PROC_BROWSER_TEST_F(PopupBrowserTest, MoveClampedToCurrentDisplay) {
   const auto display = GetDisplayNearestBrowser(browser());
+  ASSERT_TRUE(display.work_area().Contains(browser()->window()->GetBounds()))
+      << "The browser window should be contained by its display's work area";
   const char kOpenPopup[] =
-      "open('.', '', 'left=' + (screen.availLeft + 50) + "
-      "',top=' + (screen.availTop + 50) + "
-      "',width=150,height=100');";
+      ("open('.', '', `left=${screen.availLeft+screen.availWidth/2}"
+       ",top=${screen.availTop+screen.availHeight/2},width=200,height=200`)");
+
   const char* const kMoveScripts[] = {
-      "moveBy(screen.availWidth * 2, 0);",
-      "moveBy(screen.availWidth * -2, 0);",
-      "moveBy(0, screen.availHeight * 2);",
-      "moveBy(0, screen.availHeight * -2);",
-      "moveBy(screen.availWidth * 2, screen.availHeight * 2);",
-      "moveBy(screen.availWidth * -2, screen.availHeight * -2);",
-      "moveTo(screen.availLeft + screen.availWidth + 50, screen.availTop);",
-      "moveTo(screen.availLeft - 50, screen.availTop);",
-      "moveTo(screen.availLeft, screen.availTop + screen.availHeight + 50);",
-      "moveTo(screen.availLeft, screen.availTop - 50);",
-      ("moveTo(screen.availLeft + screen.availWidth + 50, "
-       "screen.availTop + screen.availHeight + 50);"),
-      "moveTo(screen.availLeft - 50, screen.availTop - 50);",
+      "moveBy(screen.availWidth*2, screen.availHeight* 2)",
+      "moveBy(screen.availWidth*-2, screen.availHeight*-2)",
+      ("moveTo(screen.availLeft+screen.availWidth+50,"
+       "screen.availTop+screen.availHeight+50)"),
+      "moveTo(screen.availLeft-50, screen.availTop-50)",
   };
   for (auto* const script : kMoveScripts) {
     Browser* popup = OpenPopup(browser(), kOpenPopup);
@@ -260,16 +241,17 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, MAYBE_MoveClampedToCurrentDisplay) {
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
     auto* widget = views::Widget::GetWidgetForNativeWindow(
         popup->window()->GetNativeWindow());
-
+    SCOPED_TRACE(testing::Message()
+                 << " script: " << script
+                 << " work_area: " << display.work_area().ToString()
+                 << " popup-before: " << popup_bounds.ToString());
     content::ExecuteScriptAsync(popup_contents, script);
-    // Wait for the substantial move, widgets may move during initialization.
+    // Wait for a substantial move, widgets bounds change during init.
     WidgetBoundsChangeWaiter(widget, /*move_by=*/40, /*resize_by=*/0).Wait();
     EXPECT_NE(popup_bounds.origin(), popup->window()->GetBounds().origin());
     EXPECT_EQ(popup_bounds.size(), popup->window()->GetBounds().size());
     EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
-        << " script: " << script
-        << " work_area: " << display.work_area().ToString()
-        << " popup: " << popup_bounds.ToString();
+        << " popup-after: " << popup->window()->GetBounds().ToString();
   }
 }
 
@@ -277,16 +259,12 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, MAYBE_MoveClampedToCurrentDisplay) {
 IN_PROC_BROWSER_TEST_F(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
   const auto display = GetDisplayNearestBrowser(browser());
   const char kOpenPopup[] =
-      "open('.', '', 'left=' + (screen.availLeft + 50) + "
-      "',top=' + (screen.availTop + 50) + "
-      "',width=150,height=100');";
-  // The popup cannot be resized beyond the current screen by script.
+      ("open('.', '', `left=${screen.availLeft},top=${screen.availTop}"
+       ",width=200,height=200`)");
+
   const char* const kResizeScripts[] = {
-      "resizeBy(screen.availWidth * 2, 0);",
-      "resizeBy(0, screen.availHeight * 2);",
-      "resizeTo(screen.availWidth + 200, 200);",
-      "resizeTo(200, screen.availHeight + 200);",
-      "resizeTo(screen.availWidth + 200, screen.availHeight + 200);",
+      "resizeBy(screen.availWidth*2, screen.availHeight*2)",
+      "resizeTo(screen.availWidth+200, screen.availHeight+200)",
   };
   for (auto* const script : kResizeScripts) {
     Browser* popup = OpenPopup(browser(), kOpenPopup);
@@ -294,26 +272,28 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
     auto* widget = views::Widget::GetWidgetForNativeWindow(
         popup->window()->GetNativeWindow());
-
+    SCOPED_TRACE(testing::Message()
+                 << " script: " << script
+                 << " work_area: " << display.work_area().ToString()
+                 << " popup-before: " << popup_bounds.ToString());
     content::ExecuteScriptAsync(popup_contents, script);
-    // Wait for the substantial resize, widgets may move during initialization.
+    // Wait for a substantial resize, widgets bounds change during init.
     WidgetBoundsChangeWaiter(widget, /*move_by=*/0, /*resize_by=*/100).Wait();
     EXPECT_NE(popup_bounds.size(), popup->window()->GetBounds().size());
     EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
-        << " script: " << script
-        << " work_area: " << display.work_area().ToString()
-        << " popup: " << popup_bounds.ToString();
+        << " popup-after: " << popup->window()->GetBounds().ToString();
   }
 }
 
 // Opens two popups with custom position and size, but one has noopener. They
 // should both have the same position and size. http://crbug.com/1011688
 IN_PROC_BROWSER_TEST_F(PopupBrowserTest, NoopenerPositioning) {
+  const char kFeatures[] =
+      "left=${screen.availLeft},top=${screen.availTop},width=200,height=200";
   Browser* noopener_popup = OpenPopup(
-      browser(),
-      "open('.', '', 'noopener=1,height=200,width=200,top=100,left=100')");
-  Browser* opener_popup = OpenPopup(
-      browser(), "open('.', '', 'height=200,width=200,top=100,left=100')");
+      browser(), "open('.', '', `noopener=1," + std::string(kFeatures) + "`)");
+  Browser* opener_popup =
+      OpenPopup(browser(), "open('.', '', `" + std::string(kFeatures) + "`)");
 
   WidgetBoundsEqualWaiter(views::Widget::GetWidgetForNativeWindow(
                               noopener_popup->window()->GetNativeWindow()),
@@ -439,30 +419,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WindowManagementPopupBrowserTest,
                          ::testing::Bool());
 
-// TODO(crbug.com/1183791): Disabled everywhere except ChromeOS and Mac because
-// of races with SetScreenInstance and observers not being notified.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
-#define MAYBE_AboutBlankCrossScreenPlacement AboutBlankCrossScreenPlacement
-#else
-#define MAYBE_AboutBlankCrossScreenPlacement \
-  DISABLED_AboutBlankCrossScreenPlacement
-#endif
 // Tests that an about:blank popup can be moved across screens with permission.
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
-                       MAYBE_AboutBlankCrossScreenPlacement) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+                       AboutBlankCrossScreenPlacement) {
   if (!SetUpVirtualDisplays()) {
     GTEST_SKIP() << "Virtual displays not supported on this platform.";
   }
-#else
-  display::ScreenBase test_screen;
-  test_screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
-                                        display::DisplayList::Type::PRIMARY);
-  test_screen.display_list().AddDisplay(
-      {2, gfx::Rect(901, 100, 802, 802)},
-      display::DisplayList::Type::NOT_PRIMARY);
-  display::Screen::SetScreenInstance(&test_screen);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   AssertMinimumDisplayCount(2);
   SetUpWebServer();
   auto* opener = browser()->tab_strip_model()->GetActiveWebContents();
@@ -499,10 +461,6 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
   EXPECT_TRUE(new_popup_display.work_area().Contains(popup_bounds))
       << " work_area: " << new_popup_display.work_area().ToString()
       << " popup: " << popup_bounds.ToString();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
-  display::Screen::SetScreenInstance(nullptr);
-#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
 }
 
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, BasicFullscreen) {
