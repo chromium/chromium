@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
@@ -59,6 +58,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -396,7 +396,8 @@ public class FeedStream implements Stream {
     /**
      * Implementation of FeedActionsHandler methods.
      */
-    class FeedActionsHandlerImpl implements FeedActionsHandler {
+    class FeedActionsHandlerImpl
+            implements org.chromium.chrome.browser.xsurface.FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
         // This is based on the menu animation time (218ms) from BottomSheet.java.
@@ -462,12 +463,37 @@ public class FeedStream implements Stream {
                     mNativeFeedStream, FeedStream.this, changeId);
         }
 
+        private @org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
+        int convertDuration(SnackbarDuration duration) {
+            switch (duration) {
+                case SHORT:
+                    return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
+                            .SnackbarDuration.SHORT;
+                case LONG:
+                    return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
+                            .SnackbarDuration.LONG;
+            }
+            return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
+                    .SHORT;
+        }
+
         @Override
         public void showSnackbar(String text, String actionLabel, SnackbarDuration duration,
-                SnackbarController delegateController) {
+                SnackbarController controller) {
+            showSnackbar(text, actionLabel, convertDuration(duration), controller);
+        }
+
+        @Override
+        public void showSnackbar(String text, String actionLabel,
+                @org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
+                int duration,
+                org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
+                        .SnackbarController delegateController) {
             assert ThreadUtils.runningOnUiThread();
             int durationMs = SNACKBAR_DURATION_MS_SHORT;
-            if (duration == FeedActionsHandler.SnackbarDuration.LONG) {
+            if (duration
+                    == org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
+                               .LONG) {
                 durationMs = SNACKBAR_DURATION_MS_LONG;
             }
             SnackbarManager.SnackbarController controller =
@@ -807,7 +833,7 @@ public class FeedStream implements Stream {
         FeedStreamJni.get().surfaceOpened(mNativeFeedStream, FeedStream.this);
 
         if (mFeedUserInteractionReliabilityLogger != null) {
-            mFeedUserInteractionReliabilityLogger.onStreamOpened(getXSurfaceStreamType());
+            mFeedUserInteractionReliabilityLogger.onStreamOpened(getStreamType());
         }
     }
 
@@ -1202,20 +1228,6 @@ public class FeedStream implements Stream {
                 return StreamType.SINGLE_WEB_FEED;
             default:
                 return StreamType.UNSPECIFIED;
-        }
-    }
-
-    // TODO(jianli): Consolidate 2 StreamType defined in different places.
-    private @org.chromium.chrome.browser.xsurface.StreamType int getXSurfaceStreamType() {
-        switch (mStreamKind) {
-            case StreamKind.FOR_YOU:
-                return org.chromium.chrome.browser.xsurface.StreamType.FOR_YOU;
-            case StreamKind.FOLLOWING:
-                return org.chromium.chrome.browser.xsurface.StreamType.WEB_FEED;
-            case StreamKind.SINGLE_WEB_FEED:
-                return org.chromium.chrome.browser.xsurface.StreamType.SINGLE_WEB_FEED;
-            default:
-                return org.chromium.chrome.browser.xsurface.StreamType.UNSPECIFIED;
         }
     }
 
