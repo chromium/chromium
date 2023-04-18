@@ -498,6 +498,14 @@ id<GREYMatcher> SystemSelectionCalloutCopyButton() {
   return [EditMenuAppInterface editMenuCopyButtonMatcher];
 }
 
+id<GREYMatcher> SystemSelectionCalloutCutButton() {
+  return [EditMenuAppInterface editMenuCutButtonMatcher];
+}
+
+id<GREYMatcher> SystemSelectionCalloutPasteButton() {
+  return [EditMenuAppInterface editMenuPasteButtonMatcher];
+}
+
 id<GREYMatcher> SystemSelectionCalloutOverflowButton() {
   return [EditMenuAppInterface editMenuNextButtonMatcher];
 }

@@ -397,6 +397,12 @@ id<GREYMatcher> SystemSelectionCalloutLinkToTextButton();
 // Returns a matcher for the copy button on the system selection callout.
 id<GREYMatcher> SystemSelectionCalloutCopyButton();
 
+// Returns a matcher for the cut button on the system selection callout.
+id<GREYMatcher> SystemSelectionCalloutCutButton();
+
+// Returns a matcher for the paste button on the system selection callout.
+id<GREYMatcher> SystemSelectionCalloutPasteButton();
+
 // Returns a matcher for the system selection callout overflow button to show
 // more menu items.
 id<GREYMatcher> SystemSelectionCalloutOverflowButton();

@@ -32,6 +32,8 @@
 // Some individual matchers for specific actions
 + (id<GREYMatcher>)editMenuLinkToTextButtonMatcher;
 + (id<GREYMatcher>)editMenuCopyButtonMatcher;
++ (id<GREYMatcher>)editMenuCutButtonMatcher;
++ (id<GREYMatcher>)editMenuPasteButtonMatcher;
 
 // Retrieve the accessibility IDs of menu items visible on screen.
 + (NSArray<NSString*>*)editMenuActions;
