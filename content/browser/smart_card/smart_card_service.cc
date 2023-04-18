@@ -41,15 +41,28 @@ class DocumentHelper
     service_->RegisterClient(std::move(client), std::move(callback));
   }
 
+  void Connect(const std::string& reader,
+               device::mojom::SmartCardShareMode share_mode,
+               device::mojom::SmartCardProtocolsPtr preferred_protocols,
+               ConnectCallback callback) override {
+    service_->Connect(reader, share_mode, std::move(preferred_protocols),
+                      std::move(callback));
+  }
+
  private:
   const std::unique_ptr<SmartCardService> service_;
 };
 
 }  // namespace
 
-SmartCardService::SmartCardService(SmartCardDelegate& delegate,
-                                   SmartCardReaderTracker& reader_tracker)
-    : delegate_(delegate), reader_tracker_(reader_tracker) {}
+SmartCardService::SmartCardService(
+    mojo::PendingRemote<device::mojom::SmartCardContextFactory> context_factory,
+    bool supports_reader_added_removed_notifications,
+    SmartCardReaderTracker& reader_tracker)
+    : reader_tracker_(reader_tracker),
+      context_factory_(std::move(context_factory)),
+      supports_reader_added_removed_notifications_(
+          supports_reader_added_removed_notifications) {}
 
 SmartCardService::~SmartCardService() {
   reader_tracker_->Stop(this);
@@ -97,7 +110,9 @@ void SmartCardService::Create(
   // RenderFrameHost commits a cross-document navigation. It forwards its Mojo
   // interface to SmartCardService.
   new DocumentHelper(
-      std::make_unique<SmartCardService>(*delegate, reader_tracker),
+      std::make_unique<SmartCardService>(
+          delegate->GetSmartCardContextFactory(*browser_context),
+          delegate->SupportsReaderAddedRemovedNotifications(), reader_tracker),
       *render_frame_host, std::move(receiver));
 }
 
@@ -111,10 +126,33 @@ void SmartCardService::RegisterClient(
     RegisterClientCallback callback) {
   clients_.Add(std::move(client));
 
-  const bool can_notify_added_removed =
-      delegate_->SupportsReaderAddedRemovedNotifications();
+  std::move(callback).Run(supports_reader_added_removed_notifications_);
+}
 
-  std::move(callback).Run(can_notify_added_removed);
+void SmartCardService::Connect(
+    const std::string& reader,
+    device::mojom::SmartCardShareMode share_mode,
+    device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    ConnectCallback callback) {
+  if (!context_) {
+    context_ = mojo::Remote<device::mojom::SmartCardContext>();
+    context_factory_->CreateContext(
+        base::BindOnce(&SmartCardService::OnCreateContextDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (!context_->is_bound()) {
+    // Still waiting for the response of a CreateContext() call.
+    pending_connect_calls_.emplace(reader, share_mode,
+                                   std::move(preferred_protocols),
+                                   std::move(callback));
+    return;
+  }
+
+  context_.value()->Connect(
+      reader, share_mode, std::move(preferred_protocols),
+      base::BindOnce(&SmartCardService::OnConnectDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SmartCardService::OnReaderAdded(
@@ -143,5 +181,78 @@ void SmartCardService::OnError(device::mojom::SmartCardError error) {
     client->Error(error);
   }
 }
+
+void SmartCardService::OnCreateContextDone(
+    device::mojom::SmartCardCreateContextResultPtr result) {
+  CHECK(context_ && !context_->is_bound());
+
+  if (result->is_error()) {
+    context_.reset();
+    FailPendingConnectCalls(result->get_error());
+    return;
+  }
+
+  context_->Bind(std::move(result->get_context()));
+  IssuePendingConnectCalls();
+}
+
+void SmartCardService::OnConnectDone(
+    ConnectCallback callback,
+    device::mojom::SmartCardConnectResultPtr result) {
+  CHECK(context_ && context_->is_bound());
+
+  if (result->is_error()) {
+    const device::mojom::SmartCardError error = result->get_error();
+    if (error == device::mojom::SmartCardError::kInvalidHandle ||
+        error == device::mojom::SmartCardError::kNoService) {
+      // Those are unrecoverable errors that mean the context is useless.
+      context_.reset();
+      std::move(callback).Run(std::move(result));
+      FailPendingConnectCalls(error);
+      return;
+    }
+  }
+
+  std::move(callback).Run(std::move(result));
+}
+
+void SmartCardService::IssuePendingConnectCalls() {
+  CHECK(context_ && context_->is_bound());
+
+  while (!pending_connect_calls_.empty()) {
+    auto pending_connect = std::move(pending_connect_calls_.front());
+    pending_connect_calls_.pop();
+
+    context_.value()->Connect(
+        pending_connect.reader, pending_connect.share_mode,
+        std::move(pending_connect.preferred_protocols),
+        base::BindOnce(&SmartCardService::OnConnectDone,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(pending_connect.callback)));
+  }
+}
+
+void SmartCardService::FailPendingConnectCalls(
+    device::mojom::SmartCardError error) {
+  while (!pending_connect_calls_.empty()) {
+    auto pending_connect = std::move(pending_connect_calls_.front());
+    pending_connect_calls_.pop();
+    std::move(pending_connect.callback)
+        .Run(device::mojom::SmartCardConnectResult::NewError(error));
+  }
+}
+
+SmartCardService::PendingConnectCall::~PendingConnectCall() = default;
+SmartCardService::PendingConnectCall::PendingConnectCall(PendingConnectCall&&) =
+    default;
+SmartCardService::PendingConnectCall::PendingConnectCall(
+    std::string reader,
+    device::mojom::SmartCardShareMode share_mode,
+    device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    SmartCardService::ConnectCallback callback)
+    : reader(std::move(reader)),
+      share_mode(share_mode),
+      preferred_protocols(std::move(preferred_protocols)),
+      callback(std::move(callback)) {}
 
 }  // namespace content

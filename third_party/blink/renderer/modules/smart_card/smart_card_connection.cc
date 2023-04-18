@@ -9,7 +9,15 @@
 
 namespace blink {
 
-SmartCardConnection::SmartCardConnection() = default;
+SmartCardConnection::SmartCardConnection(
+    mojo::PendingRemote<device::mojom::blink::SmartCardConnection>
+        pending_connection,
+    ExecutionContext* execution_context)
+    : connection_(execution_context) {
+  connection_.Bind(
+      std::move(pending_connection),
+      execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+}
 
 ScriptPromise SmartCardConnection::disconnect(const V8SmartCardDisposition&) {
   NOTIMPLEMENTED();
@@ -19,6 +27,11 @@ ScriptPromise SmartCardConnection::disconnect(const V8SmartCardDisposition&) {
 ScriptPromise SmartCardConnection::status() {
   NOTIMPLEMENTED();
   return ScriptPromise();
+}
+
+void SmartCardConnection::Trace(Visitor* visitor) const {
+  visitor->Trace(connection_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

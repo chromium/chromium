@@ -14,6 +14,12 @@ enum SmartCardReaderState {
   "unpowered"
 };
 
+enum SmartCardAccessMode {
+  "shared",
+  "exclusive",
+  "direct"
+};
+
 [
   ActiveScriptWrappable,
   Exposed=Window,
@@ -25,6 +31,10 @@ enum SmartCardReaderState {
 
   readonly attribute SmartCardReaderState state;
   attribute EventHandler onstatechange;
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<SmartCardConnection> connect(SmartCardAccessMode accessMode,
+      optional sequence<SmartCardProtocol> preferredProtocols);
 
   // TODO(crbug.com/1386175): add the rest of the API
 };

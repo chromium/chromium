@@ -59,6 +59,12 @@ class MODULES_EXPORT SmartCardResourceManager final
   void ReaderChanged(SmartCardReaderInfoPtr reader_info) override;
   void Error(device::mojom::blink::SmartCardError error) override;
 
+  // Used by SmarCardReader::connect
+  void Connect(const String& reader_name,
+               device::mojom::blink::SmartCardShareMode share_mode,
+               device::mojom::blink::SmartCardProtocolsPtr preferred_protocols,
+               mojom::blink::SmartCardService::ConnectCallback callback);
+
  private:
   SmartCardReader* GetOrCreateReader(SmartCardReaderInfoPtr info);
   void EnsureServiceConnection();

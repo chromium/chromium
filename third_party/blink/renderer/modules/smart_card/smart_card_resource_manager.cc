@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.h"
 
+#include "services/device/public/mojom/smart_card.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
@@ -108,6 +109,16 @@ void SmartCardResourceManager::Error(
   // * Forward error to existing SmartCardPresenceObservers.
 }
 
+void SmartCardResourceManager::Connect(
+    const String& reader_name,
+    device::mojom::blink::SmartCardShareMode share_mode,
+    device::mojom::blink::SmartCardProtocolsPtr preferred_protocols,
+    mojom::blink::SmartCardService::ConnectCallback callback) {
+  EnsureServiceConnection();
+  service_->Connect(reader_name, share_mode, std::move(preferred_protocols),
+                    std::move(callback));
+}
+
 void SmartCardResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(get_readers_promises_);
@@ -204,7 +215,7 @@ SmartCardReader* SmartCardResourceManager::GetOrCreateReader(
 
   const String name = info->name;
   SmartCardReader* reader = MakeGarbageCollected<SmartCardReader>(
-      std::move(info), GetExecutionContext());
+      this, std::move(info), GetExecutionContext());
 
   reader_cache_.insert(name, reader);
   return reader;
