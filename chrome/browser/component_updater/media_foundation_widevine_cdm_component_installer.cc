@@ -65,9 +65,11 @@ const char kWidevineCdmArch[] =
 
 namespace component_updater {
 
+// Allows this component to be disabled via `ComponentUpdatesEnabled` policy.
+// See https://chromeenterprise.google/policies/?policy=ComponentUpdatesEnabled
 bool MediaFoundationWidevineCdmComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool MediaFoundationWidevineCdmComponentInstallerPolicy::
