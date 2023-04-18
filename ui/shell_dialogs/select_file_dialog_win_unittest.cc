@@ -288,7 +288,11 @@ TEST_F(SelectFileDialogWinTest, UploadFolderCheckStrings) {
 
   EXPECT_FALSE(was_cancelled());
   ASSERT_EQ(1u, selected_paths().size());
-  EXPECT_EQ(selected_paths()[0], default_path);
+  // On some machines GetSystemDirectory returns C:\WINDOWS which is then
+  // normalized to C:\Windows by the file dialog, leading to spurious failures
+  // if a case-sensitive comparison is used.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      selected_paths()[0].value(), default_path.value()));
 }
 
 // Specifying the title when opening a dialog to select a file, select multiple
@@ -346,7 +350,11 @@ TEST_F(SelectFileDialogWinTest, TestSelectFile) {
 
   EXPECT_FALSE(was_cancelled());
   ASSERT_EQ(1u, selected_paths().size());
-  EXPECT_EQ(selected_paths()[0], default_path);
+  // On some machines GetSystemDirectory returns C:\WINDOWS which is then
+  // normalized to C:\Windows by the file dialog, leading to spurious failures
+  // if a case-sensitive comparison is used.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      selected_paths()[0].value(), default_path.value()));
 }
 
 // Tests that the file extension is automatically added.
@@ -374,7 +382,11 @@ TEST_F(SelectFileDialogWinTest, TestSaveFile) {
 
   EXPECT_FALSE(was_cancelled());
   ASSERT_EQ(1u, selected_paths().size());
-  EXPECT_EQ(selected_paths()[0], default_path.AddExtension(L"html"));
+  // On some machines GetSystemDirectory returns C:\WINDOWS which is then
+  // normalized to C:\Windows by the file dialog, leading to spurious failures
+  // if a case-sensitive comparison is used.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      selected_paths()[0].value(), default_path.AddExtension(L"html").value()));
 }
 
 // Tests that only specifying a basename as the default path works.
@@ -423,7 +435,11 @@ TEST_F(SelectFileDialogWinTest, SaveAsDifferentExtension) {
   RunUntilIdle();
 
   EXPECT_FALSE(was_cancelled());
-  EXPECT_EQ(selected_paths()[0], default_path);
+  // On some machines GetSystemDirectory returns C:\WINDOWS which is then
+  // normalized to C:\Windows by the file dialog, leading to spurious failures
+  // if a case-sensitive comparison is used.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      selected_paths()[0].value(), default_path.value()));
 }
 
 TEST_F(SelectFileDialogWinTest, OpenFileDifferentExtension) {
@@ -450,7 +466,11 @@ TEST_F(SelectFileDialogWinTest, OpenFileDifferentExtension) {
   RunUntilIdle();
 
   EXPECT_FALSE(was_cancelled());
-  EXPECT_EQ(selected_paths()[0], default_path);
+  // On some machines GetSystemDirectory returns C:\WINDOWS which is then
+  // normalized to C:\Windows by the file dialog, leading to spurious failures
+  // if a case-sensitive comparison is used.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      selected_paths()[0].value(), default_path.value()));
 }
 
 TEST_F(SelectFileDialogWinTest, SelectNonExistingFile) {
