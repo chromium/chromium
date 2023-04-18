@@ -37,10 +37,10 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 
 BASE_FEATURE(kEnableWifiSignalEventsReporting,
              "EnableWifiSignalEventsReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableNetworkConnectionStateEventsReporting,
              "EnableNetworkConnectionStateEventsReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableVpnConnectionStateEventsReporting,
              "EnableVpnConnectionStateEventsReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
