@@ -124,7 +124,7 @@ class WebrtcVideoEncoderGpu::Core
   void BitstreamBufferReady(
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
-  void NotifyError(media::VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const media::EncoderStatus& status) override;
 
  private:
   enum State { UNINITIALIZED, INITIALIZING, INITIALIZED, INITIALIZATION_ERROR };
@@ -340,10 +340,12 @@ void WebrtcVideoEncoderGpu::Core::BitstreamBufferReady(
   callbacks_.erase(metadata.timestamp);
 }
 
-void WebrtcVideoEncoderGpu::Core::NotifyError(
-    media::VideoEncodeAccelerator::Error error) {
+void WebrtcVideoEncoderGpu::Core::NotifyErrorStatus(
+    const media::EncoderStatus& status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LOG(ERROR) << __func__ << " error: " << error;
+  LOG(ERROR) << "NotifyErrorStatus() is called, code="
+             << static_cast<int32_t>(status.code())
+             << ", message=" << status.message();
 }
 
 void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
