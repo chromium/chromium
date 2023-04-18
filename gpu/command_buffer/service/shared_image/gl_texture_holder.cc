@@ -110,8 +110,7 @@ GLTextureHolder::~GLTextureHolder() {
     }
   } else {
     if (texture_) {
-      texture_->RemoveLightweightRef(!context_lost_);
-      texture_ = nullptr;
+      texture_.ExtractAsDangling()->RemoveLightweightRef(!context_lost_);
     }
   }
 }

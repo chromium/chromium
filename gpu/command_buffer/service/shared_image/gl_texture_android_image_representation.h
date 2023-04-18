@@ -41,7 +41,7 @@ class GLTextureAndroidImageRepresentation
   }
 
   gl::ScopedEGLImage egl_image_;
-  const raw_ptr<gles2::Texture, DanglingUntriaged> texture_;
+  raw_ptr<gles2::Texture> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };
 

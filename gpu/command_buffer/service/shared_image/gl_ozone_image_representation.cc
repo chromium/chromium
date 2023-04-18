@@ -131,8 +131,9 @@ TextureHolder::TextureHolder(
       texture_passthrough_(std::move(texture_passthrough)) {}
 
 TextureHolder::~TextureHolder() {
-  if (texture_)
-    texture_->RemoveLightweightRef(!context_lost_);
+  if (texture_) {
+    texture_.ExtractAsDangling()->RemoveLightweightRef(!context_lost_);
+  }
 }
 
 void TextureHolder::MarkContextLost() {

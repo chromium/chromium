@@ -21,9 +21,9 @@ GLTextureAndroidImageRepresentation::GLTextureAndroidImageRepresentation(
 
 GLTextureAndroidImageRepresentation::~GLTextureAndroidImageRepresentation() {
   EndAccess();
-
-  if (texture_)
-    texture_->RemoveLightweightRef(has_context());
+  if (texture_) {
+    texture_.ExtractAsDangling()->RemoveLightweightRef(has_context());
+  }
 }
 
 gles2::Texture* GLTextureAndroidImageRepresentation::GetTexture(

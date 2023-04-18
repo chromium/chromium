@@ -227,7 +227,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
 TestImageBacking::~TestImageBacking() {
   // Pretend our context is lost to avoid actual cleanup in |texture_| or
   // |passthrough_texture_|.
-  texture_->RemoveLightweightRef(/*have_context=*/false);
+  texture_.ExtractAsDangling()->RemoveLightweightRef(/*have_context=*/false);
   texture_passthrough_->MarkContextLost();
   texture_passthrough_.reset();
 
