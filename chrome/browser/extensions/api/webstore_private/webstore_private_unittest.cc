@@ -23,7 +23,10 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -130,6 +133,17 @@ void SetExtensionSettings(const std::string& settings_string,
   profile->GetTestingPrefService()->SetManagedPref(
       pref_names::kExtensionManagement,
       base::Value::ToUniquePtrValue(std::move(*settings)));
+}
+
+std::unique_ptr<KeyedService> BuildManagementApi(
+    content::BrowserContext* context) {
+  return std::make_unique<ManagementAPI>(context);
+}
+
+std::unique_ptr<KeyedService> BuildEventRouter(
+    content::BrowserContext* profile) {
+  return std::make_unique<extensions::EventRouter>(
+      profile, ExtensionPrefs::Get(profile));
 }
 
 }  // namespace
@@ -249,6 +263,10 @@ class WebstorePrivateBeginInstallWithManifest3Test
 
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
+    ManagementAPI::GetFactoryInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildManagementApi));
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildEventRouter));
     TestExtensionSystem* test_extension_system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
     service_ = test_extension_system->CreateExtensionService(

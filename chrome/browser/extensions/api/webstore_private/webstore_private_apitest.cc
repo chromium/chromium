@@ -53,6 +53,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
@@ -371,9 +372,18 @@ class ExtensionWebstorePrivateApiTestChild
     logged_in_user_mixin_.LogInUser(true /* issue_any_scope_token */);
     ExtensionWebstorePrivateApiTest::SetUpOnMainThread();
 
+    extensions_delegate_ =
+        std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
+
     InitializeFamilyData();
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+  }
+
+  void TearDownOnMainThread() override {
+    extensions_delegate_.reset();
+    identity_test_env_.reset();
+    ExtensionWebstorePrivateApiTest::TearDownOnMainThread();
   }
 
   ash::LoggedInUserMixin* GetLoggedInUserMixin() {
@@ -412,6 +422,7 @@ class ExtensionWebstorePrivateApiTestChild
 
  protected:
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  std::unique_ptr<SupervisedUserExtensionsDelegateImpl> extensions_delegate_;
 
  private:
   // Create another embedded test server to avoid starting the same one twice.
@@ -440,9 +451,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
           .SetID(kTestAppId)
           .SetVersion(kTestAppVersion)
           .Build();
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
-  ASSERT_TRUE(service->IsExtensionAllowed(*extension));
+  ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
 }
 
 // Tests no install occurs for a child when the parent permission
@@ -458,14 +467,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
   ASSERT_EQ(kTestAppId, listener.id());
   ASSERT_EQ(listener.last_failure_reason(),
             WebstoreInstaller::FailureReason::FAILURE_REASON_CANCELLED);
+
   scoped_refptr<const Extension> extension =
       extensions::ExtensionBuilder("test extension")
           .SetID(kTestAppId)
           .SetVersion(kTestAppVersion)
           .Build();
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
-  ASSERT_FALSE(service->IsExtensionAllowed(*extension));
+  ASSERT_FALSE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
 }
 
 // Tests that no parent permission is required for a child to install a theme.

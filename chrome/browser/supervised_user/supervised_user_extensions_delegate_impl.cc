@@ -104,6 +104,24 @@ bool SupervisedUserExtensionsDelegateImpl::CanInstallExtensions() const {
       ->CanInstallExtensions();
 }
 
+void SupervisedUserExtensionsDelegateImpl::AddExtensionApproval(
+    const extensions::Extension& extension) {
+  return SupervisedUserServiceFactory::GetForBrowserContext(context_)
+      ->AddExtensionApproval(extension);
+}
+
+void SupervisedUserExtensionsDelegateImpl::RemoveExtensionApproval(
+    const extensions::Extension& extension) {
+  return SupervisedUserServiceFactory::GetForBrowserContext(context_)
+      ->RemoveExtensionApproval(extension);
+}
+
+void SupervisedUserExtensionsDelegateImpl::RecordExtensionEnablementUmaMetrics(
+    bool enabled) const {
+  return SupervisedUserServiceFactory::GetForBrowserContext(context_)
+      ->RecordExtensionEnablementUmaMetrics(enabled);
+}
+
 void SupervisedUserExtensionsDelegateImpl::
     ShowParentPermissionDialogForExtension(const Extension& extension,
                                            content::WebContents* contents,

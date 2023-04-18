@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -233,10 +234,6 @@ class ParentPermissionDialogViewTest
   }
 
  protected:
-  SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
-  }
-
   const extensions::Extension* test_extension() {
     return test_extension_.get();
   }
@@ -253,7 +250,6 @@ class ParentPermissionDialogViewTest
  private:
   ParentPermissionDialogView* view_ = nullptr;
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
-
   ParentPermissionDialog::Result result_;
 
   // Emulate consumer ownership (create public owner key file, install
@@ -579,20 +575,25 @@ class ExtensionManagementApiTestSupervised
       // In addition to the two extensions from the PRE test, there's one more
       // test extension from the ParentPermissionDialogViewTest parent class.
       EXPECT_EQ(3u, extension_registry()->disabled_extensions().size());
+      scoped_refptr<const extensions::Extension> test_extension;
       for (const auto& e : extension_registry()->disabled_extensions()) {
         if (e->name() == "disabled_extension") {
           disabled_extension_id_ = e->id();
         } else if (e->name() == "Extension Management API Test") {
+          CHECK(test_extension_id_.empty());
           test_extension_id_ = e->id();
+          test_extension = e;
         }
       }
       EXPECT_FALSE(disabled_extension_id_.empty());
       EXPECT_FALSE(test_extension_id_.empty());
-
       // Approve the extension for running the test.
-      GetSupervisedUserService()->UpdateApprovedExtensionForTesting(
-          test_extension_id_,
-          SupervisedUserService::ApprovedExtensionChange::kAdd);
+      std::unique_ptr<extensions::SupervisedUserExtensionsDelegate>
+          supervised_user_extensions_delegate_ = std::make_unique<
+              extensions::SupervisedUserExtensionsDelegateImpl>(
+              browser()->profile());
+      supervised_user_extensions_delegate_->AddExtensionApproval(
+          *test_extension);
     }
   }
 

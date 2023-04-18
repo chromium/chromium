@@ -276,13 +276,6 @@ void SupervisedUserService::RemoveExtensionApproval(
   }
 }
 
-void SupervisedUserService::UpdateApprovedExtensionForTesting(
-    const std::string& extension_id,
-    ApprovedExtensionChange type) {
-  base::Version dummy_version("0");
-  UpdateApprovedExtension(extension_id, dummy_version.GetString(), type);
-}
-
 bool SupervisedUserService::
     GetSupervisedUserExtensionsMayRequestPermissionsPref() const {
   DCHECK(IsChild())

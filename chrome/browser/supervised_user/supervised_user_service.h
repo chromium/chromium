@@ -182,11 +182,6 @@ class SupervisedUserService
   // Updates the set of approved extensions to remove approval for |extension|.
   void RemoveExtensionApproval(const extensions::Extension& extension);
 
-  // Wraps UpdateApprovedExtension() for testing. Use this to simulate adding or
-  // removing custodian approval for an extension via sync.
-  void UpdateApprovedExtensionForTesting(const std::string& extension_id,
-                                         ApprovedExtensionChange type);
-
   bool GetSupervisedUserExtensionsMayRequestPermissionsPref() const;
 
   bool CanInstallExtensions() const;

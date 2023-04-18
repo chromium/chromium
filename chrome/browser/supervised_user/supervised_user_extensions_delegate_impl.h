@@ -49,12 +49,12 @@ class SupervisedUserExtensionsDelegateImpl
       const Extension& extension,
       content::WebContents* web_contents,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
+  bool CanInstallExtensions() const override;
+  void AddExtensionApproval(const extensions::Extension& extension) override;
+  void RemoveExtensionApproval(const extensions::Extension& extension) override;
+  void RecordExtensionEnablementUmaMetrics(bool enabled) const override;
 
  private:
-  // Returns true if |context_| represents a supervised child account who may
-  // install extensions with parent permission.
-  bool CanInstallExtensions() const;
-
   // Shows a parent permission dialog for |extension| and call |done_callback|
   // when it completes.
   void ShowParentPermissionDialogForExtension(const Extension& extension,

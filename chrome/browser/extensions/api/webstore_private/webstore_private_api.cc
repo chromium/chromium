@@ -527,14 +527,21 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   if (!dummy_extension_->is_theme()) {
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
-    if (service->AreExtensionsPermissionsEnabled() &&
-        !service->CanInstallExtensions()) {
-      // Assume that the block dialog will be shown here since it was checked
-      // that extensions cannot be installed by the child user. If extensions
-      // are allowed, the install prompt will be shown before the request
-      // permission dialog is shown.
-      RequestExtensionApproval(web_contents);
-      return;
+
+    if (service->AreExtensionsPermissionsEnabled()) {
+      SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+          ManagementAPI::GetFactoryInstance()
+              ->Get(profile_)
+              ->GetSupervisedUserExtensionsDelegate();
+      CHECK(supervised_user_extensions_delegate);
+      if (!supervised_user_extensions_delegate->CanInstallExtensions()) {
+        // Assume that the block dialog will be shown here since it was checked
+        // that extensions cannot be installed by the child user. If extensions
+        // are allowed, the install prompt will be shown before the request
+        // permission dialog is shown.
+        RequestExtensionApproval(web_contents);
+        return;
+      }
     }
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -631,9 +638,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnExtensionApprovalApproved() {
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  service->AddExtensionApproval(*dummy_extension_);
+  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+      ManagementAPI::GetFactoryInstance()
+          ->Get(profile_)
+          ->GetSupervisedUserExtensionsDelegate();
+  CHECK(supervised_user_extensions_delegate);
+  supervised_user_extensions_delegate->AddExtensionApproval(*dummy_extension_);
 
   HandleInstallProceed();
 }
