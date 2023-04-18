@@ -759,8 +759,7 @@ void PinManager::HandleQueryItem(Id dir_id,
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id)
-              << " has lookup error: "
-              << Quote(md.shortcut_details->target_lookup_status);
+              << " has lookup error: " << Quote(md);
       return;
     }
 
@@ -770,14 +769,15 @@ void PinManager::HandleQueryItem(Id dir_id,
       progress_.skipped_items++;
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
-              << Id(md.shortcut_details->target_stable_id) << " is trashed";
+              << Id(md.shortcut_details->target_stable_id)
+              << " is trashed: " << Quote(md);
       return;
     }
 
     // The shortcut target is accessible.
     VLOG(1) << "Following shortcut " << id << " " << Quote(path) << " to "
             << Quote(md.type) << " "
-            << Id(md.shortcut_details->target_stable_id);
+            << Id(md.shortcut_details->target_stable_id) << ": " << Quote(md);
 
     // Follow the shortcut.
     md.stable_id = md.shortcut_details->target_stable_id;
@@ -790,8 +790,9 @@ void PinManager::HandleQueryItem(Id dir_id,
     DCHECK_EQ(it->first, id);
     progress_.skipped_items++;
     VLOG(1) << "Skipped " << Quote(md.type) << " " << id << " " << Quote(path)
-            << " seen in Directory " << dir_id << " " << Quote(dir_path)
-            << ": Previously seen in Directory " << it->second;
+            << " " << Quote(md) << " seen in Directory " << dir_id << " "
+            << Quote(dir_path) << ": Previously seen in Directory "
+            << it->second;
     return;
   }
 
@@ -815,7 +816,7 @@ void PinManager::HandleQueryItem(Id dir_id,
 
   progress_.skipped_items++;
   LOG(ERROR) << "Unexpected item type " << Quote(md.type) << " for " << id
-             << " " << path;
+             << " " << path << ": " << Quote(md);
 }
 
 void PinManager::Complete(const Stage stage) {
