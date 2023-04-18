@@ -490,6 +490,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_HISTORY_CLUSTERS_BOOKMARKED},
       {"modulesJourneysOpenAllInNewTabGroupButtonText",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_OPEN_ALL_IN_NEW_TAB_GROUP_BUTTON_TEXT},
+      {"modulesJourneysCartAnnotation", IDS_NTP_MODULES_QUEST_CART_ANNOTATION},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},

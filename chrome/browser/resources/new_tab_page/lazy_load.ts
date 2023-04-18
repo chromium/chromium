@@ -38,6 +38,7 @@ export {DummyModuleElement, dummyV2Descriptor} from './modules/dummy_v2/module.j
 // </if>
 export {FeedProxy} from './modules/feed/feed_module_proxy.js';
 export {feedDescriptor, FeedModuleElement, feedV2Descriptor} from './modules/feed/module.js';
+export {CartTileModuleElement} from './modules/history_clusters/cart/cart_tile.js';
 export {HistoryClustersProxy, HistoryClustersProxyImpl} from './modules/history_clusters/history_clusters_proxy.js';
 export {HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS} from './modules/history_clusters/module.js';
 export {SuggestTileModuleElement} from './modules/history_clusters/suggest_tile.js';

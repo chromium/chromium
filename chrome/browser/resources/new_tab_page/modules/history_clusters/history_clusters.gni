@@ -8,6 +8,7 @@ history_clusters_web_component_files = [
   "modules/history_clusters/page_favicon.ts",
   "modules/history_clusters/suggest_tile.ts",
   "modules/history_clusters/tile.ts",
+  "modules/history_clusters/cart/cart_tile.ts",
 ]
 
 # List of files that don't need to be passed to html_to_wrapper().
