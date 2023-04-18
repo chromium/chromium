@@ -121,7 +121,7 @@ void SupervisedUserService::Init() {
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
                           base::Unretained(this)));
 
-  SetActive(IsChild());
+  SetActive(IsSubjectToParentalControls());
 }
 
 void SupervisedUserService::SetDelegate(Delegate* delegate) {
@@ -187,9 +187,9 @@ std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
 bool SupervisedUserService::IsURLFilteringEnabled() const {
 // TODO(b/271413641): Use capabilities to verify if filtering is enabled on iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return profile_->IsChild();
+  return IsSubjectToParentalControls();
 #else
-  return profile_->IsChild() &&
+  return IsSubjectToParentalControls() &&
          base::FeatureList::IsEnabled(
              supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 #endif
@@ -198,9 +198,9 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
 bool SupervisedUserService::AreExtensionsPermissionsEnabled() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return profile_->IsChild();
+  return IsSubjectToParentalControls();
 #else
-  return profile_->IsChild() &&
+  return IsSubjectToParentalControls() &&
          base::FeatureList::IsEnabled(
              supervised_user::
                  kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
@@ -278,7 +278,7 @@ void SupervisedUserService::RemoveExtensionApproval(
 
 bool SupervisedUserService::
     GetSupervisedUserExtensionsMayRequestPermissionsPref() const {
-  DCHECK(IsChild())
+  DCHECK(IsSubjectToParentalControls())
       << "Calling GetSupervisedUserExtensionsMayRequestPermissionsPref() only "
          "makes sense for supervised users";
   return user_prefs_->GetBoolean(
@@ -407,8 +407,9 @@ void SupervisedUserService::SetActive(bool active) {
   }
 }
 
-bool SupervisedUserService::IsChild() const {
-  return profile_->IsChild();
+bool SupervisedUserService::IsSubjectToParentalControls() const {
+  return user_prefs_->GetString(prefs::kSupervisedUserId) ==
+         supervised_user::kChildAccountSUID;
 }
 
 void SupervisedUserService::OnCustodianInfoChanged() {
@@ -417,7 +418,7 @@ void SupervisedUserService::OnCustodianInfoChanged() {
 }
 
 void SupervisedUserService::OnSupervisedUserIdChanged() {
-  SetActive(IsChild());
+  SetActive(IsSubjectToParentalControls());
 }
 
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
@@ -441,7 +442,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 }
 
 bool SupervisedUserService::IsSafeSitesEnabled() const {
-  return profile_->IsChild() &&
+  return IsSubjectToParentalControls() &&
          user_prefs_->GetBoolean(prefs::kSupervisedUserSafeSites);
 }
 
@@ -518,7 +519,7 @@ void SupervisedUserService::Shutdown() {
     return;
   DCHECK(!did_shutdown_);
   did_shutdown_ = true;
-  if (IsChild()) {
+  if (IsSubjectToParentalControls()) {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }
   SetActive(false);
@@ -596,7 +597,7 @@ std::string SupervisedUserService::GetDebugPolicyProviderName() const {
 
 bool SupervisedUserService::UserMayLoad(const Extension* extension,
                                         std::u16string* error) const {
-  DCHECK(IsChild());
+  DCHECK(IsSubjectToParentalControls());
   ExtensionState result = GetExtensionState(*extension);
   bool may_load = result != ExtensionState::BLOCKED;
   if (!may_load && error)
@@ -608,7 +609,7 @@ bool SupervisedUserService::MustRemainDisabled(
     const Extension* extension,
     extensions::disable_reason::DisableReason* reason,
     std::u16string* error) const {
-  DCHECK(IsChild());
+  DCHECK(IsSubjectToParentalControls());
   ExtensionState state = GetExtensionState(*extension);
   // Only extensions that require approval should be disabled.
   // Blocked extensions should be not loaded at all, and are taken care of
@@ -652,7 +653,7 @@ void SupervisedUserService::ChangeExtensionStateIfNecessary(
   // shouldn't be needed.
   if (!active_)
     return;
-  DCHECK(IsChild());
+  DCHECK(IsSubjectToParentalControls());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   const Extension* extension = registry->GetInstalledExtension(extension_id);
   // If the extension is not installed (yet), do nothing.

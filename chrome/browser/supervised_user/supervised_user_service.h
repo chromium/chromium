@@ -197,6 +197,12 @@ class SupervisedUserService
   // metrics. Ignores reporting when AreWebFilterPrefsDefault() is true.
   void ReportNonDefaultWebFilterValue() const;
 
+  // Returns true if both: the user is a type of Family Link supervised account
+  // and the platform supports Family Link supervision features.
+  // This method should be prefered on gating child-specific features if there
+  // is no dedicated method for the feature (e.g IsURLFilteringEnabled).
+  bool IsSubjectToParentalControls() const;
+
  private:
   friend class SupervisedUserServiceExtensionTestBase;
   friend class SupervisedUserServiceFactory;
@@ -221,10 +227,6 @@ class SupervisedUserService
           url_filter_delegate);
 
   void SetActive(bool active);
-
-  // Returns true if the user is a type of Family Link supervised account, this
-  // includes Unicorn, Geller, and Griffin accounts.
-  bool IsChild() const;
 
   void OnCustodianInfoChanged();
 
