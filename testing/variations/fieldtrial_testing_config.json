@@ -65,7 +65,7 @@
             ]
         }
     ],
-    "AlignWakeUps": [
+    "AlignWakeUpsWithAntiStarvation": [
         {
             "platforms": [
                 "android",
@@ -75,22 +75,19 @@
                 "fuchsia",
                 "ios",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
-                    "name": "Enabled16ms_20221212",
+                    "name": "Enabled16msAntiStarvation_20230405",
                     "params": {
+                        "count": "1",
                         "leeway": "16ms"
                     },
                     "enable_features": [
                         "AddTaskLeeway",
                         "AlignWakeUps",
-                        "ExplicitHighResolutionTimerWin"
-                    ],
-                    "disable_features": [
-                        "UseLessHighResTimers"
+                        "MaxDelayedStarvationTasks"
                     ]
                 }
             ]
@@ -5003,6 +5000,26 @@
                     },
                     "enable_features": [
                         "ExcludeLowEntropyImagesFromLCP"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ExplicitHighResolutionTimerWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230405",
+                    "params": {
+                        "leeway": "16ms"
+                    },
+                    "enable_features": [
+                        "AddTaskLeeway",
+                        "ExplicitHighResolutionTimerWin",
+                        "UseLessHighResTimers"
                     ]
                 }
             ]
