@@ -66,10 +66,6 @@ bool UserEligibleForAndroidSwitcherPrompt() {
       }
     }
   }
-  if (GetBringYourOwnTabsPromptType() ==
-      BringYourOwnTabsPromptType::kDisabled) {
-    return false;
-  }
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
 }
 
@@ -149,10 +145,15 @@ void BringAndroidTabsToIOSService::LoadTabs() {
   if (!position_of_tabs_in_synced_sessions_.empty()) {
     return;
   }
-  // If the tabs are empty, it's possible that the tabs aren't loaded because
-  // the last invocation to `LoadTabs()` happens before the user enrolls in
-  // sync. Try again.
-  if (UserIsAndroidSwitcher(device_switcher_result_dispatcher_)) {
+  // If the feature is enabled and the user is an android switcher BUT the tabs
+  // are empty, it's possible that the tabs aren't loaded because the last
+  // invocation to `LoadTabs()` happens before the user enrolls in sync. Try
+  // again.
+  // The feature check is called right before
+  // `UserIsAndroidSwitcher()` to avoid collecting unnecessary/noisy data.
+  if (GetBringYourOwnTabsPromptType() !=
+          BringYourOwnTabsPromptType::kDisabled &&
+      UserIsAndroidSwitcher(device_switcher_result_dispatcher_)) {
     LoadSyncedSessionsAndComputeTabPositions();
   }
 }
