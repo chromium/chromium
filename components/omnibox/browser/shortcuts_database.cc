@@ -32,7 +32,7 @@ const int kCompatibleVersionNumber = 1;
 
 void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
                              sql::Statement* s) {
-  DCHECK(base::IsValidUuid(shortcut.id));
+  DCHECK(base::Uuid::ParseCaseInsensitive(shortcut.id).is_valid());
   s->BindString(0, shortcut.id);
   s->BindString16(1, shortcut.text);
   s->BindString16(2, shortcut.match_core.fill_into_edit);

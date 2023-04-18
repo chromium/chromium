@@ -346,7 +346,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
                           base::UTF8ToUTF16(match.destination_url.host()))
           : text;
   AddShortcut(ShortcutsDatabase::Shortcut(
-      base::GenerateUuid(), expanded_text,
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), expanded_text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
       now, 1));
 }
