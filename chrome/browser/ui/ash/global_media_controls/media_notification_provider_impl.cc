@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
+#include "ash/system/media/media_color_theme.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "base/metrics/histogram_functions.h"
@@ -167,7 +168,7 @@ MediaNotificationProviderImpl::ShowMediaItem(
       BuildDeviceSelector(
           id, item, GetDeviceService(item), &device_selector_delegate_, profile,
           global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),
-      color_theme_,
+      color_theme_, GetCrosMediaColorTheme(),
       media_message_center::MediaDisplayPage::kQuickSettingsMediaDetailedView);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);

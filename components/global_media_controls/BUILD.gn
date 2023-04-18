@@ -34,6 +34,10 @@ component("global_media_controls") {
     "//ui/message_center/public/cpp",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants:constants" ]
+  }
+
   public_deps = [
     "//components/media_message_center",
     "//services/media_session/public/cpp",

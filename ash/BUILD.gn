@@ -1458,6 +1458,8 @@ component("ash") {
     "system/locale/unified_locale_detailed_view_controller.h",
     "system/lock_screen_notification_controller.cc",
     "system/lock_screen_notification_controller.h",
+    "system/media/media_color_theme.cc",
+    "system/media/media_color_theme.h",
     "system/media/media_notification_provider.cc",
     "system/media/media_notification_provider.h",
     "system/media/media_notification_provider_observer.h",

@@ -84,7 +84,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   std::unique_ptr<MediaNotificationViewAshImpl> CreateView(
       MediaDisplayPage media_display_page) {
     return std::make_unique<MediaNotificationViewAshImpl>(
-        container_.get(), item_->GetWeakPtr(), NotificationTheme(),
+        container_.get(), item_->GetWeakPtr(), MediaColorTheme(),
         media_display_page);
   }
 

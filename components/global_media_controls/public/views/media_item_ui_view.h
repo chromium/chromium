@@ -48,12 +48,20 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
  public:
   METADATA_HEADER(MediaItemUIView);
 
+  // MediaItemUIView is used in multiple places so some optional parameters may
+  // not be set:
+  // - Chrome OS media UI will set notification_theme for color theme.
+  // - Chrome OS Zenith 2.0 media UI will set media_color_theme for color theme
+  // and media_display_page for display page source.
+  // - Chrome browser media UI will set none of them.
   MediaItemUIView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       std::unique_ptr<MediaItemUIFooter> footer_view,
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
-      absl::optional<media_message_center::NotificationTheme> theme =
+      absl::optional<media_message_center::NotificationTheme>
+          notification_theme = absl::nullopt,
+      absl::optional<media_message_center::MediaColorTheme> media_color_theme =
           absl::nullopt,
       absl::optional<media_message_center::MediaDisplayPage>
           media_display_page = absl::nullopt);
@@ -186,7 +194,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
-  const bool is_cros_;
+  // Sets to true when the notification theme is provided on Chrome OS.
+  const bool has_notification_theme_;
 };
 
 }  // namespace global_media_controls
