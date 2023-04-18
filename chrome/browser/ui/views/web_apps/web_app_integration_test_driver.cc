@@ -1387,7 +1387,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
   base::RunLoop run_loop;
   BrowserAddedWaiter browser_added_waiter;
 #if BUILDFLAG(IS_MAC)
-  web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
+  apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #else
   web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #endif
@@ -1436,7 +1436,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
   base::RunLoop run_loop;
   BrowserAddedWaiter browser_added_waiter;
 #if BUILDFLAG(IS_MAC)
-  web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
+  apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #else
   web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
 #endif
@@ -1596,7 +1596,10 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
     app_browser_ = GetBrowserForAppId(profile(), app_id);
+    base::RunLoop run_loop;
+    apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    run_loop.Run();
     if (!app_browser_) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
@@ -1604,7 +1607,10 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
+    base::RunLoop run_loop;
+    apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    run_loop.Run();
   }
 #else
   if (is_open_in_app_browser) {
