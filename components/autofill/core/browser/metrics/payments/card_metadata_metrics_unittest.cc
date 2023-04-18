@@ -101,9 +101,24 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                  card_issuer_available() && card_metadata_available()),
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN,
                  !card_issuer_available() || !card_metadata_available())));
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.Amex.ShownWithMetadata", card_metadata_available(),
-      card_issuer_available());
+      card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.Amex.ShownWithMetadataOnce",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
+
+  // Show the popup again.
+  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true,
+                                        form(), form().fields.back());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.Amex.ShownWithMetadata", card_metadata_available(),
+      card_issuer_available() ? 2 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.Amex.ShownWithMetadataOnce",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
 }
 
 // Test metadata selected metrics are correctly logged.
@@ -136,7 +151,22 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
                  !card_issuer_available() || !card_metadata_available())));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.Amex.SelectedWithMetadata",
-      card_metadata_available(), card_issuer_available());
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.Amex.SelectedWithMetadataOnce",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
+
+  // Select the suggestion again.
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
+      MakeFrontendId({.credit_card_id = kCardGuid}),
+      AutofillTriggerSource::kPopup);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.Amex.SelectedWithMetadata",
+      card_metadata_available(), card_issuer_available() ? 2 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.Amex.SelectedWithMetadataOnce",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
 }
 
 // Params:
