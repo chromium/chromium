@@ -4,13 +4,20 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 
+#import "base/files/file_util.h"
+#import "base/no_destructor.h"
+#import "base/path_service.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/history/core/browser/top_sites.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/variations/variations_ids_provider.h"
+#import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/omnibox/test_fake_suggestions_service.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -38,6 +45,20 @@ bool GoogleToLocalhostURLRewriter(GURL* url, web::BrowserState* browser_state) {
   return true;
 }
 
+// Returns the directory containing fake suggestions files.
+const base::FilePath& GetTestDataDir() {
+  static base::NoDestructor<base::FilePath> dir([]() {
+    base::FilePath dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    return dir.AppendASCII("ios")
+        .AppendASCII("chrome")
+        .AppendASCII("test")
+        .AppendASCII("data")
+        .AppendASCII("omnibox");
+  }());
+  return *dir;
+}
+
 }  // namespace
 
 @implementation OmniboxAppInterface
@@ -62,6 +83,33 @@ bool GoogleToLocalhostURLRewriter(GURL* url, web::BrowserState* browser_state) {
   if (top_sites) {
     top_sites->AddBlockedUrl(GURL(base::SysNSStringToUTF8(URL)));
   }
+}
+
++ (void)setUpFakeSuggestionsService:(NSString*)filename {
+  RemoteSuggestionsService* remoteSuggestionsService =
+      RemoteSuggestionsServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState(), YES);
+
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+
+  base::FilePath filePath =
+      GetTestDataDir().AppendASCII(base::SysNSStringToUTF8(filename));
+  TestFakeSuggestionsService::GetInstance()->SetUp(
+      remoteSuggestionsService, templateURLService, filePath);
+}
+
++ (void)tearDownFakeSuggestionsService {
+  RemoteSuggestionsService* remoteSuggestionsService =
+      RemoteSuggestionsServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState(), YES);
+
+  network::mojom::URLLoaderFactory* urlLoaderFactory =
+      chrome_test_util::GetOriginalBrowserState()->GetURLLoaderFactory();
+
+  TestFakeSuggestionsService::GetInstance()->TearDown(remoteSuggestionsService,
+                                                      urlLoaderFactory);
 }
 
 @end

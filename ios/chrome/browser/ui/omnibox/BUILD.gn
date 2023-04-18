@@ -230,14 +230,22 @@ source_set("eg_app_support+eg2") {
   sources = [
     "omnibox_app_interface.h",
     "omnibox_app_interface.mm",
+    "test_fake_suggestions_service.cc",
+    "test_fake_suggestions_service.h",
   ]
   deps = [
+    ":omnibox_internal",
     "//base",
     "//components/google/core/common",
     "//components/history/core/browser",
+    "//components/omnibox/browser",
+    "//components/search_engines",
     "//components/variations:variations",
+    "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
@@ -245,6 +253,7 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//net:test_support",
+    "//services/network:test_support",
     "//ui/base",
     "//ui/base:test_support",
   ]
