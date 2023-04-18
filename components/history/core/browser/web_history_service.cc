@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/web_history_service_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -28,7 +27,6 @@
 #include "components/sync/protocol/history_status.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -72,7 +70,7 @@ const size_t kMaxRetries = 1;
 
 class RequestImpl : public WebHistoryService::Request {
  public:
-  ~RequestImpl() override {}
+  ~RequestImpl() override = default;
 
   // Returns the response code received from the server, which will only be
   // valid if the request succeeded.
@@ -96,10 +94,7 @@ class RequestImpl : public WebHistoryService::Request {
         url_loader_factory_(std::move(url_loader_factory)),
         url_(url),
         post_data_mime_type_(kPostDataMimeType),
-        response_code_(0),
-        auth_retry_count_(0),
         callback_(std::move(callback)),
-        is_pending_(false),
         partial_traffic_annotation_(partial_traffic_annotation) {
     DCHECK(identity_manager_);
     DCHECK(url_loader_factory_);
@@ -249,20 +244,20 @@ class RequestImpl : public WebHistoryService::Request {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   // Holds the response code received from the server.
-  int response_code_;
+  int response_code_ = 0;
 
   // Holds the response body received from the server.
   std::string response_body_;
 
   // The number of times this request has already been retried due to
   // authorization problems.
-  int auth_retry_count_;
+  int auth_retry_count_ = 0;
 
   // The callback to execute when the query is complete.
   WebHistoryService::CompletionCallback callback_;
 
   // True if the request was started and has not yet completed, otherwise false.
-  bool is_pending_;
+  bool is_pending_ = false;
 
   // Partial Network traffic annotation used to create SimpleURLLoader for this
   // request.
@@ -334,11 +329,9 @@ base::Value::Dict CreateDeletion(const std::string& min_time,
 
 }  // namespace
 
-WebHistoryService::Request::Request() {
-}
+WebHistoryService::Request::Request() = default;
 
-WebHistoryService::Request::~Request() {
-}
+WebHistoryService::Request::~Request() = default;
 
 WebHistoryService::WebHistoryService(
     signin::IdentityManager* identity_manager,
@@ -346,8 +339,7 @@ WebHistoryService::WebHistoryService(
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)) {}
 
-WebHistoryService::~WebHistoryService() {
-}
+WebHistoryService::~WebHistoryService() = default;
 
 void WebHistoryService::AddObserver(WebHistoryServiceObserver* observer) {
   observer_list_.AddObserver(observer);
@@ -484,10 +476,10 @@ void WebHistoryService::SetAudioHistoryEnabled(
   std::unique_ptr<Request> request(CreateRequest(
       url, std::move(completion_callback), partial_traffic_annotation));
 
-  base::Value enable_audio_history(base::Value::Type::DICT);
-  enable_audio_history.SetBoolKey("enable_history_recording",
-                                  new_enabled_value);
-  enable_audio_history.SetStringKey("client", "audio");
+  base::Value::Dict enable_audio_history =
+      base::Value::Dict()
+          .Set("enable_history_recording", new_enabled_value)
+          .Set("client", "audio");
   std::string post_data;
   base::JSONWriter::Write(enable_audio_history, &post_data);
   request->SetPostData(post_data);
