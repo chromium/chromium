@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/mac/foundation_util.h"
+#import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -573,6 +574,47 @@ BOOL gChromeContextMenuEnabled = NO;
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
     (web::WebState*)webState {
   return _javaScriptDialogPresenter.get();
+}
+
+- (BOOL)webState:(web::WebState*)webState
+    handlePermissions:(NSArray<NSNumber*>*)permissions
+      decisionHandler:(void (^)(BOOL allow))decisionHandler
+    API_AVAILABLE(ios(15.0)) {
+  DCHECK(decisionHandler);
+  CWVMediaCaptureType mediaCaptureType;
+  BOOL cameraPermissionRequested =
+      [permissions containsObject:@(web::PermissionCamera)];
+  BOOL micPermissionRequested =
+      [permissions containsObject:@(web::PermissionMicrophone)];
+  if (cameraPermissionRequested && micPermissionRequested) {
+    mediaCaptureType = CWVMediaCaptureTypeCameraAndMicrophone;
+  } else if (cameraPermissionRequested) {
+    mediaCaptureType = CWVMediaCaptureTypeCamera;
+  } else if (micPermissionRequested) {
+    mediaCaptureType = CWVMediaCaptureTypeMicrophone;
+  } else {
+    NOTREACHED() << "Unknown media permissions";
+  }
+
+  SEL selector = @selector(webView:
+      requestMediaCapturePermissionForType:decisionHandler:);
+  if ([_UIDelegate respondsToSelector:selector]) {
+    [_UIDelegate webView:self
+        requestMediaCapturePermissionForType:mediaCaptureType
+                             decisionHandler:^(CWVPermissionDecision decision) {
+                               switch (decision) {
+                                 case CWVPermissionDecisionGrant:
+                                   decisionHandler(YES);
+                                   break;
+                                 case CWVPermissionDecisionDeny:
+                                   decisionHandler(NO);
+                                   break;
+                               }
+                             }];
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 - (void)webState:(web::WebState*)webState

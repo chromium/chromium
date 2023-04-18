@@ -1134,6 +1134,49 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)webView:(CWVWebView*)webView
+    requestMediaCapturePermissionForType:(CWVMediaCaptureType)type
+                         decisionHandler:
+                             (void (^)(CWVPermissionDecision decision))
+                                 decisionHandler API_AVAILABLE(ios(15.0)) {
+  NSString* mediaCaptureType;
+  switch (type) {
+    case CWVMediaCaptureTypeCamera:
+      mediaCaptureType = @"Camera";
+      break;
+    case CWVMediaCaptureTypeMicrophone:
+      mediaCaptureType = @"Microphone";
+      break;
+    case CWVMediaCaptureTypeCameraAndMicrophone:
+      mediaCaptureType = @"Camera and Microphone";
+      break;
+  }
+
+  NSString* title =
+      [NSString stringWithFormat:@"Request %@ Permission", mediaCaptureType];
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:nil
+                                   preferredStyle:UIAlertControllerStyleAlert];
+
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:@"Grant"
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              decisionHandler(CWVPermissionDecisionGrant);
+                            }]];
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:@"Deny"
+                              style:UIAlertActionStyleDestructive
+                            handler:^(UIAlertAction* action) {
+                              decisionHandler(CWVPermissionDecisionDeny);
+                            }]];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)webView:(CWVWebView*)webView
     contextMenuConfigurationForElement:(CWVHTMLElement*)element
                      completionHandler:(void (^)(UIContextMenuConfiguration*))
                                            completionHandler {

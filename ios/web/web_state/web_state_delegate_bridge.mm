@@ -76,10 +76,9 @@ bool WebStateDelegateBridge::HandlePermissionsDecisionRequest(
     WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
   if ([delegate_ respondsToSelector:@selector(webState:
                                         handlePermissions:decisionHandler:)]) {
-    [delegate_ webState:source
-        handlePermissions:permissions
-          decisionHandler:handler];
-    return true;
+    return [delegate_ webState:source
+             handlePermissions:permissions
+               decisionHandler:handler];
   }
   return false;
 }
