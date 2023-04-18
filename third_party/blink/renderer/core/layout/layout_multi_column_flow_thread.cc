@@ -1225,6 +1225,11 @@ MinMaxSizes LayoutMultiColumnFlowThread::PreferredLogicalWidths() const {
   NOTREACHED_NORETURN();
 }
 
+MinMaxSizes LayoutMultiColumnFlowThread::ComputeIntrinsicLogicalWidths() const {
+  NOT_DESTROYED();
+  NOTREACHED_NORETURN();
+}
+
 void LayoutMultiColumnFlowThread::ComputeLogicalHeight(
     LayoutUnit logical_height,
     LayoutUnit logical_top,

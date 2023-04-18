@@ -256,12 +256,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       LineDirectionMode line_direction) const;
 
  protected:
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
-  void ComputeChildPreferredLogicalWidths(
-      LayoutObject& child,
-      LayoutUnit& min_preferred_logical_width,
-      LayoutUnit& max_preferred_logical_width) const;
-
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,
                        const PhysicalOffset& accumulated_offset,
@@ -316,9 +310,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
 
   TrackedLayoutBoxLinkedHashSet* PositionedObjectsInternal() const;
-
-  void ComputeBlockPreferredLogicalWidths(LayoutUnit& min_logical_width,
-                                          LayoutUnit& max_logical_width) const;
 
  protected:
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
