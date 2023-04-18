@@ -21,20 +21,6 @@
 
 namespace media {
 
-namespace {
-
-constexpr uint8_t zigzag_4x4[] = {
-    0, 1, 4, 8, 5, 2, 3, 6, 9, 12, 13, 10, 7, 11, 14, 15,
-};
-
-constexpr uint8_t zigzag_8x8[] = {
-    0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,  5,
-    12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6,  7,  14, 21, 28,
-    35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
-    58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
-
-}  // namespace
-
 // This struct contains the kernel-specific parts of the H265 acceleration,
 // that we don't want to expose in the .h file since they may differ from
 // upstream.
@@ -230,62 +216,67 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   ctrl.ptr = &v4l2_pps;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ctrl_h265_scaling_matrix v4l2_scaling_matrix;
+  struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix;
   memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix));
+  struct H265ScalingListData checker;
 
+  // TODO(jkardatzke): Optimize storage of the 32x32 since only indices 0 and 3
+  // are actually used. See ../../video/h265_parser.h
   static_assert(
-      std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
-              std::extent<decltype(pps->scaling_list4x4)>() &&
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
-              std::extent<decltype(pps->scaling_list4x4[0])>() &&
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8)>() <=
-              std::extent<decltype(pps->scaling_list8x8)>() &&
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
-              std::extent<decltype(pps->scaling_list8x8[0])>(),
-      "PPS scaling_lists must be of correct size");
-  static_assert(
-      std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
-              std::extent<decltype(sps->scaling_list4x4)>() &&
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
-              std::extent<decltype(sps->scaling_list4x4[0])>() &&
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8)>() <=
-              std::extent<decltype(sps->scaling_list8x8)>() &&
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
-              std::extent<decltype(sps->scaling_list8x8[0])>(),
-      "SPS scaling_lists must be of correct size");
+      std::size(checker.scaling_list_dc_coef_16x16) ==
+              std::size(v4l2_scaling_matrix.scaling_list_dc_coef_16x16) &&
+          std::size(checker.scaling_list_dc_coef_32x32) / 3 ==
+              std::size(v4l2_scaling_matrix.scaling_list_dc_coef_32x32) &&
+          std::size(checker.scaling_list_4x4) ==
+              std::size(v4l2_scaling_matrix.scaling_list_4x4) &&
+          std::size(checker.scaling_list_4x4[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_4x4[0]) &&
+          std::size(checker.scaling_list_8x8) ==
+              std::size(v4l2_scaling_matrix.scaling_list_8x8) &&
+          std::size(checker.scaling_list_8x8[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_8x8[0]) &&
+          std::size(checker.scaling_list_16x16) ==
+              std::size(v4l2_scaling_matrix.scaling_list_16x16) &&
+          std::size(checker.scaling_list_16x16[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_16x16[0]) &&
+          std::size(checker.scaling_list_32x32) / 3 ==
+              std::size(v4l2_scaling_matrix.scaling_list_32x32) &&
+          std::size(checker.scaling_list_32x32[0]) ==
+              std::size(v4l2_scaling_matrix.scaling_list_32x32[0]),
+      "scaling_list_data must be of correct size");
 
-  const auto* scaling_list4x4 = &sps->scaling_list4x4[0];
-  const auto* scaling_list8x8 = &sps->scaling_list8x8[0];
-  if (pps->pic_scaling_matrix_present_flag) {
-    scaling_list4x4 = &pps->scaling_list4x4[0];
-    scaling_list8x8 = &pps->scaling_list8x8[0];
-  }
+  if (sps->scaling_list_enabled_flag) {
+    // Copied from H265VaapiVideoDecoderDelegate:
+    // We already populated the scaling list data with default values in the
+    // parser if they are not present in the stream, so just fill them all in.
+    const auto& scaling_list = pps->pps_scaling_list_data_present_flag
+                                   ? pps->scaling_list_data
+                                   : sps->scaling_list_data;
 
-  for (size_t i = 0; i < std::size(v4l2_scaling_matrix.scaling_list_4x4); ++i) {
-    for (size_t j = 0; j < std::size(v4l2_scaling_matrix.scaling_list_4x4[i]);
-         ++j) {
-      // Parser uses source (zigzag) order, while V4L2 API requires raster
-      // order.
-      static_assert(
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4), 1>() ==
-          std::extent<decltype(zigzag_4x4)>());
-      v4l2_scaling_matrix.scaling_list_4x4[i][zigzag_4x4[j]] =
-          scaling_list4x4[i][j];
-    }
-  }
-  for (size_t i = 0; i < std::size(v4l2_scaling_matrix.scaling_list_8x8); ++i) {
-    for (size_t j = 0; j < std::size(v4l2_scaling_matrix.scaling_list_8x8[i]);
-         ++j) {
-      static_assert(
-          std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8), 1>() ==
-          std::extent<decltype(zigzag_8x8)>());
-      v4l2_scaling_matrix.scaling_list_8x8[i][zigzag_8x8[j]] =
-          scaling_list8x8[i][j];
-    }
+    memcpy(v4l2_scaling_matrix.scaling_list_4x4, scaling_list.scaling_list_4x4,
+           sizeof(v4l2_scaling_matrix.scaling_list_4x4));
+    memcpy(v4l2_scaling_matrix.scaling_list_8x8, scaling_list.scaling_list_8x8,
+           sizeof(v4l2_scaling_matrix.scaling_list_8x8));
+    memcpy(v4l2_scaling_matrix.scaling_list_16x16,
+           scaling_list.scaling_list_16x16,
+           sizeof(v4l2_scaling_matrix.scaling_list_16x16));
+    memcpy(v4l2_scaling_matrix.scaling_list_32x32[0],
+           scaling_list.scaling_list_32x32[0],
+           sizeof(v4l2_scaling_matrix.scaling_list_32x32[0]));
+    memcpy(v4l2_scaling_matrix.scaling_list_32x32[1],
+           scaling_list.scaling_list_32x32[3],
+           sizeof(v4l2_scaling_matrix.scaling_list_32x32[1]));
+    memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
+           scaling_list.scaling_list_dc_coef_16x16,
+           sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
+    v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
+        scaling_list.scaling_list_dc_coef_32x32[0];
+    v4l2_scaling_matrix.scaling_list_dc_coef_32x32[1] =
+        scaling_list.scaling_list_dc_coef_32x32[1];
   }
 
   memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_STATELESS_H265_SCALING_MATRIX;
+  ctrl.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX;
   ctrl.size = sizeof(v4l2_scaling_matrix);
   ctrl.ptr = &v4l2_scaling_matrix;
   ctrls.push_back(ctrl);
