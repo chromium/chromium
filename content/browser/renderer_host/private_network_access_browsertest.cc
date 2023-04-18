@@ -893,11 +893,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Navigate to the cached document.
-  //
-  // NOTE: We do not use `NavigateToURL()`, nor `window.location.reload()`, as
-  // both of those seem to bypass the cache.
   ResourceLoadObserver observer(shell());
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   observer.WaitForResourceCompletion(url);
 
   blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
@@ -922,11 +919,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Navigate to the cached document.
-  //
-  // NOTE: We do not use `NavigateToURL()`, nor `window.location.reload()`, as
-  // both of those seem to bypass the cache.
   ResourceLoadObserver observer(shell());
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   observer.WaitForResourceCompletion(url);
 
   blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
