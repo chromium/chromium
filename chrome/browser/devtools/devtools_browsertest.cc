@@ -236,11 +236,11 @@ void SwitchToExtensionPanel(DevToolsWindow* window,
   SwitchToPanel(window, (prefix + panel_name).c_str());
 }
 
-void DisallowDevToolsForForceInstalledExtenions(Browser* browser) {
+void DisallowDevToolsForSensitiveExtenions(Browser* browser) {
   browser->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                           kDisallowedForForceInstalledExtensions));
+                           kDisallowedForSenstiveExtensions));
 }
 
 void DisallowDevTools(Browser* browser) {
@@ -2313,7 +2313,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedCloseConnection) {
 }
 
 using ManifestLocation = extensions::mojom::ManifestLocation;
-class DevToolsDisallowedForForceInstalledExtensionsPolicyTest
+class DevToolsDisallowedForSensitiveExtensionsPolicyTest
     : public extensions::ExtensionBrowserTest {
  public:
   // Installs an extension from the test/data/devtools/extensions folder, using
@@ -2351,7 +2351,7 @@ class DevToolsDisallowedForForceInstalledExtensionsPolicyTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForSensitiveExtensionsPolicyTest,
                        DisallowedForExternalPolicyDownloadExtension) {
   // DevTools are disallowed for force-installed extensions by default.
   auto extension = ForceInstallExtension("simple_background_page");
@@ -2365,7 +2365,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForSensitiveExtensionsPolicyTest,
                        DisallowedForManagementExternalComponentExtension) {
   // DevTools are disallowed for component extensions with the management
   // permission by default.
@@ -2380,9 +2380,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForSensitiveExtensionsPolicyTest,
                        AllowedForNonManagementExternalComponentExtension) {
-  // DevTools are disallowed for component extensions with the management
+  // DevTools are allowed for component extensions without the management
   // permission by default.
   auto extension = InstallComponentExtension("simple_background_page");
   ASSERT_TRUE(extension);
@@ -2395,7 +2395,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForSensitiveExtensionsPolicyTest,
                        ExtensionConnectionClosedOnPolicyChange) {
   AllowDevTools(browser());
   auto extension = ForceInstallExtension("simple_background_page");
@@ -2410,11 +2410,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Policy change must close the connection with the force installed extension.
-  DisallowDevToolsForForceInstalledExtenions(browser());
+  DisallowDevToolsForSensitiveExtenions(browser());
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForSensitiveExtensionsPolicyTest,
                        ClosedAfterNavigationToExtension) {
   // DevTools are disallowed for force-installed extensions by default.
   auto extension = ForceInstallExtension("simple_background_page");
@@ -2435,7 +2435,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForSensitiveExtensionsPolicyTest,
                        AboutBlankConnectionKeptOnPolicyChange) {
   AllowDevTools(browser());
 
@@ -2451,12 +2451,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
 
   // Policy change to must not disrupt CDP coneciton unrelated to a force
   // installed extension.
-  DisallowDevToolsForForceInstalledExtenions(browser());
+  DisallowDevToolsForSensitiveExtenions(browser());
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
 class DevToolsAllowedByCommandLineSwitch
-    : public DevToolsDisallowedForForceInstalledExtensionsPolicyTest {
+    : public DevToolsDisallowedForSensitiveExtensionsPolicyTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);

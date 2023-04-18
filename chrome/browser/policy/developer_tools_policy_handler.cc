@@ -153,7 +153,7 @@ absl::optional<Availability> GetValueFromBothPolicies(
 // Returns the current policy-set developer tools availability according to
 // the values in |pref_service|. If no policy mandating developer tools
 // availability is set, the default will be
-// |Availability::kDisallowedForForceInstalledExtensions|.
+// |Availability::kDisallowedForSenstiveExtensions|.
 Availability GetDevToolsAvailability(const PrefService* pref_sevice) {
   int value = pref_sevice->GetInteger(prefs::kDevToolsAvailability);
   if (!IsValidDeveloperToolsAvailabilityValue(value)) {
@@ -184,9 +184,9 @@ Availability GetMostRestrictiveAvailability(Availability availability_1,
       availability_2 == Availability::kDisallowed) {
     return Availability::kDisallowed;
   }
-  if (availability_1 == Availability::kDisallowedForForceInstalledExtensions ||
-      availability_2 == Availability::kDisallowedForForceInstalledExtensions) {
-    return Availability::kDisallowedForForceInstalledExtensions;
+  if (availability_1 == Availability::kDisallowedForSenstiveExtensions ||
+      availability_2 == Availability::kDisallowedForSenstiveExtensions) {
+    return Availability::kDisallowedForSenstiveExtensions;
   }
   return Availability::kAllowed;
 }
@@ -250,14 +250,14 @@ void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 // static
 void DeveloperToolsPolicyHandler::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // The default for this pref is |kDisallowedForForceInstalledExtensions|, both
-  // for managed and for unmanaged users. This is fine for unmanaged users too,
+  // The default for this pref is |kDisallowedForSenstiveExtensions|, both for
+  // managed and for unmanaged users. This is fine for unmanaged users too,
   // because even if they have force-installed extensions (which could happen
   // e.g. through GPO for Chrome on Windows), developer tools should be disabled
   // for these by default.
   registry->RegisterIntegerPref(
       prefs::kDevToolsAvailability,
-      static_cast<int>(Availability::kDisallowedForForceInstalledExtensions));
+      static_cast<int>(Availability::kDisallowedForSenstiveExtensions));
 }
 
 policy::DeveloperToolsPolicyHandler::Availability

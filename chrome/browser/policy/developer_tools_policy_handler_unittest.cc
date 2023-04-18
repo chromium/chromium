@@ -44,20 +44,18 @@ TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyOverridesLegacyPolicy) {
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 
   PolicyMap policy;
-  policy.Set(
-      key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-      base::Value(0 /*DeveloperToolsDisallowedForForceInstalledExtensions*/),
-      nullptr);
+  policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+             base::Value(0 /*DeveloperToolsDisallowedForSensitiveExtensions*/),
+             nullptr);
   policy.Set(key::kDeveloperToolsDisabled, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
              nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
-  EXPECT_EQ(
-      static_cast<int>(Availability::kDisallowedForForceInstalledExtensions),
-      value->GetInt());
+  EXPECT_EQ(static_cast<int>(Availability::kDisallowedForSenstiveExtensions),
+            value->GetInt());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // No force-disabling of developer mode on extensions UI.
@@ -105,21 +103,19 @@ TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyAppliesIfLegacyPolicyInvalid) {
   EXPECT_EQ(static_cast<int>(Availability::kAllowed), value->GetInt());
 }
 
-TEST_F(DeveloperToolsPolicyHandlerTest, DisallowedForForceInstalledExtensions) {
+TEST_F(DeveloperToolsPolicyHandlerTest, DisallowedForSenstiveExtensions) {
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 
   PolicyMap policy;
-  policy.Set(
-      key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-      base::Value(0 /*DeveloperToolsDisallowedForForceInstalledExtensions*/),
-      nullptr);
+  policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+             base::Value(0 /*DeveloperToolsDisallowedForSensitiveExtensions*/),
+             nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
-  EXPECT_EQ(
-      static_cast<int>(Availability::kDisallowedForForceInstalledExtensions),
-      value->GetInt());
+  EXPECT_EQ(static_cast<int>(Availability::kDisallowedForSenstiveExtensions),
+            value->GetInt());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // No force-disabling of developer mode on extensions UI.
@@ -256,7 +252,7 @@ class DeveloperToolsPolicyHandlerWithProfileTest
 TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,
        GetEffectiveAvailabilityForced) {
   EXPECT_EQ(
-      Availability::kDisallowedForForceInstalledExtensions,
+      Availability::kDisallowedForSenstiveExtensions,
       DeveloperToolsPolicyHandler::GetEffectiveAvailability(primary_profile_));
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -295,23 +291,23 @@ INSTANTIATE_TEST_SUITE_P(
         TestParam(
             /* primary_profile_availability= */ Availability::kAllowed,
             /* secondary_profile_availability= */
-            Availability::kDisallowedForForceInstalledExtensions,
+            Availability::kDisallowedForSenstiveExtensions,
             /* expected_result= */
-            Availability::kDisallowedForForceInstalledExtensions),
+            Availability::kDisallowedForSenstiveExtensions),
         TestParam(
             /* primary_profile_availability= */ Availability::
-                kDisallowedForForceInstalledExtensions,
+                kDisallowedForSenstiveExtensions,
             /* secondary_profile_availability= */ Availability::kAllowed,
             /* expected_result= */
-            Availability::kDisallowedForForceInstalledExtensions),
+            Availability::kDisallowedForSenstiveExtensions),
         TestParam(
             /* primary_profile_availability= */ Availability::kDisallowed,
             /* secondary_profile_availability= */
-            Availability::kDisallowedForForceInstalledExtensions,
+            Availability::kDisallowedForSenstiveExtensions,
             /* expected_result= */ Availability::kDisallowed),
         TestParam(
             /* primary_profile_availability= */ Availability::
-                kDisallowedForForceInstalledExtensions,
+                kDisallowedForSenstiveExtensions,
             /* secondary_profile_availability= */ Availability::kDisallowed,
             /* expected_result= */ Availability::kDisallowed),
         TestParam(
