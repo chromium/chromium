@@ -9,13 +9,6 @@ from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
 
-def full_token_name(name, context):
-    namespace = context['token_namespace']
-    if namespace:
-        return f'{namespace}.{name}'
-    return name
-
-
 class Modes:
     LIGHT = 'light'
     DARK = 'dark'
@@ -86,7 +79,6 @@ class ModeKeyedModel(collections.OrderedDict, Submodel):
         self.variable_map = dict()
 
     def Add(self, name, value_obj, context):
-        name = full_token_name(name, context)
         if name not in self:
             self[name] = {}
 
@@ -171,6 +163,7 @@ class ColorModel(ModeKeyedModel):
         # created for each mode, suffixed by mode name.
         # (e.g my_color_light, my_color_debug)
         generate_per_mode = False
+
         # If a color has generate_inverted set, a |color_name|_inverted will be
         # generated which uses the dark color for light mode and vice versa.
         generate_inverted = False
@@ -285,6 +278,7 @@ class ColorModel(ModeKeyedModel):
     def _CreateValue(self, value):
         return Color(value)
 
+
 class SimpleModel(collections.OrderedDict, Submodel):
     def __init__(self, variable_type, check_func=None):
         self.variable_type = variable_type
@@ -295,13 +289,6 @@ class SimpleModel(collections.OrderedDict, Submodel):
             self.check_func(name, value_obj, context)
         self[name] = value_obj
         return [StyleVariable(self.variable_type, name, value_obj, context)]
-
-
-# A simple model where all variables are prefixed with the current namespace.
-class NamespacedModel(SimpleModel):
-    def Add(self, name, value_obj, context):
-        name = full_token_name(name, context)
-        return super().Add(name, value_obj, context)
 
 
 class Model(object):
@@ -318,7 +305,7 @@ class Model(object):
         self.colors = ColorModel(self.opacities)
         self.submodels[VariableType.COLOR] = self.colors
 
-        self.untyped_css = NamespacedModel(VariableType.UNTYPED_CSS)
+        self.untyped_css = SimpleModel(VariableType.UNTYPED_CSS)
         self.submodels[VariableType.UNTYPED_CSS] = self.untyped_css
 
         self.legacy_mappings = SimpleModel(VariableType.LEGACY_MAPPING)
@@ -330,22 +317,23 @@ class Model(object):
             assert value_obj['font_weight']
             assert value_obj['line_height']
 
-        self.typefaces = NamespacedModel(VariableType.TYPEFACE, CheckTypeFace)
+        self.typefaces = SimpleModel(VariableType.TYPEFACE, CheckTypeFace)
         self.submodels[VariableType.TYPEFACE] = self.typefaces
 
         def CheckFontFamily(name, value_obj, context):
             assert name.startswith('font_family_')
 
-        self.font_families = NamespacedModel(VariableType.FONT_FAMILY,
-                                             CheckFontFamily)
+        self.font_families = SimpleModel(VariableType.FONT_FAMILY,
+                                         CheckFontFamily)
         self.submodels[VariableType.FONT_FAMILY] = self.font_families
 
     def Add(self, variable_type, name, value_obj, context):
         '''Adds a new variable to the submodel for |variable_type|.
         '''
         try:
-            submodel = self.submodels[variable_type]
-            added = self.submodels[variable_type].Add(name, value_obj, context)
+            full_name = self.FullTokenName(name, context)
+            added = self.submodels[variable_type].Add(full_name, value_obj,
+                                                      context)
         except ValueError as err:
             raise ValueError(
                 f'Error parsing {variable_type} "{full_name}": {value_obj}'
@@ -356,6 +344,11 @@ class Model(object):
                 raise ValueError('Variable name "%s" is reused' % name)
             self.variable_map[var.name] = var
 
+    def FullTokenName(self, name, context):
+        namespace = context['token_namespace']
+        if namespace:
+            return f'{namespace}.{name}'
+        return name
 
     def PostProcess(self, default_preblend=True):
         '''Called after all variables have been added to perform operations that
