@@ -127,7 +127,7 @@ class MockQuotaManager : public QuotaManager {
 
   // Overrides QuotaManager's implementation so that tests can observe
   // calls to this function.
-  void NotifyWriteFailed(const blink::StorageKey& storage_key) override;
+  void OnClientWriteFailed(const blink::StorageKey& storage_key) override;
 
   void CreateBucketForTesting(
       const blink::StorageKey& storage_key,

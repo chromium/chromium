@@ -311,7 +311,7 @@ void MockQuotaManager::UpdateBucketPersistence(
   }
 }
 
-void MockQuotaManager::NotifyWriteFailed(const StorageKey& storage_key) {
+void MockQuotaManager::OnClientWriteFailed(const StorageKey& storage_key) {
   auto storage_key_error_log =
       write_error_tracker_.insert(std::pair<StorageKey, int>(storage_key, 0))
           .first;

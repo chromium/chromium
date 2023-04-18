@@ -180,7 +180,7 @@ void MediaLicenseStorageHost::DidWriteFile(WriteFileCallback callback,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!success) {
-    manager_->quota_manager_proxy()->NotifyWriteFailed(storage_key());
+    manager_->quota_manager_proxy()->OnClientWriteFailed(storage_key());
     std::move(callback).Run(false);
     return;
   }

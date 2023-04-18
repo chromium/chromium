@@ -70,6 +70,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   void ReportPerHourHistogram();
   void Start();
 
+  bool in_round() const { return round_statistics_.in_round; }
+
  private:
   friend class QuotaTemporaryStorageEvictorTest;
 

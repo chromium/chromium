@@ -10,7 +10,7 @@
 namespace chrome {
 
 // Shows a BubbleView that alerts the user about storage pressure.
-void ShowStoragePressureBubble(const url::Origin origin);
+void ShowStoragePressureBubble(const url::Origin& origin);
 
 }  // namespace chrome
 

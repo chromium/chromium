@@ -16,12 +16,12 @@ class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(StoragePressureBubbleView);
 
-  static void ShowBubble(const url::Origin origin);
+  static void ShowBubble(const url::Origin& origin);
 
  private:
   StoragePressureBubbleView(views::View* anchor_view,
                             Browser* browser,
-                            const url::Origin origin);
+                            const url::Origin& origin);
   ~StoragePressureBubbleView() override;
 
   void OnDialogAccepted();

@@ -202,7 +202,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);
 
-  virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
+  virtual void OnClientWriteFailed(const blink::StorageKey& storage_key);
 
   virtual void SetUsageCacheEnabled(QuotaClientType client_id,
                                     const blink::StorageKey& storage_key,

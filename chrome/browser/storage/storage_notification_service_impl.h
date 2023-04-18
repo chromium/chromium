@@ -9,7 +9,10 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/storage_notification_service.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+
+namespace blink {
+class StorageKey;
+}
 
 class StorageNotificationServiceImpl
     : public content::StorageNotificationService,
@@ -17,13 +20,20 @@ class StorageNotificationServiceImpl
  public:
   StorageNotificationServiceImpl();
   ~StorageNotificationServiceImpl() override;
+
+  StorageNotificationServiceImpl(const StorageNotificationServiceImpl& other) =
+      delete;
+  StorageNotificationServiceImpl operator=(
+      const StorageNotificationServiceImpl& other) = delete;
+
   // Called from the UI thread, this method returns a callback that can passed
   // to any thread, and proxies calls to
   // `MaybeShowStoragePressureNotification()` back to the UI thread. It wraps a
   // weak pointer to `this`.
   StoragePressureNotificationCallback
   CreateThreadSafePressureNotificationCallback() override;
-  void MaybeShowStoragePressureNotification(const blink::StorageKey) override;
+  void MaybeShowStoragePressureNotification(
+      const blink::StorageKey& storage_key) override;
   base::TimeTicks GetLastSentAtForTesting() {
     return disk_pressure_notification_last_sent_at_;
   }

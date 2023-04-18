@@ -325,7 +325,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // of space, and trigger actions if deemed appropriate.
   //
   // This method is declared as virtual to allow test code to override it.
-  virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
+  virtual void OnClientWriteFailed(const blink::StorageKey& storage_key);
 
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
@@ -430,7 +430,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Called when StoragePartition is initialized if embedder has an
   // implementation of StorageNotificationService.
   void SetStoragePressureCallback(
-      base::RepeatingCallback<void(blink::StorageKey)>
+      base::RepeatingCallback<void(const blink::StorageKey&)>
           storage_pressure_callback);
 
   // DevTools Quota Override methods:
@@ -639,6 +639,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       BucketInfo bucket_info,
       QuotaErrorOr<mojom::BucketTableEntryPtr> result);
 
+  // Called when the quota database or a quota client run into low disk space
+  // errors.
+  void OnFullDiskError(absl::optional<blink::StorageKey> storage_key);
+
+  // Notifies the embedder that space is too low. This ends up showing a
+  // user-facing dialog in Chrome.
+  void NotifyWriteFailed(const blink::StorageKey& storage_key);
+
   // Methods for eviction logic.
   void StartEviction();
   void DeleteBucketFromDatabase(
@@ -775,7 +783,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   GetQuotaSettingsFunc get_settings_function_;
   scoped_refptr<base::TaskRunner> get_settings_task_runner_;
-  base::RepeatingCallback<void(blink::StorageKey)> storage_pressure_callback_;
+  base::RepeatingCallback<void(const blink::StorageKey&)>
+      storage_pressure_callback_;
   base::RepeatingClosure quota_change_callback_;
   QuotaSettings settings_;
   base::TimeTicks settings_timestamp_;
@@ -785,6 +794,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       settings_callbacks_;
   CallbackQueue<StorageCapacityCallback, int64_t, int64_t>
       storage_capacity_callbacks_;
+
+  // The storage key for the last time a bucket was opened. This is used as an
+  // imperfect estimate of which site may have encountered the last quota
+  // database full disk error.
+  absl::optional<blink::StorageKey> last_opened_bucket_site_;
+
+  // The last time that an eviction round was started due to a full disk error.
+  base::TimeTicks last_full_disk_eviction_time_;
 
   GetBucketCallback lru_bucket_callback_;
 

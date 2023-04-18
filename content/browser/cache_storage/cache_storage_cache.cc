@@ -1894,7 +1894,7 @@ void CacheStorageCache::PutDidCreateEntry(
   put_context->cache_entry.reset(result.ReleaseEntry());
 
   if (rv != net::OK) {
-    quota_manager_proxy_->NotifyWriteFailed(bucket_locator_.storage_key);
+    quota_manager_proxy_->OnClientWriteFailed(bucket_locator_.storage_key);
     PutComplete(std::move(put_context), CacheStorageError::kErrorExists);
     return;
   }
@@ -1991,7 +1991,7 @@ void CacheStorageCache::PutDidWriteHeaders(
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   if (rv != expected_bytes) {
-    quota_manager_proxy_->NotifyWriteFailed(bucket_locator_.storage_key);
+    quota_manager_proxy_->OnClientWriteFailed(bucket_locator_.storage_key);
     PutComplete(
         std::move(put_context),
         MakeErrorStorage(ErrorStorageType::kPutDidWriteHeadersWrongBytes));

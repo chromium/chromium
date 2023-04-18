@@ -220,7 +220,7 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
     const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
         file_system_context_->quota_manager_proxy();
     if (quota_manager_proxy) {
-      quota_manager_proxy->NotifyWriteFailed(url_.storage_key());
+      quota_manager_proxy->OnClientWriteFailed(url_.storage_key());
     }
     if (CancelIfRequested())
       return;

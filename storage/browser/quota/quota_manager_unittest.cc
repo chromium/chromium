@@ -496,8 +496,8 @@ class QuotaManagerImplTest : public testing::Test {
   }
 
   void SetStoragePressureCallback(
-      base::RepeatingCallback<void(StorageKey)> callback) {
-    quota_manager_impl_->SetStoragePressureCallback(std::move(callback));
+      base::RepeatingCallback<void(const StorageKey&)> callback) {
+    quota_manager_impl_->SetStoragePressureCallback(callback);
   }
 
   void MaybeRunStoragePressureCallback(const StorageKey& storage_key,
@@ -3343,10 +3343,12 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_SessionOnly) {
 TEST_F(QuotaManagerImplTest, MaybeRunStoragePressureCallback) {
   bool callback_ran = false;
   auto cb = base::BindRepeating(
-      [](bool* callback_ran, StorageKey storage_key) { *callback_ran = true; },
+      [](bool* callback_ran, const StorageKey& storage_key) {
+        *callback_ran = true;
+      },
       &callback_ran);
 
-  SetStoragePressureCallback(std::move(cb));
+  SetStoragePressureCallback(cb);
 
   int64_t kGBytes = QuotaManagerImpl::kMBytes * 1024;
   MaybeRunStoragePressureCallback(StorageKey(), 100 * kGBytes, 2 * kGBytes);
@@ -3578,9 +3580,9 @@ TEST_F(QuotaManagerImplTest, SimulateStoragePressure_Incognito) {
   bool callback_ran = false;
 
   auto cb = base::BindLambdaForTesting(
-      [&callback_ran](StorageKey storage_key) { callback_ran = true; });
+      [&callback_ran](const StorageKey& storage_key) { callback_ran = true; });
 
-  SetStoragePressureCallback(std::move(cb));
+  SetStoragePressureCallback(cb);
 
   ResetQuotaManagerImpl(/*is_incognito=*/true);
 

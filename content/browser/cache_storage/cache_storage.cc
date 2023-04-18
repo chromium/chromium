@@ -401,7 +401,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
       const storage::BucketLocator& bucket_locator) {
     if (!base::WriteFile(tmp_path, data)) {
       base::DeleteFile(tmp_path);
-      quota_manager_proxy->NotifyWriteFailed(bucket_locator.storage_key);
+      quota_manager_proxy->OnClientWriteFailed(bucket_locator.storage_key);
       return false;
     }
 

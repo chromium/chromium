@@ -126,7 +126,7 @@ void QuotaTemporaryStorageEvictor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Don't start while we're in a round.
-  if (round_statistics_.in_round) {
+  if (in_round()) {
     return;
   }
 
@@ -159,7 +159,7 @@ void QuotaTemporaryStorageEvictor::StartEvictionTimerWithDelay(
 void QuotaTemporaryStorageEvictor::ConsiderEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Only look for expired buckets once per round.
-  if (round_statistics_.in_round) {
+  if (in_round()) {
     OnEvictedExpiredBuckets(blink::mojom::QuotaStatusCode::kOk);
     return;
   }

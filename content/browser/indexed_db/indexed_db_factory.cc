@@ -728,7 +728,7 @@ IndexedDBFactory::GetOrOpenBucketFactory(
                      bucket_locator);
 
     if (disk_full) {
-      context_->quota_manager_proxy()->NotifyWriteFailed(
+      context_->quota_manager_proxy()->OnClientWriteFailed(
           bucket_locator.storage_key);
       return {IndexedDBBucketStateHandle(), s,
               IndexedDBDatabaseError(blink::mojom::IDBException::kQuotaError,
@@ -969,7 +969,7 @@ void IndexedDBFactory::OnDatabaseError(
     HandleBackingStoreCorruption(bucket_locator, error);
   } else {
     if (status.IsIOError()) {
-      context_->quota_manager_proxy()->NotifyWriteFailed(
+      context_->quota_manager_proxy()->OnClientWriteFailed(
           bucket_locator.storage_key);
     }
     HandleBackingStoreFailure(bucket_locator);

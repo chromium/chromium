@@ -1046,6 +1046,8 @@ void QuotaManagerImpl::UpdateOrCreateBucket(
     return;
   }
 
+  last_opened_bucket_site_ = bucket_params.storage_key;
+
   // The default bucket skips the quota check.
   if (bucket_params.name == kDefaultBucketName) {
     PostTaskAndReplyWithResultForDBThread(
@@ -1354,26 +1356,10 @@ void QuotaManagerImpl::GetBucketUsageAndQuota(BucketId id,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void QuotaManagerImpl::NotifyWriteFailed(const StorageKey& storage_key) {
+void QuotaManagerImpl::OnClientWriteFailed(const StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto age_of_disk_stats = base::TimeTicks::Now() -
-                           std::get<0>(cached_disk_stats_for_storage_pressure_);
-
-  // Avoid polling for free disk space if disk stats have been recently
-  // queried.
-  if (age_of_disk_stats < kStoragePressureCheckDiskStatsInterval) {
-    int64_t total_space = std::get<1>(cached_disk_stats_for_storage_pressure_);
-    int64_t available_space =
-        std::get<2>(cached_disk_stats_for_storage_pressure_);
-    MaybeRunStoragePressureCallback(storage_key, total_space, available_space);
-  }
-
-  GetStorageCapacity(
-      base::BindOnce(&QuotaManagerImpl::MaybeRunStoragePressureCallback,
-                     weak_factory_.GetWeakPtr(), storage_key));
+  OnFullDiskError(storage_key);
 }
-
 void QuotaManagerImpl::SetUsageCacheEnabled(QuotaClientType client_id,
                                             const StorageKey& storage_key,
                                             StorageType type,
@@ -1773,9 +1759,9 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
                                                             : profile_path_);
 
   // Start the storage eviction routine on a full disk error.
-  database_->SetOnFullDiskErrorCallback(
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &QuotaManagerImpl::StartEviction, weak_factory_.GetWeakPtr())));
+  database_->SetOnFullDiskErrorCallback(base::BindPostTaskToCurrentDefault(
+      base::BindRepeating(&QuotaManagerImpl::OnFullDiskError,
+                          weak_factory_.GetWeakPtr(), absl::nullopt)));
 
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kTemporary], StorageType::kTemporary,
@@ -2049,6 +2035,43 @@ void QuotaManagerImpl::AddBucketTableEntry(
   std::move(barrier_callback).Run(std::move(entry));
 }
 
+void QuotaManagerImpl::OnFullDiskError(absl::optional<StorageKey> storage_key) {
+  if ((base::TimeTicks::Now() - last_full_disk_eviction_time_) >
+      base::Minutes(15)) {
+    last_full_disk_eviction_time_ = base::TimeTicks::Now();
+    StartEviction();
+  }
+
+  // We may already be evicting, either due to the above or just by chance. In
+  // either case, do nothing more for now.
+  if (temporary_storage_evictor_ && temporary_storage_evictor_->in_round()) {
+    return;
+  }
+
+  if (storage_key) {
+    NotifyWriteFailed(*storage_key);
+  } else if (last_opened_bucket_site_) {
+    NotifyWriteFailed(*last_opened_bucket_site_);
+  }
+}
+
+void QuotaManagerImpl::NotifyWriteFailed(const blink::StorageKey& storage_key) {
+  auto [time_of_last_stats, total_space, available_space] =
+      cached_disk_stats_for_storage_pressure_;
+  auto age_of_disk_stats = base::TimeTicks::Now() - time_of_last_stats;
+
+  // Avoid polling for free disk space if disk stats have been recently
+  // queried.
+  if (age_of_disk_stats < kStoragePressureCheckDiskStatsInterval) {
+    MaybeRunStoragePressureCallback(storage_key, total_space, available_space);
+    return;
+  }
+
+  GetStorageCapacity(
+      base::BindOnce(&QuotaManagerImpl::MaybeRunStoragePressureCallback,
+                     weak_factory_.GetWeakPtr(), storage_key));
+}
+
 void QuotaManagerImpl::StartEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2239,7 +2262,8 @@ void QuotaManagerImpl::DetermineStoragePressure(int64_t total_space,
 }
 
 void QuotaManagerImpl::SetStoragePressureCallback(
-    base::RepeatingCallback<void(StorageKey)> storage_pressure_callback) {
+    base::RepeatingCallback<void(const StorageKey&)>
+        storage_pressure_callback) {
   storage_pressure_callback_ = storage_pressure_callback;
   if (storage_key_for_pending_storage_pressure_callback_.has_value()) {
     storage_pressure_callback_.Run(

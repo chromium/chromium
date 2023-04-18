@@ -110,7 +110,7 @@ void RecordRetryCount(size_t retries, size_t queue_size) {
 
 // Notifies quota manager that a disk write operation failed so that it can
 // check for storage pressure.
-void MaybeNotifyWriteFailed(
+void CheckForClientWriteFailure(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     storage::mojom::ServiceWorkerDatabaseStatus status,
     const blink::StorageKey& key) {
@@ -119,7 +119,7 @@ void MaybeNotifyWriteFailed(
 
   if (status == storage::mojom::ServiceWorkerDatabaseStatus::kErrorFailed ||
       status == storage::mojom::ServiceWorkerDatabaseStatus::kErrorIOError) {
-    quota_manager_proxy->NotifyWriteFailed(key);
+    quota_manager_proxy->OnClientWriteFailed(key);
   }
 }
 
@@ -1411,7 +1411,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
 
-  MaybeNotifyWriteFailed(quota_manager_proxy_, database_status, key);
+  CheckForClientWriteFailure(quota_manager_proxy_, database_status, key);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     ScheduleDeleteAndStartOver();
@@ -1517,7 +1517,7 @@ void ServiceWorkerRegistry::DidUpdateToActiveState(
     const blink::StorageKey& key,
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, key);
+  CheckForClientWriteFailure(quota_manager_proxy_, status, key);
   DidUpdateRegistration(std::move(callback), status);
 }
 
@@ -1525,7 +1525,7 @@ void ServiceWorkerRegistry::DidWriteUncommittedResourceIds(
     const blink::StorageKey& key,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, key);
+  CheckForClientWriteFailure(quota_manager_proxy_, status, key);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk)
     ScheduleDeleteAndStartOver();
 }
@@ -1566,7 +1566,7 @@ void ServiceWorkerRegistry::DidStoreUserData(
     const blink::StorageKey& key,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, key);
+  CheckForClientWriteFailure(quota_manager_proxy_, status, key);
   // |status| can be NOT_FOUND when the associated registration did not exist in
   // the database. In the case, we don't have to schedule the corruption
   // recovery.
