@@ -34,6 +34,7 @@ constexpr auto kSourceMapping =
     base::MakeFixedFlatMap<base::StringPiece, AutofillProfile::Source>(
         {{"account", AutofillProfile::Source::kAccount},
          {"localOrSyncable", AutofillProfile::Source::kLocalOrSyncable}});
+constexpr base::StringPiece kKeyInitialCreatorId = "initial_creator_id";
 
 using FieldTypeLookupTable = base::flat_map<std::string, ServerFieldType>;
 
@@ -102,6 +103,15 @@ absl::optional<AutofillProfile> MakeProfile(
   for (const auto [key, value] : dict) {
     if (key == kKeySource) {
       continue;
+    }
+    if (key == kKeyInitialCreatorId) {
+      if (const absl::optional<int> creator_id = dict.FindInt(key)) {
+        profile.set_initial_creator_id(*creator_id);
+        continue;
+      } else {
+        LOG(ERROR) << "Incorrect value for " << key << ".";
+        return absl::nullopt;
+      }
     }
     if (!lookup_table.contains(key)) {
       LOG(ERROR) << "Unknown type " << key << ".";

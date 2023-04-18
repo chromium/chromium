@@ -37,6 +37,7 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
       },
       {
         "source" : "account",
+        "initial_creator_id": 999,
         "ADDRESS_HOME_STREET_ADDRESS" : "street 123",
         "ADDRESS_HOME_STREET_NAME" : "street",
         "ADDRESS_HOME_HOUSE_NUMBER" : "123"
@@ -54,6 +55,7 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
       NAME_LAST, u"last", VerificationStatus::kUserVerified);
 
   AutofillProfile expected_profile2(AutofillProfile::Source::kAccount);
+  expected_profile2.set_initial_creator_id(999);
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"street 123",
       VerificationStatus::kUserVerified);
@@ -94,6 +96,31 @@ TEST(ManualTestingProfileImportTest,
   })");
   ASSERT_TRUE(json);
   EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
+}
+
+// Tests that the conversion fails when the "initial_creator_id" has
+// an invalid value.
+TEST(ManualTestingProfileImportTest,
+     AutofillProfilesFromJSON_InvalidInitialCreatorId) {
+  absl::optional<base::Value> json1 = base::JSONReader::Read(R"({
+    "profiles" : [
+      {
+        "initial_creator_id" : "123"
+      }
+    ]
+  })");
+  ASSERT_TRUE(json1);
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json1).has_value());
+
+  absl::optional<base::Value> json2 = base::JSONReader::Read(R"({
+    "profiles" : [
+      {
+        "initial_creator_id" : true
+      }
+    ]
+  })");
+  ASSERT_TRUE(json2);
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json2).has_value());
 }
 
 // Tests that the conversion fails for non-fully structured profiles.

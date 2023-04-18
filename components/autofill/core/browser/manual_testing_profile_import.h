@@ -23,6 +23,7 @@ namespace autofill {
 //   "profiles" : [
 //     {
 //       "source" : "localOrSyncable",
+//       "initial_creator_id" : 123,
 //       "field-type" : "value",
 //       ...
 //     },
@@ -32,6 +33,8 @@ namespace autofill {
 // The "source" is optional and can either be "account" or "localOrSyncable".
 // This corresponds to the AutofillProfile::Source of the resulting profile. It
 // default to "localOrSyncable".
+// The "initial_creator_id" is an optional int value which sets the profile's
+// property of the same name.
 // "field-type" corresponds to ServerFieldTypes like "NAME_FULL".
 // All profiles specified in the file are imported. They replace any existing
 // profiles.
