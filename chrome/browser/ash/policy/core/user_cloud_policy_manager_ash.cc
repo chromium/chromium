@@ -322,6 +322,11 @@ void UserCloudPolicyManagerAsh::OnWildcardCheckCompleted(
     // logged-in session is not possible. Fix this either by delaying the
     // cryptohome deletion operation or by getting rid of the in-session
     // wildcard check.
+    // Also note that, following |fatal_error_callback_| is practically
+    // OnUserPolicyFatalError above, so is attempting to shutting down Chrome.
+    // Thus, some asynchronous operations such as reporting in
+    // UserAddedRemovedReporter are not guaranteed to be completed unless
+    // task runners' priority/shutdown-behavior are configured.
     user_manager::UserManager::Get()->RemoveUserFromList(
         AccountId::FromUserEmail(username));
     if (fatal_error_callback_)

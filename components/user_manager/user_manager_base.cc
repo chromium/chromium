@@ -366,37 +366,48 @@ void UserManagerBase::RemoveUserInternal(const AccountId& account_id,
 
 void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
                                                  UserRemovalReason reason) {
-  NotifyUserToBeRemoved(account_id);
-  AsyncRemoveCryptohome(account_id);
-  RemoveUserFromList(account_id);
-  // |account_id| cannot be used after the |RemoveUserFromList| call, use
-  // |account_id_copy| instead if needed.
-
-  NotifyUserRemoved(account_id, reason);
+  RemoveUserFromListImpl(account_id, reason,
+                         /*trigger_cryptohome_removal=*/true);
 }
 
 void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
-  RemoveUserFromListImpl(account_id, /* notify=*/true);
+  RemoveUserFromListImpl(account_id, UserRemovalReason::UNKNOWN,
+                         /*trigger_cryptohome_removal=*/false);
 }
 
 void UserManagerBase::RemoveUserFromListForRecreation(
     const AccountId& account_id) {
-  RemoveUserFromListImpl(account_id, /* notify=*/false);
+  RemoveUserFromListImpl(account_id, /*reason=*/absl::nullopt,
+                         /*trigger_cryptohome_removal=*/false);
 }
 
-void UserManagerBase::RemoveUserFromListImpl(const AccountId& account_id,
-                                             bool notify) {
+void UserManagerBase::RemoveUserFromListImpl(
+    const AccountId& account_id,
+    absl::optional<UserRemovalReason> reason,
+    bool trigger_cryptohome_removal) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  if (reason.has_value()) {
+    NotifyUserToBeRemoved(account_id);
+  }
+  if (trigger_cryptohome_removal) {
+    AsyncRemoveCryptohome(account_id);
+  }
+
   RemoveNonCryptohomeData(account_id);
   KnownUser(GetLocalState()).RemovePrefs(account_id);
   if (user_loading_stage_ == STAGE_LOADED) {
     // After the User object is deleted from memory in DeleteUser() here,
     // the account_id reference will be invalid if the reference points
     // to the account_id in the User object.
-    DeleteUser(RemoveRegularOrSupervisedUserFromList(account_id, notify));
+    DeleteUser(
+        RemoveRegularOrSupervisedUserFromList(account_id, reason.has_value()));
   } else {
     NOTREACHED() << "Users are not loaded yet.";
     return;
+  }
+
+  if (reason.has_value()) {
+    NotifyUserRemoved(account_id, reason.value());
   }
 
   // Make sure that new data is persisted to Local State.

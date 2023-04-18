@@ -24,6 +24,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -235,8 +236,13 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   User* RemoveRegularOrSupervisedUserFromList(const AccountId& account_id,
                                               bool notify);
 
-  // Implementation for `RemoveUserFromList`[`ForRecreation`] methods.
-  void RemoveUserFromListImpl(const AccountId& account_id, bool notify);
+  // Implementation for RemoveUser. If |reason| is set, it notifies observers
+  // via OnUserToBeRemoved, OnUserRemoved and LocalStateChanged.
+  // If |trigger_cryptohome_removal| is set to true, this triggeres an
+  // asynchronous operation to remove the user data in Cryptohome.
+  void RemoveUserFromListImpl(const AccountId& account_id,
+                              absl::optional<UserRemovalReason> reason,
+                              bool trigger_cryptohome_removal);
 
   // Implementation for RemoveUser method. This is an asynchronous part of the
   // method, that verifies that owner will not get deleted, and calls
@@ -270,6 +276,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                                               const UserType user_type);
 
   // Should be called when regular user was removed.
+  // DEPRECATED: TODO(b/267685577): replace this by Observer::OnUserRemoved.
   virtual void OnUserRemoved(const AccountId& account_id) = 0;
 
   // Update the global LoginState.

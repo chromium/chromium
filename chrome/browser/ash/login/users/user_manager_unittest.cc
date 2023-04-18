@@ -404,8 +404,6 @@ TEST_F(UserManagerTest, RemoveUser) {
   ASSERT_EQ(2U, user_manager->GetUsers().size());
   ASSERT_EQ(0U, user_manager->GetLoggedInUsers().size());
 
-  // Removing non-owner account is acceptable.
-  EXPECT_CALL(*user_manager, AsyncRemoveCryptohome(testing::_)).Times(1);
   // Get a pointer to the user that will be removed.
   user_manager::User* user_to_remove = nullptr;
   for (user_manager::User* user : user_manager->GetUsers()) {
@@ -416,18 +414,29 @@ TEST_F(UserManagerTest, RemoveUser) {
   }
   ASSERT_TRUE(user_to_remove);
   ASSERT_EQ(account_id0_at_invalid_domain_, user_to_remove->GetAccountId());
+
+  // Removing non-owner account is acceptable.
+  EXPECT_CALL(*user_manager,
+              AsyncRemoveCryptohome(account_id0_at_invalid_domain_))
+      .Times(1);
+
   // Pass the account id of the user to be removed from the user list to verify
   // that a reference to the account id will not be used after user removal.
-  user_manager->RemoveUser(user_to_remove->GetAccountId(),
+  user_manager->RemoveUser(account_id0_at_invalid_domain_,
                            user_manager::UserRemovalReason::UNKNOWN);
+  testing::Mock::VerifyAndClearExpectations(user_manager.get());
   EXPECT_EQ(1, observer_test.OnUserToBeRemovedCallCount());
   EXPECT_EQ(1, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 
   // Removing owner account is unacceptable.
+  EXPECT_CALL(*user_manager,
+              AsyncRemoveCryptohome(owner_account_id_at_invalid_domain_))
+      .Times(0);
   observer_test.ResetCallCounts();
   user_manager->RemoveUser(owner_account_id_at_invalid_domain_,
                            user_manager::UserRemovalReason::UNKNOWN);
+  testing::Mock::VerifyAndClearExpectations(user_manager.get());
   EXPECT_EQ(0, observer_test.OnUserToBeRemovedCallCount());
   EXPECT_EQ(0, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
