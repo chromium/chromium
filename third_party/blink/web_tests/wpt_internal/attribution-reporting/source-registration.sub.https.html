@@ -34,6 +34,8 @@ attribution_reporting_promise_test(async t => {
     cookie: attributionDebugCookie,
   });
 
+  console.log('source-event-id', source.source_event_id);
+
   await waitForSourceToBeRegistered(source.source_event_id);
   await registerAttributionSrc(t, {
     trigger: {
@@ -43,6 +45,7 @@ attribution_reporting_promise_test(async t => {
   });
 
   const payload = await pollEventLevelReports(reportingOrigin);
+  console.log('event-level-reports', JSON.stringify(payload));
   assert_equals(payload.reports.length, 1);
 
   const report = JSON.parse(payload.reports[0].body);
@@ -50,6 +53,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(report.source_type, sourceType);
 
   const debugReportPayload = await pollVerboseDebugReports(reportingOrigin);
+  console.log('verbose-debug-reports', JSON.stringify(debugReportPayload));
   assert_equals(debugReportPayload.reports.length, 1);
   const debugReport = JSON.parse(debugReportPayload.reports[0].body);
   assert_equals(debugReport.length, 1);
