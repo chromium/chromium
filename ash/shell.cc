@@ -1176,7 +1176,8 @@ void Shell::Init(
       shell_delegate_->CreateCaptureModeDelegate());
 
   if (features::IsGameDashboardEnabled()) {
-    game_dashboard_controller_ = std::make_unique<GameDashboardController>();
+    game_dashboard_controller_ = std::make_unique<GameDashboardController>(
+        shell_delegate_->CreateGameDashboardDelegate());
   }
 
   // Accelerometer file reader starts listening to tablet mode controller.

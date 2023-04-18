@@ -517,7 +517,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = window_util::GetTopWindow();
-  return window && GameDashboardController::CanStart(window);
+  return window && GameDashboardController::Get()->IsSupported(window);
 }
 
 bool CanToggleMultitaskMenu() {
@@ -1334,12 +1334,7 @@ void ToggleGameDashboard() {
   DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = window_util::GetTopWindow();
   DCHECK(window);
-  auto* controller = Shell::Get()->game_dashboard_controller();
-  if (!controller->IsActive(window)) {
-    controller->Start(window);
-  } else {
-    controller->ToggleMenu(window);
-  }
+  // TODO(phshah): Connect to Game Dashboard.
 }
 
 void ToggleHighContrast() {

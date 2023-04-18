@@ -10,6 +10,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
+#include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 #include "chrome/browser/ui/ash/glanceables/chrome_glanceables_delegate.h"
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
@@ -128,6 +130,11 @@ bool ChromeShellDelegate::CanShowWindowForUser(
 std::unique_ptr<ash::CaptureModeDelegate>
 ChromeShellDelegate::CreateCaptureModeDelegate() const {
   return std::make_unique<ChromeCaptureModeDelegate>();
+}
+
+std::unique_ptr<ash::GameDashboardDelegate>
+ChromeShellDelegate::CreateGameDashboardDelegate() const {
+  return std::make_unique<ChromeGameDashboardDelegate>();
 }
 
 std::unique_ptr<ash::GlanceablesDelegate>

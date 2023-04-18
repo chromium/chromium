@@ -2351,6 +2351,8 @@ static_library("ui") {
       "ash/device_scheduled_reboot/scheduled_reboot_dialog.h",
       "ash/fwupd_download_client_impl.cc",
       "ash/fwupd_download_client_impl.h",
+      "ash/game_dashboard/chrome_game_dashboard_delegate.cc",
+      "ash/game_dashboard/chrome_game_dashboard_delegate.h",
       "ash/glanceables/chrome_glanceables_delegate.cc",
       "ash/glanceables/chrome_glanceables_delegate.h",
       "ash/glanceables/glanceables_keyed_service.cc",
