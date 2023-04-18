@@ -1,0 +1,91 @@
+[
+  [
+  "nopedal",
+  [
+    "nopedal",
+    "nopedal 2",
+    "nopedal 3",
+    "dino game",
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+  ],
+  [],
+  {
+    "google:clientdata": {
+      "bpc": false,
+      "tlw": false
+    },
+    "google:suggestdetail": [
+      {},
+      {},
+      {},
+      {},
+    ],
+    "google:suggestrelevance": [
+      1253,
+      1252,
+      1251,
+      1250,
+    ],
+    "google:suggestsubtypes": [
+      [],
+      [],
+      [],
+      [],
+    ],
+    "google:suggesttype": [
+      "QUERY",
+      "QUERY",
+      "QUERY",
+      "QUERY",
+    ],
+    "google:verbatimrelevance": 1300
+  }
+  ],
+  [
+  "pedaldino",
+  [
+    "nopedal",
+    "dino game",
+    "nopedal 3"
+  ],
+  [
+    "",
+    "",
+    "",
+  ],
+  [],
+  {
+    "google:clientdata": {
+      "bpc": false,
+      "tlw": false
+    },
+    "google:suggestdetail": [
+      {},
+      {},
+      {},
+    ],
+    "google:suggestrelevance": [
+      1253,
+      1252,
+      1251,
+    ],
+    "google:suggestsubtypes": [
+      [],
+      [],
+      [],
+    ],
+    "google:suggesttype": [
+      "QUERY",
+      "QUERY",
+      "QUERY",
+    ],
+    "google:verbatimrelevance": 1300
+  }
+  ],
+]
+

@@ -281,6 +281,7 @@ source_set("eg2_tests") {
   sources = [
     "omnibox_popup_carousel_egtest.mm",
     "omnibox_popup_egtest.mm",
+    "omnibox_popup_pedal_egtest.mm",
   ]
   deps = [
     ":popup_accessibility_identifier_constants",

@@ -235,6 +235,7 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     ":omnibox_internal",
+    ":resources_fake_suggestions_tests",
     "//base",
     "//components/google/core/common",
     "//components/history/core/browser",
@@ -336,6 +337,14 @@ bundle_data("resources_unit_tests") {
   sources = [ "//ios/chrome/test/data/omnibox/selected_ranges.txt" ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
+}
+
+bundle_data("resources_fake_suggestions_tests") {
+  visibility = [ ":eg_app_support+eg2" ]
+  testonly = true
+  sources = [ "//ios/chrome/test/data/omnibox/fake_suggestions_pedal.json" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("features") {
