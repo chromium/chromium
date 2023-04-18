@@ -441,7 +441,7 @@ const int kMaxBookmarksSearchResults = 50;
   // (When adding new folder, table is already been updated. So no need to
   // reload here.)
   if (bookmarkNode == self.sharedState.tableViewDisplayedRootNode &&
-      !self.sharedState.addingNewFolder) {
+      !self.addingNewFolder) {
     if (self.sharedState.currentlyInEditMode && ![self hasBookmarksOrFolders]) {
       [self.consumer setTableViewEditing:NO];
     }

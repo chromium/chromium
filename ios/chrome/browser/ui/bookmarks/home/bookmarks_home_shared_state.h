@@ -93,9 +93,6 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 @property(nonatomic, readonly, assign)
     std::set<const bookmarks::BookmarkNode*>& editNodes;
 
-// If a new folder is being added currently.
-@property(nonatomic, assign) BOOL addingNewFolder;
-
 // The cell for the newly created folder while its name is being edited. Set
 // to nil once the editing completes. Corresponds to `editingFolderNode`.
 @property(nonatomic, weak)

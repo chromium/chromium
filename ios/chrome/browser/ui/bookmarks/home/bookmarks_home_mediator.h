@@ -17,6 +17,9 @@ class Browser;
 
 @property(nonatomic, weak) id<BookmarksHomeConsumer> consumer;
 
+// If a new folder is being added currently.
+@property(nonatomic, assign) BOOL addingNewFolder;
+
 // Designated initializer.
 // `baseViewController` view controller used to present sign-in UI.
 // TODO(crbug.com/1402758): `browser` and `baseViewController` need to be

@@ -1080,7 +1080,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)textDidChangeTo:(NSString*)newName {
   DCHECK(self.sharedState.editingFolderNode);
-  self.sharedState.addingNewFolder = NO;
+  self.mediator.addingNewFolder = NO;
   if (newName.length > 0) {
     self.sharedState.profileBookmarkModel->SetTitle(
         self.sharedState.editingFolderNode, base::SysNSStringToUTF16(newName),
@@ -1351,7 +1351,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   if (!self.sharedState.tableViewDisplayedRootNode) {
     return;
   }
-  self.sharedState.addingNewFolder = YES;
+  self.mediator.addingNewFolder = YES;
   std::u16string folderTitle =
       l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_NEW_GROUP_DEFAULT_NAME);
   self.sharedState.editingFolderNode =
