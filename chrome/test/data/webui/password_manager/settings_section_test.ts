@@ -407,7 +407,7 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await passkeysProxy.whenCalled('passkeysHasPasskeys');
     flush();
-    assertFalse(isVisible(settings.$.managePasskeysRow));
+    assertFalse(!!settings.shadowRoot!.querySelector('#managePasskeysRow'));
   });
 
   test('managePasskeysShownWhenNeeded', async function() {
@@ -416,10 +416,11 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await passkeysProxy.whenCalled('passkeysHasPasskeys');
     flush();
-    const row = settings.$.managePasskeysRow;
-    assertTrue(isVisible(row));
+    const managePasskeysRow = settings.shadowRoot!.querySelector<HTMLElement>(
+                                  '#managePasskeysRow') as HTMLElement;
+    assertTrue(!!managePasskeysRow);
 
-    row.click();
+    managePasskeysRow.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals('chrome://settings/passkeys', url);
   });

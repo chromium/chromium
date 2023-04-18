@@ -32,7 +32,6 @@ export interface SettingsSectionElement {
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
     trustedVaultBanner: CrLinkRowElement,
-    managePasskeysRow: CrLinkRowElement,
   };
 }
 
