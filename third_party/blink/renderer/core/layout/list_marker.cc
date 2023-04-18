@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
@@ -54,6 +55,9 @@ ListMarker* ListMarker::Get(LayoutObject* marker) {
 LayoutObject* ListMarker::MarkerFromListItem(const LayoutObject* list_item) {
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item->Marker();
+  if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(list_item)) {
+    return inline_list_item->Marker();
+  }
   return nullptr;
 }
 
@@ -80,6 +84,9 @@ LayoutBlockFlow* ListMarker::ListItemBlockFlow(
 int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item->Value();
+  if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(list_item)) {
+    return inline_list_item->Value();
+  }
   NOTREACHED();
   return 0;
 }

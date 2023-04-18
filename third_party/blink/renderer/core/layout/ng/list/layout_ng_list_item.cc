@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 
 namespace blink {
 
@@ -126,6 +127,11 @@ const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
 
   if (object->IsLayoutNGListItem())
     return FindSymbolMarkerLayoutText(To<LayoutNGListItem>(object)->Marker());
+
+  if (const auto* inline_list_item =
+          DynamicTo<LayoutNGInlineListItem>(object)) {
+    return FindSymbolMarkerLayoutText(inline_list_item->Marker());
+  }
 
   if (object->IsAnonymousBlock())
     return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));

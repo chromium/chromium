@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+  Basic rendering tests for 'inline list-item' and 'inline flow-root list-item'.
+  - .i boxes can be breakable into multiple lines.
+  - An .ir box and an .i box shold be on a same line.
+  - Both of .i and .ir should have list markers.
+-->
+<style>
+.container {
+  width: 20em;
+  margin: 4em;
+  font-size: 20px;
+  line-height: 32px;
+}
+.i {
+  display: inline list-item;
+  background: rgba(200,200,255, 0.4);
+}
+.ir {
+  display: inline flow-root list-item;
+  background: rgba(200,255,200, 0.4);
+  width: 8em;
+}
+</style>
+<body>
+
+<div class="container" style="list-style-type: disc;">
+ Normal text <span class="i">inline inline inline inline inline inline inline</span>
+ <span class="ir">flow-root flow-root flow-root flow-root flow-root flow-root</span>
+ <span class="i">inline inline</span>
+</div>
+
+<div class="container" style="list-style-type: decimal;">
+ Normal text <span class="i">inline inline inline inline inline inline inline</span>
+ <span class="ir">flow-root flow-root flow-root flow-root flow-root flow-root</span>
+ <span class="i">inline inline</span>
+</div>

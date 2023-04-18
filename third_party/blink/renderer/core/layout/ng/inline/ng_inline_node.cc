@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -258,6 +259,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
 
   const LayoutObject* symbol =
       LayoutNGListItem::FindSymbolMarkerLayoutText(block);
+  const LayoutObject* inline_list_item_marker = nullptr;
   while (node) {
     if (auto* counter = DynamicTo<LayoutCounter>(node)) {
       // According to
@@ -295,8 +297,9 @@ void CollectInlinesInternal(ItemsBuilder* builder,
     } else if (auto* layout_text = DynamicTo<LayoutText>(node)) {
       builder->AppendText(layout_text, previous_data);
 
-      if (symbol == layout_text)
+      if (symbol == layout_text || inline_list_item_marker == layout_text) {
         builder->SetIsSymbolMarker();
+      }
 
       builder->ClearNeedsLayout(layout_text);
     } else if (node->IsFloating()) {
@@ -329,6 +332,11 @@ void CollectInlinesInternal(ItemsBuilder* builder,
       }
       builder->ClearInlineFragment(node);
     } else if (auto* layout_inline = DynamicTo<LayoutInline>(node)) {
+      if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(node)) {
+        inline_list_item->UpdateMarkerTextIfNeeded();
+        inline_list_item_marker =
+            LayoutNGListItem::FindSymbolMarkerLayoutText(inline_list_item);
+      }
       builder->UpdateShouldCreateBoxFragment(layout_inline);
 
       builder->EnterInline(layout_inline);
