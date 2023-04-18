@@ -500,6 +500,11 @@ bool V4L2VideoDecoderDelegateH265::OutputPicture(
 
 void V4L2VideoDecoderDelegateH265::Reset() {}
 
+bool V4L2VideoDecoderDelegateH265::IsChromaSamplingSupported(
+    VideoChromaSampling chroma_sampling) {
+  return chroma_sampling == VideoChromaSampling::k420;
+}
+
 scoped_refptr<V4L2DecodeSurface>
 V4L2VideoDecoderDelegateH265::H265PictureToV4L2DecodeSurface(H265Picture* pic) {
   V4L2H265Picture* v4l2_pic = pic->AsV4L2H265Picture();

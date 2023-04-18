@@ -60,6 +60,7 @@ class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
   Status SubmitDecode(scoped_refptr<H265Picture> pic) override;
   bool OutputPicture(scoped_refptr<H265Picture> pic) override;
   void Reset() override;
+  bool IsChromaSamplingSupported(VideoChromaSampling format) override;
 
  private:
   std::vector<scoped_refptr<V4L2DecodeSurface>> FillInV4L2DPB(
