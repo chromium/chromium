@@ -68,8 +68,9 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
 
  private:
   virtual void SetUpFeatureList() {
-    feature_list_.InitAndEnableFeature(
-        page_info::kPageInfoAboutThisSiteMoreInfo);
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoAboutThisSiteMoreInfo},
+        {page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs});
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
