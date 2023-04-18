@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.ComponentUpdaterResultMatchesSBApiHandlerCheck"
-    enum="HighConfidenceUrlAllowlistCheckResults" expires_after="2023-04-20">
+    enum="HighConfidenceUrlAllowlistCheckResults" expires_after="2023-05-20">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
