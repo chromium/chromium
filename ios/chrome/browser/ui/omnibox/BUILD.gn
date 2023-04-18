@@ -111,6 +111,8 @@ source_set("omnibox_internal") {
   sources = [
     "chrome_omnibox_client_ios.h",
     "chrome_omnibox_client_ios.mm",
+    "fake_suggestions_database.cc",
+    "fake_suggestions_database.h",
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
@@ -288,6 +290,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "fake_suggestions_database_unittest.cc",
     "omnibox_text_field_ios_experimental_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "omnibox_view_ios_unittest.mm",
