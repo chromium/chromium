@@ -839,6 +839,8 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "Conversions";
     case TracingDataType::kDeferredCookies:
       return "DeferredCookies";
+    case TracingDataType::kSharedStorage:
+      return "SharedStorage";
   }
 }
 
