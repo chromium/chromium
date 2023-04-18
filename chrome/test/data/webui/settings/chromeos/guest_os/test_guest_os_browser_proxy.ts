@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/os_settings.js';
-
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-
+import {GuestOsBrowserProxy, GuestOsSharedUsbDevice} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {GuestOsBrowserProxy} */
-export class TestGuestOsBrowserProxy extends TestBrowserProxy {
+export class TestGuestOsBrowserProxy extends TestBrowserProxy implements
+    GuestOsBrowserProxy {
+  sharedUsbDevices: GuestOsSharedUsbDevice[] = [];
+  private removeSharedPathResult_: boolean = true;
   constructor() {
     super([
       'getGuestOsSharedPathsDisplayText',
@@ -17,33 +17,28 @@ export class TestGuestOsBrowserProxy extends TestBrowserProxy {
       'setGuestOsUsbDeviceShared',
       'removeGuestOsSharedPath',
     ]);
-    /** @type {!Array<!GuestOsSharedUsbDevice>} */
-    this.sharedUsbDevices = [];
-    this.removeSharedPathResult = true;
   }
 
-  /** override */
-  getGuestOsSharedPathsDisplayText(paths) {
+  getGuestOsSharedPathsDisplayText(paths: string[]): Promise<string[]> {
     this.methodCalled('getGuestOsSharedPathsDisplayText');
     return Promise.resolve(paths.map(path => path + '-displayText'));
   }
 
-  /** @override */
-  notifyGuestOsSharedUsbDevicesPageReady() {
+  notifyGuestOsSharedUsbDevicesPageReady(): void {
     this.methodCalled('notifyGuestOsSharedUsbDevicesPageReady');
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', this.sharedUsbDevices);
   }
 
-  /** @override */
-  setGuestOsUsbDeviceShared(vmName, containerName, guid, shared) {
+  setGuestOsUsbDeviceShared(
+      vmName: string, containerName: string, guid: string,
+      shared: boolean): void {
     this.methodCalled(
         'setGuestOsUsbDeviceShared', [vmName, containerName, guid, shared]);
   }
 
-  /** override */
-  removeGuestOsSharedPath(vmName, path) {
+  removeGuestOsSharedPath(vmName: string, path: string): Promise<boolean> {
     this.methodCalled('removeGuestOsSharedPath', [vmName, path]);
-    return Promise.resolve(this.removeSharedPathResult);
+    return Promise.resolve(this.removeSharedPathResult_);
   }
 }

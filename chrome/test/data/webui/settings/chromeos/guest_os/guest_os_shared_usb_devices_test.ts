@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {GuestOsBrowserProxyImpl, SettingsGuestOsSharedUsbDevicesElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
 import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.js';
 
-suite('SharedUsbDevices', function() {
-  /** @type {?SettingsGuestOsSharedUsbDevicesElement} */
-  let page = null;
+suite('<settings-guest-os-shared-usb-devices>', () => {
+  let page: SettingsGuestOsSharedUsbDevicesElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
 
-  /** @type {?TestGuestOsBrowserProxy} */
-  let guestOsBrowserProxy = null;
-
-  setup(async function() {
+  setup(async () => {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
     guestOsBrowserProxy.sharedUsbDevices = [
       {
@@ -59,24 +57,24 @@ suite('SharedUsbDevices', function() {
       },
     ];
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
-    PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-usb-devices');
     page.guestOsType = 'pluginVm';
     document.body.appendChild(page);
     await flushTasks();
   });
 
-  teardown(function() {
+  teardown(() => {
     page.remove();
   });
 
-  test('USB devices are shown', async function() {
-    assertEquals(3, page.shadowRoot.querySelectorAll('.toggle').length);
+  test('USB devices are shown', () => {
+    assertEquals(3, page.shadowRoot!.querySelectorAll('.toggle').length);
   });
 
-  test('USB shared state is updated by toggling', async function() {
-    assertTrue(!!page.shadowRoot.querySelector('.toggle'));
-    page.shadowRoot.querySelector('.toggle').click();
+  test('USB shared state is updated by toggling', async () => {
+    const toggleElement = page.shadowRoot!.querySelector('cr-toggle');
+    assert(toggleElement);
+    toggleElement.click();
 
     await flushTasks();
     flush();
@@ -102,44 +100,53 @@ suite('SharedUsbDevices', function() {
       },
     ]);
     flush();
-    assertEquals(1, page.shadowRoot.querySelectorAll('.toggle').length);
+    assertEquals(1, page.shadowRoot!.querySelectorAll('.toggle').length);
   });
 
-  test('Show dialog for reassign', async function() {
-    const items = page.shadowRoot.querySelectorAll('.toggle');
+  test('Show dialog for reassign', async () => {
+    const items = page.shadowRoot!.querySelectorAll('cr-toggle');
     assertEquals(3, items.length);
 
     // Clicking on item[2] should show dialog.
-    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
-    items[2].click();
+    let reassignDialog =
+        page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog');
+    assertEquals(null, reassignDialog);
+    items[2]!.click();
     flush();
-    assertTrue(page.shadowRoot.querySelector('#reassignDialog').open);
+    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    assert(reassignDialog);
+    assertTrue(reassignDialog.open);
 
     // Clicking cancel will close the dialog.
-    page.shadowRoot.querySelector('#cancel').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#cancel')!.click();
     flush();
-    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
+    assertEquals(null, page.shadowRoot!.querySelector('#reassignDialog'));
 
     // Pressing escape will close the dialog, but it's not possible to trigger
     // this with a fake keypress, so we instead send the 'cancel' event directly
     // to the native <dialog> element.
-    items[2].click();
+    items[2]!.click();
     flush();
-    assertTrue(page.shadowRoot.querySelector('#reassignDialog').open);
+    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    assert(reassignDialog);
+    assertTrue(reassignDialog.open);
+
     const e = new CustomEvent('cancel', {cancelable: true});
-    page.shadowRoot.querySelector('#reassignDialog')
+    page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog')!
         .getNative()
         .dispatchEvent(e);
     flush();
-    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
+    assertEquals(null, page.shadowRoot!.querySelector('#reassignDialog'));
 
     // Clicking continue will call the proxy and close the dialog.
-    items[2].click();
+    items[2]!.click();
     flush();
-    assertTrue(page.shadowRoot.querySelector('#reassignDialog').open);
-    page.shadowRoot.querySelector('#continue').click();
+    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    assert(reassignDialog);
+    assertTrue(reassignDialog.open);
+    page.shadowRoot!.querySelector<HTMLElement>('#continue')!.click();
     flush();
-    assertFalse(!!page.shadowRoot.querySelector('#reassignDialog'));
+    assertEquals(null, page.shadowRoot!.querySelector('#reassignDialog'));
     const args =
         await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
     assertEquals('PvmDefault', args[0]);
@@ -149,14 +156,11 @@ suite('SharedUsbDevices', function() {
   });
 });
 
-suite('SharedUsbDevicesMultiContainer', function() {
-  /** @type {?SettingsGuestOsSharedUsbDevicesElement} */
-  let page = null;
+suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
+  let page: SettingsGuestOsSharedUsbDevicesElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
 
-  /** @type {?TestGuestOsBrowserProxy} */
-  let guestOsBrowserProxy = null;
-
-  setup(async function() {
+  setup(async () => {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
     guestOsBrowserProxy.sharedUsbDevices = [
       {
@@ -194,7 +198,6 @@ suite('SharedUsbDevicesMultiContainer', function() {
       },
     ];
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
-    PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-usb-devices');
     page.guestOsType = 'crostini';
     page.hasContainers = true;
@@ -202,7 +205,7 @@ suite('SharedUsbDevicesMultiContainer', function() {
       'vm_name': 'termina',
       'container_name': 'penguin',
     };
-    page.onContainerInfo_([
+    page['onContainerInfo_']([
       {
         id: {
           vm_name: 'termina',
@@ -222,64 +225,69 @@ suite('SharedUsbDevicesMultiContainer', function() {
     await flushTasks();
   });
 
-  teardown(function() {
+  teardown(() => {
     page.remove();
   });
 
-  test('USB devices are shown', async function() {
-    const guests = page.shadowRoot.querySelectorAll('.usb-list-guest-id');
+  test('USB devices are shown', async () => {
+    const guests =
+        page.shadowRoot!.querySelectorAll<HTMLElement>('.usb-list-guest-id');
     assertEquals(2, guests.length);
     // Default VM name is omitted.
-    assertEquals('penguin', guests[0].innerText);
-    assertEquals('not-termina:not-penguin', guests[1].innerText);
+    assertEquals('penguin', guests[0]!.innerText);
+    assertEquals('not-termina:not-penguin', guests[1]!.innerText);
 
-    const devices = page.shadowRoot.querySelectorAll('.usb-list-card-label');
+    const devices =
+        page.shadowRoot!.querySelectorAll<HTMLElement>('.usb-list-card-label');
     assertEquals(2, devices.length);
-    assertEquals('usb_dev2', devices[0].innerText);
-    assertEquals('usb_dev3', devices[1].innerText);
+    assertEquals('usb_dev2', devices[0]!.innerText);
+    assertEquals('usb_dev3', devices[1]!.innerText);
 
-    page.shadowRoot.querySelector('#addUsbBtn').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#addUsbBtn')!.click();
     flush();
 
-    const dialog = page.shadowRoot.querySelector(
+    const dialog = page.shadowRoot!.querySelector(
         'settings-guest-os-shared-usb-devices-add-dialog');
+    assert(dialog);
 
     // USB devices shown in dropdown.
-    const selectDevice = dialog.shadowRoot.querySelector('#selectDevice');
-    assertEquals(3, selectDevice.options.length);
+    const selectDevice =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#selectDevice');
+    assertEquals(3, selectDevice!.options.length);
     // Guests VMs/containers shown in dropdown.
     const selectContainer =
-        dialog.shadowRoot.querySelector('settings-guest-os-container-select')
-            .shadowRoot.querySelector('#selectContainer');
-    assertEquals(2, selectContainer.options.length);
+        dialog.shadowRoot!.querySelector('settings-guest-os-container-select')!
+            .shadowRoot!.querySelector<HTMLSelectElement>('#selectContainer');
+    assertEquals(2, selectContainer!.options.length);
 
     const dialogClose = eventToPromise('close', dialog);
-    dialog.shadowRoot.querySelector('#cancel').click();
+    dialog.shadowRoot!.querySelector<HTMLElement>('#cancel')!.click();
 
     // Dialog should close.
     await dialogClose;
     assertEquals(
         null,
-        page.shadowRoot.querySelector(
+        page.shadowRoot!.querySelector(
             'settings-guest-os-shared-usb-devices-add-dialog'));
   });
 
-  test('USB shared state is updated by adding device', async function() {
-    page.shadowRoot.querySelector('#addUsbBtn').click();
+  test('USB shared state is updated by adding device', async () => {
+    page.shadowRoot!.querySelector<HTMLElement>('#addUsbBtn')!.click();
     flush();
 
-    const dialog = page.shadowRoot.querySelector(
+    const dialog = page.shadowRoot!.querySelector(
         'settings-guest-os-shared-usb-devices-add-dialog');
+    assert(dialog);
 
     // Add the first device to the first guest (termina:penguin).
     const dialogClose = eventToPromise('close', dialog);
-    dialog.shadowRoot.querySelector('#continue').click();
+    dialog.shadowRoot!.querySelector<HTMLElement>('#continue')!.click();
 
     // Dialog should close.
     await dialogClose;
     assertEquals(
         null,
-        page.shadowRoot.querySelector(
+        page.shadowRoot!.querySelector(
             'settings-guest-os-shared-usb-devices-add-dialog'));
 
     const args =
@@ -298,57 +306,62 @@ suite('SharedUsbDevicesMultiContainer', function() {
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();
     assertEquals(
-        2, page.shadowRoot.querySelectorAll('.usb-list-guest-id').length);
+        2, page.shadowRoot!.querySelectorAll('.usb-list-guest-id').length);
     assertEquals(
-        3, page.shadowRoot.querySelectorAll('.usb-list-card-label').length);
+        3, page.shadowRoot!.querySelectorAll('.usb-list-card-label').length);
   });
 
-  test('Show dialog for reassign', async function() {
-    page.shadowRoot.querySelector('#addUsbBtn').click();
+  test('Show dialog for reassign', async () => {
+    page.shadowRoot!.querySelector<HTMLElement>('#addUsbBtn')!.click();
     flush();
 
-    const dialog = page.shadowRoot.querySelector(
+    const dialog = page.shadowRoot!.querySelector(
         'settings-guest-os-shared-usb-devices-add-dialog');
+    assert(dialog);
 
-    const selectDevice = dialog.shadowRoot.querySelector('#selectDevice');
-    selectDevice.selectedIndex = 1;
+    const selectDevice =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#selectDevice');
+    selectDevice!.selectedIndex = 1;
     const selectContainer =
-        dialog.shadowRoot.querySelector('settings-guest-os-container-select')
-            .shadowRoot.querySelector('#selectContainer');
-    selectContainer.selectedIndex = 1;
-    selectContainer.dispatchEvent(new Event('change'));
+        dialog.shadowRoot!.querySelector('settings-guest-os-container-select')!
+            .shadowRoot!.querySelector<HTMLSelectElement>('#selectContainer');
+    selectContainer!.selectedIndex = 1;
+    selectContainer!.dispatchEvent(new Event('change'));
 
     // Adding the second device to the second guest (not-termina:not-penguin)
     // will show the dialog.
-    dialog.shadowRoot.querySelector('#continue').click();
+    dialog.shadowRoot!.querySelector<HTMLElement>('#continue')!.click();
     flush();
 
-    let reassignDialog = dialog.shadowRoot.querySelector('#reassignDialog');
-    assertTrue(!!reassignDialog && reassignDialog.open);
+    let reassignDialog =
+        dialog.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog');
+    assert(reassignDialog);
+    assertTrue(reassignDialog.open);
 
     // Clicking cancel will close the inner dialog.
-    reassignDialog.querySelector('#cancel').click();
+    reassignDialog.querySelector<HTMLElement>('#cancel')!.click();
     flush();
 
-    assertEquals(null, dialog.shadowRoot.querySelector('#reassignDialog'));
+    assertEquals(null, dialog.shadowRoot!.querySelector('#reassignDialog'));
 
     // Re-enter the inner dialog.
-    dialog.shadowRoot.querySelector('#continue').click();
+    dialog.shadowRoot!.querySelector<HTMLElement>('#continue')!.click();
     flush();
 
-    reassignDialog = dialog.shadowRoot.querySelector('#reassignDialog');
-    assertTrue(!!reassignDialog && reassignDialog.open);
+    reassignDialog = dialog.shadowRoot!.querySelector('#reassignDialog');
+    assert(reassignDialog);
+    assertTrue(reassignDialog.open);
 
     // Clicking continue will reassign the device.
     const dialogClose = eventToPromise('close', dialog);
-    reassignDialog.querySelector('#continue').click();
+    reassignDialog.querySelector<HTMLElement>('#continue')!.click();
 
     // All dialogs should close.
     await dialogClose;
-    assertEquals(null, dialog.shadowRoot.querySelector('#reassignDialog'));
+    assertEquals(null, dialog.shadowRoot!.querySelector('#reassignDialog'));
     assertEquals(
         null,
-        page.shadowRoot.querySelector(
+        page.shadowRoot!.querySelector(
             'settings-guest-os-shared-usb-devices-add-dialog'));
 
     const args =
@@ -366,8 +379,8 @@ suite('SharedUsbDevicesMultiContainer', function() {
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();
     assertEquals(
-        1, page.shadowRoot.querySelectorAll('.usb-list-guest-id').length);
+        1, page.shadowRoot!.querySelectorAll('.usb-list-guest-id').length);
     assertEquals(
-        2, page.shadowRoot.querySelectorAll('.usb-list-card-label').length);
+        2, page.shadowRoot!.querySelectorAll('.usb-list-card-label').length);
   });
 });

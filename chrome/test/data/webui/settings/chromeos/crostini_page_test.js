@@ -8,13 +8,12 @@ import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
+import {TestGuestOsBrowserProxy} from './guest_os/test_guest_os_browser_proxy.js';
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
-import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.js';
 
 /** @type {?SettingsCrostiniPageElement} */
 let crostiniPage = null;
