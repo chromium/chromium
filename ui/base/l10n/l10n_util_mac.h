@@ -14,11 +14,11 @@
 
 #ifdef __OBJC__
 @class NSString;
-#else
-class NSString;
 #endif
 
 namespace l10n_util {
+
+#ifdef __OBJC__
 
 // Remove the Windows-style accelerator marker (for labels, menuitems, etc.)
 // and change "..." into an ellipsis.
@@ -94,6 +94,8 @@ NSString* GetNSStringFWithFixup(int message_id,
 // go/plurals (Google internal).
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetPluralNSStringF(int message_id, int number);
+
+#endif  // __OBJC__
 
 // Support the override of the locale with the value from Cocoa.
 COMPONENT_EXPORT(UI_BASE) void OverrideLocaleWithCocoaLocale();

@@ -132,7 +132,7 @@ void ChromeTestSuite::Initialize() {
 
 void ChromeTestSuite::Shutdown() {
 #if BUILDFLAG(IS_MAC)
-  base::mac::SetOverrideFrameworkBundle(NULL);
+  base::mac::SetOverrideFrameworkBundlePath({});
 #endif
 
   content::ContentTestSuiteBase::Shutdown();

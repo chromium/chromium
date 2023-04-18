@@ -61,9 +61,11 @@ static void AssignOverrideBundle(NSBundle* new_bundle,
 
 static void AssignOverridePath(const FilePath& file_path,
                                NSBundle** override_bundle) {
-  NSString* path = base::SysUTF8ToNSString(file_path.value());
-  NSBundle* new_bundle = [NSBundle bundleWithPath:path];
-  DCHECK(new_bundle) << "Failed to load the bundle at " << file_path.value();
+  NSBundle* new_bundle = nil;
+  if (!file_path.empty()) {
+    new_bundle = [NSBundle bundleWithURL:base::mac::FilePathToNSURL(file_path)];
+    CHECK(new_bundle) << "Failed to load the bundle at " << file_path.value();
+  }
   AssignOverrideBundle(new_bundle, override_bundle);
 }
 

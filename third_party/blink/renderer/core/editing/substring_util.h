@@ -31,16 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SUBSTRING_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SUBSTRING_UTIL_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <cstddef>
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-
-#if __OBJC__
-@class NSAttributedString;
-#else
-class NSAttributedString;
-#endif
 
 namespace gfx {
 class Point;
@@ -55,11 +51,11 @@ class SubstringUtil {
   // Given a point inside a `WebFrameWidgetImpl`, determines the word underneath
   // that point and returns:
   //
-  // - an autoreleased `NSAttributedString` of that word and
+  // - an autoreleased `CFAttributedStringRef` of that word and
   // - the left baseline point of that word in `baseline_point`
   //
   // Returns nil on failure.
-  CORE_EXPORT static NSAttributedString* AttributedWordAtPoint(
+  CORE_EXPORT static CFAttributedStringRef AttributedWordAtPoint(
       WebFrameWidgetImpl*,
       gfx::Point,
       gfx::Point& baseline_point);
@@ -67,11 +63,11 @@ class SubstringUtil {
   // Given a range of a `LocalFrame`, determines the substring specified by that
   // range and returns:
   //
-  // - an autoreleased `NSAttributedString` of that substring and
+  // - an autoreleased `CFAttributedStringRef` of that substring and
   // - the left baseline point of that substring in `baseline_point`
   //
   // Returns nil on failure.
-  CORE_EXPORT static NSAttributedString* AttributedSubstringInRange(
+  CORE_EXPORT static CFAttributedStringRef AttributedSubstringInRange(
       LocalFrame*,
       wtf_size_t location,
       wtf_size_t length,

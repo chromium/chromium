@@ -104,7 +104,7 @@ void UIBaseTestSuite::Shutdown() {
   ui::ResourceBundle::CleanupSharedInstance();
 
 #if BUILDFLAG(IS_MAC)
-  base::mac::SetOverrideFrameworkBundle(NULL);
+  base::mac::SetOverrideFrameworkBundlePath({});
 #endif
   base::TestSuite::Shutdown();
 }

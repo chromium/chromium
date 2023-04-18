@@ -149,7 +149,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
 #include "third_party/blink/renderer/core/editing/substring_util.h"
 #include "third_party/blink/renderer/platform/fonts/mac/attributed_string_type_converter.h"
 #include "ui/base/mojom/attributed_string.mojom-blink.h"
@@ -660,11 +659,10 @@ void WebFrameWidgetImpl::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                           GetStringAtPointCallback callback) {
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  NSAttributedString* string = SubstringUtil::AttributedWordAtPoint(
+  CFAttributedStringRef string = SubstringUtil::AttributedWordAtPoint(
       this, point_in_local_root, baseline_point);
   if (string) {
-    attributed_string =
-        ui::mojom::blink::AttributedString::From(base::mac::NSToCFCast(string));
+    attributed_string = ui::mojom::blink::AttributedString::From(string);
   }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);

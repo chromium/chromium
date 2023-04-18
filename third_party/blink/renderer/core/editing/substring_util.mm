@@ -184,19 +184,21 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
 
 }  // namespace
 
-NSAttributedString* SubstringUtil::AttributedWordAtPoint(
+CFAttributedStringRef SubstringUtil::AttributedWordAtPoint(
     WebFrameWidgetImpl* frame_widget,
     gfx::Point point,
     gfx::Point& baseline_point) {
   HitTestResult result = frame_widget->CoreHitTestResultAt(gfx::PointF(point));
 
-  if (!result.InnerNode())
+  if (!result.InnerNode()) {
     return nil;
+  }
   LocalFrame* frame = result.InnerNode()->GetDocument().GetFrame();
   EphemeralRange range =
       frame->GetEditor().RangeForPoint(result.RoundedPointInInnerNodeFrame());
-  if (range.IsNull())
+  if (range.IsNull()) {
     return nil;
+  }
 
   // Expand to word under point.
   const SelectionInDOMTree selection = ExpandWithGranularity(
@@ -204,13 +206,13 @@ NSAttributedString* SubstringUtil::AttributedWordAtPoint(
       TextGranularity::kWord);
   const EphemeralRange word_range = NormalizeRange(selection);
 
-  // Convert to NSAttributedString.
+  // Convert to CFAttributedStringRef.
   NSAttributedString* string = AttributedSubstringFromRange(frame, word_range);
   baseline_point = GetBaselinePoint(frame->View(), word_range, string);
-  return string;
+  return base::mac::NSToCFCast(string);
 }
 
-NSAttributedString* SubstringUtil::AttributedSubstringInRange(
+CFAttributedStringRef SubstringUtil::AttributedSubstringInRange(
     LocalFrame* frame,
     wtf_size_t location,
     wtf_size_t length,
@@ -228,7 +230,7 @@ NSAttributedString* SubstringUtil::AttributedSubstringInRange(
   NSAttributedString* string =
       AttributedSubstringFromRange(frame, ephemeral_range);
   baseline_point = GetBaselinePoint(frame->View(), ephemeral_range, string);
-  return string;
+  return base::mac::NSToCFCast(string);
 }
 
 }  // namespace blink

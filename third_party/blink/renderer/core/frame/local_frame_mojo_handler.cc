@@ -1005,12 +1005,11 @@ void LocalFrameMojoHandler::GetStringForRange(
     GetStringForRangeCallback callback) {
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  NSAttributedString* string = SubstringUtil::AttributedSubstringInRange(
+  CFAttributedStringRef string = SubstringUtil::AttributedSubstringInRange(
       frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
       base::checked_cast<WTF::wtf_size_t>(range.length()), baseline_point);
   if (string) {
-    attributed_string =
-        ui::mojom::blink::AttributedString::From(base::mac::NSToCFCast(string));
+    attributed_string = ui::mojom::blink::AttributedString::From(string);
   }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);
