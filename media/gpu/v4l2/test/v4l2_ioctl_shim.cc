@@ -558,7 +558,8 @@ void V4L2IoctlShim::StreamOff(const enum v4l2_buf_type type) const {
 }
 
 void V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                                v4l2_ext_controls* ext_ctrls) const {
+                                v4l2_ext_controls* ext_ctrls,
+                                bool immediate) const {
   // TODO(b/230021497): add compressed header probability related change
   // when V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is supported
 
@@ -568,20 +569,14 @@ void V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
   // instead are applied by the driver for the buffer associated with
   // the same request.", see:
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-ext-ctrls.html#description
-  ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
-  ext_ctrls->request_fd = queue->media_request_fd();
+  // Unmentioned in that documentation is that |V4L2_CTRL_WHICH_CUR_VAL| will
+  // force the request to be processed immediately instead of being queue.
+  if (immediate) {
+    ext_ctrls->which = V4L2_CTRL_WHICH_CUR_VAL;
+  } else {
+    ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
+  }
 
-  const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, ext_ctrls);
-
-  LOG_ASSERT(ret) << "VIDIOC_S_EXT_CTRLS failed.";
-}
-
-void V4L2IoctlShim::SetExtCtrlsImmediate(
-    const std::unique_ptr<V4L2Queue>& queue,
-    v4l2_ext_controls* ext_ctrls) const {
-  // TODO(b/230021497): add compressed header probability related change
-  // when V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is supported
-  ext_ctrls->which = V4L2_CTRL_WHICH_CUR_VAL;
   ext_ctrls->request_fd = queue->media_request_fd();
 
   const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, ext_ctrls);
