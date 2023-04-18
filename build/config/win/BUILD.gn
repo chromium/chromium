@@ -42,9 +42,6 @@ declare_args() {
   #  and with this switch, clang emits it like this:
   #    foo/bar.cc:12:34: error: something went wrong
   use_clang_diagnostics_format = false
-
-  # Indicates whether to use /pdbpagesize:8192 to allow PDBs larger than 4 GiB.
-  use_large_pdbs = true
 }
 
 # This is included by reference in the //build/config/compiler config that
@@ -171,14 +168,14 @@ config("compiler") {
     ldflags += [ "/lldignoreenv" ]
   }
 
-  if (use_large_pdbs) {
-    # This allows PDBs up to 8 GiB in size. This requires lld-link.exe or
-    # link.exe from VS 2022 or later.
-    if (!defined(configs)) {
-      configs = []
-    }
-    configs += [ ":pdb_larger_than_4gb" ]
-  }
+  # Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
+  # to 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
+  # which is a PDB limit that was hit in https://crbug.com/1406510. The page size
+  # can easily be increased in the future to allow even larger PDBs or larger
+  # block maps.
+  # This flag requires lld-link.exe or link.exe from VS 2022 or later to create
+  # the PDBs, and tools from circa 22H2 or later to consume the PDBs.
+  ldflags += [ "/pdbpagesize:8192" ]
 
   if (!is_debug && !is_component_build) {
     # Enable standard linker optimizations like GC (/OPT:REF) and ICF in static
@@ -607,16 +604,4 @@ config("lean_and_mean") {
 
 config("nominmax") {
   defines = [ "NOMINMAX" ]
-}
-
-# Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
-# to 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
-# which is a PDB limit that was hit in https://crbug.com/1406510. The page size
-# can easily be increased in the future to allow even larger PDBs or larger
-# block maps.
-config("pdb_larger_than_4gb") {
-  if (!defined(ldflags)) {
-    ldflags = []
-  }
-  ldflags += [ "/pdbpagesize:8192" ]
 }
