@@ -1930,9 +1930,13 @@ LayoutUnit NGGridLayoutAlgorithm::ComputeSubgridContributionSize(
   ComputeUsedTrackSizes(sizing_subtree, track_direction, sizing_constraint,
                         /* opt_needs_additional_pass */ nullptr);
 
-  return sizing_subtree.LayoutData()
-      .SizingCollection(track_direction)
-      .TotalTrackSize();
+  const auto border_scrollbar_padding =
+      (track_direction == kForColumns) ? BorderScrollbarPadding().InlineSum()
+                                       : BorderScrollbarPadding().BlockSum();
+
+  return border_scrollbar_padding + sizing_subtree.LayoutData()
+                                        .SizingCollection(track_direction)
+                                        .TotalTrackSize();
 }
 
 // Helpers for the track sizing algorithm.
