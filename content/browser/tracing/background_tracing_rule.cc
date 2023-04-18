@@ -54,7 +54,7 @@ const char kConfigRuleTypeMonitorHistogram[] =
 namespace content {
 
 BackgroundTracingRule::BackgroundTracingRule() = default;
-BackgroundTracingRule::BackgroundTracingRule(int trigger_delay)
+BackgroundTracingRule::BackgroundTracingRule(base::TimeDelta trigger_delay)
     : trigger_delay_(trigger_delay) {}
 
 BackgroundTracingRule::~BackgroundTracingRule() {
@@ -88,7 +88,7 @@ bool BackgroundTracingRule::OnRuleTriggered() const {
   return trigger_callback_.Run(this);
 }
 
-int BackgroundTracingRule::GetTraceDelay() const {
+base::TimeDelta BackgroundTracingRule::GetTraceDelay() const {
   return trigger_delay_;
 }
 
@@ -102,8 +102,10 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
   if (trigger_chance_ < 1.0)
     dict.Set(kConfigRuleTriggerChance, trigger_chance_);
 
-  if (trigger_delay_ != -1)
-    dict.Set(kConfigRuleTriggerDelay, trigger_delay_);
+  if (!trigger_delay_.is_zero()) {
+    dict.Set(kConfigRuleTriggerDelay,
+             static_cast<int>(trigger_delay_.InSeconds()));
+  }
 
   if (rule_id_ != GetDefaultRuleId()) {
     dict.Set(kConfigRuleIdKey, rule_id_);
@@ -124,7 +126,7 @@ void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
     trigger_chance_ = *trigger_chance;
   }
   if (auto trigger_delay = dict.FindInt(kConfigRuleTriggerDelay)) {
-    trigger_delay_ = *trigger_delay;
+    trigger_delay_ = base::Seconds(*trigger_delay);
   }
   if (const std::string* rule_id = dict.FindString(kConfigRuleIdKey)) {
     rule_id_ = *rule_id;
