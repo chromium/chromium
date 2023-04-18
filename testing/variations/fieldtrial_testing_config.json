@@ -6492,6 +6492,21 @@
             ]
         }
     ],
+    "IOSDefaultBrowserRefactoringPromoManager": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserRefactoringPromoManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEmailExperience": [
         {
             "platforms": [
