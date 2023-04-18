@@ -322,15 +322,15 @@ class StartupWebAppCreator
     }
   }
 
-  void OnAppLaunched(Browser* browser,
-                     content::WebContents* web_contents,
+  void OnAppLaunched(base::WeakPtr<Browser> browser,
+                     base::WeakPtr<content::WebContents> web_contents,
                      apps::LaunchContainer container) {
     // The finalization step should only occur for the first app launch.
     if (app_window_has_been_launched_)
       return;
 
-    FinalizeWebAppLaunch(open_mode_, command_line_, is_first_run_, browser,
-                         container);
+    FinalizeWebAppLaunch(open_mode_, command_line_, is_first_run_,
+                         browser.get(), container);
     app_window_has_been_launched_ = true;
   }
 

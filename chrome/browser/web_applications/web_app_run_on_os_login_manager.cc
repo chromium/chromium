@@ -87,8 +87,8 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
 void WebAppRunOnOsLoginManager::OnAppLaunchedOnOsLogin(
     AppId app_id,
     std::string app_name,
-    Browser* browser,
-    content::WebContents* web_contents,
+    base::WeakPtr<Browser> browser,
+    base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container) {
 // TODO(crbug.com/1341247): Implement notification for lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)

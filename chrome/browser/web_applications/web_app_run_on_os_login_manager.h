@@ -35,8 +35,8 @@ class WebAppRunOnOsLoginManager {
   void RunAppsOnOsLogin(AllAppsLock& lock);
   void OnAppLaunchedOnOsLogin(AppId app_id,
                               std::string app_name,
-                              Browser* browser,
-                              content::WebContents* web_contents,
+                              base::WeakPtr<Browser> browser,
+                              base::WeakPtr<content::WebContents> web_contents,
                               apps::LaunchContainer container);
 
   raw_ref<WebAppCommandScheduler, DanglingUntriaged> scheduler_;

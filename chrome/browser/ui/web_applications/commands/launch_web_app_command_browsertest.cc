@@ -56,9 +56,12 @@ class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
     return *web_app::WebAppProvider::GetForTest(profile());
   }
 
-  std::tuple<Browser*, content::WebContents*, apps::LaunchContainer> DoLaunch(
-      apps::AppLaunchParams params) {
-    base::test::TestFuture<Browser*, content::WebContents*,
+  std::tuple<base::WeakPtr<Browser>,
+             base::WeakPtr<content::WebContents>,
+             apps::LaunchContainer>
+  DoLaunch(apps::AppLaunchParams params) {
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         future;
     provider().scheduler().LaunchAppWithCustomParams(std::move(params),
@@ -98,14 +101,14 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       apps::LaunchSource::kFromCommandLine, {}, absl::nullopt, absl::nullopt);
 
-  Browser* launch_browser;
-  content::WebContents* web_contents;
+  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<content::WebContents> web_contents;
   apps::LaunchContainer launch_container;
   std::tie(launch_browser, web_contents, launch_container) =
       DoLaunch(std::move(launch_params));
 
-  EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser));
-  EXPECT_EQ(launch_browser, browser());
+  EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
+  EXPECT_EQ(launch_browser.get(), browser());
   EXPECT_EQ(launch_browser->tab_strip_model()->count(), 2);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
@@ -116,14 +119,14 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
       WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromCommandLine,
       {}, absl::nullopt, absl::nullopt);
 
-  Browser* launch_browser;
-  content::WebContents* web_contents;
+  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<content::WebContents> web_contents;
   apps::LaunchContainer launch_container;
   std::tie(launch_browser, web_contents, launch_container) =
       DoLaunch(std::move(launch_params));
 
-  EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser));
-  EXPECT_NE(launch_browser, browser());
+  EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
+  EXPECT_NE(launch_browser.get(), browser());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
   EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);

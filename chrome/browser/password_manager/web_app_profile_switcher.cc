@@ -153,7 +153,8 @@ void WebAppProfileSwitcher::LaunchAppWithId(
       ->scheduler()
       .LaunchAppWithCustomParams(
           std::move(params),
-          base::IgnoreArgs<Browser*, content::WebContents*,
+          base::IgnoreArgs<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>(
               base::BindOnce(&WebAppProfileSwitcher::RunCompletionCallback,
                              weak_factory_.GetWeakPtr())));

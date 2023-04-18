@@ -57,8 +57,8 @@ class WebAppUiManagerObserver : public base::CheckedObserver {
 };
 
 using LaunchWebAppCallback =
-    base::OnceCallback<void(Browser* browser,
-                            content::WebContents* web_contents,
+    base::OnceCallback<void(base::WeakPtr<Browser> browser,
+                            base::WeakPtr<content::WebContents> web_contents,
                             apps::LaunchContainer container)>;
 
 enum class LaunchWebAppWindowSetting {

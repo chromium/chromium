@@ -422,8 +422,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       bool is_system_web_app,
       absl::optional<GURL> override_url,
       base::OnceCallback<void(content::WebContents*)> on_complete,
-      Browser* browser,
-      content::WebContents* web_contents,
+      base::WeakPtr<Browser> browser,
+      base::WeakPtr<content::WebContents> web_contents,
       apps::LaunchContainer container);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;

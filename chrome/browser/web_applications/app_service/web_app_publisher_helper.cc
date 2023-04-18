@@ -1908,13 +1908,14 @@ void WebAppPublisherHelper::OnLaunchCompleted(
     bool is_system_web_app,
     absl::optional<GURL> override_url,
     base::OnceCallback<void(content::WebContents*)> on_complete,
-    Browser* browser,
-    content::WebContents* web_contents,
+    base::WeakPtr<Browser> browser,
+    base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Save all launch information for system web apps, because the
   // browser session restore can't restore system web apps.
-  int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
+  int session_id =
+      apps::GetSessionIdForRestoreFromWebContents(web_contents.get());
   if (SessionID::IsValidValue(session_id)) {
     if (is_system_web_app) {
       std::unique_ptr<app_restore::AppLaunchInfo> launch_info =
@@ -1935,7 +1936,7 @@ void WebAppPublisherHelper::OnLaunchCompleted(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  std::move(on_complete).Run(web_contents);
+  std::move(on_complete).Run(web_contents.get());
 }
 
 }  // namespace web_app
