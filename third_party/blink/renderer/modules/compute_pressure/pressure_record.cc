@@ -11,9 +11,8 @@ namespace blink {
 
 PressureRecord::PressureRecord(V8PressureSource::Enum source,
                                V8PressureState::Enum state,
-                               const Vector<V8PressureFactor> factors,
                                const DOMHighResTimeStamp time)
-    : source_(source), state_(state), factors_(factors), time_(time) {}
+    : source_(source), state_(state), time_(time) {}
 
 PressureRecord::~PressureRecord() = default;
 
@@ -25,10 +24,6 @@ V8PressureState PressureRecord::state() const {
   return V8PressureState(state_);
 }
 
-const Vector<V8PressureFactor>& PressureRecord::factors() const {
-  return factors_;
-}
-
 DOMHighResTimeStamp PressureRecord::time() const {
   return time_;
 }
@@ -37,7 +32,6 @@ ScriptValue PressureRecord::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.Add("source", source());
   result.Add("state", state());
-  result.Add("factors", factors());
   result.Add("time", time());
   return result.GetScriptValue();
 }

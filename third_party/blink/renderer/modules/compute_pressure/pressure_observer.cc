@@ -146,16 +146,15 @@ void PressureObserver::Trace(blink::Visitor* visitor) const {
 void PressureObserver::OnUpdate(ExecutionContext* execution_context,
                                 V8PressureSource::Enum source,
                                 V8PressureState::Enum state,
-                                const Vector<V8PressureFactor>& factors,
                                 DOMHighResTimeStamp timestamp) {
   if (!PassesRateTest(source, timestamp))
     return;
 
-  if (!HasChangeInData(source, state, factors))
+  if (!HasChangeInData(source, state)) {
     return;
+  }
 
-  auto* record =
-      MakeGarbageCollected<PressureRecord>(source, state, factors, timestamp);
+  auto* record = MakeGarbageCollected<PressureRecord>(source, state, timestamp);
 
   last_record_map_[ToSourceIndex(source)] = record;
 
@@ -231,17 +230,14 @@ bool PressureObserver::PassesRateTest(
 }
 
 // https://wicg.github.io/compute-pressure/#dfn-has-change-in-data
-bool PressureObserver::HasChangeInData(
-    V8PressureSource::Enum source,
-    V8PressureState::Enum state,
-    const Vector<V8PressureFactor>& factors) const {
+bool PressureObserver::HasChangeInData(V8PressureSource::Enum source,
+                                       V8PressureState::Enum state) const {
   const auto& last_record = last_record_map_[ToSourceIndex(source)];
 
   if (!last_record)
     return true;
 
-  return last_record->state() != state ||
-         !base::ranges::equal(last_record->factors(), factors);
+  return last_record->state() != state;
 }
 
 void PressureObserver::ResolvePendingResolvers(V8PressureSource::Enum source) {

@@ -7,7 +7,6 @@
 
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_factor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
@@ -18,7 +17,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -71,7 +69,6 @@ class PressureObserver final : public ScriptWrappable {
   void OnUpdate(ExecutionContext*,
                 V8PressureSource::Enum,
                 V8PressureState::Enum,
-                const Vector<V8PressureFactor>&,
                 DOMHighResTimeStamp);
 
   // Called by PressureObserverManager.
@@ -84,9 +81,7 @@ class PressureObserver final : public ScriptWrappable {
   bool PassesRateTest(V8PressureSource::Enum, const DOMHighResTimeStamp&) const;
 
   // Verifies if there is data change in between last update and new one.
-  bool HasChangeInData(V8PressureSource::Enum,
-                       V8PressureState::Enum,
-                       const Vector<V8PressureFactor>&) const;
+  bool HasChangeInData(V8PressureSource::Enum, V8PressureState::Enum) const;
 
   // Resolve/reject pending resolvers.
   void ResolvePendingResolvers(V8PressureSource::Enum);

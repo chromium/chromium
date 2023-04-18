@@ -7155,7 +7155,6 @@ interface PressureObserver
     method unobserve
 interface PressureRecord
     attribute @@toStringTag
-    getter factors
     getter source
     getter state
     getter time

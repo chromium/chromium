@@ -1103,7 +1103,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unobserve
 [Worker] interface PressureRecord
 [Worker]     attribute @@toStringTag
-[Worker]     getter factors
 [Worker]     getter source
 [Worker]     getter state
 [Worker]     getter time
