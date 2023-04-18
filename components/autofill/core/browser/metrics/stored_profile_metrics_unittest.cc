@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,10 +17,10 @@ namespace autofill::autofill_metrics {
 
 // Separate stored profile count metrics exist for every profile category. Test
 // them in a parameterized way.
-class StoredProfileMetricsTest
+class StoredProfileMetricsTestByCategory
     : public testing::TestWithParam<AutofillProfileSourceCategory> {
  public:
-  StoredProfileMetricsTest() {
+  StoredProfileMetricsTestByCategory() {
     // Metrics for kAccount profiles are only emitted when the union view is
     // enabled, since kAccount profiles are otherwise not loaded.
     features_.InitAndEnableFeature(features::kAutofillAccountProfilesUnionView);
@@ -36,14 +37,14 @@ class StoredProfileMetricsTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    StoredProfileMetricsTest,
+    StoredProfileMetricsTestByCategory,
     testing::ValuesIn({AutofillProfileSourceCategory::kLocalOrSyncable,
                        AutofillProfileSourceCategory::kAccountChrome,
                        AutofillProfileSourceCategory::kAccountNonChrome}));
 
 // Tests that no profile count metrics for the corresponding category are
 // emitted when no profiles of that category are stored.
-TEST_P(StoredProfileMetricsTest, NoProfiles) {
+TEST_P(StoredProfileMetricsTestByCategory, NoProfiles) {
   base::HistogramTester histogram_tester;
   LogStoredProfileMetrics(/*profiles=*/{});
 
@@ -68,7 +69,7 @@ TEST_P(StoredProfileMetricsTest, NoProfiles) {
 }
 
 // Tests that when profiles of a category exist, they metrics are emitted.
-TEST_P(StoredProfileMetricsTest, StoredProfiles) {
+TEST_P(StoredProfileMetricsTestByCategory, StoredProfiles) {
   // Create a recently used (3 days ago) profile.
   AutofillProfile profile0 = test::GetFullProfile();
   profile0.set_use_date(AutofillClock::Now() - base::Days(3));
@@ -104,6 +105,26 @@ TEST_P(StoredProfileMetricsTest, StoredProfiles) {
     histogram_tester.ExpectUniqueSample(
         "Autofill.StoredProfileWithoutCountryCount", 1, 1);
   }
+}
+
+// Tests that `LogLocalProfileSupersetMetrics()` determines the correct number
+// of superset profiles.
+TEST(StoredProfileMetricsTest, LocalProfileSupersetMetrics) {
+  AutofillProfile account_profile = test::SubsetOfStandardProfile();
+  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile1 = test::StandardProfile();
+  AutofillProfile local_profile2 = test::SubsetOfStandardProfile();
+  AutofillProfile local_profile3 = test::DifferentFromStandardProfile();
+
+  base::HistogramTester histogram_tester;
+  LogLocalProfileSupersetMetrics(
+      {&account_profile, &local_profile1, &local_profile2, &local_profile3},
+      "en-US");
+  // Expect that `local_profile1` is a strict superset of `account_profile`, but
+  // `local_profile2` and `local_profile3` is not.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup", 1,
+      1);
 }
 
 }  // namespace autofill::autofill_metrics

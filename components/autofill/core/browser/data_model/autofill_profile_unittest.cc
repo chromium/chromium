@@ -966,6 +966,24 @@ TEST(AutofillProfileTest,
       comparator, profile2, {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
+TEST(AutofillProfileTest, IsStrictSupersetOf) {
+  AutofillProfileComparator comparator("en-US");
+  const AutofillProfile standard_profile = test::StandardProfile();
+  const AutofillProfile subset_profile = test::SubsetOfStandardProfile();
+  const AutofillProfile different_profile =
+      test::DifferentFromStandardProfile();
+
+  EXPECT_TRUE(standard_profile.IsStrictSupersetOf(comparator, subset_profile));
+  EXPECT_FALSE(subset_profile.IsStrictSupersetOf(comparator, standard_profile));
+  EXPECT_FALSE(
+      standard_profile.IsStrictSupersetOf(comparator, different_profile));
+
+  // Profiles are not strict supersets of themselves.
+  EXPECT_FALSE(
+      standard_profile.IsStrictSupersetOf(comparator, standard_profile));
+  EXPECT_FALSE(subset_profile.IsStrictSupersetOf(comparator, subset_profile));
+}
+
 TEST(AutofillProfileTest, TestFinalizeAfterImport) {
   // A profile with just a full name should be finalizeable.
   {

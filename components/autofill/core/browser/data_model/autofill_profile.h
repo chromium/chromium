@@ -156,6 +156,10 @@ class AutofillProfile : public AutofillDataModel {
                              const AutofillProfile& profile,
                              const ServerFieldTypeSet& types) const;
 
+  // Like `IsSubsetOf()`, but for strict superset instead of subset.
+  bool IsStrictSupersetOf(const AutofillProfileComparator& comparator,
+                          const AutofillProfile& profile) const;
+
   // Overwrites the data of |this| profile with data from the given |profile|.
   // Expects that the profiles have the same guid.
   void OverwriteDataFrom(const AutofillProfile& profile);

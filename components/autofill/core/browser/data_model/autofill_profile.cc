@@ -561,6 +561,13 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
   return true;
 }
 
+bool AutofillProfile::IsStrictSupersetOf(
+    const AutofillProfileComparator& comparator,
+    const AutofillProfile& profile) const {
+  return profile.IsSubsetOf(comparator, *this) &&
+         !IsSubsetOf(comparator, profile);
+}
+
 void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   // Verified profiles should never be overwritten with unverified data.
   DCHECK(!IsVerified() || profile.IsVerified());

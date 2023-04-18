@@ -2206,7 +2206,15 @@ void PersonalDataManager::LogStoredDataMetrics() const {
   // Only log this info once per Chrome user profile load.
   has_logged_stored_data_metrics_ = true;
 
-  autofill_metrics::LogStoredProfileMetrics(GetProfiles());
+  const std::vector<AutofillProfile*> profiles = GetProfiles();
+  autofill_metrics::LogStoredProfileMetrics(profiles);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView) &&
+      base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage)) {
+    autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profiles),
+                                                     app_locale_);
+  }
+
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_credit_cards_, server_credit_cards_,
       GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
