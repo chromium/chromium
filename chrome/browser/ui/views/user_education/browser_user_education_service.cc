@@ -52,9 +52,13 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/user_education/views/help_bubble_factory_views_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_MAC)
 #include "components/user_education/views/help_bubble_factory_mac.h"
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -185,6 +189,14 @@ void RegisterChromeHelpBubbleFactories(
     user_education::HelpBubbleFactoryRegistry& registry) {
   const user_education::HelpBubbleDelegate* const delegate =
       GetHelpBubbleDelegate();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(http://b/277994050): Move registration after Lacros launch.
+  // Try to create an Ash-specific help bubble first. Note that an Ash-specific
+  // help bubble will only take precedence over a standard Views-specific help
+  // bubble if the tracked element's help bubble context is explicitly set to
+  // `ash::HelpBubbleContext::kAsh`.
+  registry.MaybeRegister<ash::HelpBubbleFactoryViewsAsh>(delegate);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   registry.MaybeRegister<user_education::HelpBubbleFactoryViews>(delegate);
   // Try to create a floating bubble first, if it's allowed.
   registry.MaybeRegister<FloatingWebUIHelpBubbleFactoryBrowser>(delegate);

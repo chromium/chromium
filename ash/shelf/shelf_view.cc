@@ -43,6 +43,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/rounded_label.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
@@ -370,6 +371,9 @@ ShelfView::ShelfView(ShelfModel* model,
   set_allow_deactivate_on_esc(true);
 
   if (features::IsUserEducationEnabled()) {
+    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+    // in case registration causes a help bubble to be created synchronously.
+    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
     SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
   }
 

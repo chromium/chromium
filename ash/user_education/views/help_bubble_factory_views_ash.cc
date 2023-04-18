@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -210,7 +211,9 @@ HelpBubbleFactoryViewsAsh::CreateBubble(
 
 bool HelpBubbleFactoryViewsAsh::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  return element->IsA<views::TrackedElementViews>();
+  return element->IsA<views::TrackedElementViews>() &&
+         element->AsA<views::TrackedElementViews>()->view()->GetProperty(
+             kHelpBubbleContextKey) == HelpBubbleContext::kAsh;
 }
 
 std::unique_ptr<user_education::HelpBubble>

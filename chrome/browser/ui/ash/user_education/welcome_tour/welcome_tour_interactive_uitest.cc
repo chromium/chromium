@@ -4,11 +4,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/label_button.h"
@@ -44,31 +44,29 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
 
   // Returns a builder for an interaction step that waits for a help bubble.
   [[nodiscard]] static auto WaitForHelpBubble() {
-    return WaitForShow(
-        user_education::HelpBubbleView::kHelpBubbleElementIdForTesting);
+    return WaitForShow(ash::HelpBubbleViewAsh::kHelpBubbleElementIdForTesting);
   }
 
   // Returns a builder for an interaction step that checks that the body text of
   // a help bubble matches the specified `message_id`.
   [[nodiscard]] static auto CheckHelpBubbleBodyText(int message_id) {
-    return CheckViewProperty(
-        user_education::HelpBubbleView::kBodyTextIdForTesting,
-        &views::Label::GetText, l10n_util::GetStringUTF16(message_id));
+    return CheckViewProperty(ash::HelpBubbleViewAsh::kBodyTextIdForTesting,
+                             &views::Label::GetText,
+                             l10n_util::GetStringUTF16(message_id));
   }
 
   // Returns a builder for an interaction step that checks that the default
   // button text of a help bubble matches the specified `message_id`.
   [[nodiscard]] static auto CheckHelpBubbleDefaultButtonText(int message_id) {
-    return CheckViewProperty(
-        user_education::HelpBubbleView::kDefaultButtonIdForTesting,
-        &views::LabelButton::GetText, l10n_util::GetStringUTF16(message_id));
+    return CheckViewProperty(ash::HelpBubbleViewAsh::kDefaultButtonIdForTesting,
+                             &views::LabelButton::GetText,
+                             l10n_util::GetStringUTF16(message_id));
   }
 
   // Returns a builder for an interaction step that presses the default button
   // of a help bubble.
   [[nodiscard]] auto PressHelpBubbleDefaultButton() {
-    return PressButton(
-        user_education::HelpBubbleView::kDefaultButtonIdForTesting);
+    return PressButton(ash::HelpBubbleViewAsh::kDefaultButtonIdForTesting);
   }
 
  private:
