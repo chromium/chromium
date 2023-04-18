@@ -453,6 +453,7 @@ enum class ToolbarKind {
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
+  UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
 }
 
 #pragma mark - ChromeCoordinator
@@ -835,6 +836,8 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
+  _urlLoadingNotifierBrowserAgent =
+      UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
   // TODO(crbug.com/1413769) Typecast should be performed using
   // HandlerForProtocol method. PrimaryToolbarCoordinator isn't started yet, so
@@ -888,7 +891,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   _viewControllerDependencies.urlLoadingNotifierBrowserAgent =
-      UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
+      _urlLoadingNotifierBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
       TabUsageRecorderBrowserAgent::FromBrowser(self.browser);
   _viewControllerDependencies.webNavigationBrowserAgent =
@@ -1291,7 +1294,9 @@ enum class ToolbarKind {
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator
-          restorationAgent:sessionRestorationBrowserAgent];
+          restorationAgent:sessionRestorationBrowserAgent
+              browserState:browserState
+           loadingNotifier:_urlLoadingNotifierBrowserAgent];
   self.tabEventsMediator.consumer = browserViewController;
 
   browserViewController.reauthHandler =

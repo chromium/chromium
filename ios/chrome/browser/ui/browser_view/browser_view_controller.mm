@@ -17,9 +17,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
@@ -83,8 +81,6 @@
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
-#import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
@@ -196,7 +192,6 @@ enum HeaderBehaviour {
                                      SideSwipeControllerDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
-                                     URLLoadingObserver,
                                      ViewRevealingAnimatee> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
@@ -258,8 +253,6 @@ enum HeaderBehaviour {
 
   // Fake status bar view used to blend the toolbar into the status bar.
   UIView* _fakeStatusBarView;
-
-  std::unique_ptr<UrlLoadingObserverBridge> _URLLoadingObserverBridge;
 
   // The disabler that prevents the toolbar from being scrolled offscreen when
   // the thumb strip is visible.
@@ -490,11 +483,6 @@ enum HeaderBehaviour {
     _inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
-
-    _URLLoadingObserverBridge =
-        std::make_unique<UrlLoadingObserverBridge>(self);
-    _urlLoadingNotifierBrowserAgent->AddObserver(
-        _URLLoadingObserverBridge.get());
 
     // When starting the browser with an open tab, it is necessary to reset the
     // clipsToBounds property of the WKWebView so the page can bleed behind the
@@ -916,11 +904,6 @@ enum HeaderBehaviour {
 - (void)shutdown {
   DCHECK(!_isShutdown);
   _isShutdown = YES;
-
-  if (_urlLoadingNotifierBrowserAgent) {
-    _urlLoadingNotifierBrowserAgent->RemoveObserver(
-        _URLLoadingObserverBridge.get());
-  }
 
   // Disconnect child coordinators.
   if (base::FeatureList::IsEnabled(kModernTabStrip)) {
@@ -2411,80 +2394,6 @@ enum HeaderBehaviour {
                      CGRectGetMinY(bounds) + self.headerHeight);
 }
 
-#pragma mark - URLLoadingObserver
-
-// TODO(crbug.com/907527): consider moving these separate functional blurbs
-// closer to their main component (using localized observers)
-
-- (void)tabWillLoadURL:(GURL)URL
-        transitionType:(ui::PageTransition)transitionType {
-  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
-
-  web::WebState* currentWebState = self.currentWebState;
-  if (currentWebState &&
-      (transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    new_tab_page_uma::RecordActionFromOmnibox(_isOffTheRecord, currentWebState,
-                                              URL, transitionType);
-  }
-}
-
-- (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
-  if (isUserInitiated) {
-    // Send either the "New Tab Opened" or "New Incognito Tab" opened to the
-    // feature_engagement::Tracker based on `inIncognito`.
-    feature_engagement::NotifyNewTabEvent(self.browserState, _isOffTheRecord);
-  }
-}
-
-- (void)willSwitchToTabWithURL:(GURL)URL
-              newWebStateIndex:(NSInteger)newWebStateIndex {
-  if ([self canShowTabStrip])
-    return;
-
-  WebStateList* webStateList = self.webStateList;
-  web::WebState* webStateBeingActivated =
-      webStateList->GetWebStateAt(newWebStateIndex);
-
-  // Add animations only if the tab strip isn't shown.
-  UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
-
-  // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
-  SwipeView* swipeView = [[SwipeView alloc]
-      initWithFrame:self.contentArea.frame
-          topMargin:[self snapshotEdgeInsetsForWebState:webStateBeingActivated]
-                        .top];
-
-  [swipeView setTopToolbarImage:[self.primaryToolbarCoordinator
-                                    toolbarSideSwipeSnapshotForWebState:
-                                        webStateBeingActivated]];
-  [swipeView setBottomToolbarImage:[self.secondaryToolbarCoordinator
-                                       toolbarSideSwipeSnapshotForWebState:
-                                           webStateBeingActivated]];
-
-  SnapshotTabHelper::FromWebState(webStateBeingActivated)
-      ->RetrieveColorSnapshot(^(UIImage* image) {
-        if (PagePlaceholderTabHelper::FromWebState(webStateBeingActivated)
-                ->will_add_placeholder_for_next_navigation()) {
-          [swipeView setImage:nil];
-        } else {
-          [swipeView setImage:image];
-        }
-      });
-
-  SwitchToTabAnimationView* animationView =
-      [[SwitchToTabAnimationView alloc] initWithFrame:self.view.bounds];
-
-  [self.view addSubview:animationView];
-
-  SwitchToTabAnimationPosition position =
-      newWebStateIndex > webStateList->active_index()
-          ? SwitchToTabAnimationPositionAfter
-          : SwitchToTabAnimationPositionBefore;
-  [animationView animateFromCurrentView:snapshotView
-                              toNewView:swipeView
-                             inPosition:position];
-}
-
 #pragma mark - OmniboxPopupPresenterDelegate methods.
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
@@ -2943,6 +2852,59 @@ enum HeaderBehaviour {
   if (self.active) {
     [self displayWebState:webState];
   }
+}
+
+- (void)switchtoTabWithNewWebStateIndex:(NSInteger)newWebStateIndex {
+  if ([self canShowTabStrip]) {
+    return;
+  }
+
+  WebStateList* webStateList = self.webStateList;
+  web::WebState* webStateBeingActivated =
+      webStateList->GetWebStateAt(newWebStateIndex);
+
+  // Add animations only if the tab strip isn't shown.
+  UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
+
+  // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
+  SwipeView* swipeView = [[SwipeView alloc]
+      initWithFrame:self.contentArea.frame
+          topMargin:[self snapshotEdgeInsetsForWebState:webStateBeingActivated]
+                        .top];
+
+  [swipeView setTopToolbarImage:[self.primaryToolbarCoordinator
+                                    toolbarSideSwipeSnapshotForWebState:
+                                        webStateBeingActivated]];
+  [swipeView setBottomToolbarImage:[self.secondaryToolbarCoordinator
+                                       toolbarSideSwipeSnapshotForWebState:
+                                           webStateBeingActivated]];
+
+  SnapshotTabHelper::FromWebState(webStateBeingActivated)
+      ->RetrieveColorSnapshot(^(UIImage* image) {
+        if (PagePlaceholderTabHelper::FromWebState(webStateBeingActivated)
+                ->will_add_placeholder_for_next_navigation()) {
+          [swipeView setImage:nil];
+        } else {
+          [swipeView setImage:image];
+        }
+      });
+
+  SwitchToTabAnimationView* animationView =
+      [[SwitchToTabAnimationView alloc] initWithFrame:self.view.bounds];
+
+  [self.view addSubview:animationView];
+
+  SwitchToTabAnimationPosition position =
+      newWebStateIndex > webStateList->active_index()
+          ? SwitchToTabAnimationPositionAfter
+          : SwitchToTabAnimationPositionBefore;
+  [animationView animateFromCurrentView:snapshotView
+                              toNewView:swipeView
+                             inPosition:position];
+}
+
+- (void)dismissBookmarkModalController {
+  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
 }
 
 #pragma mark - TabConsumer helpers
