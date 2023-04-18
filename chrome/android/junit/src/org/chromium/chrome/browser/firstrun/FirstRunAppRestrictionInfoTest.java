@@ -157,6 +157,7 @@ public class FirstRunAppRestrictionInfoTest {
         Assert.assertEquals("CallbackHelper should not triggered yet.", 0,
                 completionCallbackHelper3.getCallCount());
 
+        mPauseDuringPostTask = false;
         // Initialized the AppRestrictionInfo and wait until initialized.
         TestThreadUtils.runOnUiThreadBlocking(() -> mPendingPostTask.run());
 
