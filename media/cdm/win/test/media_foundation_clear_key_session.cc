@@ -266,7 +266,7 @@ STDMETHODIMP MediaFoundationClearKeySession::GetKeyStatuses(
   for (UINT i = 0; i < key_status_count; ++i) {
     key_status_array[i].cbKeyId = keys_info_[i]->key_id.size();
     key_status_array[i].pbKeyId = static_cast<BYTE*>(
-        CoTaskMemAlloc(sizeof(keys_info_[i]->key_id.size())));
+        CoTaskMemAlloc(keys_info_[i]->key_id.size() * sizeof(uint8_t)));
     if (key_status_array[i].pbKeyId == nullptr) {
       return E_OUTOFMEMORY;
     }
