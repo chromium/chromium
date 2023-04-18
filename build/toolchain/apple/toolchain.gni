@@ -619,7 +619,7 @@ template("single_apple_toolchain") {
       if (host_os == "mac") {
         command = "rm -rf {{output}} && /bin/cp -Rc {{source}} {{output}}"
       } else {
-        command = "rm -rf {{output}} && /bin/cp -Rl {{source}} {{output}}"
+        command = "rm -rf {{output}} && /bin/cp -Rld {{source}} {{output}}"
       }
       description = "COPY_BUNDLE_DATA {{source}} {{output}}"
       pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"
