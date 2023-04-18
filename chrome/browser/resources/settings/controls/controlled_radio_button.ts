@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '../settings_vars.css.js';
 
 import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';

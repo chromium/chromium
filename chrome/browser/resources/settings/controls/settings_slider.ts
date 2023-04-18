@@ -8,8 +8,8 @@
  * linear UI range to a range of real values.  When |value| does not map exactly
  * to a tick mark, it interpolates to the nearest tick.
  */
-import '../settings_vars.css.js';
 import '../strings.m.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 // <if expr='chromeos_ash'>
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
