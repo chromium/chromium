@@ -224,9 +224,17 @@ class CORE_EXPORT HTMLElement : public Element {
   void setPopover(const AtomicString& value);
   PopoverValueType PopoverType() const;
   bool popoverOpen() const;
+  // IsPopoverReady returns true if the popover is in a state where it can be
+  // either shown or hidden based on |action|. If exception_state is set, then
+  // it will throw an exception if the state is not ready to transition to the
+  // state in |action|. |include_event_handler_text| adds some additional text
+  // to the exception if an exception is thrown. When |expected_document| is
+  // set, it will be compared to the current document and return false if they
+  // do not match.
   bool IsPopoverReady(PopoverTriggerAction action,
                       ExceptionState* exception_state,
-                      bool include_event_handler_text = false) const;
+                      bool include_event_handler_text = false,
+                      Document* expected_document = nullptr) const;
   void togglePopover(ExceptionState& exception_state);
   void togglePopover(bool force, ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
