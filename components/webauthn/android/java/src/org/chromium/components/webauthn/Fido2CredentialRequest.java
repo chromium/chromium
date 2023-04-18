@@ -92,6 +92,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private boolean mEchoCredProps;
     private WebAuthnBrowserBridge mBrowserBridge;
     private boolean mAttestationAcceptable;
+    private boolean mIsCrossOrigin;
 
     private enum ConditionalUiState {
         NONE,
@@ -224,6 +225,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             returnErrorAndResetCallback(webAuthSecurityChecksResults.securityCheckResult);
             return;
         }
+        mIsCrossOrigin = webAuthSecurityChecksResults.isCrossOrigin;
 
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;
@@ -247,8 +249,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 prefetchCredentialsViaCredMan(
                         options, callerOrigin, frameHost, callerOriginString, clientDataHash);
             } else {
-                getCredentialViaCredMan(options, callerOrigin,
-                        webAuthSecurityChecksResults.isCrossOrigin, frameHost);
+                getCredentialViaCredMan(options, callerOrigin, frameHost);
             }
             return;
         }
@@ -263,10 +264,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
             assert options.challenge != null;
             clientDataHash = buildClientDataJsonAndComputeHash(ClientDataRequestType.PAYMENT_GET,
-                    callerOriginString, options.challenge,
-                    webAuthSecurityChecksResults.isCrossOrigin, payment, options.relyingPartyId,
-                    mWebContents.getMainFrame().getLastCommittedOrigin());
+                    callerOriginString, options.challenge, mIsCrossOrigin, payment,
+                    options.relyingPartyId, mWebContents.getMainFrame().getLastCommittedOrigin());
             if (clientDataHash == null) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;
             }
         }
@@ -670,6 +671,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         /*isCrossOrigin=*/false, /*paymentOptions=*/null, options.relyingParty.id,
                         /*topOrigin=*/null);
         if (clientDataHash == null) {
+            returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
             return;
         }
 
@@ -766,30 +768,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressWarnings("WrongConstant")
-    private void getCredentialViaCredMan(PublicKeyCredentialRequestOptions options, Origin origin,
-            boolean isCrossOrigin, RenderFrameHost frameHost) {
-        final String requestAsJson =
-                Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
+    private void getCredentialViaCredMan(
+            PublicKeyCredentialRequestOptions options, Origin origin, RenderFrameHost frameHost) {
         final Context context = ContextUtils.getApplicationContext();
-
-        final byte[] clientDataHash =
-                buildClientDataJsonAndComputeHash(ClientDataRequestType.WEB_AUTHN_GET,
-                        convertOriginToString(origin), options.challenge, isCrossOrigin,
-                        /*paymentOptions=*/null, options.relyingPartyId, /*topOrigin=*/null);
-        if (clientDataHash == null) {
-            return;
-        }
-
-        final Bundle publicKeyCredentialOptionBundle = new Bundle();
-        publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
-                CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
-        publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
-        publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH",
-                Base64.encodeToString(
-                        clientDataHash, Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE));
-        publicKeyCredentialOptionBundle.putBoolean(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -859,7 +840,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         };
 
         try {
-            final Object getCredentialRequest = buildGetCredentialRequest(origin, requestAsJson);
+            final Object getCredentialRequest = buildGetCredentialRequest(options, origin);
+            if (getCredentialRequest == null) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                return;
+            }
 
             // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
             // `@SuppressWarnings` when the Android U SDK is available.
@@ -886,8 +871,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private void prefetchCredentialsViaCredMan(PublicKeyCredentialRequestOptions options,
             Origin origin, RenderFrameHost frameHost, String callerOriginString,
             byte[] clientDataHash) {
-        final String requestAsJson =
-                Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
         final Context context = ContextUtils.getApplicationContext();
 
         // The Android 14 APIs have to be called via reflection until Chromium
@@ -954,7 +937,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         };
 
         try {
-            final Object getCredentialRequest = buildGetCredentialRequest(origin, requestAsJson);
+            final Object getCredentialRequest = buildGetCredentialRequest(options, origin);
+            if (getCredentialRequest == null) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                return;
+            }
 
             // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
             // `@SuppressWarnings` when the Android U SDK is available.
@@ -972,10 +959,23 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
     }
 
-    private Object buildGetCredentialRequest(Origin origin, String requestAsJson)
-            throws ReflectiveOperationException {
-        Bundle publicKeyCredentialOptionBundle =
-                buildPublicKeyCredentialOptionBundle(requestAsJson);
+    private Object buildGetCredentialRequest(PublicKeyCredentialRequestOptions options,
+            Origin origin) throws ReflectiveOperationException {
+        final String requestAsJson =
+                Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
+
+        final byte[] clientDataHash =
+                buildClientDataJsonAndComputeHash(ClientDataRequestType.WEB_AUTHN_GET,
+                        convertOriginToString(origin), options.challenge, mIsCrossOrigin,
+                        /*paymentOptions=*/null, options.relyingPartyId, /*topOrigin=*/null);
+        if (clientDataHash == null) {
+            Log.e(TAG, "ClientDataJson generation failed.");
+            return null;
+        }
+
+        Bundle publicKeyCredentialOptionBundle = buildPublicKeyCredentialOptionBundle(requestAsJson,
+                Base64.encodeToString(
+                        clientDataHash, Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE));
 
         // Build the CredentialOption:
         final Class<?> credentialOptionBuilderClass =
@@ -1003,14 +1003,15 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 getCredentialRequestBuilderObject);
     }
 
-    private Bundle buildPublicKeyCredentialOptionBundle(String requestAsJson) {
+    private Bundle buildPublicKeyCredentialOptionBundle(
+            String requestAsJson, String encodedClientDataHash) {
         final Bundle publicKeyCredentialOptionBundle = new Bundle();
         publicKeyCredentialOptionBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
         publicKeyCredentialOptionBundle.putString(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
         publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", null);
+                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", encodedClientDataHash);
         publicKeyCredentialOptionBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
         return publicKeyCredentialOptionBundle;
@@ -1023,14 +1024,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mClientDataJson = ClientDataJson.buildClientDataJson(clientDataRequestType, callerOrigin,
                 challenge, isCrossOrigin, paymentOptions, relyingPartyId, topOrigin);
         if (mClientDataJson == null) {
-            returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
             return null;
         }
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
             return null;
         }
         messageDigest.update(mClientDataJson.getBytes());
