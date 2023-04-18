@@ -2002,6 +2002,8 @@ component("ash") {
     "system/unified/feature_tile.h",
     "system/unified/feature_tiles_container_view.cc",
     "system/unified/feature_tiles_container_view.h",
+    "system/unified/glanceable_tray_bubble.cc",
+    "system/unified/glanceable_tray_bubble.h",
     "system/unified/ime_mode_view.cc",
     "system/unified/ime_mode_view.h",
     "system/unified/managed_device_tray_item_view.cc",

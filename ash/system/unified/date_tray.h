@@ -22,10 +22,13 @@ namespace ash {
 class Shelf;
 class TimeTrayItemView;
 class TrayBubbleView;
+class GlanceableTrayBubble;
 
 // This date tray is next to the `UnifiedSystemTray`. Activating this tray
 // results in the `CalendarView` showing in the `UnifiedSystemTray`'s bubble.
-// This tray doesn't have its own bubble.
+// If GlanceablesV2 feature flag is enabled, it will instead show the
+// GlanceableTrayBubble.
+// TODO(b:277268122) update documentation.
 class ASH_EXPORT DateTray : public TrayBackgroundView,
                             public UnifiedSystemTray::Observer {
  public:
@@ -42,10 +45,10 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void HandleLocaleChange() override;
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;
-  void ShowBubble() override {}
+  void ShowBubble() override;
   void CloseBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void ClickedOutsideBubble() override {}
+  void ClickedOutsideBubble() override;
 
   // UnifiedSystemTray::Observer:
   void OnOpeningCalendarView() override;
@@ -53,6 +56,9 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
 
   // Callback called when this tray is pressed.
   void OnButtonPressed(const ui::Event& event);
+
+  void ShowGlanceableBubble();
+  void HideGlanceableBubble();
 
  private:
   friend class DateTrayTest;
@@ -62,6 +68,9 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
 
   // Owned by `StatusAreaWidget`.
   UnifiedSystemTray* unified_system_tray_ = nullptr;
+
+  // Bubble container for Glanceable UI.
+  std::unique_ptr<GlanceableTrayBubble> bubble_;
 
   base::ScopedObservation<UnifiedSystemTray, UnifiedSystemTray::Observer>
       scoped_unified_system_tray_observer_{this};
