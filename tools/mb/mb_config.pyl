@@ -982,11 +982,6 @@
       'win64-chrome-stable': 'official_reclient_x64',
     },
 
-    'tryserver.chrome.captured-sites': {
-      'linux-autofill-captured-sites-rel': 'release_bot',
-      'linux-password-manager-captured-sites-rel': 'release_bot',
-    },
-
     'tryserver.chrome.pgo': {
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
