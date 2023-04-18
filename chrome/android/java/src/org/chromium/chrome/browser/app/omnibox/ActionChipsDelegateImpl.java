@@ -18,9 +18,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
@@ -28,11 +26,9 @@ import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -68,18 +64,31 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         @OmniboxPedalType
         int pedalId = pedal.pedalId;
         switch (pedalId) {
+            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
+                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.MAIN);
+                break;
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
                 mSettingsLauncher.launchSettingsActivity(
-                        mActivity, ClearBrowsingDataTabsFragment.class);
+                        mActivity, SettingsFragment.CLEAR_BROWSING_DATA);
                 break;
+            case OmniboxPedalType.UPDATE_CREDIT_CARD:
+                mSettingsLauncher.launchSettingsActivity(
+                        mActivity, SettingsFragment.PAYMENT_METHODS);
+                break;
+            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
+                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.SAFETY_CHECK);
+                break;
+            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
+                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.SITE);
+                break;
+            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
+                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.ACCESSIBILITY);
+                break;
+
             case OmniboxPedalType.MANAGE_PASSWORDS:
                 PasswordManagerLauncher.showPasswordSettings(mActivity,
                         ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
                         /*managePasskeys=*/false);
-                break;
-            case OmniboxPedalType.UPDATE_CREDIT_CARD:
-                mSettingsLauncher.launchSettingsActivity(
-                        mActivity, AutofillPaymentMethodsFragment.class);
                 break;
             case OmniboxPedalType.LAUNCH_INCOGNITO:
                 if (isChromeActivity()) {
@@ -92,18 +101,6 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                     startActivity(intent);
                 }
                 break;
-            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
-                mSettingsLauncher.launchSettingsActivity(mActivity,
-                        SafetyCheckSettingsFragment.class,
-                        SafetyCheckSettingsFragment.createBundle(
-                                /*runSafetyCheckImmediately=*/true));
-                break;
-            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
-                mSettingsLauncher.launchSettingsActivity(mActivity, SiteSettings.class);
-                break;
-            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
-                mSettingsLauncher.launchSettingsActivity(mActivity);
-                break;
             case OmniboxPedalType.VIEW_CHROME_HISTORY:
                 if (isChromeActivity()) {
                     ((ChromeActivity) mActivity)
@@ -114,9 +111,6 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                     intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, false);
                     startActivity(intent);
                 }
-                break;
-            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
-                mSettingsLauncher.launchSettingsActivity(mActivity, AccessibilitySettings.class);
                 break;
             case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
                 if (isChromeActivity()) {
