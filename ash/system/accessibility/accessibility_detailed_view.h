@@ -168,6 +168,10 @@ class ASH_EXPORT AccessibilityDetailedView
   views::Button* settings_view_ = nullptr;
 
   LoginStatus login_;
+
+  // Whether `features::kQsRevamp` is enabled. Used to avoid redundant
+  // base::Feature lookups when building the view.
+  const bool is_qs_revamp_enabled_;
 };
 
 }  // namespace ash

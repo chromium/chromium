@@ -138,7 +138,8 @@ constexpr char AccessibilityDetailedView::kClassName[] =
 
 AccessibilityDetailedView::AccessibilityDetailedView(
     DetailedViewDelegate* delegate)
-    : TrayDetailedView(delegate) {
+    : TrayDetailedView(delegate),
+      is_qs_revamp_enabled_(features::IsQsRevampEnabled()) {
   Reset();
   AppendAccessibilityList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TITLE);
@@ -269,7 +270,7 @@ const char* AccessibilityDetailedView::GetClassName() const {
 void AccessibilityDetailedView::AppendAccessibilityList() {
   CreateScrollableList();
 
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     auto top_container = std::make_unique<RoundedContainer>();
     AddEnabledFeatures(top_container.get());
 
@@ -410,7 +411,7 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
   }
 
   // QsRevamp does not use a separator or sub-header.
-  if (!features::IsQsRevampEnabled()) {
+  if (!is_qs_revamp_enabled_) {
     if (controller->IsAdditionalSettingsSeparatorVisibleInTray()) {
       container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
     }
@@ -454,7 +455,9 @@ HoverHighlightView* AccessibilityDetailedView::AddSpokenFeedbackView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->spoken_feedback().enabled();
   return AddScrollListFeatureItem(
-      container, kSystemMenuAccessibilityChromevoxIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yChromevoxIcon
+                            : kSystemMenuAccessibilityChromevoxIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SPOKEN_FEEDBACK),
       checked, controller->IsEnterpriseIconVisibleForSpokenFeedback());
@@ -465,7 +468,9 @@ HoverHighlightView* AccessibilityDetailedView::AddSelectToSpeakView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->select_to_speak().enabled();
   return AddScrollListFeatureItem(
-      container, kSystemMenuAccessibilitySelectToSpeakIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11ySelectToSpeakIcon
+                            : kSystemMenuAccessibilitySelectToSpeakIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK),
       checked, controller->IsEnterpriseIconVisibleForSelectToSpeak());
@@ -476,7 +481,9 @@ HoverHighlightView* AccessibilityDetailedView::AddDictationView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->dictation().enabled();
   return AddScrollListFeatureItem(
-      container, kDictationMenuIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yDictationIcon
+                            : kDictationMenuIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
       checked, controller->IsEnterpriseIconVisibleForDictation());
 }
@@ -497,7 +504,9 @@ HoverHighlightView* AccessibilityDetailedView::AddScreenMagnifierView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = Shell::Get()->accessibility_delegate()->IsMagnifierEnabled();
   return AddScrollListFeatureItem(
-      container, kSystemMenuAccessibilityFullscreenMagnifierIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yFullscreenMagnifierIcon
+                            : kSystemMenuAccessibilityFullscreenMagnifierIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SCREEN_MAGNIFIER),
       checked, controller->IsEnterpriseIconVisibleForFullScreenMagnifier());
@@ -508,7 +517,9 @@ HoverHighlightView* AccessibilityDetailedView::AddDockedMagnifierView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = Shell::Get()->docked_magnifier_controller()->GetEnabled();
   return AddScrollListFeatureItem(
-      container, kSystemMenuAccessibilityDockedMagnifierIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yDockedMagnifierIcon
+                            : kSystemMenuAccessibilityDockedMagnifierIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DOCKED_MAGNIFIER),
       checked, controller->IsEnterpriseIconVisibleForDockedMagnifier());
@@ -529,7 +540,9 @@ HoverHighlightView* AccessibilityDetailedView::AddVirtualKeyboardView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->virtual_keyboard().enabled();
   return AddScrollListFeatureItem(
-      container, kSystemMenuKeyboardLegacyIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yOnscreenKeyboardIcon
+                            : kSystemMenuKeyboardLegacyIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
       checked, controller->IsEnterpriseIconVisibleForVirtualKeyboard());
@@ -540,7 +553,9 @@ HoverHighlightView* AccessibilityDetailedView::AddSwitchAccessView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->switch_access().enabled();
   return AddScrollListFeatureItem(
-      container, kSwitchAccessIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11ySwitchAccessIcon
+                            : kSwitchAccessIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS),
       checked, controller->IsEnterpriseIconVisibleForSwitchAccess());
@@ -551,7 +566,9 @@ HoverHighlightView* AccessibilityDetailedView::AddLiveCaptionView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->live_caption().enabled();
   return AddScrollListFeatureItem(
-      container, vector_icons::kLiveCaptionOnIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yLiveCaptionIcon
+                            : vector_icons::kLiveCaptionOnIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION), checked,
       controller->IsEnterpriseIconVisibleForLiveCaption());
 }
@@ -561,7 +578,9 @@ HoverHighlightView* AccessibilityDetailedView::AddLargeCursorView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->large_cursor().enabled();
   return AddScrollListFeatureItem(
-      container, gfx::kNoneIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yLargeMouseCursorIcon
+                            : gfx::kNoneIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_LARGE_CURSOR),
       checked, controller->IsEnterpriseIconVisibleForLargeCursor());
 }
@@ -571,7 +590,8 @@ HoverHighlightView* AccessibilityDetailedView::AddMonoAudioView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->mono_audio().enabled();
   return AddScrollListFeatureItem(
-      container, gfx::kNoneIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yMonoAudioIcon : gfx::kNoneIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO),
       checked, controller->IsEnterpriseIconVisibleForMonoAudio());
 }
@@ -581,7 +601,9 @@ HoverHighlightView* AccessibilityDetailedView::AddCaretHighlightView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->caret_highlight().enabled();
   return AddScrollListFeatureItem(
-      container, gfx::kNoneIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yHighlightTextCaretIcon
+                            : gfx::kNoneIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_CARET_HIGHLIGHT),
       checked, controller->IsEnterpriseIconVisibleForCaretHighlight());
@@ -592,7 +614,9 @@ HoverHighlightView* AccessibilityDetailedView::AddHighlightMouseCursorView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->cursor_highlight().enabled();
   return AddScrollListFeatureItem(
-      container, gfx::kNoneIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yHighlightMouseCursorIcon
+                            : gfx::kNoneIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR),
       checked, controller->IsEnterpriseIconVisibleForCursorHighlight());
@@ -603,7 +627,9 @@ HoverHighlightView* AccessibilityDetailedView::AddHighlightKeyboardFocusView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->focus_highlight().enabled();
   return AddScrollListFeatureItem(
-      container, gfx::kNoneIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yHighlightKeyboardFocusIcon
+                            : gfx::kNoneIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS),
       checked, controller->IsEnterpriseIconVisibleForFocusHighlight());
@@ -614,7 +640,8 @@ HoverHighlightView* AccessibilityDetailedView::AddStickyKeysView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->sticky_keys().enabled();
   return AddScrollListFeatureItem(
-      container, gfx::kNoneIcon,
+      container,
+      is_qs_revamp_enabled_ ? kQuickSettingsA11yStickyKeysIcon : gfx::kNoneIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_STICKY_KEYS),
       checked, controller->IsEnterpriseIconVisibleForStickyKeys());
 }
@@ -625,7 +652,7 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListFeatureItem(
     const std::u16string& text,
     bool checked,
     bool enterprise_managed) {
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     // QsRevamp uses items with a toggle button on the right.
     return AddScrollListToggleItem(container, icon, text, checked,
                                    enterprise_managed);
@@ -656,11 +683,11 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
   } else {
     // Create a non-clickable non-focusable toggle button on the right.
     std::unique_ptr<views::ToggleButton> toggle;
-    if (!features::IsQsRevampEnabled()) {
+    if (!is_qs_revamp_enabled_) {
       toggle = std::make_unique<TrayToggleButton>(
           views::Button::PressedCallback(),
           /*accessible_name_id=*/absl::nullopt,
-          /*use_empty_border=*/features::IsQsRevampEnabled());
+          /*use_empty_border=*/false);
     } else {
       toggle = std::make_unique<Switch>();
     }
