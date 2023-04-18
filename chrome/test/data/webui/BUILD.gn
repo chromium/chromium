@@ -167,6 +167,7 @@ if (include_js_tests) {
         "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
         "chromeos/emoji_picker/emoji_picker_browsertest.js",
         "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
+        "chromeos/internet_config_dialog_browsertest.js",
         "chromeos/internet_detail_dialog_browsertest.js",
         "chromeos/network_browsertest.js",
         "chromeos/office_fallback/office_fallback_browsertest.js",

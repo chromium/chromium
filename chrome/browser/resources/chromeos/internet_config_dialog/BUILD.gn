@@ -31,6 +31,7 @@ if (optimize_webui) {
       "//ash/webui/common/resources:css_wrapper_files",
       "//ash/webui/common/resources:html_wrapper_files",
       "//ash/webui/common/resources:preprocess",
+      "//ui/webui/resources/cr_components/color_change_listener:build_ts",
       "//ui/webui/resources/cr_elements:build_ts",
     ]
   }
