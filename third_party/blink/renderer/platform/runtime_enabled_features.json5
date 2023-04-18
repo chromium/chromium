@@ -1155,7 +1155,7 @@
     },
     {
       name: "DateInputInlineBlock",
-      status: "stable",
+      status: "test",
     },
     {
       name: "DecodeJpeg420ImagesToYUV",

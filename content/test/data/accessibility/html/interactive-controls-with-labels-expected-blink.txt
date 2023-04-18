@@ -85,41 +85,39 @@ rootWebArea
 ++++++++++staticText name='Option 8'
 ++++++++++++inlineTextBox name='Option 8'
 ++++++inputTime name='aria label' value='12:05'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Hours aria label' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='12'
-++++++++++++++++++inlineTextBox name='12'
-++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox name=':'
-++++++++++++++spinButton name='Minutes aria label' placeholder='--' value='05' valueForRange=5.00 minValueForRange=0.00 maxValueForRange=59.00
-++++++++++++++++staticText name='05'
-++++++++++++++++++inlineTextBox name='05'
-++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox name=' '
-++++++++++++++spinButton name='AM/PM aria label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
-++++++++++++++++staticText name='PM'
-++++++++++++++++++inlineTextBox name='PM'
-++++++++++popUpButton name='Show time picker'
+++++++++++++spinButton name='Hours aria label' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='12'
+++++++++++++++++inlineTextBox name='12'
+++++++++++++staticText name=':'
+++++++++++++++inlineTextBox name=':'
+++++++++++++spinButton name='Minutes aria label' placeholder='--' value='05' valueForRange=5.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++staticText name='05'
+++++++++++++++++inlineTextBox name='05'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++spinButton name='AM/PM aria label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++staticText name='PM'
+++++++++++++++++inlineTextBox name='PM'
+++++++++popUpButton name='Show time picker'
 ++++++inputTime name='Test label' value='12:05'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Hours Test label' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='12'
-++++++++++++++++++inlineTextBox name='12'
-++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox name=':'
-++++++++++++++spinButton name='Minutes Test label' placeholder='--' value='05' valueForRange=5.00 minValueForRange=0.00 maxValueForRange=59.00
-++++++++++++++++staticText name='05'
-++++++++++++++++++inlineTextBox name='05'
-++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox name=' '
-++++++++++++++spinButton name='AM/PM Test label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
-++++++++++++++++staticText name='PM'
-++++++++++++++++++inlineTextBox name='PM'
-++++++++++popUpButton name='Show time picker'
+++++++++++++spinButton name='Hours Test label' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='12'
+++++++++++++++++inlineTextBox name='12'
+++++++++++++staticText name=':'
+++++++++++++++inlineTextBox name=':'
+++++++++++++spinButton name='Minutes Test label' placeholder='--' value='05' valueForRange=5.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++staticText name='05'
+++++++++++++++++inlineTextBox name='05'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++spinButton name='AM/PM Test label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++staticText name='PM'
+++++++++++++++++inlineTextBox name='PM'
+++++++++popUpButton name='Show time picker'
 ++++++colorWell name='aria label' value='#e4e4e4'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
