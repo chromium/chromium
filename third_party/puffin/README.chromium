@@ -54,3 +54,5 @@ This is an existing bug in the AOSP implementation, will notify the owners.
 - Fixing one case where a stream is closed early.
 - Updating patching_unittest with zucchini v2 patches to fix broken tests.
 - missed one stream close in puffdiff.cc.
+- Making sure to call FindDeflateSubBlocks in PuffDiff to prepopulate deflate
+subblocks.

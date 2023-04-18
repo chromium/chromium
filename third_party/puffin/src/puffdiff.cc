@@ -271,6 +271,22 @@ Status PuffDiff(const string& src_file_path,
                << dest_file_path;
   }
 
+  if (src_deflates_bit.empty()) {
+    if (!FindDeflateSubBlocks(src_stream, src_deflates_byte,
+                              &src_deflates_bit)) {
+      LOG(ERROR) << "Unable to find deflate subblocks for source.";
+      return Status::P_STREAM_ERROR;
+    }
+  }
+
+  if (dst_deflates_bit.empty()) {
+    if (!FindDeflateSubBlocks(dest_stream, dst_deflates_byte,
+                              &dst_deflates_bit)) {
+      LOG(ERROR) << "Unable to find deflate subblocks for destination";
+      return Status::P_STREAM_ERROR;
+    }
+  }
+
   Buffer puffdiff_delta;
   if (!puffin::PuffDiff(std::move(src_stream), std::move(dest_stream),
                         src_deflates_bit, dst_deflates_bit,
