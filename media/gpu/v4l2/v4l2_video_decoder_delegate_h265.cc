@@ -128,10 +128,8 @@ H265Decoder::H265Accelerator::Status
 V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     const H265SPS* sps,
     const H265PPS* pps,
-    const H265DPB& dpb,
-    const H265Picture::Vector& ref_pic_listp0,
-    const H265Picture::Vector& ref_pic_listb0,
-    const H265Picture::Vector& ref_pic_listb1,
+    const H265SliceHeader* slice_hdr,
+    const H265Picture::Vector& ref_pic_list,
     scoped_refptr<H265Picture> pic) {
   struct v4l2_ext_control ctrl;
   std::vector<struct v4l2_ext_control> ctrls;
@@ -312,10 +310,14 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
 }
 
 H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
+    const H265SPS* sps,
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
     const H265Picture::Vector& ref_pic_list0,
     const H265Picture::Vector& ref_pic_list1,
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> pic,
     const uint8_t* data,
     size_t size,
