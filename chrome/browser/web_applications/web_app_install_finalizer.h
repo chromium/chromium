@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -46,6 +47,7 @@ class WebAppPolicyManager;
 class WebAppRegistrar;
 class WebAppTranslationManager;
 class WebAppCommandManager;
+class WebAppOriginAssociationManager;
 
 // An finalizer for the installation process, represents the last step.
 // Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -88,6 +90,11 @@ class WebAppInstallFinalizer {
     bool add_to_applications_menu = true;
     bool add_to_desktop = true;
     bool add_to_quick_launch_bar = true;
+
+    // Controls fetching and validation of web_app_origin_association data
+    // from web origins found in manifest scope_extensions entries. If true,
+    // do not validate even if scope_extensions has valid entries.
+    bool skip_origin_association_validation = false;
   };
 
   explicit WebAppInstallFinalizer(Profile* profile);
@@ -141,15 +148,17 @@ class WebAppInstallFinalizer {
   void Start();
   void Shutdown();
 
-  void SetSubsystems(WebAppInstallManager* install_manager,
-                     WebAppRegistrar* registrar,
-                     WebAppUiManager* ui_manager,
-                     WebAppSyncBridge* sync_bridge,
-                     OsIntegrationManager* os_integration_manager,
-                     WebAppIconManager* icon_manager,
-                     WebAppPolicyManager* policy_manager,
-                     WebAppTranslationManager* translation_manager,
-                     WebAppCommandManager* command_manager);
+  void SetSubsystems(
+      WebAppInstallManager* install_manager,
+      WebAppRegistrar* registrar,
+      WebAppUiManager* ui_manager,
+      WebAppSyncBridge* sync_bridge,
+      OsIntegrationManager* os_integration_manager,
+      WebAppIconManager* icon_manager,
+      WebAppPolicyManager* policy_manager,
+      WebAppTranslationManager* translation_manager,
+      WebAppCommandManager* command_manager,
+      WebAppOriginAssociationManager* origin_association_manager);
 
   virtual void SetRemoveManagementTypeCallbackForTesting(
       base::RepeatingCallback<void(const AppId&)>);
@@ -200,6 +209,12 @@ class WebAppInstallFinalizer {
                           CommitCallback commit_callback,
                           bool success);
 
+  void OnOriginAssociationValidated(WebAppInstallInfo web_app_info,
+                                    FinalizeOptions options,
+                                    InstallFinalizedCallback callback,
+                                    AppId app_id,
+                                    ScopeExtensions validated_scope_extensions);
+
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            FinalizeOptions finalize_options,
@@ -244,6 +259,8 @@ class WebAppInstallFinalizer {
   raw_ptr<WebAppTranslationManager, DanglingUntriaged> translation_manager_ =
       nullptr;
   raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
+  raw_ptr<WebAppOriginAssociationManager, DanglingUntriaged>
+      origin_association_manager_ = nullptr;
 
   const raw_ptr<Profile> profile_;
   bool started_ = false;

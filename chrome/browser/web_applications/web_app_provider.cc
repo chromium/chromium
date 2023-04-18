@@ -210,6 +210,10 @@ const OsIntegrationManager& WebAppProvider::os_integration_manager() const {
   return *os_integration_manager_;
 }
 
+WebAppOriginAssociationManager& WebAppProvider::origin_association_manager() {
+  return *origin_association_manager_;
+}
+
 WebAppCommandManager& WebAppProvider::command_manager() {
   // Note: It is OK to access the command manager before connection or start.
   // Internally it will queue commands to only happen after it has started.
@@ -291,6 +295,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   command_manager_ = std::make_unique<WebAppCommandManager>(profile, this);
   command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile, this);
 
+  origin_association_manager_ =
+      std::make_unique<WebAppOriginAssociationManager>();
+
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
 
@@ -310,7 +317,7 @@ void WebAppProvider::ConnectSubsystems() {
       install_manager_.get(), registrar_.get(), ui_manager_.get(),
       sync_bridge_.get(), os_integration_manager_.get(), icon_manager_.get(),
       web_app_policy_manager_.get(), translation_manager_.get(),
-      command_manager_.get());
+      command_manager_.get(), origin_association_manager_.get());
   manifest_update_manager_->SetSubsystems(install_manager_.get(),
                                           registrar_.get(), ui_manager_.get(),
                                           command_scheduler_.get());

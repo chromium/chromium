@@ -380,6 +380,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->disallowed_launch_protocols().empty());
   EXPECT_TRUE(app->url_handlers().empty());
   EXPECT_TRUE(app->scope_extensions().empty());
+  EXPECT_TRUE(app->validated_scope_extensions().empty());
   EXPECT_TRUE(app->last_badging_time().is_null());
   EXPECT_TRUE(app->last_launch_time().is_null());
   EXPECT_TRUE(app->install_time().is_null());
@@ -452,6 +453,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->disallowed_launch_protocols().empty());
   EXPECT_TRUE(app_copy->url_handlers().empty());
   EXPECT_TRUE(app_copy->scope_extensions().empty());
+  EXPECT_TRUE(app_copy->validated_scope_extensions().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);

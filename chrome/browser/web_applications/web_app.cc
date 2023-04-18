@@ -458,6 +458,11 @@ void WebApp::SetScopeExtensions(
   scope_extensions_ = std::move(scope_extensions);
 }
 
+void WebApp::SetValidatedScopeExtensions(
+    std::vector<ScopeExtensionInfo> validated_scope_extensions) {
+  validated_scope_extensions_ = std::move(validated_scope_extensions);
+}
+
 void WebApp::SetLockScreenStartUrl(const GURL& lock_screen_start_url) {
   DCHECK(lock_screen_start_url.is_empty() || lock_screen_start_url.is_valid());
   lock_screen_start_url_ = lock_screen_start_url;
@@ -755,6 +760,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.disallowed_launch_protocols_,
         app.url_handlers_,
         app.scope_extensions_,
+        app.validated_scope_extensions_,
         app.lock_screen_start_url_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
@@ -1015,6 +1021,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("url_handlers", ConvertDebugValueList(url_handlers_));
 
   root.Set("scope_extensions", ConvertDebugValueList(scope_extensions_));
+
+  root.Set("scope_extensions_validated",
+           ConvertDebugValueList(validated_scope_extensions_));
 
   root.Set("user_display_mode",
            user_display_mode_.has_value()

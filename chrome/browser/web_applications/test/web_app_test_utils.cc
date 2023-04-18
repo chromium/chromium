@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -679,6 +680,15 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
   app->SetScopeExtensions(
       CreateRandomScopeExtensions(random.next_uint(), random));
+
+  ScopeExtensions validated_scope_extensions;
+  base::ranges::copy_if(app->scope_extensions(),
+                        std::back_inserter(validated_scope_extensions),
+                        [&random](const ScopeExtensionInfo& extension) {
+                          return random.next_bool();
+                        });
+  app->SetValidatedScopeExtensions(validated_scope_extensions);
+
   if (random.next_bool()) {
     app->SetLockScreenStartUrl(scope.Resolve(
         "lock_screen_start_url" + base::NumberToString(random.next_uint())));

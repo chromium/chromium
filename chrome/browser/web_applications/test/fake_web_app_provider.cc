@@ -183,6 +183,13 @@ void FakeWebAppProvider::SetPreinstalledWebAppManager(
   preinstalled_web_app_manager_ = std::move(preinstalled_web_app_manager);
 }
 
+void FakeWebAppProvider::SetOriginAssociationManager(
+    std::unique_ptr<WebAppOriginAssociationManager>
+        origin_association_manager) {
+  CheckNotStarted();
+  origin_association_manager_ = std::move(origin_association_manager);
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());

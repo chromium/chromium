@@ -1311,6 +1311,8 @@ void ApplyParamsToFinalizeOptions(
   options.add_to_applications_menu = install_params.add_to_applications_menu;
   options.add_to_desktop = install_params.add_to_desktop;
   options.add_to_quick_launch_bar = install_params.add_to_quick_launch_bar;
+  options.skip_origin_association_validation =
+      install_params.skip_origin_association_validation;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (install_params.system_app_type.has_value()) {
     options.system_web_app_data.emplace();

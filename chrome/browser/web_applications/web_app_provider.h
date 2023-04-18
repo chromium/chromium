@@ -46,6 +46,7 @@ class OsIntegrationManager;
 class WebAppTranslationManager;
 class WebAppCommandManager;
 class WebAppCommandScheduler;
+class WebAppOriginAssociationManager;
 
 // WebAppProvider is the heart of Chrome web app code.
 //
@@ -155,6 +156,8 @@ class WebAppProvider : public KeyedService {
   OsIntegrationManager& os_integration_manager();
   const OsIntegrationManager& os_integration_manager() const;
 
+  WebAppOriginAssociationManager& origin_association_manager();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -218,6 +221,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppCommandManager> command_manager_;
   std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
+  std::unique_ptr<WebAppOriginAssociationManager> origin_association_manager_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

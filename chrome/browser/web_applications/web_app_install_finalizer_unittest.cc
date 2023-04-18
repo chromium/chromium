@@ -18,7 +18,9 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -41,6 +43,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -105,6 +108,8 @@ class WebAppInstallFinalizerUnitTest
     provider->SetInstallManager(std::move(install_manager));
     provider->SetInstallFinalizer(
         std::make_unique<WebAppInstallFinalizer>(profile()));
+    provider->SetOriginAssociationManager(
+        std::make_unique<FakeWebAppOriginAssociationManager>());
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -489,6 +494,60 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);
+}
+
+TEST_P(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+
+  ScopeExtensionInfo scope_extension =
+      ScopeExtensionInfo(url::Origin::Create(GURL("htps://foo.example")),
+                         /*has_origin_wildcard=*/true);
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data = {
+      {scope_extension, scope_extension}};
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_TRUE(installed_app->is_locally_installed());
+  EXPECT_EQ(ScopeExtensions({scope_extension}),
+            installed_app->validated_scope_extensions());
+}
+
+TEST_P(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+
+  ScopeExtensionInfo scope_extension =
+      ScopeExtensionInfo(url::Origin::Create(GURL("htps://foo.example")),
+                         /*has_origin_wildcard=*/true);
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will not be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data;
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_TRUE(installed_app->is_locally_installed());
+  EXPECT_EQ(ScopeExtensions(), installed_app->validated_scope_extensions());
 }
 
 INSTANTIATE_TEST_SUITE_P(

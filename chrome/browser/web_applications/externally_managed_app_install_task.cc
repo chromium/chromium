@@ -176,6 +176,12 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
   auto internal_install_source = ConvertExternalInstallSourceToInstallSource(
       install_options().install_source);
   auto install_params = ConvertExternalInstallOptionsToParams(install_options_);
+
+  // Do not fetch web_app_origin_association data over network.
+  if (install_options_.only_use_app_info_factory) {
+    install_params.skip_origin_association_validation = true;
+  }
+
   install_params.bypass_os_hooks = true;
   auto web_app_info = install_options_.app_info_factory.Run();
   for (std::string& search_term : install_params.additional_search_terms) {

@@ -111,6 +111,10 @@ struct WebAppInstallParams {
   // populated (especially for user installed or sync installed apps)
   // in which case the URL will not be written to the web_app DB.
   GURL install_url;
+
+  // If true, do not validate origin associations as part of the install even if
+  // app has valid scope_extensions.
+  bool skip_origin_association_validation = false;
 };
 
 // The different UI flows that exist for creating a web app.

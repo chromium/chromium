@@ -203,6 +203,9 @@ void InstallFromManifestCommand::OnAppLockAcquired(
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
   finalize_options.add_to_quick_launch_bar = false;
   finalize_options.overwrite_existing_manifest_fields = false;
+  // TODO(crbug.com/1250011): apply host_allowlist instead of disabling origin
+  // association validate for all origins.
+  finalize_options.skip_origin_association_validation = true;
 
   app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,

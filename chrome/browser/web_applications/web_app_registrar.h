@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -220,6 +221,14 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the "url_handlers" field from the app manifest.
   apps::UrlHandlers GetAppUrlHandlers(const AppId& app_id) const;
+
+  // Returns the `scope_extensions` field from the app manifest after
+  // validation. Entries with an origin that validated association with this web
+  // app are returned. Other entries are removed. See
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+  // for association requirements.
+  std::vector<ScopeExtensionInfo> GetValidatedScopeExtensions(
+      const AppId& app_id) const;
 
   GURL GetAppManifestUrl(const AppId& app_id) const;
 
