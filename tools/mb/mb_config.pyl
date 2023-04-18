@@ -3169,11 +3169,11 @@
     ],
 
     'official_android_arm32_pgo': [
-      'official', 'reclient', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+      'official', 'reclient', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_android_arm64_pgo': [
-      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_celab_release_bot': [
@@ -4667,6 +4667,12 @@
 
     'stable_channel': {
       'gn_args': 'android_channel="stable"',
+    },
+
+    # Ensures we don't have mulitple versions of Trichrome Library installed on
+    # devices so as to not run out of disk space.
+    'stable_version_code': {
+      'gn_args': 'android_override_version_code="1234567890"',
     },
 
     'static': {
