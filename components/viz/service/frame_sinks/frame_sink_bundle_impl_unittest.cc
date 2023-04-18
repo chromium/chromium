@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/functional/bind.h"
+#include "base/auto_reset.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -172,9 +172,9 @@ class TestBundleClient : public mojom::FrameSinkBundleClient {
       std::vector<mojom::BundledReturnedResourcesPtr>* acks,
       std::vector<mojom::BeginFrameInfoPtr>* begin_frames,
       std::vector<mojom::BundledReturnedResourcesPtr>* reclaimed_resources) {
-    acks_ = acks;
-    begin_frames_ = begin_frames;
-    reclaimed_resources_ = reclaimed_resources;
+    base::AutoReset acks_scope(&acks_, acks);
+    base::AutoReset frames_scope(&begin_frames_, begin_frames);
+    base::AutoReset resources_scope(&reclaimed_resources_, reclaimed_resources);
     WaitForNextMessage();
   }
 
