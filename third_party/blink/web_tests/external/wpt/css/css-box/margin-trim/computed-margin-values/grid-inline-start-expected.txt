@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+FAIL grid > item 1 assert_equals: 
+<item data-expected-margin-left="0"></item>
+margin-left expected "0" but got "30"
+PASS grid > item 2
+FAIL grid > item 3 assert_equals: 
+<item data-expected-margin-left="0"></item>
+margin-left expected "0" but got "8"
+FAIL grid > item 4 assert_equals: 
+<item class="locked-position" data-expected-margin-left="0"></item>
+margin-left expected "0" but got "-30"
+FAIL grid > item 5 assert_equals: 
+<item data-expected-margin-left="0"></item>
+margin-left expected "0" but got "10"
+Harness: the test ran to completion.
+

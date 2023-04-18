@@ -2949,6 +2949,7 @@ crbug.com/626703 external/wpt/css/css-multicol/file-control-crash.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Timeout ]
@@ -6175,7 +6176,7 @@ crbug.com/1427180 [ Mac11 ] external/wpt/top-level-storage-access-api/tentative/
 crbug.com/1427180 [ Mac10.15 ] external/wpt/top-level-storage-access-api/tentative/requestStorageAccessFor.sub.https.window.html [ Failure ]
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
 
-crbug.com/1434123 media/video-source-type-params.html [ Pass Failure ]
+crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]

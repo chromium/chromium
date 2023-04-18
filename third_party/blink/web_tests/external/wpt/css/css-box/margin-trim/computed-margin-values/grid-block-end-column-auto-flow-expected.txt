@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS grid > item 1
+PASS grid > item 2
+PASS grid > item 3
+FAIL grid > item 4 assert_equals: 
+<item data-expected-margin-bottom="0" class="span-four"></item>
+margin-bottom expected "0" but got "10"
+FAIL grid > item 5 assert_equals: 
+<item data-expected-margin-bottom="0"></item>
+margin-bottom expected "0" but got "10"
+Harness: the test ran to completion.
+
