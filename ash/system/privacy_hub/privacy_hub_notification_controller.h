@@ -43,6 +43,13 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // accessing `sensor`.
   void UpdateSoftwareSwitchNotification(Sensor sensor);
 
+  // Checks if a sensor-related notification is shown.
+  bool IsSoftwareSwitchNotificationDisplayedForSensor(Sensor sensor);
+
+  // Allows to alter priority for the upcoming microphone hw notifications.
+  void SetPriorityForMicrophoneHardwareNotification(
+      message_center::NotificationPriority priority);
+
   // Called by any sensor system when a hardware switch notification for
   // `sensor` should be shown to the user.
   void ShowHardwareSwitchNotification(Sensor sensor);

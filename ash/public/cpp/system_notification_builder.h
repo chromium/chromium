@@ -238,6 +238,9 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   SystemNotificationBuilder& SetOptionalFields(
       const message_center::RichNotificationData& optional_fields);
 
+  // Returns currently set optional fields.
+  const message_center::RichNotificationData& GetOptionalFields();
+
   // Set the warning level.
   // Default: `message_center::SystemNotificationWarningLevel::NORMAL`
   SystemNotificationBuilder& SetWarningLevel(

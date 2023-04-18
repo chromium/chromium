@@ -349,18 +349,12 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
 
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 
-  // Mute the mic, a notification should be shown and also popup. If Video
-  // Conference or Privacy Indicators are enabled, no notifier is sent if muted
-  // during a session.
+  // Mute the mic, no notifications to be shown (as no new apps started, doesn't
+  // matter if Video Conference or Privacy Indicators are enabled).
   MuteMicrophone();
 
-  if (IsPrivacyIndicatorsEnabled() || IsVideoConferenceEnabled()) {
-    EXPECT_FALSE(GetSWSwitchNotification());
-    EXPECT_FALSE(GetSWSwitchPopupNotification());
-  } else {
-    EXPECT_TRUE(GetSWSwitchNotification());
-    EXPECT_TRUE(GetSWSwitchPopupNotification());
-  }
+  EXPECT_FALSE(GetSWSwitchNotification());
+  EXPECT_FALSE(GetSWSwitchPopupNotification());
 }
 
 TEST_P(PrivacyHubMicrophoneControllerTest,
@@ -596,11 +590,11 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
 
   if (IsVideoConferenceEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
-    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
   } else {
     // Verify the notification popup is shown.
     EXPECT_TRUE(GetHWSwitchNotification());
-    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
   }
 
   // The software switch notification is instantly hidden.
@@ -640,23 +634,19 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
   LaunchApp(u"junior");
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
-  // Notification should be shown and also popup. If Video Conference or Privacy
-  // Indicators are enabled, this notification is not sent.
-  if (IsPrivacyIndicatorsEnabled() || IsVideoConferenceEnabled()) {
-    EXPECT_FALSE(GetHWSwitchNotification());
-    EXPECT_FALSE(GetHWSwitchPopupNotification());
-  } else {
-    EXPECT_TRUE(GetHWSwitchNotification());
-    EXPECT_TRUE(GetHWSwitchPopupNotification());
-  }
+  // No notifications to be shown if microphone was turned off.
+  EXPECT_FALSE(GetHWSwitchNotification());
+  EXPECT_FALSE(GetHWSwitchPopupNotification());
 
   // Add another audio input stream, and verify the notification popup shows.
   LaunchApp(u"junior1");
 
   if (IsVideoConferenceEnabled()) {
+    // If an app started while video conference is on - no notifications.
     EXPECT_FALSE(GetHWSwitchNotification());
     EXPECT_FALSE(GetHWSwitchPopupNotification());
   } else {
+    // Otherwise - it shall be a notification.
     EXPECT_TRUE(GetHWSwitchNotification());
     EXPECT_TRUE(GetHWSwitchPopupNotification());
   }
@@ -778,7 +768,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationText) {
     EXPECT_FALSE(GetHWSwitchPopupNotification());
   } else {
     EXPECT_TRUE(GetHWSwitchNotification());
-    EXPECT_TRUE(GetHWSwitchPopupNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
     EXPECT_EQ(l10n_util::GetStringUTF16(
                   IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE),
               GetHWSwitchNotification()->title());

@@ -194,6 +194,17 @@ void PrivacyHubNotificationController::UpdateSoftwareSwitchNotification(
   }
 }
 
+bool PrivacyHubNotificationController::
+    IsSoftwareSwitchNotificationDisplayedForSensor(Sensor sensor) {
+  return combined_notification_->IsShown() && sensors_.Has(sensor);
+}
+
+void PrivacyHubNotificationController::
+    SetPriorityForMicrophoneHardwareNotification(
+        message_center::NotificationPriority priority) {
+  microphone_hw_switch_notification_->SetPriority(priority);
+}
+
 void PrivacyHubNotificationController::ShowHardwareSwitchNotification(
     const Sensor sensor) {
   switch (sensor) {
