@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -31,6 +32,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
     : public device::BluetoothDevice,
       public FlossGattClientObserver {
  public:
+  enum class ConnectingState {
+    kIdle = 0,
+    kACLConnecting,
+    kProfilesConnecting,
+    kProfilesConnected,
+  };
+  enum class GattConnectingState {
+    kGattDisconnected = 0,
+    kGattConnecting,
+    kGattConnected,
+  };
+
   BluetoothDeviceFloss(const BluetoothDeviceFloss&) = delete;
   BluetoothDeviceFloss& operator=(const BluetoothDeviceFloss&) = delete;
 
@@ -115,14 +128,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsBondedImpl() const;
   void SetName(const std::string& name);
   FlossAdapterClient::BondState GetBondState() { return bond_state_; }
-  void SetBondState(FlossAdapterClient::BondState bond_state);
+  void SetBondState(
+      FlossAdapterClient::BondState bond_state,
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
   void SetIsConnected(bool is_connected);
   void SetConnectionState(uint32_t state);
-  void ConnectAllEnabledProfiles();
   void ResetPairing();
-  // Triggers the pending callback of Connect() method.
-  void TriggerConnectCallback(
-      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
 
   BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
@@ -163,6 +174,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void DisconnectGatt() override;
 
  private:
+  // Invoked when no connection established during connecting.
+  void ConnectionIncomplete();
+  // Method to connect profiles.
+  void ConnectAllEnabledProfiles();
+  // Updates the state of connecting and calls callbacks accordingly.
+  void UpdateConnectingState(
+      ConnectingState state,
+      absl::optional<BluetoothDevice::ConnectErrorCode> error);
+  // Updates the state of gatt connecting.
+  void UpdateGattConnectingState(GattConnectingState state);
+  // Triggers the pending callback of Connect() method.
+  void TriggerConnectCallback(
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
+
   void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
   void OnGetRemoteClass(DBusResult<uint32_t> ret);
   void OnGetRemoteAppearance(DBusResult<uint16_t> ret);
@@ -193,6 +218,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
+
+  // Timer to stop waiting for a successful connect complete.
+  base::OneShotTimer connection_incomplete_timer_;
 
   absl::optional<base::OnceClosure> pending_callback_on_init_props_ =
       absl::nullopt;
@@ -241,9 +269,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Updated via |SetIsConnected| only.
   bool is_acl_connected_ = false;
 
-  // Is GATT connected for this device.
-  bool is_gatt_connected_ = false;
-
   // Are all services resolved? Only true if full discovery is completed. See
   // |IsGattServicesDiscoveryComplete| for more info.
   bool svc_resolved_ = false;
@@ -265,10 +290,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // This is used for determining if the device is paired.
   uint32_t connection_state_ = 0;
 
-  // Number of ongoing calls to Connect(). Incremented with a call to Connect()
-  // and decremented when either profiles are connected or pairing was
-  // cancelled.
-  int num_connecting_calls_ = 0;
+  // The status of profile connecting.
+  ConnectingState connecting_state_ = ConnectingState::kIdle;
+
+  // The status of GATT connecting.
+  GattConnectingState gatt_connecting_state_ =
+      GattConnectingState::kGattDisconnected;
 
   // UI thread task runner and socket thread used to create sockets.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;

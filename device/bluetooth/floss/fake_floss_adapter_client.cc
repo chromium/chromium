@@ -79,6 +79,11 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                         FlossDeviceId device,
                                         BluetoothTransport transport) {
   // TODO(b/202874707): Simulate pairing failures.
+  for (auto& observer : observers_) {
+    observer.DeviceBondStateChanged(
+        device, /*status=*/0,
+        FlossAdapterClient::BondState::kBondingInProgress);
+  }
 
   if (device.address == kJustWorksAddress) {
     for (auto& observer : observers_) {

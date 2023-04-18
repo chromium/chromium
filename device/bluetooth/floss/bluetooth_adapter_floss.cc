@@ -591,7 +591,8 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
     return;
   }
 
-  device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret));
+  device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret),
+                       absl::nullopt);
   if (device->HasReadProperties()) {
     NotifyDevicePairedChanged(device, device->IsPaired());
   }
@@ -915,8 +916,9 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
       // Mark that no actions should be triggered for pairing delegate.
       device->pairing()->SetActive(false);
     }
-    LOG(ERROR) << "Received BondStateChanged with error status = " << status;
-    device->SetBondState(bond_state);
+    LOG(ERROR) << "Received BondStateChanged with error status = " << status
+               << " for " << remote_device.address;
+    device->SetBondState(bond_state, BtifStatusToConnectErrorCode(status));
     if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
       // Since we're no longer bonded, update connection state so that
       // ConnectCallback can process the error correctly.
@@ -926,7 +928,6 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     NotifyDevicePairedChanged(device, device->IsPaired());
 
     // TODO(b/192289534): Record status in UMA.
-    device->TriggerConnectCallback(BtifStatusToConnectErrorCode(status));
     return;
   }
 
@@ -934,13 +935,11 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     return;
   }
 
-  device->SetBondState(bond_state);
+  device->SetBondState(bond_state, absl::nullopt);
   NotifyDeviceChanged(device);
   NotifyDevicePairedChanged(device, device->IsPaired());
 
-  if (bond_state == FlossAdapterClient::BondState::kBonded) {
-    device->ConnectAllEnabledProfiles();
-  } else if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
+  if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
     // If we're no longer bonded (or paired/connected), we should clear the
     // device so it doesn't show up in found devices list.
     AdapterClearedDevice(remote_device);

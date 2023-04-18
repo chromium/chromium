@@ -242,6 +242,8 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
             run_loop.Quit();
           }));
   ASSERT_TRUE(device->IsConnecting());
+
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   ASSERT_FALSE(device->IsConnecting());
@@ -271,6 +273,7 @@ TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
@@ -305,6 +308,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeySucceeded) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
@@ -341,6 +345,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeyFailed) {
             EXPECT_TRUE(error.has_value());
             run_loop.Quit();
           }));
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   EXPECT_FALSE(device->IsPaired());
@@ -366,6 +371,7 @@ TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
@@ -392,9 +398,14 @@ TEST_F(BluetoothFlossTest, RemoveBonding) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
+  ASSERT_TRUE(device->IsConnected());
+
+  // Simulate device disconnecting
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(false);
 
   base::RunLoop run_loop2;
   device->Forget(base::BindLambdaForTesting([&run_loop2]() {
@@ -447,6 +458,7 @@ TEST_F(BluetoothFlossTest, Disconnect) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
+  static_cast<BluetoothDeviceFloss*>(device)->SetIsConnected(true);
   run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
