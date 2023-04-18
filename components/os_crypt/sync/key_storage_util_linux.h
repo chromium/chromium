@@ -25,6 +25,7 @@ enum class SelectedLinuxBackend {
   GNOME_LIBSECRET,
   KWALLET,
   KWALLET5,
+  KWALLET6,
 };
 
 // Decide which backend to target. |type| is checked first. If it does not

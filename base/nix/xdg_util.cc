@@ -86,6 +86,9 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
           if (kde_session == "5") {
             return DESKTOP_ENVIRONMENT_KDE5;
           }
+          if (kde_session == "6") {
+            return DESKTOP_ENVIRONMENT_KDE6;
+          }
         }
         return DESKTOP_ENVIRONMENT_KDE4;
       }
@@ -152,6 +155,8 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
       return "KDE4";
     case DESKTOP_ENVIRONMENT_KDE5:
       return "KDE5";
+    case DESKTOP_ENVIRONMENT_KDE6:
+      return "KDE6";
     case DESKTOP_ENVIRONMENT_PANTHEON:
       return "PANTHEON";
     case DESKTOP_ENVIRONMENT_UNITY:

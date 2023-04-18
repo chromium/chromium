@@ -44,6 +44,7 @@ const char* const kXdgDesktopUnity = "Unity";
 const char* const kXdgDesktopUnity7 = "Unity:Unity7";
 const char* const kXdgDesktopUnity8 = "Unity:Unity8";
 const char* const kKDESessionKDE5 = "5";
+const char* const kKDESessionKDE6 = "6";
 
 const char kDesktopSession[] = "DESKTOP_SESSION";
 const char kKDESession[] = "KDE_SESSION_VERSION";
@@ -160,6 +161,17 @@ TEST(XDGUtilTest, GetXdgDesktopKDE5) {
       .WillOnce(DoAll(SetArgPointee<1>(kKDESessionKDE5), Return(true)));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE5, GetDesktopEnvironment(&getter));
+}
+
+TEST(XDGUtilTest, GetXdgDesktopKDE6) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopKDE), Return(true)));
+  EXPECT_CALL(getter, GetVar(Eq(kKDESession), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kKDESessionKDE6), Return(true)));
+
+  EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE6, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopKDE4) {

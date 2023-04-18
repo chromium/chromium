@@ -169,7 +169,7 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
       void* params,
       std::unique_ptr<KDialogOutputParams> results);
 
-  // Should be either DESKTOP_ENVIRONMENT_KDE3, KDE4, or KDE5.
+  // Should be either DESKTOP_ENVIRONMENT_KDE3, KDE4, KDE5, or KDE6.
   base::nix::DesktopEnvironment desktop_;
 
   // The set of all parent windows for which we are currently running
@@ -222,7 +222,8 @@ SelectFileDialogLinuxKde::SelectFileDialogLinuxKde(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(desktop_ == base::nix::DESKTOP_ENVIRONMENT_KDE3 ||
          desktop_ == base::nix::DESKTOP_ENVIRONMENT_KDE4 ||
-         desktop_ == base::nix::DESKTOP_ENVIRONMENT_KDE5);
+         desktop_ == base::nix::DESKTOP_ENVIRONMENT_KDE5 ||
+         desktop_ == base::nix::DESKTOP_ENVIRONMENT_KDE6);
   // |kdialog_version| should be of the form "kdialog 1.2.3", so split on
   // whitespace and then try to parse a version from the second piece. If
   // parsing fails for whatever reason, we fall back to the behavior that works

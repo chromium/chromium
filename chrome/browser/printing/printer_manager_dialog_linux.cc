@@ -30,6 +30,8 @@ constexpr const char* kKde4KcmPrinterCommand[] = {"kcmshell4",
                                                   "kcm_printer_manager"};
 constexpr const char* kKde5KcmPrinterCommand[] = {"kcmshell5",
                                                   "kcm_printer_manager"};
+constexpr const char* kKde6KcmPrinterCommand[] = {"kcmshell6",
+                                                  "kcm_printer_manager"};
 
 // Older GNOME printer manager. Used as a fallback.
 constexpr const char* kGnomeControlCenterPrintersCommand[] = {
@@ -71,6 +73,10 @@ void DetectAndOpenPrinterConfigDialog() {
       break;
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:
       opened = OpenPrinterConfigDialog(kKde5KcmPrinterCommand) ||
+               OpenPrinterConfigDialog(kSystemConfigPrinterCommand);
+      break;
+    case base::nix::DESKTOP_ENVIRONMENT_KDE6:
+      opened = OpenPrinterConfigDialog(kKde6KcmPrinterCommand) ||
                OpenPrinterConfigDialog(kSystemConfigPrinterCommand);
       break;
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:

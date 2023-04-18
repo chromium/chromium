@@ -22,11 +22,12 @@ enum DesktopEnvironment {
   DESKTOP_ENVIRONMENT_CINNAMON = 1,
   DESKTOP_ENVIRONMENT_DEEPIN = 2,
   DESKTOP_ENVIRONMENT_GNOME = 3,
-  // KDE3, KDE4 and KDE5 are sufficiently different that we count
+  // KDE{3,4,5,6} are sufficiently different that we count
   // them as different desktop environments here.
   DESKTOP_ENVIRONMENT_KDE3 = 4,
   DESKTOP_ENVIRONMENT_KDE4 = 5,
   DESKTOP_ENVIRONMENT_KDE5 = 6,
+  DESKTOP_ENVIRONMENT_KDE6 = 12,
   DESKTOP_ENVIRONMENT_PANTHEON = 7,
   DESKTOP_ENVIRONMENT_UKUI = 8,
   DESKTOP_ENVIRONMENT_UNITY = 9,

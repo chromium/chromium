@@ -535,13 +535,12 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       if (!env_var_getter->GetVar(base::env_vars::kHome, &home))
         // User has no $HOME? Give up. Later we'll report the failure.
         return;
-      if (base::nix::GetDesktopEnvironment(env_var_getter) ==
-          base::nix::DESKTOP_ENVIRONMENT_KDE3) {
+      auto desktop = base::nix::GetDesktopEnvironment(env_var_getter);
+      if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3) {
         // KDE3 always uses .kde for its configuration.
         base::FilePath kde_path = base::FilePath(home).Append(".kde");
         kde_config_dirs_.emplace_back(KDEHomeToConfigPath(kde_path));
-      } else if (base::nix::GetDesktopEnvironment(env_var_getter) ==
-                 base::nix::DESKTOP_ENVIRONMENT_KDE4) {
+      } else if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE4) {
         // Some distributions patch KDE4 to use .kde4 instead of .kde, so that
         // both can be installed side-by-side. Sadly they don't all do this, and
         // they don't always do this: some distributions have started switching
@@ -573,7 +572,8 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
         } else {
           kde_config_dirs_.emplace_back(KDEHomeToConfigPath(kde3_path));
         }
-      } else {
+      } else if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE5 ||
+                 desktop == base::nix::DESKTOP_ENVIRONMENT_KDE6) {
         // KDE 5 migrated to ~/.config for storing kioslaverc.
         kde_config_dirs_.emplace_back(base::FilePath(home).Append(".config"));
 
@@ -1248,6 +1248,7 @@ ProxyConfigServiceLinux::Delegate::Delegate(
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
     case base::nix::DESKTOP_ENVIRONMENT_KDE4:
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:
+    case base::nix::DESKTOP_ENVIRONMENT_KDE6:
       setting_getter_ =
           std::make_unique<SettingGetterImplKDE>(env_var_getter_.get());
       break;
