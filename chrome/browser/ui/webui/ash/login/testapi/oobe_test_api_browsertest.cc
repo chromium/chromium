@@ -165,11 +165,7 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, AdvanceToScreen) {
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
 
-  if (features::IsOobeConsolidatedConsentEnabled())
-    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
-  else
-    OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
-
+  OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().ExecuteAsync(
       base::StringPrintf("OobeAPI.advanceToScreen('%s')",
                          MarketingOptInScreenView::kScreenId.name));
@@ -182,10 +178,7 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, SkipPostLoginScreens) {
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
 
-  if (features::IsOobeConsolidatedConsentEnabled())
-    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
-  else
-    OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
+  OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
 
   test::OobeJS().ExecuteAsync("OobeAPI.skipPostLoginScreens()");
   login_mixin_.WaitForActiveSession();

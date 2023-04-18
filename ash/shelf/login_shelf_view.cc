@@ -534,19 +534,11 @@ LoginShelfView::LoginShelfView(
                  },
                  this),
              IDS_ASH_SHELF_CANCEL_BUTTON, kShelfCancelButtonIcon);
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    add_button(kBrowseAsGuest,
-               base::BindRepeating(
-                   &LoginScreenController::ShowGuestTosScreen,
-                   base::Unretained(Shell::Get()->login_screen_controller())),
-               IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
-  } else {
-    add_button(kBrowseAsGuest,
-               base::BindRepeating(
-                   &LoginScreenController::LoginAsGuest,
-                   base::Unretained(Shell::Get()->login_screen_controller())),
-               IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
-  }
+  add_button(kBrowseAsGuest,
+             base::BindRepeating(
+                 &LoginScreenController::ShowGuestTosScreen,
+                 base::Unretained(Shell::Get()->login_screen_controller())),
+             IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
   add_button(kAddUser,
              base::BindRepeating(
                  &LoginScreenController::ShowGaiaSignin,

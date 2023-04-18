@@ -131,8 +131,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   // initialized along with `kOobeOnboardingTime`.
   registry->RegisterBooleanPref(
       arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded, false);
-  if (switches::IsRevenBranding() &&
-      features::IsOobeConsolidatedConsentEnabled()) {
+  if (switches::IsRevenBranding()) {
     registry->RegisterBooleanPref(prefs::kRevenOobeConsolidatedConsentAccepted,
                                   false);
   }

@@ -499,9 +499,8 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   const bool should_show_new_terms =
       (user_manager->IsCurrentUserOwner() &&
        !IsHwDataUsageDeviceSettingSet()) ||
-      (features::IsOobeConsolidatedConsentEnabled() &&
-       !profile->GetPrefs()->GetBoolean(
-           prefs::kRevenOobeConsolidatedConsentAccepted));
+      !profile->GetPrefs()->GetBoolean(
+          prefs::kRevenOobeConsolidatedConsentAccepted);
   if (!should_show_new_terms) {
     return false;
   }

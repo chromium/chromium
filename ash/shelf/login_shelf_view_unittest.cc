@@ -627,11 +627,7 @@ TEST_F(LoginShelfViewTest, ClickCancelButton) {
 TEST_F(LoginShelfViewTest, ClickBrowseAsGuestButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
 
-  if (features::IsOobeConsolidatedConsentEnabled())
-    EXPECT_CALL(*client, ShowGuestTosScreen());
-  else
-    EXPECT_CALL(*client, LoginAsGuest());
-
+  EXPECT_CALL(*client, ShowGuestTosScreen());
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   Click(LoginShelfView::kBrowseAsGuest);

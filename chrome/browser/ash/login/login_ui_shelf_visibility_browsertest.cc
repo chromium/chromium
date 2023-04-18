@@ -64,13 +64,9 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
         ->ShowSigninScreenForTest(kNewUserEmail, kNewUserGaiaId,
                                   FakeGaiaMixin::kEmptyUserServices);
 
-    // Sync consent is the first post-login screen shown when a new user signs
-    // in.
-    if (features::IsOobeConsolidatedConsentEnabled()) {
-      OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
-    } else {
-      OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
-    }
+    // Consolidated consent is the first post-login screen shown when a new user
+    // signs in.
+    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   }
 
  private:

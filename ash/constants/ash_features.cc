@@ -1537,12 +1537,6 @@ BASE_FEATURE(kOobeTouchpadScroll,
              "OobeTouchpadScrollDirection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, EULA and ARC Terms of Service screens are skipped and merged
-// into Consolidated Consent Screen.
-BASE_FEATURE(kOobeConsolidatedConsent,
-             "OobeConsolidatedConsent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the ChromeOS OOBE HID Detection Revamp, which updates
 // the OOBE HID detection screen UI and related infrastructure. See
 // https://crbug.com/1299099.
@@ -3064,10 +3058,6 @@ bool IsOobeNetworkScreenSkipEnabled() {
 
 bool IsOobeChoobeEnabled() {
   return base::FeatureList::IsEnabled(kOobeChoobe);
-}
-
-bool IsOobeConsolidatedConsentEnabled() {
-  return base::FeatureList::IsEnabled(kOobeConsolidatedConsent);
 }
 
 bool IsOobeQuickStartEnabled() {

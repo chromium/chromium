@@ -817,17 +817,15 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    append(std::make_unique<ConsolidatedConsentScreen>(
-        oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
-                            weak_factory_.GetWeakPtr())));
+  append(std::make_unique<ConsolidatedConsentScreen>(
+      oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
-    append(std::make_unique<GuestTosScreen>(
-        oobe_ui->GetView<GuestTosScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnGuestTosScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<GuestTosScreen>(
+      oobe_ui->GetView<GuestTosScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnGuestTosScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   if (switches::IsOsInstallAllowed()) {
     append(std::make_unique<OsInstallScreen>(
@@ -1143,7 +1141,6 @@ void WizardController::ShowLacrosDataBackwardMigrationScreen() {
 }
 
 void WizardController::ShowGuestTosScreen() {
-  DCHECK(features::IsOobeConsolidatedConsentEnabled());
   SetCurrentScreen(GetScreen(GuestTosScreenView::kScreenId));
 }
 
@@ -1299,13 +1296,7 @@ void WizardController::OnEduCoexistenceLoginScreenExit(
     EduCoexistenceLoginScreen::Result result) {
   OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
                EduCoexistenceLoginScreen::GetResultString(result));
-  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
-  // after being enabled during OOBE.
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    ShowConsolidatedConsentScreen();
-  } else {
-    ShowSyncConsentScreen();
-  }
+  ShowConsolidatedConsentScreen();
 }
 
 void WizardController::OnParentalHandoffScreenExit(
@@ -1672,7 +1663,7 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 }
 
 void WizardController::OnUpdateCompleted() {
-  if (features::IsOobeConsolidatedConsentEnabled() && demo_setup_controller_) {
+  if (demo_setup_controller_) {
     ShowConsolidatedConsentScreen();
     return;
   }
@@ -2741,7 +2732,6 @@ void WizardController::MaybeTakeTPMOwnership() {
     return;
   }
 
-  DCHECK(features::IsOobeConsolidatedConsentEnabled());
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }

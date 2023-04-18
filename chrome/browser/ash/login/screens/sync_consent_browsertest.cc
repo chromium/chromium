@@ -209,12 +209,10 @@ class SyncConsentTest
     }
 
     // If the screen has already exited, don't try to show it again.
-    // Although, sync consent screen is not the first screen in the onboarding
-    // flow when OobeConsolidatedConsent feature is enabled, it can be reached
-    // and skipped after its predecessors are skipped.
-    if (features::IsOobeConsolidatedConsentEnabled() && !screen_exited_)
+    if (!screen_exited_) {
       LoginDisplayHost::default_host()->StartWizard(
           SyncConsentScreenView::kScreenId);
+    }
 
     // Sync Consent screen may skip, so OobeScreenWaiter will not stop. Use
     // custom predicate instead.

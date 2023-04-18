@@ -207,10 +207,6 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
     kMaxValue = kErrorStepRetryButtonClicked,
   };
 
-  ConsolidatedConsentScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeConsolidatedConsent);
-  }
-
   void SetUpOnMainThread() override {
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;

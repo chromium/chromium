@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -57,11 +56,9 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
     OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
-    if (features::IsOobeConsolidatedConsentEnabled()) {
-      OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
-      test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
-      test::OobeJS().ClickOnPath(kGuestTosAcceptButton);
-    }
+    OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+    test::OobeJS().ClickOnPath(kGuestTosAcceptButton);
   }
 
   void CheckCryptohomeMountAssertions() {
@@ -107,12 +104,10 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_Login) {
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
   CheckCryptohomeMountAssertions();
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 1);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Guest-tos.Accept", 1);
-    histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 1);
-  }
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Guest-tos.Accept", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
@@ -240,10 +235,9 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_SkipGuestToS) {
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 0);
-    histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 0);
-  }
+
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 0);
+  histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, SkipGuestToS) {

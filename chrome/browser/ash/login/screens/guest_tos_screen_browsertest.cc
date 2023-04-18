@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -52,10 +51,6 @@ const test::UIPath kCrosEulaOkButton = {kGuestTostId, "crosEulaOkButton"};
 
 class GuestTosScreenTest : public OobeBaseTest {
  public:
-  GuestTosScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeConsolidatedConsent);
-  }
-
   void SetUpOnMainThread() override {
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
