@@ -98,9 +98,27 @@ bool GLTestHelper::CheckPixelsWithError(int x,
 }
 
 #if BUILDFLAG(IS_WIN)
+GLTestHelper::WindowPixels::WindowPixels(std::vector<SkColor> pixels,
+                                         const gfx::Size& size)
+    : pixels_(std::move(pixels)), size_(size) {
+  CHECK_EQ(
+      static_cast<size_t>(size_.width()) * static_cast<size_t>(size_.height()),
+      pixels_.size());
+}
+
+GLTestHelper::WindowPixels::~WindowPixels() = default;
+
+SkColor GLTestHelper::WindowPixels::GetPixel(gfx::Point location) const {
+  CHECK_GE(location.x(), 0);
+  CHECK_LT(location.x(), size_.width());
+  CHECK_GE(location.y(), 0);
+  CHECK_LT(location.y(), size_.height());
+  return pixels_[location.y() * size_.width() + location.x()];
+}
+
 // static
-std::vector<SkColor> GLTestHelper::ReadBackWindow(HWND window,
-                                                  const gfx::Size& size) {
+GLTestHelper::WindowPixels GLTestHelper::ReadBackWindow(HWND window,
+                                                        const gfx::Size& size) {
   base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
   DCHECK(mem_hdc.IsValid());
 
@@ -129,7 +147,8 @@ std::vector<SkColor> GLTestHelper::ReadBackWindow(HWND window,
 
   std::vector<SkColor> pixels(size.width() * size.height());
   memcpy(pixels.data(), bits, pixels.size() * sizeof(SkColor));
-  return pixels;
+
+  return GLTestHelper::WindowPixels(std::move(pixels), size);
 }
 
 // static
@@ -137,7 +156,7 @@ SkColor GLTestHelper::ReadBackWindowPixel(HWND window,
                                           const gfx::Point& point) {
   gfx::Size size(point.x() + 1, point.y() + 1);
   auto pixels = ReadBackWindow(window, size);
-  return pixels[size.width() * point.y() + point.x()];
+  return pixels.GetPixel(point);
 }
 #endif
 
