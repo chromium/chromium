@@ -25,6 +25,9 @@ class LacrosDataBackwardMigrationScreen : public BaseScreen {
   LacrosDataBackwardMigrationScreen& operator=(
       const LacrosDataBackwardMigrationScreen&) = delete;
 
+  // Set `migrator_for_testing_`.
+  static void SetMigratorForTesting(BrowserDataBackMigratorBase* migrator);
+
  private:
   // BaseScreen:
   void ShowImpl() override;
@@ -37,7 +40,9 @@ class LacrosDataBackwardMigrationScreen : public BaseScreen {
   void OnMigrated(BrowserDataBackMigratorBase::Result result);
 
   base::WeakPtr<LacrosDataBackwardMigrationScreenView> view_;
-  std::unique_ptr<BrowserDataBackMigrator> migrator_;
+  std::unique_ptr<BrowserDataBackMigratorBase> migrator_;
+
+  static BrowserDataBackMigratorBase* migrator_for_testing_;
 
   base::WeakPtrFactory<LacrosDataBackwardMigrationScreen> weak_factory_{this};
 };
