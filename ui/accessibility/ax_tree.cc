@@ -843,9 +843,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     // bad state.
     if (bounds.IsEmpty() && !GetTreeUpdateInProgressState() &&
         allow_recursion) {
-      for (size_t i = 0; i < node->children().size(); i++) {
-        ui::AXNode* child = node->children()[i];
-
+      for (auto* child : node->children()) {
         bool ignore_offscreen;
         gfx::RectF child_bounds =
             RelativeToTreeBoundsInternal(child, gfx::RectF(), &ignore_offscreen,

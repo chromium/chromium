@@ -2041,12 +2041,12 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
           const std::vector<int32_t>& marker_types = child->GetIntListAttribute(
               ax::mojom::IntListAttribute::kMarkerTypes);
 
-          for (size_t i = 0; i < marker_types.size(); ++i) {
-            if (marker_types[i] &
+          for (int marker_type : marker_types) {
+            if (marker_type &
                 static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) {
               message_id = CONTENT_INVALID_SPELLING;
               break;
-            } else if (marker_types[i] &
+            } else if (marker_type &
                        static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) {
               message_id = CONTENT_INVALID_GRAMMAR;
               break;

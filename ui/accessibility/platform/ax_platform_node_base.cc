@@ -2325,7 +2325,7 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   // TODO(nektar): Compute what objects are auto-generated in Blink and
   // TODO(1278249): add OCRed text from Screen AI Service too.
   if (GetRole() == ax::mojom::Role::kListMarker)
-    attributes.push_back(std::make_pair("auto-generated", "true"));
+    attributes.emplace_back("auto-generated", "true");
 
   int color;
   if ((color = delegate_->GetBackgroundColor())) {
@@ -2336,7 +2336,7 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
                               base::NumberToString(green) + ',' +
                               base::NumberToString(blue) + ')';
     SanitizeTextAttributeValue(color_value, &color_value);
-    attributes.push_back(std::make_pair("background-color", color_value));
+    attributes.emplace_back(std::make_pair("background-color", color_value));
   }
 
   if ((color = delegate_->GetColor())) {
@@ -2347,7 +2347,7 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
                               base::NumberToString(green) + ',' +
                               base::NumberToString(blue) + ')';
     SanitizeTextAttributeValue(color_value, &color_value);
-    attributes.push_back(std::make_pair("color", color_value));
+    attributes.emplace_back(std::make_pair("color", color_value));
   }
 
   // First try to get the inherited font family name from the delegate. If we
@@ -2362,13 +2362,13 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   // Attribute has no default value.
   if (!font_family.empty()) {
     SanitizeTextAttributeValue(font_family, &font_family);
-    attributes.push_back(std::make_pair("font-family", font_family));
+    attributes.emplace_back(std::make_pair("font-family", font_family));
   }
 
   absl::optional<float> font_size_in_points = GetFontSizeInPoints();
   // Attribute has no default value.
   if (font_size_in_points) {
-    attributes.push_back(std::make_pair(
+    attributes.emplace_back(std::make_pair(
         "font-size", base::NumberToString(*font_size_in_points) + "pt"));
   }
 
@@ -2379,23 +2379,24 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   int32_t text_style = GetIntAttribute(ax::mojom::IntAttribute::kTextStyle);
   if (text_style) {
     if (HasTextStyle(ax::mojom::TextStyle::kBold))
-      attributes.push_back(std::make_pair("font-weight", "bold"));
+      attributes.emplace_back(std::make_pair("font-weight", "bold"));
     if (HasTextStyle(ax::mojom::TextStyle::kItalic))
-      attributes.push_back(std::make_pair("font-style", "italic"));
+      attributes.emplace_back(std::make_pair("font-style", "italic"));
     if (HasTextStyle(ax::mojom::TextStyle::kLineThrough)) {
       // TODO(nektar): Figure out a more specific value.
-      attributes.push_back(std::make_pair("text-line-through-style", "solid"));
+      attributes.emplace_back(
+          std::make_pair("text-line-through-style", "solid"));
     }
     if (HasTextStyle(ax::mojom::TextStyle::kUnderline)) {
       // TODO(nektar): Figure out a more specific value.
-      attributes.push_back(std::make_pair("text-underline-style", "solid"));
+      attributes.emplace_back(std::make_pair("text-underline-style", "solid"));
     }
   }
 
   std::string language = GetDelegate()->GetLanguage();
   if (!language.empty()) {
     SanitizeTextAttributeValue(language, &language);
-    attributes.push_back(std::make_pair("language", language));
+    attributes.emplace_back(std::make_pair("language", language));
   }
 
   auto text_direction = static_cast<ax::mojom::WritingDirection>(
@@ -2404,17 +2405,17 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
     case ax::mojom::WritingDirection::kNone:
       break;
     case ax::mojom::WritingDirection::kLtr:
-      attributes.push_back(std::make_pair("writing-mode", "lr"));
+      attributes.emplace_back(std::make_pair("writing-mode", "lr"));
       break;
     case ax::mojom::WritingDirection::kRtl:
-      attributes.push_back(std::make_pair("writing-mode", "rl"));
+      attributes.emplace_back(std::make_pair("writing-mode", "rl"));
       break;
     case ax::mojom::WritingDirection::kTtb:
-      attributes.push_back(std::make_pair("writing-mode", "tb"));
+      attributes.emplace_back(std::make_pair("writing-mode", "tb"));
       break;
     case ax::mojom::WritingDirection::kBtt:
       // Not listed in the IA2 Spec.
-      attributes.push_back(std::make_pair("writing-mode", "bt"));
+      attributes.emplace_back(std::make_pair("writing-mode", "bt"));
       break;
   }
 
@@ -2424,10 +2425,10 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
     case ax::mojom::TextPosition::kNone:
       break;
     case ax::mojom::TextPosition::kSubscript:
-      attributes.push_back(std::make_pair("text-position", "sub"));
+      attributes.emplace_back(std::make_pair("text-position", "sub"));
       break;
     case ax::mojom::TextPosition::kSuperscript:
-      attributes.push_back(std::make_pair("text-position", "super"));
+      attributes.emplace_back(std::make_pair("text-position", "super"));
       break;
   }
 

@@ -46,7 +46,7 @@ OneShotAccessibilityTreeSearch::OneShotAccessibilityTreeSearch(
       onscreen_only_(false),
       did_search_(false) {}
 
-OneShotAccessibilityTreeSearch::~OneShotAccessibilityTreeSearch() {}
+OneShotAccessibilityTreeSearch::~OneShotAccessibilityTreeSearch() = default;
 
 void OneShotAccessibilityTreeSearch::SetStartNode(
     BrowserAccessibility* start_node) {

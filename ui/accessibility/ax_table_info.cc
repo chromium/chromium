@@ -61,7 +61,7 @@ void FindRowsAndThenCells(AXNode* node,
                            caption_node_id);
     } else if (IsTableRow(child->GetRole())) {
       row_node_list->push_back(child);
-      cell_nodes_per_row->push_back(std::vector<AXNode*>());
+      cell_nodes_per_row->emplace_back();
       FindCellsInRow(child, &cell_nodes_per_row->back());
     } else if (child->GetRole() == ax::mojom::Role::kCaption) {
       caption_node_id = child->id();
@@ -427,13 +427,12 @@ void AXTableInfo::UpdateExtraMacNodes() {
 
   for (size_t i = 0; i < col_count; i++) {
     new_extra_mac_nodes.push_back(CreateExtraMacColumnNode(i));
-    changes.push_back(AXTreeObserver::Change(
-        new_extra_mac_nodes[i], AXTreeObserver::ChangeType::NODE_CREATED));
+    changes.emplace_back(new_extra_mac_nodes[i],
+                         AXTreeObserver::ChangeType::NODE_CREATED);
   }
   new_extra_mac_nodes.push_back(CreateExtraMacTableHeaderNode());
-  changes.push_back(
-      AXTreeObserver::Change(new_extra_mac_nodes[col_count],
-                             AXTreeObserver::ChangeType::NODE_CREATED));
+  changes.emplace_back(new_extra_mac_nodes[col_count],
+                       AXTreeObserver::ChangeType::NODE_CREATED);
 
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*tree_);
@@ -456,8 +455,7 @@ void AXTableInfo::UpdateExtraMacNodes() {
 
   }  // tree_update_in_progress.
 
-  changes.push_back(AXTreeObserver::Change(
-      table_node_, AXTreeObserver::ChangeType::NODE_CHANGED));
+  changes.emplace_back(table_node_, AXTreeObserver::ChangeType::NODE_CHANGED);
 
   for (AXNode* node : extra_mac_nodes) {
     for (AXTreeObserver& observer : tree_->observers())

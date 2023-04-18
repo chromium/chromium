@@ -434,13 +434,14 @@ void BrowserAccessibilityStateImplAndroid::SetImageLabelsModeForProfile(
     BrowserContext* profile) {
   std::vector<WebContentsImpl*> web_contents_vector =
       WebContentsImpl::GetAllWebContents();
-  for (size_t i = 0; i < web_contents_vector.size(); ++i) {
-    if (web_contents_vector[i]->GetBrowserContext() != profile)
+  for (auto*& web_contents : web_contents_vector) {
+    if (web_contents->GetBrowserContext() != profile) {
       continue;
+    }
 
-    ui::AXMode ax_mode = web_contents_vector[i]->GetAccessibilityMode();
+    ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
     ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
-    web_contents_vector[i]->SetAccessibilityMode(ax_mode);
+    web_contents->SetAccessibilityMode(ax_mode);
   }
 }
 

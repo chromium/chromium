@@ -654,7 +654,7 @@ jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
 
 jboolean WebContentsAccessibilityAndroid::IsNodeValid(JNIEnv* env,
                                                       jint unique_id) {
-  return GetAXFromUniqueID(unique_id) != NULL;
+  return GetAXFromUniqueID(unique_id) != nullptr;
 }
 
 void WebContentsAccessibilityAndroid::HitTest(JNIEnv* env, jint x, jint y) {

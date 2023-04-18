@@ -10,11 +10,9 @@
 
 namespace ui {
 
-AXTreeCombiner::AXTreeCombiner() {
-}
+AXTreeCombiner::AXTreeCombiner() = default;
 
-AXTreeCombiner::~AXTreeCombiner() {
-}
+AXTreeCombiner::~AXTreeCombiner() = default;
 
 void AXTreeCombiner::AddTree(const AXTreeUpdate& tree, bool is_root) {
   if (tree.tree_data.tree_id == AXTreeIDUnknown()) {
@@ -87,8 +85,7 @@ AXNodeID AXTreeCombiner::MapId(AXTreeID tree_id, AXNodeID node_id) {
 
 void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
   AXTreeID tree_id = tree->tree_data.tree_id;
-  for (size_t i = 0; i < tree->nodes.size(); ++i) {
-    AXNodeData node = tree->nodes[i];
+  for (auto node : tree->nodes) {
     AXTreeID child_tree_id = AXTreeID::FromString(
         node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
 
@@ -96,8 +93,9 @@ void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
     node.id = MapId(tree_id, node.id);
 
     // Map the node's child IDs.
-    for (size_t j = 0; j < node.child_ids.size(); ++j)
-      node.child_ids[j] = MapId(tree_id, node.child_ids[j]);
+    for (int& child_id : node.child_ids) {
+      child_id = MapId(tree_id, child_id);
+    }
 
     // Map the container id.
     if (node.relative_bounds.offset_container_id > 0)
@@ -105,24 +103,23 @@ void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
           MapId(tree_id, node.relative_bounds.offset_container_id);
 
     // Map other int attributes that refer to node IDs.
-    for (size_t j = 0; j < node.int_attributes.size(); ++j) {
-      auto& attr = node.int_attributes[j];
-      if (IsNodeIdIntAttribute(attr.first))
+    for (auto& attr : node.int_attributes) {
+      if (IsNodeIdIntAttribute(attr.first)) {
         attr.second = MapId(tree_id, attr.second);
+      }
     }
 
     // Map other int list attributes that refer to node IDs.
-    for (size_t j = 0; j < node.intlist_attributes.size(); ++j) {
-      auto& attr = node.intlist_attributes[j];
-      if (IsNodeIdIntListAttribute(attr.first)) {
-        for (size_t k = 0; k < attr.second.size(); k++)
-          attr.second[k] = MapId(tree_id, attr.second[k]);
+    for (auto& node_int_list : node.intlist_attributes) {
+      if (IsNodeIdIntListAttribute(node_int_list.first)) {
+        for (int& attr : node_int_list.second) {
+          attr = MapId(tree_id, attr);
+        }
       }
     }
 
     // Remove the ax::mojom::StringAttribute::kChildTreeId attribute.
-    for (size_t j = 0; j < node.string_attributes.size(); ++j) {
-      auto& attr = node.string_attributes[j];
+    for (auto& attr : node.string_attributes) {
       if (attr.first == ax::mojom::StringAttribute::kChildTreeId) {
         attr.first = ax::mojom::StringAttribute::kNone;
         attr.second = "";
