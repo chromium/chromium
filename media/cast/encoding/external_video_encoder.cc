@@ -258,11 +258,12 @@ class ExternalVideoEncoder::VEAClientImpl final
   }
 
  protected:
-  void NotifyError(VideoEncodeAccelerator::Error error) final {
+  void NotifyErrorStatus(const media::EncoderStatus& status) final {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-    DCHECK(error != VideoEncodeAccelerator::kInvalidArgumentError &&
-           error != VideoEncodeAccelerator::kIllegalStateError);
+    CHECK(!status.is_ok());
+    LOG(ERROR) << "NotifyErrorStatus() is called, code="
+               << static_cast<int32_t>(status.code())
+               << ", message=" << status.message();
 
     encoder_active_ = false;
 
@@ -324,10 +325,9 @@ class ExternalVideoEncoder::VEAClientImpl final
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     if (bitstream_buffer_id < 0 ||
         bitstream_buffer_id >= static_cast<int32_t>(output_buffers_.size())) {
-      NOTREACHED();
-      VLOG(1) << "BitstreamBufferReady(): invalid bitstream_buffer_id="
-              << bitstream_buffer_id;
-      NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
+                         "invalid bitstream_buffer_id=" +
+                             base::NumberToString(bitstream_buffer_id)});
       return;
     }
     const char* output_buffer_memory = output_buffers_[bitstream_buffer_id]
@@ -335,10 +335,10 @@ class ExternalVideoEncoder::VEAClientImpl final
                                            .data();
     if (metadata.payload_size_bytes >
         output_buffers_[bitstream_buffer_id].second.size()) {
-      NOTREACHED();
-      VLOG(1) << "BitstreamBufferReady(): invalid payload_size = "
-              << metadata.payload_size_bytes;
-      NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus(
+          {media::EncoderStatus::Codes::kInvalidOutputBuffer,
+           "invalid payload_size=" +
+               base::NumberToString(metadata.payload_size_bytes)});
       return;
     }
     if (metadata.key_frame) {
