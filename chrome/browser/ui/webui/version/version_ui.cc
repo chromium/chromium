@@ -269,6 +269,9 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
                          AndroidAboutAppInfo::GetTargetsUInfo());
   html_source->AddString(version_ui::kGmsVersion,
                          AndroidAboutAppInfo::GetGmsInfo());
+  html_source->AddString(
+      version_ui::kVersionCode,
+      base::android::BuildInfo::GetInstance()->package_version_code());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

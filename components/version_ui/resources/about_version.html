@@ -105,7 +105,11 @@ about:version template page
 </if>
 <if expr="is_android">
         <tr>
-          <td class="label">targetSdkVersion</td>
+          <td class="label">APK versionCode</td>
+          <td class="version">$i18n{version_code}</td>
+        </tr>
+        <tr>
+          <td class="label">APK targetSdkVersion</td>
           <td class="version">$i18n{target_sdk_version}</td>
         </tr>
          <tr>
