@@ -14,13 +14,13 @@ from telemetry.web_perf import timeline_based_measurement
 _NAVIGATION_TIMEOUT = 180
 _QUIESCENCE_TIMEOUT = 30
 
+
 # Benchmark to measure various UMA histograms relevant to AdTagging as well as
 # CPU usage on page loads. These measurements will help to determine the
 # accuracy of AdTagging.
-@benchmark.Info(emails=['alexmt@chromium.org','johnidel@chromium.org'],
+@benchmark.Info(emails=['alexmt@chromium.org', 'johnidel@chromium.org'],
                 component='UI>Browser>AdFilter')
 class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
-
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
@@ -28,14 +28,12 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
         '--additional-histograms',
         action='store',
         help='Comma-separated list of additional UMA histograms to record.')
-    parser.add_option(
-        '--verbose-cpu-metrics',
-        action='store_true',
-        help='Enables non-UMA CPU metrics.')
-    parser.add_option(
-        '--verbose-memory-metrics',
-        action='store_true',
-        help='Enables non-UMA memory metrics.')
+    parser.add_option('--verbose-cpu-metrics',
+                      action='store_true',
+                      help='Enables non-UMA CPU metrics.')
+    parser.add_option('--verbose-memory-metrics',
+                      action='store_true',
+                      help='Enables non-UMA memory metrics.')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -75,7 +73,6 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
         'PageLoad.Clients.Ads.FrameCounts.AdFrames.Total',
         'PageLoad.Clients.Ads.Resources.Bytes.Ads2',
         'PageLoad.Cpu.TotalUsage',
-        'PageLoad.Experimental.Bytes.NetworkIncludingHeaders',
         'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
     ]
     uma_histograms.extend(self.additional_histograms)
@@ -113,7 +110,9 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
                              timeout_in_seconds=_NAVIGATION_TIMEOUT)
 
     return page_set.CTPageSet(
-        options.urls_list, options.user_agent, options.archive_data_file,
+        options.urls_list,
+        options.user_agent,
+        options.archive_data_file,
         run_navigate_steps_callback=NavigateToPageAndLeavePage,
         cache_temperature=cache_temperature.COLD)
 

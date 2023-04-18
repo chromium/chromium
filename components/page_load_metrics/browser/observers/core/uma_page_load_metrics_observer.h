@@ -71,21 +71,8 @@ extern const char kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint[];
 extern const char kHistogramFirstEligibleToPaint[];
 extern const char kHistogramFirstEligibleToPaintToFirstPaint[];
 
-extern const char kHistogramPageLoadTotalBytes[];
-extern const char kHistogramPageLoadNetworkBytes[];
-extern const char kHistogramPageLoadNetworkBytesIncludingHeaders[];
-
 extern const char kHistogramPageLoadCpuTotalUsage[];
 extern const char kHistogramPageLoadCpuTotalUsageForegrounded[];
-
-extern const char kHistogramLoadTypeTotalBytesForwardBack[];
-extern const char kHistogramLoadTypeNetworkBytesForwardBack[];
-
-extern const char kHistogramLoadTypeTotalBytesReload[];
-extern const char kHistogramLoadTypeNetworkBytesReload[];
-
-extern const char kHistogramLoadTypeTotalBytesNewNavigation[];
-extern const char kHistogramLoadTypeNetworkBytesNewNavigation[];
 
 extern const char kHistogramInputToNavigation[];
 extern const char kBackgroundHistogramInputToNavigation[];

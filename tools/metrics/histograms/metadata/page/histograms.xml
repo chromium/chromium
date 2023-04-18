@@ -1597,40 +1597,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.Bytes.Network" units="KB"
-    expires_after="2022-10-09">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The number of prefiltered (e.g., compressed) response body KiloBytes loaded
-    over the network via the browser process for a page load. Does not include
-    any header or overhead bytes. Recorded when the page load is terminated.
-    Only recorded for complete resources.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"
-    units="KB" expires_after="2022-08-21">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The number of prefiltered (e.g., compressed) KiloBytes loaded over the
-    network via the browser process for a page load. This includes network
-    headers/overhead. Recorded when the page load is terminated. Recorded for
-    incomplete resources.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.Bytes.Total2" units="KB"
-    expires_after="2022-08-21">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    The number of prefiltered (e.g., compressed) response body KiloBytes loaded
-    via the browser process for a page load. Does not include any header or
-    overhead bytes. Recorded when the page load is terminated. Only recorded for
-    complete resources. Includes resources from both the http and memory cache.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.ClickInputBurst" units="count"
     expires_after="2024-02-24">
   <owner>dougarnett@chromium.org</owner>

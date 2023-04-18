@@ -249,31 +249,9 @@ const char kHistogramFirstEligibleToPaint[] =
 const char kHistogramFirstEligibleToPaintToFirstPaint[] =
     "PageLoad.Experimental.PaintTiming.FirstEligibleToPaintToFirstPaint";
 
-const char kHistogramPageLoadTotalBytes[] =
-    "PageLoad.Experimental.Bytes.Total2";
-const char kHistogramPageLoadNetworkBytes[] =
-    "PageLoad.Experimental.Bytes.Network";
-const char kHistogramPageLoadNetworkBytesIncludingHeaders[] =
-    "PageLoad.Experimental.Bytes.NetworkIncludingHeaders";
-
 const char kHistogramPageLoadCpuTotalUsage[] = "PageLoad.Cpu.TotalUsage";
 const char kHistogramPageLoadCpuTotalUsageForegrounded[] =
     "PageLoad.Cpu.TotalUsageForegrounded";
-
-const char kHistogramLoadTypeTotalBytesForwardBack[] =
-    "PageLoad.Experimental.Bytes.Total2.LoadType.ForwardBackNavigation";
-const char kHistogramLoadTypeNetworkBytesForwardBack[] =
-    "PageLoad.Experimental.Bytes.Network.LoadType.ForwardBackNavigation";
-
-const char kHistogramLoadTypeTotalBytesReload[] =
-    "PageLoad.Experimental.Bytes.Total2.LoadType.Reload";
-const char kHistogramLoadTypeNetworkBytesReload[] =
-    "PageLoad.Experimental.Bytes.Network.LoadType.Reload";
-
-const char kHistogramLoadTypeTotalBytesNewNavigation[] =
-    "PageLoad.Experimental.Bytes.Total2.LoadType.NewNavigation";
-const char kHistogramLoadTypeNetworkBytesNewNavigation[] =
-    "PageLoad.Experimental.Bytes.Network.LoadType.NewNavigation";
 
 const char kHistogramInputToNavigation[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart";
@@ -1100,38 +1078,6 @@ void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_GE(network_bytes_, 0);
   DCHECK_GE(cache_bytes_, 0);
-  int64_t total_bytes = network_bytes_ + cache_bytes_;
-
-  PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadNetworkBytes,
-                       network_bytes_);
-  PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadTotalBytes, total_bytes);
-  PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadNetworkBytesIncludingHeaders,
-                       network_bytes_including_headers_);
-
-  switch (GetPageLoadType(transition_)) {
-    case LOAD_TYPE_RELOAD:
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeNetworkBytesReload,
-                           network_bytes_);
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeTotalBytesReload,
-                           total_bytes);
-      break;
-    case LOAD_TYPE_FORWARD_BACK:
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeNetworkBytesForwardBack,
-                           network_bytes_);
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeTotalBytesForwardBack,
-                           total_bytes);
-      break;
-    case LOAD_TYPE_NEW_NAVIGATION:
-      PAGE_BYTES_HISTOGRAM(
-          internal::kHistogramLoadTypeNetworkBytesNewNavigation,
-          network_bytes_);
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeTotalBytesNewNavigation,
-                           total_bytes);
-      break;
-    case LOAD_TYPE_NONE:
-      NOTREACHED();
-      break;
-  }
   click_tracker_.RecordClickBurst(GetDelegate().GetPageUkmSourceId());
 }
 

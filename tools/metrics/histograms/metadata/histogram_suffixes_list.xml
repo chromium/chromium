@@ -3281,7 +3281,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
@@ -3381,8 +3380,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
 </histogram_suffixes>
@@ -3416,8 +3413,6 @@ chromium-metrics-reviews@google.com.
              ResourceLoadingHints to show a Preview version of the page."/>
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
-      name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
@@ -3509,8 +3504,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Total2"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
