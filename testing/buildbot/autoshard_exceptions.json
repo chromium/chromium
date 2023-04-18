@@ -1,0 +1,101 @@
+{
+    "chromium.android": {
+        "android-12-x64-rel": {
+            "webview_instrumentation_test_apk": {
+                "shards": "11"
+            }
+        }
+    },
+    "chromium.chromiumos": {
+        "linux-chromeos-rel": {
+            "browser_tests": {
+                "shards": "64"
+            }
+        },
+        "linux-lacros-tester-rel": {
+            "interactive_ui_tests": {
+                "shards": "4"
+            },
+            "interactive_ui_tests Lacros version skew testing ash beta": {
+                "shards": "4"
+            },
+            "interactive_ui_tests Lacros version skew testing ash canary": {
+                "shards": "4"
+            },
+            "interactive_ui_tests Lacros version skew testing ash dev": {
+                "shards": "4"
+            },
+            "interactive_ui_tests Lacros version skew testing ash stable": {
+                "shards": "4"
+            },
+            "lacros_chrome_browsertests_run_in_series": {
+                "shards": "3"
+            },
+            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta": {
+                "shards": "3"
+            },
+            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary": {
+                "shards": "3"
+            },
+            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev": {
+                "shards": "3"
+            },
+            "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable": {
+                "shards": "3"
+            }
+        }
+    },
+    "chromium.fuchsia": {
+        "fuchsia-x64-cast-receiver-rel": {
+            "content_unittests": {
+                "shards": "2"
+            }
+        }
+    },
+    "chromium.linux": {
+        "Linux Tests": {
+            "blink_wpt_tests": {
+                "shards": "11"
+            },
+            "browser_tests": {
+                "shards": "24"
+            },
+            "interactive_ui_tests": {
+                "shards": "5"
+            }
+        },
+        "Linux Tests (Wayland)": {
+            "browser_tests": {
+                "shards": "21"
+            },
+            "interactive_ui_tests": {
+                "shards": "4"
+            }
+        }
+    },
+    "chromium.memory": {
+        "Linux ASan LSan Tests (1)": {
+            "content_browsertests": {
+                "shards": "26"
+            },
+            "interactive_ui_tests": {
+                "shards": "15"
+            }
+        },
+        "Linux TSan Tests": {
+            "content_browsertests": {
+                "shards": "32"
+            }
+        }
+    },
+    "chromium.win": {
+        "Win10 Tests x64": {
+            "updater_tests": {
+                "shards": "2"
+            },
+            "updater_tests_system": {
+                "shards": "2"
+            }
+        }
+    }
+}

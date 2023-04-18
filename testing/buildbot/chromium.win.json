@@ -1735,7 +1735,8 @@
               "os": "Windows-10-19045"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests",
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
@@ -1753,7 +1754,8 @@
               "os": "Windows-10-19045"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
