@@ -229,8 +229,10 @@ used to impact the behavior of the Chrome accessibility engine at launch.
 
 * `--force-renderer-accessibility=[basic|form-controls|complete]`: Force
   accessibility to be enabled, with optional parameter to force the AXMode
-  to one of the predefined bundles. If the optional parameter is missing or
-  invalid, then the default AXMode will be `complete`.
+  to one of the predefined bundles during the entire execution. If the optional
+  parameter is invalid, then the default AXMode will be `complete`. If the
+  optional parameter is missing, then the AXMode will initially default to
+  `complete` but allow changes to the mode during execution.
 * `--disable-renderer-accessibility`: Disable accessibility
 
 ### Supported Platforms and APIs

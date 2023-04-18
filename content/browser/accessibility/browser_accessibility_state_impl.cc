@@ -99,15 +99,19 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
             switches::kForceRendererAccessibility);
 #endif
 
-    // Support --force-renderer-accessibility=[basic|form-controls|complete]
-    if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
-      force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeBasic;
-    } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
-      force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeFormControls;
-    } else {
-      // If AXMode is 'complete', invalid or missing, default to complete
-      // bundle.
-      force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeComplete;
+    // For backwards compatibility, allow parameter to be empty and do not force
+    // mode in that scenario.
+    if (!ax_mode_bundle.empty()) {
+      // Support --force-renderer-accessibility=[basic|form-controls|complete]
+      if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
+        force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeBasic;
+      } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
+        force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeFormControls;
+      } else {
+        // If AXMode is 'complete' or invalid, default to complete
+        // bundle.
+        force_renderer_accessibility_ax_mode_flags_ = ui::kAXModeComplete;
+      }
     }
   }
 
@@ -188,9 +192,15 @@ bool BrowserAccessibilityStateImpl::IsRendererAccessibilityEnabled() {
 void BrowserAccessibilityStateImpl::ResetAccessibilityModeValue() {
   accessibility_mode_ = ui::AXMode();
 
-  // Use forced AXMode bundle.
+  // Use forced AXMode bundle if optional parameter has been provided.
+  // Otherwise, reset to kAXModeComplete by default.
   if (force_renderer_accessibility_) {
-    AddAccessibilityModeFlags(force_renderer_accessibility_ax_mode_flags_);
+    if (force_renderer_accessibility_ax_mode_flags_.flags() !=
+        ui::AXMode::kNone) {
+      AddAccessibilityModeFlags(force_renderer_accessibility_ax_mode_flags_);
+    } else {
+      AddAccessibilityModeFlags(ui::kAXModeComplete);
+    }
   }
 }
 
@@ -397,11 +407,14 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     return;
   }
 
-  // If the --force-renderer-accessibility command line flag is present, then
-  // the AXMode bundle should always be respected. Any attempts to set mode to
-  // flags other than the bundle should be ignored.
+  // If the --force-renderer-accessibility command line flag is present and an
+  // AXMode bundle has been provided as an argument, then the AXMode bundle
+  // should always be respected. Any attempts to set mode to flags other than
+  // the bundle should be ignored.
   if (force_renderer_accessibility_ &&
-      force_renderer_accessibility_ax_mode_flags_ != mode) {
+      (force_renderer_accessibility_ax_mode_flags_.flags() !=
+           ui::AXMode::kNone &&
+       force_renderer_accessibility_ax_mode_flags_ != mode)) {
     return;
   }
 
@@ -496,8 +509,13 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
     ui::AXMode mode) {
   // Turning off accessibility or changing the mode will not be allowed if the
-  // --force-renderer-accessibility command line flag has been enabled.
-  if (force_renderer_accessibility_) {
+  // --force-renderer-accessibility command line flag has been enabled and
+  // either 1) there is an attempt to turn off accessibility entirely or 2) an
+  // AXMode bundle parameter has been provided.
+  if (force_renderer_accessibility_ &&
+      (mode == ui::kAXModeComplete ||
+       force_renderer_accessibility_ax_mode_flags_.flags() !=
+           ui::AXMode::kNone)) {
     return;
   }
 
