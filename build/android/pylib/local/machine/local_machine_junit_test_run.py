@@ -334,7 +334,7 @@ def _RunCommandsAndSerializeOutput(cmd_list):
           stderr=temp_file,
       ))
 
-  deadline = time.time() + (_SHARD_TIMEOUT / num_shards)
+  deadline = time.time() + (_SHARD_TIMEOUT / (num_shards // 2 + 1))
 
   yield '\n'
   yield 'Shard 0 output:\n'
