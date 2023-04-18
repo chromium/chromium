@@ -2201,42 +2201,6 @@ LayoutUnit LayoutBox::OverrideContentLogicalHeight() const {
       .ClampNegativeToZero();
 }
 
-LayoutUnit LayoutBox::OverrideContainingBlockContentWidth() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideContainingBlockContentWidth());
-  return ContainingBlock()->StyleRef().IsHorizontalWritingMode()
-             ? OverrideContainingBlockContentLogicalWidth()
-             : OverrideContainingBlockContentLogicalHeight();
-}
-
-LayoutUnit LayoutBox::OverrideContainingBlockContentHeight() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideContainingBlockContentHeight());
-  return ContainingBlock()->StyleRef().IsHorizontalWritingMode()
-             ? OverrideContainingBlockContentLogicalHeight()
-             : OverrideContainingBlockContentLogicalWidth();
-}
-
-bool LayoutBox::HasOverrideContainingBlockContentWidth() const {
-  NOT_DESTROYED();
-  if (!ContainingBlock())
-    return false;
-
-  return ContainingBlock()->StyleRef().IsHorizontalWritingMode()
-             ? HasOverrideContainingBlockContentLogicalWidth()
-             : HasOverrideContainingBlockContentLogicalHeight();
-}
-
-bool LayoutBox::HasOverrideContainingBlockContentHeight() const {
-  NOT_DESTROYED();
-  if (!ContainingBlock())
-    return false;
-
-  return ContainingBlock()->StyleRef().IsHorizontalWritingMode()
-             ? HasOverrideContainingBlockContentLogicalHeight()
-             : HasOverrideContainingBlockContentLogicalWidth();
-}
-
 // TODO (lajava) Shouldn't we implement these functions based on physical
 // direction ?.
 LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {

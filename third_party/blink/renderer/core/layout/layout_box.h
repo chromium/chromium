@@ -895,10 +895,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OverrideContentLogicalWidth() const;
   LayoutUnit OverrideContentLogicalHeight() const;
 
-  LayoutUnit OverrideContainingBlockContentWidth() const override;
-  LayoutUnit OverrideContainingBlockContentHeight() const override;
-  bool HasOverrideContainingBlockContentWidth() const override;
-  bool HasOverrideContainingBlockContentHeight() const override;
   LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
   LayoutUnit OverrideContainingBlockContentLogicalHeight() const;
   bool HasOverrideContainingBlockContentLogicalWidth() const;

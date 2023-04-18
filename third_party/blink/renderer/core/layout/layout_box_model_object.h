@@ -520,25 +520,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   bool BackgroundTransfersToView(
       const ComputedStyle* document_element_style = nullptr) const;
 
-  virtual LayoutUnit OverrideContainingBlockContentWidth() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return LayoutUnit(-1);
-  }
-  virtual LayoutUnit OverrideContainingBlockContentHeight() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return LayoutUnit(-1);
-  }
-  virtual bool HasOverrideContainingBlockContentWidth() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual bool HasOverrideContainingBlockContentHeight() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
   void RecalcVisualOverflow() override;
 
   void AddOutlineRectsForNormalChildren(OutlineRectCollector&,
