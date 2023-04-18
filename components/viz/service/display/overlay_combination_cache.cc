@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_map.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/service/display/overlay_candidate.h"
@@ -82,7 +83,7 @@ OverlayCombinationCache::OverlayCombinationCache()
 OverlayCombinationCache::~OverlayCombinationCache() = default;
 
 OverlayCombinationToTest OverlayCombinationCache::GetOverlayCombinationToTest(
-    const std::vector<OverlayProposedCandidate>& sorted_candidates,
+    base::span<OverlayProposedCandidate const> sorted_candidates,
     int max_overlays_considered) {
   DCHECK_LE(max_overlays_considered, static_cast<int>(kMaxTrackedCandidates));
 
@@ -137,7 +138,7 @@ void OverlayCombinationCache::ClearCache() {
 
 std::vector<OverlayProposedCandidate>
 OverlayCombinationCache::GetConsideredCandidates(
-    const std::vector<OverlayProposedCandidate>& sorted_candidates,
+    base::span<OverlayProposedCandidate const> sorted_candidates,
     size_t max_overlays_possible) {
   std::vector<OverlayProposedCandidate> considered_candidates;
 
@@ -228,7 +229,7 @@ OverlayCombinationCache::GetPowerSortedCombinations(
 }
 
 void OverlayCombinationCache::DeclarePromotedCandidates(
-    const std::vector<OverlayProposedCandidate>& attempted_candidates) {
+    base::span<OverlayProposedCandidate const> attempted_candidates) {
   if (attempted_candidates.empty()) {
     return;
   }

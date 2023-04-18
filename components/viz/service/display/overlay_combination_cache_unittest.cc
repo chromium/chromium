@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/overlay_candidate.h"
@@ -50,7 +51,7 @@ class OverlayCombinationCacheTest : public testing::Test {
  protected:
   // Access private methods on OverlayCombinationCache for testing.
   std::vector<OverlayProposedCandidate> GetConsideredCandidates(
-      const std::vector<OverlayProposedCandidate>& sorted_candidates,
+      base::span<OverlayProposedCandidate const> sorted_candidates,
       size_t max_overlays_possible) {
     return combination_cache_.GetConsideredCandidates(sorted_candidates,
                                                       max_overlays_possible);
