@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 
 #include <memory>
 #include <string>
@@ -170,6 +170,15 @@ GetDefaultNetworkTrafficAnnotationTag<ListFamilyMembersRequest>() {
             "The request is authenticated with an OAuth2 access token "
             "identifying the Google account. No other information is sent."
           destination: GOOGLE_OWNED_SERVICE
+          user_data {
+            type: NONE
+          }
+          internal {
+            contacts {
+              email: "chrome-kids-eng@google.com"
+            }
+          }
+          last_reviewed: "2023-04-18"
         }
         policy {
           cookies_allowed: NO

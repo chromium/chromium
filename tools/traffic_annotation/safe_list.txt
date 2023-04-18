@@ -150,7 +150,6 @@ missing_new_fields,chrome/browser/ssl/sct_reporting_service.cc
 missing_new_fields,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
 missing_new_fields,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc
 missing_new_fields,chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.cc
-missing_new_fields,chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.cc
 missing_new_fields,chrome/browser/supervised_user/supervised_user_service.cc
 missing_new_fields,chrome/browser/sync_file_system/drive_backend/sync_engine.cc
 missing_new_fields,chrome/browser/ui/ash/ambient/ambient_client_impl.cc
