@@ -69,11 +69,17 @@ if (current_cpu == "x86") {
 
   # Place holder for mips64 support, not tested.
   android_abi_target = "mips64el-linux-android"
+} else if (current_cpu == "riscv64") {
+  android_app_abi = "riscv64"
+
+  # Place holder for riscv64 support, not tested.
+  android_abi_target = "riscv64-linux-android"
 } else {
   assert(false, "Unknown Android ABI: " + current_cpu)
 }
 
-if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el") {
+if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el" ||
+    target_cpu == "riscv64") {
   android_64bit_target_cpu = true
 } else if (target_cpu == "arm" || target_cpu == "x86" ||
            target_cpu == "mipsel") {
