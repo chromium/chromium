@@ -180,6 +180,10 @@ bool IsNavigationInSessionHistoryPredictorDomain(NavigationHandle* handle) {
   return true;
 }
 
+bool IsDevToolsOpen(WebContents& web_contents) {
+  return DevToolsAgentHost::HasFor(&web_contents);
+}
+
 }  // namespace
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
@@ -1306,6 +1310,11 @@ void PrerenderHostRegistry::DestroyWhenUsingExcessiveMemory(
   if (!base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls))
     return;
 
+  // Override the memory restriction when the DevTools is open.
+  if (IsDevToolsOpen(*web_contents())) {
+    return;
+  }
+
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestPrivateMemoryFootprint(
           base::kNullProcessId,
@@ -1319,6 +1328,12 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump) {
   CHECK(
       base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls));
+
+  // Override the memory restriction when the DevTools is open.
+  if (IsDevToolsOpen(*web_contents())) {
+    return;
+  }
+
   // Stop a prerendering when we can't get the current memory usage.
   if (!success) {
     CancelHost(frame_tree_node_id, PrerenderFinalStatus::kFailToGetMemoryUsage);
