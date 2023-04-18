@@ -379,11 +379,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
       yuva_images[i]->SetCleared();
     }
   }
-  if (auto end_state = rgba_scoped_access->TakeEndState()) {
-    shared_context_state_->gr_context()->setBackendTextureState(
-        rgba_scoped_access->promise_image_texture()->backendTexture(),
-        *end_state);
-  }
+  rgba_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
   return base::ok();
@@ -494,11 +490,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
   FlushSurface(dest_scoped_access.get());
   for (int i = 0; i < num_src_planes; ++i) {
     if (source_scoped_access[i]) {
-      if (auto end_state = source_scoped_access[i]->TakeEndState()) {
-        shared_context_state_->gr_context()->setBackendTextureState(
-            source_scoped_access[i]->promise_image_texture()->backendTexture(),
-            *end_state);
-      }
+      source_scoped_access[i]->ApplyBackendSurfaceEndState();
     }
   }
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
@@ -703,17 +695,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   }
 
   FlushSurface(dest_scoped_access.get());
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    const int num_planes =
-        static_cast<int>(source_shared_image->NumPlanesExpected());
-    for (int plane_index = 0; plane_index < num_planes; plane_index++) {
-      shared_context_state_->gr_context()->setBackendTextureState(
-          source_scoped_access->promise_image_texture(plane_index)
-              ->backendTexture(),
-          *end_state);
-    }
-  }
-
+  source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
   return result;
@@ -841,16 +823,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
   }
 
   dest_surface->flush();
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    const int num_planes =
-        static_cast<int>(source_shared_image->NumPlanesExpected());
-    for (int plane_index = 0; plane_index < num_planes; plane_index++) {
-      shared_context_state_->gr_context()->setBackendTextureState(
-          source_scoped_access->promise_image_texture(plane_index)
-              ->backendTexture(),
-          *end_state);
-    }
-  }
+  source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
   return result;
@@ -910,13 +883,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                 "Couldn't create SkImage for reading."));
   }
 
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    shared_context_state_->gr_context()->setBackendTextureState(
-        source_scoped_access->promise_image_texture(plane_index)
-            ->backendTexture(),
-        *end_state);
-  }
-
+  source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
   return result;

@@ -152,7 +152,6 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
   // state then code here needs to be updated to handle them.
   EXPECT_TRUE(begin_semaphores.empty());
   EXPECT_TRUE(end_semaphores.empty());
-  EXPECT_FALSE(scoped_read_access->TakeEndState());
 
   viz::SharedImageFormat format = skia_representation->format();
   gfx::Size size = skia_representation->size();
@@ -186,6 +185,7 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
                                   cc::ExactPixelComparator()))
         << "plane_index=" << plane;
   }
+  scoped_read_access->ApplyBackendSurfaceEndState();
 }
 
 }  // namespace gpu

@@ -246,12 +246,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
 
   void ApplyEndAccessState() {
     for (auto& accessor : read_accessors_) {
-      auto& scoped_access = accessor.second.scoped_read_access;
-      if (auto end_state = scoped_access->TakeEndState()) {
-        shared_context_state_->gr_context()->setBackendTextureState(
-            scoped_access->promise_image_texture()->backendTexture(),
-            *end_state);
-      }
+      accessor.second.scoped_read_access->ApplyBackendSurfaceEndState();
     }
   }
 
@@ -2443,12 +2438,7 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
       SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
       &OnReadYUVImagePixelsDone, &yuv_result);
 
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    gr_context()->setBackendTextureState(
-        source_scoped_access->promise_image_texture()->backendTexture(),
-        *end_state);
-  }
-
+  source_scoped_access->ApplyBackendSurfaceEndState();
   if (!end_semaphores.empty()) {
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores.size(),

@@ -366,7 +366,11 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     // multiplanar formats.
     sk_sp<SkImage> CreateSkImageForPlane(int plane_index,
                                          GrDirectContext* context) const;
-    [[nodiscard]] std::unique_ptr<GrBackendSurfaceMutableState> TakeEndState();
+    // Checks if need to apply GrBackendSurfaceMutableState.
+    bool HasBackendSurfaceEndState();
+    // Applies the GrBackendSurfaceMutableState for Vulkan layout and external
+    // queue transitions needed for Vulkan/GL interop.
+    void ApplyBackendSurfaceEndState();
 
    private:
     // A vector of promise textures corresponding to the number of planes in
@@ -411,6 +415,8 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
+
+  GrDirectContext* gr_context() const { return gr_context_; }
 
   virtual bool SupportsMultipleConcurrentReadAccess();
 

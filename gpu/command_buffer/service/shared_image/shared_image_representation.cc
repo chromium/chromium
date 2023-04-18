@@ -356,9 +356,23 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImageForPlane(
       surface_origin, color_type, alpha_type, /*sk_color_space=*/nullptr);
 }
 
-std::unique_ptr<GrBackendSurfaceMutableState>
-SkiaImageRepresentation::ScopedReadAccess::TakeEndState() {
-  return std::move(end_state_);
+bool SkiaImageRepresentation::ScopedReadAccess::HasBackendSurfaceEndState() {
+  return end_state_.get();
+}
+
+void SkiaImageRepresentation::ScopedReadAccess::ApplyBackendSurfaceEndState() {
+  if (!end_state_) {
+    return;
+  }
+  for (int plane = 0; plane < representation()->format().NumberOfPlanes();
+       plane++) {
+    if (!representation()->gr_context()->setBackendTextureState(
+            promise_image_texture(plane)->backendTexture(), *end_state_)) {
+      LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
+      return;
+    }
+  }
+  end_state_ = nullptr;
 }
 
 std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>

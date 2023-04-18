@@ -69,10 +69,15 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       const {
     return promise_image_textures_;
   }
-  std::unique_ptr<GrBackendSurfaceMutableState> TakeAccessEndState() const {
+  bool HasAccessEndState() const {
     return representation_scoped_read_access_
-               ? representation_scoped_read_access_->TakeEndState()
-               : nullptr;
+               ? representation_scoped_read_access_->HasBackendSurfaceEndState()
+               : false;
+  }
+  void ApplyAccessEndState() const {
+    if (representation_scoped_read_access_) {
+      representation_scoped_read_access_->ApplyBackendSurfaceEndState();
+    }
   }
 
   void SetPromiseImageTextures(

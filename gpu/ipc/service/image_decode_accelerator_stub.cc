@@ -80,21 +80,9 @@ void CleanUpResource(SkImage::ReleaseContext context) {
   // The context should be current as we set it to be current earlier, and this
   // call is coming from Skia itself.
   DCHECK(
-      clean_up_context->shared_context_state->IsCurrent(nullptr /* surface */));
+      clean_up_context->shared_context_state->IsCurrent(/*surface=*/nullptr));
 
-  // Note: While we have to call TakeEndState() here by contract, we can elide
-  // setting the backend texture state of the GrContext to that end state. The
-  // latter usually needs to be called to add a layout transition for the
-  // underlying image (currently relevant only for VkImage), but the underlying
-  // image in this case is going away: this VkImage will be deleted right after
-  // the transition would be complete and the underlying dma-buf is going to be
-  // deleted at the same time (we are dropping our ref to the dma-buf here and
-  // Vulkan will drop the last one with the VkImage deletion). Not performing
-  // the layout transition layout saves some work. It might result in missing
-  // data in the dma-buf as caches won't be flushed, but no one was writing to
-  // that dma-buf and no one is going to use it at this point in any case.
-  std::ignore = clean_up_context->skia_scoped_access->TakeEndState();
-
+  clean_up_context->skia_scoped_access->ApplyBackendSurfaceEndState();
   delete clean_up_context;
 }
 

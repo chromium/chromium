@@ -673,13 +673,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Transition the image back to the desired end state. This is used
       // for transitioning the image to the external queue for Vulkan/GL
       // interop.
-      if (auto end_state = scoped_read_access->TakeEndState()) {
-        if (!shared_context_state_->gr_context()->setBackendTextureState(
-                scoped_read_access->promise_image_texture()->backendTexture(),
-                *end_state)) {
-          DLOG(ERROR) << "setBackendTextureState() failed.";
-        }
-      }
+      scoped_read_access->ApplyBackendSurfaceEndState();
       // Signal the semaphores.
       SignalSemaphores(std::move(end_semaphores));
       return success;

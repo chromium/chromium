@@ -1589,9 +1589,9 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     context->BeginAccessIfNecessary(
         context_state_.get(), shared_image_representation_factory_.get(),
         dependency_->GetMailboxManager(), begin_semaphores, end_semaphores);
-    if (auto end_state = context->TakeAccessEndState())
-      image_contexts_with_end_access_state_.emplace(context,
-                                                    std::move(end_state));
+    if (context->HasAccessEndState()) {
+      image_contexts_to_apply_end_state_.emplace(context);
+    }
 
     // Texture parameters can be modified by concurrent reads so reset them
     // before compositing from the texture. See https://crbug.com/1092080.
@@ -1606,23 +1606,17 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
 }
 
 void SkiaOutputSurfaceImplOnGpu::ResetStateOfImages() {
-  for (auto& context : image_contexts_with_end_access_state_) {
-    for (SkPromiseImageTexture* promise_texture :
-         context.first->promise_image_textures()) {
-      if (!gr_context()->setBackendTextureState(
-              promise_texture->backendTexture(), *context.second)) {
-        DLOG(ERROR) << "setBackendTextureState() failed.";
-      }
-    }
+  for (auto* context : image_contexts_to_apply_end_state_) {
+    context->ApplyAccessEndState();
   }
-  image_contexts_with_end_access_state_.clear();
+  image_contexts_to_apply_end_state_.clear();
 }
 
 void SkiaOutputSurfaceImplOnGpu::EndAccessImages(
     const base::flat_set<ImageContextImpl*>& image_contexts) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::EndAccessImages");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(image_contexts_with_end_access_state_.empty());
+  DCHECK(image_contexts_to_apply_end_state_.empty());
   for (auto* context : image_contexts)
     context->EndAccessIfNecessary();
 }

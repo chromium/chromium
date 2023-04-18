@@ -204,9 +204,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
       EXPECT_EQ(pixel[3], 255);
     }
 
-    if (auto end_state = skia_scoped_access->TakeEndState()) {
-      gr_context()->setBackendTextureState(backend_texture, *end_state);
-    }
+    skia_scoped_access->ApplyBackendSurfaceEndState();
 
     GrFlushInfo flush_info;
     flush_info.fNumSemaphores = end_semaphores.size();
@@ -449,11 +447,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
     }
 
     // Handle end state and semaphores.
-    if (auto end_state = scoped_read_access->TakeEndState()) {
-      gr_context()->setBackendTextureState(
-          scoped_read_access->promise_image_texture(0)->backendTexture(),
-          *end_state);
-    }
+    scoped_read_access->ApplyBackendSurfaceEndState();
     if (!end_semaphores.empty()) {
       GrFlushInfo flush_info = {
           .fNumSemaphores = end_semaphores.size(),
