@@ -36,9 +36,10 @@ class GrContextForGLES2Interface;
 namespace viz {
 
 enum TestContextType {
-  kGLES2,           // Provides GLES2Interface.
-  kSoftwareRaster,  // Provides RasterInterface for software raster.
-  kGpuRaster        // Provides RasterInterface for GPU raster.
+  kGLES2,            // Provides GLES2Interface.
+  kGLES2WithRaster,  // Provides GLES2Interface and RasterInterface.
+  kSoftwareRaster,   // Provides RasterInterface for software raster.
+  kGpuRaster         // Provides RasterInterface for GPU raster.
 };
 
 class TestInProcessContextProvider
@@ -83,6 +84,7 @@ class TestInProcessContextProvider
   const TestContextType type_;
   raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
   raw_ptr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
+  bool is_bound_ = false;
 
   base::ThreadChecker main_thread_checker_;
   base::ThreadChecker context_thread_checker_;
@@ -92,13 +94,13 @@ class TestInProcessContextProvider
   // Used for GLES2 contexts only.
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
+  std::unique_ptr<gpu::raster::RasterInterface> gles2_raster_impl_;
 
   // Used for raster contexts only.
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;
   absl::optional<base::Lock> context_lock_;
-  gpu::GpuFeatureInfo gpu_feature_info_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 };
