@@ -26,7 +26,7 @@ import org.chromium.webengine.WebSandbox;
 import org.chromium.webengine.test.instrumentation_test_apk.InstrumentationActivity;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ActivityTestRule for InstrumentationActivity.
@@ -120,7 +120,7 @@ public class InstrumentationActivityTestRule
      */
     public void navigateAndWait(Tab tab, String url) throws Exception {
         CountDownLatch navigationCompleteLatch = new CountDownLatch(1);
-        AtomicReference<Navigation> navigationFailure = new AtomicReference();
+        AtomicBoolean failed = new AtomicBoolean(false);
         runOnUiThreadBlocking(() -> {
             tab.getNavigationController().registerNavigationObserver(new NavigationObserver() {
                 @Override
@@ -129,7 +129,7 @@ public class InstrumentationActivityTestRule
                 }
                 @Override
                 public void onNavigationFailed(Tab tab, Navigation navigation) {
-                    navigationFailure.set(navigation);
+                    failed.set(true);
                     navigationCompleteLatch.countDown();
                 }
             });
@@ -137,9 +137,7 @@ public class InstrumentationActivityTestRule
         });
         navigationCompleteLatch.await();
 
-        if (navigationFailure.get() != null) {
-            throw new NavigationFailureException(navigationFailure.get());
-        }
+        if (failed.get()) throw new RuntimeException("Navigation failed.");
     }
 
     public void setTabActiveAndWait(WebEngine webEngine, Tab tab) throws Exception {
@@ -162,20 +160,5 @@ public class InstrumentationActivityTestRule
 
     public String getPackageName() {
         return getActivity().getPackageName();
-    }
-
-    /**
-     * Thrown by navigateAndWait if the navigation failed.
-     */
-    public class NavigationFailureException extends RuntimeException {
-        private final Navigation mNavigation;
-        NavigationFailureException(Navigation navigation) {
-            super("Navigation failed");
-            mNavigation = navigation;
-        }
-
-        public Navigation getNavigation() {
-            return mNavigation;
-        }
     }
 }
