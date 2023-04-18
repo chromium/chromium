@@ -163,7 +163,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  capture_mode_util::MaybeSetHighlightBorder(
+  capture_mode_util::SetHighlightBorder(
       this, kCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow

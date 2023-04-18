@@ -564,13 +564,9 @@ int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode) {
   return total;
 }
 
-void MaybeSetHighlightBorder(views::View* view,
-                             int corner_radius,
-                             views::HighlightBorder::Type type) {
-  if (!features::IsDarkLightModeEnabled()) {
-    return;
-  }
-
+void SetHighlightBorder(views::View* view,
+                        int corner_radius,
+                        views::HighlightBorder::Type type) {
   view->SetBorder(
       std::make_unique<views::HighlightBorder>(corner_radius, type));
 }

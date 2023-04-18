@@ -211,9 +211,9 @@ int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode);
 
 // Sets a highlight border to the `view` with given rounded corner radius and
 // type.
-void MaybeSetHighlightBorder(views::View* view,
-                             int corner_radius,
-                             views::HighlightBorder::Type type);
+void SetHighlightBorder(views::View* view,
+                        int corner_radius,
+                        views::HighlightBorder::Type type);
 
 }  // namespace capture_mode_util
 

@@ -177,7 +177,7 @@ CaptureLabelView::CaptureLabelView(
   label_->SetEnabledColorId(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
-  capture_mode_util::MaybeSetHighlightBorder(
+  capture_mode_util::SetHighlightBorder(
       this, kCaptureLabelRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow

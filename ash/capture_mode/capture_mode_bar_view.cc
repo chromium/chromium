@@ -114,7 +114,7 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
   separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_2_->SetPreferredLength(kSeparatorHeight);
 
-  capture_mode_util::MaybeSetHighlightBorder(
+  capture_mode_util::SetHighlightBorder(
       this, kBorderRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
