@@ -29,26 +29,19 @@ namespace {
 DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return DXGI_FORMAT_R16G16B16A16_FLOAT;
-  }
-  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+  } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return DXGI_FORMAT_R8G8B8A8_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kR_8) {
+  } else if (format == viz::SinglePlaneFormat::kR_8) {
     return DXGI_FORMAT_R8_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kRG_88) {
+  } else if (format == viz::SinglePlaneFormat::kRG_88) {
     return DXGI_FORMAT_R8G8_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kR_16) {
+  } else if (format == viz::SinglePlaneFormat::kR_16) {
     return DXGI_FORMAT_R16_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kRG_1616) {
+  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
     return DXGI_FORMAT_R16G16_UNORM;
-  }
-  if (format == viz::MultiPlaneFormat::kNV12) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
 
@@ -60,17 +53,15 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
 DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return DXGI_FORMAT_R8G8B8A8_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
-  }
-  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return DXGI_FORMAT_R16G16B16A16_FLOAT;
-  }
-  if (format == viz::MultiPlaneFormat::kNV12 ||
-      format == viz::LegacyMultiPlaneFormat::kNV12) {
+  } else if (format == viz::MultiPlaneFormat::kNV12 ||
+             format == viz::LegacyMultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
+
   return DXGI_FORMAT_UNKNOWN;
 }
 
@@ -78,13 +69,12 @@ DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
 DXGI_FORMAT GetDXGITypelessFormat(viz::SharedImageFormat format) {
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return DXGI_FORMAT_R8G8B8A8_TYPELESS;
-  }
-  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
     return DXGI_FORMAT_B8G8R8A8_TYPELESS;
-  }
-  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return DXGI_FORMAT_R16G16B16A16_TYPELESS;
   }
+
   return DXGI_FORMAT_UNKNOWN;
 }
 
