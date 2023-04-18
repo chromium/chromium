@@ -47,6 +47,9 @@ constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
 constexpr uint32_t kSupportedInputFourccs[] = {
     // V4L2 stateless formats
     V4L2_PIX_FMT_H264_SLICE,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    V4L2_PIX_FMT_HEVC_SLICE,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     V4L2_PIX_FMT_VP8_FRAME,
     V4L2_PIX_FMT_VP9_FRAME,
     V4L2_PIX_FMT_AV1_FRAME,

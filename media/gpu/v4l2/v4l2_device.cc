@@ -1567,11 +1567,9 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
     else
       return V4L2_PIX_FMT_H264;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  } else if (profile == HEVCPROFILE_MAIN) {
+  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
     if (slice_based) {
-      DVLOGF(1) << "Unsupported profile for slice based decode: "
-                << GetProfileName(profile);
-      return 0;
+      return V4L2_PIX_FMT_HEVC_SLICE;
     } else {
       return V4L2_PIX_FMT_HEVC;
     }
@@ -1635,6 +1633,18 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return VP9PROFILE_PROFILE2;
       }
       break;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      switch (v4l2_profile) {
+        case V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN:
+          return HEVCPROFILE_MAIN;
+        case V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_STILL_PICTURE:
+          return HEVCPROFILE_MAIN_STILL_PICTURE;
+        case V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_10:
+          return HEVCPROFILE_MAIN10;
+      }
+      break;
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case VideoCodec::kAV1:
       switch (v4l2_profile) {
@@ -1724,6 +1734,7 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case V4L2_PIX_FMT_HEVC:
+    case V4L2_PIX_FMT_HEVC_SLICE:
       if (!get_supported_profiles(VideoCodec::kHEVC, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY HEVC profiles, "
                       << "use default value, Main";

@@ -65,6 +65,13 @@
                                    */
 #endif
 
+// TODO(b/278157861): Remove this once ChromeOS V4L2 header is updated
+// Add it directly instead of including hevc-ctrls-upstream.h
+#ifndef V4L2_PIX_FMT_HEVC_SLICE
+#define V4L2_PIX_FMT_HEVC_SLICE \
+  v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #ifndef V4L2_CID_MPEG_VIDEO_AV1_PROFILE
 #define V4L2_CID_MPEG_VIDEO_AV1_PROFILE V4L2_CID_STATELESS_AV1_PROFILE

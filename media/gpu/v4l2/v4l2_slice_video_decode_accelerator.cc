@@ -44,6 +44,7 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_h265.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -84,7 +85,12 @@ namespace media {
 
 // static
 const uint32_t V4L2SliceVideoDecodeAccelerator::supported_input_fourccs_[] = {
-    V4L2_PIX_FMT_H264_SLICE, V4L2_PIX_FMT_VP8_FRAME, V4L2_PIX_FMT_VP9_FRAME,
+    V4L2_PIX_FMT_H264_SLICE,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    V4L2_PIX_FMT_HEVC_SLICE,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    V4L2_PIX_FMT_VP8_FRAME,
+    V4L2_PIX_FMT_VP9_FRAME,
 };
 
 // static
@@ -328,6 +334,13 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
     decoder_ = std::make_unique<H264Decoder>(
         std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
         video_profile_, config.container_color_space);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  } else if (video_profile_ >= HEVCPROFILE_MIN &&
+             video_profile_ <= HEVCPROFILE_MAX) {
+    decoder_ = std::make_unique<H265Decoder>(
+        std::make_unique<V4L2VideoDecoderDelegateH265>(this, device_.get()),
+        video_profile_, config.container_color_space);
+#endif
   } else if (video_profile_ >= VP8PROFILE_MIN &&
              video_profile_ <= VP8PROFILE_MAX) {
     decoder_ = std::make_unique<VP8Decoder>(
