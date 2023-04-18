@@ -800,6 +800,10 @@
       base_feature: "none",
     },
     {
+      name: "CSSExponentialFunctions",
+      status: "experimental",
+    },
+    {
       name: "CSSFocusVisible",
       status: "stable",
       base_feature: "none",

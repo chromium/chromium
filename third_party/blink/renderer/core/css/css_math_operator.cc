@@ -55,6 +55,8 @@ String ToString(CSSMathOperator op) {
       return "mod";
     case CSSMathOperator::kRem:
       return "rem";
+    case CSSMathOperator::kHypot:
+      return "hypot";
     default:
       NOTREACHED();
       return String();

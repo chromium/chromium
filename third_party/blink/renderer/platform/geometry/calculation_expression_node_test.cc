@@ -92,6 +92,42 @@ TEST(CalculationExpressionOperationNodeTest, SteppedValueFunctions) {
   EXPECT_EQ(operation_rem_two_mods->Evaluate(FLT_MAX, nullptr), 1.f);
 }
 
+static scoped_refptr<CalculationExpressionOperationNode>
+BuildHypotOperationNode(Vector<float> numbers) {
+  CalculationExpressionOperationNode::Children operands;
+  for (float number : numbers) {
+    scoped_refptr<CalculationExpressionNumberNode> operand =
+        base::MakeRefCounted<CalculationExpressionNumberNode>(number);
+    operands.push_back(operand);
+  }
+  scoped_refptr<CalculationExpressionOperationNode> operation =
+      base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(operands), CalculationOperator::kHypot);
+  return operation;
+}
+
+TEST(CalculationExpressionOperationNodeTest, ExponentialFunctions) {
+  EXPECT_EQ(BuildHypotOperationNode({3.f, 4.f})->Evaluate(FLT_MAX, nullptr),
+            5.f);
+  EXPECT_EQ(BuildHypotOperationNode({3e37f, 4e37f})->Evaluate(FLT_MAX, nullptr),
+            5e37f);
+  EXPECT_EQ(
+      BuildHypotOperationNode({8e-46f, 15e-46f})->Evaluate(FLT_MAX, nullptr),
+      17e-46f);
+  EXPECT_EQ(BuildHypotOperationNode({6e37f, 6e37f, 17e37})
+                ->Evaluate(FLT_MAX, nullptr),
+            19e37f);
+  EXPECT_EQ(BuildHypotOperationNode({-3.f, 4.f})->Evaluate(FLT_MAX, nullptr),
+            5.f);
+  EXPECT_EQ(BuildHypotOperationNode({-3.f, -4.f})->Evaluate(FLT_MAX, nullptr),
+            5.f);
+  EXPECT_EQ(BuildHypotOperationNode({-0.f, +0.f})->Evaluate(FLT_MAX, nullptr),
+            +0.f);
+  EXPECT_EQ(BuildHypotOperationNode({6e37f, -6e37f, -17e37})
+                ->Evaluate(FLT_MAX, nullptr),
+            19e37f);
+}
+
 }  // namespace
 
 }  // namespace blink

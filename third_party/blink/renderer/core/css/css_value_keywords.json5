@@ -1403,6 +1403,13 @@
     "sign",
     "abs",
 
+    // Exponential functions
+    "pow",
+    "sqrt",
+    "hypot",
+    "log",
+    "exp",
+
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
     "infinity",

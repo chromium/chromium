@@ -256,6 +256,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
   static CSSMathExpressionNode* CreateSteppedValueFunction(Operands&& operands,
                                                            CSSMathOperator op);
 
+  static CSSMathExpressionNode* CreateExponentialFunction(
+      Operands&& operands,
+      CSSValueID function_id);
+
   static CSSMathExpressionNode* CreateArithmeticOperationSimplified(
       const CSSMathExpressionNode* left_side,
       const CSSMathExpressionNode* right_side,
@@ -293,10 +297,14 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return CSSMathOperator::kRoundNearest <= operator_ &&
            operator_ <= CSSMathOperator::kRem;
   }
+  bool IsTrigonometricFunction() const {
+    return operator_ == CSSMathOperator::kHypot;
+  }
 
   // TODO(crbug.com/1284199): Check other math functions too.
   bool IsMathFunction() const final {
-    return IsMinOrMax() || IsClamp() || IsSteppedValueFunction();
+    return IsMinOrMax() || IsClamp() || IsSteppedValueFunction() ||
+           IsTrigonometricFunction();
   }
 
   String CSSTextAsClamp() const;
