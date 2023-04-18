@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
-  WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+  WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(params.intent->action, apps_util::kIntentActionSend);
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
-  WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+  WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(params.intent->action,

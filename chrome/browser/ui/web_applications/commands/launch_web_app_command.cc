@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -117,9 +116,9 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
       Browser::CreationStatus::kOk) {
     if (app_lock.registrar().IsInstalled(params.app_id)) {
       container = params.container;
-      if (WebAppLaunchManager::GetOpenApplicationCallbackForTesting()) {
+      if (WebAppLaunchProcess::GetOpenApplicationCallbackForTesting()) {
         web_contents =
-            WebAppLaunchManager::GetOpenApplicationCallbackForTesting().Run(
+            WebAppLaunchProcess::GetOpenApplicationCallbackForTesting().Run(
                 std::move(params));
       } else {
         web_contents = WebAppLaunchProcess::CreateAndRun(

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_PROCESS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_PROCESS_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -38,6 +39,9 @@ class WebAppRegistrar;
 // https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 class WebAppLaunchProcess {
  public:
+  using OpenApplicationCallback = base::RepeatingCallback<content::WebContents*(
+      apps::AppLaunchParams&& params)>;
+
   WebAppLaunchProcess(const WebAppLaunchProcess&) = delete;
 
   static content::WebContents* CreateAndRun(
@@ -45,6 +49,12 @@ class WebAppLaunchProcess {
       WebAppRegistrar& registrar,
       OsIntegrationManager& os_integration_manager,
       const apps::AppLaunchParams& params);
+
+  static void SetOpenApplicationCallbackForTesting(
+      OpenApplicationCallback callback);
+
+  // Created temporarily while this class is migrated to the command system.
+  static OpenApplicationCallback& GetOpenApplicationCallbackForTesting();
 
  private:
   WebAppLaunchProcess(Profile& profile,

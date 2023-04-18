@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -67,6 +68,20 @@ content::WebContents* WebAppLaunchProcess::CreateAndRun(
     const apps::AppLaunchParams& params) {
   return WebAppLaunchProcess(profile, registrar, os_integration_manager, params)
       .Run();
+}
+
+// static
+void WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
+    OpenApplicationCallback callback) {
+  GetOpenApplicationCallbackForTesting() = std::move(callback);  // IN-TEST
+}
+
+// static
+WebAppLaunchProcess::OpenApplicationCallback&
+WebAppLaunchProcess::GetOpenApplicationCallbackForTesting() {
+  static base::NoDestructor<WebAppLaunchProcess::OpenApplicationCallback>
+      callback;
+  return *callback;
 }
 
 WebAppLaunchProcess::WebAppLaunchProcess(
