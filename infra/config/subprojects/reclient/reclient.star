@@ -233,7 +233,6 @@ fyi_reclient_staging_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
-    reclient_scandeps_server = False,
 )
 
 fyi_reclient_test_builder(
@@ -256,7 +255,6 @@ fyi_reclient_test_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
-    reclient_scandeps_server = False,
 )
 
 fyi_reclient_staging_builder(
