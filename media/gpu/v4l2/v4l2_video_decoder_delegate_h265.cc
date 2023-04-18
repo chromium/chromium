@@ -383,11 +383,6 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitDecode(
   ctrl.ptr = &priv_->v4l2_decode_param;
   ctrls.push_back(ctrl);
 
-  memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_STATELESS_H265_DECODE_MODE;
-  ctrl.value = V4L2_STATELESS_H265_DECODE_MODE_FRAME_BASED;
-  ctrls.push_back(ctrl);
-
   struct v4l2_ext_controls ext_ctrls;
   memset(&ext_ctrls, 0, sizeof(ext_ctrls));
   ext_ctrls.count = ctrls.size();
