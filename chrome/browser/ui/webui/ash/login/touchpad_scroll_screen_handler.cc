@@ -32,6 +32,8 @@ void TouchpadScrollScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_DESC);
   builder->Add("TouchpadScrollAreaDescription",
                IDS_OOBE_TOUCHPAD_SCROLL_AREA_DESC);
+  builder->Add("choobeTouchpadScrollTitle",
+               IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE);
 }
 
 void TouchpadScrollScreenHandler::SetReverseScrolling(bool value) {

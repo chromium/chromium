@@ -51,6 +51,12 @@ class TouchpadScrollScreenTest
         WizardController::default_controller()
             ->GetScreen<TouchpadScrollScreen>();
 
+    // Set the tests as branded to force the consolidated consent screen to be
+    // shown, while consolidated consent is shown, `kNaturalScroll` can be set
+    // before advancing to the touchpad scroll screen.
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
+
     original_callback_ =
         touchpad_scroll_screen->get_exit_callback_for_testing();
     touchpad_scroll_screen->set_exit_callback_for_testing(base::BindRepeating(

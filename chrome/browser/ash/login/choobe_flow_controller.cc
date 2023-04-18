@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 
@@ -27,6 +28,7 @@ const int kMaxScreensToShowChoobe = 10;
 // Optional screens to be shown in CHOOBE screen. The screen tiles are
 // shown in the same order they are listed in this list.
 const StaticOobeScreenId kOptionalScreens[] = {
+    TouchpadScrollScreenView::kScreenId,
     ThemeSelectionScreenView::kScreenId,
 };
 

@@ -1492,7 +1492,7 @@ void WizardController::OnChoobeScreenExit(ChoobeScreen::Result result) {
   switch (result) {
     case ChoobeScreen::Result::SELECTED:
     case ChoobeScreen::Result::NOT_APPLICABLE:
-      ShowThemeSelectionScreen();
+      ShowTouchpadScrollScreen();
       break;
     case ChoobeScreen::Result::SKIPPED:
       choobe_flow_controller_.reset();
@@ -1508,7 +1508,7 @@ void WizardController::OnTouchpadScreenExit(
   switch (result) {
     case TouchpadScrollScreen::Result::kNotApplicable:
     case TouchpadScrollScreen::Result::kNext:
-      ShowMarketingOptInScreen();
+      ShowThemeSelectionScreen();
       break;
   }
 }
