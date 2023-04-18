@@ -126,6 +126,7 @@
     ]
   },
   "builder_group": "tryserver.chromium.dawn",
+  "cq": "path-based",
   "recipe": "chromium_trybot",
   "root_solution_revision": "refs/heads/main"
 }

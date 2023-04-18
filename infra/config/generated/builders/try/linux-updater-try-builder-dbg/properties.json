@@ -85,5 +85,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.updater",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

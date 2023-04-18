@@ -56,5 +56,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.fuchsia",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

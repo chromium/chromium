@@ -56,5 +56,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

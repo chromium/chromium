@@ -50,5 +50,6 @@
     ]
   },
   "builder_group": "tryserver.blink",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

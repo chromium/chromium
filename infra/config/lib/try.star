@@ -269,6 +269,15 @@ def try_builder(
             "check_for_flakiness": True,
         }
 
+    # Populate "cq" property if builder is a required or path-based CQ builder.
+    # This is useful for bigquery analysis.
+    if "cq" in properties:
+        fail("Setting 'cq' property directly is not supported. It is " +
+             "generated automatically based on tryjob and location_filters.")
+    if tryjob != None:
+        cq = "required" if not tryjob.location_filters else "path-based"
+        properties["cq"] = cq
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(

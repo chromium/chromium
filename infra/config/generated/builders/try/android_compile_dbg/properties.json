@@ -58,5 +58,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
+  "cq": "required",
   "recipe": "chromium_trybot"
 }

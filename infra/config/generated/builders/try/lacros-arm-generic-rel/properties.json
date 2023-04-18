@@ -60,5 +60,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
+  "cq": "required",
   "recipe": "chromium_trybot"
 }

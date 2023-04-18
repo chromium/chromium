@@ -76,6 +76,7 @@
     }
   ],
   "branch_script": "infra/config/scripts/branch.py",
+  "cq": "path-based",
   "recipe": "branch_configuration/tester",
   "starlark_entry_points": [
     "infra/config/main.star",
