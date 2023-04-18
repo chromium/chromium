@@ -272,10 +272,7 @@ class ReportBuilder {
 
   ReportBuilder& SetRandomizedTriggerRate(double rate);
 
-  ReportBuilder& SetReportId(AttributionReport::EventLevelData::Id id);
-
-  ReportBuilder& SetReportId(
-      AttributionReport::AggregatableAttributionData::Id id);
+  ReportBuilder& SetReportId(AttributionReport::Id id);
 
   ReportBuilder& SetAggregatableHistogramContributions(
       std::vector<AggregatableHistogramContribution> contributions);
@@ -297,9 +294,7 @@ class ReportBuilder {
   int64_t priority_ = 0;
   base::Uuid external_report_id_;
   double randomized_trigger_rate_ = 0;
-  AttributionReport::EventLevelData::Id report_id_{0};
-  AttributionReport::AggregatableAttributionData::Id
-      aggregatable_attribution_report_id_{0};
+  AttributionReport::Id report_id_{0};
   std::vector<AggregatableHistogramContribution> contributions_;
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =

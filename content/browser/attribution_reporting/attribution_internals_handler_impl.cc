@@ -185,7 +185,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
       report.data());
 
   return attribution_internals::mojom::WebUIReport::New(
-      report.ReportId(), report.ReportURL(is_debug_report),
+      report.id(), report.ReportURL(is_debug_report),
       /*trigger_time=*/attribution_info.time.ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(),
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),

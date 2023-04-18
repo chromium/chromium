@@ -954,7 +954,7 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   std::vector<AttributionReport> reports =
       storage()->GetAttributionReports(base::Time::Now());
   EXPECT_THAT(reports, SizeIs(1));
-  EXPECT_TRUE(storage()->DeleteReport(reports[0].ReportId()));
+  EXPECT_TRUE(storage()->DeleteReport(reports[0].id()));
   // Store another impression to trigger the expiry logic.
   storage()->StoreSource(
       SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
@@ -984,8 +984,7 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
           ReportTypeIs(AttributionReport::Type::kEventLevel),
           ReportTypeIs(AttributionReport::Type::kAggregatableAttribution)));
 
-  EXPECT_TRUE(storage()->DeleteReport(
-      AttributionReport::AggregatableAttributionData::Id(2)));
+  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(2)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(ReportTypeIs(AttributionReport::Type::kEventLevel)));
 
@@ -1017,8 +1016,7 @@ TEST_F(AttributionStorageSqlTest,
           ReportTypeIs(AttributionReport::Type::kEventLevel),
           ReportTypeIs(AttributionReport::Type::kAggregatableAttribution)));
 
-  EXPECT_TRUE(
-      storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
+  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(1)));
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
   // Store another source to trigger the expiry logic.
@@ -1056,8 +1054,8 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
 
-  EXPECT_TRUE(storage()->DeleteReport(reports[0].ReportId()));
-  EXPECT_TRUE(storage()->DeleteReport(reports[1].ReportId()));
+  EXPECT_TRUE(storage()->DeleteReport(reports[0].id()));
+  EXPECT_TRUE(storage()->DeleteReport(reports[1].id()));
 
   // Store another source to trigger the expiry logic.
   storage()->StoreSource(

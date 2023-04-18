@@ -190,7 +190,7 @@ class AttributionStorageTest : public testing::Test {
 
   void DeleteReports(const std::vector<AttributionReport>& reports) {
     for (const auto& report : reports) {
-      EXPECT_TRUE(storage_->DeleteReport(report.ReportId()));
+      EXPECT_TRUE(storage_->DeleteReport(report.id()));
     }
   }
 
@@ -227,7 +227,7 @@ TEST_F(AttributionStorageTest,
                 .event_level_status());
   EXPECT_THAT(storage->GetAttributionReports(base::Time::Now()), IsEmpty());
   EXPECT_THAT(storage->GetActiveSources(), IsEmpty());
-  EXPECT_TRUE(storage->DeleteReport(AttributionReport::EventLevelData::Id(0)));
+  EXPECT_TRUE(storage->DeleteReport(AttributionReport::Id(0)));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
   EXPECT_EQ(storage->AdjustOfflineReportTimes(), absl::nullopt);
@@ -2318,7 +2318,7 @@ TEST_F(AttributionStorageTest, NoIDReuse_Conversion) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   auto reports = storage()->GetAttributionReports(base::Time::Max());
   ASSERT_THAT(reports, SizeIs(1));
-  const AttributionReport::Id id1 = reports.front().ReportId();
+  const AttributionReport::Id id1 = reports.front().id();
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
@@ -2329,7 +2329,7 @@ TEST_F(AttributionStorageTest, NoIDReuse_Conversion) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   reports = storage()->GetAttributionReports(base::Time::Max());
   ASSERT_THAT(reports, SizeIs(1));
-  const AttributionReport::Id id2 = reports.front().ReportId();
+  const AttributionReport::Id id2 = reports.front().id();
 
   EXPECT_NE(id1, id2);
 }
@@ -2357,10 +2357,10 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
 
   const base::TimeDelta delay = base::Days(2);
   const base::Time new_report_time = actual_reports[0].report_time() + delay;
-  EXPECT_TRUE(storage()->UpdateReportForSendFailure(
-      actual_reports[0].ReportId(), new_report_time));
-  EXPECT_TRUE(storage()->UpdateReportForSendFailure(
-      actual_reports[1].ReportId(), new_report_time));
+  EXPECT_TRUE(storage()->UpdateReportForSendFailure(actual_reports[0].id(),
+                                                    new_report_time));
+  EXPECT_TRUE(storage()->UpdateReportForSendFailure(actual_reports[1].id(),
+                                                    new_report_time));
 
   task_environment_.FastForwardBy(delay);
 

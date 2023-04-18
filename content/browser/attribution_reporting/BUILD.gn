@@ -40,14 +40,6 @@ mojom("internals_mojo_bindings") {
     {
       types = [
         {
-          mojom = "attribution_internals.mojom.AggregatableAttributionReportID"
-          cpp = "::content::AttributionReport::AggregatableAttributionData::Id"
-        },
-        {
-          mojom = "attribution_internals.mojom.EventLevelReportID"
-          cpp = "::content::AttributionReport::EventLevelData::Id"
-        },
-        {
           mojom = "attribution_internals.mojom.ReportID"
           cpp = "::content::AttributionReport::Id"
         },
@@ -56,7 +48,6 @@ mojom("internals_mojo_bindings") {
         "attribution_internals_mojom_traits.h",
         "attribution_report.h",
       ]
-      traits_sources = [ "attribution_internals_mojom_traits.cc" ]
       traits_deps = [
         ":attribution_reporting_proto",
 

@@ -440,15 +440,8 @@ ReportBuilder& ReportBuilder::SetRandomizedTriggerRate(double rate) {
   return *this;
 }
 
-ReportBuilder& ReportBuilder::SetReportId(
-    AttributionReport::EventLevelData::Id id) {
+ReportBuilder& ReportBuilder::SetReportId(AttributionReport::Id id) {
   report_id_ = id;
-  return *this;
-}
-
-ReportBuilder& ReportBuilder::SetReportId(
-    AttributionReport::AggregatableAttributionData::Id id) {
-  aggregatable_attribution_report_id_ = id;
   return *this;
 }
 
@@ -474,19 +467,20 @@ ReportBuilder& ReportBuilder::SetAttestationToken(
 
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
-      attribution_info_, report_time_, /*initial_report_time=*/report_time_,
-      external_report_id_, /*failed_send_attempts=*/0,
+      attribution_info_, report_id_, report_time_,
+      /*initial_report_time=*/report_time_, external_report_id_,
+      /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data_, priority_,
-                                        randomized_trigger_rate_, report_id_));
+                                        randomized_trigger_rate_));
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
   return AttributionReport(
-      attribution_info_, report_time_, /*initial_report_time=*/report_time_,
-      external_report_id_, /*failed_send_attempts=*/0,
+      attribution_info_, report_id_, report_time_,
+      /*initial_report_time=*/report_time_, external_report_id_,
+      /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
-          contributions_, aggregatable_attribution_report_id_,
-          aggregation_coordinator_, attestation_token_));
+          contributions_, aggregation_coordinator_, attestation_token_));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -563,8 +557,6 @@ bool operator==(const AggregatableHistogramContribution& a,
   return tie(a) == tie(b);
 }
 
-// Does not compare ID as it is set by the underlying sqlite db and
-// should not be tested.
 bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b) {
   const auto tie = [](const AttributionReport::EventLevelData& data) {
@@ -574,9 +566,7 @@ bool operator==(const AttributionReport::EventLevelData& a,
   return tie(a) == tie(b);
 }
 
-// Does not compare ID as it is set by the underlying sqlite db and
-// should not be tested.
-// Also does not compare the assembled report as it is returned by the
+// Does not compare the assembled report as it is returned by the
 // aggregation service from all the other data.
 bool operator==(const AttributionReport::AggregatableAttributionData& a,
                 const AttributionReport::AggregatableAttributionData& b) {
@@ -810,8 +800,7 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data) {
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
-             << ",randomized_trigger_rate=" << data.randomized_trigger_rate
-             << ",id=" << *data.id;
+             << ",randomized_trigger_rate=" << data.randomized_trigger_rate;
 }
 
 std::ostream& operator<<(
@@ -825,7 +814,7 @@ std::ostream& operator<<(
     separator = ", ";
   }
 
-  out << "],id=" << *data.id;
+  out << "]";
   if (data.attestation_token.has_value()) {
     out << ",attestation_token=" << data.attestation_token.value();
   } else {
@@ -848,6 +837,7 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
   return out << "{attribution_info=" << report.attribution_info()
+             << ",id=" << *report.id()
              << ",report_time=" << report.report_time()
              << ",initial_report_time=" << report.initial_report_time()
              << ",external_report_id=" << report.external_report_id()

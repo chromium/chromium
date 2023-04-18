@@ -311,8 +311,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // We keep track of pending reports timings in memory to record metrics
   // when the browser becomes unavailable to send reports due to becoming
   // offline or being shutdown.
-  base::flat_map<AttributionReport::AggregatableAttributionData::Id,
-                 PendingReportTimings>
+  base::flat_map<AttributionReport::Id, PendingReportTimings>
       pending_aggregatable_reports_;
 
   base::ObserverList<AttributionObserver> observers_;

@@ -13,21 +13,10 @@ import "services/network/public/mojom/attribution.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// Represents `AttributionReport::EventLevelData::Id`.
+// Represents `AttributionReport::Id`.
 // Will be used to issue commands for individual reports.
-struct EventLevelReportID {
+struct ReportID {
   int64 value;
-};
-
-// Represents `AttributionReport::AggregatableAttributionData::Id`.
-// Will be used to issue commands for individual reports.
-struct AggregatableAttributionReportID {
-  int64 value;
-};
-
-union ReportID {
-  EventLevelReportID event_level_id;
-  AggregatableAttributionReportID aggregatable_attribution_id;
 };
 
 // Contains event-level data to be displayed.

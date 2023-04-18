@@ -82,7 +82,6 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsNull;
 using ::testing::Return;
-using ::testing::VariantWith;
 
 const char kAttributionInternalsUrl[] = "chrome://attribution-internals/";
 
@@ -929,16 +928,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
               .SetPriority(7)
-              .SetReportId(AttributionReport::EventLevelData::Id(5))
+              .SetReportId(AttributionReport::Id(5))
               .Build()}))
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
-  EXPECT_CALL(
-      *manager(),
-      SendReportsForWebUI(
-          ElementsAre(VariantWith<AttributionReport::EventLevelData::Id>(
-              AttributionReport::EventLevelData::Id(5))),
-          _))
+  EXPECT_CALL(*manager(),
+              SendReportsForWebUI(ElementsAre(AttributionReport::Id(5)), _))
       .WillOnce([](const std::vector<AttributionReport::Id>& ids,
                    base::OnceClosure done) { std::move(done).Run(); });
 
@@ -1222,20 +1217,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
-              .SetReportId(
-                  AttributionReport::AggregatableAttributionData::Id(5))
+              .SetReportId(AttributionReport::Id(5))
               .SetAggregatableHistogramContributions(
                   {AggregatableHistogramContribution(1, 2)})
               .BuildAggregatableAttribution()}))
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
-  EXPECT_CALL(
-      *manager(),
-      SendReportsForWebUI(
-          ElementsAre(
-              VariantWith<AttributionReport::AggregatableAttributionData::Id>(
-                  AttributionReport::AggregatableAttributionData::Id(5))),
-          _))
+  EXPECT_CALL(*manager(),
+              SendReportsForWebUI(ElementsAre(AttributionReport::Id(5)), _))
       .WillOnce([](const std::vector<AttributionReport::Id>& ids,
                    base::OnceClosure done) { std::move(done).Run(); });
 

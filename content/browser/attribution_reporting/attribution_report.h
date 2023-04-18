@@ -38,14 +38,13 @@ class CONTENT_EXPORT AttributionReport {
  public:
   using Type = ::attribution_reporting::mojom::ReportType;
 
+  using Id = base::StrongAlias<AttributionReport, int64_t>;
+
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {
-    using Id = base::StrongAlias<EventLevelData, int64_t>;
-
     EventLevelData(uint64_t trigger_data,
                    int64_t priority,
-                   double randomized_trigger_rate,
-                   Id id);
+                   double randomized_trigger_rate);
     // This is added to allow default construction of
     // `AttributionReport::Data()`.
     EventLevelData();
@@ -67,20 +66,14 @@ class CONTENT_EXPORT AttributionReport {
     // registered.
     double randomized_trigger_rate;
 
-    // Id assigned by storage to uniquely identify a completed conversion.
-    Id id;
-
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
   };
 
   // Struct that contains the data specific to the aggregatable report.
   struct CONTENT_EXPORT AggregatableAttributionData {
-    using Id = base::StrongAlias<AggregatableAttributionData, int64_t>;
-
     AggregatableAttributionData(
         std::vector<AggregatableHistogramContribution> contributions,
-        Id id,
         ::aggregation_service::mojom::AggregationCoordinator
             aggregation_coordinator,
         absl::optional<std::string> attestation_token);
@@ -104,9 +97,6 @@ class CONTENT_EXPORT AttributionReport {
     // The historgram contributions.
     std::vector<AggregatableHistogramContribution> contributions;
 
-    // Id assigned by storage to uniquely identify an aggregatable contribution.
-    Id id;
-
     // The report assembled by the aggregation service. If null, the report has
     // not been assembled yet.
     absl::optional<AggregatableReport> assembled_report;
@@ -122,14 +112,7 @@ class CONTENT_EXPORT AttributionReport {
     // `attribution_test_utils.h` should also be updated.
   };
 
-  // TODO(linnan): Use a single Id type for both types of reports.
-  using Id = absl::variant<EventLevelData::Id, AggregatableAttributionData::Id>;
-
   using Data = absl::variant<EventLevelData, AggregatableAttributionData>;
-
-  static Type GetReportType(Id report_id) {
-    return static_cast<Type>(report_id.index());
-  }
 
   // Returns the minimum non-null time of `a` and `b`, or `absl::nullopt` if
   // both are null.
@@ -137,6 +120,7 @@ class CONTENT_EXPORT AttributionReport {
                                                   absl::optional<base::Time> b);
 
   AttributionReport(AttributionInfo attribution_info,
+                    Id id,
                     base::Time report_time,
                     base::Time initial_report_time,
                     base::Uuid external_report_id,
@@ -156,9 +140,9 @@ class CONTENT_EXPORT AttributionReport {
   // Populate additional headers that should be sent alongside the report.
   void PopulateAdditionalHeaders(net::HttpRequestHeaders&) const;
 
-  Id ReportId() const;
-
   const AttributionInfo& attribution_info() const { return attribution_info_; }
+
+  Id id() const { return id_; }
 
   base::Time report_time() const { return report_time_; }
 
@@ -174,6 +158,8 @@ class CONTENT_EXPORT AttributionReport {
 
   Type GetReportType() const { return static_cast<Type>(data_.index()); }
 
+  void set_id(Id id) { id_ = id; }
+
   void set_report_time(base::Time report_time);
 
   void SetExternalReportIdForTesting(base::Uuid external_report_id);
@@ -181,6 +167,9 @@ class CONTENT_EXPORT AttributionReport {
  private:
   // The attribution info.
   AttributionInfo attribution_info_;
+
+  // Id assigned by storage to uniquely identify an attribution report.
+  Id id_;
 
   // The time this conversion report should be sent.
   base::Time report_time_;

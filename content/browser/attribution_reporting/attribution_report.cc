@@ -32,12 +32,10 @@ namespace content {
 AttributionReport::EventLevelData::EventLevelData(
     uint64_t trigger_data,
     int64_t priority,
-    double randomized_trigger_rate,
-    Id id)
+    double randomized_trigger_rate)
     : trigger_data(trigger_data),
       priority(priority),
-      randomized_trigger_rate(randomized_trigger_rate),
-      id(id) {
+      randomized_trigger_rate(randomized_trigger_rate) {
   DCHECK_GE(randomized_trigger_rate, 0);
   DCHECK_LE(randomized_trigger_rate, 1);
 }
@@ -59,12 +57,10 @@ AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     std::vector<AggregatableHistogramContribution> contributions,
-    Id id,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator,
     absl::optional<std::string> attestation_token)
     : contributions(std::move(contributions)),
-      id(id),
       attestation_token(std::move(attestation_token)),
       aggregation_coordinator(aggregation_coordinator) {}
 
@@ -98,12 +94,14 @@ AttributionReport::AggregatableAttributionData::BudgetRequired() const {
 }
 
 AttributionReport::AttributionReport(AttributionInfo attribution_info,
+                                     Id id,
                                      base::Time report_time,
                                      base::Time initial_report_time,
                                      base::Uuid external_report_id,
                                      int failed_send_attempts,
                                      Data data)
     : attribution_info_(std::move(attribution_info)),
+      id_(id),
       report_time_(report_time),
       initial_report_time_(initial_report_time),
       external_report_id_(std::move(external_report_id)),
@@ -220,10 +218,6 @@ base::Value::Dict AttributionReport::ReportBody() const {
           },
       },
       data_);
-}
-
-AttributionReport::Id AttributionReport::ReportId() const {
-  return absl::visit([](const auto& v) { return Id(v.id); }, data_);
 }
 
 void AttributionReport::set_report_time(base::Time report_time) {

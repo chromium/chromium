@@ -521,19 +521,6 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
 }
 
-int64_t GetRawId(AttributionReport::Id id) {
-  return absl::visit([](auto v) { return *v; }, id);
-}
-
-AttributionReport::Id FromRawId(int64_t id, AttributionReport::Type type) {
-  switch (type) {
-    case AttributionReport::Type::kEventLevel:
-      return AttributionReport::EventLevelData::Id(id);
-    case AttributionReport::Type::kAggregatableAttribution:
-      return AttributionReport::AggregatableAttributionData::Id(id);
-  }
-}
-
 }  // namespace
 
 // static
@@ -768,13 +755,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           AttributionInfo(stored_source, fake_report.trigger_time,
                           /*debug_key=*/absl::nullopt,
                           /*context_origin=*/common_info.source_origin()),
-          fake_report.report_time,
+          AttributionReport::Id(kUnsetReportId), fake_report.report_time,
           /*initial_report_time=*/fake_report.report_time,
           delegate_->NewReportID(), /*failed_send_attempts=*/0,
-          AttributionReport::EventLevelData(
-              fake_report.trigger_data, /*priority=*/0,
-              /*randomized_trigger_rate=*/0,
-              AttributionReport::EventLevelData::Id(kUnsetReportId)));
+          AttributionReport::EventLevelData(fake_report.trigger_data,
+                                            /*priority=*/0,
+                                            /*randomized_trigger_rate=*/0));
       if (!StoreAttributionReport(fake_attribution_report)) {
         return StoreSourceResult(StorableSource::Result::kInternalError);
       }
@@ -843,8 +829,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   min_priority_statement.BindInt64(0, *source.source_id());
   min_priority_statement.BindTime(1, report.report_time());
 
-  absl::optional<AttributionReport::EventLevelData::Id>
-      conversion_id_with_min_priority;
+  absl::optional<AttributionReport::Id> conversion_id_with_min_priority;
   int64_t min_priority;
   base::Time max_trigger_time;
 
@@ -1308,12 +1293,12 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   // TODO(apaseltiner): Consider informing the manager if the trigger
   // data was out of range for DevTools issue reporting.
   report = AttributionReport(
-      attribution_info, report_time, /*initial_report_time=*/report_time,
-      delegate_->NewReportID(), /*failed_send_attempts=*/0,
+      attribution_info, AttributionReport::Id(kUnsetReportId), report_time,
+      /*initial_report_time=*/report_time, delegate_->NewReportID(),
+      /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(
           delegate_->SanitizeTriggerData(event_trigger->data, source_type),
-          event_trigger->priority, randomized_response_rate,
-          AttributionReport::EventLevelData::Id(kUnsetReportId)));
+          event_trigger->priority, randomized_response_rate));
 
   dedup_key = event_trigger->dedup_key;
 
@@ -1466,8 +1451,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       auto& event_level_data = data.emplace<AttributionReport::EventLevelData>(
           /*trigger_data=*/0, /*priority=*/0,
           delegate_->GetRandomizedResponseRate(
-              source_data->source.common_info().source_type()),
-          AttributionReport::EventLevelData::Id(report_id));
+              source_data->source.common_info().source_type()));
       if (!DeserializeReportMetadata(metadata, event_level_data)) {
         return absl::nullopt;
       }
@@ -1476,8 +1460,6 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
     case AttributionReport::Type::kAggregatableAttribution: {
       auto& aggregatable_data =
           data.emplace<AttributionReport::AggregatableAttributionData>();
-      aggregatable_data.id =
-          AttributionReport::AggregatableAttributionData::Id(report_id);
       if (!DeserializeReportMetadata(
               metadata, delegate_->GetAggregatableBudgetPerSource(),
               aggregatable_data)) {
@@ -1490,8 +1472,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   return AttributionReport(
       AttributionInfo(std::move(source_data->source), trigger_time,
                       trigger_debug_key, std::move(*context_origin)),
-      report_time, initial_report_time, std::move(external_report_id),
-      failed_send_attempts, std::move(data));
+      AttributionReport::Id(report_id), report_time, initial_report_time,
+      std::move(external_report_id), failed_send_attempts, std::move(data));
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -1578,7 +1560,7 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
     AttributionReport::Id id) {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetReportSql));
-  statement.BindInt64(0, GetRawId(id));
+  statement.BindInt64(0, *id);
 
   if (!statement.Step()) {
     return absl::nullopt;
@@ -1646,7 +1628,7 @@ bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
       "DELETE FROM reports WHERE report_id=?";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteReportSql));
-  statement.BindInt64(0, GetRawId(report_id));
+  statement.BindInt64(0, *report_id);
   return statement.Run();
 }
 
@@ -1661,7 +1643,7 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kUpdateFailedReportSql));
   statement.BindTime(0, new_report_time);
-  statement.BindInt64(1, GetRawId(report_id));
+  statement.BindInt64(1, *report_id);
   return statement.Run() && db_.GetLastChangeCount() == 1;
 }
 
@@ -2411,21 +2393,17 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
           statement.GetColumnType(3) != sql::ColumnType::kNull) {
         absl::optional<AttributionReport::Type> report_type =
             DeserializeReportType(statement.ColumnInt(3));
-        // TODO(linnan): Delete report even if report type is invalid.
-        if (!report_type) {
-          continue;
+        if (report_type) {
+          switch (*report_type) {
+            case AttributionReport::Type::kEventLevel:
+              ++num_event_reports_deleted;
+              break;
+            case AttributionReport::Type::kAggregatableAttribution:
+              ++num_aggregatable_reports_deleted;
+              break;
+          }
         }
-
-        int64_t report_id = statement.ColumnInt64(2);
-        switch (*report_type) {
-          case AttributionReport::Type::kEventLevel:
-            ++num_event_reports_deleted;
-            break;
-          case AttributionReport::Type::kAggregatableAttribution:
-            ++num_aggregatable_reports_deleted;
-            break;
-        }
-        if (!DeleteReport(FromRawId(report_id, *report_type))) {
+        if (!DeleteReport(AttributionReport::Id(statement.ColumnInt64(2)))) {
           return false;
         }
       }
@@ -2602,11 +2580,11 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
           ? trigger.attestation()->aggregatable_report_id()
           : delegate_->NewReportID();
   report = AttributionReport(
-      attribution_info, report_time, /*initial_report_time=*/report_time,
-      std::move(external_report_id), /*failed_send_attempts=*/0,
+      attribution_info, AttributionReport::Id(kUnsetReportId), report_time,
+      /*initial_report_time=*/report_time, std::move(external_report_id),
+      /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           std::move(contributions),
-          AttributionReport::AggregatableAttributionData::Id(kUnsetReportId),
           trigger_registration.aggregation_coordinator,
           std::move(attestation_token)));
 
@@ -2646,18 +2624,7 @@ bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report) {
     return false;
   }
 
-  int64_t report_id = db_.GetLastInsertRowId();
-  absl::visit(
-      base::Overloaded{
-          [report_id](AttributionReport::EventLevelData& data) {
-            data.id = AttributionReport::EventLevelData::Id(report_id);
-          },
-          [report_id](AttributionReport::AggregatableAttributionData& data) {
-            data.id =
-                AttributionReport::AggregatableAttributionData::Id(report_id);
-          }},
-      report.data());
-
+  report.set_id(AttributionReport::Id(db_.GetLastInsertRowId()));
   return true;
 }
 

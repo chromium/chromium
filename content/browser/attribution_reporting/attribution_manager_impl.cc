@@ -754,16 +754,14 @@ void AttributionManagerImpl::AddPendingAggregatableReportTiming(
     return;
   }
 
-  const auto* data =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(data);
+  DCHECK_EQ(report.GetReportType(),
+            AttributionReport::Type::kAggregatableAttribution);
 
   auto [it, inserted] = pending_aggregatable_reports_.try_emplace(
-      data->id, PendingReportTimings{
-                    .creation_time = base::Time::Now(),
-                    .report_time = report.report_time(),
-                });
+      report.id(), PendingReportTimings{
+                       .creation_time = base::Time::Now(),
+                       .report_time = report.report_time(),
+                   });
   DCHECK(inserted);
 }
 
@@ -967,7 +965,7 @@ void AttributionManagerImpl::SendReports(
   for (AttributionReport& report : reports) {
     DCHECK_LE(report.report_time(), now);
 
-    bool inserted = reports_being_sent_.emplace(report.ReportId()).second;
+    bool inserted = reports_being_sent_.emplace(report.id()).second;
     if (!inserted) {
       if (web_ui_callback) {
         web_ui_callback.Run();
@@ -976,11 +974,9 @@ void AttributionManagerImpl::SendReports(
       continue;
     }
 
-    if (auto id = report.ReportId();
-        const auto* aggregatable_id =
-            absl::get_if<AttributionReport::AggregatableAttributionData::Id>(
-                &id)) {
-      pending_aggregatable_reports_.erase(*aggregatable_id);
+    if (report.GetReportType() ==
+        AttributionReport::Type::kAggregatableAttribution) {
+      pending_aggregatable_reports_.erase(report.id());
     }
 
     if (!IsReportAllowed(report)) {
@@ -1060,13 +1056,13 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
           manager->NotifyReportsChanged();
         }
       },
-      std::move(done), weak_factory_.GetWeakPtr(), report.ReportId(),
+      std::move(done), weak_factory_.GetWeakPtr(), report.id(),
       new_report_time);
 
   if (new_report_time) {
     attribution_storage_
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
-        .WithArgs(report.ReportId(), *new_report_time)
+        .WithArgs(report.id(), *new_report_time)
         .Then(std::move(then));
 
     // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
@@ -1075,7 +1071,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
-      .WithArgs(report.ReportId())
+      .WithArgs(report.id())
       .Then(std::move(then));
 
   LogMetricsOnReportCompleted(report, info.status);

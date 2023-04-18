@@ -1299,7 +1299,7 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
 
   checkpoint.Call(1);
 
-  attribution_manager_->SendReportsForWebUI({reports.front().ReportId()},
+  attribution_manager_->SendReportsForWebUI({reports.front().id()},
                                             base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
 }
@@ -1336,7 +1336,7 @@ TEST_F(AttributionManagerImplTest,
   checkpoint.Call(1);
 
   attribution_manager_->SendReportsForWebUI(
-      {reports.front().ReportId(), reports.back().ReportId()},
+      {reports.front().id(), reports.back().id()},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(callback_calls, 0u);
@@ -2027,8 +2027,8 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
 
   EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
 
-  attribution_manager_->SendReportsForWebUI(
-      {AttributionReport::EventLevelData::Id(1)}, base::DoNothing());
+  attribution_manager_->SendReportsForWebUI({AttributionReport::Id(1)},
+                                            base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
 
   histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);
