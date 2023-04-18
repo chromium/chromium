@@ -57,12 +57,7 @@ class HighEfficiencyChipTabHelper
   friend class content::WebContentsUserData<HighEfficiencyChipTabHelper>;
   explicit HighEfficiencyChipTabHelper(content::WebContents* contents);
 
-  // Returns whether the high efficiency chip should be supported for the
-  // given URL
-  bool DoesChipSupportPage(const GURL& url) const;
-
-  absl::optional<mojom::LifecycleUnitDiscardReason> GetDiscardReason(
-      content::NavigationHandle* navigation_handle) const;
+  bool IsProactiveDiscard() const;
 
   bool was_discarded_ = false;
   bool was_animated_ = false;
