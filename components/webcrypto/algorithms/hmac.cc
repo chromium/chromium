@@ -297,21 +297,27 @@ class HmacImplementation : public AlgorithmImplementation {
                                     key);
   }
 
-  Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
-                      bool* has_length_bits,
-                      unsigned int* length_bits) const override {
+  Status GetKeyLength(
+      const blink::WebCryptoAlgorithm& key_length_algorithm,
+      absl::optional<unsigned int>* length_bits) const override {
     const blink::WebCryptoHmacImportParams* params =
         key_length_algorithm.HmacImportParams();
 
-    *has_length_bits = true;
     if (params->HasLengthBits()) {
       *length_bits = params->OptionalLengthBits();
-      if (*length_bits == 0)
+      if (length_bits->value() == 0) {
         return Status::ErrorGetHmacKeyLengthZero();
+      }
       return Status::Success();
     }
 
-    return GetDigestBlockSizeBits(params->GetHash(), length_bits);
+    unsigned int block_size_bits;
+    Status status = GetDigestBlockSizeBits(params->GetHash(), &block_size_bits);
+    if (status.IsError()) {
+      return status;
+    }
+    *length_bits = block_size_bits;
+    return Status::Success();
   }
 };
 

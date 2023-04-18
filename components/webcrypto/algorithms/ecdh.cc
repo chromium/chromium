@@ -48,8 +48,7 @@ class EcdhImplementation : public EcAlgorithm {
 
   Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                     const blink::WebCryptoKey& base_key,
-                    bool has_optional_length_bits,
-                    unsigned int optional_length_bits,
+                    absl::optional<unsigned int> length_bits,
                     std::vector<uint8_t>* derived_bytes) const override {
     if (base_key.GetType() != blink::kWebCryptoKeyTypePrivate)
       return Status::ErrorUnexpectedKeyType();
@@ -92,30 +91,31 @@ class EcdhImplementation : public EcAlgorithm {
 
     // If a desired key length was not specified, default to the field size
     // (rounded up to nearest byte).
-    unsigned int length_bits =
-        has_optional_length_bits ? optional_length_bits : field_size_bytes * 8;
+    unsigned int actual_length_bits =
+        length_bits.value_or(field_size_bytes * 8);
 
     // Short-circuit when deriving an empty key.
     // TODO(eroman): ECDH_compute_key() is not happy when given a NULL output.
     //               http://crbug.com/464194.
-    if (length_bits == 0) {
+    if (actual_length_bits == 0) {
       derived_bytes->clear();
       return Status::Success();
     }
 
-    if (length_bits > static_cast<unsigned int>(field_size_bytes * 8))
+    if (actual_length_bits > static_cast<unsigned int>(field_size_bytes * 8)) {
       return Status::ErrorEcdhLengthTooBig(field_size_bytes * 8);
+    }
 
     // Resize to target length in bytes (BoringSSL can operate on a shorter
     // buffer than field_size_bytes).
-    derived_bytes->resize(NumBitsToBytes(length_bits));
+    derived_bytes->resize(NumBitsToBytes(actual_length_bits));
 
     int result = ECDH_compute_key(derived_bytes->data(), derived_bytes->size(),
                                   public_key_point, private_key_ec, nullptr);
     if (result < 0 || static_cast<size_t>(result) != derived_bytes->size())
       return Status::OperationError();
 
-    TruncateToBitLength(length_bits, derived_bytes);
+    TruncateToBitLength(actual_length_bits, derived_bytes);
     return Status::Success();
   }
 };
