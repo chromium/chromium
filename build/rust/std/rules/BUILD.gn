@@ -308,14 +308,14 @@ cargo_crate("hashbrown") {
 }
 cargo_crate("libc") {
   crate_type = "rlib"
-  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.139/src/lib.rs"
+  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.140/src/lib.rs"
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.139/src/lib.rs" ]
+  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.140/src/lib.rs" ]
   edition = "2015"
-  cargo_pkg_version = "0.2.139"
+  cargo_pkg_version = "0.2.140"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
