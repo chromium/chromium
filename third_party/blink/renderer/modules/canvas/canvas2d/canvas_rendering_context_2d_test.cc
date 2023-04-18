@@ -480,7 +480,7 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_FullCoverage) {
 
 TEST_P(CanvasRenderingContext2DOverdrawTest, DisableOverdrawOptimization) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kCanvasOverdrawOptimization);
+  feature_list.InitAndEnableFeature(kDisableCanvasOverdrawOptimization);
   ExpectNoOverdraw();
   Context2D()->clearRect(0, 0, 10, 10);
   VerifyExpectations();
