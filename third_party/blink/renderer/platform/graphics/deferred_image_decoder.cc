@@ -28,11 +28,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
@@ -384,6 +386,13 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
 }
 
 void DeferredImageDecoder::ActivateLazyGainmapDecoding() {
+  // Gate this behind a feature flag.
+  static bool feature_enabled =
+      base::FeatureList::IsEnabled(blink::features::kGainmapHdrImages);
+  if (!feature_enabled) {
+    return;
+  }
+
   // Early-out if we have excluded the possibility that this image has a
   // gainmap, or if we have already created the gainmap frame generator.
   if (!might_have_gainmap_ || gainmap_) {

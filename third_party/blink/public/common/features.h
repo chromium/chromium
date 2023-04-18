@@ -1097,6 +1097,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoteResourceCache);
 // Tracker: https://crbug.com/1356128
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKeepAliveInBrowserMigration);
 
+// Switch to enabling rendering of gainmap-based HDR images.
+// Tracker: https://crbug.com/1404000
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGainmapHdrImages);
+
 }  // namespace features
 }  // namespace blink
 

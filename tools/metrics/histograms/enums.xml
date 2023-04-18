@@ -58723,6 +58723,7 @@ from previous Chrome versions.
   <int value="-1793010019" label="DesktopPWAsKeepAlive:enabled"/>
   <int value="-1792162033" label="WebID:enabled"/>
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
+  <int value="-1790251283" label="GainmapHdrImages:disabled"/>
   <int value="-1790227231" label="show-autofill-signatures"/>
   <int value="-1789139269" label="SmbFs:disabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
@@ -61399,6 +61400,7 @@ from previous Chrome versions.
   <int value="-349057743" label="extensions-on-chrome-urls"/>
   <int value="-347654657" label="CSSColorSchemeUARendering:enabled"/>
   <int value="-347036716" label="OmniboxDomainSuggestions:disabled"/>
+  <int value="-346600492" label="GainmapHdrImages:enabled"/>
   <int value="-346413328" label="UseNewAcceptLanguageHeader:disabled"/>
   <int value="-345838366" label="enable-hosted-apps-in-windows"/>
   <int value="-345324571" label="enable-quirks-client"/>

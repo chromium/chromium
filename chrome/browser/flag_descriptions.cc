@@ -164,6 +164,10 @@ const char kGaiaIdCacheInAccountManagerFacadeDescription[] =
     "If enabled, starts fetching gaia id from android accounts in "
     "AccountManagerFacade (AMF)";
 
+const char kGainmapHdrImagesName[] = "Gainmap HDR image rendering";
+const char kGainmapHdrImagesDescription[] =
+    "If enabled, renders images that include an gainmap in HDR";
+
 const char kIdentityStatusConsistencyName[] = "Identity Status Consistency";
 const char kIdentityStatusConsistencyDescription[] =
     "If enabled, always show identity status - even for signed-out users";
