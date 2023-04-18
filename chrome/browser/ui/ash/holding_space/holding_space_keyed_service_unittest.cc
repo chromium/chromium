@@ -2624,7 +2624,8 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
         EXPECT_EQ(
             holding_space_model->ContainsItem(type, file_path),
             holding_space_service
-                ->AddPhoneHubCameraRollItem(file_path, HoldingSpaceProgress())
+                ->AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+                                file_path, HoldingSpaceProgress())
                 .empty());
         break;
       case HoldingSpaceItem::Type::kPrintedPdf:

@@ -223,13 +223,6 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-const std::string& HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
-    const base::FilePath& item_path,
-    const HoldingSpaceProgress& progress) {
-  return AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll, item_path,
-                       progress);
-}
-
 void HoldingSpaceKeyedService::SetSuggestions(
     const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
         suggestions) {

@@ -90,14 +90,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
 
-  // TODO(http://b/274477308): Remove one-off API.
-  // Adds a photo or video downloaded from a connected Android phone via
-  // PhoneHub. Returns the id of the added holding space item or an empty string
-  // if the item was not added due to de-duplication checks.
-  const std::string& AddPhoneHubCameraRollItem(
-      const base::FilePath& item_path,
-      const HoldingSpaceProgress& progress);
-
   // Replaces the existing suggestions with `suggestions`. The order among
   // `suggestions` is respected, which means that if a suggestion A is in front
   // of a suggestion B in the given array, after calling this function, the
