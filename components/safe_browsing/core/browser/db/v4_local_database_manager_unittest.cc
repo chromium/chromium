@@ -18,6 +18,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/branding_buildflags.h"
@@ -848,6 +849,33 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
+}
+
+// Tests the command line flag that skips the high-confidence allowlist check.
+TEST_F(V4LocalDatabaseManagerTest,
+       TestCheckUrlForHCAllowlistSkippedViaCommandLineSwitch) {
+  SetupFakeManager();
+  std::string url_safe_no_scheme("example.com/safe/");
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+
+  // Setup to match full hash in the local database.
+  StoreAndHashPrefixes store_and_hash_prefixes;
+  store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
+                                       safe_full_hash);
+  ReplaceV4Database(store_and_hash_prefixes, /*stores_available=*/true);
+  const GURL url_check("https://" + url_safe_no_scheme);
+
+  // First, confirm the high-confidence allowlist is checked by default.
+  EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check, "HPRT"));
+
+  // Now, check that the high-confidence allowlist is skipped if the command
+  // line switch is present.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      "safe-browsing-skip-high-confidence-allowlist");
+  EXPECT_FALSE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check, "HPRT"));
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {

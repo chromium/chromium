@@ -53,6 +53,11 @@ const int64_t kBytesPerFullHashEntry = 32;
 // smaller than this number, the allowlist is considered as unavailable.
 const int kHighConfidenceAllowlistMinimumEntryCount = 100;
 
+// If the switch is present, any high-confidence allowlist check will return
+// that it does not match the allowlist.
+const char kSkipHighConfidenceAllowlist[] =
+    "safe-browsing-skip-high-confidence-allowlist";
+
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
 
@@ -461,6 +466,10 @@ bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
     const std::string& metric_variation) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSkipHighConfidenceAllowlist)) {
+    return false;
+  }
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
