@@ -752,12 +752,13 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 
   if (buffer_id < 0 ||
       buffer_id >= static_cast<int>(output_buffer_handles_.size())) {
-    DLOG(ERROR) << "Buffer id is out of bounds: " << buffer_id;
-    NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kInvalidOutputBuffer,
+         "Buffer id is out of bounds: " + base::NumberToString(buffer_id)});
   }
   if (!output_buffer_handles_[buffer_id]) {
-    DLOG(ERROR) << "Invalid output buffer.";
-    NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kInvalidOutputBuffer, "Invalid output buffer"});
   }
 
   const base::WritableSharedMemoryMapping& mapping =
@@ -792,7 +793,8 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
       }
 
       if (!status.is_ok()) {
-        NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+        NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                           "Failed to convert a buffer to h264 chunk"});
         return;
       }
       result.size = actual_output_size;
@@ -803,7 +805,8 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
         const auto& config = h264_converter_->GetCurrentConfig();
         desc = CodecDescription();
         if (!config.Serialize(desc.value())) {
-          NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+          NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
+                             "Failed to get h264 config"});
           return;
         }
       }
@@ -825,7 +828,8 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
         }
 
         if (!status.is_ok()) {
-          NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+          NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                             "Failed to convert a buffer to h265 chunk"});
           return;
         }
         result.size = actual_output_size;
@@ -836,7 +840,9 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
           const auto& config = h265_converter_->GetCurrentConfig();
           desc = CodecDescription();
           if (!config.Serialize(desc.value())) {
-            NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+            NotifyErrorStatus(
+                {media::EncoderStatus::Codes::kEncoderFailedEncode,
+                 "Failed to get h265 config"});
             return;
           }
         }
@@ -880,13 +886,18 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   }
 }
 
-void VideoEncodeAcceleratorAdapter::NotifyError(
-    VideoEncodeAccelerator::Error error) {
+void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
+    const EncoderStatus& status) {
+  CHECK(!status.is_ok());
+  LOG(ERROR) << "NotifyErrorStatus() is called, code="
+             << static_cast<int32_t>(status.code())
+             << ", message=" << status.message();
   if (state_ == State::kInitializing) {
     InitCompleted(
         EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "VideoEncodeAccelerator encountered an error")
-            .WithData("VideoEncodeAccelerator::Error", int32_t{error}));
+            .WithData("VideoEncodeAccelerator status code",
+                      static_cast<int32_t>(status.code())));
     return;
   }
 
@@ -895,11 +906,11 @@ void VideoEncodeAcceleratorAdapter::NotifyError(
 
   // Report the error to all encoding-done callbacks
   for (auto& encode : active_encodes_) {
-    auto status =
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
-                      "VideoEncodeAccelerator encountered an error")
-            .WithData("VideoEncodeAccelerator::Error", int32_t{error});
-    std::move(encode->done_callback).Run(status);
+    std::move(encode->done_callback)
+        .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                           "VideoEncodeAccelerator encountered an error")
+                 .WithData("VideoEncodeAccelerator status code",
+                           static_cast<int32_t>(status.code())));
   }
   active_encodes_.clear();
   state_ = State::kNotInitialized;
