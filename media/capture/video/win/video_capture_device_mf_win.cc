@@ -28,6 +28,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/win/color_space_util_win.h"
@@ -573,6 +574,8 @@ void GetTextureSizeAndFormat(ID3D11Texture2D* texture,
 
 HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
                                      HANDLE dxgi_handle) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "CopyTextureToGpuMemoryBuffer");
   Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
   texture->GetDevice(&texture_device);
 
@@ -673,6 +676,8 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
   }
 
   IFACEMETHODIMP OnEvent(IMFMediaEvent* media_event) override {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                 "MFVideoCallback::OnEvent");
     base::AutoLock lock(lock_);
     if (!observer_) {
       return S_OK;
@@ -682,6 +687,8 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
   }
 
   IFACEMETHODIMP OnSample(IMFSample* sample) override {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                 "MFVideoCallback::OnSample");
     base::AutoLock lock(lock_);
     if (!observer_) {
       return S_OK;
@@ -901,6 +908,8 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
     IMFCaptureSource* source,
     bool photo,
     CapabilityList* capabilities) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::FillCapabilities");
   DWORD stream_count = 0;
   HRESULT hr = GetDeviceStreamCount(source, &stream_count);
   if (FAILED(hr))
@@ -1099,6 +1108,8 @@ void VideoCaptureDeviceMFWin::DeinitVideoCallbacksControlsAndMonitors() {
 }
 
 bool VideoCaptureDeviceMFWin::Init() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::Init");
   DCHECK(!is_initialized_);
   HRESULT hr;
 
@@ -1168,6 +1179,8 @@ bool VideoCaptureDeviceMFWin::Init() {
 void VideoCaptureDeviceMFWin::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::AllocateAndStart");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   params_ = params;
   client_ = std::move(client);
@@ -1349,6 +1362,8 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
 }
 
 void VideoCaptureDeviceMFWin::StopAndDeAllocate() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::StopAndDeAllocate");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_started_ && engine_) {
     engine_->StopPreview();
@@ -1371,6 +1386,8 @@ void VideoCaptureDeviceMFWin::StopAndDeAllocate() {
 }
 
 void VideoCaptureDeviceMFWin::TakePhoto(TakePhotoCallback callback) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::TakePhoto");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_started_)
@@ -1865,6 +1882,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
     Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::OnIncomingCapturedData");
   // This is called on IMFCaptureEngine thread.
   // To serialize all access to this class we post to the task
   // runner which is used for Video capture service API calls
@@ -1880,6 +1899,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
     ID3D11Texture2D* texture,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::DeliverTextureToClient");
   // Check for device loss
   Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
   texture->GetDevice(&texture_device);
@@ -1984,6 +2005,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
     Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SendOnStartedIfNotYetSent();
@@ -2050,6 +2073,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
 
 void VideoCaptureDeviceMFWin::OnFrameDropped(
     VideoCaptureFrameDropReason reason) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::OnFrameDropped");
   // This is called on IMFCaptureEngine thread.
   // To serialize all access to this class we post to the task
   // runner which is used for Video capture service API calls
@@ -2062,6 +2087,8 @@ void VideoCaptureDeviceMFWin::OnFrameDropped(
 
 void VideoCaptureDeviceMFWin::OnFrameDroppedInternal(
     VideoCaptureFrameDropReason reason) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::OnFrameDroppedInternal");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SendOnStartedIfNotYetSent();
@@ -2072,6 +2099,9 @@ void VideoCaptureDeviceMFWin::OnFrameDroppedInternal(
 }
 
 void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::OnEvent");
+
   HRESULT hr;
   GUID capture_event_guid = GUID_NULL;
 
@@ -2081,6 +2111,9 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
   // When MF_CAPTURE_ENGINE_ERROR is returned the captureengine object is no
   // longer valid.
   if (capture_event_guid == MF_CAPTURE_ENGINE_ERROR || FAILED(hr)) {
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                         "VideoCaptureDeviceMFWin::OnEvent",
+                         TRACE_EVENT_SCOPE_PROCESS, "error HR", hr);
     // Safe to access this on a potentially different sequence, as
     // this thread is write only and there is a barrier synchronization due
     // to |capture_error_| event.
@@ -2106,6 +2139,8 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
 }
 
 void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::ProcessEventError");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (hr == DXGI_ERROR_DEVICE_REMOVED && dxgi_device_manager_ != nullptr) {
@@ -2184,6 +2219,8 @@ void VideoCaptureDeviceMFWin::SendOnStartedIfNotYetSent() {
 }
 
 HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::WaitOnCaptureEvent");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   HRESULT hr = S_OK;
@@ -2223,6 +2260,8 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
 }
 
 bool VideoCaptureDeviceMFWin::RecreateMFSource() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::RecreateMFSource");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool is_sensor_api = device_descriptor_.capture_api ==
