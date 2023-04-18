@@ -1870,6 +1870,7 @@ if (enable_java_templates && is_android) {
           args += [ "--input-zips=@FileArg($_rebased_build_config:deps_info:device_classpath)" ]
         }
       }
+
       _excludes = []
       if (defined(invoker.jar_excluded_patterns)) {
         _excludes += invoker.jar_excluded_patterns
@@ -1878,6 +1879,9 @@ if (enable_java_templates && is_android) {
         # Turbine adds files like: META-INF/TRANSITIVE/.../Foo.class
         # These confuse proguard: https://crbug.com/1081443
         _excludes += [ "META-INF/*" ]
+      } else {
+        # Manifest files will never be correct when merging jars.
+        _excludes += [ "META-INF/*.MF" ]
       }
       if (_excludes != []) {
         args += [ "--input-zips-excluded-globs=$_excludes" ]
