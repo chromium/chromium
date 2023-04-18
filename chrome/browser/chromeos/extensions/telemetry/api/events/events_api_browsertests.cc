@@ -210,6 +210,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
             crosapi::mojom::TelemetryAudioJackEventInfo::New();
         audio_jack_info->state =
             crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
         GetFakeService()->EmitEventForCategory(
             crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
@@ -222,7 +224,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onAudioJackEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            deviceType: 'headphone'
           });
 
           chrome.test.succeed();
@@ -261,6 +264,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
             crosapi::mojom::TelemetryAudioJackEventInfo::New();
         audio_jack_info->state =
             crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
         GetFakeService()->EmitEventForCategory(
             crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
@@ -273,7 +278,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onAudioJackEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            deviceType: 'headphone'
           });
 
           chrome.test.succeed();
@@ -320,6 +326,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
             crosapi::mojom::TelemetryAudioJackEventInfo::New();
         audio_jack_info->state =
             crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
         GetFakeService()->EmitEventForCategory(
             crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
@@ -332,7 +340,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       async function startCapturingEvents() {
         chrome.os.events.onAudioJackEvent.addListener((event) => {
           chrome.test.assertEq(event, {
-            event: 'connected'
+            event: 'connected',
+            deviceType: 'headphone'
           });
 
           chrome.test.succeed();

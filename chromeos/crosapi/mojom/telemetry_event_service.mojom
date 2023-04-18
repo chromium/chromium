@@ -19,7 +19,7 @@ import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
 // Audio jack event info. This is emitted when the
 // audio jack is plugged in or out.
 //
-// NextMinVersion: 1, NextIndex: 1
+// NextMinVersion: 2, NextIndex: 2
 [Stable]
 struct TelemetryAudioJackEventInfo {
   [Stable, Extensible]
@@ -33,6 +33,18 @@ struct TelemetryAudioJackEventInfo {
   };
 
   State state@0;
+
+  [Stable, Extensible]
+  enum DeviceType {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // The device is a headphone.
+    kHeadphone,
+    // The device is a microphone.
+    kMicrophone,
+  };
+
+  [MinVersion=1] DeviceType device_type@1;
 };
 
 // Union of event info.

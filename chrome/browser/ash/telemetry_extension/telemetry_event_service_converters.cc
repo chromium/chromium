@@ -16,7 +16,7 @@ namespace unchecked {
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioJackEventInfoPtr input) {
   return crosapi::mojom::TelemetryAudioJackEventInfo::New(
-      Convert(input->state));
+      Convert(input->state), Convert(input->device_type));
 }
 
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
@@ -93,6 +93,22 @@ crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
       return crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;
     case cros_healthd::mojom::AudioJackEventInfo_State::kRemove:
       return crosapi::mojom::TelemetryAudioJackEventInfo::State::kRemove;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
+    cros_healthd::mojom::AudioJackEventInfo::DeviceType input) {
+  switch (input) {
+    case cros_healthd::mojom::AudioJackEventInfo_DeviceType::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::
+          kUnmappedEnumField;
+    case cros_healthd::mojom::AudioJackEventInfo_DeviceType::kHeadphone:
+      return crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::
+          kHeadphone;
+    case cros_healthd::mojom::AudioJackEventInfo_DeviceType::kMicrophone:
+      return crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::
+          kMicrophone;
   }
   NOTREACHED();
 }

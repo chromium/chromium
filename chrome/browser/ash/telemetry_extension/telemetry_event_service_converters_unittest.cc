@@ -39,6 +39,22 @@ TEST(TelemetryEventServiceConvertersTest,
 }
 
 TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryAudioJackEventInfo_DeviceType) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::
+                        kUnmappedEnumField),
+            crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::
+                kUnmappedEnumField);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::kHeadphone),
+      crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kHeadphone);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::kMicrophone),
+      crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kMicrophone);
+}
+
+TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryExtensionExceptionReason) {
   EXPECT_EQ(
       Convert(cros_healthd::mojom::Exception_Reason::kUnmappedEnumField),

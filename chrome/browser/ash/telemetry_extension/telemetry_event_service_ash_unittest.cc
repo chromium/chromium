@@ -101,6 +101,8 @@ TEST_F(TelemetryEventServiceAshTest, AddEventObserver) {
   auto audio_jack_info = cros_healthd::mojom::AudioJackEventInfo::New();
   audio_jack_info->state =
       cros_healthd::mojom::AudioJackEventInfo::State::kRemove;
+  audio_jack_info->device_type =
+      cros_healthd::mojom::AudioJackEventInfo::DeviceType::kHeadphone;
 
   auto info = cros_healthd::mojom::EventInfo::NewAudioJackEventInfo(
       std::move(audio_jack_info));
@@ -110,11 +112,12 @@ TEST_F(TelemetryEventServiceAshTest, AddEventObserver) {
   // Flush so that the result shows up.
   FlushForTesting();
 
-  EXPECT_EQ(
-      observer().WaitAndGetEvent(),
-      crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
-          crosapi::mojom::TelemetryAudioJackEventInfo::New(
-              crosapi::mojom::TelemetryAudioJackEventInfo::State::kRemove)));
+  EXPECT_EQ(observer().WaitAndGetEvent(),
+            crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
+                crosapi::mojom::TelemetryAudioJackEventInfo::New(
+                    crosapi::mojom::TelemetryAudioJackEventInfo::State::kRemove,
+                    crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::
+                        kHeadphone)));
 }
 
 TEST_F(TelemetryEventServiceAshTest, IsEventSupported) {

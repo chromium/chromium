@@ -28,8 +28,16 @@ namespace os.events {
         disconnected
     };
 
+    enum AudioJackDeviceType {
+        // The device is a headphone.
+        headphone,
+        // The device is a microphone.
+        microphone
+    };
+
     dictionary AudioJackEventInfo {
         AudioJackEvent? event;
+        AudioJackDeviceType? deviceType;
     };
 
     callback VoidCallback = void();

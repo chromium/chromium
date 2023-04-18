@@ -22,6 +22,9 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
 api::os_events::AudioJackEvent Convert(
     crosapi::mojom::TelemetryAudioJackEventInfo::State state);
 
+api::os_events::AudioJackDeviceType Convert(
+    crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType device_type);
+
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);
 

@@ -17,6 +17,7 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
   api::os_events::AudioJackEventInfo result;
 
   result.event = Convert(ptr->state);
+  result.device_type = Convert(ptr->device_type);
 
   return result;
 }
@@ -32,6 +33,20 @@ api::os_events::AudioJackEvent Convert(
       return api::os_events::AudioJackEvent::kConnected;
     case crosapi::mojom::TelemetryAudioJackEventInfo_State::kRemove:
       return api::os_events::AudioJackEvent::kDisconnected;
+  }
+  NOTREACHED();
+}
+
+api::os_events::AudioJackDeviceType Convert(
+    crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType device_type) {
+  switch (device_type) {
+    case crosapi::mojom::TelemetryAudioJackEventInfo_DeviceType::
+        kUnmappedEnumField:
+      return api::os_events::AudioJackDeviceType::kNone;
+    case crosapi::mojom::TelemetryAudioJackEventInfo_DeviceType::kHeadphone:
+      return api::os_events::AudioJackDeviceType::kHeadphone;
+    case crosapi::mojom::TelemetryAudioJackEventInfo_DeviceType::kMicrophone:
+      return api::os_events::AudioJackDeviceType::kMicrophone;
   }
   NOTREACHED();
 }

@@ -43,6 +43,9 @@ crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
     cros_healthd::mojom::AudioJackEventInfo::State input);
 
+crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
+    cros_healthd::mojom::AudioJackEventInfo::DeviceType input);
+
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input);
 
