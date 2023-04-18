@@ -1553,14 +1553,6 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Has derived field"/>
 </enum>
 
-<enum name="AddSearchProvider">
-  <int value="0" label="window.external.AddSearchProvider was called"/>
-  <int value="1" label="A confirmation dialog was shown"/>
-  <int value="2" label="The user added a search engine via the dialog"/>
-  <int value="3"
-      label="The user saw the dialog but closed it without adding an engine"/>
-</enum>
-
 <enum name="AddSupervisionEnrollment">
   <summary>Tracks the state of the Add Supervision dialog process.</summary>
   <int value="0" label="Initiated"/>
@@ -38337,8 +38329,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="978" label="CSSAtRuleWebkitKeyframes"/>
   <int value="979" label="V8HTMLFieldSetElement_Elements_AttributeGetter"/>
   <int value="980" label="HTMLMediaElementPreloadForcedNone"/>
-  <int value="981" label="ExternalAddSearchProvider"/>
-  <int value="982" label="ExternalIsSearchProviderInstalled"/>
+  <int value="981" label="OBSOLETE_ExternalAddSearchProvider"/>
+  <int value="982" label="OBSOLETE_ExternalIsSearchProviderInstalled"/>
   <int value="983" label="V8Permissions_RequestAll_Method"/>
   <int value="984" label="BluetoothDeviceInstanceId"/>
   <int value="985" label="HTMLLabelElementFormIDLAttribute"/>
