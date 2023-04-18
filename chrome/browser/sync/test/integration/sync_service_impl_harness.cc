@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_internals_util.h"
+#include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/engine/traffic_logger.h"
@@ -333,7 +334,8 @@ void SyncServiceImplHarness::StopSyncServiceAndClearData() {
 
 void SyncServiceImplHarness::StopSyncServiceWithoutClearingData() {
   DVLOG(1) << "Requesting stop for service without clearing data.";
-  service()->GetUserSettings()->ClearSyncRequested();
+  static_cast<syncer::SyncUserSettingsImpl*>(service()->GetUserSettings())
+      ->ClearSyncRequested();
 }
 
 bool SyncServiceImplHarness::StartSyncService() {

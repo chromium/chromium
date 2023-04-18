@@ -306,14 +306,12 @@ TEST_F(SyncServiceImplTest, NeedsConfirmation) {
 TEST_F(SyncServiceImplTest, ModelTypesForTransportMode) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  InitializeForNthSync();
+  InitializeForFirstSync();
 
-  // Disable sync-the-feature.
-  service()->GetUserSettings()->ClearSyncRequested();
   ASSERT_FALSE(service()->IsSyncFeatureActive());
   ASSERT_FALSE(service()->IsSyncFeatureEnabled());
 
-  // Sync-the-transport should become active again.
+  // Sync-the-transport should become active.
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -431,7 +429,7 @@ TEST_F(SyncServiceImplTest, AbortedByShutdown) {
   ShutdownAndDeleteService();
 }
 
-// Test ClearSyncRequested() before we've initialized the backend.
+// Test StopAndClear() before the backend's initialization completes.
 TEST_F(SyncServiceImplTest, EarlyRequestStop) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
@@ -445,7 +443,7 @@ TEST_F(SyncServiceImplTest, EarlyRequestStop) {
   // Request stop. This should immediately restart the service in standalone
   // transport mode.
   component_factory()->AllowFakeEngineInitCompletion(true);
-  service()->GetUserSettings()->ClearSyncRequested();
+  service()->StopAndClear();
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
@@ -457,6 +455,8 @@ TEST_F(SyncServiceImplTest, EarlyRequestStop) {
 
   // Request start. Now Sync-the-feature should start again.
   service()->GetUserSettings()->SetSyncRequested();
+  service()->GetUserSettings()->SetFirstSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
@@ -465,7 +465,7 @@ TEST_F(SyncServiceImplTest, EarlyRequestStop) {
   EXPECT_TRUE(service()->IsSyncFeatureEnabled());
 }
 
-// Test ClearSyncRequested() after we've initialized the backend.
+// Test StopAndClear() after we've initialized the backend.
 TEST_F(SyncServiceImplTest, DisableAndEnableSyncTemporarily) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
@@ -480,7 +480,7 @@ TEST_F(SyncServiceImplTest, DisableAndEnableSyncTemporarily) {
   ASSERT_TRUE(service()->IsSyncFeatureActive());
   ASSERT_TRUE(service()->IsSyncFeatureEnabled());
 
-  service()->GetUserSettings()->ClearSyncRequested();
+  service()->StopAndClear();
   EXPECT_FALSE(sync_prefs.IsSyncRequested());
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
@@ -494,6 +494,8 @@ TEST_F(SyncServiceImplTest, DisableAndEnableSyncTemporarily) {
   service()->GetUserSettings()->SetSyncRequested();
   EXPECT_TRUE(sync_prefs.IsSyncRequested());
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  service()->GetUserSettings()->SetFirstSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());

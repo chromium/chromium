@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // On ChromeOS, Sync-the-feature gets started automatically once a primary
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->StopSyncServiceWithoutClearingData();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->StopSyncServiceWithoutClearingData();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Sign in to a primary account, but don't enable Sync-the-feature.
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // Turn off Sync-the-feature again.
   // Note: Turning Sync off without signing out isn't actually exposed to the
   // user, so this generally shouldn't happen. Still best to cover it here.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->StopSyncServiceWithoutClearingData();
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 

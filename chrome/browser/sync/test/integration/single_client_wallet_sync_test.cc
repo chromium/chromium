@@ -499,8 +499,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
   ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
   ASSERT_EQ(1U, GetServerAddressesMetadata(0).size());
 
-  // Stop sync, the data & metadata should be gone.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  // Stop sync (without clearing data), yet the data & metadata for autofill
+  // wallet should be gone.
+  GetClient(0)->StopSyncServiceWithoutClearingData();
   WaitForNumberOfCards(0, pdm);
 
   EXPECT_EQ(0uL, pdm->GetServerProfiles().size());
@@ -1504,11 +1505,11 @@ IN_PROC_BROWSER_TEST_F(
 // Sync-standalone-transport properly migrates server credit cards between the
 // profile (i.e. persisted) and account (i.e. ephemeral) storage.
 // Sync can either be turned off temporarily via
-// SyncUserSettings::ClearSyncRequested(), or permanently via
-// SyncService::StopAndClear. For full coverage, we test all transitions, and
-// each time verify that the card is in the correct storage:
+// StopSyncServiceWithoutClearingData (ChromeOS only, via sync dashboard), or
+// permanently via SyncService::StopAndClear. For full coverage, we test all
+// transitions, and each time verify that the card is in the correct storage:
 // 1. Start out in Sync-the-feature mode -> profile storage.
-// 2. ClearSyncRequested() -> account storage.
+// 2. StopSyncServiceWithoutClearingData() -> account storage.
 // 3. Enable Sync-the-feature again -> profile storage.
 // 4. StopAndClear() -> account storage.
 // 5. Enable Sync-the-feature again -> profile storage.
@@ -1549,7 +1550,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 
   // STEP 2. Turn off Sync-the-feature temporarily (e.g. the Sync feature toggle
   // on Android), i.e. leave the Sync data around.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->StopSyncServiceWithoutClearingData();
 
   // Wait for Sync to get reconfigured into transport mode.
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());

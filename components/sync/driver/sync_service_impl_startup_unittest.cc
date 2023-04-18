@@ -434,30 +434,6 @@ TEST_F(SyncServiceImplStartupTest, StartNormal) {
             sync_service()->GetTransportState());
 }
 
-TEST_F(SyncServiceImplStartupTest, StopSync) {
-  sync_prefs()->SetFirstSetupComplete();
-  CreateSyncService(SyncServiceImpl::MANUAL_START);
-  SimulateTestUserSignin();
-
-  sync_service()->Initialize();
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            sync_service()->GetTransportState());
-
-  // On ClearSyncRequested(), the sync service will immediately start up
-  // again in transport mode.
-  sync_service()->GetUserSettings()->ClearSyncRequested();
-  base::RunLoop().RunUntilIdle();
-
-  // Sync-the-feature is still considered off.
-  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
-  EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
-  EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            sync_service()->GetTransportState());
-}
-
 TEST_F(SyncServiceImplStartupTest, DisableSync) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();

@@ -174,8 +174,6 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
     return dict->Clone();
   }
 
-  void NotifySyncStateChanged() { handler_->OnStateChanged(sync_service_); }
-
   bool GetWallperEnabledPref() {
     return profile()->GetPrefs()->GetBoolean(settings::prefs::kSyncOsWallpaper);
   }
@@ -219,7 +217,7 @@ TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
 
   // Now, act as if the SyncService has started up.
   sync_service_->SetTransportState(SyncService::TransportState::ACTIVE);
-  NotifySyncStateChanged();
+  handler_->OnStateChanged(sync_service_);
 
   // Update for sync prefs is sent.
   ASSERT_EQ(1U, web_ui_->call_data().size());
@@ -227,15 +225,6 @@ TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
 
   std::string event_name = call_data.arg1()->GetString();
   EXPECT_EQ(event_name, "os-sync-prefs-changed");
-}
-
-// Tests that transport state signals not related to user intention to
-// configure sync don't trigger sync engine start.
-TEST_F(OsSyncHandlerTest, OnlyStartEngineWhenConfiguringSync) {
-  user_settings_->ClearSyncRequested();
-  sync_service_->SetTransportState(SyncService::TransportState::INITIALIZING);
-  NotifySyncStateChanged();
-  EXPECT_FALSE(user_settings_->IsSyncRequested());
 }
 
 TEST_F(OsSyncHandlerTest, TestSyncEverything) {

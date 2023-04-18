@@ -110,6 +110,9 @@ class SyncServiceImplHarness {
   // Stops the sync service and clears all local sync data.
   void StopSyncServiceAndClearData();
   // Stops the sync service but keeps all local sync data around.
+  // TODO(crbug.com/1219990): Remove or rename this function since there is no
+  // UI for the user to achieve this, with the exception of ChromeOS for the
+  // case where the user clears sync data via dashboard.
   void StopSyncServiceWithoutClearingData();
   // Starts the sync service after a previous stop.
   bool StartSyncService();

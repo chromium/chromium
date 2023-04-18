@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
   ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
   // Stop sync, the offer data should be gone.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->StopSyncServiceWithoutClearingData();
   WaitForNumberOfOffers(0, pdm);
   EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 

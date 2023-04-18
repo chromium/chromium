@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 
   // Turn off Sync-the-feature by user choice. The machinery should start up
   // again in transport-only mode.
-  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
+  GetClient(0)->StopSyncServiceWithoutClearingData();
   EXPECT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,

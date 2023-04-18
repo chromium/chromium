@@ -63,8 +63,8 @@ class TestSyncService : public SyncService {
   void FireSyncCycleCompleted();
 
   // SyncService implementation.
-  syncer::SyncUserSettings* GetUserSettings() override;
-  const syncer::SyncUserSettings* GetUserSettings() const override;
+  TestSyncUserSettings* GetUserSettings() override;
+  const TestSyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;
   TransportState GetTransportState() const override;
   UserActionableError GetUserActionableError() const override;
@@ -85,7 +85,7 @@ class TestSyncService : public SyncService {
   void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;
-  void DataTypePreconditionChanged(syncer::ModelType type) override;
+  void DataTypePreconditionChanged(ModelType type) override;
 
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
@@ -137,7 +137,7 @@ class TestSyncService : public SyncService {
 
   SyncCycleSnapshot last_cycle_snapshot_;
 
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
 };
