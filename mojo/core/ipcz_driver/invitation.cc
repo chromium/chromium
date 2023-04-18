@@ -100,20 +100,22 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
 }
 
 #if BUILDFLAG(IS_WIN)
-// Helper function on Windows platform to open the remote client process given a
-// handle to a connected named pipe. It may return an invalid process object if
-// either the handle does not refer to a named pipe or the handle refers to a
-// named pipe that is not connected.
-base::Process OpenRemoteProcess(
-    const MojoInvitationTransportEndpoint& endpoint) {
+// Helper function on Windows platform to open the remote server/client process
+// given a handle to a connected named pipe. It may return an invalid process
+// object if either the handle does not refer to a named pipe or the handle
+// refers to a named pipe that is not connected.
+base::Process OpenRemoteProcess(const MojoInvitationTransportEndpoint& endpoint,
+                                bool remote_is_server) {
   base::ProcessId remote_process_id = 0;
   // Extract the handle to the connected named pipe from mojo invitation
   // transport endpoint.
   HANDLE handle =
       LongToHandle(static_cast<long>(endpoint.platform_handles[0].value));
+  auto get_remote_pid = remote_is_server ? &GetNamedPipeServerProcessId
+                                         : &GetNamedPipeClientProcessId;
   // Try to get the remote client process id given the extracted handle via
-  // GetNamedPipeClientProcessId API.
-  if ((!GetNamedPipeClientProcessId(handle, &remote_process_id) ||
+  // GetNamedPipe(Server|Client)ProcessId API.
+  if ((!get_remote_pid(handle, &remote_process_id) ||
        remote_process_id == base::Process::Current().Pid())) {
     DVLOG(2) << "Failed to get remote process id via the connected named pipe";
     return base::Process();
@@ -266,7 +268,8 @@ MojoResult Invitation::Send(
   // in such case, rely on the connected named pipe to get the remote process
   // id, then open and set the remote process.
   if (!remote_process.IsValid()) {
-    remote_process = OpenRemoteProcess(*transport_endpoint);
+    remote_process =
+        OpenRemoteProcess(*transport_endpoint, /* remote_is_server= */ false);
   }
 #endif
 
@@ -383,18 +386,18 @@ MojoHandle Invitation::Accept(
   }
 
   // In an elevated Windows process our transport needs a handle to the broker's
-  // own process (assumed to be our parent process). This is required to support
-  // transmission of arbitrary Windows handles to and from the elevated process.
-  base::Process launcher;
+  // own process. This is required to support transmission of arbitrary Windows
+  // handles to and from the elevated process.
+  base::Process remote_process;
 #if BUILDFLAG(IS_WIN)
-  if (base::IsCurrentProcessElevated()) {
-    launcher = base::Process(::OpenProcess(
-        PROCESS_DUP_HANDLE, FALSE,
-        base::GetParentProcessId(base::GetCurrentProcessHandle())));
+  if (is_elevated) {
+    remote_process =
+        OpenRemoteProcess(*transport_endpoint, /* remote_is_server= */ true);
   }
 #endif
-  if (launcher.IsValid()) {
-    Transport::FromHandle(transport)->set_remote_process(std::move(launcher));
+  if (remote_process.IsValid()) {
+    Transport::FromHandle(transport)->set_remote_process(
+        std::move(remote_process));
   }
 
   IpczResult result = GetIpczAPI().ConnectNode(
