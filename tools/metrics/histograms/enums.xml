@@ -7342,6 +7342,12 @@ others/histograms.xml -->
   <int value="59" label="Suggestions shown and none had metadata"/>
   <int value="60" label="Selected card suggestion had metadata"/>
   <int value="61" label="Selected card suggestion did not have metadata"/>
+  <int value="64"
+      label="Suggestions shown and included a card with metadata (once)"/>
+  <int value="65" label="Suggestions shown and none had metadata (once)"/>
+  <int value="66" label="Selected card suggestion had metadata (once)"/>
+  <int value="67"
+      label="Selected card suggestion did not have metadata (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

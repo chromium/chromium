@@ -86,21 +86,32 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
   autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true,
                                         form(), form().fields.back());
 
+  const bool should_log_for_metadata =
+      card_issuer_available() && card_metadata_available();
   // Verify that:
   // 1. if the card suggestion shown had issuer id and metadata,
-  // `FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN` is logged.
-  // 2. if the card suggestion shown did not have either issuer id or metadata,
-  // `FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN` is logged.
-  // 3. if the card suggestion shown had issuer id, a histogram is logged which
-  // tells if the card from the issuer had metadata.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
-          Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
-                 card_issuer_available() && card_metadata_available()),
-          Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN,
-                 !card_issuer_available() || !card_metadata_available())));
+  // `FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN` is logged as many times
+  // as the suggestions are shown, and
+  // `FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN_ONCE` is logged only
+  // once.
+  // 2.  if the card suggestion shown did not have either issuer id or metadata,
+  // `FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN` is logged as many times
+  // as the suggestions are shown, and
+  // `FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE` is logged only
+  // once.
+  // 3. if the card suggestion shown had issuer id, two histograms are logged
+  // which tells if the card from the issuer had metadata.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
+                         should_log_for_metadata ? 1 : 0),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN,
+                         should_log_for_metadata ? 0 : 1),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN_ONCE,
+                         should_log_for_metadata ? 1 : 0),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
+                         should_log_for_metadata ? 0 : 1)));
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.Amex.ShownWithMetadata", card_metadata_available(),
@@ -113,6 +124,18 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true,
                                         form(), form().fields.back());
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
+                         should_log_for_metadata ? 2 : 0),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN,
+                         should_log_for_metadata ? 0 : 2),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN_ONCE,
+                         should_log_for_metadata ? 1 : 0),
+                  Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
+                         should_log_for_metadata ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.Amex.ShownWithMetadata", card_metadata_available(),
       card_issuer_available() ? 2 : 0);
@@ -134,21 +157,33 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       MakeFrontendId({.credit_card_id = kCardGuid}),
       AutofillTriggerSource::kPopup);
 
+  const bool should_log_for_metadata =
+      card_issuer_available() && card_metadata_available();
   // Verify that:
   // 1. if the selected card had issuer id and metadata,
-  // `FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED` is logged.
+  // `FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED` is logged as many times
+  // as the suggestions are shown, and
+  // `FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE` is logged only
+  // once.
   // 2. if the selected card did not have either issuer id or metadata,
-  // `FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED` is logged.
-  // 3. if the selected card had issuer id, a histogram is logged which tells if
-  // the card from the issuer had metadata.
+  // `FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED` is logged as many
+  // times as the suggestions are shown, and
+  // `FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE` is logged only
+  // once.
+  // 3. if the selected card had issuer id, two histogram are logged which tells
+  // if the card from the issuer had metadata.
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
       BucketsInclude(
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED,
-                 card_issuer_available() && card_metadata_available()),
+                 should_log_for_metadata ? 1 : 0),
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED,
-                 !card_issuer_available() || !card_metadata_available())));
+                 should_log_for_metadata ? 0 : 1),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE,
+                 should_log_for_metadata ? 1 : 0),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
+                 should_log_for_metadata ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.Amex.SelectedWithMetadata",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
@@ -161,6 +196,19 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
       MakeFrontendId({.credit_card_id = kCardGuid}),
       AutofillTriggerSource::kPopup);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 2),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED,
+                 should_log_for_metadata ? 2 : 0),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED,
+                 should_log_for_metadata ? 0 : 2),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE,
+                 should_log_for_metadata ? 1 : 0),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
+                 should_log_for_metadata ? 0 : 1)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.Amex.SelectedWithMetadata",
       card_metadata_available(), card_issuer_available() ? 2 : 0);

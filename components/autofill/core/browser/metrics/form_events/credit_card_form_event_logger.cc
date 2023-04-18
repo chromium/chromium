@@ -72,6 +72,12 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
           ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN
           : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN,
       form);
+  if (!has_logged_suggestion_with_metadata_shown_) {
+    Log(metadata_logging_context_.card_metadata_available
+            ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN_ONCE
+            : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
+        form);
+  }
   // Log issuer-specific metrics on whether metadata was shown.
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kShown,
@@ -128,6 +134,12 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
           ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED
           : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED,
       form);
+  if (!has_logged_suggestion_with_metadata_selected_) {
+    Log(metadata_logging_context_.card_metadata_available
+            ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE
+            : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
+        form);
+  }
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kSelected,
       metadata_logging_context_,
