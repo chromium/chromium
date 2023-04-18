@@ -217,7 +217,7 @@ void OfflinePageTabHelper::DidFinishNavigation(
   if (reading_list::IsOfflineReloadURL(navigation_context->GetUrl())) {
     if (dont_reload_online_on_next_navigation_) {
       dont_reload_online_on_next_navigation_ = false;
-    } else {
+    } else if (reloading_from_offline_) {
       ReplaceLocationUrlAndReload(
           reading_list::ReloadURLForOfflineURL(navigation_context->GetUrl()));
       return;
