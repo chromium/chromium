@@ -48,7 +48,6 @@
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
-#import "ios/web/public/ui/page_display_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/crw_ssl_status_updater.h"
@@ -121,13 +120,6 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   // TODO(crbug.com/549616): Remove this in favor of just updating the
   // navigation manager and treating that as authoritative.
   GURL _documentURL;
-  // The web::PageDisplayState recorded when the page starts loading.
-  web::PageDisplayState _displayStateOnStartLoading;
-  // Whether or not the page has zoomed since the current navigation has been
-  // committed by user interaction.
-  BOOL _pageHasZoomed;
-  // Whether a PageDisplayState is currently being applied.
-  BOOL _applyingPageState;
   // Actions to execute once the page load is complete.
   NSMutableArray* _pendingLoadCompleteActions;
   // Flag to say if browsing is enabled.
@@ -163,9 +155,6 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 @property(weak, nonatomic) WKWebView* webView;
 // The scroll view of `webView`.
 @property(weak, nonatomic, readonly) UIScrollView* webScrollView;
-// The current page state of the web view. Writing to this property
-// asynchronously applies the passed value to the current web view.
-@property(nonatomic, readwrite) web::PageDisplayState pageDisplayState;
 
 @property(nonatomic, strong, readonly)
     CRWWebViewNavigationObserver* webViewNavigationObserver;
@@ -236,25 +225,12 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 // `completion` is called with nullptr.
 typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)extractViewportTagWithCompletion:(ViewportStateCompletion)completion;
-// Queries the web view for the user-scalable meta tag and calls
-// `-applyPageDisplayState:userScalable:` with the result.
-- (void)applyPageDisplayState:(const web::PageDisplayState&)displayState;
-// Restores state of the web view's scroll view from `scrollState`.
-// `isUserScalable` represents the value of user-scalable meta tag.
-- (void)applyPageDisplayState:(const web::PageDisplayState&)displayState
-                 userScalable:(BOOL)isUserScalable;
 // Calls the zoom-preparation UIScrollViewDelegate callbacks on the web view.
 // This is called before `-applyWebViewScrollZoomScaleFromScrollState:`.
 - (void)prepareToApplyWebViewScrollZoomScale;
 // Calls the zoom-completion UIScrollViewDelegate callbacks on the web view.
 // This is called after `-applyWebViewScrollZoomScaleFromScrollState:`.
 - (void)finishApplyingWebViewScrollZoomScale;
-// Sets zoom scale value for webview scroll view from `zoomState`.
-- (void)applyWebViewScrollZoomScaleFromZoomState:
-    (const web::PageZoomState&)zoomState;
-// Sets scroll offset value for webview scroll view from `scrollState`.
-- (void)applyWebViewScrollOffsetFromScrollState:
-    (const web::PageScrollState&)scrollState;
 // Finds all the scrollviews in the view hierarchy and makes sure they do not
 // interfere with scroll to top when tapping the statusbar.
 - (void)optOutScrollsToTopForSubviews;
@@ -432,37 +408,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (UIScrollView*)webScrollView {
   return self.webView.scrollView;
-}
-
-- (web::PageDisplayState)pageDisplayState {
-  web::PageDisplayState displayState;
-  if (self.webView) {
-    displayState.set_scroll_state(web::PageScrollState(
-        self.scrollPosition, self.webScrollView.contentInset));
-    UIScrollView* scrollView = self.webScrollView;
-    displayState.zoom_state().set_minimum_zoom_scale(
-        scrollView.minimumZoomScale);
-    displayState.zoom_state().set_maximum_zoom_scale(
-        scrollView.maximumZoomScale);
-    displayState.zoom_state().set_zoom_scale(scrollView.zoomScale);
-  }
-  return displayState;
-}
-
-- (void)setPageDisplayState:(web::PageDisplayState)displayState {
-  if (!displayState.IsValid())
-    return;
-  if (self.webView) {
-    // Page state is restored after a page load completes.  If the user has
-    // scrolled or changed the zoom scale while the page is still loading, don't
-    // restore any state since it will confuse the user.
-    web::PageDisplayState currentPageDisplayState = self.pageDisplayState;
-    if (currentPageDisplayState.scroll_state() ==
-            _displayStateOnStartLoading.scroll_state() &&
-        !_pageHasZoomed) {
-      [self applyPageDisplayState:displayState];
-    }
-  }
 }
 
 - (NSDictionary*)WKWebViewObservers {
@@ -718,12 +663,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // Only record the state if:
   // - the current NavigationItem's URL matches the current URL, and
   // - the user has interacted with the page.
-  web::NavigationItem* item = self.currentNavItem;
-  if (item && item->GetURL() == [self currentURL] &&
-      _userInteractionState.UserInteractionRegisteredSincePageLoaded()) {
-    [[maybe_unused]] const web::PageDisplayState displayState =
-        self.pageDisplayState;
-  }
 }
 
 - (void)setVisible:(BOOL)visible {
@@ -1379,28 +1318,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)webViewScrollViewDidZoom:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  _pageHasZoomed = YES;
 }
 
 - (void)webViewScrollViewDidResetContentSize:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  web::NavigationItem* currentItem = self.currentNavItem;
-  if (webViewScrollViewProxy.isZooming || _applyingPageState || !currentItem)
-    return;
-  CGSize contentSize = webViewScrollViewProxy.contentSize;
-  if (contentSize.width + 1 < CGRectGetWidth(webViewScrollViewProxy.frame)) {
-    // The content area should never be narrower than the frame, but floating
-    // point error from non-integer zoom values can cause it to be at most 1
-    // pixel narrower. If it's any narrower than that, the renderer incorrectly
-    // resized the content area. Resetting the scroll view's zoom scale will
-    // force a re-rendering.  rdar://23963992
-    _applyingPageState = YES;
-    web::PageZoomState zoomState = self.pageDisplayState.zoom_state();
-    if (!zoomState.IsValid())
-      zoomState = web::PageZoomState(1.0, 1.0, 1.0);
-    [self applyWebViewScrollZoomScaleFromZoomState:zoomState];
-    _applyingPageState = NO;
-  }
 }
 
 // Under WKWebView, JavaScript can execute asynchronously. User can start
@@ -1457,58 +1378,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // - After zooming occurs in a UIWebView that's displaying a page with a hard-
   // coded viewport width, the zoom will not be updated upon rotation
   // ( crbug.com/485055 ).
-  if (!self.webView)
-    return;
-  web::NavigationItem* currentItem = self.currentNavItem;
-  if (!currentItem)
-    return;
-  web::PageDisplayState displayState = self.pageDisplayState;
-  if (!displayState.IsValid())
-    return;
-  CGFloat zoomPercentage = (displayState.zoom_state().zoom_scale() -
-                            displayState.zoom_state().minimum_zoom_scale()) /
-                           displayState.zoom_state().GetMinMaxZoomDifference();
-  displayState.zoom_state().set_minimum_zoom_scale(
-      self.webScrollView.minimumZoomScale);
-  displayState.zoom_state().set_maximum_zoom_scale(
-      self.webScrollView.maximumZoomScale);
-  displayState.zoom_state().set_zoom_scale(
-      displayState.zoom_state().minimum_zoom_scale() +
-      zoomPercentage * displayState.zoom_state().GetMinMaxZoomDifference());
-  [self applyPageDisplayState:displayState];
-}
-
-- (void)applyPageDisplayState:(const web::PageDisplayState&)displayState {
-  if (!displayState.IsValid())
-    return;
-  __weak CRWWebController* weakSelf = self;
-  web::PageDisplayState displayStateCopy = displayState;
-  [self extractViewportTagWithCompletion:^(
-            const web::PageViewportState* viewportState) {
-    if (viewportState) {
-      [weakSelf applyPageDisplayState:displayStateCopy
-                         userScalable:viewportState->user_scalable()];
-    }
-  }];
-}
-
-- (void)applyPageDisplayState:(const web::PageDisplayState&)displayState
-                 userScalable:(BOOL)isUserScalable {
-  // Early return if `scrollState` doesn't match the current NavigationItem.
-  // This can sometimes occur in tests, as navigation occurs programmatically
-  // and `-applyPageScrollState:` is asynchronous.
-  if (self.pageDisplayState != displayState) {
-    return;
-  }
-  DCHECK(displayState.IsValid());
-  _applyingPageState = YES;
-  if (isUserScalable) {
-    [self prepareToApplyWebViewScrollZoomScale];
-    [self applyWebViewScrollZoomScaleFromZoomState:displayState.zoom_state()];
-    [self finishApplyingWebViewScrollZoomScale];
-  }
-  [self applyWebViewScrollOffsetFromScrollState:displayState.scroll_state()];
-  _applyingPageState = NO;
 }
 
 - (void)prepareToApplyWebViewScrollZoomScale {
@@ -1539,42 +1408,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     [webView scrollViewDidEndZooming:self.webScrollView
                             withView:contentView
                              atScale:self.webScrollView.zoomScale];
-  }
-}
-
-- (void)applyWebViewScrollZoomScaleFromZoomState:
-    (const web::PageZoomState&)zoomState {
-  // After rendering a web page, WKWebView keeps the `minimumZoomScale` and
-  // `maximumZoomScale` properties of its scroll view constant while adjusting
-  // the `zoomScale` property accordingly.  The maximum-scale or minimum-scale
-  // meta tags of a page may have changed since the state was recorded, so clamp
-  // the zoom scale to the current range if necessary.
-  DCHECK(zoomState.IsValid());
-  CGFloat zoomScale = zoomState.zoom_scale();
-  if (zoomScale < self.webScrollView.minimumZoomScale)
-    zoomScale = self.webScrollView.minimumZoomScale;
-  if (zoomScale > self.webScrollView.maximumZoomScale)
-    zoomScale = self.webScrollView.maximumZoomScale;
-  self.webScrollView.zoomScale = zoomScale;
-}
-
-- (void)applyWebViewScrollOffsetFromScrollState:
-    (const web::PageScrollState&)scrollState {
-  DCHECK(scrollState.IsValid());
-  CGPoint contentOffset = scrollState.GetEffectiveContentOffsetForContentInset(
-      self.webScrollView.contentInset);
-  if (self.navigationHandler.navigationState ==
-      web::WKNavigationState::FINISHED) {
-    // If the page is loaded, update the scroll immediately.
-    self.webScrollView.contentOffset = contentOffset;
-  } else {
-    // If the page isn't loaded, store the action to update the scroll
-    // when the page finishes loading.
-    __weak UIScrollView* weakScrollView = self.webScrollView;
-    ProceduralBlock action = [^{
-      weakScrollView.contentOffset = contentOffset;
-    } copy];
-    [_pendingLoadCompleteActions addObject:action];
   }
 }
 
@@ -1815,10 +1648,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 // state not specific to web pages.
 - (void)didStartLoading {
   self.navigationHandler.navigationState = web::WKNavigationState::STARTED;
-  _displayStateOnStartLoading = self.pageDisplayState;
-
   _userInteractionState.SetUserInteractionRegisteredSincePageLoaded(false);
-  _pageHasZoomed = NO;
 }
 
 #pragma mark - CRWSSLStatusUpdaterDataSource
