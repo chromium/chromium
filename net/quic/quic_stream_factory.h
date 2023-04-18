@@ -109,7 +109,8 @@ enum QuicPlatformNotification {
 enum AllActiveSessionsGoingAwayReason {
   kClockSkewDetected,
   kIPAddressChanged,
-  kCertDBChanged
+  kCertDBChanged,
+  kCertVerifierChanged
 };
 
 enum CreateSessionFailure {
@@ -249,7 +250,8 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
 class NET_EXPORT_PRIVATE QuicStreamFactory
     : public NetworkChangeNotifier::IPAddressObserver,
       public NetworkChangeNotifier::NetworkObserver,
-      public CertDatabase::Observer {
+      public CertDatabase::Observer,
+      public CertVerifier::Observer {
  public:
   // This class encompasses |destination| and |server_id|.
   // |destination| is a HostPortPair which is resolved
@@ -416,6 +418,10 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   // We close all sessions when certificate database is changed.
   void OnCertDBChanged() override;
+
+  // CertVerifier::Observer:
+  // We close all sessions when certificate verifier settings have changed.
+  void OnCertVerifierChanged() override;
 
   bool is_quic_known_to_work_on_current_network() const {
     return is_quic_known_to_work_on_current_network_;
