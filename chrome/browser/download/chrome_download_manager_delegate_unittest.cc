@@ -1444,16 +1444,16 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
   const auto kInsecureOrigin = Origin::Create(GURL("http://example.org"));
 
-  struct {
+  const struct {
     // The file's final URL.
-    const GURL& download_url;
+    GURL download_url;
     // The origin that linked to or initiated the download.
-    const absl::optional<url::Origin>& initiator_origin;
+    absl::optional<url::Origin> initiator_origin;
     // One URL that the download may have redirected through.
-    const absl::optional<GURL>& redirect_url;
+    absl::optional<GURL> redirect_url;
 
-    const download::DownloadInterruptReason expected_interrupt_reason;
-    const download::DownloadItem::InsecureDownloadStatus
+    download::DownloadInterruptReason expected_interrupt_reason;
+    download::DownloadItem::InsecureDownloadStatus
         expected_insecure_download_status;
   } kTestCases[] = {
       // Secure files, with or without redirects, shouldn't be blocked.

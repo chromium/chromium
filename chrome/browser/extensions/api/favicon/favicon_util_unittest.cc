@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/favicon/favicon_util.h"
 
+#include "base/strings/string_piece.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -11,9 +12,9 @@
 namespace extensions {
 
 TEST(FaviconUtilUnittest, Parse) {
-  struct {
+  const struct {
     bool parse_should_succeed;
-    const std::string& url;
+    base::StringPiece url;
   } test_cases[] = {
       {false, "chrome-extension://id"},
       {false, "chrome-extension://id/"},

@@ -146,12 +146,12 @@ class StorageMonitorCrosTest : public testing::Test {
     return *mock_storage_observer_;
   }
 
-  TestStorageMonitorCros* monitor_;
+  TestStorageMonitorCros* monitor_ = nullptr;
 
   // Owned by DiskMountManager.
-  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
 
-  StorageMonitor::EjectStatus status_;
+  StorageMonitor::EjectStatus status_ = StorageMonitor::EJECT_FAILURE;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -163,13 +163,8 @@ class StorageMonitorCrosTest : public testing::Test {
   std::unique_ptr<MockRemovableStorageObserver> mock_storage_observer_;
 };
 
-StorageMonitorCrosTest::StorageMonitorCrosTest()
-    : monitor_(NULL),
-      disk_mount_manager_mock_(NULL),
-      status_(StorageMonitor::EJECT_FAILURE) {}
-
-StorageMonitorCrosTest::~StorageMonitorCrosTest() {
-}
+StorageMonitorCrosTest::StorageMonitorCrosTest() = default;
+StorageMonitorCrosTest::~StorageMonitorCrosTest() = default;
 
 void StorageMonitorCrosTest::SetUp() {
   ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -191,9 +186,9 @@ void StorageMonitorCrosTest::SetUp() {
 
 void StorageMonitorCrosTest::TearDown() {
   monitor_->RemoveObserver(mock_storage_observer_.get());
-  monitor_ = NULL;
+  monitor_ = nullptr;
 
-  disk_mount_manager_mock_ = NULL;
+  disk_mount_manager_mock_ = nullptr;
   DiskMountManager::Shutdown();
   task_environment_.RunUntilIdle();
 }
