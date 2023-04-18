@@ -41,6 +41,9 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // 0-127.
     uint8_t min_qp;
     uint8_t max_qp;
+
+    // Error resilient mode.
+    bool error_resilient_mode = false;
   };
 
   VP8VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -69,7 +72,6 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       VP8Picture& picture,
       std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
-  void Reset();
 
   bool PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
