@@ -2747,6 +2747,7 @@
     },
     {
       name: "QuickIntensiveWakeUpThrottlingAfterLoading",
+      status: "stable",
     },
     {
       name: "QuotaChange",
