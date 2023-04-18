@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -93,14 +92,6 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
       battery_icon_(new views::ImageView),
       battery_label_(new views::Label) {
   DCHECK(delegate);
-
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-  }
-
   SetID(PhoneHubViewID::kPhoneStatusView);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
@@ -125,12 +116,10 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
 
   AddView(TriView::Container::CENTER, signal_icon_);
 
-  if (features::IsDarkLightModeEnabled()) {
-    // The battery icon requires its own layer to properly render the masked
-    // outline of the badge within the battery icon.
-    battery_icon_->SetPaintToLayer();
-    battery_icon_->layer()->SetFillsBoundsOpaquely(false);
-  }
+  // The battery icon requires its own layer to properly render the masked
+  // outline of the badge within the battery icon.
+  battery_icon_->SetPaintToLayer();
+  battery_icon_->layer()->SetFillsBoundsOpaquely(false);
   AddView(TriView::Container::CENTER, battery_icon_);
 
   battery_label_->SetAutoColorReadabilityEnabled(false);
@@ -243,16 +232,13 @@ void PhoneStatusView::UpdateBatteryStatus() {
 
   const PowerStatus::BatteryImageInfo& info = CalculateBatteryInfo();
 
-  const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
-      ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()),
-      GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
   const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
       IsBatterySaverModeOn(phone_status)
           ? AshColorProvider::ContentLayerType::kIconColorWarning
           : AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   battery_icon_->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color));
+      info, kUnifiedTrayBatteryIconSize, icon_fg_color));
   SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
@@ -271,11 +257,7 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
 
   if (IsBatterySaverModeOn(phone_status)) {
     info.icon_badge = &kPhoneHubBatterySaverIcon;
-    if (features::IsDarkLightModeEnabled()) {
-      info.badge_outline = &kPhoneHubBatterySaverOutlineMaskIcon;
-    } else {
-      info.badge_outline = &kPhoneHubBatterySaverOutlineIcon;
-    }
+    info.badge_outline = &kPhoneHubBatterySaverOutlineMaskIcon;
     return info;
   }
 
@@ -284,28 +266,16 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
       info.alert_if_low = true;
       if (info.charge_percent < PowerStatus::kCriticalBatteryChargePercentage) {
         info.icon_badge = &kUnifiedMenuBatteryAlertIcon;
-        if (features::IsDarkLightModeEnabled()) {
-          info.badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
-        } else {
-          info.badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
-        }
+        info.badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
       }
       break;
     case PhoneStatusModel::ChargingState::kChargingAc:
       info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
-      if (features::IsDarkLightModeEnabled()) {
-        info.badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
-      } else {
-        info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
-      }
+      info.badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
       break;
     case PhoneStatusModel::ChargingState::kChargingUsb:
       info.icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-      if (features::IsDarkLightModeEnabled()) {
-        info.badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
-      } else {
-        info.badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
-      }
+      info.badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
       break;
   }
 

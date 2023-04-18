@@ -200,7 +200,6 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   static gfx::ImageSkia GetBatteryImage(
       const BatteryImageInfo& info,
       int height,
-      SkColor bg_color,
       SkColor fg_color,
       absl::optional<SkColor> badge_color = absl::nullopt);
 

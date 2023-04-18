@@ -110,15 +110,11 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
     return;
   info_ = info;
 
-  // Note: The icon color (both fg and bg) changes when the UI in in OOBE mode.
+  // Note: The icon color changes when the UI is in OOBE mode.
   const SkColor icon_fg_color =
       GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-  const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
-      ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()),
-      GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
-
   image_view()->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color));
+      info, kUnifiedTrayBatteryIconSize, icon_fg_color));
 }
 
 }  // namespace ash

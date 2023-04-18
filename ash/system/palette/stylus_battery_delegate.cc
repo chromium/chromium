@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -48,27 +47,18 @@ SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 }
 
-gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage(
-    ui::ColorProvider* color_provider) const {
+gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
   PowerStatus::BatteryImageInfo info;
   info.charge_percent = battery_level_.value_or(0);
 
   if (IsBatteryCharging()) {
     info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
-    if (features::IsDarkLightModeEnabled()) {
-      info.badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
-    } else {
-      info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
-    }
+    info.badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
   }
 
   const SkColor icon_fg_color = GetColorForBatteryLevel();
-  DCHECK(color_provider);
-  const SkColor icon_bg_color =
-      color_provider->GetColor(kColorAshShieldAndBaseOpaque);
-
   return PowerStatus::GetBatteryImage(info, kUnifiedTrayBatteryIconSize,
-                                      icon_bg_color, icon_fg_color);
+                                      icon_fg_color);
 }
 
 gfx::ImageSkia StylusBatteryDelegate::GetBatteryStatusUnknownImage() const {

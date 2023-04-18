@@ -196,9 +196,8 @@ TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
 
   PowerStatus* power_status = power_status_;
   auto get_battery_image = [&power_status]() {
-    return gfx::Image(
-        power_status->GetBatteryImage(power_status->GetBatteryImageInfo(), 16,
-                                      SK_ColorYELLOW, SK_ColorGREEN));
+    return gfx::Image(power_status->GetBatteryImage(
+        power_status->GetBatteryImageInfo(), 16, SK_ColorGREEN));
   };
 
   prop.set_external_power(PowerSupplyProperties::AC);

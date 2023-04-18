@@ -155,8 +155,7 @@ void QsBatteryIconView::ConfigureIcon() {
 
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
-                    info, kUnifiedTrayBatteryIconSize, battery_icon_color,
-                    battery_icon_color)));
+                    info, kUnifiedTrayBatteryIconSize, battery_icon_color)));
 }
 
 QuickSettingsFooter::QuickSettingsFooter(

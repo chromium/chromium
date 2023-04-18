@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -43,12 +42,10 @@ namespace ash {
 BatteryImageSource::BatteryImageSource(
     const PowerStatus::BatteryImageInfo& info,
     int height,
-    SkColor bg_color,
     SkColor fg_color,
     absl::optional<SkColor> badge_color)
     : gfx::CanvasImageSource(gfx::Size(height, height)),
       info_(info),
-      bg_color_(bg_color),
       fg_color_(fg_color),
       badge_color_(badge_color.value_or(
           info.charge_percent > 50 ? GetBatteryBadgeColor() : fg_color)) {}
@@ -101,30 +98,19 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
   canvas->Restore();
 
   if (info_.badge_outline) {
-    if (ash::features::IsDarkLightModeEnabled()) {
-      // The outline is always a vector icon with PATH_MODE_CLEAR. This means it
-      // masks out anything previously drawn to the canvas. Give it any opaque
-      // color so it will properly mask the rest of the battery icon. NOTE: The
-      // view which renders this canvas must paint to its own non-opaque layer,
-      // otherwise this outline will show up SK_ColorBlue instead of
-      // transparent.
-      PaintVectorIcon(canvas, *info_.badge_outline, size().height(),
-                      SK_ColorBLUE);
-    } else {
-      // The outline is a colored outline, so give it a color meant to be seen
-      // by the user.
-      const SkColor outline_color =
-          info_.charge_percent > 50 ? fg_color_ : bg_color_;
-      PaintVectorIcon(canvas, *info_.badge_outline, size().height(),
-                      outline_color);
-    }
+    // The outline is always a vector icon with PATH_MODE_CLEAR. This means it
+    // masks out anything previously drawn to the canvas. Give it any opaque
+    // color so it will properly mask the rest of the battery icon. NOTE: The
+    // view which renders this canvas must paint to its own non-opaque layer,
+    // otherwise this outline will show up SK_ColorBlue instead of
+    // transparent.
+    PaintVectorIcon(canvas, *info_.badge_outline, size().height(),
+                    SK_ColorBLUE);
   }
 
   // Paint the badge over top of the battery, if applicable.
   if (info_.icon_badge) {
-    const SkColor default_color =
-        ash::features::IsDarkLightModeEnabled() ? fg_color_ : badge_color_;
-    const SkColor badge_color = use_alert_color ? alert_color : default_color;
+    const SkColor badge_color = use_alert_color ? alert_color : fg_color_;
     PaintVectorIcon(canvas, *info_.icon_badge, size().height(), badge_color);
   }
 }
