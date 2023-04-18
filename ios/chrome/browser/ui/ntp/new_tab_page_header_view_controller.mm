@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 
 #import "base/check.h"
 #import "base/ios/ios_util.h"
@@ -27,15 +27,15 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -57,7 +57,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 }  // namespace
 
-@interface ContentSuggestionsHeaderViewController () <
+@interface NewTabPageHeaderViewController () <
     DoodleObserver,
     UIIndirectScribbleInteractionDelegate,
     UIPointerInteractionDelegate>
@@ -68,7 +68,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 // Exposes view and methods to drive the doodle.
 @property(nonatomic, weak, readonly) id<LogoVendor> logoVendor;
 
-@property(nonatomic, strong) ContentSuggestionsHeaderView* headerView;
+@property(nonatomic, strong) NewTabPageHeaderView* headerView;
 @property(nonatomic, strong) UIButton* fakeOmnibox;
 @property(nonatomic, strong) UIButton* accessibilityButton;
 @property(nonatomic, strong) NSString* identityDiscAccessibilityLabel;
@@ -88,7 +88,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 @end
 
-@implementation ContentSuggestionsHeaderViewController
+@implementation NewTabPageHeaderViewController
 
 - (instancetype)init {
   return [super initWithNibName:nil bundle:nil];
@@ -180,7 +180,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 }
 
 // TODO(crbug.com/1403613): Name animateScrollAnimation something more aligned
-// to its true state indication. Why update the constraints only somtimes?
+// to its true state indication. Why update the constraints only sometimes?
 - (void)updateFakeOmniboxForOffset:(CGFloat)offset
                        screenWidth:(CGFloat)screenWidth
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
@@ -253,7 +253,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
     CGFloat width = self.view.frame.size.width;
 
-    self.headerView = [[ContentSuggestionsHeaderView alloc] init];
+    self.headerView = [[NewTabPageHeaderView alloc] init];
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
     self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -326,7 +326,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
                                action:@selector(fakeboxTapped)
                      forControlEvents:UIControlEventTouchUpInside];
   // Because the visual fakebox background is implemented within
-  // ContentSuggestionsHeaderView, KVO the highlight events of
+  // NewTabPageHeaderView, KVO the highlight events of
   // `accessibilityButton` and pass them along.
   [self.accessibilityButton addObserver:self
                              forKeyPath:@"highlighted"
@@ -480,15 +480,16 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread
-// between ContentSuggestionsHeaderViewController and inside
-// ContentSuggestionsHeaderView.  Post refresh this can be coalesced into one
+// between NewTabPageHeaderViewController and inside
+// NewTabPageHeaderView.  Post refresh this can be coalesced into one
 // control, and the KVO highlight logic below can be removed.
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  if ([@"highlighted" isEqualToString:keyPath])
+  if ([@"highlighted" isEqualToString:keyPath]) {
     [self.headerView setFakeboxHighlighted:[object isHighlighted]];
+  }
 }
 
 // If display is compact size, shows fakebox. If display is regular size,
@@ -646,7 +647,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   [self.commandHandler updateForHeaderSizeChange];
 }
 
-#pragma mark - ContentSuggestionsHeaderConsumer
+#pragma mark - NewTabPageHeaderConsumer
 
 - (void)setLogoIsShowing:(BOOL)logoIsShowing {
   _logoIsShowing = logoIsShowing;
@@ -659,15 +660,17 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)locationBarBecomesFirstResponder {
-  if (!self.isShowing)
+  if (!self.isShowing) {
     return;
+  }
 
   [self.commandHandler fakeboxTapped];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
-  if (_voiceSearchIsEnabled == voiceSearchIsEnabled)
+  if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
     return;
+  }
   _voiceSearchIsEnabled = voiceSearchIsEnabled;
   [self updateVoiceSearchDisplay];
 }

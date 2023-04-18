@@ -14,9 +14,9 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -45,8 +45,8 @@
   return discoverFeedService->GetFeedMetricsRecorder();
 }
 
-- (ContentSuggestionsHeaderViewController*)headerController {
-  return [[ContentSuggestionsHeaderViewController alloc] init];
+- (NewTabPageHeaderViewController*)headerViewController {
+  return [[NewTabPageHeaderViewController alloc] init];
 }
 
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser

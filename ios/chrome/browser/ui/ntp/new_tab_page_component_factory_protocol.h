@@ -11,8 +11,8 @@ class WebState;
 }
 
 @class ContentSuggestionsCoordinator;
-@class ContentSuggestionsHeaderViewController;
 @class FeedMetricsRecorder;
+@class NewTabPageHeaderViewController;
 @class NewTabPageMediator;
 @class NewTabPageViewController;
 @protocol UserAccountImageUpdateDelegate;
@@ -27,7 +27,7 @@ class WebState;
 - (FeedMetricsRecorder*)feedMetricsRecorderForBrowser:(Browser*)browser;
 
 // The header view controller containing the fake omnibox and logo.
-- (ContentSuggestionsHeaderViewController*)headerController;
+- (NewTabPageHeaderViewController*)headerViewController;
 
 // Mediator owned by the NewTabPageCoordinator
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser

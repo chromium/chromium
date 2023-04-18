@@ -1,23 +1,23 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller_delegate.h"
 
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsCommands;
-@protocol ContentSuggestionsHeaderCommands;
-@protocol ContentSuggestionsHeaderViewControllerDelegate;
 @protocol FakeboxFocuser;
 @protocol NewTabPageControllerDelegate;
+@protocol NewTabPageHeaderCommands;
 @protocol OmniboxCommands;
 @protocol LensCommands;
 @class LayoutGuideCenter;
@@ -26,9 +26,9 @@
 // Controller for the header containing the logo and the fake omnibox, handling
 // the interactions between the header and the collection, and the rest of the
 // application.
-@interface ContentSuggestionsHeaderViewController
-    : UIViewController <ContentSuggestionsHeaderConsumer,
-                        LogoAnimationControllerOwnerOwner,
+@interface NewTabPageHeaderViewController
+    : UIViewController <LogoAnimationControllerOwnerOwner,
+                        NewTabPageHeaderConsumer,
                         UserAccountImageUpdateDelegate>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
@@ -42,9 +42,8 @@
                               FakeboxFocuser,
                               LensCommands>
     dispatcher;
-@property(nonatomic, weak) id<ContentSuggestionsHeaderViewControllerDelegate>
-    delegate;
-@property(nonatomic, weak) id<ContentSuggestionsHeaderCommands> commandHandler;
+@property(nonatomic, weak) id<NewTabPageHeaderViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<NewTabPageHeaderCommands> commandHandler;
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
 // `YES` if Google is the default search engine.
@@ -109,4 +108,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_

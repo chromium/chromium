@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
 @protocol LogoVendor;
 
-// Handles updates to the Content Suggestions header.
-@protocol ContentSuggestionsHeaderConsumer <NSObject>
+// Handles updates to the NTP header.
+@protocol NewTabPageHeaderConsumer <NSObject>
 
 // Whether the Google logo or doodle is being shown.
 - (void)setLogoIsShowing:(BOOL)logoIsShowing;
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_CONSUMER_H_

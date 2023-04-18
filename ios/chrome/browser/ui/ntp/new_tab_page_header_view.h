@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_
+#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
-@interface ContentSuggestionsHeaderView : UIView
+@interface NewTabPageHeaderView : UIView
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
@@ -54,7 +54,7 @@
 
 // Changes the constraints of searchField based on its initialFrame and the
 // scroll view's y `offset`. Also adjust the alpha values for `_searchBoxBorder`
-// and `_shadow` and the constant values for the `constraints`.|screenWidth` is
+// and `_shadow` and the constant values for the `constraints`. `screenWidth` is
 // the width of the screen, including the space outside the safe area. The
 // `safeAreaInsets` is relative to the view used to calculate the `width`.
 - (void)updateSearchFieldWidth:(NSLayoutConstraint*)widthConstraint
@@ -77,4 +77,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_

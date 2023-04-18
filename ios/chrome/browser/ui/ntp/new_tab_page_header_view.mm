@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view.h"
 
 #import <UIKit/UIKit.h>
 
@@ -81,7 +81,7 @@ CGFloat ToolbarHeight() {
 
 }  // namespace
 
-@interface ContentSuggestionsHeaderView ()
+@interface NewTabPageHeaderView ()
 
 // The Lens button. May be null if Lens is not available.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
@@ -123,7 +123,7 @@ CGFloat ToolbarHeight() {
 
 @end
 
-@implementation ContentSuggestionsHeaderView
+@implementation NewTabPageHeaderView
 
 #pragma mark - Public
 
@@ -397,14 +397,15 @@ CGFloat ToolbarHeight() {
                 safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
   CGFloat contentWidth = std::max<CGFloat>(
       0, screenWidth - safeAreaInsets.left - safeAreaInsets.right);
-  if (screenWidth == 0 || contentWidth == 0)
+  if (screenWidth == 0 || contentWidth == 0) {
     return;
+  }
 
   CGFloat searchFieldNormalWidth =
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
-  CGFloat percent =
-      [self searchFieldProgressForOffset:offset safeAreaInsets:safeAreaInsets];
+  CGFloat percent = [self searchFieldProgressForOffset:offset
+                                        safeAreaInsets:safeAreaInsets];
 
   // Offset the hint label constraints with half of the change in width
   // from the original scale, since constraints are calculated before

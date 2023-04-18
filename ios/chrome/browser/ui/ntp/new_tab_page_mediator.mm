@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
@@ -38,6 +37,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -149,8 +149,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     self.webState->AddObserver(_webStateObserver.get());
   }
 
-  [self.contentSuggestionsHeaderConsumer setLogoVendor:self.logoVendor];
-  [self.contentSuggestionsHeaderConsumer
+  [self.headerConsumer setLogoVendor:self.logoVendor];
+  [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
   self.templateURLService->Load();
@@ -260,7 +260,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  DCHECK(self.contentSuggestionsHeaderConsumer);
+  DCHECK(self.headerConsumer);
   [self.consumer omniboxDidResignFirstResponder];
 }
 
@@ -286,7 +286,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                    self.templateURLService->search_terms_data()) ==
                SEARCH_ENGINE_GOOGLE;
   }
-  [self.contentSuggestionsHeaderConsumer setLogoIsShowing:showLogo];
+  [self.headerConsumer setLogoIsShowing:showLogo];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

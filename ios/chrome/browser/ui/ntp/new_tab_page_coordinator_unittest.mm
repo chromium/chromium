@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
@@ -222,7 +222,7 @@ TEST_F(NewTabPageCoordinatorTest, StartOffTheRecord) {
 }
 
 // Tests that if the NTPCoordinator properly configures
-// ContentSuggestionsHeaderViewController and NewTabPageTabHelper correctly for
+// NewTabPageHeaderViewController and NewTabPageTabHelper correctly for
 // Start depending on public lifecycle API calls.
 TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   CreateCoordinator(/*off_the_record=*/false);

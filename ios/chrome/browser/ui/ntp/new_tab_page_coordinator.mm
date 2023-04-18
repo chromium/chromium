@@ -67,8 +67,6 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
@@ -93,6 +91,8 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -125,7 +125,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 @interface NewTabPageCoordinator () <AppStateObserver,
                                      BooleanObserver,
-                                     ContentSuggestionsHeaderCommands,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
                                      FeedControlDelegate,
@@ -138,6 +137,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
                                      NewTabPageContentDelegate,
                                      NewTabPageDelegate,
                                      NewTabPageFollowDelegate,
+                                     NewTabPageHeaderCommands,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
                                      SceneStateObserver> {
@@ -236,7 +236,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 // The header view controller containing the fake omnibox and logo.
 @property(nonatomic, strong)
-    ContentSuggestionsHeaderViewController* headerController;
+    NewTabPageHeaderViewController* headerViewController;
 
 // The coordinator for handling feed management.
 @property(nonatomic, strong)
@@ -350,7 +350,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if ([self isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   }
-  [self configureHeaderController];
+  [self configureheaderViewController];
   [self configureContentSuggestionsCoordinator];
   [self configureNTPMediator];
   [self configureFeedMetricsRecorder];
@@ -392,7 +392,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.feedManagementCoordinator = nil;
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
-  self.headerController = nil;
+  self.headerViewController = nil;
   // Remove before nil to ensure View Hierarchy doesn't hold last strong
   // reference.
   [self.containedViewController willMoveToParentViewController:nil];
@@ -493,7 +493,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)locationBarDidBecomeFirstResponder {
-  [self.headerController locationBarBecomesFirstResponder];
+  [self.headerViewController locationBarBecomesFirstResponder];
   self.NTPViewController.omniboxFocused = YES;
 }
 
@@ -578,7 +578,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 // Starts all NTP observers.
 - (void)startObservers {
   DCHECK(self.prefService);
-  DCHECK(self.headerController);
+  DCHECK(self.headerViewController);
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(self.prefService);
@@ -618,11 +618,11 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   id<NewTabPageComponentFactoryProtocol> componentFactory =
       self.componentFactory;
   self.NTPViewController = [componentFactory NTPViewController];
-  self.headerController = [componentFactory headerController];
+  self.headerViewController = [componentFactory headerViewController];
   self.NTPMediator =
       [componentFactory NTPMediatorForBrowser:browser
                                      webState:self.webState
-                     identityDiscImageUpdater:self.headerController];
+                     identityDiscImageUpdater:self.headerViewController];
   self.contentSuggestionsCoordinator =
       [componentFactory contentSuggestionsCoordinatorForBrowser:browser];
   self.feedMetricsRecorder =
@@ -666,25 +666,25 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   }
 }
 
-// Configures `self.headerController`.
-- (void)configureHeaderController {
-  DCHECK(self.headerController);
+// Configures `self.headerViewController`.
+- (void)configureheaderViewController {
+  DCHECK(self.headerViewController);
   DCHECK(self.NTPMediator);
 
-  self.headerController.isGoogleDefaultSearchEngine =
+  self.headerViewController.isGoogleDefaultSearchEngine =
       [self isGoogleDefaultSearchEngine];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.headerController.dispatcher =
+  self.headerViewController.dispatcher =
       static_cast<id<ApplicationCommands, BrowserCoordinatorCommands,
                      OmniboxCommands, FakeboxFocuser, LensCommands>>(
           self.browser->GetCommandDispatcher());
-  self.headerController.commandHandler = self;
-  self.headerController.delegate = self.NTPViewController;
-  self.headerController.layoutGuideCenter =
+  self.headerViewController.commandHandler = self;
+  self.headerViewController.delegate = self.NTPViewController;
+  self.headerViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.headerController.toolbarDelegate = self.toolbarDelegate;
-  self.headerController.baseViewController = self.baseViewController;
+  self.headerViewController.toolbarDelegate = self.toolbarDelegate;
+  self.headerViewController.baseViewController = self.baseViewController;
 }
 
 // Configures `self.contentSuggestionsCoordiantor`.
@@ -702,7 +702,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   DCHECK(NTPMediator);
   NTPMediator.browser = self.browser;
   NTPMediator.feedControlDelegate = self;
-  NTPMediator.contentSuggestionsHeaderConsumer = self.headerController;
+  NTPMediator.headerConsumer = self.headerViewController;
   NTPMediator.consumer = self.NTPViewController;
   NTPMediator.suggestionsMediator =
       self.contentSuggestionsCoordinator.contentSuggestionsMediator;
@@ -740,7 +740,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.NTPViewController.overscrollDelegate = self;
   self.NTPViewController.ntpContentDelegate = self;
 
-  self.NTPViewController.headerController = self.headerController;
+  self.NTPViewController.headerViewController = self.headerViewController;
 
   [self configureMainViewControllerUsing:self.NTPViewController];
   self.NTPViewController.feedMetricsRecorder = self.feedMetricsRecorder;
@@ -790,7 +790,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   [self handleFeedSelected:feedType];
 }
 
-#pragma mark - ContentSuggestionsHeaderCommands
+#pragma mark - NewTabPageHeaderCommands
 
 - (void)updateForHeaderSizeChange {
   [self.NTPViewController updateHeightAboveFeedAndScrollToTopIfNeeded];
@@ -1235,7 +1235,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 #pragma mark - LogoAnimationControllerOwnerOwner
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  return [self.headerController logoAnimationControllerOwner];
+  return [self.headerViewController logoAnimationControllerOwner];
 }
 
 #pragma mark - OverscrollActionsControllerDelegate
@@ -1270,8 +1270,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (UIView*)toolbarSnapshotViewForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return
-      [[self.headerController toolBarView] snapshotViewAfterScreenUpdates:NO];
+  return [[self.headerViewController toolBarView]
+      snapshotViewAfterScreenUpdates:NO];
 }
 
 - (UIView*)headerViewForOverscrollActionsController:
@@ -1286,7 +1286,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (CGFloat)headerHeightForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  CGFloat height = [self.headerController toolBarView].bounds.size.height;
+  CGFloat height = [self.headerViewController toolBarView].bounds.size.height;
   CGFloat topInset = self.feedWrapperViewController.view.safeAreaInsets.top;
   return height + topInset;
 }
@@ -1308,7 +1308,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (previousInitStage == InitStageFirstRun) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = YES;
-    [self.headerController focusAccessibilityOnOmnibox];
+    [self.headerViewController focusAccessibilityOnOmnibox];
 
     [appState removeObserver:self];
   }

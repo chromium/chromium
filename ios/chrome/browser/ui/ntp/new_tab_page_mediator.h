@@ -18,13 +18,13 @@ class WebState;
 class AuthenticationService;
 class Browser;
 class ChromeAccountManagerService;
-@protocol ContentSuggestionsHeaderConsumer;
 @class ContentSuggestionsMediator;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
 class GURL;
 @protocol LogoVendor;
 @protocol NewTabPageConsumer;
+@protocol NewTabPageHeaderConsumer;
 @class NTPHomeMetrics;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
@@ -56,9 +56,8 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, strong) ContentSuggestionsMediator* suggestionsMediator;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<NewTabPageConsumer> consumer;
-// Consumer for Content Suggestions header model updates.
-@property(nonatomic, weak) id<ContentSuggestionsHeaderConsumer>
-    contentSuggestionsHeaderConsumer;
+// Consumer for NTP header model updates.
+@property(nonatomic, weak) id<NewTabPageHeaderConsumer> headerConsumer;
 // Delegate for controlling the current feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 // The browser.
