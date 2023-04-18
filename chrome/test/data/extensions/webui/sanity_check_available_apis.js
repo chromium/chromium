@@ -20,6 +20,9 @@ var expected = [
   'loadTimes',
   'management',
   'metricsPrivate',
+  // chrome.readAnything is exposed to all WebUIs but meant to be used in
+  // chrome://read-anything-side-panel.top-chrome.
+  'readAnything',
   'runtime',
   'send',
   'test',

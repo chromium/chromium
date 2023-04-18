@@ -31,6 +31,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace extensions {
 
@@ -40,6 +41,11 @@ namespace {
 
 // Tests running extension APIs on WebUI.
 class ExtensionWebUITest : public ExtensionApiTest {
+ public:
+  ExtensionWebUITest() {
+    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
+  }
+
  protected:
   testing::AssertionResult RunTest(const char* name,
                                    const GURL& page_url,
@@ -84,6 +90,9 @@ class ExtensionWebUITest : public ExtensionApiTest {
     // Tests should fail.
     return RunTest(name, GURL("chrome://about"), false);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests running within an <extensionoptions>.
