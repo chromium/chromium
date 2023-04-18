@@ -7,12 +7,12 @@
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -71,15 +71,21 @@ CGFloat const kTableViewCornerRadius = 10;
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
   NSArray<FormSuggestion*>* _suggestions;
+
+  // The password controller handler used to open the password manager.
+  id<PasswordSuggestionBottomSheetHandler> _handler;
 }
 
 @end
 
 @implementation PasswordSuggestionBottomSheetViewController
 
-- (instancetype)init {
+- (instancetype)initWithHandler:
+    (id<PasswordSuggestionBottomSheetHandler>)handler {
   self = [super init];
   if (self) {
+    _handler = handler;
+
     [self setUpBottomSheet];
   }
   return self;
@@ -148,6 +154,30 @@ CGFloat const kTableViewCornerRadius = 10;
 
   // Refresh cells to show the checkmark icon next to the selected suggestion.
   [_tableView reloadData];
+}
+
+// Long press open context menu.
+- (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
+    contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
+                                        point:(CGPoint)point {
+  __weak __typeof(self) weakSelf = self;
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        NSMutableArray<UIMenuElement*>* menuElements =
+            [[NSMutableArray alloc] initWithArray:suggestedActions];
+
+        PasswordSuggestionBottomSheetViewController* strongSelf = weakSelf;
+        if (strongSelf) {
+          [menuElements addObject:[strongSelf openPasswordManagerAction]];
+        }
+
+        return [UIMenu menuWithTitle:@"" children:menuElements];
+      };
+
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
 }
 
 #pragma mark - UITableViewDataSource
@@ -394,6 +424,33 @@ CGFloat const kTableViewCornerRadius = 10;
     presentationController.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierLarge;
   }];
+}
+
+// Opens the password manager settings page.
+- (void)displayPasswordManager {
+  [_handler displayPasswordManager];
+}
+
+// Creates the UI action used to open the password manager.
+- (UIAction*)openPasswordManagerAction {
+  __weak __typeof(self) weakSelf = self;
+  void (^passwordManagerButtonTapHandler)(UIAction*) = ^(UIAction* action) {
+    // Open Password Manager.
+    [weakSelf dismissViewControllerAnimated:NO
+                                 completion:^{
+                                   // Send some message to open the password
+                                   // manager.
+                                   [weakSelf displayPasswordManager];
+                                 }];
+  };
+  UIImage* keyIcon =
+      CustomSymbolWithPointSize(kPasswordSymbol, kSymbolActionPointSize);
+  return [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER)
+                image:keyIcon
+           identifier:@"kBottomSheetPopupMenuPasswordManagerActionIdentifier"
+              handler:passwordManagerButtonTapHandler];
 }
 
 @end

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
@@ -14,7 +15,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PasswordSuggestionBottomSheetCoordinator ()
+@interface PasswordSuggestionBottomSheetCoordinator () {
+  // The password controller delegate used to open the password manager.
+  id<PasswordControllerDelegate> _passwordControllerDelegate;
+}
 
 // This mediator is used to fetch data related to the bottom sheet.
 @property(nonatomic, strong) PasswordSuggestionBottomSheetMediator* mediator;
@@ -34,8 +38,9 @@
                       delegate:(id<PasswordControllerDelegate>)delegate {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    self.viewController =
-        [[PasswordSuggestionBottomSheetViewController alloc] init];
+    _passwordControllerDelegate = delegate;
+    self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
+        initWithHandler:self];
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
         initWithWebStateList:browser->GetWebStateList()
                faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
@@ -64,6 +69,12 @@
   _mediator = nil;
   _viewController.delegate = nil;
   _viewController = nil;
+}
+
+#pragma mark - PasswordSuggestionBottomSheetHandler
+
+- (void)displayPasswordManager {
+  [_passwordControllerDelegate displaySavedPasswordList];
 }
 
 @end

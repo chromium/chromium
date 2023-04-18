@@ -9,6 +9,7 @@ source_set("bottom_sheet") {
     "password_suggestion_bottom_sheet_coordinator.h",
     "password_suggestion_bottom_sheet_coordinator.mm",
     "password_suggestion_bottom_sheet_delegate.h",
+    "password_suggestion_bottom_sheet_handler.h",
     "password_suggestion_bottom_sheet_mediator.h",
     "password_suggestion_bottom_sheet_mediator.mm",
     "password_suggestion_bottom_sheet_view_controller.h",
