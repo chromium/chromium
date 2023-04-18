@@ -85,7 +85,13 @@ source_set("tests") {
     "//testing/gtest",
   ]
 
-  data = [ "//mojo/public/interfaces/bindings/tests/data/validation/" ]
+  if (is_ios) {
+    deps += [
+      "//mojo/public/interfaces/bindings/tests:validation_unittest_bundle_data",
+    ]
+  } else {
+    data = [ "//mojo/public/interfaces/bindings/tests/data/validation/" ]
+  }
 
   if (!use_blink) {
     assert_no_deps = [ "//third_party/blink/*" ]
