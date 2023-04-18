@@ -72,6 +72,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     // responses. It is used to classify a successful response where the list in
     // the response is empty.
     kEmptyListError,
+    kInvalidContentTypeError,
   };
   struct FetchStatus {
     ParseStatus parse_status;

@@ -1119,7 +1119,7 @@ TEST_F(IdpNetworkRequestManagerTest, WellKnownWrongMimeType) {
   "provider_urls": ["https://idp.test/fedcm.json"]
   })",
                                              net::HTTP_OK, "text/html");
-  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ(ParseStatus::kInvalidContentTypeError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ(std::set<GURL>{}, urls);
 }
@@ -1129,7 +1129,7 @@ TEST_F(IdpNetworkRequestManagerTest, ConfigWrongMimeType) {
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       R"({"branding" : { "color": "blue" } })", net::HTTP_OK, "text/html");
-  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ(ParseStatus::kInvalidContentTypeError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
 }
 
@@ -1141,7 +1141,8 @@ TEST_F(IdpNetworkRequestManagerTest, AccountsWrongMimeType) {
   std::tie(accounts_response, accounts) = SendAccountsRequestAndWaitForResponse(
       test_single_account_json, /*client_id=*/"", net::HTTP_OK, "text/html");
 
-  EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
+  EXPECT_EQ(ParseStatus::kInvalidContentTypeError,
+            accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_TRUE(accounts.empty());
 }
@@ -1152,7 +1153,7 @@ TEST_F(IdpNetworkRequestManagerTest, TokenWrongMimeType) {
   std::tie(fetch_status, token) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "text/html");
   EXPECT_EQ("", token);
-  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+  EXPECT_EQ(ParseStatus::kInvalidContentTypeError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
 }
 

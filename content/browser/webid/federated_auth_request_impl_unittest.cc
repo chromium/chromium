@@ -178,6 +178,7 @@ struct MockClientIdConfiguration {
 
 struct MockWellKnown {
   std::set<std::string> provider_urls;
+  FetchStatus fetch_status;
 };
 
 // Mock information returned from IdpNetworkRequestManager::FetchConfig().
@@ -235,7 +236,7 @@ static const RequestParameters kDefaultRequestParameters{
     /*auto_reauthn=*/false, blink::mojom::RpContext::kSignIn};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
-    {kWellKnown},
+    {kWellKnown, {ParseStatus::kSuccess, net::HTTP_OK}},
     {
         {ParseStatus::kSuccess, net::HTTP_OK},
         kAccountsEndpoint,
@@ -327,9 +328,11 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     std::set<GURL> url_set(
         config_.idp_info[provider_key].well_known.provider_urls.begin(),
         config_.idp_info[provider_key].well_known.provider_urls.end());
-    FetchStatus success{ParseStatus::kSuccess, net::HTTP_OK};
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), success, url_set));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       config_.idp_info[provider_key].well_known.fetch_status,
+                       url_set));
   }
 
   void FetchConfig(const GURL& provider,
@@ -1153,7 +1156,8 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
   EXPECT_NE(std::string(idp_config_url), kWellKnownMismatchConfigUrl);
 
   MockConfiguration config = kConfigurationValid;
-  config.idp_info[idp_config_url].well_known = {{kWellKnownMismatchConfigUrl}};
+  config.idp_info[idp_config_url].well_known = {
+      {kWellKnownMismatchConfigUrl}, {ParseStatus::kSuccess, net::HTTP_OK}};
   RunAuthTest(kDefaultRequestParameters, request_not_in_list, config);
   EXPECT_TRUE(DidFetchWellKnownAndConfig());
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
@@ -3435,6 +3439,139 @@ TEST_F(FederatedAuthRequestImplTest, RpContextIsDefaultToSignIn) {
 
   EXPECT_EQ(dialog_controller_state_.rp_context,
             blink::mojom::RpContext::kSignIn);
+}
+
+TEST_F(FederatedAuthRequestImplTest, WellKnownInvalidContentType) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull]
+      .well_known.fetch_status.parse_status =
+      ParseStatus::kInvalidContentTypeError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidContentType},
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  ukm_loop.Run();
+
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Status.RequestIdToken",
+      TokenStatus::kWellKnownInvalidContentType, 1);
+
+  ExpectRequestTokenStatusUKM(TokenStatus::kWellKnownInvalidContentType);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, ConfigInvalidContentType) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.fetch_status.parse_status =
+      ParseStatus::kInvalidContentTypeError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType},
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  ukm_loop.Run();
+
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       TokenStatus::kConfigInvalidContentType,
+                                       1);
+
+  ExpectRequestTokenStatusUKM(TokenStatus::kConfigInvalidContentType);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, ClientMetadataInvalidContentType) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull]
+      .client_metadata.fetch_status.parse_status =
+      ParseStatus::kInvalidContentTypeError;
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  // The FedCM flow succeeds even if the client metadata fetch fails.
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  ukm_loop.Run();
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       TokenStatus::kSuccess, 1);
+
+  ExpectRequestTokenStatusUKM(TokenStatus::kSuccess);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, AccountsInvalidContentType) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidContentTypeError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType},
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  ukm_loop.Run();
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       TokenStatus::kAccountsInvalidContentType,
+                                       1);
+
+  ExpectRequestTokenStatusUKM(TokenStatus::kAccountsInvalidContentType);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, IdTokenInvalidContentType) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_response.parse_status =
+      ParseStatus::kInvalidContentTypeError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType},
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  ukm_loop.Run();
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       TokenStatus::kIdTokenInvalidContentType,
+                                       1);
+
+  ExpectRequestTokenStatusUKM(TokenStatus::kIdTokenInvalidContentType);
+  CheckAllFedCmSessionIDs();
 }
 
 }  // namespace content

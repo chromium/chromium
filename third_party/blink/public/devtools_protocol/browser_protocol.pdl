@@ -809,14 +809,17 @@ experimental domain Audits
       WellKnownNoResponse
       WellKnownInvalidResponse
       WellKnownListEmpty
+      WellKnownInvalidContentType
       ConfigNotInWellKnown
       WellKnownTooBig
       ConfigHttpNotFound
       ConfigNoResponse
       ConfigInvalidResponse
+      ConfigInvalidContentType
       ClientMetadataHttpNotFound
       ClientMetadataNoResponse
       ClientMetadataInvalidResponse
+      ClientMetadataInvalidContentType
       DisabledInSettings
       ErrorFetchingSignin
       InvalidSigninResponse
@@ -824,10 +827,12 @@ experimental domain Audits
       AccountsNoResponse
       AccountsInvalidResponse
       AccountsListEmpty
+      AccountsInvalidContentType
       IdTokenHttpNotFound
       IdTokenNoResponse
       IdTokenInvalidResponse
       IdTokenInvalidRequest
+      IdTokenInvalidContentType
       ErrorIdToken
       Canceled
       RpPageNotVisible

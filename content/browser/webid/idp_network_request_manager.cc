@@ -295,7 +295,7 @@ ParseStatus GetResponseError(std::string* response_body,
   }
 
   if (!IsJsonMimeType(mime_type)) {
-    return ParseStatus::kInvalidResponseError;
+    return ParseStatus::kInvalidContentTypeError;
   }
 
   return ParseStatus::kSuccess;

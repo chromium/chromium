@@ -146,22 +146,28 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidContentType:
     case FederatedAuthRequestResult::kErrorConfigNotInWellKnown:
     case FederatedAuthRequestResult::kErrorWellKnownTooBig:
     case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse:
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidContentType:
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty:
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
@@ -181,11 +187,13 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
     }
     case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
+    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty:
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kAccountsEndpointInvalidResponse;
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kTokenEndpointInvalidResponse;
     }
@@ -215,7 +223,11 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
     case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidResponse: {
+        kErrorFetchingClientMetadataInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidContentType:
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType:
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kIdpServerInvalidResponse;
     }
@@ -1259,6 +1271,14 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           TokenStatus::kAccountsListEmpty);
       return;
     }
+    case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
+      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
+      HandleAccountsFetchFailure(
+          std::move(idp_info), old_idp_signin_status,
+          FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType,
+          TokenStatus::kAccountsInvalidContentType);
+      return;
+    }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       if (IsFedCmLoginHintEnabled()) {
         FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
@@ -1523,6 +1543,14 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
           TokenStatus::kIdTokenInvalidResponse,
+          /*should_delay_callback=*/true);
+      return;
+    }
+    case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
+      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType,
+          TokenStatus::kIdTokenInvalidContentType,
           /*should_delay_callback=*/true);
       return;
     }

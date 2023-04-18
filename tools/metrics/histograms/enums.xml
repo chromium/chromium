@@ -42300,6 +42300,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="32" label="NotSignedInWithIdp"/>
   <int value="33" label="AccountsListEmpty"/>
   <int value="34" label="WellKnownListEmpty"/>
+  <int value="35" label="WellKnownInvalidContentType"/>
+  <int value="36" label="ConfigInvalidContentType"/>
+  <int value="37" label="AccountsInvalidContentType"/>
+  <int value="38" label="IdTokenInvalidContentType"/>
 </enum>
 
 <enum name="FedCmReturningAccounts">

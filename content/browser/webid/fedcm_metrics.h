@@ -56,8 +56,12 @@ enum class FedCmRequestIdTokenStatus {
   kNotSignedInWithIdp,
   kAccountsListEmpty,
   kWellKnownListEmpty,
+  kWellKnownInvalidContentType,
+  kConfigInvalidContentType,
+  kAccountsInvalidContentType,
+  kIdTokenInvalidContentType,
 
-  kMaxValue = kWellKnownListEmpty
+  kMaxValue = kIdTokenInvalidContentType
 };
 
 // This enum describes whether user sign-in states between IDP and browser
