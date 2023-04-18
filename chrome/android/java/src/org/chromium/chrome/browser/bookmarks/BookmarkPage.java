@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -35,7 +36,8 @@ public class BookmarkPage extends BasicNativePage {
 
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(host.getContext(), componentName, false, isIncognito,
-                        snackbarManager, Profile.getLastUsedRegularProfile());
+                        snackbarManager, Profile.getLastUsedRegularProfile(),
+                        new BookmarkUiPrefs(SharedPreferencesManager.getInstance()));
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         mTitle = host.getContext().getResources().getString(R.string.bookmarks);
 

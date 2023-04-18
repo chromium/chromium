@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -111,7 +112,7 @@ public class BookmarkManagerMediatorTest {
     @Mock
     AccessibilityManager mAccessibilityManager;
     @Mock
-    private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Captor
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
@@ -129,6 +130,7 @@ public class BookmarkManagerMediatorTest {
 
     private Activity mActivity;
     private BookmarkManagerMediator mMediator;
+    private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
     private final BookmarkItem mFolderItem1 =
             new BookmarkItem(mFolderId1, "Folder1", null, true, null, true, false, 0, false);
     private final BookmarkItem mFolderItem2 =
@@ -164,6 +166,11 @@ public class BookmarkManagerMediatorTest {
                     .when(mBookmarkUiObserver)
                     .onDestroy();
 
+            // Setup SharedPreferencesManager.
+            doReturn(BookmarkRowDisplayPref.COMPACT)
+                    .when(mBookmarkUiPrefs)
+                    .getBookmarkRowDisplayPref();
+
             // Setup sync/identify mocks.
             SyncService.overrideForTests(mSyncService);
             IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -171,11 +178,13 @@ public class BookmarkManagerMediatorTest {
             doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
             AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
 
+            mDragReorderableRecyclerViewAdapter =
+                    spy(new DragReorderableRecyclerViewAdapter(mActivity, mModelList));
             mMediator = new BookmarkManagerMediator(mActivity, mBookmarkModel, mBookmarkOpener,
                     mSelectableListLayout, mSelectionDelegate, mRecyclerView,
                     mDragReorderableRecyclerViewAdapter, mLargeIconBridge, /*isDialogUi=*/true,
                     /*isIncognito=*/false, mBackPressStateSupplier, mProfile,
-                    mBookmarkUndoController, mModelList);
+                    mBookmarkUndoController, mModelList, mBookmarkUiPrefs);
             mMediator.addUiObserver(mBookmarkUiObserver);
         });
     }
@@ -333,5 +342,11 @@ public class BookmarkManagerMediatorTest {
 
         mMediator.onDetachedFromWindow();
         verify(mBookmarkUndoController).setEnabled(false);
+    }
+
+    @Test
+    public void onPreferenceChanged_ViewPreferenceUpdated() {
+        mMediator.onBookmarkRowDisplayPrefChanged();
+        verify(mRecyclerView).setAdapter(mDragReorderableRecyclerViewAdapter);
     }
 }

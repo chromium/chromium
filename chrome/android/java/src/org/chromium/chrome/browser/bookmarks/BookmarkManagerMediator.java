@@ -53,8 +53,9 @@ import java.util.Stack;
 
 /** Responsible for BookmarkManager business logic. */
 // TODO(crbug.com/1416611): Remove BookmarkDelegate if possible.
-class BookmarkManagerMediator
-        implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
+class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
+                                         PartnerBookmarksReader.FaviconUpdateObserver,
+                                         BookmarkUiPrefs.Observer {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
 
@@ -344,6 +345,7 @@ class BookmarkManagerMediator
     private final BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkUndoController mBookmarkUndoController;
     private final ModelList mModelList;
+    private final BookmarkUiPrefs mBookmarkUiPrefs;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -364,7 +366,8 @@ class BookmarkManagerMediator
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             LargeIconBridge largeIconBridge, boolean isDialogUi, boolean isIncognito,
             ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile,
-            BookmarkUndoController bookmarkUndoController, ModelList modelList) {
+            BookmarkUndoController bookmarkUndoController, ModelList modelList,
+            BookmarkUiPrefs bookmarkUiPrefs) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -390,6 +393,8 @@ class BookmarkManagerMediator
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
         mBookmarkUndoController = bookmarkUndoController;
         mModelList = modelList;
+        mBookmarkUiPrefs = bookmarkUiPrefs;
+        mBookmarkUiPrefs.addObserver(this);
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
@@ -426,6 +431,8 @@ class BookmarkManagerMediator
 
         mBookmarkUndoController.destroy();
         mDragStateDelegate.destroy();
+
+        mBookmarkUiPrefs.removeObserver(this);
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
@@ -1071,6 +1078,16 @@ class BookmarkManagerMediator
         PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
         propertyModel.set(BookmarkManagerProperties.OPEN_FOLDER, this::openFolder);
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
+    }
+
+    // BookmarkUiPrefs.Observer implementation.
+
+    @Override
+    @SuppressWarnings("NotifyDataSetChanged")
+    public void onBookmarkRowDisplayPrefChanged() {
+        mRecyclerView.setAdapter(null);
+        mRecyclerView.setAdapter(mDragReorderableRecyclerViewAdapter);
+        mDragReorderableRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     // Testing methods.

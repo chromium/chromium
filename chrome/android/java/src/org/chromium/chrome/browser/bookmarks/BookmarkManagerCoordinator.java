@@ -67,6 +67,7 @@ public class BookmarkManagerCoordinator
     private final BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkModel mBookmarkModel;
     private final Profile mProfile;
+    private final BookmarkUiPrefs mBookmarkUiPrefs;
 
     /**
      * Creates an instance of {@link BookmarkManagerCoordinator}. It also initializes resources,
@@ -77,10 +78,11 @@ public class BookmarkManagerCoordinator
      * @param isIncognito Whether the tab model loading the bookmark manager is for incognito mode.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param profile The profile which the manager is running in.
+     * @param bookmarkUiPrefs Manages prefs for bookmarks ui.
      */
     public BookmarkManagerCoordinator(Context context, ComponentName openBookmarkComponentName,
             boolean isDialogUi, boolean isIncognito, SnackbarManager snackbarManager,
-            Profile profile) {
+            Profile profile, BookmarkUiPrefs bookmarkUiPrefs) {
         mProfile = profile;
         mImageFetcher =
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
@@ -93,6 +95,7 @@ public class BookmarkManagerCoordinator
         if (ShoppingFeatures.isShoppingListEligible()) {
             ShoppingServiceFactory.getForProfile(profile).scheduleSavedProductUpdate();
         }
+        mBookmarkUiPrefs = bookmarkUiPrefs;
 
         SelectionDelegate<BookmarkId> selectionDelegate = new SelectionDelegate<>() {
             @Override
@@ -129,7 +132,8 @@ public class BookmarkManagerCoordinator
                 new OneshotSupplierImpl<>();
         mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(context, mSelectableListLayout,
                 selectionDelegate, /*searchDelegate=*/this, dragReorderableRecyclerViewAdapter,
-                isDialogUi, bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener);
+                isDialogUi, bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener,
+                mBookmarkUiPrefs);
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
@@ -140,7 +144,8 @@ public class BookmarkManagerCoordinator
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, selectionDelegate, mRecyclerView,
                 dragReorderableRecyclerViewAdapter, largeIconBridge, isDialogUi, isIncognito,
-                mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList);
+                mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList,
+                mBookmarkUiPrefs);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
@@ -329,20 +334,20 @@ public class BookmarkManagerCoordinator
 
     private static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {
         BookmarkFolderRow bookmarkFolderRow = BookmarkFolderRow.buildView(
-                parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+                parent.getContext(), BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
         return bookmarkFolderRow;
     }
 
     static @VisibleForTesting BookmarkItemRow buildBookmarkItemView(ViewGroup parent) {
         BookmarkItemRow bookmarkItemRow = BookmarkItemRow.buildView(
-                parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+                parent.getContext(), BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
         return bookmarkItemRow;
     }
 
     static @VisibleForTesting PowerBookmarkShoppingItemRow buildShoppingItemView(ViewGroup parent) {
         PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow =
-                PowerBookmarkShoppingItemRow.buildView(
-                        parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+                PowerBookmarkShoppingItemRow.buildView(parent.getContext(),
+                        BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
         return powerBookmarkShoppingItemRow;
     }
 

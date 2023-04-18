@@ -77,6 +77,8 @@ public class BookmarkManagerCoordinatorTest {
     IdentityManager mIdentityManager;
     @Mock
     BookmarkModel mBookmarkModel;
+    @Mock
+    BookmarkUiPrefs mBookmarkUiPrefs;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -99,7 +101,7 @@ public class BookmarkManagerCoordinatorTest {
             mCoordinator = new BookmarkManagerCoordinator(mActivity,
                     /*openBookmarkComponentName=*/null,
                     /*isDialogUi=*/!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                    /*isIncognito=*/false, mSnackbarManager, mProfile);
+                    /*isIncognito=*/false, mSnackbarManager, mProfile, mBookmarkUiPrefs);
             mActivity.setContentView(mCoordinator.getView());
         });
     }

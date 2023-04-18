@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -82,6 +84,8 @@ public class BookmarkToolbarMediatorTest {
     BookmarkId mBookmarkId;
     @Mock
     BookmarkItem mBookmarkItem;
+    @Mock
+    BookmarkUiPrefs mBookmarkUiPrefs;
     @Spy
     Context mContext;
 
@@ -114,7 +118,7 @@ public class BookmarkToolbarMediatorTest {
 
         mMediator = new BookmarkToolbarMediator(mContext, mModel,
                 mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
-                mBookmarkModel, mBookmarkOpener);
+                mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -136,7 +140,7 @@ public class BookmarkToolbarMediatorTest {
 
         mMediator = new BookmarkToolbarMediator(mContext, mModel,
                 mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
-                mBookmarkModel, mBookmarkOpener);
+                mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs);
     }
 
     @Test
@@ -285,5 +289,51 @@ public class BookmarkToolbarMediatorTest {
         Assert.assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                                   .apply(R.id.selection_mode_delete_menu_id));
         verify(mBookmarkModel).deleteBookmarks(Mockito.any());
+    }
+
+    @Test
+    public void testOnMenuItemClick_selectionOpenInNewTab() {
+        setCurrentSelection(mBookmarkId);
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_new_tab_id));
+        verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(false));
+    }
+
+    @Test
+    public void testOnMenuItemClick_selectionOpenInIncognitoTab() {
+        setCurrentSelection(mBookmarkId);
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
+        verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(true));
+    }
+
+    @Test
+    public void testOnMenuItemClick_sortOptions() {
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_newest));
+        Assert.assertEquals(
+                R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_oldest));
+        Assert.assertEquals(
+                R.id.sort_by_oldest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_alpha));
+        Assert.assertEquals(
+                R.id.sort_by_alpha, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_reverse_alpha));
+        Assert.assertEquals(R.id.sort_by_reverse_alpha,
+                mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+    }
+
+    @Test
+    public void testOnMenuItemClick_viewOptions() {
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.visual_view));
+        Assert.assertEquals(
+                R.id.visual_view, mModel.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.compact_view));
+        Assert.assertEquals(
+                R.id.compact_view, mModel.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
     }
 }
