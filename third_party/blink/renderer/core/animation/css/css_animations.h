@@ -342,17 +342,10 @@ class CORE_EXPORT CSSAnimations final {
   static ScrollTimeline* FindTimelineForNode(const ScopedCSSName& name,
                                              Node*,
                                              const CSSAnimationUpdate*);
-  static ScrollTimeline* FindScrollTimelineForElement(const ScopedCSSName&,
-                                                      const CSSAnimationUpdate*,
-                                                      const TimelineData*);
-  static ViewTimeline* FindViewTimelineForElement(const ScopedCSSName& name,
-                                                  const CSSAnimationUpdate*,
-                                                  const TimelineData*);
   template <typename TimelineType>
-  static TimelineType* FindTimelineForElement(
-      const ScopedCSSName& name,
-      const CSSTimelineMap<TimelineType>* existing_timelines,
-      const CSSTimelineMap<TimelineType>* changed_timelines);
+  static TimelineType* FindTimelineForElement(const ScopedCSSName& name,
+                                              const TimelineData*,
+                                              const CSSAnimationUpdate*);
 
   static ScrollTimeline* FindPreviousSiblingAncestorTimeline(
       const ScopedCSSName& name,

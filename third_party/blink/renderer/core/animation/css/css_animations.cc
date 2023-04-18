@@ -1076,46 +1076,22 @@ ScrollTimeline* CSSAnimations::FindTimelineForNode(
     return nullptr;
   const TimelineData* timeline_data = GetTimelineData(*element);
   if (ViewTimeline* timeline =
-          FindViewTimelineForElement(name, update, timeline_data)) {
+          FindTimelineForElement<ViewTimeline>(name, timeline_data, update)) {
     return timeline;
   }
-  return FindScrollTimelineForElement(name, update, timeline_data);
-}
-
-ScrollTimeline* CSSAnimations::FindScrollTimelineForElement(
-    const ScopedCSSName& target_name,
-    const CSSAnimationUpdate* update,
-    const TimelineData* timeline_data) {
-  const CSSScrollTimelineMap* existing_timelines =
-      timeline_data ? &timeline_data->GetScrollTimelines() : nullptr;
-  const CSSScrollTimelineMap* changed_timelines =
-      update ? &update->ChangedScrollTimelines() : nullptr;
-  return FindTimelineForElement<ScrollTimeline>(target_name, existing_timelines,
-                                                changed_timelines);
-}
-
-ViewTimeline* CSSAnimations::FindViewTimelineForElement(
-    const ScopedCSSName& target_name,
-    const CSSAnimationUpdate* update,
-    const TimelineData* timeline_data) {
-  const CSSViewTimelineMap* existing_timelines =
-      timeline_data ? &timeline_data->GetViewTimelines() : nullptr;
-  const CSSViewTimelineMap* changed_timelines =
-      update ? &update->ChangedViewTimelines() : nullptr;
-  return FindTimelineForElement<ViewTimeline>(target_name, existing_timelines,
-                                              changed_timelines);
+  return FindTimelineForElement<ScrollTimeline>(name, timeline_data, update);
 }
 
 template <typename TimelineType>
 TimelineType* CSSAnimations::FindTimelineForElement(
     const ScopedCSSName& target_name,
-    const CSSTimelineMap<TimelineType>* existing_timelines,
-    const CSSTimelineMap<TimelineType>* changed_timelines) {
+    const TimelineData* timeline_data,
+    const CSSAnimationUpdate* update) {
   TimelineType* matching_timeline = nullptr;
   size_t matching_distance = std::numeric_limits<size_t>::max();
 
-  blink::ForEachTimeline(
-      existing_timelines, changed_timelines,
+  ForEachTimeline<TimelineType>(
+      timeline_data, update,
       [&target_name, &matching_timeline, &matching_distance](
           const ScopedCSSName& name, TimelineType* candidate_timeline) {
         UpdateMatchingTimeline(target_name, name, candidate_timeline,
