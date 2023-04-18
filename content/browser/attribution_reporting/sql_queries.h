@@ -40,12 +40,15 @@ inline constexpr const char kSelectInactiveSourcesSql[] =
     "SELECT source_id FROM reports"
     ")LIMIT ?";
 
-inline constexpr const char kScanCandidateData[] =
-    "SELECT I.reporting_origin,I.source_id,R.report_id,R.report_type "
-    "FROM sources I LEFT JOIN reports R ON "
-    "R.source_id=I.source_id WHERE"
-    "(I.source_time BETWEEN ?1 AND ?2)OR"
-    "(R.trigger_time BETWEEN ?1 AND ?2)";
+inline constexpr const char kScanSourcesData[] =
+    "SELECT I.reporting_origin,I.source_id "
+    "FROM sources I WHERE "
+    "I.source_time BETWEEN ? AND ?";
+
+inline constexpr const char kScanReportsData[] =
+    "SELECT R.reporting_origin,R.source_id,R.report_id,R.report_type "
+    "FROM reports R WHERE "
+    "R.trigger_time BETWEEN ? AND ?";
 
 inline constexpr const char kDeleteVestigialConversionSql[] =
     "DELETE FROM reports WHERE source_id=? RETURNING report_type";

@@ -76,6 +76,7 @@ struct AttributionReportRecord {
   std::string external_report_id;
   absl::optional<uint64_t> debug_key;
   std::string context_origin = "https://destination.test";
+  std::string reporting_origin = "https://reporter.test";
   int report_type;
   std::string metadata;
 };
@@ -229,7 +230,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreReportSql[] =
         "INSERT INTO reports "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreReportSql));
     statement.BindInt64(0, record.report_id);
     statement.BindInt64(1, record.source_id);
@@ -245,9 +246,10 @@ class AttributionStorageSqlTest : public testing::Test {
       statement.BindNull(7);
     }
     statement.BindString(8, record.context_origin);
+    statement.BindString(9, record.reporting_origin);
 
-    statement.BindInt(9, record.report_type);
-    statement.BindBlob(10, record.metadata);
+    statement.BindInt(10, record.report_type);
+    statement.BindBlob(11, record.metadata);
     ASSERT_TRUE(statement.Run());
   }
 
@@ -301,13 +303,13 @@ TEST_F(AttributionStorageSqlTest,
     EXPECT_EQ(7u, sql::test::CountSQLTables(&raw_db));
 
     // [conversion_domain_idx], [impression_expiry_idx],
-    // [impression_origin_idx], [reports_by_report_time],
-    // [reports_by_source_id_report_type],
-    // [rate_limit_source_site_reporting_origin_idx],
+    // [impression_origin_idx], [sources_by_source_time],
+    // [reports_by_report_time], [reports_by_source_id_report_type],
+    // [reports_by_trigger_time], [rate_limit_source_site_reporting_origin_idx],
     // [rate_limit_reporting_origin_idx], [rate_limit_time_idx],
     // [rate_limit_impression_id_idx], [sources_by_destination_site], and the
     // meta table index.
-    EXPECT_EQ(11u, sql::test::CountSQLIndices(&raw_db));
+    EXPECT_EQ(13u, sql::test::CountSQLIndices(&raw_db));
   }
 }
 

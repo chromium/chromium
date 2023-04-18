@@ -1434,6 +1434,9 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
   // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
+  //
+  // TODO(linnan): Consider verifying that reporting origin stored in `reports`
+  // table is consistent with that in `sources` table.
   if (failed_send_attempts < 0 || !external_report_id.is_valid() ||
       !source_data.has_value() || !context_origin.has_value() ||
       !report_type.has_value()) {
@@ -2179,6 +2182,14 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
+  // Optimizes data deletion by source time.
+  static constexpr char kSourcesSourceTimeIndexSql[] =
+      "CREATE INDEX sources_by_source_time "
+      "ON sources(source_time)";
+  if (!db_.Execute(kSourcesSourceTimeIndexSql)) {
+    return false;
+  }
+
   // All columns in this table are const except |report_time| and
   // |failed_send_attempts|,
   // which are updated when a report fails to send, as part of retries.
@@ -2191,6 +2202,8 @@ bool AttributionStorageSql::CreateSchema() {
   // data-deletion purposes. For real reports, it is the destination origin on
   // which the trigger was registered. For fake reports, it is the source
   // origin.
+  // |reporting_origin| is the reporting origin for the report and is the same
+  // as the |reporting_origin| of its associated source.
   // |report_type| indicates whether it's an event-level or aggregatable report.
   // |metadata| encodes the report type-specific data.
   //
@@ -2207,6 +2220,7 @@ bool AttributionStorageSql::CreateSchema() {
       "external_report_id TEXT NOT NULL,"
       "debug_key INTEGER,"
       "context_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
       "report_type INTEGER NOT NULL,"
       "metadata BLOB NOT NULL)";
   if (!db_.Execute(kReportsTableSql)) {
@@ -2231,6 +2245,14 @@ bool AttributionStorageSql::CreateSchema() {
       "CREATE INDEX reports_by_source_id_report_type "
       "ON reports(source_id,report_type)";
   if (!db_.Execute(kReportsSourceIdReportTypeIndexSql)) {
+    return false;
+  }
+
+  // Optimizes data deletion by trigger time.
+  static constexpr char kReportsTriggerTimeIndexSql[] =
+      "CREATE INDEX reports_by_trigger_time "
+      "ON reports(trigger_time)";
+  if (!db_.Execute(kReportsTriggerTimeIndexSql)) {
     return false;
   }
 
@@ -2377,40 +2399,59 @@ bool AttributionStorageSql::ClearReportsForOriginsInRange(
     return false;
   }
 
-  // TODO(linnan): Considering optimizing SQL query by moving some logic to C++.
-  // See the comment in crrev.com/c/3379484 for more information.
-  sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kScanCandidateData));
-  statement.BindTime(0, delete_begin);
-  statement.BindTime(1, delete_end);
+  auto match_filter = [&](const std::string& str) {
+    return filter.is_null() || filter.Run(blink::StorageKey::CreateFirstParty(
+                                   DeserializeOrigin(str)));
+  };
 
-  while (statement.Step()) {
-    if (filter.is_null() ||
-        filter.Run(blink::StorageKey::CreateFirstParty(
-            DeserializeOrigin(statement.ColumnString(0))))) {
-      source_ids_to_delete.emplace_back(statement.ColumnInt64(1));
-      if (statement.GetColumnType(2) != sql::ColumnType::kNull &&
-          statement.GetColumnType(3) != sql::ColumnType::kNull) {
-        absl::optional<AttributionReport::Type> report_type =
-            DeserializeReportType(statement.ColumnInt(3));
-        if (report_type) {
-          switch (*report_type) {
-            case AttributionReport::Type::kEventLevel:
-              ++num_event_reports_deleted;
-              break;
-            case AttributionReport::Type::kAggregatableAttribution:
-              ++num_aggregatable_reports_deleted;
-              break;
-          }
-        }
-        if (!DeleteReport(AttributionReport::Id(statement.ColumnInt64(2)))) {
-          return false;
-        }
-      }
+  sql::Statement scan_sources_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kScanSourcesData));
+  scan_sources_statement.BindTime(0, delete_begin);
+  scan_sources_statement.BindTime(1, delete_end);
+
+  while (scan_sources_statement.Step()) {
+    if (match_filter(scan_sources_statement.ColumnString(0))) {
+      source_ids_to_delete.emplace_back(scan_sources_statement.ColumnInt64(1));
     }
   }
 
-  return statement.Succeeded() && transaction.Commit();
+  if (!scan_sources_statement.Succeeded()) {
+    return false;
+  }
+
+  sql::Statement scan_reports_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kScanReportsData));
+  scan_reports_statement.BindTime(0, delete_begin);
+  scan_reports_statement.BindTime(1, delete_end);
+
+  while (scan_reports_statement.Step()) {
+    if (!match_filter(scan_reports_statement.ColumnString(0))) {
+      continue;
+    }
+    source_ids_to_delete.emplace_back(scan_reports_statement.ColumnInt64(1));
+    absl::optional<AttributionReport::Type> report_type =
+        DeserializeReportType(scan_reports_statement.ColumnInt(3));
+    if (report_type) {
+      switch (*report_type) {
+        case AttributionReport::Type::kEventLevel:
+          ++num_event_reports_deleted;
+          break;
+        case AttributionReport::Type::kAggregatableAttribution:
+          ++num_aggregatable_reports_deleted;
+          break;
+      }
+    }
+    if (!DeleteReport(
+            AttributionReport::Id(scan_reports_statement.ColumnInt64(2)))) {
+      return false;
+    }
+  }
+
+  if (!scan_reports_statement.Succeeded()) {
+    return false;
+  }
+
+  return transaction.Commit();
 }
 
 bool AttributionStorageSql::ClearReportsForSourceIds(
@@ -2596,8 +2637,8 @@ bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report) {
       "INSERT INTO reports"
       "(source_id,trigger_time,report_time,initial_report_time,"
       "failed_send_attempts,external_report_id,debug_key,context_origin,"
-      "report_type,metadata)"
-      "VALUES(?,?,?,?,0,?,?,?,?,?)";
+      "reporting_origin,report_type,metadata)"
+      "VALUES(?,?,?,?,0,?,?,?,?,?,?)";
   sql::Statement store_report_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
 
@@ -2612,14 +2653,16 @@ bool AttributionStorageSql::StoreAttributionReport(AttributionReport& report) {
   BindUint64OrNull(store_report_statement, 5, attribution_info.debug_key);
   store_report_statement.BindString(
       6, attribution_info.context_origin.Serialize());
-  store_report_statement.BindInt(7,
+  store_report_statement.BindString(
+      7, attribution_info.source.common_info().reporting_origin().Serialize());
+  store_report_statement.BindInt(8,
                                  SerializeReportType(report.GetReportType()));
 
   std::string metadata = absl::visit(
       [](const auto& data) { return SerializeReportMetadata(data); },
       report.data());
 
-  store_report_statement.BindBlob(8, metadata);
+  store_report_statement.BindBlob(9, metadata);
   if (!store_report_statement.Run()) {
     return false;
   }
