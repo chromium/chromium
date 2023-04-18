@@ -533,7 +533,7 @@ public final class PrivacySandboxDialogTest {
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 

@@ -75,7 +75,7 @@ public class PrivacySandboxDialogNoticeRestrictedV4
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
             dismiss();
         } else if (id == R.id.settings_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);

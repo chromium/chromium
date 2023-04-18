@@ -360,6 +360,7 @@ void PrivacySandboxService::PromptActionOccurredM1(
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
   }
+  // TODO(crbug.com/1428506): Handle PromptAction::kRestrictedNoticeAcknowledge.
 }
 
 // static
@@ -1630,6 +1631,11 @@ void PrivacySandboxService::RecordPromptActionMetrics(
     case (PromptAction::kNoticeMoreButtonClicked): {
       base::RecordAction(base::UserMetricsAction(
           "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
+      break;
+    }
+    case (PromptAction::kRestrictedNoticeAcknowledge): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
       break;
     }
   }
