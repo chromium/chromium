@@ -17,6 +17,10 @@ BASE_DECLARE_FEATURE(kEnableBrowsingDataLifetimeManager);
 // data interface.
 BASE_DECLARE_FEATURE(kDeprecateCookiesTreeModel);
 
+// Enables data retention policies to be applied without the dependency on
+// SyncDisabled by simply disabled sync for the browsing data that is set to be
+// deleted by policy.
+BASE_DECLARE_FEATURE(kDataRetentionPoliciesDisableSyncTypesNeeded);
 }  // namespace browsing_data::features
 
 #endif  // COMPONENTS_BROWSING_DATA_CORE_FEATURES_H_

@@ -25,18 +25,6 @@ class Profile;
 
 namespace browsing_data {
 
-// The data types values of the BrowsingDataSettings policy.
-namespace policy_data_types {
-extern const char kBrowsingHistory[];
-extern const char kDownloadHistory[];
-extern const char kCookiesAndOtherSiteData[];
-extern const char kCachedImagesAndFiles[];
-extern const char kPasswordSignin[];
-extern const char kAutofill[];
-extern const char kSiteSettings[];
-extern const char kHostedAppData[];
-}  // namespace policy_data_types
-
 // The fields of each item defined in the BrowsingDataSettings policy.
 namespace policy_fields {
 extern const char kTimeToLiveInHours[];

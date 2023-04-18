@@ -8,6 +8,8 @@ if (is_android) {
 
 static_library("core") {
   sources = [
+    "browsing_data_policies_utils.cc",
+    "browsing_data_policies_utils.h",
     "browsing_data_utils.cc",
     "browsing_data_utils.h",
     "clear_browsing_data_tab.h",
@@ -71,6 +73,7 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "browsing_data_policies_utils_unittest.cc",
     "browsing_data_utils_unittest.cc",
     "counters/browsing_data_counter_unittest.cc",
     "history_notice_utils_unittest.cc",
