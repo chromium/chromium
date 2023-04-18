@@ -809,7 +809,10 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     // This lives here rather than in ChromeBrowserMainExtraPartsLacros due to
     // timing constraints. If we relocate it, then the flags aren't propagated
     // to the GPU process.
-    if (init_params->BuildFlags().has_value()) {
+    // All the flags in the block below relate to HW protected content, which
+    // require OOP video decoding as well.
+    if (init_params->BuildFlags().has_value() &&
+        init_params->OopVideoDecodingEnabled()) {
       for (auto flag : init_params->BuildFlags().value()) {
         switch (flag) {
           case crosapi::mojom::BuildFlag::kUnknown:

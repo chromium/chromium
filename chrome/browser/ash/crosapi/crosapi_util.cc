@@ -608,6 +608,9 @@ void InjectBrowserInitParams(
   params->enable_cpu_mappable_native_gpu_memory_buffers =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableNativeGpuMemoryBuffers);
+
+  params->oop_video_decoding_enabled = base::FeatureList::IsEnabled(
+      media::kExposeOutOfProcessVideoDecodingToLacros);
 }
 
 template <typename BrowserParams>
