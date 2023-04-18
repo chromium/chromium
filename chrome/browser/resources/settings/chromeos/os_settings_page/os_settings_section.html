@@ -26,6 +26,10 @@
     overflow: hidden;
   }
 
+  :host-context(body.jelly-enabled):host(:not(.expanded)) #card {
+    background-color: var(--cros-sys-app_base);
+  }
+
   @media (forced-colors: active) {
     /* Use border instead of box-shadow (which does not work) in Windows
        HCM. */
