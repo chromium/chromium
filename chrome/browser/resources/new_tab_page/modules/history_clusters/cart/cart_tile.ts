@@ -6,7 +6,7 @@ import '../page_favicon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MerchantCart} from '../../../chrome_cart.mojom-webui.js';
+import {Cart} from '../../../cart.mojom-webui.js';
 import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './cart_tile.html.js';
@@ -28,7 +28,7 @@ export class CartTileModuleElement extends I18nMixin
     };
   }
 
-  cart: MerchantCart;
+  cart: Cart;
 
   override ready() {
     super.ready();

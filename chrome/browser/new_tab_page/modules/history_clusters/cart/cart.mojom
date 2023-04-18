@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.history_clusters.cart.mojom;
+
+import "url/mojom/url.mojom";
+
+// Information needed to show cart for one merchant in Quest module.
+struct Cart {
+  // Domain of the merchant that this cart comes from. This is the
+  // primary key to identify carts.
+  string domain;
+  // Merchant that this cart comes from.
+  string merchant;
+  // URL that directs to the cart page.
+  url.mojom.Url cart_url;
+  // List of URLs for product images to show in the cart.
+  array<url.mojom.Url> product_image_urls;
+  // Text content of the discount on this cart (e.g. 15% off).
+  string discount_text;
+  // Localized string of approximate timestamp of the last time user
+  // interacts with cart (e.g. visit, add product, etc), e.g., "2 days ago".
+  string relative_date;
+};

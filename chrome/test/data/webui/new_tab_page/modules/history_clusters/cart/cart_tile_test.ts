@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {MerchantCart} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
+import {Cart} from 'chrome://new-tab-page/cart.mojom-webui.js';
 import {CartTileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -17,8 +17,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  async function initializeModule(cart: MerchantCart):
-      Promise<CartTileModuleElement> {
+  async function initializeModule(cart: Cart): Promise<CartTileModuleElement> {
     const tileElement = new CartTileModuleElement();
     tileElement.cart = cart;
     document.body.append(tileElement);
@@ -29,6 +28,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
   test('Tile shows multiple images with extra image count card', async () => {
     // Arrange.
     const cart = {
+      domain: 'foo.com',
       merchant: 'Foo',
       cartUrl: {url: 'https://foo.com'},
       productImageUrls: [...Array(5).keys()].map((_, i) => {
@@ -37,6 +37,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
         };
       }),
       discountText: '',
+      relativeDate: '6 mins ago',
     };
     const tileElement = await initializeModule(cart);
 
@@ -55,12 +56,15 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
     assertTrue(isVisible($$(tileElement, '#extraImageCard')!));
     assertEquals($$(tileElement, '#extraImageCard')!.textContent!, '+2');
     assertFalse(isVisible($$(tileElement, '#fallbackImage')!));
+    assertEquals($$(tileElement, '#domain')!.textContent!, 'foo.com');
+    assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
   });
 
   test(
       'Tile shows multiple images without extra image count card', async () => {
         // Arrange.
         const cart = {
+          domain: 'foo.com',
           merchant: 'Foo',
           cartUrl: {url: 'https://foo.com'},
           productImageUrls: [...Array(2).keys()].map((_, i) => {
@@ -69,6 +73,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
             };
           }),
           discountText: '',
+          relativeDate: '6 mins ago',
         };
         const tileElement = await initializeModule(cart);
 
@@ -88,11 +93,14 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
             tileElement.shadowRoot!.querySelectorAll('.large-image').length, 0);
         assertFalse(isVisible($$(tileElement, '#extraImageCard')!));
         assertFalse(isVisible($$(tileElement, '#fallbackImage')!));
+        assertEquals($$(tileElement, '#domain')!.textContent!, 'foo.com');
+        assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
       });
 
   test('Tile shows single image', async () => {
     // Arrange.
     const cart = {
+      domain: 'foo.com',
       merchant: 'Foo',
       cartUrl: {url: 'https://foo.com'},
       productImageUrls: [...Array(1).keys()].map((_, i) => {
@@ -101,6 +109,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
         };
       }),
       discountText: '',
+      relativeDate: '6 mins ago',
     };
     const tileElement = await initializeModule(cart);
 
@@ -119,15 +128,19 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
         tileElement.shadowRoot!.querySelectorAll('.large-image').length, 1);
     assertFalse(isVisible($$(tileElement, '#extraImageCard')!));
     assertFalse(isVisible($$(tileElement, '#fallbackImage')!));
+    assertEquals($$(tileElement, '#domain')!.textContent!, 'foo.com');
+    assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
   });
 
   test('Tile shows fallback image with favicon', async () => {
     // Arrange.
     const cart = {
+      domain: 'foo.com',
       merchant: 'Foo',
       cartUrl: {url: 'https://foo.com'},
       productImageUrls: [],
       discountText: '',
+      relativeDate: '6 mins ago',
     };
     const tileElement = await initializeModule(cart);
 
@@ -146,5 +159,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
         tileElement.shadowRoot!.querySelectorAll('.large-image').length, 0);
     assertFalse(isVisible($$(tileElement, '#extraImageCard')!));
     assertTrue(isVisible($$(tileElement, '#fallbackImage')!));
+    assertEquals($$(tileElement, '#domain')!.textContent!, 'foo.com');
+    assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
   });
 });

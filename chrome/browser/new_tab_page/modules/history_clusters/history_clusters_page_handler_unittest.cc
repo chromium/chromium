@@ -82,6 +82,7 @@ class MockCartService : public CartService {
 
   MOCK_METHOD2(HasActiveCartForURL,
                void(const GURL& url, base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD1(LoadAllActiveCarts, void(CartDB::LoadCallback callback));
 };
 
 constexpr char kSampleNonSearchUrl[] = "https://www.foo.com/";
@@ -592,6 +593,12 @@ TEST_F(HistoryClustersPageHandlerTest, DismissCluster) {
   ASSERT_EQ(1u, visit_ids.front());
 }
 
+TEST_F(HistoryClustersPageHandlerTest, NotLoadCartWithoutFeature) {
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
+  handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
 class HistoryClustersPageHandlerCartTest
     : public HistoryClustersPageHandlerTest {
  public:
@@ -672,4 +679,22 @@ TEST_F(HistoryClustersPageHandlerCartTest, CheckClusterHasCart) {
       "NewTabPage.HistoryClusters.HasCartForTopCluster", false, 1);
   histogram_tester.ExpectTotalCount(
       "NewTabPage.HistoryClusters.HasCartForTopCluster", 2);
+}
+
+class HistoryClustersPageHandlerCartInQuestTest
+    : public HistoryClustersPageHandlerTest {
+ public:
+  HistoryClustersPageHandlerCartInQuestTest() {
+    features_.InitAndEnableFeature(
+        ntp_features::kNtpChromeCartInHistoryClusterModule);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(HistoryClustersPageHandlerCartInQuestTest, LoadCartWithFeature) {
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(1);
+  handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
 }
