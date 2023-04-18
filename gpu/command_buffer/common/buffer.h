@@ -29,7 +29,7 @@ class GPU_EXPORT BufferBacking {
 
 class GPU_EXPORT MemoryBufferBacking : public BufferBacking {
  public:
-  explicit MemoryBufferBacking(uint32_t size);
+  explicit MemoryBufferBacking(uint32_t size, uint32_t alignment = 0);
 
   MemoryBufferBacking(const MemoryBufferBacking&) = delete;
   MemoryBufferBacking& operator=(const MemoryBufferBacking&) = delete;
@@ -41,6 +41,7 @@ class GPU_EXPORT MemoryBufferBacking : public BufferBacking {
  private:
   std::unique_ptr<char[]> memory_;
   uint32_t size_;
+  uint32_t alignment_;
 };
 
 
@@ -108,9 +109,10 @@ inline scoped_refptr<Buffer> MakeBufferFromSharedMemory(
       std::move(shared_memory_region), std::move(shared_memory_mapping)));
 }
 
-inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size) {
+inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size,
+                                              uint32_t alignment = 0) {
   return base::MakeRefCounted<Buffer>(
-      std::make_unique<MemoryBufferBacking>(size));
+      std::make_unique<MemoryBufferBacking>(size, alignment));
 }
 
 // Generates a process unique buffer ID which can be safely used with

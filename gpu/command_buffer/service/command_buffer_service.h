@@ -112,10 +112,14 @@ class GPU_EXPORT CommandBufferService : public CommandBufferServiceBase {
 
   // Creates an in-process transfer buffer and register it with a newly created
   // id.
-  scoped_refptr<Buffer> CreateTransferBuffer(uint32_t size, int32_t* id);
+  scoped_refptr<Buffer> CreateTransferBuffer(uint32_t size,
+                                             int32_t* id,
+                                             uint32_t alignment = 0);
 
   // Creates an in-process transfer buffer and register it with a given id.
-  scoped_refptr<Buffer> CreateTransferBufferWithId(uint32_t size, int32_t id);
+  scoped_refptr<Buffer> CreateTransferBufferWithId(uint32_t size,
+                                                   int32_t id,
+                                                   uint32_t alignment = 0);
 
   // Sets whether commands should be processed by this scheduler. Setting to
   // false unschedules. Setting to true reschedules.

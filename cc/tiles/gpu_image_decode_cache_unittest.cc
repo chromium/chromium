@@ -20,6 +20,7 @@
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op_writer.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_tile_task_runner.h"
@@ -170,7 +171,9 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
 
   void* MapTransferCacheEntry(uint32_t serialized_size) override {
     mapped_entry_size_ = serialized_size;
-    mapped_entry_.reset(new uint8_t[serialized_size]);
+    auto buffer =
+        PaintOpWriter::AllocateAlignedBuffer<uint8_t>(serialized_size);
+    mapped_entry_.swap(buffer);
     return mapped_entry_.get();
   }
 
@@ -270,7 +273,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   bool advertise_accelerated_decoding_ = false;
   size_t mapped_entry_size_ = 0;
-  std::unique_ptr<uint8_t[]> mapped_entry_;
+  std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
 };
 
 class MockRasterImplementation : public gpu::raster::RasterImplementationGLES {
