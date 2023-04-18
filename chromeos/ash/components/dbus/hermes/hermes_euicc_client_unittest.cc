@@ -4,7 +4,9 @@
 
 #include <deque>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -40,6 +42,25 @@ MATCHER_P(MatchUninstallProfileCall, expected_profile_path, "") {
     *result_listener << "has method_name=" << arg->GetMember()
                      << " carrier_profile_path="
                      << carrier_profile_path.value();
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P2(MatchRefreshSmdxProfilesCall,
+           expected_activation_code,
+           expected_restore_slot,
+           "") {
+  dbus::MessageReader reader(arg);
+  std::string activation_code;
+  bool restore_slot;
+  if (arg->GetMember() != hermes::euicc::kRefreshSmdxProfiles ||
+      !reader.PopString(&activation_code) ||
+      activation_code != expected_activation_code ||
+      !reader.PopBool(&restore_slot) || restore_slot != expected_restore_slot) {
+    *result_listener << "has method_name=" << arg->GetMember()
+                     << " activation_code=" << activation_code
+                     << " restore_slot=" << restore_slot;
     return false;
   }
   return true;
@@ -126,6 +147,15 @@ MATCHER_P2(MatchInstallPendingProfileCall,
     return false;
   }
   return true;
+}
+
+void CopyRefreshSmdxProfilesResult(
+    HermesResponseStatus* dest_status,
+    std::vector<dbus::ObjectPath>* dest_profiles,
+    HermesResponseStatus status,
+    const std::vector<dbus::ObjectPath>& profiles) {
+  *dest_status = status;
+  *dest_profiles = profiles;
 }
 
 void CopyInstallResult(HermesResponseStatus* dest_status,
@@ -314,6 +344,56 @@ TEST_F(HermesEuiccClientTest, TestRefreshInstalledProfiles) {
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
+}
+
+TEST_F(HermesEuiccClientTest, TestRefreshSmdxProfiles) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {{ash::features::kSmdsSupport, ash::features::kSmdsDbusMigration}}, {{}});
+
+  dbus::ObjectPath test_euicc_path(kTestEuiccPath);
+  dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                               hermes::euicc::kRefreshSmdxProfiles);
+  method_call.SetSerial(123);
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  MatchRefreshSmdxProfilesCall(kTestRootSmds,
+                                               /*expected_restore_slot=*/true),
+                  _, _))
+      .Times(2)
+      .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
+
+  HermesResponseStatus status;
+  std::vector<dbus::ObjectPath> profiles;
+
+  const std::vector<dbus::ObjectPath> kProfilesToReturn{
+      {dbus::ObjectPath(kTestCarrierProfilePath)}};
+
+  // Verify that client makes corresponding dbus method call with
+  // correct arguments.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter response_writer(response.get());
+  response_writer.AppendArrayOfObjectPaths(kProfilesToReturn);
+  AddPendingMethodCallResult(std::move(response), nullptr);
+  client_->RefreshSmdxProfiles(
+      test_euicc_path, kTestRootSmds, /*restore_slot=*/true,
+      base::BindOnce(CopyRefreshSmdxProfilesResult, &status, &profiles));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kSuccess);
+  ASSERT_EQ(profiles.size(), 1u);
+  EXPECT_EQ(profiles.front(), kProfilesToReturn.front());
+
+  // Verify that error responses are returned properly.
+  std::unique_ptr<dbus::ErrorResponse> error_response =
+      dbus::ErrorResponse::FromMethodCall(&method_call,
+                                          hermes::kErrorNoResponse, "");
+  AddPendingMethodCallResult(nullptr, std::move(error_response));
+  client_->RefreshSmdxProfiles(
+      test_euicc_path, kTestRootSmds, /*restore_slot=*/true,
+      base::BindOnce(CopyRefreshSmdxProfilesResult, &status, &profiles));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kErrorNoResponse);
+  EXPECT_TRUE(profiles.empty());
 }
 
 TEST_F(HermesEuiccClientTest, TestRequestPendingProfiles) {

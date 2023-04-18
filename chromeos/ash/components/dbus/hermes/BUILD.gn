@@ -67,6 +67,7 @@ source_set("test_support") {
   testonly = true
   public_deps = [ ":hermes" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/common",

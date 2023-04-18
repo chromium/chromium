@@ -114,6 +114,22 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void RefreshSmdxProfiles(const dbus::ObjectPath& euicc_path,
+                           const std::string& activation_code,
+                           bool restore_slot,
+                           RefreshSmdxProfilesCallback callback) override {
+    dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                                 hermes::euicc::kRefreshSmdxProfiles);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(activation_code);
+    writer.AppendBool(restore_slot);
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
+    object_proxy->CallMethodWithErrorResponse(
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
+        base::BindOnce(&HermesEuiccClientImpl::OnRefreshSmdxProfilesResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void UninstallProfile(const dbus::ObjectPath& euicc_path,
                         const dbus::ObjectPath& carrier_profile_path,
                         HermesResponseCallback callback) override {
@@ -204,6 +220,34 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     dbus::ObjectPath profile_path;
     reader.PopObjectPath(&profile_path);
     std::move(callback).Run(HermesResponseStatus::kSuccess, &profile_path);
+  }
+
+  void OnRefreshSmdxProfilesResponse(RefreshSmdxProfilesCallback callback,
+                                     dbus::Response* response,
+                                     dbus::ErrorResponse* error_response) {
+    std::vector<dbus::ObjectPath> profile_paths;
+
+    if (error_response) {
+      NET_LOG(ERROR) << "Refresh SM-DX profiles failed with error: "
+                     << error_response->GetErrorName();
+      std::move(callback).Run(
+          HermesResponseStatusFromErrorName(error_response->GetErrorName()),
+          profile_paths);
+      return;
+    }
+
+    if (!response) {
+      // No Error or Response received.
+      NET_LOG(ERROR) << "Refresh SM-DX profiles Error: No error or "
+                        "response received.";
+      std::move(callback).Run(HermesResponseStatus::kErrorNoResponse,
+                              profile_paths);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    reader.PopArrayOfObjectPaths(&profile_paths);
+    std::move(callback).Run(HermesResponseStatus::kSuccess, profile_paths);
   }
 
   void OnHermesStatusResponse(HermesResponseCallback callback,
