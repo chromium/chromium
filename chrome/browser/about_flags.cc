@@ -5397,6 +5397,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"print-management-jelly", flag_descriptions::kPrintManagementJellyName,
      flag_descriptions::kPrintManagementJellyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPrintManagementJelly)},
+    {"printer-settings-revamp", flag_descriptions::kPrinterSettingsRevampName,
+     flag_descriptions::kPrinterSettingsRevampDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPrinterSettingsRevamp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

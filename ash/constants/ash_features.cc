@@ -1697,6 +1697,11 @@ BASE_FEATURE(kPrintManagementJelly,
              "PrintManagementJelly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the new OS Printer Settings UI.
+BASE_FEATURE(kPrinterSettingsRevamp,
+             "PrinterSettingsRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables to allocate more video capture buffers.
 BASE_FEATURE(kMoreVideoCaptureBuffers,
              "MoreVideoCaptureBuffers",
@@ -3140,6 +3145,10 @@ bool IsPinAutosubmitBackfillFeatureEnabled() {
 
 bool IsPinAutosubmitFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmit);
+}
+
+bool IsPrinterSettingsRevampEnabled() {
+  return base::FeatureList::IsEnabled(kPrinterSettingsRevamp);
 }
 
 bool IsPrivacyIndicatorsEnabled() {

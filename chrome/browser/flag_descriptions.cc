@@ -6131,6 +6131,10 @@ const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";
 
+const char kPrinterSettingsRevampName[] = "Enable Printer Settings Revamped UI";
+const char kPrinterSettingsRevampDescription[] =
+    "Show the enhanced UI for the OS Printer settings page.";
+
 const char kPrintingPpdChannelName[] = "Printing PPD channel";
 const char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "

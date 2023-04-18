@@ -60066,6 +60066,7 @@ from previous Chrome versions.
       label="ContextMenuSearchAndShopWithGoogleLens:enabled"/>
   <int value="-1080893507" label="MessagesForAndroidStackingAnimation:enabled"/>
   <int value="-1080300455" label="ProductivityLauncherImageSearch:disabled"/>
+  <int value="-1080220553" label="PrinterSettingsRevamp:enabled"/>
   <int value="-1078892725" label="ReduceAcceptLanguage:enabled"/>
   <int value="-1078093206" label="ash-debug-shortcuts"/>
   <int value="-1077752943" label="enable-password-generation"/>
@@ -65524,6 +65525,7 @@ from previous Chrome versions.
   <int value="1888665816"
       label="AutofillTouchToFillForCreditCardsAndroid:disabled"/>
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>
+  <int value="1888896587" label="PrinterSettingsRevamp:disabled"/>
   <int value="1889038381" label="AppManagementAppDetails:disabled"/>
   <int value="1889051856" label="eol-reset-dismissed-prefs:enabled"/>
   <int value="1889076955" label="disable-app-link"/>
