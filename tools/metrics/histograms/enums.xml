@@ -58380,6 +58380,7 @@ from previous Chrome versions.
   <int value="-1964730371"
       label="AutofillFillMerchantPromoCodeFields:disabled"/>
   <int value="-1964261747" label="WebVrVsyncAlign:disabled"/>
+  <int value="-1963995131" label="DesktopPWAsKeepAlive:disabled"/>
   <int value="-1963838301"
       label="ShowSyncPausedReasonCookiesClearedOnExit:enabled"/>
   <int value="-1963427770" label="EmojiHandwritingVoiceInput:disabled"/>
@@ -58719,6 +58720,7 @@ from previous Chrome versions.
   <int value="-1797739460" label="brotli-encoding:disabled"/>
   <int value="-1797183993" label="LacrosMergeIcuDataFile:enabled"/>
   <int value="-1794783272" label="PdfViewerDocumentProperties:disabled"/>
+  <int value="-1793010019" label="DesktopPWAsKeepAlive:enabled"/>
   <int value="-1792162033" label="WebID:enabled"/>
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
   <int value="-1790227231" label="show-autofill-signatures"/>

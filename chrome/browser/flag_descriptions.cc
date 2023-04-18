@@ -6515,6 +6515,11 @@ const char kRunOnOsLoginDescription[] =
 const char kPreventCloseName[] = "Prevent close";
 const char kPreventCloseDescription[] =
     "When enabled, allow-listed PWAs cannot be closed manually.";
+
+const char kKeepAliveName[] = "Keep alive";
+const char kKeepAliveDescription[] =
+    "When enabled, allow-listed PWAs will be prevented for throttling or "
+    "hibernation.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
