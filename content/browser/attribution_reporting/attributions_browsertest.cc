@@ -665,31 +665,52 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       /*attribution_destination=*/"https://a.test",
       /*source_event_id=*/"5", /*source_type=*/"event",
       /*trigger_data=*/"1", https_server());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect");
+
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_trigger");
+
   ASSERT_TRUE(https_server()->Start());
 
   GURL page_url = https_server()->GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  GURL register_source_url = https_server()->GetURL(
-      "a.test",
-      "/attribution_reporting/"
-      "register_source_headers_trigger_same_origin.html");
-
-  GURL register_trigger_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_trigger_headers.html");
-
   // Setting the frame's sandbox attribute causes its origin to be opaque.
-  ASSERT_TRUE(
-      ExecJs(shell(), JsReplace(R"(
-    let frame = document.getElementById('test_iframe');
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    const frame = document.getElementById('test_iframe');
     frame.setAttribute('sandbox', '');
+    frame.setAttribute('srcdoc', '<img attributionsrc=/register_source_redirect>');
+  )"));
 
-    frame.setAttribute('srcdoc', `
-      <img attributionsrc=$1>
-      <img attributionsrc=$2>
-    `);
-  )",
-                                register_source_url, register_trigger_url)));
+  {
+    register_response->WaitForRequest();
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+    http_response->AddCustomHeader(
+        kAttributionReportingRegisterSourceHeader,
+        R"({"source_event_id":"5","destination":"https://a.test"})");
+    http_response->AddCustomHeader(
+        "Location",
+        https_server()->GetURL("a.test", "/register_trigger").spec());
+    register_response->Send(http_response->ToResponseString());
+    register_response->Done();
+  }
+
+  {
+    register_response2->WaitForRequest();
+    auto http_response2 =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response2->AddCustomHeader(
+        "Attribution-Reporting-Register-Trigger",
+        R"({"event_trigger_data":[{"trigger_data":"1"}]})");
+    register_response2->Send(http_response2->ToResponseString());
+    register_response2->Done();
+  }
 
   expected_report.WaitForReport();
 }
