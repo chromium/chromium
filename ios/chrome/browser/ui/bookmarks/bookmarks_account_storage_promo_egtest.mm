@@ -84,4 +84,24 @@ using chrome_test_util::SecondarySignInButton;
                                         consent:signin::ConsentLevel::kSignin];
 }
 
+// Tests to sign-in in incognito mode with the promo.
+// See http://crbug.com/1432747.
+- (void)testSignInPromoInIncognito {
+  // Add identity to sign-in with.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  // Open bookmarks in incognito mode.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Result: the sign-in is successful without any issue.
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+}
+
 @end

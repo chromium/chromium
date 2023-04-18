@@ -288,7 +288,7 @@ enum AuthenticationState {
 }
 
 - (void)continueSignin {
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   if (self.handlingError) {
     // The flow should not continue while the error is being handled, e.g. while
     // the user is being informed of an issue.
@@ -424,7 +424,7 @@ enum AuthenticationState {
 // is not subject to parental controls and then continues sign-in.
 - (void)checkMergeCaseForUnsupervisedAccounts {
   if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                  browserStatePrefs:_browser->GetBrowserState()
+                                  browserStatePrefs:[self originalBrowserState]
                                                         ->GetPrefs()])) {
     [_performer promptMergeCaseForIdentity:_identityToSignIn
                                    browser:_browser
@@ -440,7 +440,7 @@ enum AuthenticationState {
 - (void)checkSigninSteps {
   id<SystemIdentity> currentIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
-          _browser->GetBrowserState())
+          [self originalBrowserState])
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
     // If the identity to sign-in is different than the current identity,
@@ -452,7 +452,7 @@ enum AuthenticationState {
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity {
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
@@ -639,6 +639,14 @@ enum AuthenticationState {
                                             completion();
                                           }
                                         }];
+}
+
+#pragma mark - Private methods
+
+// The original chrome browser state used for services that don't exist in
+// incognito mode.
+- (ChromeBrowserState*)originalBrowserState {
+  return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
 }
 
 #pragma mark - Used for testing
