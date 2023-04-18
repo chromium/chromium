@@ -30,6 +30,8 @@ class CORE_EXPORT ResourceCacheImpl final
 
   void AddReceiver(mojo::PendingReceiver<mojom::blink::ResourceCache>);
 
+  void ClearReceivers();
+
   void Trace(Visitor*) const;
 
  private:

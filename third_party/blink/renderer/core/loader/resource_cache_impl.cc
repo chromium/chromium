@@ -50,15 +50,19 @@ ResourceCacheImpl::ResourceCacheImpl(
                                           TaskType::kNetworkingUnfreezable));
 }
 
-void ResourceCacheImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_);
-  visitor->Trace(receivers_);
-}
-
 void ResourceCacheImpl::AddReceiver(
     mojo::PendingReceiver<mojom::blink::ResourceCache> receiver) {
   receivers_.Add(std::move(receiver), frame_->GetDocument()->GetTaskRunner(
                                           TaskType::kNetworkingUnfreezable));
+}
+
+void ResourceCacheImpl::ClearReceivers() {
+  receivers_.Clear();
+}
+
+void ResourceCacheImpl::Trace(Visitor* visitor) const {
+  visitor->Trace(frame_);
+  visitor->Trace(receivers_);
 }
 
 void ResourceCacheImpl::Contains(const KURL& url, ContainsCallback callback) {

@@ -1812,7 +1812,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   ResourceCacheManager* resource_cache_manager =
       GetStoragePartition()->GetResourceCacheManager();
   if (resource_cache_manager) {
-    resource_cache_manager->RenderFrameHostDeleted(*this);
+    resource_cache_manager->RenderFrameHostBecameIneligible(*this);
   }
 
   render_view_host_.reset();

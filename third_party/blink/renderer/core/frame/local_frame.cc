@@ -2772,6 +2772,11 @@ void LocalFrame::DidFreeze() {
     DomWindow()->SetIsInBackForwardCache(true);
   }
 
+  if (resource_cache_) {
+    resource_cache_->ClearReceivers();
+    resource_cache_.Clear();
+  }
+
   LoaderFreezeMode freeze_mode = GetLoaderFreezeMode();
   GetDocument()->Fetcher()->SetDefersLoading(freeze_mode);
   Loader().SetDefersLoading(freeze_mode);
