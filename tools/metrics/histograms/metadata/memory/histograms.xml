@@ -1407,11 +1407,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Graphics" units="MB" expires_after="M82">
+<histogram name="Memory.Graphics" units="MB" expires_after="never">
+<!-- expires-never: "heartbeat" metric (internal: used for chromeos memory) -->
+
   <owner>hajimehoshi@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>kouhei@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
   <summary>
     System-wide graphics driver memory consumption. Recorded on Chrome OS for
     platforms where it is exposed by the kernel (for example, Intel i915 and
