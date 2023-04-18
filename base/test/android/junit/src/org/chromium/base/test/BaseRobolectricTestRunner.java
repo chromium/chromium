@@ -10,6 +10,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.TestLifecycle;
+import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
@@ -24,6 +25,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.lang.reflect.Method;
@@ -93,5 +95,12 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
         }
         Class<?> testSuiteClass = method.getDeclaringClass();
         return testSuiteClass.getAnnotation(DisabledTest.class) != null;
+    }
+
+    @Override
+    protected InstrumentationConfiguration createClassLoaderConfig(final FrameworkMethod method) {
+        return new InstrumentationConfiguration.Builder(super.createClassLoaderConfig(method))
+                .doNotAcquireClass(TimeoutTimer.class) // Requires access to non-fake SystemClock.
+                .build();
     }
 }

@@ -103,8 +103,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     ]
     if self._test_instance.debug_socket and not for_listing:
       jvm_args += [
-          '-agentlib:jdwp=transport=dt_socket'
-          ',server=y,suspend=y,address=%s' % self._test_instance.debug_socket
+          '-Dchromium.jdwp_active=true',
+          ('-agentlib:jdwp=transport=dt_socket'
+           ',server=y,suspend=y,address=%s' % self._test_instance.debug_socket)
       ]
 
     if self._test_instance.coverage_dir and not for_listing:
