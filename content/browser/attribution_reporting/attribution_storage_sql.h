@@ -230,6 +230,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
       const AttributionInfo& attribution_info,
+      const StoredSource&,
       const AttributionTrigger& trigger,
       absl::optional<AttributionReport>& report,
       absl::optional<uint64_t>& dedup_key,
@@ -304,6 +305,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   AttributionTrigger::AggregatableResult
   MaybeCreateAggregatableAttributionReport(
       const AttributionInfo& attribution_info,
+      const StoredSource&,
       const AttributionTrigger& trigger,
       absl::optional<AttributionReport>& report,
       absl::optional<uint64_t>& dedup_key,

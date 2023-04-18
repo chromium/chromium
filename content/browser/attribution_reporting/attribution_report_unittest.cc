@@ -32,8 +32,8 @@ using ::attribution_reporting::mojom::SourceType;
 using ::base::test::IsJson;
 
 TEST(AttributionReportTest, ReportURL) {
-  ReportBuilder builder(
-      AttributionInfoBuilder(SourceBuilder().BuildStored()).Build());
+  ReportBuilder builder(AttributionInfoBuilder().Build(),
+                        SourceBuilder().BuildStored());
 
   EXPECT_EQ(
       "https://report.test/.well-known/attribution-reporting/"
@@ -83,13 +83,13 @@ TEST(AttributionReportTest, ReportBody) {
 
   for (const auto& test_case : kTestCases) {
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder(base::Time::UnixEpoch())
-                                       .SetSourceEventId(100)
-                                       .SetSourceType(test_case.source_type)
-                                       .BuildStored())
-                .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-                .Build())
+        ReportBuilder(AttributionInfoBuilder()
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                          .Build(),
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetSourceEventId(100)
+                          .SetSourceType(test_case.source_type)
+                          .BuildStored())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
@@ -137,12 +137,12 @@ TEST(AttributionReportTest, ReportBody_MultiDestination) {
 
   for (const auto& test_case : kTestCases) {
     AttributionReport report =
-        ReportBuilder(AttributionInfoBuilder(
-                          SourceBuilder(base::Time::UnixEpoch())
-                              .SetDestinationSites(test_case.destination_sites)
-                              .BuildStored())
+        ReportBuilder(AttributionInfoBuilder()
                           .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-                          .Build())
+                          .Build(),
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetDestinationSites(test_case.destination_sites)
+                          .BuildStored())
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 
@@ -200,14 +200,14 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
 
   for (const auto& test_case : kTestCases) {
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder(base::Time::UnixEpoch())
-                                       .SetSourceEventId(100)
-                                       .SetDebugKey(test_case.source_debug_key)
-                                       .BuildStored())
-                .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-                .SetDebugKey(test_case.trigger_debug_key)
-                .Build())
+        ReportBuilder(AttributionInfoBuilder()
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                          .SetDebugKey(test_case.trigger_debug_key)
+                          .Build(),
+                      SourceBuilder(base::Time::UnixEpoch())
+                          .SetSourceEventId(100)
+                          .SetDebugKey(test_case.source_debug_key)
+                          .BuildStored())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
@@ -224,10 +224,9 @@ TEST(AttributionReportTest, ReportBody_Aggregatable) {
   })json");
 
   AttributionReport report =
-      ReportBuilder(AttributionInfoBuilder(
-                        SourceBuilder(base::Time::FromJavaTime(1234483200000))
-                            .BuildStored())
-                        .Build())
+      ReportBuilder(
+          AttributionInfoBuilder().Build(),
+          SourceBuilder(base::Time::FromJavaTime(1234483200000)).BuildStored())
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();
@@ -242,11 +241,10 @@ TEST(AttributionReportTest, PopulateAdditionalHeaders) {
   };
 
   for (const auto& attestation_token : kTestCases) {
-    AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
-            .SetAttestationToken(attestation_token)
-            .BuildAggregatableAttribution();
+    AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
+                                             SourceBuilder().BuildStored())
+                                   .SetAttestationToken(attestation_token)
+                                   .BuildAggregatableAttribution();
 
     net::HttpRequestHeaders headers;
     report.PopulateAdditionalHeaders(headers);

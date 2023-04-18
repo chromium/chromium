@@ -26,16 +26,15 @@ using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
 AttributionReport DefaultEventLevelReport(
     base::Time source_time = base::Time::Now()) {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder(source_time).BuildStored())
-                 .Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder(source_time).BuildStored())
       .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
       .Build();
 }
 
 AttributionReport DefaultAggregatableReport() {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder().BuildStored())
       .SetAggregatableHistogramContributions(
           {AggregatableHistogramContribution(1, 2)})
       .BuildAggregatableAttribution();

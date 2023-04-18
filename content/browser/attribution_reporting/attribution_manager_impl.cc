@@ -420,8 +420,7 @@ AttributionManagerImpl::CreateWithNewDbForTesting(
 
 bool AttributionManagerImpl::IsReportAllowed(
     const AttributionReport& report) const {
-  const CommonSourceInfo& common_info =
-      report.attribution_info().source.common_info();
+  const CommonSourceInfo& common_info = report.GetStoredSource().common_info();
   return IsOperationAllowed(
       storage_partition_.get(),
       ContentBrowserClient::AttributionReportingOperation::kReport,
@@ -810,7 +809,7 @@ void AttributionManagerImpl::OnReportStored(
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   const AttributionInfo& attribution_info = report.attribution_info();
-  if (!attribution_info.debug_key || !attribution_info.source.debug_key() ||
+  if (!attribution_info.debug_key || !report.GetStoredSource().debug_key() ||
       !IsReportAllowed(report)) {
     return;
   }

@@ -74,7 +74,8 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns false on failure.
   [[nodiscard]] bool AddRateLimitForAttribution(
       sql::Database* db,
-      const AttributionInfo& attribution_info);
+      const AttributionInfo& attribution_info,
+      const StoredSource&);
 
   [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
       sql::Database* db,
@@ -86,11 +87,13 @@ class CONTENT_EXPORT RateLimitTable {
 
   [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
       sql::Database* db,
-      const AttributionInfo& attribution_info);
+      const AttributionInfo& attribution_info,
+      const StoredSource&);
 
   [[nodiscard]] RateLimitResult AttributionAllowedForAttributionLimit(
       sql::Database* db,
-      const AttributionInfo& attribution_info);
+      const AttributionInfo& attribution_info,
+      const StoredSource&);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.

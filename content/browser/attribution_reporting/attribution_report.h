@@ -20,6 +20,7 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -44,10 +45,8 @@ class CONTENT_EXPORT AttributionReport {
   struct CONTENT_EXPORT EventLevelData {
     EventLevelData(uint64_t trigger_data,
                    int64_t priority,
-                   double randomized_trigger_rate);
-    // This is added to allow default construction of
-    // `AttributionReport::Data()`.
-    EventLevelData();
+                   double randomized_trigger_rate,
+                   StoredSource);
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -66,6 +65,8 @@ class CONTENT_EXPORT AttributionReport {
     // registered.
     double randomized_trigger_rate;
 
+    StoredSource source;
+
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
   };
@@ -76,8 +77,8 @@ class CONTENT_EXPORT AttributionReport {
         std::vector<AggregatableHistogramContribution> contributions,
         ::aggregation_service::mojom::AggregationCoordinator
             aggregation_coordinator,
-        absl::optional<std::string> attestation_token);
-    AggregatableAttributionData();
+        absl::optional<std::string> attestation_token,
+        StoredSource);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
     AggregatableAttributionData(AggregatableAttributionData&&);
@@ -107,6 +108,8 @@ class CONTENT_EXPORT AttributionReport {
 
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator;
+
+    StoredSource source;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
@@ -157,6 +160,8 @@ class CONTENT_EXPORT AttributionReport {
   Data& data() { return data_; }
 
   Type GetReportType() const { return static_cast<Type>(data_.index()); }
+
+  const StoredSource& GetStoredSource() const;
 
   void set_id(Id id) { id_ = id; }
 

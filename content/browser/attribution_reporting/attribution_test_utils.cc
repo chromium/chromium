@@ -387,9 +387,8 @@ AttributionTrigger TriggerBuilder::Build(
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(
-    StoredSource source,
     attribution_reporting::SuitableOrigin context_origin)
-    : source_(std::move(source)), context_origin_(std::move(context_origin)) {}
+    : context_origin_(std::move(context_origin)) {}
 
 AttributionInfoBuilder::~AttributionInfoBuilder() = default;
 
@@ -405,11 +404,13 @@ AttributionInfoBuilder& AttributionInfoBuilder::SetDebugKey(
 }
 
 AttributionInfo AttributionInfoBuilder::Build() const {
-  return AttributionInfo(source_, time_, debug_key_, context_origin_);
+  return AttributionInfo(time_, debug_key_, context_origin_);
 }
 
-ReportBuilder::ReportBuilder(AttributionInfo attribution_info)
+ReportBuilder::ReportBuilder(AttributionInfo attribution_info,
+                             StoredSource source)
     : attribution_info_(std::move(attribution_info)),
+      source_(std::move(source)),
       external_report_id_(DefaultExternalReportID()) {}
 
 ReportBuilder::~ReportBuilder() = default;
@@ -471,16 +472,17 @@ AttributionReport ReportBuilder::Build() const {
       /*initial_report_time=*/report_time_, external_report_id_,
       /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data_, priority_,
-                                        randomized_trigger_rate_));
+                                        randomized_trigger_rate_, source_));
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
-  return AttributionReport(
-      attribution_info_, report_id_, report_time_,
-      /*initial_report_time=*/report_time_, external_report_id_,
-      /*failed_send_attempts=*/0,
-      AttributionReport::AggregatableAttributionData(
-          contributions_, aggregation_coordinator_, attestation_token_));
+  return AttributionReport(attribution_info_, report_id_, report_time_,
+                           /*initial_report_time=*/report_time_,
+                           external_report_id_,
+                           /*failed_send_attempts=*/0,
+                           AttributionReport::AggregatableAttributionData(
+                               contributions_, aggregation_coordinator_,
+                               attestation_token_, source_));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -501,8 +503,7 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
 
 bool operator==(const AttributionInfo& a, const AttributionInfo& b) {
   const auto tie = [](const AttributionInfo& attribution_info) {
-    return std::make_tuple(attribution_info.source, attribution_info.time,
-                           attribution_info.debug_key,
+    return std::make_tuple(attribution_info.debug_key,
                            attribution_info.context_origin);
   };
   return tie(a) == tie(b);
@@ -561,7 +562,7 @@ bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b) {
   const auto tie = [](const AttributionReport::EventLevelData& data) {
     return std::make_tuple(data.trigger_data, data.priority,
-                           data.randomized_trigger_rate);
+                           data.randomized_trigger_rate, data.source);
   };
   return tie(a) == tie(b);
 }
@@ -573,7 +574,7 @@ bool operator==(const AttributionReport::AggregatableAttributionData& a,
   const auto tie =
       [](const AttributionReport::AggregatableAttributionData& data) {
         return std::make_tuple(data.contributions, data.attestation_token,
-                               data.aggregation_coordinator);
+                               data.aggregation_coordinator, data.source);
       };
   return tie(a) == tie(b);
 }
@@ -731,8 +732,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionInfo& attribution_info) {
-  return out << "{source=" << attribution_info.source
-             << ",time=" << attribution_info.time << ",debug_key="
+  return out << "{time=" << attribution_info.time << ",debug_key="
              << (attribution_info.debug_key
                      ? base::NumberToString(*attribution_info.debug_key)
                      : "null")
@@ -800,7 +800,8 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data) {
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
-             << ",randomized_trigger_rate=" << data.randomized_trigger_rate;
+             << ",randomized_trigger_rate=" << data.randomized_trigger_rate
+             << ",source=" << data.source << "}";
 }
 
 std::ostream& operator<<(
@@ -822,7 +823,7 @@ std::ostream& operator<<(
   }
 
   return out << ",aggregation_coordinator=" << data.aggregation_coordinator
-             << "}";
+             << ",source=" << data.source << "}";
 }
 
 namespace {

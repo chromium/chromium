@@ -102,9 +102,7 @@ struct RateLimitInput {
 
   AttributionInfo BuildAttributionInfo() const {
     CHECK_EQ(scope, RateLimitScope::kAttribution);
-    auto source = NewSourceBuilder().BuildStored();
     return AttributionInfoBuilder(
-               std::move(source),
                *SuitableOrigin::Deserialize(destination_origin))
         .SetTime(attribution_time.value_or(time))
         .Build();
@@ -219,8 +217,9 @@ class RateLimitTableTest : public testing::Test {
   }
 
   [[nodiscard]] bool AddRateLimitForAttribution(const RateLimitInput& input) {
-    return table_.AddRateLimitForAttribution(&db_,
-                                             input.BuildAttributionInfo());
+    return table_.AddRateLimitForAttribution(
+        &db_, input.BuildAttributionInfo(),
+        input.NewSourceBuilder().BuildStored());
   }
 
   [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
@@ -240,13 +239,15 @@ class RateLimitTableTest : public testing::Test {
   [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
       const RateLimitInput& input) {
     return table_.AttributionAllowedForReportingOriginLimit(
-        &db_, input.BuildAttributionInfo());
+        &db_, input.BuildAttributionInfo(),
+        input.NewSourceBuilder().BuildStored());
   }
 
   [[nodiscard]] RateLimitResult AttributionAllowedForAttributionLimit(
       const RateLimitInput& input) {
     return table_.AttributionAllowedForAttributionLimit(
-        &db_, input.BuildAttributionInfo());
+        &db_, input.BuildAttributionInfo(),
+        input.NewSourceBuilder().BuildStored());
   }
 
  protected:
@@ -351,39 +352,38 @@ TEST_F(RateLimitTableTest,
       .max_attributions = 2,
   });
 
-  const auto navigation_attribution =
-      AttributionInfoBuilder(
-          SourceBuilder()
-              .SetSourceType(
-                  attribution_reporting::mojom::SourceType::kNavigation)
-              .BuildStored())
-          .Build();
+  const auto navigation_source =
+      SourceBuilder()
+          .SetSourceType(attribution_reporting::mojom::SourceType::kNavigation)
+          .BuildStored();
 
-  const auto event_attribution =
-      AttributionInfoBuilder(
-          SourceBuilder()
-              .SetSourceType(attribution_reporting::mojom::SourceType::kEvent)
-              .BuildStored())
-          .Build();
+  const auto event_source =
+      SourceBuilder()
+          .SetSourceType(attribution_reporting::mojom::SourceType::kEvent)
+          .BuildStored();
+
+  const auto attribution_info = AttributionInfoBuilder().Build();
 
   ASSERT_EQ(RateLimitResult::kAllowed,
-            table_.AttributionAllowedForAttributionLimit(
-                &db_, navigation_attribution));
+            table_.AttributionAllowedForAttributionLimit(&db_, attribution_info,
+                                                         navigation_source));
 
-  ASSERT_EQ(
-      RateLimitResult::kAllowed,
-      table_.AttributionAllowedForAttributionLimit(&db_, event_attribution));
+  ASSERT_EQ(RateLimitResult::kAllowed,
+            table_.AttributionAllowedForAttributionLimit(&db_, attribution_info,
+                                                         event_source));
 
-  ASSERT_TRUE(table_.AddRateLimitForAttribution(&db_, navigation_attribution));
-  ASSERT_TRUE(table_.AddRateLimitForAttribution(&db_, event_attribution));
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(&db_, attribution_info,
+                                                navigation_source));
+  ASSERT_TRUE(
+      table_.AddRateLimitForAttribution(&db_, attribution_info, event_source));
 
   ASSERT_EQ(RateLimitResult::kNotAllowed,
-            table_.AttributionAllowedForAttributionLimit(
-                &db_, navigation_attribution));
+            table_.AttributionAllowedForAttributionLimit(&db_, attribution_info,
+                                                         navigation_source));
 
-  ASSERT_EQ(
-      RateLimitResult::kNotAllowed,
-      table_.AttributionAllowedForAttributionLimit(&db_, event_attribution));
+  ASSERT_EQ(RateLimitResult::kNotAllowed,
+            table_.AttributionAllowedForAttributionLimit(&db_, attribution_info,
+                                                         event_source));
 }
 
 namespace {
@@ -594,7 +594,7 @@ TEST_F(RateLimitTableTest,
 TEST_F(RateLimitTableTest, ClearAllDataAllTime) {
   for (int i = 0; i < 2; i++) {
     ASSERT_TRUE(table_.AddRateLimitForAttribution(
-        &db_, AttributionInfoBuilder(SourceBuilder().BuildStored()).Build()));
+        &db_, AttributionInfoBuilder().Build(), SourceBuilder().BuildStored()));
   }
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
 
@@ -770,24 +770,18 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_,
-      AttributionInfoBuilder(
-          SourceBuilder()
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
-              .BuildStored())
-          .SetTime(base::Time::Now())
-          .Build()));
+      &db_, AttributionInfoBuilder().SetTime(base::Time::Now()).Build(),
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
+          .BuildStored()));
 
   task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_,
-      AttributionInfoBuilder(
-          SourceBuilder()
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
-              .BuildStored())
-          .SetTime(base::Time::Now())
-          .Build()));
+      &db_, AttributionInfoBuilder().SetTime(base::Time::Now()).Build(),
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
+          .BuildStored()));
 
   // Neither row has expired at this point.
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
@@ -796,13 +790,10 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_,
-      AttributionInfoBuilder(
-          SourceBuilder()
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s3.test"))
-              .BuildStored())
-          .SetTime(base::Time::Now())
-          .Build()));
+      &db_, AttributionInfoBuilder().SetTime(base::Time::Now()).Build(),
+      SourceBuilder()
+          .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s3.test"))
+          .BuildStored()));
 
   // The first row should be expired at this point.
   ASSERT_THAT(
@@ -836,16 +827,14 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_OneRowPerDestination) {
 
 TEST_F(RateLimitTableTest, AddFakeSourceForAttribution_OneRowPerDestination) {
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_,
-      AttributionInfoBuilder(
-          SourceBuilder()
-              .SetDestinationSites(
-                  {net::SchemefulSite::Deserialize("https://a.test"),
-                   net::SchemefulSite::Deserialize("https://b.test"),
-                   net::SchemefulSite::Deserialize("https://c.test")})
-              .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-              .BuildStored())
-          .Build()));
+      &db_, AttributionInfoBuilder().Build(),
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://b.test"),
+               net::SchemefulSite::Deserialize("https://c.test")})
+          .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+          .BuildStored()));
 
   ASSERT_THAT(GetRateLimitRows(), SizeIs(3));
   ASSERT_THAT(
@@ -918,10 +907,8 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
 
   for (int64_t id = 7; id <= 9; id++) {
     ASSERT_TRUE(table_.AddRateLimitForAttribution(
-        &db_,
-        AttributionInfoBuilder(
-            SourceBuilder().SetSourceId(StoredSource::Id(id)).BuildStored())
-            .Build()));
+        &db_, AttributionInfoBuilder().Build(),
+        SourceBuilder().SetSourceId(StoredSource::Id(id)).BuildStored()));
   }
 
   ASSERT_THAT(GetRateLimitRows(),
@@ -1011,12 +998,10 @@ TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {
           .BuildStored()));
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
-      &db_, AttributionInfoBuilder(
-                SourceBuilder()
-                    .SetReportingOrigin(
-                        *SuitableOrigin::Deserialize("https://b.r.test"))
-                    .BuildStored())
-                .Build()));
+      &db_, AttributionInfoBuilder().Build(),
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
+          .BuildStored()));
 
   std::vector<AttributionDataModel::DataKey> keys;
   table_.AppendRateLimitDataKeys(&db_, keys);

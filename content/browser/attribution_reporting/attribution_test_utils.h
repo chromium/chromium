@@ -235,7 +235,6 @@ class TriggerBuilder {
 class AttributionInfoBuilder {
  public:
   explicit AttributionInfoBuilder(
-      StoredSource source,
       // For most tests, the context origin is irrelevant.
       attribution_reporting::SuitableOrigin context_origin =
           *attribution_reporting::SuitableOrigin::Deserialize(
@@ -249,7 +248,6 @@ class AttributionInfoBuilder {
   AttributionInfo Build() const;
 
  private:
-  StoredSource source_;
   base::Time time_;
   absl::optional<uint64_t> debug_key_;
   attribution_reporting::SuitableOrigin context_origin_;
@@ -259,7 +257,7 @@ class AttributionInfoBuilder {
 // data.
 class ReportBuilder {
  public:
-  explicit ReportBuilder(AttributionInfo attribution_info);
+  explicit ReportBuilder(AttributionInfo attribution_info, StoredSource);
   ~ReportBuilder();
 
   ReportBuilder& SetTriggerData(uint64_t trigger_data);
@@ -289,6 +287,7 @@ class ReportBuilder {
 
  private:
   AttributionInfo attribution_info_;
+  StoredSource source_;
   uint64_t trigger_data_ = 0;
   base::Time report_time_;
   int64_t priority_ = 0;
@@ -455,8 +454,7 @@ MATCHER_P(TriggerDestinationOriginIs, matcher, "") {
 // Report matchers
 
 MATCHER_P(ReportSourceIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.attribution_info().source,
-                            result_listener);
+  return ExplainMatchResult(matcher, arg.GetStoredSource(), result_listener);
 }
 
 MATCHER_P(ReportTimeIs, matcher, "") {

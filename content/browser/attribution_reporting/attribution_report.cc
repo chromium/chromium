@@ -32,15 +32,15 @@ namespace content {
 AttributionReport::EventLevelData::EventLevelData(
     uint64_t trigger_data,
     int64_t priority,
-    double randomized_trigger_rate)
+    double randomized_trigger_rate,
+    StoredSource source)
     : trigger_data(trigger_data),
       priority(priority),
-      randomized_trigger_rate(randomized_trigger_rate) {
+      randomized_trigger_rate(randomized_trigger_rate),
+      source(std::move(source)) {
   DCHECK_GE(randomized_trigger_rate, 0);
   DCHECK_LE(randomized_trigger_rate, 1);
 }
-
-AttributionReport::EventLevelData::EventLevelData() = default;
 
 AttributionReport::EventLevelData::EventLevelData(const EventLevelData&) =
     default;
@@ -59,13 +59,12 @@ AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     std::vector<AggregatableHistogramContribution> contributions,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator,
-    absl::optional<std::string> attestation_token)
+    absl::optional<std::string> attestation_token,
+    StoredSource source)
     : contributions(std::move(contributions)),
       attestation_token(std::move(attestation_token)),
-      aggregation_coordinator(aggregation_coordinator) {}
-
-AttributionReport::AggregatableAttributionData::AggregatableAttributionData() =
-    default;
+      aggregation_coordinator(aggregation_coordinator),
+      source(std::move(source)) {}
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     const AggregatableAttributionData&) = default;
@@ -141,7 +140,8 @@ GURL AttributionReport::ReportURL(bool debug) const {
 
   GURL::Replacements replacements;
   replacements.SetPathStr(path);
-  return attribution_info_.source.common_info()
+  return GetStoredSource()
+      .common_info()
       .reporting_origin()
       ->GetURL()
       .ReplaceComponents(replacements);
@@ -153,7 +153,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
           [this](const EventLevelData& data) {
             base::Value::Dict dict;
 
-            const StoredSource& source = this->attribution_info().source;
+            const StoredSource& source = data.source;
 
             dict.Set("attribution_destination",
                      source.destination_sites().ToJson());
@@ -204,8 +204,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
                        "not generated prior to send");
             }
 
-            if (absl::optional<uint64_t> debug_key =
-                    this->attribution_info().source.debug_key()) {
+            if (absl::optional<uint64_t> debug_key = data.source.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
             }
 
@@ -252,6 +251,12 @@ void AttributionReport::PopulateAdditionalHeaders(
     headers.SetHeader("Sec-Attribution-Reporting-Private-State-Token",
                       *data->attestation_token);
   }
+}
+
+const StoredSource& AttributionReport::GetStoredSource() const {
+  return absl::visit(
+      [](const auto& data) -> const StoredSource& { return data.source; },
+      data_);
 }
 
 }  // namespace content

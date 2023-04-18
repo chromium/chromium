@@ -143,9 +143,8 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
   for (const auto& test_case : kTestCases) {
     base::Time source_time = base::Time::FromJavaTime(test_case.source_time);
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder(source_time).BuildStored())
-                .Build())
+        ReportBuilder(AttributionInfoBuilder().Build(),
+                      SourceBuilder(source_time).BuildStored())
             .SetAggregatableHistogramContributions(
                 {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
             .BuildAggregatableAttribution();
@@ -167,8 +166,8 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
   for (auto aggregation_coordinator :
        {::aggregation_service::mojom::AggregationCoordinator::kAwsCloud}) {
     AttributionReport report =
-        ReportBuilder(
-            AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+        ReportBuilder(AttributionInfoBuilder().Build(),
+                      SourceBuilder().BuildStored())
             .SetAggregatableHistogramContributions(
                 {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
             .SetAggregationCoordinator(aggregation_coordinator)

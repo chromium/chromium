@@ -151,12 +151,11 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
 
   ai_mojom::WebUIReportDataPtr data = absl::visit(
       base::Overloaded{
-          [attribution_info](
-              const AttributionReport::EventLevelData& event_level_data) {
+          [](const AttributionReport::EventLevelData& event_level_data) {
             return ai_mojom::WebUIReportData::NewEventLevelData(
                 ai_mojom::WebUIReportEventLevelData::New(
                     event_level_data.priority,
-                    attribution_info.source.attribution_logic() ==
+                    event_level_data.source.attribution_logic() ==
                         StoredSource::AttributionLogic::kTruthfully));
           },
 

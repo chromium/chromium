@@ -9,17 +9,14 @@
 
 #include "base/time/time.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-// Contains information available at the time a trigger of any type is
-// associated with a `StoredSource`.
+// Contains information associated with a trigger.
 struct CONTENT_EXPORT AttributionInfo {
-  AttributionInfo(StoredSource source,
-                  base::Time time,
+  AttributionInfo(base::Time time,
                   absl::optional<uint64_t> debug_key,
                   attribution_reporting::SuitableOrigin context_origin);
   ~AttributionInfo();
@@ -29,9 +26,6 @@ struct CONTENT_EXPORT AttributionInfo {
 
   AttributionInfo& operator=(const AttributionInfo&);
   AttributionInfo& operator=(AttributionInfo&&);
-
-  // Source associated with this attribution.
-  StoredSource source;
 
   // The time the trigger occurred.
   base::Time time;

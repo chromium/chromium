@@ -68,17 +68,14 @@ const char kVerboseDebugReportMetricName[] =
     "Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode";
 
 AttributionReport DefaultEventLevelReport() {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder(base::Time()).BuildStored())
-                 .Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder(base::Time()).BuildStored())
       .Build();
 }
 
 AttributionReport DefaultAggregatableReport() {
-  return ReportBuilder(
-             AttributionInfoBuilder(
-                 SourceBuilder(SourceBuilder(base::Time())).BuildStored())
-                 .Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder(SourceBuilder(base::Time())).BuildStored())
       .BuildAggregatableAttribution();
 }
 
@@ -172,12 +169,12 @@ TEST_F(AttributionReportNetworkSenderTest,
   };
 
   const AttributionReport report =
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(base::Time::UnixEpoch())
-                                     .SetSourceEventId(100)
-                                     .BuildStored())
-              .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
-              .Build())
+      ReportBuilder(AttributionInfoBuilder()
+                        .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                        .Build(),
+                    SourceBuilder(base::Time::UnixEpoch())
+                        .SetSourceEventId(100)
+                        .BuildStored())
           .SetTriggerData(5)
           .SetRandomizedTriggerRate(0.2)
           .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
@@ -454,10 +451,9 @@ TEST_F(AttributionReportNetworkSenderTest, ManyReports_AllSentSuccessfully) {
 
 TEST_F(AttributionReportNetworkSenderTest, HeadersPopulated) {
   AttributionReport report =
-      ReportBuilder(AttributionInfoBuilder(
-                        SourceBuilder(base::Time::FromJavaTime(1234483200000))
-                            .BuildStored())
-                        .Build())
+      ReportBuilder(
+          AttributionInfoBuilder().Build(),
+          SourceBuilder(base::Time::FromJavaTime(1234483200000)).BuildStored())
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();

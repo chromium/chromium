@@ -154,10 +154,10 @@ class AttributionStorageTest : public testing::Test {
     CHECK(event_trigger != conversion.registration().event_triggers.end());
 
     return ReportBuilder(AttributionInfoBuilder(
-                             source,
                              /*context_origin=*/conversion.destination_origin())
                              .SetTime(base::Time::Now())
-                             .Build())
+                             .Build(),
+                         source)
         .SetTriggerData(event_trigger->data)
         .SetReportTime(source.common_info().source_time() + kReportDelay)
         .SetPriority(event_trigger->priority)
@@ -169,10 +169,10 @@ class AttributionStorageTest : public testing::Test {
       std::vector<AggregatableHistogramContribution> contributions,
       const AttributionTrigger& trigger) {
     return ReportBuilder(AttributionInfoBuilder(
-                             source,
                              /*context_origin=*/trigger.destination_origin())
                              .SetTime(base::Time::Now())
-                             .Build())
+                             .Build(),
+                         source)
         .SetReportTime(base::Time::Now() + kReportDelay)
         .SetAggregatableHistogramContributions(std::move(contributions))
         .BuildAggregatableAttribution();
@@ -1590,15 +1590,14 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   AttributionReport expected_event_level_report =
       ReportBuilder(
           AttributionInfoBuilder(
-              builder
-                  .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-                  .SetActiveState(StoredSource::ActiveState::
-                                      kReachedEventLevelAttributionLimit)
-                  .BuildStored(),
               /*context_origin=*/*SuitableOrigin::Deserialize(
                   "https://impression.test"))
               .SetTime(fake_trigger_time)
-              .Build())
+              .Build(),
+          builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+              .SetActiveState(
+                  StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
+              .BuildStored())
           .SetTriggerData(7)
           .SetReportTime(fake_report_time)
           .Build();
@@ -1640,16 +1639,15 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   expected_event_level_report =
       ReportBuilder(
           AttributionInfoBuilder(
-              builder
-                  .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-                  .SetAggregatableBudgetConsumed(1)
-                  .SetActiveState(StoredSource::ActiveState::
-                                      kReachedEventLevelAttributionLimit)
-                  .BuildStored(),
               /*context_origin=*/*SuitableOrigin::Deserialize(
                   "https://impression.test"))
               .SetTime(fake_trigger_time)
-              .Build())
+              .Build(),
+          builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+              .SetAggregatableBudgetConsumed(1)
+              .SetActiveState(
+                  StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
+              .BuildStored())
           .SetTriggerData(7)
           .SetReportTime(fake_report_time)
           .Build();
@@ -2792,9 +2790,8 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
   storage()->StoreSource(provider.GetBuilder().Build());
 
   ReportBuilder builder(
-      AttributionInfoBuilder(
-          SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
-          .Build());
+      AttributionInfoBuilder().Build(),
+      SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored());
 
   // A single contribution exceeds the budget.
   EXPECT_THAT(

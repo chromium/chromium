@@ -93,14 +93,14 @@ const std::u16string kMaxInt64String = u"9223372036854775807";
 const std::u16string kMaxUint64String = u"18446744073709551615";
 
 AttributionReport IrreleventEventLevelReport() {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder().BuildStored())
       .Build();
 }
 
 AttributionReport IrreleventAggregatableReport() {
-  return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+  return ReportBuilder(AttributionInfoBuilder().Build(),
+                       SourceBuilder().BuildStored())
       .SetAggregatableHistogramContributions(
           {AggregatableHistogramContribution(1, 2)})
       .BuildAggregatableAttribution();
@@ -585,32 +585,31 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
+  manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
+                                            SourceBuilder(now).BuildStored())
+                                  .SetReportTime(now + base::Hours(3))
+                                  .Build(),
+                              /*is_debug_report=*/false,
+                              SendResult(SendResult::Status::kSent, net::OK,
+                                         /*http_response_code=*/200));
+  manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
+                                            SourceBuilder(now).BuildStored())
+                                  .SetReportTime(now + base::Hours(4))
+                                  .SetPriority(-1)
+                                  .Build(),
+                              /*is_debug_report=*/false,
+                              SendResult(SendResult::Status::kDropped));
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(3))
-          .Build(),
-      /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kSent, net::OK,
-                 /*http_response_code=*/200));
-  manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(4))
-          .SetPriority(-1)
-          .Build(),
-      /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
-  manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(5))
           .SetPriority(-2)
           .Build(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailure, net::ERR_METHOD_NOT_SUPPORTED));
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(11))
           .SetPriority(-8)
           .Build(),
@@ -619,13 +618,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(AttributionInfoBuilder(
-                            SourceBuilder(now)
-                                .SetSourceType(SourceType::kEvent)
-                                .SetAttributionLogic(
-                                    StoredSource::AttributionLogic::kFalsely)
-                                .BuildStored())
-                            .Build())
+          ReportBuilder(
+              AttributionInfoBuilder().Build(),
+              SourceBuilder(now)
+                  .SetSourceType(SourceType::kEvent)
+                  .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+                  .BuildStored())
               .SetReportTime(now)
               .SetPriority(13)
               .Build()}));
@@ -636,8 +634,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority,
           AttributionTrigger::AggregatableResult::kNoHistograms,
           /*replaced_event_level_report=*/
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(now).BuildStored())
               .SetReportTime(now + base::Hours(1))
               .SetPriority(11)
               .Build(),
@@ -773,12 +771,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  AttributionReport report =
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now)
-          .SetPriority(7)
-          .Build();
+  AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
+                                           SourceBuilder(now).BuildStored())
+                                 .SetReportTime(now)
+                                 .SetPriority(7)
+                                 .Build();
 
   std::vector<AttributionReport> stored_reports;
   stored_reports.push_back(report);
@@ -925,8 +922,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder().BuildStored())
               .SetPriority(7)
               .SetReportId(AttributionReport::Id(5))
               .Build()}))
@@ -1015,8 +1012,8 @@ IN_PROC_BROWSER_TEST_F(
       AggregatableHistogramContribution(1, 2)};
 
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(3))
           .SetAggregatableHistogramContributions(contributions)
           .SetAttestationToken("abc")
@@ -1025,31 +1022,31 @@ IN_PROC_BROWSER_TEST_F(
       SendResult(SendResult::Status::kSent, net::OK,
                  /*http_response_code=*/200));
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(4))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(5))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailedToAssemble));
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(6))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailure, net::ERR_INVALID_REDIRECT));
   manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(10))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
@@ -1058,11 +1055,10 @@ IN_PROC_BROWSER_TEST_F(
                  net::ERR_INTERNET_DISCONNECTED));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now)
-                                         .SetSourceType(SourceType::kEvent)
-                                         .BuildStored())
-                  .Build())
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(now)
+                            .SetSourceType(SourceType::kEvent)
+                            .BuildStored())
               .SetReportTime(now)
               .SetAggregatableHistogramContributions(contributions)
               .BuildAggregatableAttribution()}));
@@ -1215,8 +1211,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder().BuildStored())
               .SetReportId(AttributionReport::Id(5))
               .SetAggregatableHistogramContributions(
                   {AggregatableHistogramContribution(1, 2)})
@@ -1285,20 +1281,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now)
-          .SetPriority(1)
-          .Build(),
-      /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kSent, net::OK,
-                 /*http_response_code=*/200));
+  manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
+                                            SourceBuilder(now).BuildStored())
+                                  .SetReportTime(now)
+                                  .SetPriority(1)
+                                  .Build(),
+                              /*is_debug_report=*/true,
+                              SendResult(SendResult::Status::kSent, net::OK,
+                                         /*http_response_code=*/200));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(now).BuildStored())
               .SetReportTime(now + base::Hours(1))
               .SetPriority(2)
               .Build()}));
@@ -1332,15 +1327,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(ExecJsInWebUI(R"(
     document.querySelector('#show-debug-event-reports input').click();)"));
 
-  manager()->NotifyReportSent(
-      ReportBuilder(
-          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-          .SetReportTime(now + base::Hours(2))
-          .SetPriority(3)
-          .Build(),
-      /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kSent, net::OK,
-                 /*http_response_code=*/200));
+  manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
+                                            SourceBuilder(now).BuildStored())
+                                  .SetReportTime(now + base::Hours(2))
+                                  .SetPriority(3)
+                                  .Build(),
+                              /*is_debug_report=*/true,
+                              SendResult(SendResult::Status::kSent, net::OK,
+                                         /*http_response_code=*/200));
 
   // The debug reports, including the newly received one, should be hidden and
   // the label should indicate the number.

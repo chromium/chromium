@@ -433,10 +433,10 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 
   AttributionReport expected_report =
       ReportBuilder(AttributionInfoBuilder(
-                        builder.BuildStored(),
                         /*context_origin=*/conversion.destination_origin())
                         .SetTime(base::Time::Now())
-                        .Build())
+                        .Build(),
+                    builder.BuildStored())
           .SetTriggerData(5)
           .SetReportTime(base::Time::Now() + kFirstReportingWindow)
           .Build();

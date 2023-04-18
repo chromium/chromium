@@ -112,9 +112,10 @@ bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
 
 bool RateLimitTable::AddRateLimitForAttribution(
     sql::Database* db,
-    const AttributionInfo& attribution_info) {
+    const AttributionInfo& attribution_info,
+    const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, attribution_info.source, attribution_info.time,
+  return AddRateLimit(db, source, attribution_info.time,
                       attribution_info.context_origin);
 }
 
@@ -190,10 +191,11 @@ bool RateLimitTable::AddRateLimit(
 
 RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
     sql::Database* db,
-    const AttributionInfo& attribution_info) {
+    const AttributionInfo& attribution_info,
+    const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const CommonSourceInfo& common_info = attribution_info.source.common_info();
+  const CommonSourceInfo& common_info = source.common_info();
 
   const AttributionConfig::RateLimitConfig rate_limits =
       delegate_->GetRateLimits();
@@ -273,11 +275,11 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
 
 RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
     sql::Database* db,
-    const AttributionInfo& attribution_info) {
+    const AttributionInfo& attribution_info,
+    const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AllowedForReportingOriginLimit(
-      db, Scope::kAttribution, attribution_info.source.common_info(),
-      attribution_info.time,
+      db, Scope::kAttribution, source.common_info(), attribution_info.time,
       {net::SchemefulSite(attribution_info.context_origin)});
 }
 

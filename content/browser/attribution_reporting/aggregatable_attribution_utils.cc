@@ -128,7 +128,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   const AttributionInfo& attribution_info = report.attribution_info();
 
   AggregatableReportSharedInfo::DebugMode debug_mode =
-      attribution_info.source.debug_key().has_value() &&
+      data->source.debug_key().has_value() &&
               attribution_info.debug_key.has_value()
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
@@ -144,10 +144,9 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       });
 
   base::Value::Dict additional_fields;
-  additional_fields.Set(
-      "source_registration_time",
-      SerializeTimeRoundedDownToWholeDayInSeconds(
-          attribution_info.source.common_info().source_time()));
+  additional_fields.Set("source_registration_time",
+                        SerializeTimeRoundedDownToWholeDayInSeconds(
+                            data->source.common_info().source_time()));
   additional_fields.Set(
       "attribution_destination",
       net::SchemefulSite(attribution_info.context_origin).Serialize());
@@ -159,7 +158,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           data->aggregation_coordinator),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
-          attribution_info.source.common_info().reporting_origin(), debug_mode,
+          data->source.common_info().reporting_origin(), debug_mode,
           std::move(additional_fields),
           AttributionReport::AggregatableAttributionData::kVersion,
           AttributionReport::AggregatableAttributionData::kApiIdentifier));
