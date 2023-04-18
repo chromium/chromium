@@ -359,15 +359,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
     const Node* parent = element->parentNode();
-    const ComputedStyle* parent_style = parent->GetComputedStyle();
-    bool is_inside =
-        parent_style->ListStylePosition() == EListStylePosition::kInside ||
-        (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement()) ||
-        // https://w3c.github.io/csswg-drafts/css-lists/#list-style-position-outside
-        // > If the list item is an inline box: this value is equivalent to
-        // > inside.
-        parent_style->Display() == EDisplay::kInlineListItem;
-    if (is_inside) {
+    if (parent->GetComputedStyle()->MarkerShouldBeInside(*parent)) {
       return MakeGarbageCollected<LayoutNGInsideListMarker>(element);
     }
     return MakeGarbageCollected<LayoutNGOutsideListMarker>(element);
