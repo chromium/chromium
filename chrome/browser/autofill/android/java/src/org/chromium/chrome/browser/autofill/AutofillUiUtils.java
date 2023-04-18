@@ -454,10 +454,9 @@ public class AutofillUiUtils {
             return customIconUrl;
         }
         // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
-        // option is used to set the width in pixels, "h" is used to set the height in pixels,
-        // and "n" represents center cropping the image.
+        // option is used to set the width in pixels, and "h" is used to set the height in pixels.
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
-        url.append("=w").append(width).append("-h").append(height).append("-n");
+        url.append("=w").append(width).append("-h").append(height);
         return new GURL(url.toString());
     }
 
@@ -492,28 +491,14 @@ public class AutofillUiUtils {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
-        Resources res = context.getResources();
         Bitmap customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                        getCreditCardIconUrlWithParams(cardArtUrl,
-                                res.getDimensionPixelSize(widthId),
-                                res.getDimensionPixelSize(heightId)),
-                        res.getDimension(cornerRadiusId));
+                        context, cardArtUrl, widthId, heightId, cornerRadiusId);
         if (customIconBitmap == null) {
             return defaultIcon;
         }
 
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            // The new Capital One card icon assets are stored at all scales in the
-            // client code, and there's no need to scale the bitmap.
-            return new BitmapDrawable(res, customIconBitmap);
-        }
-
-        // Scale the icon to the desired dimension.
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(customIconBitmap,
-                res.getDimensionPixelSize(widthId), res.getDimensionPixelSize(heightId), true);
-        return new BitmapDrawable(res, scaledBitmap);
+        return new BitmapDrawable(context.getResources(), customIconBitmap);
     }
 
     public static int getSettingsPageIconWidthId() {
@@ -533,30 +518,36 @@ public class AutofillUiUtils {
     }
 
     /**
-     * If {@code roundBitmapCorners} is true, add a corner radius to bitmap corners.
+     * Resize the bitmap to the required specs, round corners, and add grey border.
      * @param bitmap to be updated.
+     * @param width of the bitmap.
+     * @param height of the bitmap.
      * @param cornerRadius for the bitmap.
-     * @param addCardIconEnhancements If true, the bitmap corners are rounded, and a grey border is
-     *         added. If false, the input bitmap is returned as it is.
-     * @return {@link Bitmap} with the corners rounded.
+     * @param addRoundedCornersAndGreyBorder If true, the bitmap corners are rounded, and a grey
+     *         border is added. If false, no enhancements are applied to the bitmap.
+     * @return Resized {@link Bitmap} with rounded corners and grey border.
      */
-    public static Bitmap getRoundedBitmapWithBorder(
-            Bitmap bitmap, float cornerRadius, boolean addCardIconEnhancements) {
-        if (!addCardIconEnhancements) {
-            return bitmap;
+    public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(Bitmap bitmap, @Px int width,
+            @Px int height, float cornerRadius, boolean addRoundedCornersAndGreyBorder) {
+        // The server maintains the card art image's aspect ratio, so the fetched image might not be
+        // the exact required size. Scale the icon to the desired dimension.
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, /* filter= */ true);
+
+        if (!addRoundedCornersAndGreyBorder) {
+            return scaledBitmap;
         }
 
         // Round the corners.
-        Bitmap roundedBitmapWithBorder =
-                Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(roundedBitmapWithBorder);
+        Bitmap scaledBitmapWithEnhancements = Bitmap.createBitmap(
+                scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(scaledBitmapWithEnhancements);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        Rect rect = new Rect(0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
         RectF rectF = new RectF(rect);
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
+        canvas.drawBitmap(scaledBitmap, rect, rect, paint);
 
         // Add the grey border.
         Context context = ContextUtils.getApplicationContext();
@@ -566,6 +557,6 @@ public class AutofillUiUtils {
         paint.setStrokeWidth(context.getResources().getDimension(R.dimen.card_art_border_width));
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
 
-        return roundedBitmapWithBorder;
+        return scaledBitmapWithEnhancements;
     }
 }
