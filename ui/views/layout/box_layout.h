@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
@@ -210,8 +211,11 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     bool VisibleToLayout() const;
 
    private:
-    raw_ptr<View, DanglingUntriaged> view_ = nullptr;
-    raw_ptr<const BoxLayout> layout_ = nullptr;
+    // `view_` and `layout_` is not a raw_ptr<> for performance reasons: based
+    // on this sampling profiler result on ChromeOS.
+    // go/brp-cros-prof-diff-20230403
+    RAW_PTR_EXCLUSION View* view_ = nullptr;
+    RAW_PTR_EXCLUSION const BoxLayout* layout_ = nullptr;
     gfx::Insets margins_;
   };
 
