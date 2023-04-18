@@ -39,21 +39,6 @@ export interface MultiDeviceBrowserProxy {
   setUpAndroidSms(): void;
 
   /**
-   * Returns the value of the preference controlling whether Smart Lock may be
-   * used to sign-in the user (as opposed to unlocking the screen).
-   */
-  getSmartLockSignInEnabled(): Promise<boolean>;
-
-  /**
-   * Sets the value of the preference controlling whether Smart Lock may be
-   * used to sign-in the user (as opposed to unlocking the screen).
-   * @param enabled
-   * @param authToken Authentication token used to restrict
-   *    edit access to the Smart Lock sign-in pref.
-   */
-  setSmartLockSignInEnabled(enabled: boolean, authToken?: string): void;
-
-  /**
    * Returns the value of the preference controlling whether Smart Lock
    * sign-in is allowed.
    */
@@ -171,14 +156,6 @@ export class MultiDeviceBrowserProxyImpl implements MultiDeviceBrowserProxy {
 
   setUpAndroidSms(): void {
     chrome.send('setUpAndroidSms');
-  }
-
-  getSmartLockSignInEnabled(): Promise<boolean> {
-    return sendWithPromise('getSmartLockSignInEnabled');
-  }
-
-  setSmartLockSignInEnabled(enabled: boolean, authToken?: string): void {
-    chrome.send('setSmartLockSignInEnabled', [enabled, authToken]);
   }
 
   getSmartLockSignInAllowed(): Promise<boolean> {

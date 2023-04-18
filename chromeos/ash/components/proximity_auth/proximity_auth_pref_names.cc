@@ -23,13 +23,6 @@ const char kProximityAuthPromotionShownCount[] =
 const char kProximityAuthRemoteBleDevices[] =
     "proximity_auth.remote_ble_devices";
 
-// Whether or not EasyUnlock is enabled on the ChromeOS login screen (in
-// addition to the lock screen).
-// TODO(b/227674947): Delete this pref now that Sign in with Smart Lock is
-// deprecated.
-const char kProximityAuthIsChromeOSLoginEnabled[] =
-    "proximity_auth.is_chromeos_login_enabled";
-
 // The dictionary containing remote BLE devices.
 // TODO(b/227674947): Delete this pref now that Sign in with Smart Lock is
 // deprecated.

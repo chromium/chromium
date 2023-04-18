@@ -811,6 +811,12 @@ const char kOfficeMoveConfirmationShown[] =
     "filebrowser.office.move_confirmation_shown";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kProximityAuthIsChromeOSLoginEnabled[] =
+    "proximity_auth.is_chromeos_login_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1110,6 +1116,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kOfficeFilesAlwaysMove, false);
   registry->RegisterBooleanPref(kOfficeMoveConfirmationShown, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kProximityAuthIsChromeOSLoginEnabled, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2153,6 +2164,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kOfficeFilesAlwaysMove);
   profile_prefs->ClearPref(kOfficeMoveConfirmationShown);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kProximityAuthIsChromeOSLoginEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

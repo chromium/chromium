@@ -3,15 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * The state of the preference controlling Smart Lock's ability to sign-in the
- * user.
- */
-export enum SmartLockSignInEnabledState {
-  ENABLED = 'enabled',
-  DISABLED = 'disabled',
-}
-
-/**
  * The possible statuses of hosts on the logged in account that determine the
  * page content. Note that this is based on (and must include an analog of
  * all values in) the HostStatus enum in

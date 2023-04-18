@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "ui/events/ash/pref_names.h"
@@ -178,7 +177,8 @@ enum {
   kTextToSpeechVolume = 100133,
   kUse24HourClock = 100134,
   kUserPrintersAllowed = 100135,
-  kProximityAuthIsChromeOSLoginEnabled = 100136,
+  // kProximityAuthIsChromeOSLoginEnabled = 100136, // deprecated with removal
+  // of Sign in with Smart Lock
   kUserImageInfo = 100137,
   kGdataDisabled = 100138,
   kGdataCellularDisabled = 100139,
@@ -664,9 +664,6 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kUse24HourClock, syncer::OS_PREFERENCES}},
         {prefs::kUserPrintersAllowed,
          {syncable_prefs_ids::kUserPrintersAllowed, syncer::OS_PREFERENCES}},
-        {proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-         {syncable_prefs_ids::kProximityAuthIsChromeOSLoginEnabled,
-          syncer::OS_PREFERENCES}},
         // This is not exposed in a header.
         // TODO(crbug.com/1420978): Declare this in the corresponding header.
         {"user_image_info",

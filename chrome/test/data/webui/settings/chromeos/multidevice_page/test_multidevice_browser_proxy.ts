@@ -55,8 +55,6 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       'getPageContentData',
       'setFeatureEnabledState',
       'setUpAndroidSms',
-      'getSmartLockSignInEnabled',
-      'setSmartLockSignInEnabled',
       'getSmartLockSignInAllowed',
       'getAndroidSmsInfo',
       'attemptNotificationSetup',
@@ -98,17 +96,8 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('setUpAndroidSms');
   }
 
-  getSmartLockSignInEnabled(): Promise<boolean> {
-    this.methodCalled('getSmartLockSignInEnabled');
-    return Promise.resolve(true);
-  }
-
-  setSmartLockSignInEnabled(enabled: boolean, authToken?: string): void {
-    this.methodCalled('setSmartLockSignInEnabled', [enabled, authToken]);
-    webUIListenerCallback('smart-lock-signin-enabled-changed', enabled);
-  }
-
-  getSmartLockSignInAllowed(): Promise<boolean> {
+  /** @override */
+  getSmartLockSignInAllowed() {
     this.methodCalled('getSmartLockSignInAllowed');
     return Promise.resolve(this.smartLockSignInAllowed_);
   }

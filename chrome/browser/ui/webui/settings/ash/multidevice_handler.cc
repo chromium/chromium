@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
-#include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
@@ -147,14 +146,6 @@ void MultideviceHandler::RegisterMessages() {
       base::BindRepeating(&MultideviceHandler::HandleSetUpAndroidSms,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSmartLockSignInEnabled",
-      base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInEnabled,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "setSmartLockSignInEnabled",
-      base::BindRepeating(&MultideviceHandler::HandleSetSmartLockSignInEnabled,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getSmartLockSignInAllowed",
       base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInAllowed,
                           base::Unretained(this)));
@@ -253,11 +244,6 @@ void MultideviceHandler::OnJavascriptAllowed() {
         browser_tabs_model_provider_);
   }
 
-  pref_change_registrar_.Add(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-      base::BindRepeating(
-          &MultideviceHandler::NotifySmartLockSignInEnabledChanged,
-          base::Unretained(this)));
   pref_change_registrar_.Add(
       multidevice_setup::kSmartLockSigninAllowedPrefName,
       base::BindRepeating(
@@ -471,39 +457,6 @@ void MultideviceHandler::HandleRetryPendingHostSetup(
 void MultideviceHandler::HandleSetUpAndroidSms(const base::Value::List& args) {
   DCHECK(args.empty());
   android_sms_app_manager_->SetUpAndLaunchAndroidSmsApp();
-}
-
-void MultideviceHandler::HandleGetSmartLockSignInEnabled(
-    const base::Value::List& args) {
-  const base::Value& callback_id = args[0];
-  CHECK(callback_id.is_string());
-
-  bool signInEnabled = prefs_->GetBoolean(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled);
-  ResolveJavascriptCallback(callback_id, base::Value(signInEnabled));
-}
-
-void MultideviceHandler::HandleSetSmartLockSignInEnabled(
-    const base::Value::List& args) {
-  bool enabled = false;
-  if (args[0].is_bool()) {
-    enabled = args[0].GetBool();
-  }
-
-  const bool auth_token_present = args.size() >= 2 && args[1].is_string();
-  const std::string& auth_token = auth_token_present ? args[1].GetString() : "";
-
-  // Either the user is disabling sign-in, or they are enabling it and the auth
-  // token must be present.
-  CHECK(!enabled || auth_token_present);
-
-  // Only check auth token if the user is attempting to enable sign-in.
-  if (enabled && !IsAuthTokenValid(auth_token)) {
-    return;
-  }
-
-  prefs_->SetBoolean(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, enabled);
 }
 
 void MultideviceHandler::HandleGetSmartLockSignInAllowed(
@@ -908,13 +861,6 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
   }
 
   return page_content_dictionary;
-}
-
-void MultideviceHandler::NotifySmartLockSignInEnabledChanged() {
-  bool sign_in_enabled = prefs_->GetBoolean(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled);
-  FireWebUIListener("smart-lock-signin-enabled-changed",
-                    base::Value(sign_in_enabled));
 }
 
 void MultideviceHandler::NotifySmartLockSignInAllowedChanged() {
