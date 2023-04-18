@@ -28,7 +28,6 @@
 <translation id="1995951722691075581">Nagrywanie zostało zatrzymane z powodu zbyt małej ilości miejsca na urządzeniu. Aby nagrać więcej filmów, musisz zwolnić miejsce.</translation>
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
-<translation id="2128052519899549250">Nagrywanie filmów poklatkowych</translation>
 <translation id="2134029355740465625">Ustawienia wideo</translation>
 <translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
 <translation id="2175927920773552910">Kod QR</translation>
@@ -92,7 +91,6 @@
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5320594929574852403">Przesuwam w lewo</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5577251651370645658">Tryb poklatkowy</translation>
 <translation id="5662366948659129155">Skanowanie strony <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kwadrat</translation>
 <translation id="5746169159649715125">Zapisz jako PDF</translation>
@@ -138,6 +136,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7670511624014457267">60 kl./s</translation>
 <translation id="7671804233658741790">Prawy dolny róg dokumentu</translation>
+<translation id="7684446460490665873">Nagrywanie filmów poklatkowych</translation>
 <translation id="7692090236657809299">Włącz przesunięcie, pochylenie i powiększenie</translation>
 <translation id="7726641833034062494">Nagraj zwykły film</translation>
 <translation id="7748344063862150053">Prawy górny róg dokumentu</translation>
@@ -163,6 +162,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="9045010116236796332">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Przetwarzam obraz...</translation>
+<translation id="9161584225258678723">Tryb poklatkowy</translation>
 <translation id="922762992951083513">Odbicie lustrzane włączone</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 </translationbundle>

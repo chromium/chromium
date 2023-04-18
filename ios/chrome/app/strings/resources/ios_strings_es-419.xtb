@@ -134,8 +134,10 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
+<translation id="1883255238294161206">Ocultar lista</translation>
 <translation id="1891796056033961979">Tus favoritos, contraseñas, parámetros de configuración y otros elementos guardados están disponibles desde esta pantalla.</translation>
 <translation id="1894023287452300670">Seguir precio aquí</translation>
+<translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1930989359703290198">Tu organización te permite acceder solo con determinadas cuentas. Las cuentas no habilitadas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2139867232736819575">Buscar el texto copiado</translation>
 <translation id="214201757571129614">Acceder…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
-<translation id="2150175299852799498">Chrome para dispositivos móviles</translation>
 <translation id="2155145621546387786">Compartir Chrome</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2178545675770638239">Seleccionar contraseña</translation>
@@ -321,6 +322,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear una pestaña de incógnito nueva.</translation>
 <translation id="3146109040683991651">Establecer Chrome como navegador predeterminado</translation>
+<translation id="3152169319860972623">La Revisión de contraseñas revisa tus contraseñas guardadas y te advierte sobre cualquier incumplimiento en línea. <ph name="BEGIN_LINK" />Obtén más información.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Agregar a la Lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
@@ -353,6 +355,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328459813621383194">Mover pestañas inactivas</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
+<translation id="3344485292736684439">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{Los favoritos se guardaron en "{title}" en tu cuenta ({email}).}}</translation>
 <translation id="3371831930909698441">Está disponible la traducción. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus favoritos, contraseñas y otros elementos que guardaste están en la parte superior.</translation>
 <translation id="3393920035788932672">Ventanas permitidas</translation>
@@ -592,6 +595,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4941089862236492464">Se produjo un error al compartir tu elemento.</translation>
 <translation id="4944543191714094452">Buscar en la página…</translation>
 <translation id="4945756290001680296">Accede a la configuración de contraseñas</translation>
+<translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva contra descargas, extensiones y sitios web peligrosos. Te advierte sobre violaciones de la seguridad de las contraseñas. Requiere que se envíen datos de navegación a Google.</translation>
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
 <translation id="4986678885919050584">Quitar de este dispositivo</translation>
@@ -655,7 +659,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="54401264925851789">Información de seguridad de la página</translation>
 <translation id="5443952882982198570">Tarjetas de crédito</translation>
 <translation id="5444892875087332195">Favoritos</translation>
-<translation id="5453250766792920795">{count,plural, =1{Se guardó el favorito en tu cuenta, {email}}other{Se guardaron los favoritos en tu cuenta, {email}}}</translation>
 <translation id="5457226814769348910">Versión sin conexión</translation>
 <translation id="5489208564673669003">Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no se recomienda)</translation>
@@ -850,6 +853,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6530992499366869131">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
 <translation id="6537746030088321027">ejemplo.com</translation>
 <translation id="6540120577248033958">Ve a un sitio y haz clic en Seguir en el Menú de Chrome</translation>
+<translation id="6550675742724504774">Opciones</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
@@ -1032,6 +1036,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7840771868269352570">Se quitarán los elementos seleccionados.</translation>
 <translation id="7845466610722898">Mostrar la Lista de lectura</translation>
 <translation id="784551991304901159">Para ver contenido, selecciona Activar en el menú</translation>
+<translation id="7846158885638438868">{count,plural, =1{Se agregó a favoritos en "{title}".}other{Se agregaron a favoritos en "{title}".}}</translation>
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7856733331829174190">No se pudo descargar</translation>
 <translation id="785938070103630874">Abre contraseñas, formas de pago, direcciones y mucho más.</translation>

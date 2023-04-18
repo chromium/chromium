@@ -118,6 +118,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1090541560108055381">Enne sidumist veenduge, et see kood oleks mõlemas seadmes sama</translation>
 <translation id="1091767800771861448">Vahelejätmiseks vajutage klahvi ESC (ainult mitteametlike järkude puhul).</translation>
 <translation id="1093457606523402488">Nähtavad võrgud:</translation>
+<translation id="1094219634413363886">Kui selles hallatud seadmes algab salvestamine, kuvatakse märguanne</translation>
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
 <translation id="1095879482467973146">Google'i paroolihaldur veebis</translation>
 <translation id="109647177154844434">Parallels Desktopi desinstallimisel kustutatakse teie Windowsi kujutis. See hõlmab selle rakendusi, seadeid ja andmeid. Kas soovite kindlasti jätkata?</translation>
@@ -3859,6 +3860,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4340125850502689798">Sobimatu kasutajanimi</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> tahab suhelda rakendusega „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4340799661701629185">Ära luba saitidel saata märguandeid</translation>
+<translation id="4341280816303414009">Teie ekraanikuva võidakse salvestada</translation>
 <translation id="4341577178275615435">Sisestusmärgiga sirvimise sisse- ja väljalülitamiseks võite kasutada kiirklahvi F7</translation>
 <translation id="4341905082470253054">TPM-i oleku kontrollimine …</translation>
 <translation id="434198521554309404">Kiire. Turvaline. Lihtne.</translation>
@@ -5678,6 +5680,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5979421442488174909">&amp;Tõlgi järgmisesse keelde: <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Lehtede järjehoidjatesse lisamiseks klõpsake aadressiribal tärnil</translation>
 <translation id="5981362776161841923">Laienduse lubamiseks muutke allpool vaikeseadet.</translation>
+<translation id="5982578203375898585">Kuva allalaadimised, kui toimingud on lõpetatud</translation>
 <translation id="5984222099446776634">Viimati külastatud</translation>
 <translation id="5985458664595100876">URL-i sobimatu vorming. Toetatud vormingud on \\server\share ja smb://server/share.</translation>
 <translation id="598810097218913399">Tühista määrang</translation>

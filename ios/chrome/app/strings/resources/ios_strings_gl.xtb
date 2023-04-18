@@ -134,8 +134,10 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1870148520156231997">Mostrar contrasinal</translation>
 <translation id="1872096359983322073">Lanterna</translation>
+<translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1891796056033961979">Agora os teus marcadores, contrasinais, configuración e demais están dispoñibles nesta pantalla.</translation>
 <translation id="1894023287452300670">Fai un seguimento do prezo aquí</translation>
+<translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
 <translation id="1930989359703290198">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="214201757571129614">Iniciar sesión…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
-<translation id="2150175299852799498">Chrome para móbil</translation>
 <translation id="2155145621546387786">Compartir Chrome</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2178545675770638239">Selecciona un contrasinal</translation>
@@ -321,6 +322,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
 <translation id="3146109040683991651">Definir Chrome como navegador predeterminado</translation>
+<translation id="3152169319860972623">Revisión de contrasinais revisa os contrasinais que gardes e avísate no caso de que haxa algunha violación da seguranza en liña. <ph name="BEGIN_LINK" />Máis información.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Gardar tarxeta</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todo como...</translation>
@@ -353,6 +355,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328459813621383194">Mover as pestanas inactivas</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
+<translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
 <translation id="3393920035788932672">Ventás emerxentes permitidas</translation>
@@ -592,6 +595,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4941089862236492464">Produciuse un problema ao compartir o teu elemento.</translation>
 <translation id="4944543191714094452">Buscar o contido na páxina…</translation>
 <translation id="4945756290001680296">Acceder á configuración do contrasinal</translation>
+<translation id="4958444002117714549">Ampliar lista</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4986678885919050584">Quitar deste dispositivo</translation>
@@ -655,7 +659,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="54401264925851789">Información de seguranza da páxina</translation>
 <translation id="5443952882982198570">Tarxetas de crédito</translation>
 <translation id="5444892875087332195">Marcadores</translation>
-<translation id="5453250766792920795">{count,plural, =1{O marcador gardouse na túa conta ({email})}other{Os marcadores gardáronse na túa conta ({email})}}</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
@@ -850,6 +853,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6530992499366869131">Avisarte se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Visita un sitio e, no menú de Chrome, fai clic en Seguir</translation>
+<translation id="6550675742724504774">Opcións</translation>
 <translation id="6561262006871132942">Achegar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a AutoFill Passwords (Autocompletar contrasinais).</translation>
 <translation id="6585618849026997638">Engade un marcador para volver acceder a unha páxina que consideres importante</translation>
@@ -1032,6 +1036,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7840771868269352570">Quitaranse os elementos seleccionados.</translation>
 <translation id="7845466610722898">Mostrar Lista de lectura</translation>
 <translation id="784551991304901159">Para ver o contido, selecciona Activar no menú</translation>
+<translation id="7846158885638438868">{count,plural, =1{Engadiuse o marcador a {title}}other{Engadíronse os marcadores a {title}}}</translation>
 <translation id="7853202427316060426">Actividade</translation>
 <translation id="7856733331829174190">Non se puido descargar o ficheiro</translation>
 <translation id="785938070103630874">Abre os contrasinais, os métodos de pago, o enderezo etc.</translation>

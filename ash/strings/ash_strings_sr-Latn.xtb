@@ -238,7 +238,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2023558322300866873">Snimanje paketa možete da zaustavite u svakom trenutku</translation>
 <translation id="2034971124472263449">Ipak sačuvaj</translation>
 <translation id="2049240716062114887">Ime radne površine je promenjeno u <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Vertikalno</translation>
 <translation id="2064048859448024834">Pregled kamere je uključen</translation>
 <translation id="2067602449040652523">Osvetljenost tastature</translation>
 <translation id="2078034614700056995">Prevucite udesno pomoću četiri prsta da biste prešli na sledeću radnu površinu</translation>
@@ -1773,7 +1772,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="954052413789300507">Nema dovoljno prostora za <ph name="FILENAME" />. Oslobodite prostor.</translation>
 <translation id="974545358917229949">Prikazuju se rezultati (<ph name="RESULT_COUNT" />) za: <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Idite na kraj dokumenta</translation>
-<translation id="98515147261107953">Horizontalno</translation>
 <translation id="989374776391122812">Kontrole kamere i zvuka</translation>
 <translation id="990277280839877440">Prozor <ph name="WINDOW_TITILE" /> je zatvoren.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

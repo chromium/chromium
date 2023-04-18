@@ -134,8 +134,10 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
+<translation id="1883255238294161206">Réduire la liste</translation>
 <translation id="1891796056033961979">Retrouvez, entre autres, sur cet écran vos favoris, mots de passe et paramètres enregistrés</translation>
 <translation id="1894023287452300670">Effectuez le suivi du prix ici</translation>
+<translation id="1910975740091000991">Chrome pour iOS</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
 <translation id="1930989359703290198">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2139867232736819575">Rechercher le texte copié</translation>
 <translation id="214201757571129614">Connectez-vous…</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
-<translation id="2150175299852799498">Chrome pour mobile</translation>
 <translation id="2155145621546387786">Partager Chrome</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2178545675770638239">Sélectionner un mot de passe</translation>
@@ -321,6 +322,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Créer un onglet de navigation privée</translation>
 <translation id="3146109040683991651">Définir Chrome comme navigateur par défaut</translation>
+<translation id="3152169319860972623">Check-up Mots de passe examine vos mots de passe enregistrés et vous avertit en cas de violation en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
@@ -353,6 +355,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328459813621383194">Déplacer les onglets inactifs</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
+<translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans "{title}" sur votre compte {email}}one{Favori enregistré dans "{title}" sur votre compte {email}}other{Favoris enregistrés dans "{title}" sur votre compte {email}}}</translation>
 <translation id="3371831930909698441">La traduction est disponible. Options disponibles au bas de l'écran.</translation>
 <translation id="3377063233124932127">Vos favoris, vos mots de passe et d'autres éléments sont désormais affichés en haut de la page.</translation>
 <translation id="3393920035788932672">Pop-up autorisés</translation>
@@ -592,6 +595,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4941089862236492464">Désolé, un problème est survenu lors du partage de l'élément.</translation>
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
+<translation id="4958444002117714549">Développer la liste</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe et nécessite d'envoyer les données de navigation à Google.</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
 <translation id="4986678885919050584">Supprimer de cet appareil</translation>
@@ -655,7 +659,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="54401264925851789">Informations sur la sécurité de cette page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
 <translation id="5444892875087332195">Favoris</translation>
-<translation id="5453250766792920795">{count,plural, =1{Favori enregistré dans votre compte {email}}one{Favori enregistré dans votre compte {email}}other{Favoris enregistrés dans votre compte {email}}}</translation>
 <translation id="5457226814769348910">Ouvrir la version hors connexion</translation>
 <translation id="5489208564673669003">Pour gérer les cookies de l'ensemble des sites, consultez la page <ph name="BEGIN_LINK" />Paramètres relatifs aux cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les cookies (non recommandé)</translation>
@@ -850,6 +853,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6530992499366869131">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Consultez un site et cliquez sur "Suivre" dans le menu Chrome</translation>
+<translation id="6550675742724504774">Options</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6583087784430677195">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Saisir automatiquement les mots de passe".</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
@@ -1033,6 +1037,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="784551991304901159">Pour afficher le contenu, sélectionnez "Activer" dans le menu</translation>
+<translation id="7846158885638438868">{count,plural, =1{Ajouté aux favoris dans "{title}"}one{Ajouté aux favoris dans "{title}"}other{Ajoutés aux favoris dans "{title}"}}</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7856733331829174190">Téléchargement impossible</translation>
 <translation id="785938070103630874">Ouvrez la section des mots de passe, des modes de paiement, de l'adresse, etc.</translation>

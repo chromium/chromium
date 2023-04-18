@@ -511,6 +511,7 @@
 <translation id="2166049586286450108">စီမံသူအပြည့်အဝ အသုံးပြုခွင့်</translation>
 <translation id="2166378884831602661">ဤဆိုက်သည် လုံခြုံသည့်ချိတ်ဆက်မှုကို စီစဉ်မပေးနိုင်ပါ</translation>
 <translation id="2168151236314517198">ဤအကြောင်းအရာ ပုံနှိပ်ထုတ်ယူခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
+<translation id="2176974405772725904">အကောင့်တွင် လိပ်စာသိမ်းပါ</translation>
 <translation id="2181821976797666341">ပေါ်လစီများ</translation>
 <translation id="2183608646556468874">ဖုန်းနံပါတ်</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{လိပ်စာ ၁ ခု}other{လိပ်စာ # ခု}}</translation>
@@ -1737,6 +1738,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4-Extra</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
+<translation id="5238301240406177137">အကောင့်တွင် သိမ်းရန်</translation>
 <translation id="5239623327352565343">တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="5242889659037569123">ခရီးဆောင်အိတ်နှင့် ခရီးသွားဆက်စပ်ပစ္စည်းများ</translation>
 <translation id="5244732203286792411">ဖွင့်နေသည်...
@@ -1755,7 +1757,6 @@
 <translation id="5273881944177595304">ဝဘ်အက်ပ်နှင့် အွန်လိုင်းတူးလ်များ</translation>
 <translation id="5274025349362408263">စာအုပ် စာပေ</translation>
 <translation id="5279286380302340275">ဒေါင်းလုဒ်များစီမံရန်</translation>
-<translation id="5279453600310613955">မလိုပါ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">မှတ်တမ်း သတ်မှတ်ချက်များ</translation>
 <translation id="528468243742722775">အဆုံး</translation>
@@ -2253,6 +2254,7 @@
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေခြင်း</translation>
 <translation id="6547208576736763147">ဘယ်ဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6549443526281184652">ဝတ်စုံများ</translation>
+<translation id="6551873053534932690">အကောင့်တွင် လိပ်စာသိမ်းမလား။</translation>
 <translation id="6554732001434021288">ပြီးခဲ့သော <ph name="NUM_DAYS" /> ရက်က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
 <translation id="6556866813142980365">ပြန်လုပ်ရန်</translation>
 <translation id="6557715786897013164">၁၄ x ၁၇ လက်မ</translation>

@@ -510,6 +510,7 @@
 <translation id="2166049586286450108">पूर्ण प्रशासक पहुँच</translation>
 <translation id="2166378884831602661">यो साइटले सुरक्षित जडान प्रदान गर्न सक्दैन</translation>
 <translation id="2168151236314517198">एड्मिनले तोक्नुभएको नीतिअनुसार यो सामग्री प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
+<translation id="2176974405772725904">यो ठेगाना खातामा सेभ गर्नुहोस्</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
 <translation id="2183608646556468874">फोन नम्बर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{१ ठेगाना}other{# ठेगानाहरू}}</translation>
@@ -1733,6 +1734,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
+<translation id="5238301240406177137">खातामा सेभ गर्नुहोस्</translation>
 <translation id="5239623327352565343">लोकेसन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5242889659037569123">झोला तथा यात्रासम्बन्धी सामग्रीहरू</translation>
 <translation id="5244732203286792411">लोड गरिँदै छ...
@@ -1751,7 +1753,6 @@
 <translation id="5273881944177595304">वेब एप तथा अनलाइन टुलहरू</translation>
 <translation id="5274025349362408263">पुस्तक तथा साहित्य</translation>
 <translation id="5279286380302340275">डाउनलोड गरिएका सामग्री व्यवस्थापन गर्नुहोस्</translation>
-<translation id="5279453600310613955">पर्दैन, धन्यवाद</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">डकुमेन्टका विशेषताहरू</translation>
 <translation id="528468243742722775">समाप्त</translation>
@@ -2250,6 +2251,7 @@
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6547208576736763147">बायाँपट्टि दुई प्वाल</translation>
 <translation id="6549443526281184652">पोसाक</translation>
+<translation id="6551873053534932690">यो ठेगाना खातामा सेभ गर्ने हो?</translation>
 <translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
 <translation id="6556866813142980365">फेरि गर्नुहोस्</translation>
 <translation id="6557715786897013164">१४ x १७ इन्च</translation>

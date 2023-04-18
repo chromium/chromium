@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Ativado</translation>
 <translation id="5430931332414098647">Tethering instantâneo</translation>
 <translation id="5431318178759467895">Colorido</translation>
+<translation id="5456936324019847994">Não é possível se conectar a nenhum APN personalizado ativado. Entre em contato com sua operadora para mais informações.</translation>
 <translation id="5457599981699367932">Navegar como visitante</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante}one{{0} tentativa restante}other{{0} tentativas restantes}}</translation>

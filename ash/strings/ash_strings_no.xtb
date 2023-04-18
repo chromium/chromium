@@ -225,6 +225,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1978498689038657292">Tekstfelt</translation>
 <translation id="1980808257969311265">Bli med i <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Vis forrige uke</translation>
+<translation id="1986150224850161328">Sørg for at telefonen og Chromebooken er på samme nettverk, og prøv på nytt. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Kan ikke ta bilde av innhold</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
 <translation id="1993072747612765854">Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen</translation>
@@ -238,7 +239,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2023558322300866873">Du kan stoppe pakkeregistreringen når som helst</translation>
 <translation id="2034971124472263449">Lagre likevel</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Portrett</translation>
 <translation id="2064048859448024834">Kameraforhåndsvisningen er på</translation>
 <translation id="2067602449040652523">Lysstyrke på tastaturet</translation>
 <translation id="2078034614700056995">Sveip til høyre med fire fingre for å bytte til neste skrivebord</translation>
@@ -374,6 +374,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2761723519669354964">Åpne det fremhevede elementet fra hyllen</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Avslutt opptaksmodus</translation>
+<translation id="2785499565474703580">1 enhet er tilkoblet</translation>
 <translation id="2791421900609674576">Du ser anbefalinger, slik at du kan fortsette der du slapp. Trykk og hold for å fjerne anbefalinger.</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
 <translation id="2797741504905337289">Hyllegruppe</translation>
@@ -1278,6 +1279,7 @@ Nylig installert</translation>
 <translation id="6941333068993625698">Send tilbakemelding</translation>
 <translation id="6942518653766415536">Meny for opptaksformat</translation>
 <translation id="6945221475159498467">Velg</translation>
+<translation id="6945922087561257829">Telefonen bruker et mobilnettverk. Sørg for at telefonen og Chromebooken er koblet til det samme wifi-nettverket, og prøv på nytt. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
 <translation id="6961840794482373852">Hurtigtasten Alt + oppoverpil er endret. For å bruke Page Up-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + oppoverpilen.</translation>
@@ -1332,6 +1334,7 @@ Nylig installert</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
+<translation id="7219573373513695352">Ingen enheter er koblet til</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
 <translation id="7256634071279256947">Mikrofon bak</translation>
 <translation id="7258828758145722155">Redigert i går</translation>
@@ -1482,6 +1485,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7902625623987030061">Trykk på fingeravtrykkssensoren</translation>
 <translation id="7904094684485781019">Administratoren for denne kontoen har forbudt multipålogging.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> enheter er tilkoblet</translation>
 <translation id="7930731167419639574">Tale behandles nå lokalt, og diktering fungerer uten nett</translation>
 <translation id="7932451802722951285">Åpne i Google Kalender</translation>
 <translation id="7933084174919150729">Google-assistenten er bare tilgjengelig for den primære profilen.</translation>
@@ -1772,7 +1776,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="954052413789300507">Ikke nok plass til <ph name="FILENAME" />. Frigjør plass.</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gå til slutten av dokumentet</translation>
-<translation id="98515147261107953">Liggende</translation>
 <translation id="989374776391122812">Kamera- og lydkontroller</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> er lukket.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

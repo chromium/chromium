@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">Bluetooth ഉപകരണങ്ങൾ</translation>
 <translation id="1662550410081243962">പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ച് സ്വമേധയാ പൂരിപ്പിക്കുക</translation>
 <translation id="1663943134801823270">കാർഡുകളും വിലാസങ്ങളും Chrome-ൽ നിന്നുള്ളതാണ്. നിങ്ങൾക്ക് അവ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാനേജ് ചെയ്യാം.</translation>
+<translation id="1668071460721346172">ഇമെയിൽ നേടുക</translation>
 <translation id="1671391448414634642">ഇനിമുതൽ <ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ <ph name="TARGET_LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യപ്പെടും.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
 <translation id="1682696192498422849">നീളം കുറഞ്ഞ അരിക് ആദ്യം</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">ഈ ആപ്പ്, വൈഫൈ ക്രെഡൻഷ്യലുകൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നതിനുള്ള അനുമതി അഭ്യർത്ഥിക്കുന്നു. സജ്ജീകരിച്ചതിന് ശേഷം, ലഭ്യമായ വൈഫൈ നെറ്റ്‌വർക്കുകളിലേക്ക് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> സ്വയമേവ കണക്റ്റ് ചെയ്യും. ഈ ക്രെഡെൻഷ്യലുകൾ നീക്കം ചെയ്യാൻ ആപ്പ് അൺഇൻസ്റ്റാൾ ചെയ്യുക.</translation>
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1807528111851433570">ആദ്യ ഷീറ്റ്</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC നിങ്ങളുടെ കാർഡിന്റെ പിൻഭാഗത്താണുള്ളത്. ഒപ്പിടാനുള്ള ബോക്‌സിന്റെ മുകളിൽ വലതുവശത്തുള്ള അവസാന 3 അക്കമാണിത്.</translation>
 <translation id="181000283860817563">ഒന്നിലധികം സൈറ്റുകളിലെ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="1810391395243432441">നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
@@ -1585,6 +1587,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> തിരയുക</translation>
 <translation id="4879491255372875719">സ്വമേധയാ (ഡിഫോൾട്ട്)</translation>
+<translation id="4879723019639546076">ഈ വിലാസം Chrome-ൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. Google ഉൽപ്പന്നങ്ങളിലുടനീളം അത് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ Google Account-ൽ (<ph name="ACCOUNT" />) സംരക്ഷിക്കുക.</translation>
 <translation id="4880827082731008257">തിരയൽ ചരിത്രം</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="4881808915112408168">24 x 31.5 ഇഞ്ച്</translation>
@@ -1753,7 +1756,6 @@
 <translation id="5273881944177595304">വെബ്‌ ആപ്പുകളും ഓൺലൈൻ ടൂളുകളും</translation>
 <translation id="5274025349362408263">പുസ്തകങ്ങളും സാഹിത്യവും</translation>
 <translation id="5279286380302340275">ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="5279453600310613955">വേണ്ട</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ഡോക്യുമെന്റ് പ്രോപ്പർട്ടികൾ</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>
@@ -2143,6 +2145,7 @@
 <translation id="6279183038361895380">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="6280223929691119688">ഈ വിലാസത്തിലേക്ക് ഡെലിവറി ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6284292079994426700">26 x 38 ഇഞ്ച്</translation>
+<translation id="6284517535531159884">വകഭേദങ്ങളുടെ സീഡ് തരം</translation>
 <translation id="6285507000506177184">'Chrome-ൽ ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="6289939620939689042">പേജിന്റെ നിറം</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2316,6 +2319,7 @@
 <translation id="6716672519412350405">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും <ph name="URL" /> താല്‍‌പ്പര്യപ്പെടുന്നു</translation>
 <translation id="6718612893943028815">ക്യാമറ ഉപയോഗിക്കണോ?</translation>
 <translation id="6721678857435001674">നിങ്ങളുടെ സുരക്ഷാ കീയുടെ നിർമ്മാണവും മോഡലും കാണുക</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ക്യാമറ</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-ന് നിങ്ങളുടെ <ph name="BEGIN_LINK" />സമന്വയ പാസ്‌ഫ്രെയ്‌സ്<ph name="END_LINK" /> ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>

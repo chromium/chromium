@@ -118,6 +118,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1090541560108055381">Inden du parrer, skal du sørge for, at koden er den samme på begge enheder</translation>
 <translation id="1091767800771861448">Tryk på ESC for at springe over (kun uofficielle builds).</translation>
 <translation id="1093457606523402488">Synlige netværk:</translation>
+<translation id="1094219634413363886">Du får vist en notifikation, hvis en optagelse starter på denne administrerede enhed</translation>
 <translation id="1095761715416917775">Sørg for, at du altid kan få adgang til dine synkroniserede data</translation>
 <translation id="1095879482467973146">Google Adgangskodeadministrator på nettet</translation>
 <translation id="109647177154844434">Hvis du afinstallerer Parallels Desktop, slettes dit Windows-billede. Dette omfatter dens apps, indstillinger og data. Er du sikker på, at du vil fortsætte?</translation>
@@ -3142,6 +3143,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="369489984217678710">Adgangskoder og andre logindata</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Sikkerhedstjekket blev gennemført. Dine data uploades.}=1{Sikkerhedstjekket blev gennemført. Din fil uploades.}one{Sikkerhedstjekket blev gennemført. Din fil uploades.}other{Sikkerhedstjekket blev gennemført. Dine filer uploades.}}</translation>
 <translation id="3696817060563289264">Filerne til tekstgenkendelse blev downloadet</translation>
+<translation id="3697716475445175867">senest åbnet</translation>
 <translation id="3698471669415859717">Gennemgangen er fuldført</translation>
 <translation id="3698825735945432002">Filtertype</translation>
 <translation id="3699624789011381381">Mailadresse</translation>
@@ -3868,6 +3870,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4340125850502689798">Ugyldigt brugernavn</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ønsker at kommunikere med appen "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Tillad ikke, at websites sender notifikationer</translation>
+<translation id="4341280816303414009">Din skærm optages muligvis</translation>
 <translation id="4341577178275615435">Brug genvejen F7 for at aktivere eller deaktivere tastenavigation</translation>
 <translation id="4341905082470253054">Tjekker TPM-status...</translation>
 <translation id="434198521554309404">Hurtig. Sikker. Nem.</translation>
@@ -5688,6 +5691,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5979421442488174909">&amp;Oversæt til <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Klik på stjernen i adresselinjen for at gemme sider som bogmærker.</translation>
 <translation id="5981362776161841923">Du kan tillade en udvidelse ved at ændre din standardindstilling nedenfor.</translation>
+<translation id="5982578203375898585">Vis downloads, når de er fuldført</translation>
 <translation id="5984222099446776634">Besøgt for nylig</translation>
 <translation id="5985458664595100876">Ugyldigt webadresseformat. De understøttede formater er \\server\share og smb://server/share.</translation>
 <translation id="598810097218913399">Fjern tildeling</translation>
@@ -6366,6 +6370,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6597017209724497268">Prøver</translation>
 <translation id="6597331566371766302">Følgende udvidelser er blevet blokeret af din administrator:</translation>
+<translation id="659894938503552850">nyeste</translation>
 <translation id="6601262427770154296">Administrer brugerordbøger</translation>
 <translation id="6601612474695404578">Nogle websites anvender cookies fra tredjeparter til at indlæse sider. Hvis et website ikke fungerer, kan du prøve at tillade cookies.</translation>
 <translation id="6602937173026466876">Adgang til dine printere</translation>
@@ -8147,6 +8152,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8161293209665121583">Læser-tilstand for websider</translation>
 <translation id="8161604891089629425">Skrifttype med kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flyt fanen til et nyt vindue}one{Flyt fanen til et nyt vindue}other{Flyt fanerne til et nyt vindue}}</translation>
+<translation id="8163708146810922598">ældste</translation>
 <translation id="8165997195302308593">Omdirigering af port i Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{et telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
 <translation id="8168071266284693455">Dine bogmærker, din historik, dine adgangskoder m.m. synkroniseres på alle dine enheder</translation>
@@ -8661,6 +8667,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8637688295594795546">Der findes en tilgængelig opdatering til systemet. Forbereder download...</translation>
 <translation id="8639047128869322042">Søger efter skadelig software...</translation>
 <translation id="8639635302972078117">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto.</translation>
+<translation id="8640575194957831802">Senest åbnet</translation>
 <translation id="8642900771896232685">2 sekunder</translation>
 <translation id="8642947597466641025">Gør teksten større</translation>
 <translation id="8643403533759285912">Slet gruppe</translation>

@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">तुम्ही तुमचा सिंक डेटा कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="1870148520156231997">पासवर्ड दाखवा</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
+<translation id="1883255238294161206">सूची कोलॅप्स</translation>
 <translation id="1891796056033961979">तुमचे सेव्ह केलेले बुकमार्क, पासवर्ड, सेटिंग्ज आणि बरेच काही आता या स्क्रीनसाठी उपलब्ध आहेत.</translation>
 <translation id="1894023287452300670">येथे किमतीचा माग ठेवा</translation>
+<translation id="1910975740091000991">iOS साठी Chrome</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
 <translation id="1923342640370224680">शेवटचा तास</translation>
 <translation id="1930989359703290198">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">तुम्ही कॉपी केलेला मजकूर शोधा</translation>
 <translation id="214201757571129614">साइन इन करा…</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
-<translation id="2150175299852799498">मोबाइल साठी Chrome</translation>
 <translation id="2155145621546387786">Chrome शेअर करा</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2178545675770638239">पासवर्ड निवडा</translation>
@@ -321,6 +322,7 @@
 <translation id="3131206671572504478">सर्व ब्लॉक करा</translation>
 <translation id="313283613037595347">नवीन गुप्त टॅब तयार करा.</translation>
 <translation id="3146109040683991651">Chrome ला डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
+<translation id="3152169319860972623">पासवर्ड तपासणी हे तुमच्या सेव्ह केलेल्या पासवर्डचे पुनरावलोकन करते आणि कोणतेही ऑनलाइन भंग आढळल्यास, तुम्हाला चेतावणी देते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">कार्ड सेव्ह करा</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
@@ -353,6 +355,7 @@
 <translation id="3324193307694657476">पत्ता 2</translation>
 <translation id="3328459813621383194">इनॅक्टिव्ह टॅब हलवा</translation>
 <translation id="3328801116991980348">साइट माहिती</translation>
+<translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="3371831930909698441">भाषांतर उपलब्ध आहे. स्क्रीनच्या खाली पर्याय उपलब्ध आहेत.</translation>
 <translation id="3377063233124932127">तुमचे सेव्ह केलेले बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी आता सर्वात वरती आहेत.</translation>
 <translation id="3393920035788932672">पॉप-अपला अनुमती</translation>
@@ -592,6 +595,7 @@
 <translation id="4941089862236492464">क्षमस्व, तुमचा आयटम शेअर करताना समस्या आली.</translation>
 <translation id="4944543191714094452">या पेजमध्ये शोधा…</translation>
 <translation id="4945756290001680296">पासवर्ड सेटिंग्ज अ‍ॅक्सेस करा</translation>
+<translation id="4958444002117714549">सूची विस्तार करा</translation>
 <translation id="4971735654804503942">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण. पासवर्ड भंगांबद्दल तुम्हाला चेतावणी देतो. Google ला पाठवला जाण्यासाठी ब्राउझिंग डेटा आवश्यक आहे.</translation>
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
 <translation id="4986678885919050584">या डिव्हाइसवरून काढून टाका</translation>
@@ -655,7 +659,6 @@
 <translation id="54401264925851789">पृष्‍ठ सुरक्षितता माहिती</translation>
 <translation id="5443952882982198570">क्रेडिट कार्ड</translation>
 <translation id="5444892875087332195">बुकमार्क</translation>
-<translation id="5453250766792920795">{count,plural, =1{बुकमार्क तुमच्या खात्यामध्ये सेव्ह केला आहे, {email}}other{बुकमार्क तुमच्या खात्यामध्ये सेव्ह केले आहेत, {email}}}</translation>
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
@@ -851,6 +854,7 @@
 <translation id="6530992499366869131">डेटा भंग यामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी देणे</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">साइटला भेट द्या आणि Chrome मेनूमध्ये फॉलो करा वर क्लिक करा</translation>
+<translation id="6550675742724504774">पर्याय</translation>
 <translation id="6561262006871132942">झूम इन करा</translation>
 <translation id="6583087784430677195">बंद करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> उघडा आणि ऑटोफिल पासवर्ड वर जा.</translation>
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
@@ -1033,6 +1037,7 @@
 <translation id="7840771868269352570">तुम्ही निवडलेले आयटम काढून टाकले जातील.</translation>
 <translation id="7845466610722898">वाचन सूची दाखवा</translation>
 <translation id="784551991304901159">आशय पाहण्यासाठी, मेनूमधून सुरू करा निवडा</translation>
+<translation id="7846158885638438868">{count,plural, =1{"{title}" वर बुकमार्क केला आहे}other{"{title}" वर बुकमार्क केले आहेत}}</translation>
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7856733331829174190">डाउनलोड करता आले नाही</translation>
 <translation id="785938070103630874">पासवर्ड, पेमेंट पद्धती किंवा ॲड्रेस आणि आणखी बरेच काही उघडा</translation>

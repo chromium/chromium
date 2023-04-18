@@ -238,7 +238,6 @@
 <translation id="2023558322300866873">Та пакет авахыг хүссэн үедээ зогсоох боломжтой</translation>
 <translation id="2034971124472263449">Ямартай ч хадгалах</translation>
 <translation id="2049240716062114887">Дэлгэцийн нэрийг <ph name="DESK_NAME" /> болгож өөрчилсөн</translation>
-<translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2064048859448024834">Камерын урьдчилан үзэлт асаалттай байна</translation>
 <translation id="2067602449040652523">Гарын гэрэлтүүлэг</translation>
 <translation id="2078034614700056995">Дараагийн дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа баруун тийш шударна уу</translation>
@@ -1774,7 +1773,6 @@
 <translation id="954052413789300507"><ph name="FILENAME" />-д хангалттай зай байхгүй байна. Зай гаргана уу.</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-н <ph name="RESULT_COUNT" /> илэрцийг үзүүлж байна</translation>
 <translation id="98120814841227350">Документын төгсгөл хэсэгт очих</translation>
-<translation id="98515147261107953">Газрын гадаргуун зураг</translation>
 <translation id="989374776391122812">Камер болон аудионы тохиргоо</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> цонх хаалттай байна.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

@@ -238,7 +238,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2023558322300866873">Du kan avsluta paketanalysen när som helst</translation>
 <translation id="2034971124472263449">Spara ändå</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Stående</translation>
 <translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
@@ -1772,7 +1771,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="954052413789300507">Det finns inte tillräckligt med utrymme för <ph name="FILENAME" />. Frigör utrymme.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultat visas för <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gå till slutet av dokumentet</translation>
-<translation id="98515147261107953">Liggande</translation>
 <translation id="989374776391122812">Kamera- och ljudkontroller</translation>
 <translation id="990277280839877440">Fönstret <ph name="WINDOW_TITILE" /> har stängts.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

@@ -34,6 +34,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Paired devices</translation>
+<translation id="1160215328209699296">on and in use</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Your USB-C cable may not connect to displays properly</translation>
 <translation id="1175572348579024023">Scroll</translation>
@@ -239,9 +240,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2023558322300866873">You can stop packet capture at any time</translation>
 <translation id="2034971124472263449">Save anyway</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
+<translation id="2075520525463668108">Toggle <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
@@ -326,6 +327,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2487915095798731898">Join</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
+<translation id="2514415433888497495">Stop <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Unlock the windows</translation>
 <translation id="2530896289327917474">Turn caret browsing on or off</translation>
@@ -1521,6 +1523,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
+<translation id="8079538659226626406">Screen Share</translation>
 <translation id="8083540854303889870">Saved for later</translation>
 <translation id="8091153018031979607">Starts at <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatic updates</translation>
@@ -1777,7 +1780,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="954052413789300507">Not enough space for <ph name="FILENAME" />. Free up space.</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Go to end of document</translation>
-<translation id="98515147261107953">Landscape</translation>
 <translation id="989374776391122812">Camera and audio controls</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

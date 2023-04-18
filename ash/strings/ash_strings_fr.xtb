@@ -238,7 +238,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2023558322300866873">Vous pouvez interrompre la capture de paquets à tout moment</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2078034614700056995">Balayez l'écran vers la droite avec quatre doigts pour passer au bureau suivant</translation>
@@ -1770,7 +1769,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="954052413789300507">Espace insuffisant pour <ph name="FILENAME" />. Libérez de l'espace.</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Accéder à la fin du document</translation>
-<translation id="98515147261107953">Paysage</translation>
 <translation id="989374776391122812">Commandes audio et de la caméra</translation>
 <translation id="990277280839877440">Fenêtre <ph name="WINDOW_TITILE" /> fermée.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

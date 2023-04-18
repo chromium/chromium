@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
+<translation id="1883255238294161206">收合清單</translation>
 <translation id="1891796056033961979">您儲存嘅書籤、密碼、設定同其他內容會喺呢度顯示。</translation>
 <translation id="1894023287452300670">在此處追蹤價格</translation>
+<translation id="1910975740091000991">Chrome iOS 版</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1930989359703290198">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">搜尋您複製的文字</translation>
 <translation id="214201757571129614">登入…</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
-<translation id="2150175299852799498">流動裝置專用的 Chrome</translation>
 <translation id="2155145621546387786">分享 Chrome</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="2178545675770638239">選取密碼</translation>
@@ -321,7 +322,7 @@
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕式分頁。</translation>
 <translation id="3146109040683991651">將 Chrome 設定為預設瀏覽器</translation>
-<translation id="3152169319860972623">「密碼安全檢查」會檢查你已儲存的密碼，並在發現網路資料侵害情形時顯示警示。<ph name="BEGIN_LINK" />瞭解詳情。<ph name="END_LINK" /></translation>
+<translation id="3152169319860972623">「密碼安全檢查」會檢查您已儲存的密碼，並在密碼於網上外洩時提醒您。<ph name="BEGIN_LINK" />瞭解詳情。<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">儲存付款卡</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157684681743766797">標示全部…</translation>
@@ -594,6 +595,7 @@
 <translation id="4941089862236492464">抱歉，分享項目時發生問題。</translation>
 <translation id="4944543191714094452">從網頁中尋找…</translation>
 <translation id="4945756290001680296">存取密碼設定</translation>
+<translation id="4958444002117714549">展開清單</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
 <translation id="4986678885919050584">從此裝置中移除</translation>
@@ -657,7 +659,6 @@
 <translation id="54401264925851789">網頁安全性資料</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">書籤</translation>
-<translation id="5453250766792920795">{count,plural, =1{書籤已儲存至帳戶 ({email})}other{書籤已儲存至帳戶 ({email})}}</translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5489208564673669003">如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
@@ -850,6 +851,7 @@
 <translation id="6530992499366869131">在密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">前往網站並按一下 Chrome 選單中的「追蹤」</translation>
+<translation id="6550675742724504774">選項</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」。</translation>
 <translation id="6585618849026997638">您可新增書籤，以便快速返回您認為重要的網頁</translation>

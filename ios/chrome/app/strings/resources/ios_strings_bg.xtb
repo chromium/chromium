@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
+<translation id="1883255238294161206">Свиване на списъка</translation>
 <translation id="1891796056033961979">Запазените ви отметки, пароли, настройки и др. са налице на този екран.</translation>
 <translation id="1894023287452300670">Проследявайте цени оттук</translation>
+<translation id="1910975740091000991">Chrome за iOS</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1923342640370224680">Последният час</translation>
 <translation id="1930989359703290198">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
 <translation id="2149973817440762519">Редактиране на отметката</translation>
-<translation id="2150175299852799498">Chrome за мобилни устройства</translation>
 <translation id="2155145621546387786">Споделяне на Chrome</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2178545675770638239">Избиране на парола</translation>
@@ -594,6 +595,7 @@
 <translation id="4941089862236492464">При споделянето на елемента възникна проблем.</translation>
 <translation id="4944543191714094452">Търсене в страницата…</translation>
 <translation id="4945756290001680296">Достъп до настройките за паролите</translation>
+<translation id="4958444002117714549">Разгъване на списъка</translation>
 <translation id="4971735654804503942">По-бърза, изпреварваща защита срещу опасни уебсайтове, изтеглени файлове и разширения. Предупреждава ви за разкрити пароли. За да действа, до Google трябва да се изпращат данни за сърфирането.</translation>
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="4986678885919050584">Премахване от това устройство</translation>
@@ -657,7 +659,6 @@
 <translation id="54401264925851789">Информация за сигурността на страницата</translation>
 <translation id="5443952882982198570">Кредитни карти</translation>
 <translation id="5444892875087332195">Отметки</translation>
-<translation id="5453250766792920795">{count,plural, =1{Отметката е запазена в профила ви {email}}other{Отметките са запазени в профила ви {email}}}</translation>
 <translation id="5457226814769348910">Отваряне на офлайн версията</translation>
 <translation id="5489208564673669003">За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />Настройки за „бисквитките“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
@@ -852,6 +853,7 @@
 <translation id="6530992499366869131">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Посетете сайт и кликнете върху „Следване“ в менюто на Chrome</translation>
+<translation id="6550675742724504774">Опции</translation>
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6583087784430677195">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> и след това AutoFill Passwords.</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>

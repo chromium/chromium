@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
+<translation id="1883255238294161206">সূচী সংকোচন কৰক</translation>
 <translation id="1891796056033961979">আপুনি ছেভ কৰি থোৱা বুকমাৰ্ক, পাছৱৰ্ড, ছেটিং আৰু অধিক এই স্ক্ৰীনখনত উপলব্ধ।</translation>
 <translation id="1894023287452300670">ইয়াত মূল্য ট্ৰেক কৰক</translation>
+<translation id="1910975740091000991">iOSৰ বাবে Chrome</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
 <translation id="1923342640370224680">যোৱা ১ঘণ্টাৰ</translation>
 <translation id="1930989359703290198">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">আপুনি প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
 <translation id="214201757571129614">ছাইন ইন কৰক…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
-<translation id="2150175299852799498">ম’বাইলৰ বাবে Chrome</translation>
 <translation id="2155145621546387786">Chrome শ্বেয়াৰ কৰক</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="2178545675770638239">পাছৱৰ্ড বাছনি কৰক</translation>
@@ -321,6 +322,7 @@
 <translation id="3131206671572504478">সকলো অৱৰোধ কৰক</translation>
 <translation id="313283613037595347">নতুন ইনক’গনিট’ টেব সৃষ্টি কৰক।</translation>
 <translation id="3146109040683991651">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
+<translation id="3152169319860972623">পাছৱৰ্ড চেকআপে আপোনাৰ ছেভ কৰি থোৱা পাছৱর্ডসমূহ পর্যালোচনা কৰে আৰু অনলাইনত হোৱা যিকোনো উলংঘনৰ ঘটনাৰ সম্পর্কে আপোনাক সতর্ক কৰি দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক।<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">কাৰ্ড ছেভ কৰক</translation>
 <translation id="3157387275655328056">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="3157684681743766797">সকলো চিহ্নিত কৰক…</translation>
@@ -593,6 +595,7 @@
 <translation id="4941089862236492464">দুঃখিত, আপোনাৰ বস্তুটো শ্বেয়াৰ কৰাত কিবা সমস্যা হৈছে।</translation>
 <translation id="4944543191714094452">পৃষ্ঠাখনত বিচাৰক…</translation>
 <translation id="4945756290001680296">পাছৱৰ্ড ছেটিংসমূহত এক্সেছ কৰক</translation>
+<translation id="4958444002117714549">তালিকা প্ৰসাৰিত কৰক</translation>
 <translation id="4971735654804503942">ক্ষতিকাৰক হিচাপে জনাজাত ৱেবছাইট, ডাউনল'ড আৰু এক্সটেনশ্বনসমূহৰ পৰা ক্ষিপ্ৰ, আগতীয়া সুৰক্ষা। পাছৱর্ড ফাদিল হোৱা সম্পর্কে আপোনাক সকীয়নি দিয়ে। Googleলৈ পঠিয়াবলৈ ব্ৰাউজিং ডেটাৰ আৱশ্যক হয়।</translation>
 <translation id="4979397965658815378">আপোনাৰ সকলো ডিভাইচত বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ পাবৰ বাবে Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="4986678885919050584">এই ডিভাইচটোৰ পৰা আঁতৰাওক</translation>
@@ -656,7 +659,6 @@
 <translation id="54401264925851789">পৃষ্ঠাৰ সুৰক্ষাৰ তথ্য</translation>
 <translation id="5443952882982198570">ক্ৰেডিট কাৰ্ড</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
-<translation id="5453250766792920795">{count,plural, =1{আপোনাৰ একাউণ্ট {email}ত বুকমাৰ্ক ছেভ কৰা হৈছে}one{আপোনাৰ একাউণ্ট {email}ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে}other{আপোনাৰ একাউণ্ট {email}ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে}}</translation>
 <translation id="5457226814769348910">অফলাইন সংস্কৰণটো খোলক</translation>
 <translation id="5489208564673669003">সকলো ছাইটৰ কুকিসমূহ পৰিচালনা কৰিবলৈ <ph name="BEGIN_LINK" />কুকিৰ ছেটিংসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="5490005495580364134">সকলো কুকি অৱৰোধ কৰক (চুপাৰিছ কৰা নহয়)</translation>
@@ -851,6 +853,7 @@
 <translation id="6530992499366869131">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">এটা ছাইট চাওক আৰু Chromeৰ মেনুখনত ফ'ল' কৰকত ক্লিক কৰক</translation>
+<translation id="6550675742724504774">বিকল্প</translation>
 <translation id="6561262006871132942">জুম ইন কৰক</translation>
 <translation id="6583087784430677195">অফ কৰিবলৈ<ph name="BEGIN_LINK" />ছেটিং<ph name="END_LINK" /> খোলক আৰু পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱা সুবিধাটোলৈ যাওক।</translation>
 <translation id="6585618849026997638">এটা বুকমাৰ্ক যোগ দি আপুনি আপোনাৰ বাবে গুৰুত্বপূর্ণ এখন পৃষ্ঠালৈ উভতি যাব পাৰে</translation>

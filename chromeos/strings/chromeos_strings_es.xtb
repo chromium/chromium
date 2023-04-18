@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
+<translation id="5456936324019847994">No se puede conectar a ningún APN personalizado habilitado. Ponte en contacto con tu operador móvil para obtener más información.</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Administrado</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento.}other{Quedan {0} intentos.}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Archivo no encontrado</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Generar par de claves aleatorio</translation>
+<translation id="5946538341867151940">Aún no te has conectado. Si tu operador móvil recomienda un APN personalizado, selecciona + Nuevo APN para introducir la información del APN.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="6017514345406065928">Verde</translation>

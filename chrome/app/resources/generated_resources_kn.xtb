@@ -580,7 +580,7 @@
 <translation id="1487335504823219454">ಆನ್ - ಕಸ್ಟಮ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1494349716233667318">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
-<translation id="1494429729245089920">ವರ್ಚುವಲ್ ಮಷೀನ್ "<ph name="VM_NAME" />" ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಮಾನ್ಯವಾದ <ph name="APP_NAME" /> ವರ್ಚುವಲ್ ಮಷೀನ್ ಎಂಬಂತೆ ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="1494429729245089920">ವರ್ಚುವಲ್ ಮಷೀನ್ "<ph name="VM_NAME" />" ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಮಾನ್ಯವಾದ <ph name="APP_NAME" /> ವರ್ಚುವಲ್ ಮಷೀನ್ ಎಂದು ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="1495677929897281669">ಟ್ಯಾಬ್‌ಗೆ ಮರಳಿ</translation>
 <translation id="1498498210836053409">ಪಠ್ಯವನ್ನು ಎಡಿಟ್ ಮಾಡುವಾಗ ಸ್ಟಿಕಿ ಮೋಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ (ಸ್ಮಾರ್ಟ್ ಸ್ಟಿಕಿ ಮೋಡ್)</translation>
 <translation id="1500297251995790841">ಅಪರಿಚಿತ ಸಾಧನ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1813,7 +1813,7 @@
 <translation id="2501797496290880632">ಶಾರ್ಟ್‌‌ಕಟ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
 <translation id="2502441965851148920">ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಹಸ್ತಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
-<translation id="2502719318159902502">ಪೂರ್ಣ ಪ್ರವೇಶ</translation>
+<translation id="2502719318159902502">ಪೂರ್ಣ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ಸ್ಕ್ರೀನ್ #}one{ಸ್ಕ್ರೀನ್ #}other{ಸ್ಕ್ರೀನ್ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ರಲ್ಲಿ <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="250704661983564564">ಡಿಸ್‌ಪ್ಲೇ ಜೋಡಣೆ</translation>
@@ -6281,7 +6281,7 @@
 <translation id="6532101170117367231">Google ಡ್ರೈವ್‌ನಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="6532106788206463496">ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="6532206849875187177">ಭದ್ರತೆ ಮತ್ತು ಸೈನ್-ಇನ್</translation>
-<translation id="6532527800157340614">ನಿಮ್ಮ ಪ್ರವೇಶ ಟೋಕನ್ ಅನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗದ ಕಾರಣ ಸೈನ್-ಇನ್ ವಿಫಲವಾಗಿದೆ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="6532527800157340614">ನಿಮ್ಮ ಆ್ಯಕ್ಸೆಸ್ ಟೋಕನ್ ಅನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗದ ಕಾರಣ ಸೈನ್-ಇನ್ ವಿಫಲವಾಗಿದೆ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6532663472409656417">ಎಂಟರ್‌ಪ್ರೈಸ್ ನೋಂದಣಿಯಾಗಿದೆ</translation>
 <translation id="6533315466883598769">Google Translate ಬಳಸಿ</translation>
 <translation id="6535331821390304775">ಸಂಬಂಧಿತ ಆ್ಯಪ್‌ನಲ್ಲಿ ಈ ಪ್ರಕಾರದ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="ORIGIN" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
@@ -7298,7 +7298,7 @@
 <translation id="7441830548568730290">ಇತರ ಬಳಕೆದಾರರು</translation>
 <translation id="744341768939279100">ಹೊಸ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ</translation>
 <translation id="744366959743242014">ಡೇಟಾ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ಇದು ಕೆಲವು ಸೆಕೆಂಡ್‌ಗಳ ಕಾಲಾವಕಾಶವನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
-<translation id="7443806024147773267">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಪ್ರವೇಶ ಪಡೆಯಿರಿ</translation>
+<translation id="7443806024147773267">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಿರಿ</translation>
 <translation id="7444970023873202833">Google Photos ನಲ್ಲಿ ನಿಮ್ಮ ಇನ್ನಷ್ಟು ಸವಿನೆನಪುಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7448430327655618736">ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -8197,7 +8197,7 @@
 <translation id="8206745257863499010">ಬ್ಲೂಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8207404892907560325">ಪಾಸ್‌ಕೀ ಒಂದನ್ನು ಆರಿಸಿ</translation>
-<translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಮಾನ್ಯ <ph name="VM_TYPE" /> VM ಎಂಬಂತೆ ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಮಾನ್ಯ <ph name="VM_TYPE" /> VM ಎಂದು ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8208188204689616705">ಈ ಸೈಟ್‌ಗಳು, <ph name="FPS_OWNER" /> ಮೂಲಕ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಗುಂಪಿನಲ್ಲಿವೆ. ಗುಂಪಿನಲ್ಲಿರುವ ಸೈಟ್‌ಗಳು, ಗುಂಪಿನಲ್ಲಿ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="8208216423136871611">ಉಳಿಸಬೇಡಿ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ಅಧಿಸೂಚನೆ}one{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}other{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}}</translation>
@@ -9384,7 +9384,7 @@
 <translation id="965211523698323809">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ಪಠ್ಯ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಿ ಮತ್ತು ಸ್ವೀಕರಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast ನಲ್ಲಿನ ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ</translation>
 <translation id="966588271015727539">ಒಂದು ಬ್ಲೂಟೂತ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="967398046773905967">HID ಸಾಧನಗಳಿಗೆ ಪ್ರವೇಶ ಪಡೆಯಲು ಯಾವುದೇ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="967398046773905967">HID ಸಾಧನಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಲು ಯಾವುದೇ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="967624055006145463">ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಡೇಟಾ</translation>
 <translation id="96774243435178359">ನಿರ್ವಹಿಸಲಾದ ಪ್ರಿಂಟರ್‌ಗಳು</translation>
 <translation id="968000525894980488">Google Play ಸೇವೆಗಳನ್ನು ಆನ್ ಮಾಡಿ.</translation>

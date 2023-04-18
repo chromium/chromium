@@ -3142,7 +3142,7 @@
 <translation id="369489984217678710">密碼和其他登入資料</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全檢查。您的資料將會上載。}=1{已完成安全檢查。您的檔案將會上載。}other{已完成安全檢查。您的檔案將會上載。}}</translation>
 <translation id="3696817060563289264">已下載文字識別檔案</translation>
-<translation id="3697716475445175867">上次開啟時間</translation>
+<translation id="3697716475445175867">上次開啟日期</translation>
 <translation id="3698471669415859717">審核已完成</translation>
 <translation id="3698825735945432002">濾鏡類型</translation>
 <translation id="3699624789011381381">電郵地址</translation>
@@ -4063,6 +4063,7 @@
 <translation id="450552327874992444">已新增的字詞</translation>
 <translation id="4507128560633489176">清除咗資料。</translation>
 <translation id="4507373251891673233">您已封鎖所有來自 <ph name="HOST" /> 的擴充程式</translation>
+<translation id="4508032221004253235">此操作會允許獲得位置權限的應用程式和網站和 ChromeOS 使用 Wi-Fi 或流動網絡所判斷的位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">無障礙功能設定</translation>
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
 <translation id="4509421746503122514">重新啟動即可更新</translation>
@@ -4854,6 +4855,7 @@
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
 <translation id="5236374273162681467">如想在所有裝置上輕鬆使用密碼，可以將這些密碼移至您的 Google 帳戶</translation>
 <translation id="523862956770478816">網站權限</translation>
+<translation id="5239752869099890912">如要將您已更新的擴充程式設定套到此網站，請重新載入此網頁</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="5243522832766285132">請稍後再試</translation>
 <translation id="5244474230056479698">正在同步至 <ph name="EMAIL" /></translation>
@@ -8117,6 +8119,7 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 狀態</translation>
 <translation id="8139447493436036221">「Google 雲端硬碟」檔案</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">允許應用程式和網站和系統時區使用「Google 定位服務」所判斷的位置。即使位置資料存取權已關閉，其他人仍有可能透過 IP 位址查看您的位置。</translation>
 <translation id="8141418916163800697">您可在 Phone Hub 設定中設定更多功能</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
 <translation id="8141725884565838206">管理您的密碼</translation>
@@ -8189,6 +8192,7 @@
 <translation id="8195737548602430447">自動將字幕翻譯為指定語言。</translation>
 <translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
+<translation id="8198511718495409170">如要將您已更新的「<ph name="EXTENSION_NAME" />」設定套到此網站，請重新載入此網頁</translation>
 <translation id="8199300056570174101">網絡 (服務) 和裝置屬性元件</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8200789660596905522">請確保在「<ph name="DEVICE_NAME" />」上接受投放要求。</translation>
@@ -8662,7 +8666,7 @@
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
 <translation id="8639047128869322042">正在檢查有害軟件…</translation>
 <translation id="8639635302972078117">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
-<translation id="8640575194957831802">上次開啟時間</translation>
+<translation id="8640575194957831802">上次開啟日期</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
 <translation id="8643403533759285912">刪除群組</translation>

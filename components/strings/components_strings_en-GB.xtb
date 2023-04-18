@@ -512,6 +512,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2166049586286450108">Full Admin Access</translation>
 <translation id="2166378884831602661">This site can’t provide a secure connection</translation>
 <translation id="2168151236314517198">Printing this content is blocked by administrator policy</translation>
+<translation id="2176974405772725904">Save address in Account</translation>
 <translation id="2181821976797666341">Policies</translation>
 <translation id="2183608646556468874">Phone Number</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
@@ -1739,6 +1740,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Dismiss</translation>
+<translation id="5238301240406177137">Save in Account</translation>
 <translation id="5239623327352565343">Location allowed</translation>
 <translation id="5242889659037569123">Luggage and travel accessories</translation>
 <translation id="5244732203286792411">Loading…
@@ -1757,7 +1759,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5273881944177595304">Web apps and online tools</translation>
 <translation id="5274025349362408263">Books and literature</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
-<translation id="5279453600310613955">No thanks</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Document properties</translation>
 <translation id="528468243742722775">End</translation>
@@ -2257,6 +2258,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6545864417968258051">Bluetooth scanning</translation>
 <translation id="6547208576736763147">Dual punch left</translation>
 <translation id="6549443526281184652">Costumes</translation>
+<translation id="6551873053534932690">Save address in Account?</translation>
 <translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6557715786897013164">14 in x 17 in</translation>

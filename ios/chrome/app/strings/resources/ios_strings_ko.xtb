@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
+<translation id="1883255238294161206">접기 목록</translation>
 <translation id="1891796056033961979">이 화면에서 저장된 북마크, 비밀번호, 설정 등을 사용할 수 있습니다.</translation>
 <translation id="1894023287452300670">여기에서 가격을 추적하세요.</translation>
+<translation id="1910975740091000991">iOS용 Chrome</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1930989359703290198">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
 <translation id="214201757571129614">로그인…</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
-<translation id="2150175299852799498">Chrome 모바일</translation>
 <translation id="2155145621546387786">Chrome 공유</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2178545675770638239">비밀번호 선택</translation>
@@ -594,6 +595,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4941089862236492464">죄송합니다. 항목을 공유하는 중에 문제가 발생했습니다.</translation>
 <translation id="4944543191714094452">페이지에서 찾기…</translation>
 <translation id="4945756290001680296">비밀번호 설정 액세스</translation>
+<translation id="4958444002117714549">펼치기 목록</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="4986678885919050584">기기에서 삭제</translation>
@@ -657,7 +659,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="54401264925851789">페이지 보안 정보</translation>
 <translation id="5443952882982198570">신용카드</translation>
 <translation id="5444892875087332195">북마크</translation>
-<translation id="5453250766792920795">{count,plural, =1{계정({email})에 북마크가 저장됨}other{계정({email})에 북마크가 저장됨}}</translation>
 <translation id="5457226814769348910">오프라인 버전 열기</translation>
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
@@ -852,6 +853,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6530992499366869131">정보 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">사이트를 방문한 다음 Chrome 메뉴에서 '팔로우'를 클릭하세요.</translation>
+<translation id="6550675742724504774">옵션</translation>
 <translation id="6561262006871132942">확대</translation>
 <translation id="6583087784430677195">사용 중지하려면 <ph name="BEGIN_LINK" />Settings(설정)<ph name="END_LINK" />를 열고 AutoFill Passwords(비밀번호 자동 완성)로 이동합니다.</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>

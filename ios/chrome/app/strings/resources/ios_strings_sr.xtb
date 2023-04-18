@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
 <translation id="1870148520156231997">Прикажите лозинку</translation>
 <translation id="1872096359983322073">Блиц</translation>
+<translation id="1883255238294161206">Скупи листу</translation>
 <translation id="1891796056033961979">Сачувани обележивачи, лозинке, подешавања и друго су доступни на овом екрану.</translation>
 <translation id="1894023287452300670">Пратите цену овде</translation>
+<translation id="1910975740091000991">Chrome за iOS</translation>
 <translation id="1911619930368729126">Отпреми у Google диск</translation>
 <translation id="1923342640370224680">Претходни сат</translation>
 <translation id="1930989359703290198">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
 <translation id="214201757571129614">Пријавите се…</translation>
 <translation id="2149973817440762519">Измените обележивач</translation>
-<translation id="2150175299852799498">Chrome за мобилне уређаје</translation>
 <translation id="2155145621546387786">Дели Chrome</translation>
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="2178545675770638239">Изаберите лозинку</translation>
@@ -342,6 +343,7 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245744387817103524">Чување промене није успело.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Ова адреса се чува само у Chrome-у. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Аутоматски попуни лозинке</translation>
 <translation id="3268451620468152448">Отворене картице</translation>
 <translation id="3272527697863656322">Откажи</translation>
@@ -594,6 +596,7 @@
 <translation id="4941089862236492464">Жао нам је, дошло је до проблема при дељењу ставке.</translation>
 <translation id="4944543191714094452">Пронађи на страници…</translation>
 <translation id="4945756290001680296">Приступите подешавањима лозинки</translation>
+<translation id="4958444002117714549">Прошири листу</translation>
 <translation id="4971735654804503942">Бржа проактивна заштита од опасних веб-сајтова, преузимања и додатака. Упозорава вас о откривању лозинки. Захтева слање података прегледања Google-у.</translation>
 <translation id="4979397965658815378">Пријавите се помоћу Google налога да бисте имали обележиваче, лозинке, историју и друга подешавања на свим уређајима</translation>
 <translation id="4986678885919050584">Уклони са овог уређаја</translation>
@@ -657,7 +660,6 @@
 <translation id="54401264925851789">Информације о безбедности странице</translation>
 <translation id="5443952882982198570">Кредитне картице</translation>
 <translation id="5444892875087332195">Обележивачи</translation>
-<translation id="5453250766792920795">{count,plural, =1{Обележивач је сачуван на налогу, {email}}one{Обележивачи су сачувани на налогу, {email}}few{Обележивачи су сачувани на налогу, {email}}other{Обележивачи су сачувани на налогу, {email}}}</translation>
 <translation id="5457226814769348910">Отвори офлајн верзију</translation>
 <translation id="5489208564673669003">Да бисте управљали колачићима за све сајтове, погледајте <ph name="BEGIN_LINK" />Подешавања колачића<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај све колачиће (не препоручује се)</translation>
@@ -852,6 +854,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6530992499366869131">Упозори ме ако су лозинке откривене при упаду у податке</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Посетите сајт и кликните на Прати у Chrome менију</translation>
+<translation id="6550675742724504774">Опције</translation>
 <translation id="6561262006871132942">Увећајте</translation>
 <translation id="6583087784430677195">Да бисте искључили, отворите <ph name="BEGIN_LINK" />Подешавања<ph name="END_LINK" /> и идите у Аутоматски попуњавај лозинке.</translation>
 <translation id="6585618849026997638">Ако додате обележивач, можете да се вратите на страницу која вам је важна</translation>

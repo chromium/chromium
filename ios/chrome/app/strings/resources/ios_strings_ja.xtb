@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
+<translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1891796056033961979">保存したブックマーク、パスワード、設定などにこの画面からアクセスできます。</translation>
 <translation id="1894023287452300670">ここで価格をトラッキングできます</translation>
+<translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1923342640370224680">1 時間以内</translation>
 <translation id="1930989359703290198">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">コピーしたテキストを検索</translation>
 <translation id="214201757571129614">ログイン…</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
-<translation id="2150175299852799498">モバイル版 Google Chrome</translation>
 <translation id="2155145621546387786">Chrome を共有</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2178545675770638239">パスワードの選択</translation>
@@ -321,6 +322,7 @@
 <translation id="3131206671572504478">すべてブロック</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
 <translation id="3146109040683991651">Chrome を既定のブラウザに設定する</translation>
+<translation id="3152169319860972623">パスワード チェックアップでは保存されているパスワードを確認し、オンライン侵害があれば警告を表示します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">カードを保存</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157684681743766797">すべてマーク...</translation>
@@ -593,6 +595,7 @@
 <translation id="4941089862236492464">アイテムの共有中に問題が発生しました。</translation>
 <translation id="4944543191714094452">ページ内を検索…</translation>
 <translation id="4945756290001680296">パスワードの設定にアクセスします</translation>
+<translation id="4958444002117714549">リストを展開する</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="4986678885919050584">このデバイスから削除</translation>
@@ -656,7 +659,6 @@
 <translation id="54401264925851789">ページのセキュリティ情報</translation>
 <translation id="5443952882982198570">クレジット カード</translation>
 <translation id="5444892875087332195">ブックマーク</translation>
-<translation id="5453250766792920795">{count,plural, =1{ブックマークをアカウント（{email}）に保存しました}other{ブックマークをアカウント（{email}）に保存しました}}</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
@@ -851,6 +853,7 @@
 <translation id="6530992499366869131">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">サイトにアクセスして、Chrome メニューで [フォロー] をクリックします</translation>
+<translation id="6550675742724504774">オプション</translation>
 <translation id="6561262006871132942">拡大</translation>
 <translation id="6583087784430677195">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードを自動入力] に移動します。</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>

@@ -134,8 +134,10 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
+<translation id="1883255238294161206">Réduire la liste</translation>
 <translation id="1891796056033961979">Vos favoris, mots de passe et paramètres enregistrés, et bien plus encore sont accessibles à partir de cet écran.</translation>
 <translation id="1894023287452300670">Suivez le prix ici</translation>
+<translation id="1910975740091000991">Chrome pour iOS</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
 <translation id="1930989359703290198">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2139867232736819575">Rechercher le texte que vous avez copié</translation>
 <translation id="214201757571129614">Connexion…</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
-<translation id="2150175299852799498">Chrome pour appareil mobile</translation>
 <translation id="2155145621546387786">Partager Chrome</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2178545675770638239">Sélectionner un mot de passe</translation>
@@ -321,6 +322,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Ouvrir un nouvel onglet de navigation privée.</translation>
 <translation id="3146109040683991651">Définir Chrome comme navigateur par défaut</translation>
+<translation id="3152169319860972623">Vérification de mot de passe examine vos mots de passe enregistrés et vous avertit de toute violation en ligne. <ph name="BEGIN_LINK" />Apprenez-en plus.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
@@ -353,6 +355,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3324193307694657476">Ligne adresse 2</translation>
 <translation id="3328459813621383194">Déplacer les onglets inactifs</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
+<translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
 <translation id="3377063233124932127">Désormais, vos favoris, vos mots de passe et d'autres éléments que vous avez enregistrés s'affichent en haut.</translation>
 <translation id="3393920035788932672">Fenêtr context autor</translation>
@@ -592,6 +595,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4941089862236492464">Un problème s'est produit lors du partage de votre élément.</translation>
 <translation id="4944543191714094452">Rechercher dans la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
+<translation id="4958444002117714549">Développer la liste</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4986678885919050584">Retirer de cet appareil</translation>
@@ -655,7 +659,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="54401264925851789">Information sur la sécurité de la page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
 <translation id="5444892875087332195">Favoris</translation>
-<translation id="5453250766792920795">{count,plural, =1{Favori enregistré dans votre compte, {email}}one{Favori enregistré dans votre compte, {email}}other{Favoris enregistrés dans votre compte, {email}}}</translation>
 <translation id="5457226814769348910">Ouvrir la version hors ligne</translation>
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
@@ -850,6 +853,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6530992499366869131">Vous envoyer un avertissement si des mots de passe sont exposés à la suite d'une violation de données</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Visitez un site et cliquez sur Suivre dans le menu Chrome</translation>
+<translation id="6550675742724504774">Options</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6583087784430677195">Pour désactiver, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" /> et accédez à remplissage automatique des mots de passe.</translation>
 <translation id="6585618849026997638">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
@@ -1032,6 +1036,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="784551991304901159">Pour afficher du contenu, sélectionnez Activer dans le menu</translation>
+<translation id="7846158885638438868">{count,plural, =1{Mis en favori avec « {title} »}one{Mis en favori avec « {title} »}other{Mis en favori avec « {title} »}}</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7856733331829174190">Échec du téléchargement</translation>
 <translation id="785938070103630874">Ouvrir les mots de passe, les modes de paiement, l'adresse et plus</translation>

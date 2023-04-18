@@ -134,8 +134,10 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="1870148520156231997">Parolu Göstərin</translation>
 <translation id="1872096359983322073">Fənər</translation>
+<translation id="1883255238294161206">Siyahını yığcamlaşdırın</translation>
 <translation id="1891796056033961979">Yadda saxladığınız əlfəcinlər, parollar, ayarlar və s. bu ekrandan əlçatandır.</translation>
 <translation id="1894023287452300670">Qiyməti burada izləyin</translation>
+<translation id="1910975740091000991">iOS üçün Chrome</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
 <translation id="1923342640370224680">Son Saat</translation>
 <translation id="1930989359703290198">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir. İcazə verilməyən hesablar gizlədilib. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="2139867232736819575">Kopyalanmış Mətni Axtarın</translation>
 <translation id="214201757571129614">Giriş…</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
-<translation id="2150175299852799498">Mobil üçün Chrome</translation>
 <translation id="2155145621546387786">Chrome'u paylaşın</translation>
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2178545675770638239">Parol Seçin</translation>
@@ -594,6 +595,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="4941089862236492464">Üzr istəyirik, elementi paylaşarkən problem baş verdi.</translation>
 <translation id="4944543191714094452">Səhifədə tapın…</translation>
 <translation id="4945756290001680296">Parol ayarlarına daxil olun</translation>
+<translation id="4958444002117714549">Siyahını genişləndirin</translation>
 <translation id="4971735654804503942">Təhlükəli veb saytlar, endirmələr və artırmalara qarşı daha sürətli, fəal qoruma. Sizə parol aşkarlanmaları barədə xəbərdarlıq edir. Baxış datasının Google'a göndərilməsini tələb edir.</translation>
 <translation id="4979397965658815378">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün Google Hesabınız ilə daxil olun.</translation>
 <translation id="4986678885919050584">Bu Cihazdan silin</translation>
@@ -657,7 +659,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="54401264925851789">Səhifə güvənliyi məlumatı</translation>
 <translation id="5443952882982198570">Kredit Kartları</translation>
 <translation id="5444892875087332195">Əlfəcinlər</translation>
-<translation id="5453250766792920795">{count,plural, =1{Əlfəcin hesabda ({email}) saxlandı}other{Əlfəcinlər hesabda ({email}) saxlandı}}</translation>
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
 <translation id="5489208564673669003">Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Kuki Ayarlarına<ph name="END_LINK" /> baxın.</translation>
 <translation id="5490005495580364134">Bütün kukiləri bloklayın (Tövsiyə edilmir)</translation>
@@ -852,6 +853,7 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="6530992499366869131">Data Pozulması halında Parolların ələ keçirilib-keçirilmədiyi bildirilir</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Sayta daxil olun və Chrome menyusunda "İzlə" seçiminə klikləyin</translation>
+<translation id="6550675742724504774">Seçimlər</translation>
 <translation id="6561262006871132942">Böyüdün</translation>
 <translation id="6583087784430677195">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parolların Avtomatik Doldurulmasına keçin.</translation>
 <translation id="6585618849026997638">Əlfəcin əlavə etməklə vacib səhifəyə qayıda bilərsiniz</translation>

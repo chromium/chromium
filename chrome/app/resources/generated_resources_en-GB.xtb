@@ -2227,6 +2227,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2852385257476173980">A list of sites that you visit may appear here as you browse the web</translation>
 <translation id="285241945869362924">Automatically creates captions for audio and video. Audio and captions never leave your device.</translation>
 <translation id="2856776373509145513">Create a new container</translation>
+<translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Remove Linux development environment</translation>
@@ -4308,6 +4309,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="47158868804223727">Click the group name to expand or collapse it</translation>
 <translation id="4716483597559580346">Powerwash for added security</translation>
 <translation id="471759229191973607">Change theme</translation>
+<translation id="4718046540206070045">More than a browser</translation>
 <translation id="4718564115458102525">No keyboard detected</translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> is sharing your screen.</translation>
@@ -5455,6 +5457,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5787146423283493983">Key Agreement</translation>
 <translation id="5787420647064736989">Device name</translation>
 <translation id="5788367137662787332">Sorry, at least one partition on the device <ph name="DEVICE_LABEL" /> could not be mounted.</translation>
+<translation id="5789581866075720267">To import passwords to <ph name="BRAND" /> on this device, select a CSV file.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Success</translation>
 <translation id="5790651917470750848">Port forward already exists</translation>
@@ -5699,6 +5702,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
 <translation id="598810097218913399">Remove assignment</translation>
+<translation id="5989629029899728491">Beyond cookies</translation>
 <translation id="5990266201903445068">Wi-Fi only</translation>
 <translation id="5990386583461751448">Translated</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{To ensure that you can keep browsing the web, ask your administrator to remove this application.}other{To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}</translation>
@@ -5809,6 +5813,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Part of unnamed group</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
+<translation id="6086347269144967242">Read attached device information and data</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
 <translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
@@ -8378,6 +8383,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">You already registered this device. You don't have to register it again.</translation>
 <translation id="8357388086258943206">Error installing Linux</translation>
+<translation id="8357591920094529889">This guide helps you to understand important choices that you have as you use Chrome. It also helps you to make these choices, so that Chrome works the way that you want it to.</translation>
 <translation id="8358685469073206162">Restore pages?</translation>
 <translation id="8358912028636606457">Casting tab audio is not supported on this device.</translation>
 <translation id="835951711479681002">Save in your Google Account</translation>
@@ -8431,6 +8437,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8398877366907290961">Proceed anyway</translation>
 <translation id="8399282673057829204">View password</translation>
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
+<translation id="8403618281196981152">Your data in Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> can check your passwords when you save them</translation>
 <translation id="8405046151008197676">Get highlights from the latest update</translation>
 <translation id="8407199357649073301">Log level:</translation>
@@ -8490,6 +8497,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8460932807646981183">Manage search engines and site search</translation>
 <translation id="84613761564611563">Network configure UI requested, please wait...</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8461973047386722744">No passwords found</translation>
 <translation id="8463001014623882202">Authorisation failed</translation>
 <translation id="846374874681391779">Downloads bar</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> disabled.</translation>
@@ -8548,6 +8556,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8512476990829870887">End Process</translation>
 <translation id="851263357009351303">Always allow <ph name="HOST" /> to show images</translation>
 <translation id="8513108775083588393">Auto-rotate</translation>
+<translation id="8513357934662532537">To import passwords to <ph name="BRAND" /> for <ph name="USER_EMAIL" />, select a CSV file.</translation>
 <translation id="8514746246728959655">Try a different security key</translation>
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="8517759303731677493">Edit…</translation>

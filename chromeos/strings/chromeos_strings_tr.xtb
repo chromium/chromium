@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Etkin</translation>
 <translation id="5430931332414098647">Hızlı Tethering</translation>
 <translation id="5431318178759467895">Renk</translation>
+<translation id="5456936324019847994">Etkinleştirilmiş özel APN'lere bağlanılamıyor. Daha fazla bilgi için mobil operatörünüzle iletişime geçin.</translation>
 <translation id="5457599981699367932">Misafir olarak Göz At</translation>
 <translation id="54609108002486618">Yönetilen</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} deneme hakkınız kaldı}other{{0} deneme hakkınız kaldı}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Dosya bulunamadı</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
 <translation id="594552776027197022">Rastgele anahtar çifti oluşturun</translation>
+<translation id="5946538341867151940">Henüz bağlanmadınız. Mobil operatörünüz özel bir APN önerirse "+ Yeni APN"yi seçerek APN bilgilerini girin.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Varsayılan Duvar Kağıdı</translation>
 <translation id="6017514345406065928">Yeşil</translation>

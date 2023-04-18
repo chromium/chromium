@@ -1754,7 +1754,6 @@
 <translation id="5273881944177595304">Applications Web et outils en ligne</translation>
 <translation id="5274025349362408263">Livres et littérature</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
-<translation id="5279453600310613955">Non merci</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriétés du document</translation>
 <translation id="528468243742722775">Fin</translation>
@@ -2105,6 +2104,7 @@
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative de récupération :</translation>
 <translation id="6169916984152623906">Vous pouvez maintenant naviguer de façon privée, et les autres personnes qui utilisent cet appareil ne verront pas votre activité. Cependant, les téléchargements et les favoris seront sauvegardés.</translation>
+<translation id="617256461084925519">Google Chrome essaie de vérifier qu'il s'agit bien de vous afin de pouvoir remplir vos informations de paiement.</translation>
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6177531123306197852">Enveloppe C2</translation>
 <translation id="6180316780098470077">Intervalle entre les nouveaux essais</translation>
@@ -2656,6 +2656,7 @@ Détails supplémentaires :
 <translation id="7518003948725431193">Aucune page Web trouvée à l'adresse : <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Section « <ph name="SECTION" /> » masquée</translation>
+<translation id="752189128961566325">Vous pouvez l'utiliser dans tous les produits Google</translation>
 <translation id="7523408071729642236">Fabrication</translation>
 <translation id="7526934274050461096">Votre connexion à ce site n'est pas privée</translation>
 <translation id="7529884293139707752">Enseignement à domicile</translation>
@@ -2883,6 +2884,7 @@ Détails supplémentaires :
 <translation id="8057711352706143257">« <ph name="SOFTWARE_NAME" /> » n'est pas correctement configuré. La désinstallation de « <ph name="SOFTWARE_NAME" /> » résout généralement le problème. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Production alimentaire</translation>
 <translation id="8058603697124206642">Non requis</translation>
+<translation id="8064892030280197386">vérifiez qu'il s'agit bien de vous afin qu'il puisse remplir vos informations de paiement.</translation>
 <translation id="8066225060526005217">Géré par les paramètres des témoins</translation>
 <translation id="8067872629359326442">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
 <translation id="8070439594494267500">Icône de l'application</translation>

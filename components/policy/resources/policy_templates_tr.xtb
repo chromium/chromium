@@ -3720,11 +3720,6 @@ kaldırılacaktır.</translation>
 <translation id="4463675333222095358">Bil Bakalım Birim Dönüşümünü Etkinleştir</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> işlevini devre dışı bırak</translation>
 <translation id="4467952432486360968">Üçüncü taraf çerezlerini engelle</translation>
-<translation id="4472525987427026071">Politika 0 (varsayılan) değerine ayarlanırsa geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Ancak kurumsal politikaya göre yüklenen uzantıların bağlamında bu erişimi sağlayamazsınız. Politika 1 değerine ayarlanırsa kurumsal politikaya göre yüklenen uzantıların bağlamı dahil tüm bağlamlarda geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Politika 2 değerine ayarlanırsa geliştirici araçlarına erişemezsiniz ve web sitesi öğelerini inceleyemezsiniz.
-
-      Bu ayar, geliştirici araçlarını veya JavaScript konsolunu açmak için klavye kısayollarını ve menü veya içerik menüsü girişlerini de kapatır.
-
-      Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 99'dan itibaren "Sayfa kaynağını görüntüle" özelliği için giriş noktalarını da kontrol eder. Bu politikayı "DeveloperToolsDisallowed" (2 değeri) olarak ayarlarsanız kullanıcılar klavye kısayollarını veya içerik menüsünü kullanarak kaynak görüntülemeye erişemez. Kaynak görüntülemeyi tamamen engellemek için <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına "view-source:*" ifadesini de eklemeniz gerekir.</translation>
 <translation id="4472740647327683596">Mikrometre cinsinden sayfanın genişliği</translation>
 <translation id="4474167089968829729">Şifrelerin, şifre yöneticisine kaydedilmesini etkinleştir</translation>
 <translation id="4476769083125004742">Bu politika <ph name="BLOCK_GEOLOCATION_SETTING" /> seçeneğine ayarlanırsa Android uygulamaları konum bilgisine erişemez. Bu politikayı başka bir değere ayarlar veya ayarlamadan bırakırsanız, bir Android uygulaması konum bilgisine erişmek istediğinde kullanıcıdan izin istenir.</translation>
@@ -4792,6 +4787,13 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="5448022937220253000"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerine ne olacağını seçin</translation>
 <translation id="5449690328792750354">Event.path API kullanılabilir.</translation>
 <translation id="5452024130413254050">Bu yapılandırmayı kullanan sanal makinelerin, vTPM'ye erişip erişemediğini kontrol eder, ayarlanmadığı takdirde varsayılan olarak yanlış ve <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> değerini alır.</translation>
+<translation id="5452167809842762761">Bu politika M114'te kaldırılmıştır. Devre dışı bırakılmış CECPQ2 için geçerli olmuş, ancak CECPQ2 varsayılan olarak devre dışı bırakılmıştır ve bunun yerini, yine standart klasik anahtar sözleşmemiz X25519 ile birlikte, NIST'nin seçtiği kuantum sonrası KEM alacaktır.
+
+Bu politika yapılandırılmaz veya etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, TLS'deki kuantum sonrası anahtar anlaşması algoritması CECPQ2 için varsayılan kullanıma sunma işlemini uygular.
+
+      CECPQ2, çok nadir durumlarda bazı ağ donanımlarında hata oluşmasını tetikleyebilen daha büyük TLS mesajlarına yol açar. Ağ sorunları çözülürken CECPQ2'yi devre dışı bırakmak için bu politika Yanlış değerine ayarlanabilir.
+
+      Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır.</translation>
 <translation id="5454128917282602937">Kullanıcı <ph name="PRODUCT_OS_NAME" /> cihazları arasında geçiş yaptığında <ph name="PRODUCT_NAME" /> V2 hizmeti, daha önce kullandığınız cihazdaki tarayıcı ve uygulama pencerelerini yeni cihazda başlatır.
 Politika, Etkin değerine ayarlanırsa mevcut kullanıcının son kullandığı <ph name="PRODUCT_OS_NAME" /> cihazdaki tarayıcı pencereleri giriş yapıldıktan sonra otomatik olarak açılır.
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa giriş yapıldıktan sonra nelerin açılacağı, tam geri yükleme ayarları tarafından belirlenir.</translation>
@@ -8495,17 +8497,6 @@ Politika ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırma sır
 <translation id="8854571659927427063">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan yer işaretleri ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yer işaretleri ilk çalıştırmada içe aktarılmaz.
 
       Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve yer işaretleri onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>
-<translation id="8854703425882848037">X.509 sertifikaları, sertifikadaki uzantılara Ad Kısıtlamaları gibi kısıtlamalar kodlayabilir. RFC 5280, güven bağlantısı sertifikalarına bu tür kısıtlamaların uygulanmasının isteğe bağlı olduğunu belirtir. <ph name="PRODUCT_NAME" /> 112 sürümünden itibaren, platform sertifika deposundan yüklenen sertifikalardaki bu tür kısıtlamalar uygulanacaktır.
-
-Bu politika, özel köklerine kodlanan kısıtlamalarla karşılaşan kuruluşların geçici olarak kapsam dışında kalmayı seçmesine neden olur. Bu durumda, kısıtlamaların uygulanmasını geçici olarak devre dışı bırakıp sertifika sorunları düzeltmek için bu politika kullanılabilir.
-
-Bu politika ayarlanmadığında veya etkin değerine ayarlandığında <ph name="PRODUCT_NAME" />, platform güven deposundan yüklenen güven bağlantılarına kodlanmış kısıtlamalar uygular.
-
-Bu politika devre dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, platform güven deposundan yüklenen güven bağlantılarına kodlanmış kısıtlamalar uygulamaz.
-
-<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> politikası devre dışı bırakılırsa bu politikanın etkisi olmaz.
-
-<ph name="PRODUCT_NAME" /> sürüm 115'te bu politikanın kaldırılması planlanmaktadır.</translation>
 <translation id="8858642179038618439">YouTube Güvenlik Modunu zorla</translation>
 <translation id="8860342862142842017">subjectPublicKeyInfo karma listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
 <translation id="8860894781631833477">Kullanıcılar <ph name="PRODUCT_OS_NAME" /> sürüm kanalını yapılandırabilir</translation>
@@ -8807,7 +8798,6 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olar
       Gerçek geri alma olasılıkları ayrıca pano ve önemli güvenlik açığı yamalarına da bağlı olabilir.</translation>
 <translation id="9123464369663964441">Kullanıcıların engellenebilir karma içeriğe izin vermek için istisnalar eklemesine izin ver</translation>
 <translation id="9124770007620653639">Alan güvenilirliği verilerini hiçbir zaman Google'a gönderme</translation>
-<translation id="9125694642546254164">Kurumsal politika tarafından yüklenen uygulama ve uzantılarda Geliştirici Araçları kullanımına izin verme, diğer bağlamlarda Geliştirici Araçları kullanımına izin ver</translation>
 <translation id="9126331659955304300">Yerel dosya sisteminden, kameradan ve Google profilinden kullanıcı avatarı seçimine izin ver</translation>
 <translation id="9126491667911789829">Politikayı ayarlamak, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcıların kaldıramadığı veya kapatamadığı web uygulamalarının listesini belirtir.
 

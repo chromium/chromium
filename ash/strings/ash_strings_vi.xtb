@@ -225,6 +225,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1978498689038657292">Nhập văn bản</translation>
 <translation id="1980808257969311265">Tham gia <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Hiện dữ liệu tuần trước</translation>
+<translation id="1986150224850161328">Hãy đảm bảo điện thoại và Chromebook của bạn kết nối với cùng một mạng, rồi thử lại. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Không thể chụp nội dung</translation>
 <translation id="1990046457226896323">Đã tải tệp mã chuyển lời nói thành văn bản xuống</translation>
 <translation id="1993072747612765854">Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất</translation>
@@ -238,7 +239,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2023558322300866873">Bạn có thể dừng quá trình thu thập gói dữ liệu bất kỳ lúc nào</translation>
 <translation id="2034971124472263449">Vẫn lưu</translation>
 <translation id="2049240716062114887">Đã đổi tên không gian làm việc thành <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2064048859448024834">Đang hiện chế độ xem trước máy ảnh</translation>
 <translation id="2067602449040652523">Độ sáng bàn phím</translation>
 <translation id="2078034614700056995">Hãy vuốt sang phải bằng 4 ngón tay để chuyển sang không gian làm việc tiếp theo</translation>
@@ -374,6 +374,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2761723519669354964">Mở mục được đánh dấu trên kệ</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
 <translation id="2782591952652094792">Thoát khỏi chế độ chụp</translation>
+<translation id="2785499565474703580">1 thiết bị đã kết nối</translation>
 <translation id="2791421900609674576">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể chạm và giữ để xoá đề xuất.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1279,7 @@ Mới cài đặt</translation>
 <translation id="6941333068993625698">Gửi phản hồi</translation>
 <translation id="6942518653766415536">Trình đơn định dạng bản ghi</translation>
 <translation id="6945221475159498467">Chọn</translation>
+<translation id="6945922087561257829">Điện thoại của bạn đang sử dụng mạng di động. Hãy đảm bảo điện thoại và Chromebook của bạn kết nối với cùng một mạng Wi-Fi, rồi thử lại. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Chưa kích hoạt. Hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="6961121602502368900">Bạn không dùng được tính năng Tắt tiếng điện thoại trên hồ sơ công việc</translation>
 <translation id="6961840794482373852">Phím tắt Alt + Mũi tên lên đã thay đổi. Để sử dụng phím Page Up, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên lên.</translation>
@@ -1332,6 +1334,7 @@ Mới cài đặt</translation>
 <translation id="7188494361780961876">Đã di chuyển trình đơn vào góc trên cùng bên trái màn hình.</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>
+<translation id="7219573373513695352">Chưa kết nối thiết bị nào</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>
 <translation id="7256634071279256947">Micrô mặt sau</translation>
 <translation id="7258828758145722155">Chỉnh sửa hôm qua</translation>
@@ -1482,6 +1485,7 @@ Mới cài đặt</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> thiết bị đã kết nối</translation>
 <translation id="7930731167419639574">Giọng nói được xử lý cục bộ và tính năng Nhập bằng giọng nói hoạt động ngoại tuyến</translation>
 <translation id="7932451802722951285">Mở trong Lịch Google</translation>
 <translation id="7933084174919150729">Bạn chỉ có thể sử dụng Trợ lý Google cho hồ sơ chính.</translation>
@@ -1772,7 +1776,6 @@ Mới cài đặt</translation>
 <translation id="954052413789300507">Không đủ dung lượng cho <ph name="FILENAME" />. Giải phóng dung lượng.</translation>
 <translation id="974545358917229949">Đang hiển thị <ph name="RESULT_COUNT" /> kết quả cho <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Chuyển đến cuối tài liệu</translation>
-<translation id="98515147261107953">Khổ ngang</translation>
 <translation id="989374776391122812">Các tuỳ chọn điều khiển máy ảnh và âm thanh</translation>
 <translation id="990277280839877440">Đã đóng cửa sổ <ph name="WINDOW_TITILE" />.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

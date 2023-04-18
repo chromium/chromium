@@ -238,7 +238,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2023558322300866873">Puwede mong ihinto ang packet capture anumang oras</translation>
 <translation id="2034971124472263449">I-save pa rin</translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2078034614700056995">Mag-swipe pakanan gamit ang apat na daliri para lumipat sa susunod na desk</translation>
@@ -1771,7 +1770,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="954052413789300507">Walang sapat na espasyo para sa <ph name="FILENAME" />. Magbakante ng espasyo.</translation>
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>
-<translation id="98515147261107953">Landscape</translation>
 <translation id="989374776391122812">Mga kontrol ng camera at audio</translation>
 <translation id="990277280839877440">Isinara ang window na <ph name="WINDOW_TITILE" />.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

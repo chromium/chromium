@@ -238,7 +238,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2023558322300866873">Paket yakalama işlemini dilediğiniz zaman durdurabilirsiniz</translation>
 <translation id="2034971124472263449">Yine de kaydet</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olarak değiştirildi</translation>
-<translation id="2050339315714019657">Dikey</translation>
 <translation id="2064048859448024834">Kamera önizlemesi açık</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
 <translation id="2078034614700056995">Sonraki masaya geçmek için dört parmakla sağa kaydırın</translation>
@@ -1772,7 +1771,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="954052413789300507"><ph name="FILENAME" /> için yeterli alan yok. Yer açın.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> için <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 <translation id="98120814841227350">Dokümanın sonuna gider</translation>
-<translation id="98515147261107953">Yatay</translation>
 <translation id="989374776391122812">Kamera ve ses kontrolleri</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> penceresi kapandı.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

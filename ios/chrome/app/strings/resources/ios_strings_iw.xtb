@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
 <translation id="1872096359983322073">פנס</translation>
+<translation id="1883255238294161206">כיווץ רשימה</translation>
 <translation id="1891796056033961979">הסימניות, הסיסמאות, ההגדרות ונתונים נוספים זמינים במסך הזה.</translation>
 <translation id="1894023287452300670">כאן ניתן לעקוב אחר המחיר</translation>
+<translation id="1910975740091000991">‏Chrome ל-iOS</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
 <translation id="1923342640370224680">בשעה האחרונה</translation>
 <translation id="1930989359703290198">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שאינם מותרים מוסתרים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">חיפוש טקסט שהעתקת</translation>
 <translation id="214201757571129614">כניסה…</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
-<translation id="2150175299852799498">‏Chrome לנייד</translation>
 <translation id="2155145621546387786">‏שיתוף Chrome</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2178545675770638239">בחירת סיסמה</translation>
@@ -321,6 +322,7 @@
 <translation id="3131206671572504478">‏חסימת כל קובצי ה-cookie</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
 <translation id="3146109040683991651">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
+<translation id="3152169319860972623">בבדיקת הסיסמאות, הסיסמאות השמורות נבדקות ומתקבלות אזהרות במקרים של פריצות אבטחה באינטרנט. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">שמירת כרטיס</translation>
 <translation id="3157387275655328056">הוספה לרשימת הקריאה</translation>
 <translation id="3157684681743766797">סימון הכול…</translation>
@@ -353,6 +355,7 @@
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328459813621383194">העברת הכרטיסיות הלא פעילות</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
+<translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
 <translation id="3393920035788932672">חלונות קופצים מותרים</translation>
@@ -592,6 +595,7 @@
 <translation id="4941089862236492464">מצטערים, אירעה בעיה בשיתוף הפריט שלך.</translation>
 <translation id="4944543191714094452">חיפוש בדף…</translation>
 <translation id="4945756290001680296">גישה להגדרות הסיסמה</translation>
+<translation id="4958444002117714549">הרחבת רשימה</translation>
 <translation id="4971735654804503942">‏הגנה מהירה יותר ואקטיבית מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google.</translation>
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
 <translation id="4986678885919050584">הסרה מהמכשיר הזה</translation>
@@ -655,7 +659,6 @@
 <translation id="54401264925851789">פרטי אבטחת דף</translation>
 <translation id="5443952882982198570">כרטיסי אשראי</translation>
 <translation id="5444892875087332195">סימניות</translation>
-<translation id="5453250766792920795">{count,plural, =1{הסימנייה נשמרה בחשבון שלך, {email}}one{הסימניות נשמרו בחשבון שלך, {email}}two{הסימניות נשמרו בחשבון שלך, {email}}other{הסימניות נשמרו בחשבון שלך, {email}}}</translation>
 <translation id="5457226814769348910">פתיחה של גרסת אופליין</translation>
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
@@ -850,6 +853,7 @@
 <translation id="6530992499366869131">הצגת אזהרה אם סיסמאות נחשפו עקב פרצה באבטחת מידע</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">‏אפשר להיכנס לאתר וללחוץ על 'מעקב' בתפריט Chrome</translation>
+<translation id="6550675742724504774">אפשרויות</translation>
 <translation id="6561262006871132942">הגדלת התצוגה</translation>
 <translation id="6583087784430677195">כדי להשבית את המילוי האוטומטי, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'מילוי אוטומטי של סיסמאות'.</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
@@ -1032,6 +1036,7 @@
 <translation id="7840771868269352570">הפריטים שבחרת יוסרו.</translation>
 <translation id="7845466610722898">הצגה של רשימת הקריאה</translation>
 <translation id="784551991304901159">כדי להציג תוכן, צריך לבחור באפשרות 'הפעלה' בתפריט</translation>
+<translation id="7846158885638438868">{count,plural, =1{הדף נוסף לסימניות בתיקייה ’{title}‘}one{Bookmarked to "{title}"}two{הדפים נוספו לסימניות בתיקייה ’{title}‘}other{הדפים נוספו לסימניות בתיקייה ’{title}‘}}</translation>
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7856733331829174190">ההורדה נכשלה</translation>
 <translation id="785938070103630874">פתיחת הסיסמאות, אמצעי התשלום, הכתובת ועוד</translation>

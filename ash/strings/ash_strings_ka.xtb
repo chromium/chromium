@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">ტექსტის შეყვანა</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />-ში მონაწილეობა</translation>
 <translation id="1982717156487272186">წინა კვირის ჩვენება</translation>
+<translation id="1986150224850161328">დარწმუნდით, რომ თქვენი ტელეფონი და Chromebook ერთსა და იმავე ქსელშია, შემდეგ კი ხელახლა ცადეთ. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">კონტენტის აღბეჭდვა ვერ ხერხდება</translation>
 <translation id="1990046457226896323">მეტყველების ფაილები ჩამოიტვირთა</translation>
 <translation id="1993072747612765854">შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ</translation>
@@ -238,7 +239,6 @@
 <translation id="2023558322300866873">პაკეტების აღბეჭდვის შეწყვეტა ნებისმიერ დროს შეგიძლიათ</translation>
 <translation id="2034971124472263449">მაინც შენახვა</translation>
 <translation id="2049240716062114887">სამუშაო მაგიდის სახელი შეცვალა „<ph name="DESK_NAME" />“-ით</translation>
-<translation id="2050339315714019657">პორტრეტი</translation>
 <translation id="2064048859448024834">კამერის გადახედვა ჩართულია</translation>
 <translation id="2067602449040652523">კლავიატურის სიკაშკაშე</translation>
 <translation id="2078034614700056995">შემდეგ სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარჯვნივ ოთხი თითით</translation>
@@ -374,6 +374,7 @@
 <translation id="2761723519669354964">გამოყოფილი ერთეულის გახსნა თაროდან</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="2782591952652094792">აღბეჭდვის რეჟიმიდან გასვლა</translation>
+<translation id="2785499565474703580">დაკავშირებულია 1 მოწყობილობა</translation>
 <translation id="2791421900609674576">თქვენ იხილავთ რეკომენდაციებს, რომ შეძლოთ იქიდან გაგრძელება, სადაც შეჩერდით. რეკომენდაციების ამოშლა შეგიძლიათ ხანგრძლივად შეხებით.</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1279,7 @@
 <translation id="6941333068993625698">გამოხმაურება</translation>
 <translation id="6942518653766415536">ჩანაწერის ფორმატის მენიუ</translation>
 <translation id="6945221475159498467">არჩევა</translation>
+<translation id="6945922087561257829">თქვენი ტელეფონი იყენებს მობილურ ქსელს. დარწმუნდით, რომ თქვენი ტელეფონი და Chromebook ერთსა და იმავე Wi-Fi ქსელშია, შემდეგ კი ხელახლა ცადეთ. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">არ არის გააქტიურებული. დაუკავშირდით თქვენს ოპერატორს.</translation>
 <translation id="6961121602502368900">ტელეფონის ჩაჩუმება მიუწვდომელია სამსახურის პროფილში</translation>
 <translation id="6961840794482373852">კლავიატურის მალსახმობი „Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Page Up კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ზემოთ მიმართულ ისარს.</translation>
@@ -1332,6 +1334,7 @@
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>
 <translation id="7189412385142492784">რა მანძილია ვენერამდე</translation>
 <translation id="7198435252016571249">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
+<translation id="7219573373513695352">დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. გასაახლებლად ეს Chromebook საჭიროებს გადატვირთვას. ამას შეიძლება 1 წუთამდე დრო დასჭირდეს.</translation>
 <translation id="7256634071279256947">უკანა მიკროფონი</translation>
 <translation id="7258828758145722155">გუშინ რედაქტირებული</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა</translation>
 <translation id="7930731167419639574">მეტყველება ახლა მუშავდება ადგილობრივად, კარნახი კი მუშაობს ხაზგარეშე რეჟიმში</translation>
 <translation id="7932451802722951285">Google Calendar-ში გახსნა</translation>
 <translation id="7933084174919150729">Google ასისტენტი ხელმისაწვდომია მხოლოდ ძირითადი პროფილისთვის.</translation>
@@ -1772,7 +1776,6 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> ვერ ჩამოიტვირთება არასაკმარისი სივრცის გამო. გაათავისუფლეთ მეხსიერება.</translation>
 <translation id="974545358917229949">ნაჩვენებია <ph name="RESULT_COUNT" /> შედეგი მოთხოვნაზე: <ph name="QUERY" /></translation>
 <translation id="98120814841227350">დოკუმენტის ბოლოში გადასვლა</translation>
-<translation id="98515147261107953">პეიზაჟი</translation>
 <translation id="989374776391122812">კამერისა და აუდიოს მართვის საშუალებები</translation>
 <translation id="990277280839877440">ფანჯარა „<ph name="WINDOW_TITILE" />“ დაიხურა.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

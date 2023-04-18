@@ -134,8 +134,10 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
+<translation id="1883255238294161206">Comprimi elenco</translation>
 <translation id="1891796056033961979">I tuoi preferiti, le password, le impostazioni e altri dati salvati sono disponibili da questa schermata.</translation>
 <translation id="1894023287452300670">Monitora qui il prezzo</translation>
+<translation id="1910975740091000991">Chrome per iOS</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1923342640370224680">Ultima ora</translation>
 <translation id="1930989359703290198">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2139867232736819575">Cerca il testo copiato</translation>
 <translation id="214201757571129614">Accedi…</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
-<translation id="2150175299852799498">Chrome per dispositivi mobili</translation>
 <translation id="2155145621546387786">Condividi Chrome</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2178545675770638239">Seleziona password</translation>
@@ -594,6 +595,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4941089862236492464">Spiacenti, si è verificato un problema di condivisione.</translation>
 <translation id="4944543191714094452">Trova nella pagina…</translation>
 <translation id="4945756290001680296">Accedi alle impostazioni della password</translation>
+<translation id="4958444002117714549">Espandi elenco</translation>
 <translation id="4971735654804503942">Sistemi di protezione proattivi e più rapidi da estensioni, siti web e download pericolosi. Ricevi un avviso in caso di violazioni della password. Richiede l'invio dei dati di navigazione a Google.</translation>
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="4986678885919050584">Rimuovi da questo dispositivo</translation>
@@ -657,7 +659,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="54401264925851789">Info sicurezza pagina</translation>
 <translation id="5443952882982198570">Carte di credito</translation>
 <translation id="5444892875087332195">Preferiti</translation>
-<translation id="5453250766792920795">{count,plural, =1{Preferito salvato nel tuo account {email}}other{Preferiti salvati nel tuo account {email}}}</translation>
 <translation id="5457226814769348910">Apri versione offline</translation>
 <translation id="5489208564673669003">Per gestire i cookie per tutti i siti, vedi le <ph name="BEGIN_LINK" />Impostazioni dei cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blocca tutti i cookie (opzione non consigliata)</translation>
@@ -852,6 +853,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6530992499366869131">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Visita un sito e fai clic su Segui nel menu Chrome</translation>
+<translation id="6550675742724504774">Opzioni</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
 <translation id="6583087784430677195">Per disattivare la funzionalità, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Riempimento automatico password.</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>

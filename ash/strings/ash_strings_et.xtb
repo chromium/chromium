@@ -238,7 +238,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2023558322300866873">Võite pakettide jäädvustamise igal ajal peatada</translation>
 <translation id="2034971124472263449">Salvesta ikkagi</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2078034614700056995">Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale</translation>
@@ -1773,7 +1772,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="954052413789300507">Faili <ph name="FILENAME" /> jaoks pole piisavalt ruumi. Vabastage ruumi.</translation>
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Dokumendi lõppu liikumine</translation>
-<translation id="98515147261107953">Horisontaalpaigutus</translation>
 <translation id="989374776391122812">Kaamera ja heli juhtnupud</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
+<translation id="5456936324019847994">Impossible de se connecter à des noms de point d'accès personnalisés activés. Contactez votre fournisseur de services cellulaires pour plus d'informations.</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Il vous reste {0} tentative}one{Il vous reste {0} tentative}other{Il vous reste {0} tentatives}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Fichier introuvable</translation>
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
+<translation id="5946538341867151940">Vous n'êtes pas encore connecté. Si votre fournisseur de services cellulaires recommande un nom de point d'accès personnalisé, entrez les informations du nom de point d'accès en sélectionnant « + Nouveau nom de point d'accès »</translation>
 <translation id="5972388717451707488">Mettre à jour le moteur</translation>
 <translation id="5984145644188835034">Fond d'écran par défaut</translation>
 <translation id="6017514345406065928">Vert</translation>

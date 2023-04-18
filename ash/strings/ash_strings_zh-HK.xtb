@@ -238,7 +238,6 @@
 <translation id="2023558322300866873">您可隨時停止擷取封包</translation>
 <translation id="2034971124472263449">仍要儲存</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
-<translation id="2050339315714019657">直向</translation>
 <translation id="2064048859448024834">開咗攝錄機預覽</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2078034614700056995">請用四隻手指向右滑動以切換至下一個桌面</translation>
@@ -1770,7 +1769,6 @@
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請騰出空間。</translation>
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="98120814841227350">前往文件結尾</translation>
-<translation id="98515147261107953">橫向</translation>
 <translation id="989374776391122812">相機和音訊控制項</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 閂咗。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>

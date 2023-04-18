@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Cor</translation>
+<translation id="5456936324019847994">Non se puido establecer a conexión con ningún APN personalizado que estea activado. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Dispositivo xestionado</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento}other{Quedan {0} intentos}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Non se encontrou o ficheiro</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
+<translation id="5946538341867151940">De momento, non tes conexión. Se o teu operador móbil recomenda usar un APN personalizado, selecciona a opción + Novo APN para engadir a información do APN</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="6017514345406065928">Verde</translation>

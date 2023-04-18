@@ -1238,7 +1238,7 @@
 <translation id="2048554637254265991">Грешка при покретању менаџера контејнера. Пробајте поново.</translation>
 <translation id="2048653237708779538">Радња није доступна</translation>
 <translation id="204914487372604757">Направи пречицу</translation>
-<translation id="2050339315714019657">Вертикално</translation>
+<translation id="2050339315714019657">Портрет</translation>
 <translation id="2051555741181591333">Аутоматски онемогући хотспот</translation>
 <translation id="2052572566310583903">Инсталирано на другим уређајима</translation>
 <translation id="2053105195397337973">Истражујемо начине да ограничимо праћење и истовремено омогућимо сајтовима да зауставе непожељне огласе и преваре.</translation>
@@ -2209,6 +2209,7 @@
 <translation id="2852385257476173980">Листа сајтова које посећујете се може приказати овде док прегледате веб</translation>
 <translation id="285241945869362924">Аутоматски прави титл за аудио и видео. Аудио фајл и титл увек остају на уређају.</translation>
 <translation id="2856776373509145513">Направите нови контејнер</translation>
+<translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Ажурирање система је довршено. Рестартујте систем.</translation>
 <translation id="2861941300086904918">Менаџер безбедности за Native Client</translation>
 <translation id="2862815659905780618">Уклоните Linux окружење за програмирање</translation>
@@ -4287,6 +4288,7 @@
 <translation id="47158868804223727">Кликните на назив групе да бисте је проширили или скупили</translation>
 <translation id="4716483597559580346">Powerwash ради веће безбедности</translation>
 <translation id="471759229191973607">Промени тему</translation>
+<translation id="4718046540206070045">Више од прегледача</translation>
 <translation id="4718564115458102525">Није откривена ниједна тастатура</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> дели екран.</translation>
@@ -5433,6 +5435,7 @@
 <translation id="5787146423283493983">Слагање кључа</translation>
 <translation id="5787420647064736989">Назив уређаја</translation>
 <translation id="5788367137662787332">Жао нам је, најмање једну партицију на уређају <ph name="DEVICE_LABEL" /> није било могуће укључити.</translation>
+<translation id="5789581866075720267">Да бисте увезли лозинке у <ph name="BRAND" />, изаберите CSV фајл.</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5790651917470750848">Прослеђивање порта већ постоји</translation>
@@ -5677,6 +5680,7 @@
 <translation id="5984222099446776634">Недавно посећено</translation>
 <translation id="5985458664595100876">Неважећи формат URL-а. Подржани формати су \\server\share и smb://server/share.</translation>
 <translation id="598810097218913399">Уклоните доделу</translation>
+<translation id="5989629029899728491">Више од колачића</translation>
 <translation id="5990266201903445068">Само WiFi</translation>
 <translation id="5990386583461751448">Преведено</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ову апликацију.}one{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ове апликације.}few{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ове апликације.}other{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ове апликације.}}</translation>
@@ -5787,6 +5791,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – део групе без назива</translation>
 <translation id="6085886413119427067">Одређује како да се повеже са веб-сајтовима преко безбедне везе</translation>
 <translation id="6086004606538989567">Налог који сте верификовали није овлашћен за приступ овом уређају.</translation>
+<translation id="6086347269144967242">Читање приложених информација и података о уређају</translation>
 <translation id="6086846494333236931">Инсталирао је администратор</translation>
 <translation id="6087746524533454243">Тражите страницу са основним подацима о прегледачу? Посетите</translation>
 <translation id="6087960857463881712">Задовољно лице</translation>
@@ -8356,6 +8361,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Већ сте регистровали овај уређај. Не морате поново да га региструјете.</translation>
 <translation id="8357388086258943206">Грешка при инсталирању Linux-а</translation>
+<translation id="8357591920094529889">Овај водич вам помаже да разумете важне опције које имате док користите Chrome. Помаже вам и да изаберете те опције, да би Chrome радио онако како желите.</translation>
 <translation id="8358685469073206162">Желите ли да вратите странице?</translation>
 <translation id="8358912028636606457">Пребацивање звука картице није подржано на овом уређају.</translation>
 <translation id="835951711479681002">Сачувај на Google налогу</translation>
@@ -8409,6 +8415,7 @@
 <translation id="8398877366907290961">Ипак настави</translation>
 <translation id="8399282673057829204">Прикажи лозинку</translation>
 <translation id="8401432541486058167">Наведите PIN који је повезан са паметном картицом.</translation>
+<translation id="8403618281196981152">Подаци у Chrome-у</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> може да проверава лозинке када их сачувате</translation>
 <translation id="8405046151008197676">Погледајте резиме најновијег ажурирања</translation>
 <translation id="8407199357649073301">Ниво евиденције:</translation>
@@ -8468,6 +8475,7 @@
 <translation id="8460932807646981183">Управљајте претраживачима и претрагом сајта</translation>
 <translation id="84613761564611563">Затражен је кориснички интерфејс за конфигурисање мреже, сачекајте...</translation>
 <translation id="8461914792118322307">Прокси</translation>
+<translation id="8461973047386722744">Није пронађена ниједна лозинка</translation>
 <translation id="8463001014623882202">Овлашћење није успело</translation>
 <translation id="846374874681391779">Трака са преузимањима</translation>
 <translation id="8463955938112983119">Додатна компонента <ph name="PLUGIN_NAME" /> је онемогућена.</translation>
@@ -8526,6 +8534,7 @@
 <translation id="8512476990829870887">Заврши процес</translation>
 <translation id="851263357009351303">Увек дозволи сајту <ph name="HOST" /> да приказује слике</translation>
 <translation id="8513108775083588393">Аутом. ротир.</translation>
+<translation id="8513357934662532537">Да бисте увезли лозинке у <ph name="BRAND" /> за <ph name="USER_EMAIL" />, изаберите CSV фајл.</translation>
 <translation id="8514746246728959655">Пробајте са неким другим безбедносним кључем</translation>
 <translation id="8514955299594277296">Не дозвољавајте сајтовима да чувају податке на уређају (не препоручује се)</translation>
 <translation id="8517759303731677493">Измени…</translation>

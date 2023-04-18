@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">စင့်ခ်လုပ်သောဒေတာကို အမြဲသုံးခွင့်ရကြောင်း သေချာစေရန် သင်ဖြစ်ကြောင်းအတည်ပြုပါ</translation>
 <translation id="1870148520156231997">စကားဝှက်ကို ပြသရန်</translation>
 <translation id="1872096359983322073">ဓာတ်မီး</translation>
+<translation id="1883255238294161206">စာရင်းကို ခေါက်သိမ်းရန်</translation>
 <translation id="1891796056033961979">သင်သိမ်းထားသည့် လိပ်စာ၊ စကားဝှက်၊ ဆက်တင် စသည်တို့ကို ဤဖန်သားပြင်တွင် ရနိုင်သည်။</translation>
 <translation id="1894023287452300670">ဤနေရာတွင် ဈေးနှုန်းစောင့်ကြည့်ရန်</translation>
+<translation id="1910975740091000991">iOS အတွက် Chrome</translation>
 <translation id="1911619930368729126">Google Drive သို့အပ်လုဒ်လုပ်မည်</translation>
 <translation id="1923342640370224680">နောက်ဆုံး နာရီ</translation>
 <translation id="1930989359703290198">အကောင့်အချို့ဖြင့်သာ လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက ခွင့်ပြုထားသည်။ ခွင့်ပြုမထားသော အကောင့်များကို ဖျောက်ထားသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">သင်မိတ္တူကူးထားသည့် စာသားကို ရှာဖွေပါ</translation>
 <translation id="214201757571129614">လက်မှတ်ထိုးဝင်ရန်…</translation>
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
-<translation id="2150175299852799498">မိုဘိုင်းအတွက် Chrome</translation>
 <translation id="2155145621546387786">Chrome ကို မျှဝေရန်</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
 <translation id="2178545675770638239">စကားဝှက် ရွေးပါ</translation>
@@ -342,6 +343,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">သင့်အပြောင်းအလဲကို သိမ်း၍မရပါ။</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ၏<ph name="VALUE" />၊ <ph name="ADDITIONAL_INFO" />၊ <ph name="INDEX" /></translation>
+<translation id="3260117527409269737">ဤလိပ်စာကို Chrome ၌သာ သိမ်းထားသည်။ Google ထုတ်ကုန်များတွင် ၎င်းကို သုံးရန် သင်၏ Google Account <ph name="USER_EMAIL" /> တွင် ၎င်းကို သိမ်းပါ။</translation>
 <translation id="3264775633254836593">အော်တိုဖြည့် စကားဝှက်များ</translation>
 <translation id="3268451620468152448">တဲဘ်များ ဖွင့်ရန်</translation>
 <translation id="3272527697863656322">မလုပ်တော့</translation>
@@ -594,6 +596,7 @@
 <translation id="4941089862236492464">ဝမ်းနည်းပါသည်၊ သင့်အကြောင်းအရာကို မျှဝေရာတွင် ပြဿနာတစ်ခုရှိနေသည်။</translation>
 <translation id="4944543191714094452">စာမျက်နှာတွင် ရှာရန်…</translation>
 <translation id="4945756290001680296">စကားဝှက် ဆက်တင်များသို့ ဝင်ခြင်း</translation>
+<translation id="4958444002117714549">စာရင်းကို ချဲ့ပါ။</translation>
 <translation id="4971735654804503942">အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများအတွက် ပိုမိုမြန်ဆန်ပြီး အမြဲမပြတ် ကာကွယ်မှုပေးပါသည်။ စကားဝှက်ပေါက်ကြားမှုများအကြောင်း သင့်အား သတိပေးပါသည်။ ကြည့်ရှုခြင်းဒေတာများကို Google သို့ ပို့ရန် လိုအပ်သည်။</translation>
 <translation id="4979397965658815378">သင့်စက်ပစ္စည်းများအားလုံးပေါ်တွင် စာညှပ်များ၊ စကားဝှက်များ၊ မှတ်တမ်းနှင့် အခြားဆက်တင်များ ရယူအသုံးပြုနိုင်ရန် သင့် Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4986678885919050584">ဤ ‘စက်’ မှဖယ်ရှားရန်</translation>
@@ -657,7 +660,6 @@
 <translation id="54401264925851789">စာမျက်နှာ လုံခြုံမှု အချက်အလက်</translation>
 <translation id="5443952882982198570">ခရက်ဒစ်ကတ်များ</translation>
 <translation id="5444892875087332195">လိပ်စာများ</translation>
-<translation id="5453250766792920795">{count,plural, =1{သင့်အကောင့် {email} တွင် လိပ်စာကို သိမ်းထားသည်}other{သင့်အကောင့် {email} တွင် လိပ်စာများကို သိမ်းထားသည်}}</translation>
 <translation id="5457226814769348910">'အော့ဖ်လိုင်းဗားရှင်း' ဖွင့်ရန်</translation>
 <translation id="5489208564673669003">ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ကွတ်ကီးဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="5490005495580364134">ကွတ်ကီးအားလုံး ပိတ်ရန် (အကြံမပြုပါ)</translation>
@@ -851,6 +853,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6530992499366869131">‘ဒေတာကျိုးပေါက်မှု’ တွင် ‘စကားဝှက်များ ဖော်ထုတ်ခံရ’ သည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">ဝဘ်ဆိုက်တစ်ခုသို့ ဝင်ကြည့်ပြီး Chrome မီနူးတွင် ‘လိုက်ကြည့်ခြင်း’ ကို နှိပ်ပါ</translation>
+<translation id="6550675742724504774">ရွေးစရာများ</translation>
 <translation id="6561262006871132942">ဇူးမ်ဆွဲရန်</translation>
 <translation id="6583087784430677195">ပိတ်ရန်အတွက် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> ဖွင့်ပြီး ‘အော်တိုဖြည့် စကားဝှက်များ’ သို့ သွားပါ။</translation>
 <translation id="6585618849026997638">သင့်အတွက်အရေးကြီးသော စာမျက်နှာသို့ လိပ်စာမှတ်ပြီး ပြန်သွားနိုင်သည်</translation>

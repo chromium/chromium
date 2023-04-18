@@ -136,8 +136,10 @@
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
 <translation id="1872096359983322073">Baterka</translation>
+<translation id="1883255238294161206">Zbaliť zoznam</translation>
 <translation id="1891796056033961979">Na tejto obrazovke máte k dispozícii svoje uložené záložky, heslá, nastavenia a ďalšie položky.</translation>
 <translation id="1894023287452300670">Tu sledujte cenu</translation>
+<translation id="1910975740091000991">Chrome pre iOS</translation>
 <translation id="1911619930368729126">Nahrať na Disk Google</translation>
 <translation id="1923342640370224680">Posledná hodina</translation>
 <translation id="1930989359703290198">Vaša organizácia vám povoľuje prihlásiť sa iba určitými účtami. Nepovolené účty sú skryté. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -173,7 +175,6 @@
 <translation id="2139867232736819575">Vyhľadať skopírovaný text</translation>
 <translation id="214201757571129614">Prihlásiť sa…</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
-<translation id="2150175299852799498">Chrome pre mobily</translation>
 <translation id="2155145621546387786">Zdieľať Chrome</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2178545675770638239">Vyberte heslo</translation>
@@ -346,6 +347,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Zmenu sa nepodarilo uložiť.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Táto adresa je uložená iba v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3264775633254836593">Automatické dopĺňanie hesiel</translation>
 <translation id="3268451620468152448">Otvorené karty</translation>
 <translation id="3272527697863656322">Zrušiť</translation>
@@ -599,6 +601,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="4941089862236492464">Je nám ľúto, pri zdieľaní položky sa vyskytol problém.</translation>
 <translation id="4944543191714094452">Nájsť na stránke…</translation>
 <translation id="4945756290001680296">Prejdite do nastavení hesla</translation>
+<translation id="4958444002117714549">Rozbaliť zoznam</translation>
 <translation id="4971735654804503942">Rýchlejšia a proaktívna ochrana pred nebezpečnými webmi, stiahnutým súbormi a rozšíreniami. Upozorní vás na porušenie ochrany hesla. Vyžaduje odoslanie dát prehliadania do Googlu.</translation>
 <translation id="4979397965658815378">Prihláste sa účtom Google a používajte svoje záložky, heslá, históriu a ďalšie nastavenia vo všetkých svojich zariadeniach</translation>
 <translation id="4986678885919050584">Odstrániť účet z tohto zariadenia</translation>
@@ -662,7 +665,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="54401264925851789">Informácie o zabezpečení stránky</translation>
 <translation id="5443952882982198570">Kreditné karty</translation>
 <translation id="5444892875087332195">Záložky</translation>
-<translation id="5453250766792920795">{count,plural, =1{Záložka bola uložená vo vašom účte {email}}few{Záložky boli uložené vo vašom účte {email}}many{Záložky boli uložené vo vašom účte {email}}other{Záložky boli uložené vo vašom účte {email}}}</translation>
 <translation id="5457226814769348910">Otvoriť offline verziu</translation>
 <translation id="5489208564673669003">Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení súborov cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovať všetky súbory cookie (neodporúča sa)</translation>
@@ -859,6 +861,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6530992499366869131">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="6537746030088321027">priklad.sk</translation>
 <translation id="6540120577248033958">Navštívte nejaký web a v Ponuke Chromu kliknite na Sledovať</translation>
+<translation id="6550675742724504774">Možnosti</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
 <translation id="6583087784430677195">Túto funkciu môžete vypnete v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /> v sekcii Automatické dopĺňanie hesiel.</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>

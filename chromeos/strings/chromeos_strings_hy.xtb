@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Ակտիվացված է</translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
+<translation id="5456936324019847994">Չի հաջողվում միանալ որևէ միացված հատուկ APN-ի։ Լրացուցիչ տեղեկությունների համար կապվեք ձեր բջջային օպերատորի հետ։</translation>
 <translation id="5457599981699367932">Մտնել հյուրի ռեժիմ</translation>
 <translation id="54609108002486618">Կառավարվող</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Մնացած փորձերի քանակը՝ {0}}one{Մնացած փորձերի քանակը՝ {0}}other{Մնացած փորձերի քանակը՝ {0}}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Ֆայլը չի գտնվել</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
+<translation id="5946538341867151940">Դուք դեռ չեք միացել։ Եթե ձեր բջջային օպերատորը որոշակի APN է խորհուրդ տալիս, մուտքագրեք այդ APN-ի տվյալները՝ ընտրելով «+ Նոր APN»</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5984145644188835034">Կանխադրված պաստառ</translation>
 <translation id="6017514345406065928">Կանաչ</translation>

@@ -134,8 +134,10 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svou totožnost</translation>
 <translation id="1870148520156231997">Zobrazit heslo</translation>
 <translation id="1872096359983322073">Svítilna</translation>
+<translation id="1883255238294161206">Sbalit seznam</translation>
 <translation id="1891796056033961979">Na této obrazovce máte k dispozici uložené záložky, hesla, nastavení a další možnosti.</translation>
 <translation id="1894023287452300670">Tady můžete sledovat cenu</translation>
+<translation id="1910975740091000991">Chrome pro iOS</translation>
 <translation id="1911619930368729126">Nahrát na Disk Google</translation>
 <translation id="1923342640370224680">Poslední hodina</translation>
 <translation id="1930989359703290198">Vaše organizace umožňuje pouze přihlášení pomocí určitých účtů. Nepovolené účty jsou skryty. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2139867232736819575">Vyhledat zkopírovaný text</translation>
 <translation id="214201757571129614">Přihlásit se…</translation>
 <translation id="2149973817440762519">Upravit záložku</translation>
-<translation id="2150175299852799498">Chrome pro mobily</translation>
 <translation id="2155145621546387786">Sdílet Chrome</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2178545675770638239">Vyberte heslo</translation>
@@ -321,6 +322,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3131206671572504478">Blokovat vše</translation>
 <translation id="313283613037595347">Vytvořit novou anonymní kartu.</translation>
 <translation id="3146109040683991651">Nastavit Chrome jako výchozí prohlížeč</translation>
+<translation id="3152169319860972623">Kontrola hesel zkontroluje vaše uložená hesla a upozorní vás na jakékoli úniky hesel online. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Uložit kartu</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="3157684681743766797">Označit vše…</translation>
@@ -353,6 +355,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3324193307694657476">Druhý řádek adresy</translation>
 <translation id="3328459813621383194">Přesunout neaktivní karty</translation>
 <translation id="3328801116991980348">Informace o stránkách</translation>
+<translation id="3344485292736684439">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}many{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}other{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}}</translation>
 <translation id="3371831930909698441">Je k dispozici Překladač. Možnosti jsou k dispozici ve spodní části obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, hesla a další položky teď najdete nahoře.</translation>
 <translation id="3393920035788932672">Vyskakovací okna povolena</translation>
@@ -592,6 +595,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4941089862236492464">Litujeme, ale při sdílení položky došlo k potížím.</translation>
 <translation id="4944543191714094452">Najít na stránce…</translation>
 <translation id="4945756290001680296">Otevřít nastavení hesla</translation>
+<translation id="4958444002117714549">Rozbalit seznam</translation>
 <translation id="4971735654804503942">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními. Upozorňuje vás na úniky hesel. Vyžaduje odesílání údajů o prohlížení do Googlu.</translation>
 <translation id="4979397965658815378">Přihlaste se pomocí účtu Google a získejte záložky, hesla, historii a další nastavení do všech svých zařízení.</translation>
 <translation id="4986678885919050584">Odstranit z tohoto zařízení</translation>
@@ -655,7 +659,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="54401264925851789">Informace o zabezpečení stránky</translation>
 <translation id="5443952882982198570">Platební karty</translation>
 <translation id="5444892875087332195">Záložky</translation>
-<translation id="5453250766792920795">{count,plural, =1{Záložka byla uložena do vašeho účtu {email}}few{Záložky byly uloženy do vašeho účtu {email}}many{Záložky byly uloženy do vašeho účtu {email}}other{Záložky byly uloženy do vašeho účtu {email}}}</translation>
 <translation id="5457226814769348910">Otevřít offline verzi</translation>
 <translation id="5489208564673669003">Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení souborů cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
@@ -850,6 +853,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6530992499366869131">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Navštivte web a v nabídce Chrome klikněte na Sledovat</translation>
+<translation id="6550675742724504774">Možnosti</translation>
 <translation id="6561262006871132942">Přiblížit</translation>
 <translation id="6583087784430677195">Pokud tuto funkci chcete vypnout, otevřete <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" /> a přejděte na Automatické vyplnění hesel.</translation>
 <translation id="6585618849026997638">Na stránky, které si přidáte do záložek, se budete moci snadno rychle vrátit</translation>
@@ -1032,6 +1036,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7840771868269352570">Vybrané položky budou odstraněny.</translation>
 <translation id="7845466610722898">Zobrazit seznam četby</translation>
 <translation id="784551991304901159">Pokud chcete zobrazit obsah, v nabídce vyberte Zapnout</translation>
+<translation id="7846158885638438868">{count,plural, =1{Záložka byla přidána do složky „{title}“}few{Záložky byly přidány do složky „{title}“}many{Záložky byly přidány do složky „{title}“}other{Záložky byly přidány do složky „{title}“}}</translation>
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7856733331829174190">Stažení se nezdařilo</translation>
 <translation id="785938070103630874">Otevřete hesla, platební metody, adresy a podobně.</translation>

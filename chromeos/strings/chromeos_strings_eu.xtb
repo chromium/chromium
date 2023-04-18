@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Aktibatuta</translation>
 <translation id="5430931332414098647">Konexioa bizkor partekatzea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
+<translation id="5456936324019847994">Ezin da konektatu gaitutako APN pertsonalizatuetara. Informazio gehiago lortzeko, jarri telefonia mugikorreko operadorearekin harremanetan.</translation>
 <translation id="5457599981699367932">Arakatu gonbidatu gisa</translation>
 <translation id="54609108002486618">Kudeatua</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} saiaketa gelditzen da}other{{0} saiakera gelditzen dira}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Ez da aurkitu fitxategia</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
 <translation id="594552776027197022">Sortu ausazko gako pare bat</translation>
+<translation id="5946538341867151940">Oraindik ez zaude konektatuta. Telefonia mugikorreko operadoreak APN pertsonalizatu bat gomendatzen badu, idatzi APNaren informazioa "+ APN berria" hautatuta.</translation>
 <translation id="5972388717451707488">Eguneratu motorra</translation>
 <translation id="5984145644188835034">Horma-paper lehenetsia</translation>
 <translation id="6017514345406065928">Berdea</translation>

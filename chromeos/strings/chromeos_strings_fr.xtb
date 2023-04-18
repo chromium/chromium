@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
+<translation id="5456936324019847994">Impossible de se connecter à un APN personnalisé activé. Pour en savoir plus, contactez votre opérateur mobile.</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentative restante}one{{0} tentative restante}other{{0} tentatives restantes}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Fichier introuvable</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="594552776027197022">Générer une paire de clés aléatoire</translation>
+<translation id="5946538341867151940">Vous n'êtes pas encore connecté. Si votre opérateur mobile vous recommande un APN personnalisé, saisissez les informations de l'APN en sélectionnant "Nouvel APN".</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fond d'écran par défaut</translation>
 <translation id="6017514345406065928">Vert</translation>

@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">ገብሯል</translation>
 <translation id="5430931332414098647">ቅጽበታዊ እንደ ሞደም መሰካት</translation>
 <translation id="5431318178759467895">ቀለም</translation>
+<translation id="5456936324019847994">ከማናቸውም የነቁ ብጁ ኤፒኤኖች ጋር መገናኘት አይቻልም። ለተጨማሪ መረጃ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">ፋይል አልተገኘም</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="594552776027197022">የዘፈቀደ የቁልፍ ጥምር አመንጭ</translation>
+<translation id="5946538341867151940">እስካሁን አልተገናኙም። የእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ብጁ የሆነ ኤፒኤን የሚመክር ከሆነ «+ አዲስ ኤፒኤን» የሚለውን በመምረጥ የኤፒኤን መረጃ ያስገቡ</translation>
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
 <translation id="6017514345406065928">አረንጓዴ</translation>

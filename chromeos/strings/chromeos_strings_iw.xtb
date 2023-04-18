@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">מופעל</translation>
 <translation id="5430931332414098647">שיתוף אינטרנט מיידי בין ניידים</translation>
 <translation id="5431318178759467895">צבע</translation>
+<translation id="5456936324019847994">‏לא ניתן להתחבר לאף פריט APN בהתאמה אישית שהופעל. למידע נוסף, יש ליצור קשר עם ספק הסלולר.</translation>
 <translation id="5457599981699367932">גלישה כאורח</translation>
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{נותר ניסיון אחד ({0})}one{נותרו {0} ניסיונות}two{נותרו {0} ניסיונות}other{נותרו {0} ניסיונות}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="594552776027197022">יצירת זוג מפתחות רנדומלי</translation>
+<translation id="5946538341867151940">‏אין עדיין חיבור. אם לפי הספק הסלולרי מומלץ להשתמש ב-APN בהתאמה אישית, צריך להזין את פרטי ה-APN. לשם כך בוחרים באפשרות '+ APN חדש'.</translation>
 <translation id="5972388717451707488">עדכון המנוע</translation>
 <translation id="5984145644188835034">הטפט המוגדר כברירת מחדל</translation>
 <translation id="6017514345406065928">ירוק</translation>

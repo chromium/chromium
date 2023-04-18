@@ -238,7 +238,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2023558322300866873">Poți opri oricând capturarea pachetelor</translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Portret</translation>
 <translation id="2064048859448024834">Previzualizarea camerei este activată</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
 <translation id="2078034614700056995">Glisează spre dreapta cu patru degete pentru a comuta la desktopul următor</translation>
@@ -1772,7 +1771,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="954052413789300507">Nu există suficient spațiu pentru <ph name="FILENAME" />. Eliberează spațiu.</translation>
 <translation id="974545358917229949">Se afișează <ph name="RESULT_COUNT" /> rezultate pentru <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Accesează sfârșitul documentului</translation>
-<translation id="98515147261107953">Peisaj</translation>
 <translation id="989374776391122812">Comenzi pentru camera foto și audio</translation>
 <translation id="990277280839877440">Fereastra <ph name="WINDOW_TITILE" /> s-a închis.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" /> <ph name="SUBTEXT" /></translation>

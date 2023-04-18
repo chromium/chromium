@@ -132,10 +132,13 @@
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
+<translation id="1836891464494477513">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google, {email}}one{Обележувачите се зачувани во вашата сметка на Google, {email}}other{Обележувачите се зачувани во вашата сметка на Google, {email}}}</translation>
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
 <translation id="1872096359983322073">Светилка</translation>
+<translation id="1883255238294161206">Собери список</translation>
 <translation id="1891796056033961979">Вашите зачувани обележувачи, лозинки, поставки и друго отсега се достапни од екранов.</translation>
 <translation id="1894023287452300670">Следете ја цената тука</translation>
+<translation id="1910975740091000991">Chrome за iOS</translation>
 <translation id="1911619930368729126">Постави во Диск на Google</translation>
 <translation id="1923342640370224680">Минатиот час</translation>
 <translation id="1930989359703290198">Вашата организација ви дозволува да се најавите само со одредени сметки. Сметките што не се дозволени се сокриени. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -171,7 +174,6 @@
 <translation id="2139867232736819575">Пребарувајте го текстот што го копиравте</translation>
 <translation id="214201757571129614">Најавете се…</translation>
 <translation id="2149973817440762519">Измени Обележувач</translation>
-<translation id="2150175299852799498">Chrome за мобилен уред</translation>
 <translation id="2155145621546387786">Споделете ја Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Изберете лозинка</translation>
@@ -321,6 +323,7 @@
 <translation id="3131206671572504478">Се блокираат сите</translation>
 <translation id="313283613037595347">Создајте нова картичка „Инкогнито“.</translation>
 <translation id="3146109040683991651">Поставете го Chrome како стандарден прелистувач</translation>
+<translation id="3152169319860972623">Password Checkup ги прегледува вашите зачувани лозинки и ве предупредува за онлајн упади. <ph name="BEGIN_LINK" />Дознајте повеќе.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Зачувај ја картичката</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
@@ -593,6 +596,7 @@
 <translation id="4941089862236492464">Се извинуваме, настана проблем при споделување на ставката.</translation>
 <translation id="4944543191714094452">Најди на страницата…</translation>
 <translation id="4945756290001680296">Пристапете до поставките за лозинка</translation>
+<translation id="4958444002117714549">Прошири ја листата</translation>
 <translation id="4971735654804503942">Побрза и проактивна заштита од опасни веб-сајтови, преземања и екстензии. Ве предупредува за упади во лозинките. Бара да се испраќаат податоци од прелистувањето до Google.</translation>
 <translation id="4979397965658815378">Најавете се со сметката на Google за да ги добиете обележувачите, лозинките, историјата и другите поставки на сите ваши уреди.</translation>
 <translation id="4986678885919050584">Отстранете ја од уредов</translation>
@@ -656,7 +660,6 @@
 <translation id="54401264925851789">Безбедносни информации за страницата</translation>
 <translation id="5443952882982198570">Кредитни картички</translation>
 <translation id="5444892875087332195">Обележувачи</translation>
-<translation id="5453250766792920795">{count,plural, =1{Зачуван е обележувач во вашата сметка, {email}}one{Зачувани се обележувачи во вашата сметка, {email}}other{Зачувани се обележувачи во вашата сметка, {email}}}</translation>
 <translation id="5457226814769348910">Отвори офлајн верзија</translation>
 <translation id="5489208564673669003">За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките за колачиња<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај ги сите колачиња (не се препорачува)</translation>
@@ -851,6 +854,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6530992499366869131">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Посетете сајт и кликнете „Следи“ во менито на Chrome</translation>
+<translation id="6550675742724504774">Опции</translation>
 <translation id="6561262006871132942">Зумирај</translation>
 <translation id="6583087784430677195">За да го исклучите, отворете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> и одете на „Автоматско пополнување лозинки“.</translation>
 <translation id="6585618849026997638">Може да се навратите на страница што ви е важна со додавање обележувач</translation>
@@ -1034,6 +1038,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7845466610722898">Прикажете го списокот за читање</translation>
 <translation id="784551991304901159">За да ги видите содржините, изберете „Вклучи“ од менито</translation>
 <translation id="7846158885638438868">{count,plural, =1{Обележувачот е зачуван во „{title}“}one{Обележувачите се зачувани во „{title}“}other{Обележувачите се зачувани во „{title}“}}</translation>
+<translation id="7852017611907717397">ВРАТИ</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7856733331829174190">Не може да се преземе</translation>
 <translation id="785938070103630874">Отворете лозинки, начини на плаќање или адреси и друго</translation>

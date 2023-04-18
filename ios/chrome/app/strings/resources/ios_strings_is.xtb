@@ -134,8 +134,10 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1870148520156231997">Sýna aðgangsorð</translation>
 <translation id="1872096359983322073">Ljós</translation>
+<translation id="1883255238294161206">Fella saman lista</translation>
 <translation id="1891796056033961979">Vistuð bókamerki, aðgangsorð, stillingar og fleira má finna á þessum skjá.</translation>
 <translation id="1894023287452300670">Vakta verð hér</translation>
+<translation id="1910975740091000991">Chrome fyrir iOS</translation>
 <translation id="1911619930368729126">Hlaða inn á Google Drive</translation>
 <translation id="1923342640370224680">Undanfarin klukkustund</translation>
 <translation id="1930989359703290198">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2139867232736819575">Leita að texta sem þú afritaðir</translation>
 <translation id="214201757571129614">Skrá inn…</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
-<translation id="2150175299852799498">Chrome fyrir snjalltæki</translation>
 <translation id="2155145621546387786">Deila Chrome</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2178545675770638239">Veldu aðgangsorð</translation>
@@ -321,6 +322,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3131206671572504478">Útiloka öll</translation>
 <translation id="313283613037595347">Búa til nýjan huliðsflipa.</translation>
 <translation id="3146109040683991651">Nota Chrome sem sjálfgefinn vafra</translation>
+<translation id="3152169319860972623">Aðgangsorðatékk fer yfir vistuðu aðgangsorðin þín og varar þig við öryggisbrotum á netinu. <ph name="BEGIN_LINK" />Nánar.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Vista kort</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
@@ -593,6 +595,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4941089862236492464">Því miður kom upp vandamál við að deila atriðinu.</translation>
 <translation id="4944543191714094452">Finna á síðu…</translation>
 <translation id="4945756290001680296">Opna stillingar fyrir aðgangsorð</translation>
+<translation id="4958444002117714549">Stækka lista</translation>
 <translation id="4971735654804503942">Hraðari forvirk vörn gegn hættulegum vefsvæðum, niðurhali og viðbótum. Varar þig við berskjölduðum aðgangsorðum. Krefst þess að vefskoðunargögn verði send til Google.</translation>
 <translation id="4979397965658815378">Skráðu þig inn með Google reikningnum þínum til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
 <translation id="4986678885919050584">Fjarlægja úr þessu tæki</translation>
@@ -656,7 +659,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="54401264925851789">Öryggisupplýsingar síðu</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
 <translation id="5444892875087332195">Bókamerki</translation>
-<translation id="5453250766792920795">{count,plural, =1{Bókamerki var vistað á reikningnum þínum, {email}}one{Bókamerki voru vistuð á reikningnum þínum, {email}}other{Bókamerki voru vistuð á reikningnum þínum, {email}}}</translation>
 <translation id="5457226814769348910">Opna útgáfu án nettengingar</translation>
 <translation id="5489208564673669003">Fyrir upplýsingar um stjórnun fótspora fyrir öll vefsvæði, sjá <ph name="BEGIN_LINK" />Fótsporastillingar<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Loka á öll fótspor (ekki mælt með)</translation>
@@ -851,6 +853,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6530992499366869131">Fá viðvörun ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Farðu á vefsvæði og smelltu á „Fylgja“ í valmynd Chrome</translation>
+<translation id="6550675742724504774">Valkostir</translation>
 <translation id="6561262006871132942">Auka aðdrátt</translation>
 <translation id="6583087784430677195">Opnaðu <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og síðan „Sjálfvirk útfylling aðgangsorða“ til að slökkva.</translation>
 <translation id="6585618849026997638">Þú getur komist aftur á mikilvæga síðu á einfaldan hátt með því að setja inn bókamerki</translation>

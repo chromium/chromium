@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">Шайкештирилген маалыматыңызга каалаган убакта кирүү үчүн бул сиз экениңизди ырастаңыз</translation>
 <translation id="1870148520156231997">Сырсөздү көрсөтүү</translation>
 <translation id="1872096359983322073">Колчырак</translation>
+<translation id="1883255238294161206">Тизмени жыйнап коюу</translation>
 <translation id="1891796056033961979">Сакталган кыстармалар, сырсөздөр, параметрлер жана башкалар эми ушул экранда болот.</translation>
 <translation id="1894023287452300670">Баасына бул жерден көз сала аласыз</translation>
+<translation id="1910975740091000991">iOS үчүн Chrome</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1923342640370224680">Акыркы саатта</translation>
 <translation id="1930989359703290198">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">Көчүрүп алган текстти издеңиз</translation>
 <translation id="214201757571129614">Кирүү…</translation>
 <translation id="2149973817440762519">Кыстарманы түзөтүү</translation>
-<translation id="2150175299852799498">Мобилдик түзмөк үчүн Chrome</translation>
 <translation id="2155145621546387786">Chrome'ду бөлүшүү</translation>
 <translation id="2175927920773552910">QR коду</translation>
 <translation id="2178545675770638239">Сырсөз тандаңыз</translation>
@@ -321,6 +322,7 @@
 <translation id="3131206671572504478">Баарын бөгөттөө</translation>
 <translation id="313283613037595347">Жаңы жашыруун өтмөк түзүү.</translation>
 <translation id="3146109040683991651">Chrome'ду демейки серепчи катары коюу</translation>
+<translation id="3152169319860972623">Сырсөздөрдү текшерүү функциясы сакталган сырсөздөрүңүздү карап чыгып, уурдалгандыгы тууралуу эскертип турат. <ph name="BEGIN_LINK" />Кененирээк.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Карточканы сактоо</translation>
 <translation id="3157387275655328056">Окуу тизмесине кошуу</translation>
 <translation id="3157684681743766797">Баарын белгилөө…</translation>
@@ -593,6 +595,7 @@
 <translation id="4941089862236492464">Кечиресиз, бул нерсени бөлүшүп жатканда көйгөй келип чыкты.</translation>
 <translation id="4944543191714094452">Барактан табуу…</translation>
 <translation id="4945756290001680296">Сырсөздүн параметрлерине кирүү</translation>
+<translation id="4958444002117714549">Тизмени жайып көрсөтүү</translation>
 <translation id="4971735654804503942">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн тез жана проактивдүү коргоо. Билинип калган сырсөздөр жөнүндө эскертет. Google'га жөнөтүү үчүн серептөө маалыматын талап кылат.</translation>
 <translation id="4979397965658815378">Бардык түзмөктөрүңүздөн кыстармалар, сырсөздөр, таржымал жана башка параметрлериңизди алуу үчүн аккаунтка кириңиз</translation>
 <translation id="4986678885919050584">Ушул түзмөктөн өчүрүү</translation>
@@ -656,7 +659,6 @@
 <translation id="54401264925851789">Баракчанын коопсуздук маалыматы</translation>
 <translation id="5443952882982198570">Насыя карталары</translation>
 <translation id="5444892875087332195">Кыстармалар</translation>
-<translation id="5453250766792920795">{count,plural, =1{Кыстарма {email} аккаунтуңузга сакталды}other{Кыстармалар {email} аккаунтуңузга сакталды}}</translation>
 <translation id="5457226814769348910">Оффлайн версиясын ачуу</translation>
 <translation id="5489208564673669003">Бардык сайттардын cookie файлдарын башкаруу үчүн <ph name="BEGIN_LINK" />Cookie файлдардын параметрлерине<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="5490005495580364134">Бардык cookie файлдарды бөгөттөө (Сунушталбайт)</translation>
@@ -851,6 +853,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6530992499366869131">Сырсөзүңүздү кимдир бирөө билип алса, эскертүү жөнөтүлсүн</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Сайтка өтүп, Chrome'дун менюсунан "Жазылуу" баскычын басыңыз</translation>
+<translation id="6550675742724504774">Параметрлер</translation>
 <translation id="6561262006871132942">Чоңойтуу</translation>
 <translation id="6583087784430677195">Өчүрүү үчүн <ph name="BEGIN_LINK" />Жөндөөлөрдү<ph name="END_LINK" /> ачып, Сырсөздөрдү автотолтурууга өтүңүз.</translation>
 <translation id="6585618849026997638">Маанилүү барактарга кайра кайтып келүү үчүн кыстармаларды кошуп коюңуз</translation>

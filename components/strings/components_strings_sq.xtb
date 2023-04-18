@@ -1754,7 +1754,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5273881944177595304">Aplikacionet e uebit dhe veglat në linjë</translation>
 <translation id="5274025349362408263">Librat dhe letërsia</translation>
 <translation id="5279286380302340275">Menaxho shkarkimet</translation>
-<translation id="5279453600310613955">Jo, faleminderit</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
 <translation id="528468243742722775">Fundi</translation>
@@ -2104,6 +2103,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6167577165590485365">Përpjekja e fundit për nxjerrje:</translation>
 <translation id="6169916984152623906">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
+<translation id="617256461084925519">Google Chrome po përpiqet të verifikojë që je ti që të mund të plotësojë informacionet e tua të pagesës.</translation>
 <translation id="6177128806592000436">Lidhja jote me këtë sajt nuk është e sigurt</translation>
 <translation id="6177531123306197852">Zarf C2</translation>
 <translation id="6180316780098470077">Intervali i ripërpjekjes</translation>
@@ -2655,6 +2655,7 @@ Detaje shtesë:
 <translation id="7518003948725431193">Nuk u gjet asnjë faqe interneti për adresën: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Seksioni "<ph name="SECTION" />" është i fshehur</translation>
+<translation id="752189128961566325">Mund ta përdorësh atë nëpër produktet e Google</translation>
 <translation id="7523408071729642236">Prodhimtaria</translation>
 <translation id="7526934274050461096">Lidhja jote me këtë faqe nuk është private</translation>
 <translation id="7529884293139707752">Edukimi në shtëpi</translation>
@@ -2882,6 +2883,7 @@ Detaje shtesë:
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" nuk është konfiguruar mirë. Zakonisht këtë problem e zgjidh çinstalimi i "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Prodhimi ushqimor</translation>
 <translation id="8058603697124206642">Nuk kërkohet</translation>
+<translation id="8064892030280197386">të verifikojë që je ti që të mund të plotësojë informacionet e tua të pagesës.</translation>
 <translation id="8066225060526005217">Menaxhohen nga cilësimet e kukive</translation>
 <translation id="8067872629359326442">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
 <translation id="8070439594494267500">Ikona e aplikacionit</translation>

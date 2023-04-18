@@ -225,6 +225,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1978498689038657292">Unos teksta</translation>
 <translation id="1980808257969311265">Pridružite se događaju <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Prikaži prethodnu sedmicu</translation>
+<translation id="1986150224850161328">Provjerite jesu li telefon i Chromebook na istoj mreži, a zatim pokušajte ponovo. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Nije moguće snimanje sadržaja</translation>
 <translation id="1990046457226896323">Fajlovi govora su preuzeti</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" /></translation>
@@ -238,7 +239,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2023558322300866873">Možete bilo kada zaustaviti snimanje paketa</translation>
 <translation id="2034971124472263449">Ipak sačuvaj</translation>
 <translation id="2049240716062114887">Naziv radne površine je promijenjen u <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Uspravno</translation>
 <translation id="2064048859448024834">Pregled kamere je uključen</translation>
 <translation id="2067602449040652523">Osvjetljenje tastature</translation>
 <translation id="2078034614700056995">Prevucite udesno s četiri prsta da prebacite na sljedeću radnu površinu</translation>
@@ -374,6 +374,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2761723519669354964">Otvorite istaknute stavke s police</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Izlaz iz načina rada za snimanje</translation>
+<translation id="2785499565474703580">Povezan je 1 uređaj</translation>
 <translation id="2791421900609674576">Vidjet ćete preporuke da možete nastaviti gdje ste stali.  Možete dodirnuti i zadržati da uklonite preporuke.</translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1279,7 @@ Nova instalacija</translation>
 <translation id="6941333068993625698">Slanje povratnih informacija</translation>
 <translation id="6942518653766415536">Meni formata snimanja</translation>
 <translation id="6945221475159498467">Odaberi</translation>
+<translation id="6945922087561257829">Telefon koristi mobilnu mrežu. Provjerite jesu li telefon i Chromebook na istoj WiFi mreži, a zatim pokušajte ponovo. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na radnom profilu</translation>
 <translation id="6961840794482373852">Prečica na tastaturi Alt + strelica nagore je promijenjena. Da koristite tipku Page Up, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nagore.</translation>
@@ -1332,6 +1334,7 @@ Nova instalacija</translation>
 <translation id="7188494361780961876">Meni je pomjeren u gornji lijevi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko je udaljena Venera</translation>
 <translation id="7198435252016571249">Kamera se uklopila u donji desni ugao. Došlo je do konflikta s površinom sistema.</translation>
+<translation id="7219573373513695352">Nema povezanih uređaja</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj Chromebook se treba ponovo pokrenuti da bi se primijenilo ažuriranje. To može potrajati do jedne minute.</translation>
 <translation id="7256634071279256947">Stražnji mikrofon</translation>
 <translation id="7258828758145722155">Uređeno jučer</translation>
@@ -1482,6 +1485,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7902625623987030061">Dodirnite senzor za otisak prsta</translation>
 <translation id="7904094684485781019">Administrator ovog računa nije dozvolio višestruku prijavu.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Povezani uređaji: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Govor se sada obrađuje lokalno i Diktiranje radi offline</translation>
 <translation id="7932451802722951285">Otvori u Google kalendaru</translation>
 <translation id="7933084174919150729">Google Asistent je dostupan samo za primarni profil.</translation>
@@ -1772,7 +1776,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="954052413789300507">Nema dovoljno prostora za fajl <ph name="FILENAME" />. Oslobodite prostor.</translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultata za upit <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Prelazak na kraj dokumenta</translation>
-<translation id="98515147261107953">Vodoravno</translation>
 <translation id="989374776391122812">Kontrole kamere i zvuka</translation>
 <translation id="990277280839877440">Prozor <ph name="WINDOW_TITILE" /> je zatvoren.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

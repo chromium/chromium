@@ -238,7 +238,6 @@
 <translation id="2023558322300866873">Спыніць захоп пакетаў можна ў любы момант</translation>
 <translation id="2034971124472263449">Усё роўна захаваць</translation>
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Кніжная арыентацыя</translation>
 <translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
 <translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
@@ -1772,7 +1771,6 @@
 <translation id="954052413789300507">Файл "<ph name="FILENAME" />" не змяшчаецца ў сховішчы. Вызваліце месца.</translation>
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">Перайсці ў канец дакумента</translation>
-<translation id="98515147261107953">Альбомная</translation>
 <translation id="989374776391122812">Элементы кіравання камерай і аўдыя</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

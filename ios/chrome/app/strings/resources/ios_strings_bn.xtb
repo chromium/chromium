@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="1870148520156231997">পাসওয়ার্ড দেখুন</translation>
 <translation id="1872096359983322073">টর্চ</translation>
+<translation id="1883255238294161206">তালিকা সঙ্কুচিত করুন</translation>
 <translation id="1891796056033961979">আপনার সেভ করা বুকমার্ক, পাসওয়ার্ড, সেটিংস এবং আরও অনেক কিছু এই স্ক্রিন থেকে পাওয়া যাবে।</translation>
 <translation id="1894023287452300670">এখানে দাম ট্র্যাক করুন</translation>
+<translation id="1910975740091000991">iOS-এর জন্য Chrome</translation>
 <translation id="1911619930368729126">Google ড্রাইভে আপলোড করুন</translation>
 <translation id="1923342640370224680">শেষ ঘণ্টা</translation>
 <translation id="1930989359703290198">আপনার সংস্থা শুধু কিছু নির্দিষ্ট অ্যাকাউন্ট ব্যবহার করে আপনাকে সাইন-ইন করার অনুমতি দিয়েছে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">আপনার কপি করা টেক্সট সার্চ করুন</translation>
 <translation id="214201757571129614">সাইন-ইন করুন…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
-<translation id="2150175299852799498">মোবাইলে Chrome</translation>
 <translation id="2155145621546387786">Chrome শেয়ার করুন</translation>
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2178545675770638239">পাসওয়ার্ড বেছে নিন</translation>
@@ -594,6 +595,7 @@
 <translation id="4941089862236492464">দুঃখিত, আপনার জিনিস শেয়ার করার সময় একটা সমস্যা ছিল।</translation>
 <translation id="4944543191714094452">পৃষ্ঠাতে খুঁজুন…</translation>
 <translation id="4945756290001680296">পাসওয়ার্ড সেটিংস অ্যাক্সেস করুন</translation>
+<translation id="4958444002117714549">তালিকা প্রসারিত করুন</translation>
 <translation id="4971735654804503942">ঝুঁকিপূর্ণ ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য আরও দ্রুত, সক্রিয় সুরক্ষা ব্যবস্থা। পাসওয়ার্ড সুরক্ষিত নেই সেই সম্পর্কে আপনাকে জানায়। Google-কে পাঠানোর জন্য ব্রাউজ করা ডেটা প্রয়োজন।</translation>
 <translation id="4979397965658815378">আপনার সব ডিভাইসে আপনার বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং অন্যান্য সেটিংস পেতে আপনার Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4986678885919050584">এই ডিভাইস থেকে সরান</translation>
@@ -657,7 +659,6 @@
 <translation id="54401264925851789">পৃষ্ঠা নিরাপত্তা তথ্য</translation>
 <translation id="5443952882982198570">ক্রেডিট কার্ড</translation>
 <translation id="5444892875087332195">বুকমার্ক</translation>
-<translation id="5453250766792920795">{count,plural, =1{আপনার অ্যাকাউন্টে বুকমার্ক সেভ করা হয়েছে, {email}}one{আপনার অ্যাকাউন্টে বুকমার্ক সেভ করা হয়েছে, {email}}other{আপনার অ্যাকাউন্টে বুকমার্ক সেভ করা হয়েছে, {email}}}</translation>
 <translation id="5457226814769348910">ডাউনলোড করা অফলাইন পেজ খুলন</translation>
 <translation id="5489208564673669003">সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5490005495580364134">সমস্ত সাইটের কুকি ব্লক করুন (যদিও আমরা এটি করতে সাজেস্ট করছি না)</translation>
@@ -853,6 +854,7 @@
 <translation id="6530992499366869131">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশিত হলে তা এটি আপনাকে জানায়</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">কোনও সাইটে যান এবং Chrome মেনুর 'ফলো করুন' বিকল্পে ক্লিক করুন</translation>
+<translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6561262006871132942">বড় করে দেখুন</translation>
 <translation id="6583087784430677195">বন্ধ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্প খুলে অটোফিল পাসওয়ার্ড বিকল্পে যান।</translation>
 <translation id="6585618849026997638">গুরুত্বপূর্ণ পৃষ্ঠার বুকমার্ক যোগ করে সহজেই সেখানে ফিরে যেতে পারবেন</translation>

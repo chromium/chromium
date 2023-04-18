@@ -134,8 +134,10 @@
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
+<translation id="1883255238294161206">Свернуть список</translation>
 <translation id="1891796056033961979">Здесь теперь хранятся ваши закладки, пароли, настройки и многое другое.</translation>
 <translation id="1894023287452300670">Отслеживайте цены здесь</translation>
+<translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1923342640370224680">Последний час</translation>
 <translation id="1930989359703290198">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -171,7 +173,6 @@
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="214201757571129614">Войти</translation>
 <translation id="2149973817440762519">Закладка</translation>
-<translation id="2150175299852799498">Chrome для мобильных устройств</translation>
 <translation id="2155145621546387786">Share Chrome (Поделиться Chrome)</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Выберите пароль</translation>
@@ -321,6 +322,7 @@
 <translation id="3131206671572504478">Блокировать все</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
 <translation id="3146109040683991651">Сделать Chrome браузером по умолчанию</translation>
+<translation id="3152169319860972623">Функция "Проверка паролей" изучает сохраненные пароли и предупреждает об утечках данных. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Сохранить подсказку</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
 <translation id="3157684681743766797">Отметить все…</translation>
@@ -353,6 +355,7 @@
 <translation id="3324193307694657476">Адрес, строка 2</translation>
 <translation id="3328459813621383194">Неактивные вкладки</translation>
 <translation id="3328801116991980348">Информация о сайте</translation>
+<translation id="3344485292736684439">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте ({email}).}one{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}few{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}many{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}other{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3377063233124932127">Теперь ваши сохраненные закладки, пароли и другие данные будут отображаться наверху.</translation>
 <translation id="3393920035788932672">Вспл. окна разрешены</translation>
@@ -592,6 +595,7 @@
 <translation id="4941089862236492464">Не удалось опубликовать запись.</translation>
 <translation id="4944543191714094452">Найти на странице…</translation>
 <translation id="4945756290001680296">Доступ к настройкам паролей</translation>
+<translation id="4958444002117714549">Развернуть список</translation>
 <translation id="4971735654804503942">Более быстрая и эффективная защита от опасных сайтов, расширений и скачанных файлов. Предупреждает об утечках паролей. Требуется отправка данных о работе в браузере в Google.</translation>
 <translation id="4979397965658815378">Войдите в аккаунт Google, чтобы пользоваться своими закладками, паролями, историей и другими настройками на любом устройстве</translation>
 <translation id="4986678885919050584">Удалить с устройства</translation>
@@ -655,7 +659,6 @@
 <translation id="54401264925851789">Сведения о надежности страницы</translation>
 <translation id="5443952882982198570">Кредитные карты</translation>
 <translation id="5444892875087332195">Закладки</translation>
-<translation id="5453250766792920795">{count,plural, =1{Закладка сохранена в вашем аккаунте ({email}).}one{Закладки сохранены в вашем аккаунте ({email}).}few{Закладки сохранены в вашем аккаунте ({email}).}many{Закладки сохранены в вашем аккаунте ({email}).}other{Закладки сохранены в вашем аккаунте ({email}).}}</translation>
 <translation id="5457226814769348910">Открыть офлайн-версию</translation>
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
@@ -850,6 +853,7 @@
 <translation id="6530992499366869131">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Откройте сайт и выберите "Подписаться" в меню Google Chrome.</translation>
+<translation id="6550675742724504774">Параметры</translation>
 <translation id="6561262006871132942">Увеличить</translation>
 <translation id="6583087784430677195">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Автозаполнение паролей".</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
@@ -1032,6 +1036,7 @@
 <translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7845466610722898">Показать список для чтения</translation>
 <translation id="784551991304901159">Чтобы посмотреть контент, в меню выберите "Включить"</translation>
+<translation id="7846158885638438868">{count,plural, =1{Закладка добавлена в папку "{title}".}one{Закладки добавлены в папку "{title}".}few{Закладки добавлены в папку "{title}".}many{Закладки добавлены в папку "{title}".}other{Закладки добавлены в папку "{title}".}}</translation>
 <translation id="7853202427316060426">Действия</translation>
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
 <translation id="785938070103630874">Откройте вкладку "Пароли", "Методы оплаты", или "Адреса и прочее".</translation>

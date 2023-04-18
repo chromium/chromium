@@ -238,7 +238,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2023558322300866873">Voit lopettaa pakettien kaappaukset milloin tahansa</translation>
 <translation id="2034971124472263449">Tallenna silti</translation>
 <translation id="2049240716062114887">Työpöydän nimeksi muutettiin <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2064048859448024834">Kameran esikatselu päällä</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
 <translation id="2078034614700056995">Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella</translation>
@@ -1771,7 +1770,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="954052413789300507">Tallennustilaa ei ole tarpeeksi, jotta <ph name="FILENAME" /> voitaisiin ladata. Vapauta tilaa.</translation>
 <translation id="974545358917229949">Näytetään <ph name="RESULT_COUNT" /> tulosta haulla <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Siirry dokumentin loppuun</translation>
-<translation id="98515147261107953">Vaakasuunta</translation>
 <translation id="989374776391122812">Kamera- ja audiosäätimet</translation>
 <translation id="990277280839877440">Ikkuna <ph name="WINDOW_TITILE" /> suljettu.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

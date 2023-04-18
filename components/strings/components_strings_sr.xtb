@@ -510,6 +510,7 @@
 <translation id="2166049586286450108">Потпуни администраторски приступ</translation>
 <translation id="2166378884831602661">Овај сајт не може да пружи безбедну везу</translation>
 <translation id="2168151236314517198">Смернице администратора блокирају штампање овог садржаја</translation>
+<translation id="2176974405772725904">Сачувајте адресу на налогу</translation>
 <translation id="2181821976797666341">Смернице</translation>
 <translation id="2183608646556468874">Број телефона</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
@@ -1736,6 +1737,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Одбаци</translation>
+<translation id="5238301240406177137">Сачувај на налогу</translation>
 <translation id="5239623327352565343">Локација је дозвољена</translation>
 <translation id="5242889659037569123">Пртљаг и прибор за путовања</translation>
 <translation id="5244732203286792411">Учитава се…
@@ -1754,7 +1756,6 @@
 <translation id="5273881944177595304">Веб-апликације и онлајн алатке</translation>
 <translation id="5274025349362408263">Књиге и књижевност</translation>
 <translation id="5279286380302340275">Управљајте преузимањима</translation>
-<translation id="5279453600310613955">Не, хвала</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Својства документа</translation>
 <translation id="528468243742722775">Заврши</translation>
@@ -2252,6 +2253,7 @@
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6547208576736763147">Двоструко бушење на левој страни</translation>
 <translation id="6549443526281184652">Костими</translation>
+<translation id="6551873053534932690">Желите да сачувате адресу на налогу?</translation>
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6556866813142980365">Понови</translation>
 <translation id="6557715786897013164">14×17 in</translation>
