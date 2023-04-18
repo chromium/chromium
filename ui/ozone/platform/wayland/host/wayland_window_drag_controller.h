@@ -191,11 +191,21 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
   base::OnceClosure quit_loop_closure_;
 
-  // Tells if the current drag event should be processed. Buggy compositors may
-  // send wl_pointer::motion events, for example, while a DND session is still
-  // in progress, which leads to issues in window dragging sessions, this flag
-  // is used to make window drag controller resistant to such scenarios.
-  bool should_process_drag_event_ = false;
+  // Tells if the current drag motion events should be processed.
+  //
+  // The processing of drag motion events should be suspended when:
+  //
+  // 1/ Buggy compositors send wl_pointer::motion events, for example, while
+  // a DND session is still in progress, which leads to issues in window
+  // dragging sessions.
+  //
+  // 2/ `Screen coordinates` feature is enabled, given that in this mode
+  // the surface location during a window drag operation is updated
+  // via `zaura_shell::origin_change` request.
+  //
+  // This flag is used to make window drag controller resistant to such
+  // scenarios.
+  bool should_process_drag_motion_events_ = false;
 
   bool extended_drag_available_for_testing_ = false;
 
