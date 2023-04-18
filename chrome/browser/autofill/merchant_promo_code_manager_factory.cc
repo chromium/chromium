@@ -36,7 +36,7 @@ MerchantPromoCodeManagerFactory::~MerchantPromoCodeManagerFactory() = default;
 KeyedService* MerchantPromoCodeManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  raw_ptr<MerchantPromoCodeManager> service = new MerchantPromoCodeManager();
+  MerchantPromoCodeManager* service = new MerchantPromoCodeManager();
   service->Init(PersonalDataManagerFactory::GetForBrowserContext(context),
                 profile->IsOffTheRecord());
   return service;

@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -90,7 +91,7 @@ std::string SnakeCaseFromCamelCase(std::string input) {
 // - Remove the 'k' prefix and 'Icon' suffix from gfx::VectorIcon.name
 // - The remaining portion of the name is converted from CamelCase to
 //      snake_case to yield the original file name
-std::string GetFileNameFromIcon(raw_ptr<const gfx::VectorIcon> icon) {
+std::string GetFileNameFromIcon(const gfx::VectorIcon* icon) {
   std::string icon_name = icon->name;
   constexpr char kPrefix[] = "k";
   constexpr char kSuffix[] = "Icon";

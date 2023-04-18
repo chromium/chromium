@@ -147,7 +147,7 @@ void DownloadDialogView::AddFooter() {
 }
 
 DownloadDialogView::DownloadDialogView(
-    raw_ptr<Browser> browser,
+    Browser* browser,
     std::unique_ptr<views::View> row_list_scroll_view,
     DownloadBubbleNavigationHandler* navigation_handler)
     : navigation_handler_(navigation_handler), browser_(browser) {

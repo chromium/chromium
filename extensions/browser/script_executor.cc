@@ -14,6 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
@@ -171,8 +172,7 @@ class Handler : public content::WebContentsObserver {
     return content::RenderFrameHost::FrameIterationAction::kContinue;
   }
 
-  void PushPendingRenderFrame(raw_ptr<content::RenderFrameHost> frame,
-                              int frame_id) {
+  void PushPendingRenderFrame(content::RenderFrameHost* frame, int frame_id) {
     pending_render_frames_.push_back(frame);
 
     // Preallocate the results to hold the initial `frame_id` and `document_id`.

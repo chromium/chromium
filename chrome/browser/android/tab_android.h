@@ -119,7 +119,7 @@ class TabAndroid : public base::SupportsUserData {
   bool IsCustomTab();
   bool IsHidden();
 
-  static bool isHardwareKeyboardAvailable(raw_ptr<TabAndroid> tab_android);
+  static bool isHardwareKeyboardAvailable(TabAndroid* tab_android);
 
   // Observers -----------------------------------------------------------------
 

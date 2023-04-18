@@ -39,9 +39,8 @@ namespace {
 class DriveIphTabHelperNotificationDelegate
     : public message_center::NotificationDelegate {
  public:
-  DriveIphTabHelperNotificationDelegate(
-      raw_ptr<feature_engagement::Tracker> tracker,
-      raw_ptr<Profile> profile)
+  DriveIphTabHelperNotificationDelegate(feature_engagement::Tracker* tracker,
+                                        Profile* profile)
       : tracker_(tracker), profile_(profile) {}
 
   // message_center::NotificationDelegate:
@@ -86,8 +85,8 @@ class DriveIphTabHelperNotificationDelegate
 };
 
 message_center::Notification CreateGoogleOneOfferNotification(
-    raw_ptr<feature_engagement::Tracker> tracker,
-    raw_ptr<Profile> profile) {
+    feature_engagement::Tracker* tracker,
+    Profile* profile) {
   std::string notification_display_source =
       base::GetFieldTrialParamValueByFeature(
           feature_engagement::kIPHGoogleOneOfferNotificationFeature,
@@ -161,7 +160,7 @@ void GoogleOneOfferIphTabHelper::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
-  raw_ptr<Profile> profile =
+  Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
   if (profile->IsGuestSession()) {
@@ -180,7 +179,7 @@ void GoogleOneOfferIphTabHelper::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
-  raw_ptr<feature_engagement::Tracker> tracker =
+  feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
 
   if (!tracker->ShouldTriggerHelpUI(

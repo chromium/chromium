@@ -339,7 +339,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     properties = FencedFrameProperties(final_it->second);
   }
 
-  for (raw_ptr<MappingResultObserver> observer : observers) {
+  for (MappingResultObserver* observer : observers) {
     observer->OnFencedFrameURLMappingComplete(properties);
   }
 

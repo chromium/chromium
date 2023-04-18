@@ -1081,18 +1081,17 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
     return false;
   }
 
-  raw_ptr<user_manager::UserManager> user_manager =
-      user_manager::UserManager::Get();
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
     return false;
   }
 
-  raw_ptr<user_manager::User> user = user_manager->GetActiveUser();
+  user_manager::User* user = user_manager->GetActiveUser();
   if (!user) {
     return false;
   }
 
-  raw_ptr<Profile> profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     return false;
   }

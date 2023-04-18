@@ -11,7 +11,7 @@
 
 namespace ash {
 PaginationModelTransitionWaiter::PaginationModelTransitionWaiter(
-    raw_ptr<PaginationModel> pagination_model)
+    PaginationModel* pagination_model)
     : pagination_model_(pagination_model) {
   scoped_observation_.Observe(pagination_model);
 }

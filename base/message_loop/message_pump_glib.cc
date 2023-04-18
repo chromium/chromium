@@ -162,7 +162,7 @@ GSourceFuncs g_fd_watch_source_funcs = {
 }  // namespace
 
 struct MessagePumpGlib::RunState {
-  explicit RunState(raw_ptr<Delegate> delegate) : delegate(delegate) {
+  explicit RunState(Delegate* delegate) : delegate(delegate) {
     CHECK(delegate);
   }
 

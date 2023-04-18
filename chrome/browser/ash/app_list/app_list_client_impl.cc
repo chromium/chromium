@@ -131,7 +131,7 @@ ash::NewWindowDelegate::Disposition ConvertDisposition(
 
 class ScopedIphSessionImpl : public ash::ScopedIphSession {
  public:
-  explicit ScopedIphSessionImpl(raw_ptr<feature_engagement::Tracker> tracker,
+  explicit ScopedIphSessionImpl(feature_engagement::Tracker* tracker,
                                 const base::Feature& iph_feature)
       : tracker_(tracker), iph_feature_(iph_feature) {
     CHECK(tracker_);
@@ -716,7 +716,7 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
     return nullptr;
   }
 
-  raw_ptr<feature_engagement::Tracker> tracker =
+  feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   if (!tracker->ShouldTriggerHelpUI(
           feature_engagement::kIPHLauncherSearchHelpUiFeature)) {

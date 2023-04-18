@@ -725,12 +725,12 @@ class DownloadExtensionTest : public ExtensionApiTest {
     return result;
   }
 
-  raw_ptr<const Extension> LoadExtensionInternal(const char* name,
-                                                 bool enable_file_access) {
+  const Extension* LoadExtensionInternal(const char* name,
+                                         bool enable_file_access) {
     // Store the created Extension object so that we can attach it to
     // ExtensionFunctions.  Also load the extension in incognito profiles for
     // testing incognito.
-    raw_ptr<const Extension> extension = ExtensionBrowserTest::LoadExtension(
+    const Extension* extension = ExtensionBrowserTest::LoadExtension(
         test_data_dir_.AppendASCII(name),
         {.allow_in_incognito = true, .allow_file_access = enable_file_access});
     CHECK(extension);

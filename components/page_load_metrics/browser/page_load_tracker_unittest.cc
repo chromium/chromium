@@ -34,7 +34,7 @@ using content::test::ScopedPrerenderWebContentsDelegate;
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
  public:
-  TestPageLoadMetricsObserver(raw_ptr<PageLoadMetricsObserverEvents> events)
+  TestPageLoadMetricsObserver(PageLoadMetricsObserverEvents* events)
       : events_(events) {}
 
   void StopObservingOnPrerender() { stop_on_prerender_ = true; }

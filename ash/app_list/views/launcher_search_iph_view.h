@@ -47,7 +47,7 @@ class LauncherSearchIphView : public views::View {
   };
 
   LauncherSearchIphView(std::unique_ptr<ScopedIphSession> scoped_iph_session,
-                        raw_ptr<Delegate> delegate,
+                        Delegate* delegate,
                         bool is_in_tablet_mode);
   ~LauncherSearchIphView() override;
 

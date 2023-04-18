@@ -75,7 +75,7 @@ constexpr int kBackgroundRadiusTablet = 16;
 
 LauncherSearchIphView::LauncherSearchIphView(
     std::unique_ptr<ScopedIphSession> scoped_iph_session,
-    raw_ptr<Delegate> delegate,
+    Delegate* delegate,
     bool is_in_tablet_mode)
     : scoped_iph_session_(std::move(scoped_iph_session)), delegate_(delegate) {
   SetID(ViewId::kSelf);
@@ -84,7 +84,7 @@ LauncherSearchIphView::LauncherSearchIphView(
 
   // Add a root `box_layout_view` as we can set margins (i.e. borders) outside
   // the background.
-  raw_ptr<views::BoxLayoutView> box_layout_view =
+  views::BoxLayoutView* box_layout_view =
       AddChildView(std::make_unique<views::BoxLayoutView>());
   box_layout_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
   box_layout_view->SetInsideBorderInsets(is_in_tablet_mode
@@ -99,28 +99,28 @@ LauncherSearchIphView::LauncherSearchIphView(
                                          : kOuterBackgroundInsetsClamshell));
 
   // Add texts into a container to avoid stretching `views::Label`s.
-  raw_ptr<views::BoxLayoutView> text_container =
+  views::BoxLayoutView* text_container =
       box_layout_view->AddChildView(std::make_unique<views::BoxLayoutView>());
   text_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   text_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   text_container->SetBetweenChildSpacing(kMainLayoutBetweenChildSpacing);
 
-  raw_ptr<views::Label> title_label = text_container->AddChildView(
+  views::Label* title_label = text_container->AddChildView(
       std::make_unique<views::Label>(kTitleTextPlaceholder));
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   title_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
   // Add a description text and a link into another container to have a
   // different between-child-spacing.
-  raw_ptr<views::BoxLayoutView> description_container =
+  views::BoxLayoutView* description_container =
       text_container->AddChildView(std::make_unique<views::BoxLayoutView>());
   description_container->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
   description_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  raw_ptr<views::Label> description_label = description_container->AddChildView(
+  views::Label* description_label = description_container->AddChildView(
       std::make_unique<views::Label>(kDescriptionTextPlaceholder));
   description_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
@@ -130,8 +130,7 @@ LauncherSearchIphView::LauncherSearchIphView(
   link_label_->SetCallback(base::BindRepeating(
       &LauncherSearchIphView::OnLinkClicked, weak_ptr_factory_.GetWeakPtr()));
 
-  raw_ptr<const TypographyProvider> typography_provider =
-      TypographyProvider::Get();
+  const TypographyProvider* typography_provider = TypographyProvider::Get();
   DCHECK(typography_provider) << "TypographyProvider must not be null";
   if (typography_provider) {
     typography_provider->StyleLabel(TypographyToken::kCrosTitle1, *title_label);
@@ -140,7 +139,7 @@ LauncherSearchIphView::LauncherSearchIphView(
     typography_provider->StyleLabel(TypographyToken::kCrosBody2, *link_label_);
   }
 
-  raw_ptr<views::BoxLayoutView> actions_container =
+  views::BoxLayoutView* actions_container =
       box_layout_view->AddChildView(std::make_unique<views::BoxLayoutView>());
   actions_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   actions_container->SetBetweenChildSpacing(
@@ -150,7 +149,7 @@ LauncherSearchIphView::LauncherSearchIphView(
   for (const std::u16string& query :
        {kChipOneQueryPlaceholder, kChipTwoQueryPlaceholder,
         kChipThreeQueryPlaceholder}) {
-    raw_ptr<ChipView> chip = actions_container->AddChildView(
+    ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
     chip->SetText(query);
     chip->SetCallback(
@@ -160,11 +159,11 @@ LauncherSearchIphView::LauncherSearchIphView(
     query_chip_view_id++;
   }
 
-  raw_ptr<views::View> spacer =
+  views::View* spacer =
       actions_container->AddChildView(std::make_unique<views::View>());
   actions_container->SetFlexForView(spacer, 1);
 
-  raw_ptr<ash::PillButton> assistant_button =
+  ash::PillButton* assistant_button =
       actions_container->AddChildView(std::make_unique<ash::PillButton>(
           base::BindRepeating(&LauncherSearchIphView::OpenAssistantPage,
                               weak_ptr_factory_.GetWeakPtr()),
@@ -190,7 +189,7 @@ LauncherSearchIphView::~LauncherSearchIphView() = default;
 void LauncherSearchIphView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  raw_ptr<ui::ColorProvider> color_provider = link_label_->GetColorProvider();
+  ui::ColorProvider* color_provider = link_label_->GetColorProvider();
   DCHECK(color_provider) << "ColorProvider must not be null";
   if (color_provider) {
     // TODO(b/277380563): `views::Link::SetEnabledColorId` does not work.

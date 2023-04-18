@@ -5,7 +5,6 @@
 #include "chrome/browser/android/historical_tab_saver.h"
 
 #include "base/android/jni_android.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
@@ -47,7 +46,7 @@ class HistoricalTabSaverBrowserTest : public AndroidBrowserTest {
 // Test WebContentsByteBuffer non-empty object creation.
 IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                        NonEmptyWebContentsByteBuffer) {
-  raw_ptr<JNIEnv> env = base::android::AttachCurrentThread();
+  JNIEnv* env = base::android::AttachCurrentThread();
 
   Navigate();
   base::android::ScopedJavaLocalRef<jobject> result =
@@ -82,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                        EmptySizeWebContentsByteBufferCrashCheck) {
 #if DCHECK_IS_ON()
-  raw_ptr<JNIEnv> env = base::android::AttachCurrentThread();
+  JNIEnv* env = base::android::AttachCurrentThread();
 
   Navigate();
   base::android::ScopedJavaLocalRef<jobject> result =

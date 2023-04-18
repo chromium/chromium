@@ -142,7 +142,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
 
   curl_easy_reset(curl_);
 
-  base::raw_ptr<struct curl_slist> headers = nullptr;
+  struct curl_slist* headers = nullptr;
+
   headers =
       curl_slist_append(headers, ("Content-Type: " + content_type).c_str());
   for (const auto& [key, value] : post_additional_headers) {
@@ -156,7 +157,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       weak_factory_.GetWeakPtr();
   if (curl_easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
       curl_easy_setopt(curl_, CURLOPT_HTTPPOST, 1L) ||
-      curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers.get()) ||
+      curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers) ||
       curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, post_data.size()) ||
       curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, post_data.c_str()) ||
       curl_easy_setopt(curl_, CURLOPT_HEADERFUNCTION,
@@ -306,8 +307,7 @@ size_t LibcurlNetworkFetcherImpl::CurlHeaderCallback(char* data,
                                                      size_t member_size,
                                                      size_t num_members,
                                                      void* userp) {
-  base::raw_ptr<base::flat_map<std::string, std::string>> headers =
-      static_cast<base::flat_map<std::string, std::string>*>(userp);
+  auto* headers = static_cast<base::flat_map<std::string, std::string>*>(userp);
 
   base::CheckedNumeric<size_t> buf_size =
       base::CheckedNumeric<size_t>(member_size) *
@@ -456,7 +456,7 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  raw_ptr<CURL> curl = curl_easy_init();
+  CURL* curl = curl_easy_init();
   if (!curl) {
     VLOG(1) << "Failed to initialize a curl handle.";
     return nullptr;

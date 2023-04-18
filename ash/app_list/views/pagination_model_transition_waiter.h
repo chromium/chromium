@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace base {
@@ -21,7 +22,7 @@ namespace ash {
 // pagination model end.
 class PaginationModelTransitionWaiter : public PaginationModelObserver {
  public:
-  explicit PaginationModelTransitionWaiter(raw_ptr<PaginationModel> model);
+  explicit PaginationModelTransitionWaiter(PaginationModel* model);
   ~PaginationModelTransitionWaiter() override;
 
   PaginationModelTransitionWaiter(const PaginationModelTransitionWaiter&) =
