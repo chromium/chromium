@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/input_method.h"
@@ -112,7 +113,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
-  if (item.display_format() != ClipboardHistoryItem::DisplayFormat::kHtml) {
+  if (item.display_format() !=
+      crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml) {
     return;
   }
 
@@ -122,7 +124,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
   auto it = base::ranges::find_if(items, [&](const auto& existing) {
     return &existing != &item &&
            existing.display_format() ==
-               ClipboardHistoryItem::DisplayFormat::kHtml &&
+               crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml &&
            existing.data().markup_data() == item.data().markup_data();
   });
 
@@ -184,7 +186,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
   // For items that will not be represented by their rendered HTML, do nothing.
-  if (item.display_format() != ClipboardHistoryItem::DisplayFormat::kHtml) {
+  if (item.display_format() !=
+      crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml) {
     return;
   }
 

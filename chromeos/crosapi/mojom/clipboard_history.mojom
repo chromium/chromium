@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 3
+
 module crosapi.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -29,10 +31,23 @@ enum ClipboardHistoryControllerShowSource {
   [MinVersion=2] kControlVLongpress,
 };
 
+// The formats dictating how clipboard history items are displayed.
+// Maps to the `ClipboardHistoryDisplayFormat` enum used in histograms. Do not
+// reorder entries; append any new ones to the end.
+[Stable, Extensible]
+enum ClipboardHistoryDisplayFormat {
+  [Default] kUnknown = -1,
+  kText = 0,
+  kPng = 1,
+  kHtml = 2,
+  kFile = 3,
+};
+
 // This interface is implemented by Ash-Chrome.
 // ClipboardHistory (//ash/clipboard) is an Ash-Chrome feature that shows the
 // last few things copied. It is shown by accelerator and contextual menu. This
 // allows Lacros-Chrome to show the ClipboardHistory menu by contextual menu.
+// Next method ID: 1
 [Stable, Uuid="2dc3f126-d79f-4d9e-a7a7-0989c1be8acd"]
 interface ClipboardHistory {
   // Shows a menu in Ash-Chrome with the last few things copied.

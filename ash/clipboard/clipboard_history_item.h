@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/models/image_model.h"
@@ -19,17 +20,6 @@ namespace ash {
 // Wraps `ClipboardData` with extra metadata for the data's visual presentation.
 class ASH_EXPORT ClipboardHistoryItem {
  public:
-  // Maps to the `ClipboardHistoryDisplayFormat` enum used in histograms. Do not
-  // reorder entries; append any new ones to the end. Each value represents a
-  // sub-type of `ClipboardHistoryItemView`.
-  enum class DisplayFormat {
-    kText = 0,
-    kPng = 1,
-    kHtml = 2,
-    kFile = 3,
-    kMaxValue = 3,
-  };
-
   // Note: `data` must have at least one supported format, as determined by
   // `clipboard_history_util::IsSupported()`.
   explicit ClipboardHistoryItem(ui::ClipboardData data);
@@ -51,7 +41,9 @@ class ASH_EXPORT ClipboardHistoryItem {
   const ui::ClipboardData& data() const { return data_; }
   const base::Time time_copied() const { return time_copied_; }
   ui::ClipboardInternalFormat main_format() const { return main_format_; }
-  DisplayFormat display_format() const { return display_format_; }
+  crosapi::mojom::ClipboardHistoryDisplayFormat display_format() const {
+    return display_format_;
+  }
   void set_display_image(const ui::ImageModel& display_image) {
     DCHECK(display_image.IsImage());
     display_image_ = display_image;
@@ -78,7 +70,7 @@ class ASH_EXPORT ClipboardHistoryItem {
 
   // The item's categorization based on the options we have for presenting data
   // to the user.
-  const DisplayFormat display_format_;
+  const crosapi::mojom::ClipboardHistoryDisplayFormat display_format_;
 
   // Cached display image. For PNG items, this will be set during construction.
   // For HTML items, this will be a placeholder image until the real preview is

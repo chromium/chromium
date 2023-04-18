@@ -78,7 +78,8 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
 
 void ExpectHistoryItemImageMatchesBitmap(const ClipboardHistoryItem& item,
                                          const SkBitmap& expected_bitmap) {
-  EXPECT_EQ(item.display_format(), ClipboardHistoryItem::DisplayFormat::kPng);
+  EXPECT_EQ(item.display_format(),
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kPng);
 
   const auto& image = item.display_image();
   ASSERT_TRUE(image.has_value());
@@ -421,8 +422,9 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(2, 1));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
-  for (const auto& test_bitmap : test_bitmaps)
+  for (const auto& test_bitmap : test_bitmaps) {
     WriteImageToClipboardAndConfirm(test_bitmap);
+  }
 
   auto result = GetHistoryValues();
   auto num_results = result.size();

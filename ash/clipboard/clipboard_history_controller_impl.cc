@@ -44,6 +44,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -391,7 +392,8 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
   // Map of `ClipboardHistoryItem` IDs to their corresponding bitmaps.
   std::map<base::UnguessableToken, SkBitmap> bitmaps_to_be_encoded;
   for (auto& item : clipboard_history_->GetItems()) {
-    if (item.display_format() == ClipboardHistoryItem::DisplayFormat::kPng) {
+    if (item.display_format() ==
+        crosapi::mojom::ClipboardHistoryDisplayFormat::kPng) {
       const auto& maybe_png = item.data().maybe_png();
       if (!maybe_png.has_value()) {
         // The clipboard contains an image which has not yet been encoded to a
@@ -492,7 +494,8 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
 
   bool all_images_encoded = true;
   for (auto& item : clipboard_history_->GetItems()) {
-    if (item.display_format() == ClipboardHistoryItem::DisplayFormat::kPng &&
+    if (item.display_format() ==
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kPng &&
         !item.data().maybe_png().has_value()) {
       // The clipboard contains an image which has not yet been encoded to a
       // PNG. Hopefully we just finished encoding and the PNG can be found
@@ -568,14 +571,16 @@ bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
 void ClipboardHistoryControllerImpl::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item,
     bool is_duplicate) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnClipboardHistoryItemsUpdated();
+  }
 }
 
 void ClipboardHistoryControllerImpl::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnClipboardHistoryItemsUpdated();
+  }
 }
 
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
@@ -665,8 +670,9 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
 
 void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
     const std::vector<base::UnguessableToken>& menu_item_ids) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnClipboardHistoryItemsUpdated();
+  }
 }
 
 void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
@@ -846,8 +852,9 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   base::UmaHistogramEnumeration("Ash.ClipboardHistory.PasteSource",
                                 paste_source);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnClipboardHistoryPasted();
+  }
 
   // If the clipboard was not changed or we intend for clipboard history to
   // remain reordered after the paste, then we are done modifying the clipboard

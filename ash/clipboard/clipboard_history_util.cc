@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -152,8 +153,9 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
   // Outside of the Files app, file system sources are written as filenames.
   if (ContainsFormat(data, ui::ClipboardInternalFormat::kFilenames)) {
     std::vector<std::string> sources;
-    for (const ui::FileInfo& filename : data.filenames())
+    for (const ui::FileInfo& filename : data.filenames()) {
       sources.push_back(filename.path.value());
+    }
     return base::UTF8ToUTF16(base::JoinString(sources, "\n"));
   }
 
@@ -209,7 +211,8 @@ bool IsEnabledInCurrentMode() {
 }
 
 ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
-  DCHECK_EQ(item.display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
+  DCHECK_EQ(item.display_format(),
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kFile);
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
   if (copied_files_count == 0)
     return ui::ImageModel();

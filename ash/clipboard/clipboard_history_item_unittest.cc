@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/file_info.h"
@@ -22,7 +23,7 @@ namespace {
 
 struct FormatPair {
   ui::ClipboardInternalFormat clipboard_format;
-  ClipboardHistoryItem::DisplayFormat display_format;
+  crosapi::mojom::ClipboardHistoryDisplayFormat display_format;
 };
 
 }  // namespace
@@ -109,7 +110,7 @@ class ClipboardHistoryItemDisplayTest
   ui::ClipboardInternalFormat GetClipboardFormat() const {
     return GetParam().clipboard_format;
   }
-  ClipboardHistoryItem::DisplayFormat GetDisplayFormat() const {
+  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
     return GetParam().display_format;
   }
 
@@ -130,18 +131,20 @@ class ClipboardHistoryItemDisplayTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClipboardHistoryItemDisplayTest,
-    ::testing::Values(FormatPair{ui::ClipboardInternalFormat::kText,
-                                 ClipboardHistoryItem::DisplayFormat::kText},
-                      FormatPair{ui::ClipboardInternalFormat::kPng,
-                                 ClipboardHistoryItem::DisplayFormat::kPng},
-                      FormatPair{ui::ClipboardInternalFormat::kHtml,
-                                 ClipboardHistoryItem::DisplayFormat::kHtml},
-                      FormatPair{ui::ClipboardInternalFormat::kFilenames,
-                                 ClipboardHistoryItem::DisplayFormat::kFile}));
+    ::testing::Values(
+        FormatPair{ui::ClipboardInternalFormat::kText,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
+        FormatPair{ui::ClipboardInternalFormat::kPng,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
+        FormatPair{ui::ClipboardInternalFormat::kHtml,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
+        FormatPair{ui::ClipboardInternalFormat::kFilenames,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}));
 
 TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
   const auto& maybe_icon = item().icon();
-  if (GetDisplayFormat() == ClipboardHistoryItem::DisplayFormat::kFile) {
+  if (GetDisplayFormat() ==
+      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
     ASSERT_TRUE(maybe_icon.has_value());
     EXPECT_TRUE(maybe_icon.value().IsVectorIcon());
   } else {
@@ -152,12 +155,14 @@ TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
 TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
   const auto& maybe_image = item().display_image();
   switch (GetDisplayFormat()) {
-    case ClipboardHistoryItem::DisplayFormat::kText:
-    case ClipboardHistoryItem::DisplayFormat::kFile:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+      NOTREACHED_NORETURN();
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       EXPECT_FALSE(maybe_image);
       break;
-    case ClipboardHistoryItem::DisplayFormat::kPng:
-    case ClipboardHistoryItem::DisplayFormat::kHtml:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       ASSERT_TRUE(maybe_image);
       EXPECT_TRUE(maybe_image.value().IsImage());
       break;
