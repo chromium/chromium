@@ -350,6 +350,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Storage.Buckets.BucketCount" units="buckets"
+    expires_after="2024-04-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Counts the number of storage buckets in existence for a StorageKey when a
+    new one is created (including the new one). This is intended to give an idea
+    of the number of buckets individual apps use. Note: the count in histogram
+    bucket 1 correlates to the total number of sites that use the buckets API
+    (per Chrome client). The count in histogram bucket N, divided by the size of
+    the bucket, correlates to the number of sites for that Chrome client which
+    use at least that many buckets.
+  </summary>
+</histogram>
+
 <histogram name="Storage.Buckets.Parameters.Durability"
     enum="StorageBucketDurabilityParameter" expires_after="2024-04-01">
   <owner>estade@chromium.org</owner>

@@ -1205,6 +1205,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
     if (current_bucket_count >= max_bucket_count) {
       return base::unexpected(QuotaError::kQuotaExceeded);
     }
+
+    base::UmaHistogramCounts100000("Storage.Buckets.BucketCount",
+                                   current_bucket_count + 1);
   }
 
   static constexpr char kSql[] =
