@@ -12,6 +12,7 @@
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,6 +27,9 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
 
   void BindPendingReceiver(
       mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
+
+  mojo::PendingRemote<crosapi::mojom::DiagnosticsService>
+  BindNewPipeAndPassRemote();
 
   // crosapi::health::mojom::DiagnosticsService overrides.
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;

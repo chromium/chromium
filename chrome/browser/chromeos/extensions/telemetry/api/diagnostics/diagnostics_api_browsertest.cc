@@ -63,15 +63,10 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Replace the production DiagnosticsService with a fake for testing.
-    mojo::Remote<crosapi::mojom::DiagnosticsService>& remote =
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::DiagnosticsService>();
-    DCHECK(remote);
-    remote.reset();
-    fake_diagnostics_service_impl->BindPendingReceiver(
-        remote.BindNewPipeAndPassReceiver());
     fake_diagnostics_service_impl_ = std::move(fake_diagnostics_service_impl);
+    // Replace the production DiagnosticsService with a fake for testing.
+    chromeos::LacrosService::Get()->InjectRemoteForTesting(
+        fake_diagnostics_service_impl_->BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 

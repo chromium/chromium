@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -27,6 +28,11 @@ FakeProbeService::~FakeProbeService() {
 void FakeProbeService::BindPendingReceiver(
     mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+mojo::PendingRemote<crosapi::mojom::TelemetryProbeService>
+FakeProbeService::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 void FakeProbeService::ProbeTelemetryInfo(

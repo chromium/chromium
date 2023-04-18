@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,6 +32,11 @@ FakeDiagnosticsService::~FakeDiagnosticsService() {
 void FakeDiagnosticsService::BindPendingReceiver(
     mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+mojo::PendingRemote<crosapi::mojom::DiagnosticsService>
+FakeDiagnosticsService::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 void FakeDiagnosticsService::GetAvailableRoutines(

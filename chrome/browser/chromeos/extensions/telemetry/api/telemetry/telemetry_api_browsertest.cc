@@ -55,14 +55,10 @@ class TelemetryExtensionTelemetryApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Replace the production Probe service with a mock for testing.
-    mojo::Remote<crosapi::mojom::TelemetryProbeService>& remote =
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::TelemetryProbeService>();
-    remote.reset();
-    fake_probe_service_impl->BindPendingReceiver(
-        remote.BindNewPipeAndPassReceiver());
     fake_probe_service_impl_ = std::move(fake_probe_service_impl);
+    // Replace the production Probe service with a mock for testing.
+    chromeos::LacrosService::Get()->InjectRemoteForTesting(
+        fake_probe_service_impl_->BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
