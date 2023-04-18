@@ -40,6 +40,12 @@ class NavigationImpl : public Navigation {
   bool should_stop_when_throttle_created() const {
     return should_stop_when_throttle_created_;
   }
+  void set_should_block_when_throttle_created() {
+    should_block_when_throttle_created_ = true;
+  }
+  bool should_block_when_throttle_created() const {
+    return should_block_when_throttle_created_;
+  }
 
   void set_safe_to_set_request_headers(bool value) {
     safe_to_set_request_headers_ = value;
@@ -155,6 +161,9 @@ class NavigationImpl : public Navigation {
   // Used to delay calling Stop() until safe. See
   // NavigationControllerImpl::NavigationThrottleImpl for details.
   bool should_stop_when_throttle_created_ = false;
+
+  // Used to prevent URLs from loading. Only set when starting navigation.
+  bool should_block_when_throttle_created_ = false;
 
   // Whether SetRequestHeader() is allowed at this time.
   bool safe_to_set_request_headers_ = false;

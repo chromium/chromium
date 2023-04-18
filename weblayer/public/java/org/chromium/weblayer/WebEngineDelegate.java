@@ -16,6 +16,8 @@ import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
 import org.chromium.webengine.interfaces.IWebEngineParams;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 
+import java.util.ArrayList;
+
 /**
  * Class to delegate between a webengine.WebEngine and its weblayer.Browser counter part.
  */
@@ -70,6 +72,10 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
         args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);
         if (params.persistenceId != null) {
             args.putString(BrowserFragmentArgs.PERSISTENCE_ID, params.persistenceId);
+        }
+        if (params.allowedOrigins != null) {
+            args.putStringArrayList(
+                    BrowserFragmentArgs.ALLOWED_ORIGINS, (ArrayList<String>) params.allowedOrigins);
         }
         args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
         args.putBoolean(BrowserFragmentArgs.IS_EXTERNAL_INTENTS_ENABLED, isExternalIntentsEnabled);
