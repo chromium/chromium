@@ -492,6 +492,7 @@ filelist.renderEncryptionStatus = (doc) => {
 
 /**
  * Renders the drive inline status in the detail table.
+ * @param {!Document} doc Owner document.
  * @return {!HTMLDivElement} Created element.
  */
 filelist.renderInlineStatus = (doc) => {
