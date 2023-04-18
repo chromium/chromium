@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(document_data);
   blink::RuntimeFeatureStateReadContext read_context =
-      document_data->runtime_feature_read_context();
+      document_data->runtime_feature_state_read_context();
   EXPECT_EQ(expected_feature_overrides, read_context.GetFeatureOverrides());
 }
 
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(document_data);
   blink::RuntimeFeatureStateReadContext read_context =
-      document_data->runtime_feature_read_context();
+      document_data->runtime_feature_state_read_context();
   EXPECT_EQ(expected_feature_overrides, read_context.GetFeatureOverrides());
 }
 
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(document_data);
   blink::RuntimeFeatureStateReadContext read_context =
-      document_data->runtime_feature_read_context();
+      document_data->runtime_feature_state_read_context();
   EXPECT_TRUE(read_context.GetFeatureOverrides().empty());
 }
 

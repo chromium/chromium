@@ -1021,7 +1021,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
-                  ->runtime_feature_read_context()
+                  ->runtime_feature_state_read_context()
                   .IsDisableThirdPartyStoragePartitioningEnabled());
 
   // Create a child frame and navigate to `child_url`.
@@ -1080,14 +1080,14 @@ TEST_F(RenderFrameHostImplTest,
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
-                  ->runtime_feature_read_context()
+                  ->runtime_feature_state_read_context()
                   .IsTestFeatureEnabled());
 
   // Now add a child and check its RFSRC.
   auto* child_frame = main_test_rfh()->AppendChild("child");
   EXPECT_TRUE(
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(child_frame)
-          ->runtime_feature_read_context()
+          ->runtime_feature_state_read_context()
           .IsTestFeatureEnabled());
 
   // Navigating the child away should change the RFSRC.
@@ -1098,7 +1098,7 @@ TEST_F(RenderFrameHostImplTest,
       child_navigation->GetFinalRenderFrameHost());
   EXPECT_FALSE(
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(child_frame)
-          ->runtime_feature_read_context()
+          ->runtime_feature_state_read_context()
           .IsTestFeatureEnabled());
 }
 

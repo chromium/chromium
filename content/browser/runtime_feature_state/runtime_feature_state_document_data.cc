@@ -13,6 +13,7 @@ RuntimeFeatureStateDocumentData::~RuntimeFeatureStateDocumentData() = default;
 RuntimeFeatureStateDocumentData::RuntimeFeatureStateDocumentData(
     RenderFrameHost* rfh,
     const blink::RuntimeFeatureStateReadContext& read_context)
-    : DocumentUserData(rfh), runtime_feature_read_context_(read_context) {}
+    : DocumentUserData(rfh),
+      runtime_feature_state_read_context_(read_context) {}
 
 }  // namespace content

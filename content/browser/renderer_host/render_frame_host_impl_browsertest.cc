@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 
   // Simulate receiving a feature diff from the renderer process.
@@ -1039,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Verify that the document data was altered with the correct overrides.
   runtime_feature_state_controller_remote.FlushForTesting();
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 }
 
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 
   // Simulate receiving a feature diff from the renderer process.
@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Verify that no feature overrides were added.
   runtime_feature_state_controller_remote.FlushForTesting();
   EXPECT_EQ(expected_overrides,
-            actual_document_data->runtime_feature_read_context()
+            actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
 }
 
