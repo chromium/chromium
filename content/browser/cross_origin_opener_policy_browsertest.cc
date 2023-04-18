@@ -5943,4 +5943,81 @@ IN_PROC_BROWSER_TEST_P(NoSiteIsolationCrossOriginIsolationBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ConsoleErrorOnWindowLocationAccess) {
+  const GURL non_coop_page = https_server()->GetURL("a.test", "/title1.html");
+  const GURL coop_page = https_server()->GetURL(
+      "b.test",
+      "/set-header?Cross-Origin-Opener-Policy-Report-Only: same-origin");
+
+  EXPECT_TRUE(NavigateToURL(shell(), non_coop_page));
+
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("window.popup = window.open($1)", coop_page)));
+  EXPECT_TRUE(WaitForLoadStop(shell_observer.GetShell()->web_contents()));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Cross-Origin-Opener-Policy policy would block the window.location "
+      "call.");
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.popup.location"));
+  ASSERT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ConsoleErrorOnWindowIndexedAccess) {
+  const GURL non_coop_page = https_server()->GetURL("a.test", "/title1.html");
+  const GURL coop_page = https_server()->GetURL(
+      "b.test",
+      "/set-header?Cross-Origin-Opener-Policy-Report-Only: same-origin");
+
+  EXPECT_TRUE(NavigateToURL(shell(), non_coop_page));
+
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("window.popup = window.open($1)", coop_page)));
+  EXPECT_TRUE(WaitForLoadStop(shell_observer.GetShell()->web_contents()));
+  ASSERT_TRUE(
+      ExecJs(shell_observer.GetShell()->web_contents(),
+             JsReplace("const iframe = document.createElement('iframe');"
+                       "iframe.src = $1;"
+                       "document.body.appendChild(iframe);",
+                       non_coop_page)));
+  EXPECT_TRUE(WaitForLoadStop(shell_observer.GetShell()->web_contents()));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Cross-Origin-Opener-Policy policy would block the window[i] call.");
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.popup[0]"));
+  ASSERT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ConsoleErrorOnWindowNamedAccess) {
+  const GURL non_coop_page = https_server()->GetURL("a.test", "/title1.html");
+  const GURL coop_page = https_server()->GetURL(
+      "a.test",
+      "/set-header?Cross-Origin-Opener-Policy-Report-Only: same-origin");
+
+  EXPECT_TRUE(NavigateToURL(shell(), non_coop_page));
+
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("window.popup = window.open($1)", coop_page)));
+  EXPECT_TRUE(WaitForLoadStop(shell_observer.GetShell()->web_contents()));
+  ASSERT_TRUE(ExecJs(shell_observer.GetShell()->web_contents(), R"(
+    const div = document.createElement("div");
+    div.id = "divID";
+    document.body.appendChild(div);
+  )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Cross-Origin-Opener-Policy policy would block the window[\"name\"] "
+      "call.");
+  EXPECT_TRUE(ExecJs(current_frame_host(), "window.popup['divID']"));
+  ASSERT_TRUE(console_observer.Wait());
+}
+
 }  // namespace content
