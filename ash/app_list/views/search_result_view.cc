@@ -35,6 +35,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -1172,10 +1173,16 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   gfx::Rect content_rect(rect);
 
-  const SkColor focus_bar_color =
-      GetColorProvider()->GetColor(ui::kColorAshFocusRing);
-  const SkColor highlight_color =
-      GetColorProvider()->GetColor(kColorAshHighlightColorHover);
+  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+
+  const SkColor focus_bar_color = GetColorProvider()->GetColor(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
+          : ui::kColorAshFocusRing);
+  const SkColor highlight_color = GetColorProvider()->GetColor(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
+          : kColorAshHighlightColorHover);
   switch (view_type_) {
     case SearchResultViewType::kDefault:
       if (selected() && !actions_view()->HasSelectedAction()) {
