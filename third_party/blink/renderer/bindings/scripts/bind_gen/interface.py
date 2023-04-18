@@ -5141,6 +5141,7 @@ def _make_operation_registration_table(table_name, operation_entries):
     no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
 
     entry_nodes = []
+    entry_nodes_wo_nadc = []
     nadc_overload_nodes = ListNode()
     pattern = ("{{"
                "\"{property_name}\", "
@@ -5153,48 +5154,80 @@ def _make_operation_registration_table(table_name, operation_entries):
                "{cross_origin_check}, "
                "{v8_side_effect}"
                "}}, ")
+    pattern_wo_nadc = pattern
     if no_alloc_direct_call_enabled:
         pattern = ("{{" + pattern + "{v8_cfunction_table}, "
                    "std::size({v8_cfunction_table})}}, ")
+    has_no_alloc_direct_call_with_enforce_range = False
     for entry in operation_entries:
         if no_alloc_direct_call_enabled:
             nadc_overload_table_name = name_style.constant(
                 "no_alloc_direct_call_overloads_of_",
                 entry.property_.identifier)
+            nadc_overloads = []
+            for nadc_entry in entry.no_alloc_direct_call_callbacks:
+                nadc_arg_flags = ""
+                for arg in nadc_entry.operation.arguments:
+                    if arg.index >= nadc_entry.argument_count:
+                        break
+                    nadc_v8_type_info_flags = []
+                    if "AllowShared" in arg.idl_type.effective_annotations:
+                        nadc_v8_type_info_flags.append(
+                            "v8::CTypeInfo::Flags::kAllowSharedBit")
+                    if "Clamp" in arg.idl_type.effective_annotations:
+                        nadc_v8_type_info_flags.append(
+                            "v8::CTypeInfo::Flags::kClampBit")
+                    if "EnforceRange" in arg.idl_type.effective_annotations:
+                        nadc_v8_type_info_flags.append(
+                            "v8::CTypeInfo::Flags::kEnforceRangeBit")
+                        has_no_alloc_direct_call_with_enforce_range = True
+                    arg_type = arg.idl_type.unwrap()
+                    if arg_type.is_floating_point_numeric and (
+                            not arg_type.keyword_typename.startswith(
+                                "unrestricted ")):
+                        nadc_v8_type_info_flags.append(
+                            "v8::CTypeInfo::Flags::kIsRestrictedBit")
+                    if nadc_v8_type_info_flags:
+                        nadc_arg_flags += ".Arg<{index}, {flags}>()".format(
+                            index=arg.index + 1,
+                            flags=", ".join(nadc_v8_type_info_flags))
+                nadc_overloads.append(
+                    F("v8::CFunctionBuilder().Fn({}){}.Build(),",
+                      nadc_entry.callback_name, nadc_arg_flags))
             nadc_overload_nodes.append(
                 ListNode([
                     T("static const v8::CFunction " +
                       nadc_overload_table_name + "[] = {"),
-                    ListNode([
-                        F("v8::CFunctionBuilder().Fn({}).Build(),",
-                          nadc_entry.callback_name)
-                        for nadc_entry in entry.no_alloc_direct_call_callbacks
-                    ]),
+                    ListNode(nadc_overloads),
                     T("};"),
                 ]))
         else:
             nadc_overload_table_name = None
 
-        text = _format(
-            pattern,
-            property_name=entry.property_.identifier,
-            operation_callback=entry.op_callback_name,
-            function_length=entry.op_func_length,
-            v8_property_attribute=_make_property_entry_v8_property_attribute(
-                entry.property_),
-            location=_make_property_entry_location(entry.property_),
-            world=_make_property_entry_world(entry.world),
-            receiver_check=_make_property_entry_receiver_check(
-                entry.property_),
-            cross_origin_check=_make_property_entry_cross_origin_check(
-                entry.property_),
-            v8_side_effect=_make_property_entry_v8_side_effect(
-                entry.property_),
-            v8_cfunction_table=nadc_overload_table_name)
-        entry_nodes.append(T(text))
+        def get_formatted_text(input_pattern):
+            return _format(
+                input_pattern,
+                property_name=entry.property_.identifier,
+                operation_callback=entry.op_callback_name,
+                function_length=entry.op_func_length,
+                v8_property_attribute=
+                _make_property_entry_v8_property_attribute(entry.property_),
+                location=_make_property_entry_location(entry.property_),
+                world=_make_property_entry_world(entry.world),
+                receiver_check=_make_property_entry_receiver_check(
+                    entry.property_),
+                cross_origin_check=_make_property_entry_cross_origin_check(
+                    entry.property_),
+                v8_side_effect=_make_property_entry_v8_side_effect(
+                    entry.property_),
+                v8_cfunction_table=nadc_overload_table_name)
+
+        entry_nodes.append(T(get_formatted_text(pattern)))
+        entry_nodes_wo_nadc.append(T(get_formatted_text(pattern_wo_nadc)))
 
     table_decl_before_name = (
         "static const IDLMemberInstaller::OperationConfig")
+    table_decl_before_name_wo_nadc = table_decl_before_name
     if no_alloc_direct_call_enabled:
         table_decl_before_name = (
             "static const "
@@ -5210,6 +5243,26 @@ def _make_operation_registration_table(table_name, operation_entries):
         ListNode(entry_nodes),
         T("};"),
     ])
+
+    # Disable [NoAllocDirectCall] on x86 due to https://crbug.com/1433212
+    if has_no_alloc_direct_call_with_enforce_range:
+        node = ListNode([
+            T("// Disable [NoAllocDirectCall] on x86 due to "
+              "https://crbug.com/1433212"),
+            T("#if defined(ARCH_CPU_X86)"),
+            T(table_decl_before_name_wo_nadc + " " + table_name + "[] = {"),
+            ListNode(entry_nodes_wo_nadc),
+            T("};"),
+            T("// Disable compiler warnings for unused functions."),
+            ListNode([
+                F("(void){};", nadc_entry.callback_name)
+                for entry in operation_entries
+                for nadc_entry in entry.no_alloc_direct_call_callbacks
+            ]),
+            T("#else   // defined(ARCH_CPU_X86)"),
+            node,
+            T("#endif  // defined(ARCH_CPU_X86)"),
+        ])
     return node
 
 
