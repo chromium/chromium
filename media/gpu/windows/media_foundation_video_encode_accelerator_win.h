@@ -105,8 +105,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     kUninitialized,
     kInitializing,
     kEncoding,
+    // We wait to feed all pending frames from `pending_input_queue_`
+    // before telling MF encoder to drain.
+    kPreFlushing,
+    // We issued a drain message to the MF encoder want wait for the drain
+    // to complete.
     kFlushing,
-    kClosing,
     kError,
   };
 
@@ -161,14 +165,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void ProcessOutput();
 
   // Asynchronous event handler
-  void MediaEventHandler(MediaEventType event_type);
+  void MediaEventHandler(MediaEventType event_type, HRESULT status);
 
   // Sends MFT_MESSAGE_COMMAND_DRAIN to the encoder to make it
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
-
-  // Releases resources encoder holds.
-  void ReleaseEncoderResources();
 
   // Initialize video processing (for scaling)
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);

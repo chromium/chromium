@@ -720,14 +720,7 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     case kEncoding: {
       pending_input_queue_.push_back(
           MakeInput(std::move(frame), force_keyframe));
-      // We could call `FeedInputs()` synchronously from here, but it will
-      // be preparing input sample which is a bit of heavy lifting, and we
-      // want to return from this Mojo call as soon as possible to unblock
-      // the renderer.
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MediaFoundationVideoEncodeAccelerator::FeedInputs,
-                         weak_ptr_));
+      FeedInputs();
       break;
     }
     case kInitializing: {
@@ -736,6 +729,8 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
       break;
     }
     default:
+      NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                         "Unexpected encoder state"});
       DCHECK(false) << "Abandon input frame for video encoder."
                     << " State: " << static_cast<int>(state_);
   }
@@ -851,8 +846,11 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetState(kClosing);
-  ReleaseEncoderResources();
+
+  if (activate_) {
+    activate_->ShutdownObject();
+    activate_->Release();
+  }
   delete this;
 }
 
@@ -863,11 +861,13 @@ void MediaFoundationVideoEncodeAccelerator::DrainEncoder() {
     std::move(flush_callback_).Run(/*success=*/false);
     return;
   }
+  SetState(kFlushing);
 }
 
 void MediaFoundationVideoEncodeAccelerator::Flush(
     FlushCallback flush_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(flush_callback);
 
   if (state_ != kEncoding || !encoder_) {
     DCHECK(false) << "Called Flush() with unexpected state."
@@ -876,14 +876,15 @@ void MediaFoundationVideoEncodeAccelerator::Flush(
     return;
   }
 
-  SetState(kFlushing);
   flush_callback_ = std::move(flush_callback);
   if (pending_input_queue_.empty()) {
-    // There are no pending inputs we can just ask encoder to drain without
+    // There are no pending inputs we can just ask MF encoder to drain without
     // having to wait for any more METransformNeedInput requests.
+    DrainEncoder();
+  } else {
     // Otherwise METransformNeedInput will call DrainEncoder() when all the
     // inputs from `pending_input_queue_` were fed to the MF encoder.
-    DrainEncoder();
+    SetState(kPreFlushing);
   }
 }
 
@@ -1178,7 +1179,7 @@ void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
     return;
   }
 
-  // No point to try feeding more than one input here,
+  // There's no point in trying to feed more than one input here,
   // because MF encoder never accepts more than one input in a row.
   auto& next_input = pending_input_queue_.front();
   HRESULT hr = ProcessInput(next_input);
@@ -1312,7 +1313,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   hr = MFFrameRateToAverageTimePerFrame(frame_rate_, 1, &sample_duration);
   RETURN_ON_HR_FAILURE(hr, "Couldn't calculate sample duration", hr);
 
-  input_sample_->SetSampleDuration(sample_duration);
+  hr = input_sample_->SetSampleDuration(sample_duration);
   RETURN_ON_HR_FAILURE(hr, "SetSampleDuration() failed", hr);
 
   if (input.options.key_frame) {
@@ -1760,10 +1761,17 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 }
 
 void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
-    MediaEventType event_type) {
+    MediaEventType event_type,
+    HRESULT status) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(event_generator_);
+
+  if (FAILED(status)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Media Foundation async error: " + PrintHr(status)});
+    return;
+  }
 
   switch (event_type) {
     case METransformNeedInput: {
@@ -1775,7 +1783,7 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
         SetState(kEncoding);
       } else if (state_ == kEncoding) {
         FeedInputs();
-      } else if (state_ == kFlushing) {
+      } else if (state_ == kPreFlushing) {
         FeedInputs();
         if (pending_input_queue_.empty()) {
           // All pending inputs are sent to the MF encoder, it's time to tell it
@@ -1791,11 +1799,12 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
     }
     case METransformDrainComplete: {
       DCHECK(pending_input_queue_.empty());
+      DCHECK_EQ(state_, kFlushing);
       auto hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
       if (FAILED(hr)) {
         SetState(kError);
         std::move(flush_callback_).Run(false);
-        break;
+        return;
       }
       SetState(kEncoding);
       std::move(flush_callback_).Run(true);
@@ -1812,26 +1821,6 @@ void MediaFoundationVideoEncodeAccelerator::SetState(State state) {
 
   DVLOG(3) << "Setting state to: " << state;
   state_ = state;
-}
-
-void MediaFoundationVideoEncodeAccelerator::ReleaseEncoderResources() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bitstream_buffer_queue_.clear();
-  pending_input_queue_.clear();
-  encoder_output_queue_.clear();
-
-  if (activate_) {
-    activate_->ShutdownObject();
-    activate_->Release();
-    activate_.Reset();
-  }
-  encoder_.Reset();
-  codec_api_.Reset();
-  event_generator_.Reset();
-  imf_input_media_type_.Reset();
-  imf_output_media_type_.Reset();
-  input_sample_.Reset();
-  output_sample_.Reset();
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
@@ -2010,20 +1999,16 @@ HRESULT MediaFoundationVideoEncodeAccelerator::Invoke(
   MediaEventType event_type = MEUnknown;
   RETURN_IF_FAILED(media_event->GetType(&event_type));
 
-  HRESULT hr = S_OK;
-  media_event->GetStatus(&hr);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "GetStatus() failed.";
-    return hr;
-  }
+  HRESULT status = S_OK;
+  media_event->GetStatus(&status);
 
   // Invoke() is called on some random OS thread, so we must post to our event
   // handler since MediaFoundationVideoEncodeAccelerator is single threaded.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaFoundationVideoEncodeAccelerator::MediaEventHandler,
-                     weak_ptr_, event_type));
-  return hr;
+                     weak_ptr_, event_type, status));
+  return status;
 }
 
 ULONG MediaFoundationVideoEncodeAccelerator::AddRef() {
