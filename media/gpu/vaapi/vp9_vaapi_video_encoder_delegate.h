@@ -44,6 +44,8 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // 0-255.
     uint8_t min_qp;
     uint8_t max_qp;
+
+    bool error_resilident_mode = false;
   };
 
   VP9VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
