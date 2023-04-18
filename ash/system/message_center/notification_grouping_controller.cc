@@ -333,7 +333,7 @@ void NotificationGroupingController::RemoveGroupedChild(
   auto grouped_notifications =
       grouped_notification_list_->GetGroupedNotificationsForParent(parent_id);
   if (grouped_notifications.size() == 1) {
-    MessageCenter::Get()->RemoveNotification(parent_id, true);
+    MessageCenter::Get()->RemoveNotification(parent_id, /*by_user=*/false);
     return;
   }
 

@@ -32,6 +32,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -293,6 +294,49 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationClickWithTwoButtons) {
   EXPECT_FALSE(delegate->launch_settings_called());
   ClickView(notification_view, 1);
   EXPECT_TRUE(delegate->launch_settings_called());
+}
+
+// Tests that privacy indicators notifications are working properly when there
+// are two running apps.
+TEST_F(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
+  std::string app_id1 = "test_app_id1";
+  std::string app_id2 = "test_app_id2";
+  std::string notification_id1 = GetPrivacyIndicatorsNotificationId(app_id1);
+  std::string notification_id2 = GetPrivacyIndicatorsNotificationId(app_id2);
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id1, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id2, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
+
+  auto* message_center = message_center::MessageCenter::Get();
+  EXPECT_TRUE(message_center->FindNotificationById(notification_id1));
+  EXPECT_TRUE(message_center->FindNotificationById(notification_id2));
+
+  // A group parent notification should also be created for these 2
+  // notifications.
+  std::string id_parent =
+      notification_id1 + message_center::kIdSuffixForGroupContainerNotification;
+  EXPECT_TRUE(message_center->FindNotificationById(id_parent));
+
+  // Update the state. All notifications should be removed.
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id1, u"test_app_name",
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id2, u"test_app_name",
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+
+  EXPECT_FALSE(message_center->FindNotificationById(notification_id1));
+  EXPECT_FALSE(message_center->FindNotificationById(notification_id2));
+  EXPECT_FALSE(message_center->FindNotificationById(id_parent));
 }
 
 // Tests that a basic privacy indicator notification is disabled when the video
