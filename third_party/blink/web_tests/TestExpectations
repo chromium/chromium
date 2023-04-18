@@ -6862,4 +6862,4 @@ crbug.com/1432272 [ Linux ] virtual/unsafe_webgpu/regress/regress-1104580.html [
 crbug.com/1432448 external/wpt/webnn/* [ Failure ]
 
 # Sheriff 2023-04-13
-crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Pass Timeout ]
+crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Crash Pass Timeout ]
