@@ -146,6 +146,10 @@ const TrackedElement* CheckElementFunction(const TrackedElement* el) {
   return el;
 }
 
+int ValueGeneratingFunction() {
+  return 5;
+}
+
 struct CallableObject {
   bool operator()() const { return i != 0; }
   int i = 0;
@@ -1175,7 +1179,7 @@ TEST_F(InteractiveTestTest, AnyOfAllFail) {
 // parameters. The output of this test must be verified manually.
 TEST_F(InteractiveTestTest, Log) {
   TestElement e1(kTestId1, kTestContext1);
-  int x = 0;
+  int x = 1;
   int y = 0;
   constexpr char kSomeString[] = "A string.";
   std::u16string deferred_string1;
@@ -1191,12 +1195,21 @@ TEST_F(InteractiveTestTest, Log) {
         deferred_string2 = "Lorem ipsum";
         unnamed_struct_ptr = &unnamed_struct;
       })),
-      Log("literal int: ", x, " deferred int: ", std::ref(y),
-          " constexpr string: ", kSomeString,
-          " deferred string 1: ", std::ref(deferred_string1),
-          " deferred string 2: ", std::ref(deferred_string2),
-          " pointer to object: ", &unnamed_struct,
-          " deferred pointer to object: ", std::ref(unnamed_struct_ptr)));
+      Log(
+          "Log() output follows:\nliteral int: ", x,
+          "\ndeferred int: ", std::ref(y), "\nconstexpr string: ", kSomeString,
+          "\ndeferred string 1: ", std::ref(deferred_string1),
+          "\ndeferred string 2: ", std::ref(deferred_string2),
+          "\npointer to object: ", &unnamed_struct,
+          "\ndeferred pointer to object: ", std::ref(unnamed_struct_ptr),
+          "\nlambda - should be 7: ", [x, &y]() { return x + y + 4; },
+          "\nOnceCallback - should be 3: ",
+          base::BindOnce([](int x, int* y) { return x + *y; }, x,
+                         base::Unretained(&y)),
+          "\nRepeatingCallback - should be 4: ",
+          base::BindRepeating([](int x, int* y) { return x + *y + 1; }, x,
+                              base::Unretained(&y)),
+          "\nfunction pointer - should be 5: ", &ValueGeneratingFunction));
 }
 
 // This test ensures that binding of various types of functions and function
