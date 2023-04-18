@@ -10,7 +10,7 @@ wesokuhara@google.com
 xiaohuic@chromium.org
 
 # Backup reviewers
-cowmoo@chromium.org
+cowmoo@google.com
 
 # Subdir OWNERS can approve global changes related to their subdir.
 per-file lazy_load.ts,os_settings.gni,os_settings.ts=file://chrome/browser/resources/settings/chromeos/crostini_page/OWNERS
