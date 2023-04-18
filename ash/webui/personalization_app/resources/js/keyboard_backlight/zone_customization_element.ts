@@ -23,7 +23,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {getPresetColors, isSelectionEvent, RAINBOW, staticColorIds} from '../utils.js';
 
 import {PresetColorSelectedEvent} from './color_selector_element.js';
-import {setBacklightZoneColor} from './keyboard_backlight_controller.js';
+import {setBacklightZoneColor, setPreRainbowBacklightZoneColor} from './keyboard_backlight_controller.js';
 import {getKeyboardBacklightProvider} from './keyboard_backlight_interface_provider.js';
 import {getTemplate} from './zone_customization_element.html.js';
 
@@ -162,6 +162,12 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     }
     const currentColor =
         this.getSelectedColor_(this.zoneSelected_, this.zoneColors_);
+    if (currentColor === BacklightColor.kRainbow) {
+      setPreRainbowBacklightZoneColor(
+          this.zoneSelected_, BacklightColor.kWallpaper, this.zoneColors_,
+          getKeyboardBacklightProvider(), this.getStore());
+      return;
+    }
     if (currentColor !== BacklightColor.kWallpaper) {
       setBacklightZoneColor(
           this.zoneSelected_, BacklightColor.kWallpaper, this.zoneColors_,
@@ -178,6 +184,12 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     const colorId = e.detail.colorId;
     assert(colorId !== undefined, 'colorId not found');
     const newColor = getPresetColors()[colorId].enumVal;
+    if (currentColor === BacklightColor.kRainbow) {
+      setPreRainbowBacklightZoneColor(
+          this.zoneSelected_, newColor, this.zoneColors_,
+          getKeyboardBacklightProvider(), this.getStore());
+      return;
+    }
     if (currentColor !== newColor) {
       setBacklightZoneColor(
           this.zoneSelected_, newColor, this.zoneColors_,

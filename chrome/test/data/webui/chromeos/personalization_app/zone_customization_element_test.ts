@@ -8,7 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {BacklightColor, CurrentBacklightState, KeyboardBacklightActionName, KeyboardBacklightObserver, SetCurrentBacklightStateAction, staticColorIds, ZoneCustomizationElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -43,7 +43,7 @@ suite('ZoneCustomizationElementTest', function() {
     await waitAfterNextRender(zoneCustomizationElement);
   }
 
-  function verifyColorContainerAriaChecked(
+  function verifyColorIconAriaChecked(
       expectedColor: string, colorContainers: NodeListOf<Element>) {
     for (let i = 0; i < colorContainers!.length; i++) {
       const colorContainer = colorContainers[i] as HTMLElement;
@@ -59,6 +59,21 @@ suite('ZoneCustomizationElementTest', function() {
             'false', colorIconElem.ariaChecked,
             `${colorId} should not be highlighted.`);
       }
+    }
+  }
+
+  function verifyNoColorIconsAriaChecked(colorContainers: NodeListOf<Element>) {
+    for (let i = 0; i < colorContainers!.length; i++) {
+      const colorContainer = colorContainers[i] as HTMLElement;
+      const colorIconElem =
+          colorContainer!.querySelector('color-icon') as HTMLElement;
+      const colorId = colorContainer.id;
+      assertNotEquals(
+          'rainbowColor', colorId,
+          'No rainbow color option should be available');
+      assertEquals(
+          'false', colorIconElem.ariaChecked,
+          `${colorId} should not be highlighted.`);
     }
   }
 
@@ -161,13 +176,13 @@ suite('ZoneCustomizationElementTest', function() {
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
     assertEquals(8, colorContainers!.length);
-    verifyColorContainerAriaChecked('redColor', colorContainers);
+    verifyColorIconAriaChecked('redColor', colorContainers);
 
     // Zone 4 has zone color as yellow, expect yellow color button to be
     // highlighted.
     (zoneTabs[3] as HTMLDivElement).click();
     await waitAfterNextRender(zoneCustomizationElement!);
-    verifyColorContainerAriaChecked('yellowColor', colorContainers);
+    verifyColorIconAriaChecked('yellowColor', colorContainers);
   });
 
   test('sets color for a zone', async () => {
@@ -193,7 +208,7 @@ suite('ZoneCustomizationElementTest', function() {
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
     assertEquals(
         8, colorContainers.length!, 'there should be 8 color containers');
-    verifyColorContainerAriaChecked('redColor', colorContainers);
+    verifyColorIconAriaChecked('redColor', colorContainers);
 
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
@@ -213,6 +228,60 @@ suite('ZoneCustomizationElementTest', function() {
     assertDeepEquals(
         expectedZoneColors, action.currentBacklightState.zoneColors);
     await waitAfterNextRender(zoneCustomizationElement!);
-    verifyColorContainerAriaChecked('wallpaper', colorContainers);
+    verifyColorIconAriaChecked('wallpaperColor', colorContainers);
+  });
+
+  test('sets color for a zone that was preset rainbow', async () => {
+    // When setting a color to a zone that rainbow color was selected as
+    // backlight color earlier, the selected zone changes to the new color and
+    // other zones change to white color.
+    keyboardBacklightProvider.setZoneCount(4);
+    keyboardBacklightProvider.setCurrentBacklightState({
+      zoneColors: Array(4).fill(BacklightColor.kRainbow),
+    });
+    await initZoneCustomizationElement();
+    const zoneSelector =
+        zoneCustomizationElement!.shadowRoot!.getElementById('zoneSelector');
+    assertTrue(!!zoneSelector, 'zone selector should display');
+    const zoneTabs =
+        zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
+    assertEquals(
+        4, zoneTabs!.length, '4 zones should display in customization dialog');
+
+    // Click on zone 2, none of color icons to be highlighted as no rainbow
+    // color available in color options.
+    (zoneTabs[1] as HTMLDivElement).click();
+    const colorSelectorElement =
+        zoneCustomizationElement!.shadowRoot!.querySelector('color-selector') as
+        HTMLElement;
+    assertTrue(!!colorSelectorElement, 'color-selector should display.');
+    const colorContainers =
+        colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
+    assertEquals(
+        8, colorContainers.length!, 'there should be 8 color containers');
+    verifyNoColorIconsAriaChecked(colorContainers);
+
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(
+        KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
+
+    // Selects wallpaper color, color of zone 2 should change to wallpaper.
+    (colorContainers[7] as HTMLElement).click();
+
+    await keyboardBacklightProvider.whenCalled('setBacklightZoneColor');
+    assertDeepEquals(
+        keyboardBacklightProvider.getCallCount('setBacklightZoneColor'), 4);
+
+    const action =
+        await personalizationStore.waitForAction(
+            KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE) as
+        SetCurrentBacklightStateAction;
+    assertTrue(!!action.currentBacklightState);
+    const expectedZoneColors = Array(4).fill(BacklightColor.kWhite);
+    expectedZoneColors[1] = BacklightColor.kWallpaper;
+    assertDeepEquals(
+        expectedZoneColors, action.currentBacklightState.zoneColors);
+    await waitAfterNextRender(zoneCustomizationElement!);
+    verifyColorIconAriaChecked('wallpaperColor', colorContainers);
   });
 });

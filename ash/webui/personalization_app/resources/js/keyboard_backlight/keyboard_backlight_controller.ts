@@ -36,6 +36,29 @@ export function setBacklightZoneColor(
       setCurrentBacklightStateAction({zoneColors: updatedZoneColors}));
 }
 
+// Set the keyboard backlight for the given zone of which keyboard backlight was
+// pre-set as rainbow color. The given zone changes to the new color and all the
+// remaining zones change to white color.
+export function setPreRainbowBacklightZoneColor(
+    zone: number, backlightColor: BacklightColor, zoneColors: BacklightColor[],
+    provider: KeyboardBacklightProviderInterface, store: PersonalizationStore) {
+  const updatedZoneColors = new Array(zoneColors.length);
+  zoneColors.forEach(function(zoneColor, zoneIdx) {
+    if (zoneIdx === zone) {
+      provider.setBacklightZoneColor(zoneIdx, backlightColor);
+      updatedZoneColors[zoneIdx] = backlightColor;
+    } else if (zoneColor === BacklightColor.kRainbow) {
+      provider.setBacklightZoneColor(zoneIdx, BacklightColor.kWhite);
+      updatedZoneColors[zoneIdx] = BacklightColor.kWhite;
+    }
+  });
+
+  // Dispatch action to set the current backlight state - zone colors with
+  // selected zone to the new color and the remaining zones to White color.
+  store.dispatch(
+      setCurrentBacklightStateAction({zoneColors: updatedZoneColors}));
+}
+
 // Set the should show nudge boolean.
 export async function getShouldShowNudge(
     provider: KeyboardBacklightProviderInterface, store: PersonalizationStore) {

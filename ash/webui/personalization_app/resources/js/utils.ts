@@ -18,7 +18,7 @@ export interface ColorInfo {
   enumVal: BacklightColor;
 }
 
-export const WALLPAPER: string = 'wallpaper';
+export const WALLPAPER: string = 'wallpaperColor';
 export const WHITE: string = 'whiteColor';
 export const RED: string = 'redColor';
 export const YELLOW: string = 'yellowColor';
@@ -26,7 +26,7 @@ export const GREEN: string = 'greenColor';
 export const BLUE: string = 'blueColor';
 export const INDIGO: string = 'indigoColor';
 export const PURPLE: string = 'purpleColor';
-export const RAINBOW: string = 'rainbow';
+export const RAINBOW: string = 'rainbowColor';
 
 export const staticColorIds =
     [WALLPAPER, WHITE, RED, YELLOW, GREEN, BLUE, INDIGO, PURPLE];
