@@ -82,15 +82,17 @@
     }
   }
 
-  .primary-side,
-  .secondary-side {
+  .primary-side {
     flex: 1;
     min-width: 0;
   }
 
   .secondary-side {
     display: var(--cr-realbox-secondary-side-display, none);
+    min-width: 0;
+    padding-block-end: 16px;
     padding-inline-end: 16px;
+    width: 314px;
   }
 
   .secondary-side .header {
@@ -104,7 +106,7 @@
 
   .secondary-side .matches {
     display: flex;
-    gap: 2px;
+    gap: 4px;
   }
 </style>
 <div id="content">
