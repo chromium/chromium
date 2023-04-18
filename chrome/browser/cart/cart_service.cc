@@ -505,7 +505,7 @@ void CartService::ShouldShowDiscountConsentCallback(
       should_show &=
           (last_dismissed_time == base::Time() ||
            reshow_time_delta.is_negative()) &&
-          last_dismissed_count <
+          last_dismissed_count <=
               commerce::kNtpChromeCartModuleDiscountConsentMaxDismissalCount
                   .Get();
     }
