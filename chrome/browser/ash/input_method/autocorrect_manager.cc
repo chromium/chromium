@@ -785,22 +785,24 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (event.code() == ui::DomCode::ARROW_UP) {
+  if (event.code() == ui::DomCode::ARROW_UP ||
+      event.code() == ui::DomCode::TAB) {
     HighlightButtons(/*should_highlight_undo=*/true,
                      /*should_highlight_learn_more=*/false);
     return true;
   }
-  if (event.code() == ui::DomCode::TAB) {
-    if (!pending_autocorrect_->undo_button_highlighted) {
-      HighlightButtons(/*should_highlight_undo=*/true,
-                       /*should_highlight_learn_more=*/false);
-      return true;
-    }
-    if (pending_autocorrect_->learn_more_button_visible) {
-      HighlightButtons(/*should_highlight_undo=*/false,
-                       /*should_highlight_learn_more=*/true);
-      return true;
-    }
+  if (event.code() == ui::DomCode::ARROW_LEFT &&
+      pending_autocorrect_->learn_more_button_highlighted) {
+    HighlightButtons(/*should_highlight_undo=*/true,
+                     /*should_highlight_learn_more=*/false);
+    return true;
+  }
+  if (event.code() == ui::DomCode::ARROW_RIGHT &&
+      pending_autocorrect_->undo_button_highlighted &&
+      pending_autocorrect_->learn_more_button_visible) {
+    HighlightButtons(/*should_highlight_undo=*/false,
+                     /*should_highlight_learn_more=*/true);
+    return true;
   }
   if (event.code() == ui::DomCode::ENTER) {
     if (pending_autocorrect_->undo_button_highlighted) {

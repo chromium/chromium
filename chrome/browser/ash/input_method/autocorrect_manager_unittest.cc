@@ -996,8 +996,9 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
 }
 
-TEST_F(AutocorrectManagerTest,
-       PressingTabKeyTogglesHighlightedButtonWhenUndoWindowIsVisible) {
+TEST_F(
+    AutocorrectManagerTest,
+    PressingRightArrowKeyHighlightsLearnMoreButtonWhenUndoButtonIsHighlighted) {
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
@@ -1027,7 +1028,8 @@ TEST_F(AutocorrectManagerTest,
 
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
-  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
+  manager_.OnKeyEvent(
+      CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_RIGHT));
 }
 
 TEST_F(AutocorrectManagerTest,
@@ -1102,7 +1104,8 @@ TEST_F(AutocorrectManagerTest,
 
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_UP));
-  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
+  manager_.OnKeyEvent(
+      CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_RIGHT));
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ENTER));
 }
 
