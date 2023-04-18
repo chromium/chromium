@@ -8827,33 +8827,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Overscroll.Cancelled3" enum="OverscrollNavigationType"
-    expires_after="2021-02-21">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Overscroll gestures that were aborted before they were completed.
-  </summary>
-</histogram>
-
-<histogram name="Overscroll.Navigated3" enum="OverscrollNavigationType"
-    expires_after="2021-01-10">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Navigations that were triggered due to completed overscroll gesture. Note
-    that not all completed overscroll gestures trigger a navigation.
-  </summary>
-</histogram>
-
-<histogram name="Overscroll.Started3" enum="OverscrollNavigationType"
-    expires_after="2021-01-10">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Overscroll gestures initiated by the user. Note that not all overscroll
-    gestures started are completed (e.g. the overscroll gesture is aborted if
-    user clicks or presses a key during the gesture).
-  </summary>
-</histogram>
-
 <histogram name="Ozone.NeuralStylusReport.ActivePalmTouchCount"
     units="touch event count" expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>
