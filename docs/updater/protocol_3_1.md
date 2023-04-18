@@ -303,18 +303,22 @@ is running within. It has the following members:
  *   `platform`: The operating system family that the client is running within
      (e.g. "win", "mac", "linux", "ios", "android"), or "" if unknown. The
      operating system family name should be transmitted in a canonical form.
-     Lowercase with minimal formatting is recommended. Default: "". Known
-     values:
-     *   "android": Android.
-     *   "chromeos": Chrome OS.
-     *   "chromiumos": Chromium OS.
+     Formatting varies across implementations. Default: "". Known values:
+     *   "android" or "Android": Android.
+     *   "chromeos" or "ChromeOS" or "Chrome OS": Chrome OS.
+     *   "chromiumos" or "ChromiumOS" or "Chromium OS": Chromium OS.
      *   "dragonfly": DragonFly BSD.
-     *   "freebsd": FreeBSD.
-     *   "ios": Apple iOS.
-     *   "linux": Linux and its derivatives, except as mentioned below.
-     *   "mac": Apple macOS (formerly Mac OS X) and its derivatives.
-     *   "openbsd": OpenBSD.
-     *   "win": Microsoft Windows and its derivatives.
+     *   "freebsd" or "FreeBSD": FreeBSD.
+     *   "Fuchsia": Fuchsia.
+     *   "ios" or "iOS": Apple iOS.
+     *   "linux" or "Linux": Linux and its derivatives, except as mentioned
+         below.
+     *   "mac" or "Mac OS X": Apple macOS and its derivatives.
+     *   "openbsd" or "OpenBSD": OpenBSD.
+     *   "Solaris": Solaris.
+     *   "win" or "Windows": Microsoft Windows and its derivatives.
+     *   "Unknown": Sent by some clients instead of "" when the platform is not
+         recognized.
  *   `version`: The version number of the operating system, or "" if unknown.
      Default: "".
  *   `sp`: The service pack level of the operating system, or "" if unknown or
