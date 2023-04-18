@@ -122,7 +122,7 @@ AccessibilityTest.define('PrivacySandboxNoticeRestrictedDialogA11yTest', {
   name: 'PrivacySandboxNoticeRestrictedDialogA11yTest',
   tests: {
     'NoticeRestricted': function() {
-      // Verify that notice dialog was loaded.
+      // Verify that notice restricted dialog was loaded.
       const noticeApp = document.body.querySelector(
           'privacy-sandbox-notice-restricted-dialog-app');
       assertTrue(!!noticeApp);
