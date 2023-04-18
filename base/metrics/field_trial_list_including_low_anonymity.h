@@ -22,7 +22,6 @@ class ProcessedStudy;
 struct SeedSimulationResult;
 class VariationsCrashKeys;
 class VariationsLayers;
-class VariationsSeedProcessorTestLowAnonymityHelper;
 SeedSimulationResult ComputeDifferences(
     const std::vector<ProcessedStudy>& processed_studies,
     const VariationsLayers& layers,
@@ -38,11 +37,15 @@ namespace base {
 // Provides a way to restrict access to the full set of field trials, including
 // trials with low anonymity, to explicitly allowed callers.
 //
-// TODO(b/274900786): expose a public |GetActiveFieldTrialGroupsForTesting()| to
-// avoid requiring test code to be explicitly friended.
-// TODO(b/274900786): better document "low anonymity".
+// See |FieldTrialList::FactoryGetFieldTrial()| for background.
 class BASE_EXPORT FieldTrialListIncludingLowAnonymity {
  public:
+  // Exposed publicly, to avoid test code needing to be explicitly friended.
+  static void GetActiveFieldTrialGroupsForTesting(
+      FieldTrial::ActiveGroups* active_groups) {
+    return GetActiveFieldTrialGroups(active_groups);
+  }
+
   // Classes / functions which are allowed full access to all field trials
   // should be listed as friends here, with a comment explaining why this does
   // not risk revealing identifiable information externally.
@@ -73,9 +76,6 @@ class BASE_EXPORT FieldTrialListIncludingLowAnonymity {
 
   // Required for tests.
   friend class TestFieldTrialObserverIncludingLowAnonymity;
-  friend class variations::VariationsSeedProcessorTestLowAnonymityHelper;
-  FRIEND_TEST_ALL_PREFIXES(FieldTrialTest,
-                           GetActiveFieldTrialGroups_LowAnonymity);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, ObserveIncludingLowAnonymity);
 
  private:

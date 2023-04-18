@@ -235,19 +235,6 @@ class VariationsSeedProcessorTest : public ::testing::Test {
   TestOverrideStringCallback override_callback_;
 };
 
-// This is exposed on the test class rather than called directly from tests
-// because |FieldTrialListIncludingLowAnonymity| needs to friend the call site
-// but |FRIEND_TEST| / |FRIEND_TEST_ALL_PREFIXES| doesn't work with
-// |TYPED_TEST|.
-class VariationsSeedProcessorTestLowAnonymityHelper {
- public:
-  static void GetActiveFieldTrialGroups(
-      base::FieldTrial::ActiveGroups* active_groups) {
-    base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
-        active_groups);
-  }
-};
-
 using EnvironmentTypes =
     ::testing::Types<ChromeEnvironment, WebViewEnvironment>;
 TYPED_TEST_SUITE(VariationsSeedProcessorTest, EnvironmentTypes);
@@ -352,8 +339,9 @@ TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag1_LowAnonymity) {
   EXPECT_EQ(active_groups.size(), 0u);
 
   base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
-  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
-      &active_groups_including_low_anonymity);
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
 }
 
@@ -1519,8 +1507,9 @@ TYPED_TEST(VariationsSeedProcessorTest, StudiesWithOverlappingEnabledFeatures) {
 
   // Both studies are returned by in the full list including low anonymity.
   base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
-  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
-      &active_groups_including_low_anonymity);
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 2u);
 }
 
@@ -1574,8 +1563,9 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   // Both studies are returned by in the full list including low anonymity.
   base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
-  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
-      &active_groups_including_low_anonymity);
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 2u);
 }
 
@@ -1630,8 +1620,9 @@ TYPED_TEST(VariationsSeedProcessorTest,
   EXPECT_EQ(active_groups.size(), 0u);
 
   base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
-  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
-      &active_groups_including_low_anonymity);
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
 }
 
@@ -1663,8 +1654,9 @@ TYPED_TEST(VariationsSeedProcessorTest,
   EXPECT_EQ(active_groups.size(), 1u);
 
   base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
-  VariationsSeedProcessorTestLowAnonymityHelper::GetActiveFieldTrialGroups(
-      &active_groups_including_low_anonymity);
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
 }
 

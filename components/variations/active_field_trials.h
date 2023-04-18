@@ -49,12 +49,21 @@ void GetFieldTrialActiveGroupIdsForActiveGroups(
     std::vector<ActiveGroupId>* name_group_ids);
 
 // Fills the supplied vector |name_group_ids| (which must be empty when called)
+// with unique ActiveGroupIds for each Field Trial that has a chosen group.
+// Field Trials for which a group has not been chosen yet are NOT returned in
+// this list. Field trial names are suffixed with |suffix| before hashing is
+// executed.
+//
+// This does not return low anonymity field trials; call sites that require
+// them can use the version of |GetFieldTrialActiveGroupIds()| below that takes
+// the active groups as an input.
+COMPONENT_EXPORT(VARIATIONS)
+void GetFieldTrialActiveGroupIds(base::StringPiece suffix,
+                                 std::vector<ActiveGroupId>* name_group_ids);
+
+// Fills the supplied vector |name_group_ids| (which must be empty when called)
 // with unique ActiveGroupIds for the provided |active_groups|.
 // Field trial names are suffixed with |suffix| before hashing is executed.
-//
-// TODO(b/274900786): split this into two methods - a default one excluding low
-// anonymity trials, which does require |active_groups| to be supplied, and one
-// which takes |active_groups|.
 COMPONENT_EXPORT(VARIATIONS)
 void GetFieldTrialActiveGroupIds(
     base::StringPiece suffix,
@@ -62,15 +71,25 @@ void GetFieldTrialActiveGroupIds(
     std::vector<ActiveGroupId>* name_group_ids);
 
 // Fills the supplied vector |output| (which must be empty when called) with
+// unique string representations of ActiveGroupIds for each Field Trial that
+// has a chosen group. The strings are formatted as "<TrialName>-<GroupName>",
+// with the names as hex strings. Field Trials for which a group has not been
+// chosen yet are NOT returned in this list. Field trial names are suffixed with
+// |suffix| before hashing is executed.
+//
+// This does not return low anonymity field trials; call sites that require
+// them can use the version of |GetFieldTrialActiveGroupIdsAsStrings()| below
+// that takes the active groups as an input.
+COMPONENT_EXPORT(VARIATIONS)
+void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
+                                          std::vector<std::string>* output);
+
+// Fills the supplied vector |output| (which must be empty when called) with
 // unique string representations of ActiveGroupIds for for the provided
 // |active_groups|.
 // The strings are formatted as "<TrialName>-<GroupName>", with the names as hex
 // strings. Field trial names are suffixed with |suffix| before hashing is
 // executed.
-//
-// TODO(b/274900786): split this into two methods - a default one excluding low
-// anonymity trials, which does require |active_groups| to be supplied, and one
-// which takes |active_groups|.
 COMPONENT_EXPORT(VARIATIONS)
 void GetFieldTrialActiveGroupIdsAsStrings(
     base::StringPiece suffix,

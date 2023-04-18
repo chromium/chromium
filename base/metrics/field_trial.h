@@ -452,9 +452,10 @@ class BASE_EXPORT FieldTrialList {
   // * SHA1 and NormalizedMurmurHash providers will use a non-zero value as a
   //   salt _instead_ of using the trial name.
   //
-  // Visibility of field trials with |is_low_anonymity| set to true is
-  // restricted to specific callers only, see
-  // |FieldTrialListIncludingLowAnonymity|.
+  // Some field trials may be targeted in such way that a relatively small
+  // number of users are in a particular experiment group. Such trials should
+  // have |is_low_anonymity| set to true, and their visitbility is restricted
+  // to specific callers only, via |FieldTrialListIncludingLowAnonymity|.
   //
   // This static method can be used to get a startup-randomized FieldTrial or a
   // previously created forced FieldTrial.

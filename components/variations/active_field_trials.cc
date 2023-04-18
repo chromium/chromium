@@ -58,6 +58,18 @@ void GetFieldTrialActiveGroupIdsForActiveGroups(
   }
 }
 
+void GetFieldTrialActiveGroupIds(base::StringPiece suffix,
+                                 std::vector<ActiveGroupId>* name_group_ids) {
+  DCHECK(name_group_ids->empty());
+  // A note on thread safety: Since GetActiveFieldTrialGroups() is thread
+  // safe, and we operate on a separate list of that data, this function is
+  // technically thread safe as well, with respect to the FieldTrialList data.
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  GetFieldTrialActiveGroupIdsForActiveGroups(suffix, active_groups,
+                                             name_group_ids);
+}
+
 void GetFieldTrialActiveGroupIds(
     base::StringPiece suffix,
     const base::FieldTrial::ActiveGroups& active_groups,
@@ -65,6 +77,14 @@ void GetFieldTrialActiveGroupIds(
   DCHECK(name_group_ids->empty());
   GetFieldTrialActiveGroupIdsForActiveGroups(suffix, active_groups,
                                              name_group_ids);
+}
+
+void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
+                                          std::vector<std::string>* output) {
+  DCHECK(output->empty());
+  std::vector<ActiveGroupId> name_group_ids;
+  GetFieldTrialActiveGroupIds(suffix, &name_group_ids);
+  AppendActiveGroupIdsAsStrings(name_group_ids, output);
 }
 
 void GetFieldTrialActiveGroupIdsAsStrings(

@@ -42,7 +42,6 @@ const char kVariationsFailedToFetchSeedStreak[] =
 // * Written to by a pref observer based on per-profile sync data. This pref is
 //   a profile-keyed dictionary so it can be updated based only on the new value
 //   of a single profile's groups.
-//   TODO:b/264838828: implement the write path.
 // * Read by variations code when processing the finch seed at startup. This
 //   code cares only about the union of the groups across all profiles.
 const char kVariationsGoogleGroups[] = "variations_google_groups";

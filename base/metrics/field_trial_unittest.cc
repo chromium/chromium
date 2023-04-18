@@ -1346,7 +1346,7 @@ TEST_F(FieldTrialTest, GetActiveFieldTrialGroups_LowAnonymity) {
   // |FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups()| includes
   // both trials.
   FieldTrial::ActiveGroups active_groups;
-  FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+  FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroupsForTesting(
       &active_groups);
   EXPECT_THAT(active_groups,
               testing::UnorderedPointwise(CompareActiveGroupToFieldTrial(),

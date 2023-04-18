@@ -99,12 +99,10 @@ JNI_ServicificationBackgroundService_TestPersistentHistogramsOnDiskSystemProfile
     return false;
   }
 
-  base::FieldTrial::ActiveGroups active_groups;
   std::vector<variations::ActiveGroupId> field_trial_ids;
   // The persistent histograms on disk do not include low anonymity trials (as
   // we do not include those in metrics reports).
-  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
-  variations::GetFieldTrialActiveGroupIds("", active_groups, &field_trial_ids);
+  variations::GetFieldTrialActiveGroupIds("", &field_trial_ids);
   int expected_size = static_cast<int>(field_trial_ids.size());
 
   // The active field trial "Foo" is guaranteed in the list.
