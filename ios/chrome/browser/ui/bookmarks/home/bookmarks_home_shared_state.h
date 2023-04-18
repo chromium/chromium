@@ -101,10 +101,6 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // The newly created folder node its name is being edited.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* editingFolderNode;
 
-// Counts the number of favicon download requests from Google server in the
-// lifespan of this tableView.
-@property(nonatomic, assign) NSUInteger faviconDownloadCount;
-
 // True if the promo is visible.
 @property(nonatomic, assign) BOOL promoVisible;
 
