@@ -210,13 +210,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
       std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
       ExceptionState&);
 
-  // Returns a reader that doesn't have the |for_author_code_| flag set. This is
-  // used in contexts where reads should not be interceptable by user code. This
-  // corresponds to calling AcquireReadableStreamDefaultReader(stream, false) in
-  // specification language. The caller must ensure that the stream is not
-  // locked.
-  ReadableStreamDefaultReader* GetReaderNotForAuthorCode(ScriptState*);
-
   //
   // Readable stream abstract operations
   //

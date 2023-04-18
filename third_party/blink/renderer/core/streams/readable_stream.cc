@@ -752,7 +752,12 @@ void ReadableStream::LockAndDisturb(ScriptState* script_state) {
     return;
   }
 
-  ReadableStreamGenericReader* reader = GetReaderNotForAuthorCode(script_state);
+  DCHECK(!IsLocked(this));
+
+  // Since the stream is not locked, AcquireDefaultReader cannot fail.
+  NonThrowableExceptionState exception_state(__FILE__, __LINE__);
+  ReadableStreamGenericReader* reader =
+      AcquireDefaultReader(script_state, this, exception_state);
   DCHECK(reader);
 
   is_disturbed_ = true;
@@ -857,15 +862,6 @@ ReadableStream* ReadableStream::Deserialize(
     return nullptr;
   }
   return readable;
-}
-
-ReadableStreamDefaultReader* ReadableStream::GetReaderNotForAuthorCode(
-    ScriptState* script_state) {
-  DCHECK(!IsLocked(this));
-
-  // Since the stream is not locked, AcquireDefaultReader cannot fail.
-  NonThrowableExceptionState exception_state(__FILE__, __LINE__);
-  return AcquireDefaultReader(script_state, this, exception_state);
 }
 
 ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
