@@ -1057,7 +1057,7 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
   ClipRectsContext clip_rects_context(this, fragment.fragment_data,
                                       kExcludeOverlayScrollbarSizeForHitTesting,
                                       respect_overflow_clip);
-  Clipper().CalculateRects(clip_rects_context, fragment.fragment_data,
+  Clipper().CalculateRects(clip_rects_context, *fragment.fragment_data,
                            fragment.layer_offset, fragment.background_rect,
                            fragment.foreground_rect);
 
@@ -1126,7 +1126,7 @@ void PaintLayer::CollectFragments(
         kExcludeOverlayScrollbarSizeForHitTesting, respect_overflow_clip,
         PhysicalOffset());
 
-    Clipper().CalculateRects(clip_rects_context, fragment_data,
+    Clipper().CalculateRects(clip_rects_context, *fragment_data,
                              fragment.layer_offset, fragment.background_rect,
                              fragment.foreground_rect);
 

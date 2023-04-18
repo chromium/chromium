@@ -69,13 +69,17 @@ bool ClipRectsContext::ShouldRespectRootLayerClip() const {
 
 PaintLayerClipper::PaintLayerClipper(const PaintLayer* layer) : layer_(layer) {}
 
-// TODO(tkent): Merge this into CalculateRects().
-void PaintLayerClipper::CalculateRectsWithGeometryMapper(
-    const ClipRectsContext& context,
-    const FragmentData& fragment_data,
-    PhysicalOffset& layer_offset,
-    ClipRect& background_rect,
-    ClipRect& foreground_rect) const {
+void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
+                                       const FragmentData& fragment_data,
+                                       PhysicalOffset& layer_offset,
+                                       ClipRect& background_rect,
+                                       ClipRect& foreground_rect) const {
+  DCHECK(fragment_data.HasLocalBorderBoxProperties());
+  // TODO(chrishtr): find the root cause of not having a fragment and fix it.
+  if (!fragment_data.HasLocalBorderBoxProperties()) {
+    return;
+  }
+
   layer_offset = context.sub_pixel_accumulation;
   if (layer_ == context.root_layer) {
     DCHECK_EQ(&fragment_data, context.root_fragment);
@@ -89,8 +93,8 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
     layer_offset -= context.root_fragment->PaintOffset();
   }
 
-  CalculateBackgroundClipRectWithGeometryMapper(
-      context, fragment_data, kRespectOverflowClip, background_rect);
+  CalculateBackgroundClipRectInternal(context, fragment_data,
+                                      kRespectOverflowClip, background_rect);
 
   foreground_rect.Reset();
 
@@ -108,23 +112,7 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
   }
 }
 
-void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
-                                       const FragmentData* fragment_data,
-                                       PhysicalOffset& layer_offset,
-                                       ClipRect& background_rect,
-                                       ClipRect& foreground_rect) const {
-  DCHECK(fragment_data);
-  DCHECK(fragment_data->HasLocalBorderBoxProperties());
-  // TODO(chrishtr): find the root cause of not having a fragment and fix it.
-  if (!fragment_data->HasLocalBorderBoxProperties()) {
-    return;
-  }
-  CalculateRectsWithGeometryMapper(context, *fragment_data, layer_offset,
-                                   background_rect, foreground_rect);
-}
-
-// TODO(tkent): Merge this into CalculateBackgroundClipRect().
-void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
+void PaintLayerClipper::CalculateBackgroundClipRectInternal(
     const ClipRectsContext& context,
     const FragmentData& fragment_data,
     ShouldRespectOverflowClipType should_apply_self_overflow_clip,
@@ -215,8 +203,8 @@ void PaintLayerClipper::CalculateBackgroundClipRect(
     return;
   }
 
-  CalculateBackgroundClipRectWithGeometryMapper(context, fragment_data,
-                                                kIgnoreOverflowClip, output);
+  CalculateBackgroundClipRectInternal(context, fragment_data,
+                                      kIgnoreOverflowClip, output);
 }
 
 bool PaintLayerClipper::ShouldClipOverflowAlongEitherAxis(
