@@ -3968,7 +3968,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}PasswordNotes.CountCredentialsWithNonEmptyNotes2"
-    units="count" expires_after="2023-06-01">
+    units="count" expires_after="2024-04-01">
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -4012,7 +4012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.{Store}PasswordNotes.CountNotesPerCredential3"
-    units="count" expires_after="2023-06-01">
+    units="count" expires_after="2024-04-01">
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
