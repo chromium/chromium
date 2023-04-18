@@ -10,6 +10,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Cart} from '../../cart.mojom-webui.js';
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {InfoDialogElement} from '../info_dialog';
@@ -84,11 +85,15 @@ export class HistoryClustersModuleElement extends I18nMixin
       /** The cluster displayed by this element. */
       cluster: Object,
 
+      /** The cart displayed by this element, could be null. */
+      cart: Object,
+
       searchResultPage: Object,
     };
   }
 
   cluster: Cluster;
+  cart: Cart|null;
   layoutType: HistoryClusterLayoutType;
   searchResultPage: URLVisit;
 
@@ -189,6 +194,12 @@ export class HistoryClustersModuleElement extends I18nMixin
         visit => visit.normalizedUrl);
     HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(urls);
   }
+
+  private shouldShowCartTile_(): boolean {
+    return loadTimeData.getBoolean(
+               'modulesChromeCartInHistoryClustersModuleEnabled') &&
+        !!this.cart;
+  }
 }
 
 customElements.define(
@@ -230,6 +241,14 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
 
   const element = new HistoryClustersModuleElement();
   element.cluster = clusters[0];
+  // Initialize the cart element when the feature is enabled.
+  if (loadTimeData.getBoolean(
+          'modulesChromeCartInHistoryClustersModuleEnabled')) {
+    const {cart} =
+        await HistoryClustersProxyImpl.getInstance().handler.getCartForCluster(
+            clusters[0]);
+    element.cart = cart;
+  }
   // Pull out the SRP to be used in the header and to open the cluster
   // in tab group.
   element.searchResultPage = clusters[0]!.visits[0];

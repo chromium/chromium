@@ -435,6 +435,13 @@ TEST_F(
           'NewTabPageModulesHistoryClustersModuleTest unload metric all images');
     });
 
+TEST_F(
+    'NewTabPageModulesHistoryClustersModuleTest', 'CartTileRendering',
+    function() {
+      runMochaSuite(
+          'NewTabPageModulesHistoryClustersModuleTest cart tile rendering');
+    });
+
 var NewTabPageModulesHistoryClustersModuleTileTest =
     class extends NewTabPageBrowserTest {
   /** @override */

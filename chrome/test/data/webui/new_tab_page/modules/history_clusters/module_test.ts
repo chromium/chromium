@@ -4,13 +4,14 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {Cart} from 'chrome://new-tab-page/cart.mojom-webui.js';
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
 import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -89,9 +90,10 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     metrics = fakeMetricsPrivate();
   });
 
-  async function initializeModule(clusters: Cluster[]):
+  async function initializeModule(clusters: Cluster[], cart: Cart|null = null):
       Promise<HistoryClustersModuleElement> {
     handler.setResultFor('getClusters', Promise.resolve({clusters}));
+    handler.setResultFor('getCartForCluster', Promise.resolve({cart}));
     const moduleElement = await historyClustersDescriptor.initialize(0) as
         HistoryClustersModuleElement;
     await handler.whenCalled('getClusters');
@@ -423,6 +425,66 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               `NewTabPage.HistoryClusters.Layout${
                   HistoryClusterLayoutType.LAYOUT_1}.ImageDisplayState`,
               HistoryClusterImageDisplayState.ALL));
+    });
+  });
+
+  suite('cart tile rendering', () => {
+    test('Cart tile is not rendererd when feature is disabled', async () => {
+      loadTimeData.overrideValues({
+        modulesChromeCartInHistoryClustersModuleEnabled: false,
+      });
+
+      const moduleElement = await initializeModule(
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_1)], null);
+
+      assertEquals(0, handler.getCallCount('getCartForCluster'));
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+      const cartTile = moduleElement.shadowRoot!.getElementById('cartTile');
+      assertFalse(!!cartTile);
+      assertFalse(!!moduleElement.cart);
+    });
+
+    test(
+        'Cart tile is not rendererd when feature is enabled but no cart',
+        async () => {
+          loadTimeData.overrideValues({
+            modulesChromeCartInHistoryClustersModuleEnabled: true,
+          });
+
+          const moduleElement = await initializeModule(
+              [createSampleCluster(HistoryClusterLayoutType.LAYOUT_1)], null);
+
+          assertEquals(1, handler.getCallCount('getCartForCluster'));
+          assertTrue(!!moduleElement);
+          await waitAfterNextRender(moduleElement);
+          const cartTile = moduleElement.shadowRoot!.getElementById('cartTile');
+          assertFalse(!!cartTile);
+          assertFalse(!!moduleElement.cart);
+        });
+
+    test('Cart tile is correctly rendered', async () => {
+      loadTimeData.overrideValues({
+        modulesChromeCartInHistoryClustersModuleEnabled: true,
+      });
+
+      const cart: Cart = Object.assign({
+        domain: 'foo.com',
+        merchant: 'Foo',
+        cartUrl: {url: 'https://foo.com'},
+        productImageUrls: [],
+        discountText: '',
+        relativeDate: '6 mins ago',
+      });
+      const moduleElement = await initializeModule(
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_1)], cart);
+
+      assertEquals(1, handler.getCallCount('getCartForCluster'));
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+      const cartTile = moduleElement.shadowRoot!.getElementById('cartTile');
+      assertTrue(!!cartTile);
+      assertTrue(!!moduleElement.cart);
     });
   });
 });

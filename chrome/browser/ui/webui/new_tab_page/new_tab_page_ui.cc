@@ -550,6 +550,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("removeScrim", base::FeatureList::IsEnabled(
                                         ntp_features::kNtpRemoveScrim));
 
+  source->AddBoolean("modulesChromeCartInHistoryClustersModuleEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpChromeCartInHistoryClusterModule));
+
   RealboxHandler::SetupWebUIDataSource(source, profile);
 
   webui::SetupWebUIDataSource(
