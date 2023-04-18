@@ -27,6 +27,7 @@
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "net/base/address_map_cache_linux.h"
+#include "net/base/address_tracker_linux_test_util.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -38,10 +39,6 @@
 #ifndef IFA_F_HOMEADDRESS
 #define IFA_F_HOMEADDRESS 0x10
 #endif
-
-bool operator==(const struct ifaddrmsg& lhs, const struct ifaddrmsg& rhs) {
-  return memcmp(&lhs, &rhs, sizeof(struct ifaddrmsg)) == 0;
-}
 
 namespace net::internal {
 namespace {
