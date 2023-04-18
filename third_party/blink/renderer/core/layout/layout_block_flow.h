@@ -80,7 +80,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     NOTREACHED_NORETURN();
   }
 
-  void ComputeVisualOverflow(bool recompute_floats) override;
+  void ComputeVisualOverflow() override;
 
   bool CanContainFirstFormattedLine() const;
 

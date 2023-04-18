@@ -273,8 +273,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool RespectsCSSOverflow() const override;
 
  protected:
-  // TOOD(crbug.com/1229581): Remove `recompute_floats`.
-  virtual void ComputeVisualOverflow(bool recompute_floats);
+  virtual void ComputeVisualOverflow();
   void AddVisualOverflowFromChildren();
   virtual void AddVisualOverflowFromBlockChildren();
 

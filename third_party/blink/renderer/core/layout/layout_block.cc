@@ -401,7 +401,7 @@ void LayoutBlock::AddVisualOverflowFromChildren() {
     AddVisualOverflowFromBlockChildren();
 }
 
-void LayoutBlock::ComputeVisualOverflow(bool) {
+void LayoutBlock::ComputeVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());
 
@@ -1237,7 +1237,7 @@ void LayoutBlock::RecalcVisualOverflow() {
 
 void LayoutBlock::RecalcSelfVisualOverflow() {
   NOT_DESTROYED();
-  ComputeVisualOverflow(true);
+  ComputeVisualOverflow();
 }
 
 #if DCHECK_IS_ON()
