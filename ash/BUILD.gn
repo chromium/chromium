@@ -3735,6 +3735,7 @@ test("ash_pixeltests") {
     "system/time/calendar_unittest_utils.h",
     "system/time/calendar_up_next_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
+    "user_education/views/help_bubble_view_ash_pixeltest.cc",
     "wm/wm_pixel_diff_test.cc",
   ]
 
@@ -3752,9 +3753,12 @@ test("ash_pixeltests") {
     "//chromeos/ash/services/bluetooth_config:test_support",
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//components/user_education/common",
+    "//components/user_education/views",
     "//components/viz/test:test_support",
     "//google_apis/calendar:test_support",
     "//mojo/core/embedder:embedder",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/events:test_support",
     "//ui/message_center",
     "//ui/views:test_support",
