@@ -1033,4 +1033,46 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   VerifyCompositorOpacity(0.05);
 }
 
+TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .defer {
+        scroll-timeline: t1 defer;
+      }
+      #scroller {
+        overflow: auto;
+        width: 100px;
+        height: 100px;
+      }
+      #scroller > div {
+        width: 50px;
+        height: 200px;
+      }
+      .ancestor-timeline {
+        scroll-timeline: t1 ancestor;
+      }
+    </style>
+    <div class=defer>
+      <div id=scroller class=ancestor-timeline>
+        <div></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* scroller = GetDocument().getElementById("scroller");
+  ASSERT_TRUE(scroller);
+
+  ElementAnimations* element_animations = scroller->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+
+  const CSSAnimations& css_animations = element_animations->CssAnimations();
+  EXPECT_TRUE(css_animations.HasTimelines());
+
+  scroller->classList().Remove("ancestor-timeline");
+  UpdateAllLifecyclePhasesForTest();
+
+  // No timeline data should linger on #scroller's CSSAnimations.
+  EXPECT_FALSE(css_animations.HasTimelines());
+}
+
 }  // namespace blink

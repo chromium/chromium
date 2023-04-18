@@ -1849,8 +1849,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     }
     if (timeline) {
       timeline->AddAttachment(attachment);
-      timeline_data_.SetAttachingTimeline(attachment, timeline);
     }
+    timeline_data_.SetAttachingTimeline(attachment, timeline);
   }
 
   for (wtf_size_t paused_index :
