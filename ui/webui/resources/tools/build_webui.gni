@@ -15,6 +15,7 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 if (use_blink) {
   import("//chrome/common/features.gni")
@@ -34,7 +35,7 @@ template("build_webui") {
     ts_out_dir = invoker.ts_out_dir
   }
 
-  optimize = false
+  optimize = optimize_webui
   if (defined(invoker.optimize)) {
     optimize = invoker.optimize
   }

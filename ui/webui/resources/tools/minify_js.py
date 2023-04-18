@@ -35,7 +35,7 @@ def main(argv):
         node_modules.PathToTerser(),
         os.path.join(in_path, input_file), '--comments',
         '/Copyright|license|LICENSE/', '--output',
-        os.path.join(out_path, input_file)
+        os.path.join(out_path, input_file), '--module'
     ])
 
   manifest_data = {}
