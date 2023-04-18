@@ -401,12 +401,15 @@ export class RemoteCall {
 
   /**
    * Simulate Click in the UI in the middle of the element.
-   * @param{string} appId App window ID contains the element. NOTE: The click is
+   * @param {string} appId App window ID contains the element. NOTE: The click
+   *     is
    * simulated on most recent window in the window system.
    * @param {string|!Array<string>} query Query to the element to be clicked.
+   * @param {boolean} leftClick If true, simulate left click. Otherwise simulate
+   *     right click.
    * @return {!Promise} A promise fulfilled after the click event.
    */
-  async simulateUiClick(appId, query) {
+  async simulateUiClick(appId, query, leftClick = true) {
     const element = /* @type {!Object} */ (
         await this.waitForElementStyles(appId, query, ['display']));
     chrome.test.assertTrue(!!element, 'element for simulateUiClick not found');
@@ -418,7 +421,18 @@ export class RemoteCall {
         Math.floor(element['renderedTop'] + (element['renderedHeight'] / 2));
 
     return sendTestMessage(
-        {appId, name: 'simulateClick', 'clickX': x, 'clickY': y});
+        {appId, name: 'simulateClick', 'clickX': x, 'clickY': y, leftClick});
+  }
+
+  /**
+   * Simulate Right Click in blank/empty space of the file list element.
+   * @param{string} appId App window ID contains the element. NOTE: The click is
+   * simulated on most recent window in the window system.
+   * @return {!Promise} A promise fulfilled after the click event.
+   */
+  async rightClickFileListBlankSpace(appId) {
+    await this.simulateUiClick(
+        appId, '#file-list .spacer.signals-overscroll', false);
   }
 
   /**

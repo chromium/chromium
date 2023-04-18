@@ -920,13 +920,8 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
   await remoteCall.fakeKeyDown(appId, menuVisible, ...escKey);
   await remoteCall.waitForElementLost(appId, menuVisible);
 
-  // Right-click 100px inside of #file-list (in an empty space).
-  const offsetBottom = -100;
-  const offsetRight = -100;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'rightClickOffset', appId, ['#file-list', offsetBottom, offsetRight]),
-      'right click failed');
+  // Right-click inside of #file-list (in an empty space).
+  await remoteCall.rightClickFileListBlankSpace(appId);
 
   // Check that context menu is NOT displayed because there is no visible menu
   // items.
