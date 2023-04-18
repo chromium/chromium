@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -17,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/bad_message.h"
@@ -1015,7 +1015,7 @@ void FileSystemManagerImpl::ContinueRegisterBlob(
     storage::FileSystemURL crack_url,
     bool security_check_success) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  std::string uuid = base::GenerateGUID();
+  std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   mojo::PendingRemote<blink::mojom::Blob> blob_remote;
   mojo::PendingReceiver<blink::mojom::Blob> blob_receiver =
       blob_remote.InitWithNewPipeAndPassReceiver();
