@@ -70,6 +70,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   bool SupportsDmabuf() const;
   bool SupportsAcquireFence() const;
   bool SupportsViewporter() const;
+  bool SupportsOverlays() const;
   bool SupportsNonBackedSolidColorBuffers() const;
   uint32_t GetSurfaceAugmentorVersion() const;
 

@@ -98,6 +98,10 @@ bool WaylandBufferManagerHost::SupportsNonBackedSolidColorBuffers() const {
   return !!connection_->surface_augmenter();
 }
 
+bool WaylandBufferManagerHost::SupportsOverlays() const {
+  return connection_->ShouldUseOverlayDelegation();
+}
+
 uint32_t WaylandBufferManagerHost::GetSurfaceAugmentorVersion() const {
   auto* augmenter = connection_->surface_augmenter();
   return augmenter ? augmenter->GetSurfaceAugmentorVersion() : 0u;

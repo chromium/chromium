@@ -60,6 +60,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_dma_buf,
       bool supports_viewporter,
       bool supports_acquire_fence,
+      bool supports_overlays,
       uint32_t supported_surface_augmentor_version) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
@@ -150,6 +151,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
   bool supports_viewporter() const { return supports_viewporter_; }
+  bool supports_overlays() const { return supports_overlays_; }
   bool supports_non_backed_solid_color_buffers() const {
     return supports_non_backed_solid_color_buffers_;
   }
@@ -258,6 +260,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Whether Wayland server implements wp_viewporter extension to support
   // cropping and scaling buffers.
   bool supports_viewporter_ = false;
+
+  // Whether delegated overlays should be used for this Wayland server.
+  bool supports_overlays_ = false;
 
   // Determines whether solid color overlays can be delegated without a backing
   // image via a wayland protocol.

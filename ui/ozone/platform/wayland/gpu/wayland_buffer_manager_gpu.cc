@@ -76,6 +76,7 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_dma_buf,
     bool supports_viewporter,
     bool supports_acquire_fence,
+    bool supports_overlays,
     uint32_t supported_surface_augmentor_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
@@ -87,6 +88,7 @@ void WaylandBufferManagerGpu::Initialize(
   supports_viewporter_ = supports_viewporter;
   supports_acquire_fence_ = supports_acquire_fence;
   supports_dmabuf_ = supports_dma_buf;
+  supports_overlays_ = supports_overlays;
 
   supports_non_backed_solid_color_buffers_ =
       supported_surface_augmentor_version >=

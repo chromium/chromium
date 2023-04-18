@@ -10,6 +10,7 @@
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
+#include <fractional-scale-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
 #include <gtk-shell-client-protocol.h>
 #include <idle-client-protocol.h>
@@ -225,6 +226,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewport)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewporter)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_content_type_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_content_type_manager_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_fractional_scale_manager_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_fractional_scale_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_token_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_popup)

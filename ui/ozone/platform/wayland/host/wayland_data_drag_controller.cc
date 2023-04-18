@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 
+#include <viewporter-client-protocol.h>
+
 #include <bitset>
 #include <cstdint>
 #include <memory>
@@ -291,6 +293,10 @@ void WaylandDataDragController::DrawIconInternal() {
     wl_surface_offset(surface,
                       pending_icon_offset_.x() - current_icon_offset_.x(),
                       pending_icon_offset_.y() - current_icon_offset_.y());
+  }
+  if (connection_->UseViewporterSurfaceScaling() && icon_surface_->viewport()) {
+    wp_viewport_set_destination(icon_surface_->viewport(), size_dip.width(),
+                                size_dip.height());
   }
   wl_surface_damage(surface, 0, 0, size_px.width(), size_px.height());
   wl_surface_commit(surface);

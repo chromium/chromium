@@ -37,7 +37,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/common/bitmap_cursor.h"
-#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
@@ -74,8 +73,8 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
     : delegate_(delegate),
       connection_(connection),
       frame_manager_(std::make_unique<WaylandFrameManager>(this, connection)),
-      wayland_overlay_delegation_enabled_(connection->viewporter() &&
-                                          IsWaylandOverlayDelegationEnabled()),
+      wayland_overlay_delegation_enabled_(
+          connection->viewporter() && connection->ShouldUseOverlayDelegation()),
       accelerated_widget_(
           connection->window_manager()->AllocateAcceleratedWidget()),
       ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {

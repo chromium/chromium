@@ -7,6 +7,7 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
+#include <fractional-scale-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
@@ -28,6 +29,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -91,7 +93,9 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
       root_window_(root_window),
       surface_(connection->CreateSurface()),
       surface_submission_in_pixel_coordinates_(
-          connection->surface_submission_in_pixel_coordinates()) {}
+          connection->surface_submission_in_pixel_coordinates()),
+      use_viewporter_surface_scaling_(
+          connection->UseViewporterSurfaceScaling()) {}
 
 WaylandSurface::~WaylandSurface() {
   for (auto& release : linux_buffer_releases_) {
@@ -119,6 +123,18 @@ bool WaylandSurface::Initialize() {
       &WaylandSurface::Leave,
   };
   wl_surface_add_listener(surface_.get(), &surface_listener, this);
+
+  if (auto* fractional_scale_manager =
+          connection_->fractional_scale_manager_v1()) {
+    static struct wp_fractional_scale_v1_listener fractional_scale_listener {
+      &WaylandSurface::PreferredScale,
+    };
+    fractional_scale_ =
+        wl::Object(wp_fractional_scale_manager_v1_get_fractional_scale(
+            fractional_scale_manager, surface_.get()));
+    wp_fractional_scale_v1_add_listener(fractional_scale_.get(),
+                                        &fractional_scale_listener, this);
+  }
 
   if (connection_->viewporter()) {
     viewport_.reset(
@@ -279,8 +295,15 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
 
   if (apply_state_immediately_) {
     state_.buffer_scale_float = pending_state_.buffer_scale_float;
-    if (!surface_submission_in_pixel_coordinates_)
-      wl_surface_set_buffer_scale(surface_.get(), GetWaylandScale(state_));
+    if (!(surface_submission_in_pixel_coordinates_ ||
+          use_viewporter_surface_scaling_)) {
+      // It's safe to cast the result of GetWaylandScale to an integer here
+      // because the buffer scale should always be integer when both surface
+      // submission in pixel coordinates and viewporter surface scaling is
+      // disabled.
+      wl_surface_set_buffer_scale(
+          surface_.get(), static_cast<int32_t>(GetWaylandScale(state_)));
+    }
     if (root_window_)
       root_window_->PropagateBufferScale(scale);
   }
@@ -330,25 +353,49 @@ void WaylandSurface::set_input_region(const gfx::Rect* region_px) {
   }
 }
 
-int WaylandSurface::GetWaylandScale(const State& state) {
-  if (surface_submission_in_pixel_coordinates_)
+float WaylandSurface::GetWaylandScale(const State& state) {
+  if (surface_submission_in_pixel_coordinates_) {
     return 1;
-  return (state.buffer_scale_float < 1.0f)
-             ? 1
-             : std::ceil(state.buffer_scale_float);
+  }
+  return (state.buffer_scale_float < 1.f)
+             ? 1.f
+             : (use_viewporter_surface_scaling_
+                    ? state.buffer_scale_float
+                    : std::ceil(state.buffer_scale_float));
+}
+
+bool WaylandSurface::IsViewportScaled(const State& state) {
+  if (state.viewport_px.IsEmpty()) {
+    return false;
+  }
+  gfx::SizeF src_size_px =
+      wl::ApplyWaylandTransform(gfx::SizeF(state.buffer_size_px),
+                                wl::ToWaylandTransform(state.buffer_transform));
+  if (!state.crop.IsEmpty()) {
+    const gfx::RectF crop_transformed = wl::ApplyWaylandTransform(
+        state.crop, gfx::SizeF(1, 1),
+        wl::ToWaylandTransform(state.buffer_transform));
+    src_size_px = gfx::ScaleRect(crop_transformed, src_size_px.width(),
+                                 src_size_px.height())
+                      .size();
+  }
+  if (src_size_px != state.viewport_px) {
+    return true;
+  }
+  return false;
 }
 
 wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
     const std::vector<gfx::Rect>& region_px,
-    int32_t buffer_scale) {
+    float buffer_scale) {
   DCHECK(root_window_);
-  DCHECK(!surface_submission_in_pixel_coordinates_ || buffer_scale == 1);
+  DCHECK(!surface_submission_in_pixel_coordinates_ || buffer_scale == 1.f);
 
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
   for (const auto& rect_px : region_px) {
-    gfx::Rect rect = gfx::ScaleToEnclosingRect(rect_px, 1.f / buffer_scale);
+    gfx::Rect rect = gfx::ScaleToEnclosedRect(rect_px, 1.f / buffer_scale);
     wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                   rect.height());
   }
@@ -562,17 +609,58 @@ void WaylandSurface::ApplyPendingState() {
       wl::ToWaylandTransform(pending_state_.buffer_transform));
   int32_t applying_surface_scale = surface_scale_set_;
 
+  gfx::RectF crop = pending_state_.crop;
+  gfx::SizeF viewport_px = pending_state_.viewport_px;
+
+  // If this is the root surface, no viewport scaling is requested, surface
+  // submission in pixel coordinates is disabled and fractional_scale_v1 is in
+  // use, then crop the buffer in accordance with the protocol specification to
+  // ensure that a pixel on the window will correspond to a pixel on the
+  // physical display.
+  if (!surface_submission_in_pixel_coordinates_ &&
+      connection_->fractional_scale_manager_v1() && root_window_ &&
+      root_window_->root_surface() == this &&
+      !IsViewportScaled(pending_state_)) {
+    gfx::Size old_size_px =
+        crop.IsEmpty()
+            ? pending_state_.buffer_size_px
+            : gfx::ToFlooredSize(
+                  gfx::ScaleRect(crop, pending_state_.buffer_size_px.width(),
+                                 pending_state_.buffer_size_px.height())
+                      .size());
+    gfx::Size new_size_dip = gfx::ScaleToFlooredSize(
+        old_size_px, 1.f / pending_state_.buffer_scale_float);
+    gfx::Size new_size_px = gfx::ScaleToRoundedSize(
+        new_size_dip, pending_state_.buffer_scale_float);
+    if (new_size_px != old_size_px) {
+      crop.set_width(static_cast<float>(new_size_px.width()) /
+                     static_cast<float>(pending_state_.buffer_size_px.width()));
+      crop.set_height(
+          static_cast<float>(new_size_px.height()) /
+          static_cast<float>(pending_state_.buffer_size_px.height()));
+      viewport_px = wl::ApplyWaylandTransform(
+          gfx::SizeF(new_size_px),
+          wl::ToWaylandTransform(pending_state_.buffer_transform));
+    }
+  }
+
+  if (viewport_px.IsEmpty() && use_viewporter_surface_scaling_) {
+    // Force usage of viewporter when needed for fractional scaling.
+    viewport_px = bounds;
+  }
+
   // When viewport_px is set, wp_viewport will scale the surface accordingly.
   // Thus, there is no need to downscale bounds as Wayland compositor
   // understands that.
-  if (!pending_state_.viewport_px.IsEmpty() && viewport()) {
+  if (!viewport_px.IsEmpty() && viewport()) {
     // Unset buffer scale if wp_viewport.destination will be set.
     applying_surface_scale = 1;
   } else {
     applying_surface_scale = GetWaylandScale(pending_state_);
     bounds = gfx::ScaleSize(bounds, 1.f / GetWaylandScale(pending_state_));
   }
-  if (!surface_submission_in_pixel_coordinates_ &&
+  if (!(surface_submission_in_pixel_coordinates_ ||
+        use_viewporter_surface_scaling_) &&
       surface_scale_set_ != applying_surface_scale) {
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
     surface_scale_set_ = applying_surface_scale;
@@ -586,12 +674,12 @@ void WaylandSurface::ApplyPendingState() {
   gfx::RectF viewport_src_dip;
   wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
                               wl_fixed_from_int(-1), wl_fixed_from_int(-1)};
-  if (pending_state_.crop.IsEmpty()) {
+  if (crop.IsEmpty()) {
     viewport_src_dip = gfx::RectF(bounds);
   } else {
     // viewport_src_dip needs to be in post-transform coordinates.
     gfx::RectF crop_transformed = wl::ApplyWaylandTransform(
-        pending_state_.crop, gfx::SizeF(1, 1),
+        crop, gfx::SizeF(1, 1),
         wl::ToWaylandTransform(pending_state_.buffer_transform));
     viewport_src_dip =
         gfx::ScaleRect(crop_transformed, bounds.width(), bounds.height());
@@ -605,7 +693,7 @@ void WaylandSurface::ApplyPendingState() {
       // TODO(crbug.com/1325344): Resolve why this viewport size ends up being
       // zero and remove the fix below.
       LOG(ERROR) << "viewport_src_dip=" << viewport_src_dip.ToString()
-                 << " pending_state_.crop=" << pending_state_.crop.ToString()
+                 << " crop=" << crop.ToString()
                  << " bounds=" << bounds.ToString()
                  << "  pending_state_.buffer_size_px="
                  << pending_state_.buffer_size_px.ToString();
@@ -635,10 +723,9 @@ void WaylandSurface::ApplyPendingState() {
   }
 
   gfx::SizeF viewport_dst_dip =
-      pending_state_.viewport_px.IsEmpty()
+      viewport_px.IsEmpty()
           ? viewport_src_dip.size()
-          : gfx::ScaleSize(pending_state_.viewport_px,
-                           1.f / GetWaylandScale(pending_state_));
+          : gfx::ScaleSize(viewport_px, 1.f / GetWaylandScale(pending_state_));
   float dst_to_set[2] = {-1.f, -1.f};
   if (viewport_dst_dip != viewport_src_dip.size()) {
     dst_to_set[0] = viewport_dst_dip.width();
@@ -662,9 +749,9 @@ void WaylandSurface::ApplyPendingState() {
     } else if (viewport()) {
       wp_viewport_set_destination(
           viewport(),
-          dst_to_set[0] > 0.f ? base::ClampCeil(viewport_dst_dip.width())
+          dst_to_set[0] > 0.f ? base::ClampRound(viewport_dst_dip.width())
                               : static_cast<int>(dst_to_set[0]),
-          dst_to_set[1] > 0.f ? base::ClampCeil(viewport_dst_dip.height())
+          dst_to_set[1] > 0.f ? base::ClampRound(viewport_dst_dip.height())
                               : static_cast<int>(dst_to_set[1]));
     }
     memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set));
@@ -696,10 +783,9 @@ void WaylandSurface::ApplyPendingState() {
                        1.0f / pending_state_.buffer_size_px.width(),
                        1.0f / pending_state_.buffer_size_px.height());
 
-    if (!pending_state_.crop.IsEmpty()) {
-      damage_uv.Offset(-pending_state_.crop.OffsetFromOrigin());
-      damage_uv.InvScale(pending_state_.crop.width(),
-                         pending_state_.crop.height());
+    if (!crop.IsEmpty()) {
+      damage_uv.Offset(-crop.OffsetFromOrigin());
+      damage_uv.InvScale(crop.width(), crop.height());
     }
     damage_uv.Intersect(gfx::RectF(1, 1));
 
@@ -811,6 +897,12 @@ void WaylandSurface::Leave(void* data,
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
   surface->RemoveEnteredOutput(wayland_output->output_id());
 }
+
+// static
+void WaylandSurface::PreferredScale(
+    void* data,
+    struct wp_fractional_scale_v1* wp_fractional_scale_v1,
+    uint32_t scale) {}
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
   auto it = base::ranges::find(entered_outputs_, output_id);

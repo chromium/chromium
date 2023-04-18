@@ -191,7 +191,9 @@ void WaylandOutput::UpdateMetrics() {
 
   if (xdg_output_) {
     xdg_output_->UpdateMetrics(
-        connection_->surface_submission_in_pixel_coordinates(), metrics_);
+        connection_->surface_submission_in_pixel_coordinates() ||
+            connection_->supports_viewporter_surface_scaling(),
+        metrics_);
   }
   if (aura_output_) {
     aura_output_->UpdateMetrics(metrics_);

@@ -26,6 +26,17 @@ BASE_FEATURE(kWaylandSurfaceSubmissionInPixelCoordinates,
 #endif
 );
 
+// Controls whether support for the fractional_scale_v1 protocol should be
+// enabled.
+BASE_FEATURE(kWaylandFractionalScaleV1,
+             "WaylandFractionalScaleV1",
+#if BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // This debug/dev flag pretty-prints DRM modeset configuration logs for ease
 // of reading. For more information, see: http://b/233006802
 BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
@@ -39,6 +50,10 @@ bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
+}
+
+bool IsWaylandFractionalScaleV1Enabled() {
+  return base::FeatureList::IsEnabled(kWaylandFractionalScaleV1);
 }
 
 bool IsPrettyPrintDrmModesetConfigLogsEnabled() {

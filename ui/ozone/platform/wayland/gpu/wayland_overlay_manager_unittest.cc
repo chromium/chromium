@@ -58,7 +58,8 @@ class WaylandOverlayManagerTest : public WaylandTest {
         std::move(manager_ptr), kSupportedFormatsWithModifiers,
         /*supports_dma_buf=*/false,
         /*supports_viewporter=*/true,
-        /*supports_acquire_fence=*/false, kAugmentedSurfaceNotSupportedVersion);
+        /*supports_acquire_fence=*/false,
+        /*supports_overlays=*/true, kAugmentedSurfaceNotSupportedVersion);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();
