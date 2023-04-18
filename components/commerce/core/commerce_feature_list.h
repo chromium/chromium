@@ -75,8 +75,6 @@ BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates);
 BASE_DECLARE_FEATURE(kCommerceAllowServerImages);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
-BASE_DECLARE_FEATURE(kCommerceProductInfoApiEnabled);
-BASE_DECLARE_FEATURE(kCommerceProductInfoApiEnabledRegionLaunched);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
