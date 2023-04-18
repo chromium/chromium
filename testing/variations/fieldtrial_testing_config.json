@@ -2909,6 +2909,22 @@
             ]
         }
     ],
+    "ChurnPrivateComputingCheckIn": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceActiveClientChurnCohortCheckIn",
+                        "DeviceActiveClientChurnObservationCheckIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionModelOptimizationGuide": [
         {
             "platforms": [
