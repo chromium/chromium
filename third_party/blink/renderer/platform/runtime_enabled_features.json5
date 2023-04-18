@@ -2978,7 +2978,7 @@
     },
     {
       name: "ScrollEndEvents",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollTimeline",

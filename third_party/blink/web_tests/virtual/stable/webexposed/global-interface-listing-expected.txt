@@ -1529,6 +1529,7 @@ interface Document : Node
     getter onresize
     getter onresume
     getter onscroll
+    getter onscrollend
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -1737,6 +1738,7 @@ interface Document : Node
     setter onresize
     setter onresume
     setter onscroll
+    setter onscrollend
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -3146,6 +3148,7 @@ interface HTMLElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -3276,6 +3279,7 @@ interface HTMLElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -5008,6 +5012,7 @@ interface MathMLElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -5116,6 +5121,7 @@ interface MathMLElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -7064,6 +7070,7 @@ interface SVGElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -7174,6 +7181,7 @@ interface SVGElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -11177,6 +11185,7 @@ namespace console
     getter onreset
     getter onresize
     getter onscroll
+    getter onscrollend
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -11391,6 +11400,7 @@ namespace console
     setter onreset
     setter onresize
     setter onscroll
+    setter onscrollend
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
