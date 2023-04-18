@@ -315,6 +315,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                            ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 }
 
+// On ChromeOS, Sync-the-feature gets started automatically once a primary
+// account is signed in and transport mode is not a thing.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // TODO(crbug.com/1191225): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CommitLocalDevice_TransportOnly \
@@ -325,13 +329,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        MAYBE_CommitLocalDevice_TransportOnly) {
   ASSERT_TRUE(SetupClients());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, Sync-the-feature gets started automatically once a primary
-  // account is signed in. To prevent that, explicitly set SyncRequested to
-  // false.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -362,13 +359,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
   ASSERT_TRUE(SetupClients());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, Sync-the-feature gets started automatically once a primary
-  // account is signed in. To prevent that, explicitly set SyncRequested to
-  // false.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
@@ -381,6 +371,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {

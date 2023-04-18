@@ -798,9 +798,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
           /*creation_time=*/0,
           /*last_modified_time=*/0));
 
-  // Mimic a browser restart to force a reconfiguration and fetch updates.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-  ASSERT_TRUE(GetClient(0)->StartSyncService());
+  // Mimic a browser restart by forcing a refresh to get updates.
+  GetSyncService(0)->TriggerRefresh(syncer::SESSIONS);
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Foreign data should be empty.
   SyncedSessionVector sessions;

@@ -118,29 +118,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        SwitchesBetweenTransportAndFeature) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Set up Sync-the-feature.
-  ASSERT_TRUE(GetClient(0)->SetupSync());
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
-
-  // Make sure that some model type which is not allowed in transport-only mode
-  // got activated.
-  ASSERT_FALSE(AllowedTypesInStandaloneTransportMode().Has(syncer::BOOKMARKS));
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kBookmarks));
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::BOOKMARKS));
-
-  // Turn off Sync-the-feature by user choice. The machinery should start up
-  // again in transport-only mode.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-  EXPECT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
-  EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
 
   syncer::ModelTypeSet bad_types =
       base::Difference(GetSyncService(0)->GetActiveDataTypes(),
@@ -148,13 +133,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   EXPECT_TRUE(bad_types.Empty())
       << syncer::ModelTypeSetToDebugString(bad_types);
 
-  // Finally, turn Sync-the-feature on again.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
-  EXPECT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-  EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
+  // Turn Sync-the-feature on.
+  ASSERT_TRUE(GetClient(0)->StartSyncService());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   EXPECT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   EXPECT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  // Make sure that some model type which is not allowed in transport-only mode
+  // got activated.
+  CHECK(!AllowedTypesInStandaloneTransportMode().Has(syncer::BOOKMARKS));
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::BOOKMARKS));
 }
 

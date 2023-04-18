@@ -24,7 +24,9 @@
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/network_change_notifier.h"
 
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
@@ -512,21 +514,22 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(GetPasswordCount(0), 1);
 
-  // Simulate Client 1 going offline.
-  GetClient(1)->StopSyncServiceWithoutClearingData();
+  // Simulate going offline on both clients.
+  fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   // Remove the password from both clients to simulate a conflict with matching
   // remote and local deletion after Client 1 comes back online.
   GetProfilePasswordStoreInterface(0)->RemoveLogin(form);
   GetProfilePasswordStoreInterface(1)->RemoveLogin(form);
-  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  ASSERT_EQ(GetPasswordCount(0), 0);
 
-  // Simulate Client 1 coming back online. Checks that the client does not crash
-  // due to trimming entity specifics for caching for a deleted entity (without
-  // a password field).
-  ASSERT_TRUE(GetClient(1)->StartSyncService());
-  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  // Simulate going online again.
+  fake_server::FakeServerHttpPostProvider::EnableNetwork();
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+
+  // Checks that the client does not crash due to trimming entity specifics for
+  // caching for a deleted entity (without a password field).
+  ASSERT_TRUE(AwaitQuiescence());
 }
 
 class TwoClientPasswordsSyncTestWithNotes : public SyncTest {

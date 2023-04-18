@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_internals_util.h"
-#include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/engine/traffic_logger.h"
@@ -255,8 +254,9 @@ void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
   signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
 void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
   DCHECK(service_->IsSyncFeatureActive());
   signin::SetInvalidRefreshTokenForPrimaryAccount(
@@ -269,6 +269,7 @@ void SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   // The engine was off in the sync-paused state, so wait for it to start.
   AwaitSyncSetupCompletion();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool SyncServiceImplHarness::SetupSync(
     SetUserSettingsCallback user_settings_callback) {
@@ -330,12 +331,6 @@ void SyncServiceImplHarness::FinishSyncSetup() {
 void SyncServiceImplHarness::StopSyncServiceAndClearData() {
   DVLOG(1) << "Requesting stop for service and clearing data.";
   service()->StopAndClear();
-}
-
-void SyncServiceImplHarness::StopSyncServiceWithoutClearingData() {
-  DVLOG(1) << "Requesting stop for service without clearing data.";
-  static_cast<syncer::SyncUserSettingsImpl*>(service()->GetUserSettings())
-      ->ClearSyncRequested();
 }
 
 bool SyncServiceImplHarness::StartSyncService() {

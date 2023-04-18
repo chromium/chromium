@@ -49,6 +49,7 @@
 #include "components/sync/test/bookmark_entity_builder.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "components/sync/test/fake_server_verifier.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
@@ -1539,8 +1540,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                   /*cryptographer=*/nullptr)
                   .Wait());
 
-  // Stop Sync and update local entity to enter in unsynced state.
-  GetClient(kSingleProfileIndex)->StopSyncServiceWithoutClearingData();
+  // Mimic the user being offline (until the next restart), to make sure the
+  // entity is unsync-ed upon brower startup (next test).
+  fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   SetTitle(kSingleProfileIndex, bookmark, new_title);
 }

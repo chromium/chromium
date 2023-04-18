@@ -99,8 +99,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 // It first starts up a client, executes a sync cycle and stops it. After a
 // simulated pause, the client gets started up again and we expect a sync cycle
 // to happen (which would be caused by polling).
-// Note, that there's a more realistic (and more complex) test for this in
-// two_client_polling_sync_test.cc too.
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                        PRE_ShouldPollWhenIntervalExpiredAcrossRestarts) {
   base::Time start = base::Time::Now();

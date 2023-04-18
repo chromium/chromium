@@ -28,6 +28,17 @@ class SingleClientPrintersSyncTest : public SyncTest {
   SingleClientPrintersSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientPrintersSyncTest() override = default;
 
+  bool SetupClients() override {
+    if (!SyncTest::SetupClients()) {
+      return false;
+    }
+
+    CHECK(UseVerifier());
+    printers_helper::WaitForPrinterStoreToLoad(verifier());
+    printers_helper::WaitForPrinterStoreToLoad(GetProfile(0));
+    return true;
+  }
+
   bool UseVerifier() override {
     // TODO(crbug.com/1137770): rewrite tests to not use verifier.
     return true;

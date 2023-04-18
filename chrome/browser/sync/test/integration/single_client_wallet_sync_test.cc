@@ -150,7 +150,6 @@ std::unique_ptr<autofill::PaymentsCustomerData> GetPaymentsCustomerData(
   consumer.Wait();
   return std::move(consumer.result());
 }
-#endif
 
 std::vector<std::unique_ptr<autofill::CreditCardCloudTokenData>>
 GetCreditCardCloudTokenData(
@@ -162,6 +161,7 @@ GetCreditCardCloudTokenData(
   consumer.Wait();
   return std::move(consumer.result());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Waits until local changes are committed or an auth error is encountered.
 class TestForAuthError : public UpdatedProgressMarkerChecker {
@@ -468,51 +468,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableSync) {
   // again.
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
-  // Wait until Sync restores the card and it arrives at PDM.
-  WaitForNumberOfCards(1, pdm);
-
-  EXPECT_EQ(1uL, pdm->GetServerProfiles().size());
-  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
-  EXPECT_EQ(1uL, pdm->GetCreditCardCloudTokenData().size());
-  EXPECT_EQ(1U, GetServerCardsMetadata(0).size());
-  EXPECT_EQ(1U, GetServerAddressesMetadata(0).size());
-}
-
-// Wallet data should get cleared from the database when sync is (temporarily)
-// stopped, e.g. due to the Sync feature toggle in Android settings.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
-                                  CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
-  ASSERT_TRUE(SetupSync());
-
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_NE(nullptr, pdm);
-
-  // Make sure the data & metadata is in the DB.
-  ASSERT_EQ(1uL, pdm->GetServerProfiles().size());
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  ASSERT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
-  ASSERT_EQ(1uL, pdm->GetCreditCardCloudTokenData().size());
-  ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
-  ASSERT_EQ(1U, GetServerAddressesMetadata(0).size());
-
-  // Stop sync (without clearing data), yet the data & metadata for autofill
-  // wallet should be gone.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-  WaitForNumberOfCards(0, pdm);
-
-  EXPECT_EQ(0uL, pdm->GetServerProfiles().size());
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
-  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
-  EXPECT_EQ(0uL, pdm->GetCreditCardCloudTokenData().size());
-  EXPECT_EQ(0U, GetServerCardsMetadata(0).size());
-  EXPECT_EQ(0U, GetServerAddressesMetadata(0).size());
-
-  // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfCards(1, pdm);
 
@@ -1500,149 +1455,3 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(profile_data).size());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// This tests that switching between Sync-the-feature and
-// Sync-standalone-transport properly migrates server credit cards between the
-// profile (i.e. persisted) and account (i.e. ephemeral) storage.
-// Sync can either be turned off temporarily via
-// StopSyncServiceWithoutClearingData (ChromeOS only, via sync dashboard), or
-// permanently via SyncService::StopAndClear. For full coverage, we test all
-// transitions, and each time verify that the card is in the correct storage:
-// 1. Start out in Sync-the-feature mode -> profile storage.
-// 2. StopSyncServiceWithoutClearingData() -> account storage.
-// 3. Enable Sync-the-feature again -> profile storage.
-// 4. StopAndClear() -> account storage.
-// 5. Enable Sync-the-feature again -> profile storage.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
-                       SwitchesBetweenAccountAndProfileStorageOnTogglingSync) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
-
-  // STEP 1. Set up Sync in full feature mode.
-  ASSERT_TRUE(GetClient(0)->SetupSync());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // PersonalDataManager should use the regular persisted (non-account) storage.
-  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
-  EXPECT_FALSE(
-      GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
-
-  scoped_refptr<autofill::AutofillWebDataService> account_data =
-      GetAccountWebDataService(0);
-  ASSERT_NE(nullptr, account_data);
-  scoped_refptr<autofill::AutofillWebDataService> profile_data =
-      GetProfileWebDataService(0);
-  ASSERT_NE(nullptr, profile_data);
-
-  // Check that the card is stored in the profile storage (persisted), but not
-  // in the account storage (ephemeral).
-  EXPECT_EQ(0U, GetServerCards(account_data).size());
-  EXPECT_EQ(1U, GetServerCards(profile_data).size());
-  EXPECT_EQ(0U, GetCreditCardCloudTokenData(account_data).size());
-  EXPECT_EQ(1U, GetCreditCardCloudTokenData(profile_data).size());
-
-  // STEP 2. Turn off Sync-the-feature temporarily (e.g. the Sync feature toggle
-  // on Android), i.e. leave the Sync data around.
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-
-  // Wait for Sync to get reconfigured into transport mode.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // PersonalDataManager should have switched to ephemeral storage.
-  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
-
-  // The card should now be in the account storage (ephemeral). Note that even
-  // though we specified KEEP_DATA above, the card is *not* in the profile
-  // storage (persisted) anymore, because AUTOFILL_WALLET_DATA is special-cased
-  // to always clear its data when Sync is turned off.
-  EXPECT_EQ(1U, GetServerCards(account_data).size());
-  EXPECT_EQ(0U, GetServerCards(profile_data).size());
-  EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
-  EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
-
-  // STEP 3. Turn Sync-the-feature on again.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
-
-  // Wait for Sync to get reconfigured into full feature mode again.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // PersonalDataManager should have switched back to persistent storage.
-  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
-  EXPECT_FALSE(
-      GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
-
-  // And the card should be in the profile i.e. persistent storage again.
-  EXPECT_EQ(0U, GetServerCards(account_data).size());
-  EXPECT_EQ(1U, GetServerCards(profile_data).size());
-  EXPECT_EQ(0U, GetCreditCardCloudTokenData(account_data).size());
-  EXPECT_EQ(1U, GetCreditCardCloudTokenData(profile_data).size());
-
-  // STEP 4. Turn off Sync-the-feature again, but this time clear data.
-  GetSyncService(0)->StopAndClear();
-
-  // Wait for Sync to get reconfigured into transport mode.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // PersonalDataManager should have switched to ephemeral storage.
-  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(
-      GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
-
-  // The card should now be in the account storage (ephemeral).
-  EXPECT_EQ(1U, GetServerCards(account_data).size());
-  EXPECT_EQ(0U, GetServerCards(profile_data).size());
-  EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
-  EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
-
-  // STEP 5. Turn Sync-the-feature on again.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
-      kSetSourceFromTest);
-
-  // Wait for Sync to get reconfigured into full feature mode again.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // PersonalDataManager should have switched back to persistent storage.
-  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
-  EXPECT_FALSE(
-      GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
-
-  // And the card should be in the profile i.e. persistent storage again.
-  EXPECT_EQ(0U, GetServerCards(account_data).size());
-  EXPECT_EQ(1U, GetServerCards(profile_data).size());
-  EXPECT_EQ(0U, GetCreditCardCloudTokenData(account_data).size());
-  EXPECT_EQ(1U, GetCreditCardCloudTokenData(profile_data).size());
-}
