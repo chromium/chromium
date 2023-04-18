@@ -18,7 +18,12 @@
 import {Protocol} from 'devtools-protocol';
 
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-import {BrowsingContext, Message, Script} from '../../../protocol/protocol.js';
+import {
+  BrowsingContext,
+  CommonDataTypes,
+  Message,
+  Script,
+} from '../../../protocol/protocol.js';
 import {LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {IEventManager} from '../events/EventManager.js';
@@ -30,13 +35,13 @@ import {CdpTarget} from './cdpTarget';
 
 export class BrowsingContextImpl {
   /** The ID of the current context. */
-  readonly #contextId: string;
+  readonly #contextId: CommonDataTypes.BrowsingContext;
 
   /**
    * The ID of the parent context.
    * If null, this is a top-level context.
    */
-  readonly #parentId: string | null;
+  readonly #parentId: CommonDataTypes.BrowsingContext | null;
 
   /**
    * Children contexts.
@@ -69,8 +74,8 @@ export class BrowsingContextImpl {
   private constructor(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    contextId: string,
-    parentId: string | null,
+    contextId: CommonDataTypes.BrowsingContext,
+    parentId: CommonDataTypes.BrowsingContext | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
@@ -89,8 +94,8 @@ export class BrowsingContextImpl {
   static create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
-    contextId: string,
-    parentId: string | null,
+    contextId: CommonDataTypes.BrowsingContext,
+    parentId: CommonDataTypes.BrowsingContext | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
@@ -149,12 +154,12 @@ export class BrowsingContextImpl {
   }
 
   /** Returns the ID of this context. */
-  get contextId(): string {
+  get contextId(): CommonDataTypes.BrowsingContext {
     return this.#contextId;
   }
 
   /** Returns the parent context ID. */
-  get parentId(): string | null {
+  get parentId(): CommonDataTypes.BrowsingContext | null {
     return this.#parentId;
   }
 

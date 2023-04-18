@@ -30,4 +30,10 @@ describe('BrowsingContextStorage', () => {
     expect(browsingContextStorage.getAllContexts()).to.be.empty;
     expect(browsingContextStorage.getTopLevelContexts()).to.be.empty;
   });
+
+  describe('find top-level context ID', () => {
+    it('top-level context', () => {
+      expect(browsingContextStorage.findTopLevelContextId(null)).to.be.null;
+    });
+  });
 });

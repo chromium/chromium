@@ -19,7 +19,7 @@ import {CommonDataTypes, Message} from '../../../protocol/protocol.js';
 
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 
-/** Container class for browsing contexts.  */
+/** Container class for browsing contexts. */
 export class BrowsingContextStorage {
   /** Map from context ID to context implementation. */
   readonly #contexts = new Map<
@@ -38,7 +38,7 @@ export class BrowsingContextStorage {
   }
 
   /** Deletes the context with the given ID. */
-  deleteContext(contextId: string) {
+  deleteContext(contextId: CommonDataTypes.BrowsingContext) {
     this.#contexts.delete(contextId);
   }
 
@@ -51,17 +51,34 @@ export class BrowsingContextStorage {
   }
 
   /** Returns true whether there is an existing context with the given ID. */
-  hasContext(contextId: string): boolean {
+  hasContext(contextId: CommonDataTypes.BrowsingContext): boolean {
     return this.#contexts.has(contextId);
   }
 
   /** Gets the context with the given ID, if any. */
-  findContext(contextId: string): BrowsingContextImpl | undefined {
+  findContext(
+    contextId: CommonDataTypes.BrowsingContext
+  ): BrowsingContextImpl | undefined {
     return this.#contexts.get(contextId);
   }
 
+  /** Returns the top-level context ID of the given context, if any. */
+  findTopLevelContextId(
+    contextId: CommonDataTypes.BrowsingContext | null
+  ): CommonDataTypes.BrowsingContext | null {
+    if (contextId === null) {
+      return null;
+    }
+    const maybeContext = this.findContext(contextId);
+    const parentId = maybeContext?.parentId ?? null;
+    if (parentId === null) {
+      return contextId;
+    }
+    return this.findTopLevelContextId(parentId);
+  }
+
   /** Gets the context with the given ID, if any, otherwise throws. */
-  getContext(contextId: string): BrowsingContextImpl {
+  getContext(contextId: CommonDataTypes.BrowsingContext): BrowsingContextImpl {
     const result = this.findContext(contextId);
     if (result === undefined) {
       throw new Message.NoSuchFrameException(`Context ${contextId} not found`);

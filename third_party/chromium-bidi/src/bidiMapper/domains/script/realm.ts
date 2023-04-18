@@ -31,7 +31,7 @@ export class Realm {
   readonly #realmStorage: RealmStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmId: Script.Realm;
-  readonly #browsingContextId: string;
+  readonly #browsingContextId: CommonDataTypes.BrowsingContext;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
@@ -46,7 +46,7 @@ export class Realm {
     realmStorage: RealmStorage,
     browsingContextStorage: BrowsingContextStorage,
     realmId: Script.Realm,
-    browsingContextId: string,
+    browsingContextId: CommonDataTypes.BrowsingContext,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
@@ -188,7 +188,7 @@ export class Realm {
     );
   }
 
-  get browsingContextId(): string {
+  get browsingContextId(): CommonDataTypes.BrowsingContext {
     return this.#browsingContextId;
   }
 

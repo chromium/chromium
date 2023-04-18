@@ -21,6 +21,7 @@ import * as sinon from 'sinon';
 import {
   BrowsingContext,
   CDP,
+  CommonDataTypes,
   Log,
   Network,
   Script,
@@ -52,16 +53,22 @@ describe('SubscriptionManager', () => {
   beforeEach(() => {
     const browsingContextStorage: BrowsingContextStorage =
       sinon.createStubInstance(BrowsingContextStorage);
-    browsingContextStorage.findContext = sinon
+    browsingContextStorage.findTopLevelContextId = sinon
       .stub()
-      .callsFake((contextId: string) => {
+      .callsFake((contextId: CommonDataTypes.BrowsingContext) => {
         if (contextId === SOME_NESTED_CONTEXT) {
-          return {parentId: SOME_CONTEXT};
+          return SOME_CONTEXT;
+        }
+        if (contextId === SOME_CONTEXT) {
+          return SOME_CONTEXT;
         }
         if (contextId === ANOTHER_NESTED_CONTEXT) {
-          return {parentId: ANOTHER_CONTEXT};
+          return ANOTHER_CONTEXT;
         }
-        return {parentId: null};
+        if (contextId === ANOTHER_CONTEXT) {
+          return ANOTHER_CONTEXT;
+        }
+        return null;
       });
 
     subscriptionManager = new SubscriptionManager(browsingContextStorage);
