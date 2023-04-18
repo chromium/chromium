@@ -94,10 +94,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
   set_hide_user_names_on_signin();
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 1);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(true);
@@ -115,10 +113,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 
   set_hide_user_names_on_signin();
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)
@@ -136,10 +132,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 
   set_hide_user_names_on_signin();
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(false);
@@ -156,10 +150,8 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
 
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }

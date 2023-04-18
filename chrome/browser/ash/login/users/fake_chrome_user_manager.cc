@@ -102,6 +102,13 @@ user_manager::User* FakeChromeUserManager::AddUserWithAffiliation(
       account_id, is_affiliated, user_manager::USER_TYPE_REGULAR, nullptr);
 }
 
+user_manager::User* FakeChromeUserManager::AddSamlUser(
+    const AccountId& account_id) {
+  user_manager::User* user = AddUser(account_id);
+  user->set_using_saml(true);
+  return user;
+}
+
 user_manager::User*
 FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
     const AccountId& account_id,
@@ -166,12 +173,9 @@ user_manager::User* FakeChromeUserManager::AddGuestUser() {
 }
 
 user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
-    const AccountId& account_id,
-    bool with_saml) {
+    const AccountId& account_id) {
   user_manager::User* user =
-      with_saml ? user_manager::User::CreatePublicAccountUserForTestingWithSAML(
-                      account_id)
-                : user_manager::User::CreatePublicAccountUser(account_id);
+      user_manager::User::CreatePublicAccountUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   user->SetStubImage(

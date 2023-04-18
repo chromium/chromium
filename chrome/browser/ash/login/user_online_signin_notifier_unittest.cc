@@ -66,8 +66,7 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSingleUser) {
                                    kLoginOnlineShortDelay);
 
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
   user_online_signin_notifier_ =
       std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
   user_online_signin_notifier_->AddObserver(
@@ -119,10 +118,8 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthTwoSamlUsers) {
                                    kLoginOnlineVeryLongDelay);
 
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
-  user_manager->AddPublicAccountUser(saml_login_account2_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
+  user_manager->AddSamlUser(saml_login_account2_id_);
   user_online_signin_notifier_ =
       std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
   user_online_signin_notifier_->AddObserver(
@@ -152,8 +149,7 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSamlAndNonSamlUsers) {
                                    kLoginOnlineLongDelay);
 
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
   user_manager->AddUser(saml_login_account2_id_);
   user_online_signin_notifier_ =
       std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
@@ -179,8 +175,7 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSamlPolicyNotSet) {
   known_user.SetOfflineSigninLimit(saml_login_account1_id_, absl::nullopt);
 
   auto* user_manager = GetFakeUserManager();
-  user_manager->AddPublicAccountUser(saml_login_account1_id_,
-                                     /*with_saml=*/true);
+  user_manager->AddSamlUser(saml_login_account1_id_);
   user_online_signin_notifier_ =
       std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
   user_online_signin_notifier_->AddObserver(

@@ -43,8 +43,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddKioskAppUser(const AccountId& account_id);
   user_manager::User* AddArcKioskAppUser(const AccountId& account_id);
   user_manager::User* AddWebKioskAppUser(const AccountId& account_id);
-  user_manager::User* AddPublicAccountUser(const AccountId& account_id,
-                                           bool with_saml = false);
+  user_manager::User* AddPublicAccountUser(const AccountId& account_id);
   user_manager::User* AddActiveDirectoryUser(const AccountId& account_id);
 
   // Calculates the user name hash and calls UserLoggedIn to login a user.
@@ -59,6 +58,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddChildUser(const AccountId& account_id);
   user_manager::User* AddUserWithAffiliation(const AccountId& account_id,
                                              bool is_affiliated);
+  user_manager::User* AddSamlUser(const AccountId& account_id);
 
   // Creates and adds user with specified `account_id` and `user_type`. Sets
   // user affiliation. If `profile` is valid, maps it to the created user.

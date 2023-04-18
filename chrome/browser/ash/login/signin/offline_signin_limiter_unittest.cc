@@ -138,8 +138,7 @@ user_manager::User* OfflineSigninLimiterTest::AddGaiaUser() {
 
 user_manager::User* OfflineSigninLimiterTest::AddSAMLUser() {
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddPublicAccountUser(test_saml_account_id_,
-                                                  /*with_saml=*/true);
+  auto* user = user_manager->AddSamlUser(test_saml_account_id_);
   profile_->set_profile_name(kTestSAMLUser);
   user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
                              /*browser_restart=*/false, /*is_child=*/false);
