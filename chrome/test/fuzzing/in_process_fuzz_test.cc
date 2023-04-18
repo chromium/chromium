@@ -7,12 +7,17 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/functional/callback_forward.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/fuzzing/in_process_fuzz_test.h"
 #include "chrome/test/fuzzing/in_process_fuzzing_buildflags.h"
 #include "content/public/app/content_main.h"
 #include "content/public/test/test_launcher.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/sys_string_conversions.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 // This is provided within libfuzzer, and documented, but is not its headers.
 extern "C" int LLVMFuzzerRunDriver(int* argc,
@@ -145,7 +150,8 @@ int main(int argc, char** argv) {
 
   bool we_are_probably_a_chromium_child_process = false;
   if (base::CommandLine::ForCurrentProcess()->argv().size() > 1) {
-    if (base::CommandLine::ForCurrentProcess()->argv()[1].starts_with("--")) {
+    if (base::StartsWith(base::CommandLine::ForCurrentProcess()->argv()[1],
+                         FILE_PATH_LITERAL("--"))) {
       we_are_probably_a_chromium_child_process = true;
     }
   }
@@ -155,22 +161,32 @@ int main(int argc, char** argv) {
     // and in fact the libfuzzer code will never run, so we don't need to
     // pass any arguments through to libfuzzer.
   } else {
+#if BUILDFLAG(IS_WIN)
+    // Convert std::wstring (Windows command lines) to std::string
+    // (as needed by libfuzzer).
+    auto wide_argv = base::CommandLine::ForCurrentProcess()->argv();
+    for (auto arg : wide_argv) {
+      libfuzzer_arguments.push_back(base::SysWideToUTF8(arg));
+    }
+#else
     libfuzzer_arguments = base::CommandLine::ForCurrentProcess()->argv();
-    std::string executable_name = libfuzzer_arguments.at(0);
+#endif  // BUILDFLAG(IS_WIN)
+    base::CommandLine::StringType executable_name =
+        base::CommandLine::ForCurrentProcess()->argv().at(0);
     base::CommandLine::StringVector chromium_arguments =
         fuzzer->GetChromiumCommandLineArguments();
     chromium_arguments.insert(chromium_arguments.begin(), executable_name);
-    chromium_arguments.push_back("--single-process-tests");
+    chromium_arguments.push_back(FILE_PATH_LITERAL("--single-process-tests"));
 #if !BUILDFLAG(AVOID_SINGLE_PROCESS_MODE)
     // TODO(1038952): make libfuzzer compatible with single-process mode.
     // As it stands, single-process mode works with centipede (and is probably
     // desirable both in terms of fuzzing speed and correctly gathering
     // coverage information) but not yet with libfuzzer.
-    chromium_arguments.push_back("--single-process");
+    chromium_arguments.push_back(FILE_PATH_LITERAL("--single-process"));
 #endif  // BUILDFLAG(AVOID_SINGLE_PROCESS_MODE)
-    chromium_arguments.push_back("--no-sandbox");
-    chromium_arguments.push_back("--no-zygote");
-    chromium_arguments.push_back("--disable-gpu");
+    chromium_arguments.push_back(FILE_PATH_LITERAL("--no-sandbox"));
+    chromium_arguments.push_back(FILE_PATH_LITERAL("--no-zygote"));
+    chromium_arguments.push_back(FILE_PATH_LITERAL("--disable-gpu"));
     base::CommandLine::ForCurrentProcess()->InitFromArgv(chromium_arguments);
   }
 
