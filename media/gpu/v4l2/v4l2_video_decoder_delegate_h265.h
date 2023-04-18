@@ -12,12 +12,13 @@
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
 
+struct v4l2_ctrl_hevc_decode_params;
+
 namespace media {
 
 class V4L2Device;
 class V4L2DecodeSurface;
 class V4L2DecodeSurfaceHandler;
-struct V4L2VideoDecoderDelegateH265Private;
 
 class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
  public:
@@ -35,11 +36,15 @@ class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
 
   // H265Decoder::H265Accelerator implementation.
   scoped_refptr<H265Picture> CreateH265Picture() override;
-  Status SubmitFrameMetadata(const H265SPS* sps,
-                             const H265PPS* pps,
-                             const H265SliceHeader* slice_hdr,
-                             const H265Picture::Vector& ref_pic_list,
-                             scoped_refptr<H265Picture> pic) override;
+  Status SubmitFrameMetadata(
+      const H265SPS* sps,
+      const H265PPS* pps,
+      const H265SliceHeader* slice_hdr,
+      const H265Picture::Vector& ref_pic_list,
+      const H265Picture::Vector& ref_pic_set_lt_curr,
+      const H265Picture::Vector& ref_pic_set_st_curr_after,
+      const H265Picture::Vector& ref_pic_set_st_curr_before,
+      scoped_refptr<H265Picture> pic) override;
   Status SubmitSlice(const H265SPS* sps,
                      const H265PPS* pps,
                      const H265SliceHeader* slice_hdr,
@@ -57,17 +62,17 @@ class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
   void Reset() override;
 
  private:
-  std::vector<scoped_refptr<V4L2DecodeSurface>> H265DPBToV4L2DPB(
-      const H265DPB& dpb);
+  std::vector<scoped_refptr<V4L2DecodeSurface>> FillInV4L2DPB(
+      struct v4l2_ctrl_hevc_decode_params* v4l2_decode_param,
+      const H265Picture::Vector& ref_pic_list,
+      const H265Picture::Vector& ref_pic_set_lt_curr,
+      const H265Picture::Vector& ref_pic_set_st_curr_after,
+      const H265Picture::Vector& ref_pic_set_st_curr_before);
   scoped_refptr<V4L2DecodeSurface> H265PictureToV4L2DecodeSurface(
       H265Picture* pic);
 
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
-
-  // Contains the kernel-specific structures that we don't want to expose
-  // outside of the compilation unit.
-  const std::unique_ptr<V4L2VideoDecoderDelegateH265Private> priv_;
 };
 
 }  // namespace media

@@ -21,13 +21,6 @@
 
 namespace media {
 
-// This struct contains the kernel-specific parts of the H265 acceleration,
-// that we don't want to expose in the .h file since they may differ from
-// upstream.
-struct V4L2VideoDecoderDelegateH265Private {
-  struct v4l2_ctrl_h265_decode_params v4l2_decode_param;
-};
-
 class V4L2H265Picture : public H265Picture {
  public:
   explicit V4L2H265Picture(scoped_refptr<V4L2DecodeSurface> dec_surface)
@@ -48,9 +41,7 @@ class V4L2H265Picture : public H265Picture {
 V4L2VideoDecoderDelegateH265::V4L2VideoDecoderDelegateH265(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : surface_handler_(surface_handler),
-      device_(device),
-      priv_(std::make_unique<V4L2VideoDecoderDelegateH265Private>()) {
+    : surface_handler_(surface_handler), device_(device) {
   DCHECK(surface_handler_);
 }
 
@@ -67,45 +58,117 @@ scoped_refptr<H265Picture> V4L2VideoDecoderDelegateH265::CreateH265Picture() {
 }
 
 std::vector<scoped_refptr<V4L2DecodeSurface>>
-V4L2VideoDecoderDelegateH265::H265DPBToV4L2DPB(const H265DPB& dpb) {
+V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
+    struct v4l2_ctrl_hevc_decode_params* v4l2_decode_param,
+    const H265Picture::Vector& ref_pic_list,
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before) {
   std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
 
-  memset(priv_->v4l2_decode_param.dpb, 0, sizeof(priv_->v4l2_decode_param.dpb));
-  size_t i = 0;
-  for (const auto& pic : dpb) {
-    if (i >= std::size(priv_->v4l2_decode_param.dpb)) {
+  memset(v4l2_decode_param->dpb, 0, sizeof(v4l2_decode_param->dpb));
+  unsigned int i = 0;
+  for (const auto& pic : ref_pic_list) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
       VLOGF(1) << "Invalid DPB size";
       break;
     }
 
-    int index = VIDEO_MAX_FRAME;
-    if (!pic->nonexisting) {
+    if (!pic) {
+      continue;
+    }
+
+    unsigned int index = 0xff;
+    if (!pic->IsUnused()) {
       scoped_refptr<V4L2DecodeSurface> dec_surface =
           H265PictureToV4L2DecodeSurface(pic.get());
       index = dec_surface->GetReferenceID();
       ref_surfaces.push_back(dec_surface);
     }
 
-    struct v4l2_h265_dpb_entry& entry = priv_->v4l2_decode_param.dpb[i++];
-    entry.reference_ts = index;
-    if (pic->long_term) {
-      entry.frame_num = pic->long_term_pic_num;
-      entry.pic_num = pic->long_term_frame_idx;
-    } else {
-      entry.frame_num = pic->frame_num;
-      entry.pic_num = pic->pic_num;
+    v4l2_decode_param->dpb[i++] = {
+        .timestamp = index,
+        .flags = static_cast<__u8>(
+            pic->IsLongTermRef() ? V4L2_HEVC_DPB_ENTRY_LONG_TERM_REFERENCE : 0),
+        .field_pic = V4L2_HEVC_SEI_PIC_STRUCT_FRAME,  // No interlaced support
+        .pic_order_cnt_val = pic->pic_order_cnt_val_,
+    };
+  }
+  v4l2_decode_param->num_active_dpb_entries = i;
+
+  // Set defaults
+  std::fill_n(v4l2_decode_param->poc_st_curr_before,
+              std::size(v4l2_decode_param->poc_st_curr_before), 0xff);
+  std::fill_n(v4l2_decode_param->poc_st_curr_after,
+              std::size(v4l2_decode_param->poc_st_curr_after), 0xff);
+  std::fill_n(v4l2_decode_param->poc_lt_curr,
+              std::size(v4l2_decode_param->poc_lt_curr), 0xff);
+
+  i = 0;
+  for (const auto& pic : ref_pic_set_st_curr_before) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
     }
 
-    DCHECK_EQ(pic->field, H265Picture::FIELD_NONE)
-        << "Interlacing not supported";
-    entry.fields = V4L2_H265_FRAME_REF;
+    if (!pic) {
+      continue;
+    }
 
-    entry.top_field_order_cnt = pic->top_field_order_cnt;
-    entry.bottom_field_order_cnt = pic->bottom_field_order_cnt;
-    entry.flags = V4L2_H265_DPB_ENTRY_FLAG_VALID |
-                  (pic->ref ? V4L2_H265_DPB_ENTRY_FLAG_ACTIVE : 0) |
-                  (pic->long_term ? V4L2_H265_DPB_ENTRY_FLAG_LONG_TERM : 0);
+    for (unsigned int j = 0; j < v4l2_decode_param->num_active_dpb_entries;
+         j++) {
+      if (pic->pic_order_cnt_val_ ==
+          v4l2_decode_param->dpb[j].pic_order_cnt_val) {
+        v4l2_decode_param->poc_st_curr_before[i++] = j;
+        break;
+      }
+    }
   }
+  v4l2_decode_param->num_poc_st_curr_before = i;
+
+  i = 0;
+  for (const auto& pic : ref_pic_set_st_curr_after) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
+    }
+
+    if (!pic) {
+      continue;
+    }
+
+    for (unsigned int j = 0; j < v4l2_decode_param->num_active_dpb_entries;
+         j++) {
+      if (pic->pic_order_cnt_val_ ==
+          v4l2_decode_param->dpb[j].pic_order_cnt_val) {
+        v4l2_decode_param->poc_st_curr_after[i++] = j;
+        break;
+      }
+    }
+  }
+  v4l2_decode_param->num_poc_st_curr_after = i;
+
+  i = 0;
+  for (const auto& pic : ref_pic_set_lt_curr) {
+    if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
+      VLOGF(1) << "Invalid DPB size";
+      break;
+    }
+
+    if (!pic) {
+      continue;
+    }
+
+    for (unsigned int j = 0; j < v4l2_decode_param->num_active_dpb_entries;
+         j++) {
+      if (pic->pic_order_cnt_val_ ==
+          v4l2_decode_param->dpb[j].pic_order_cnt_val) {
+        v4l2_decode_param->poc_lt_curr[i++] = j;
+        break;
+      }
+    }
+  }
+  v4l2_decode_param->num_poc_lt_curr = i;
 
   return ref_surfaces;
 }
@@ -116,6 +179,9 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
     const H265Picture::Vector& ref_pic_list,
+    const H265Picture::Vector& ref_pic_set_lt_curr,
+    const H265Picture::Vector& ref_pic_set_st_curr_after,
+    const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> pic) {
   struct v4l2_ext_control ctrl;
   std::vector<struct v4l2_ext_control> ctrls;
@@ -342,18 +408,43 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H265PictureToV4L2DecodeSurface(pic.get());
 
+  // In the order seen in |struct v4l2_hevc_decode_param|.
+  struct v4l2_ctrl_hevc_decode_params v4l2_decode_param = {
+      .pic_order_cnt_val = pic->pic_order_cnt_val_,
+      .short_term_ref_pic_set_size = static_cast<__u16>(slice_hdr->st_rps_bits),
+      .long_term_ref_pic_set_size = static_cast<__u16>(slice_hdr->lt_rps_bits),
+      .flags = static_cast<__u64>(
+          (pic->irap_pic_ ? V4L2_HEVC_DECODE_PARAM_FLAG_IRAP_PIC : 0) |
+          ((pic->nal_unit_type_ >= H265NALU::IDR_W_RADL &&
+            pic->nal_unit_type_ <= H265NALU::IDR_N_LP)
+               ? V4L2_HEVC_DECODE_PARAM_FLAG_IDR_PIC
+               : 0) |
+          (pic->no_output_of_prior_pics_flag_
+               ? V4L2_HEVC_DECODE_PARAM_FLAG_NO_OUTPUT_OF_PRIOR
+               : 0)),
+  };
+
+  // Also sets remaining fields in v4l2_hevc_decode_param
+  auto ref_surfaces =
+      FillInV4L2DPB(&v4l2_decode_param, ref_pic_list, ref_pic_set_lt_curr,
+                    ref_pic_set_st_curr_after, ref_pic_set_st_curr_before);
+  dec_surface->SetReferenceSurfaces(ref_surfaces);
+
+  memset(&ctrl, 0, sizeof(ctrl));
+  ctrl.id = V4L2_CID_STATELESS_HEVC_DECODE_PARAMS;
+  ctrl.size = sizeof(v4l2_decode_param);
+  ctrl.ptr = &v4l2_decode_param;
+  ctrls.push_back(ctrl);
+
   struct v4l2_ext_controls ext_ctrls;
   memset(&ext_ctrls, 0, sizeof(ext_ctrls));
   ext_ctrls.count = ctrls.size();
-  ext_ctrls.controls = &ctrls[0];
+  ext_ctrls.controls = ctrls.data();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return Status::kFail;
   }
-
-  auto ref_surfaces = H265DPBToV4L2DPB(dpb);
-  dec_surface->SetReferenceSurfaces(ref_surfaces);
 
   return Status::kOk;
 }
@@ -371,21 +462,8 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-#define SHDR_TO_V4L2DPARM(a) priv_->v4l2_decode_param.a = slice_hdr->a
-  SHDR_TO_V4L2DPARM(frame_num);
-  SHDR_TO_V4L2DPARM(idr_pic_id);
-  SHDR_TO_V4L2DPARM(pic_order_cnt_lsb);
-  SHDR_TO_V4L2DPARM(delta_pic_order_cnt_bottom);
-  SHDR_TO_V4L2DPARM(delta_pic_order_cnt0);
-  SHDR_TO_V4L2DPARM(delta_pic_order_cnt1);
-  SHDR_TO_V4L2DPARM(dec_ref_pic_marking_bit_size);
-  SHDR_TO_V4L2DPARM(pic_order_cnt_bit_size);
-#undef SHDR_TO_V4L2DPARM
-
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H265PictureToV4L2DecodeSurface(pic.get());
-
-  priv_->v4l2_decode_param.nal_ref_idc = slice_hdr->nal_ref_idc;
 
   // Add the 3-bytes NAL start code.
   // TODO: don't do it here, but have it passed from the parser?
@@ -405,45 +483,6 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitDecode(
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H265PictureToV4L2DecodeSurface(pic.get());
 
-  switch (pic->field) {
-    case H265Picture::FIELD_NONE:
-      priv_->v4l2_decode_param.flags = 0;
-      break;
-    case H265Picture::FIELD_TOP:
-      priv_->v4l2_decode_param.flags = V4L2_H265_DECODE_PARAM_FLAG_FIELD_PIC;
-      break;
-    case H265Picture::FIELD_BOTTOM:
-      priv_->v4l2_decode_param.flags =
-          (V4L2_H265_DECODE_PARAM_FLAG_FIELD_PIC |
-           V4L2_H265_DECODE_PARAM_FLAG_BOTTOM_FIELD);
-      break;
-  }
-
-  if (pic->idr)
-    priv_->v4l2_decode_param.flags |= V4L2_H265_DECODE_PARAM_FLAG_IDR_PIC;
-
-  priv_->v4l2_decode_param.top_field_order_cnt = pic->top_field_order_cnt;
-  priv_->v4l2_decode_param.bottom_field_order_cnt = pic->bottom_field_order_cnt;
-
-  struct v4l2_ext_control ctrl;
-  std::vector<struct v4l2_ext_control> ctrls;
-
-  memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_STATELESS_H265_DECODE_PARAMS;
-  ctrl.size = sizeof(priv_->v4l2_decode_param);
-  ctrl.ptr = &priv_->v4l2_decode_param;
-  ctrls.push_back(ctrl);
-
-  struct v4l2_ext_controls ext_ctrls;
-  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
-  ext_ctrls.count = ctrls.size();
-  ext_ctrls.controls = &ctrls[0];
-  dec_surface->PrepareSetCtrls(&ext_ctrls);
-  if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
-    return Status::kFail;
-  }
-
   Reset();
 
   DVLOGF(4) << "Submitting decode for surface: " << dec_surface->ToString();
@@ -459,9 +498,7 @@ bool V4L2VideoDecoderDelegateH265::OutputPicture(
   return true;
 }
 
-void V4L2VideoDecoderDelegateH265::Reset() {
-  memset(&priv_->v4l2_decode_param, 0, sizeof(priv_->v4l2_decode_param));
-}
+void V4L2VideoDecoderDelegateH265::Reset() {}
 
 scoped_refptr<V4L2DecodeSurface>
 V4L2VideoDecoderDelegateH265::H265PictureToV4L2DecodeSurface(H265Picture* pic) {

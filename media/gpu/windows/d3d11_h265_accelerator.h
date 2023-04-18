@@ -119,11 +119,15 @@ class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
 
   // H265Decoder::H265Accelerator implementation.
   scoped_refptr<H265Picture> CreateH265Picture() override;
-  Status SubmitFrameMetadata(const H265SPS* sps,
-                             const H265PPS* pps,
-                             const H265SliceHeader* slice_hdr,
-                             const H265Picture::Vector& ref_pic_list,
-                             scoped_refptr<H265Picture> pic) override;
+  Status SubmitFrameMetadata(
+      const H265SPS* sps,
+      const H265PPS* pps,
+      const H265SliceHeader* slice_hdr,
+      const H265Picture::Vector& ref_pic_list,
+      const H265Picture::Vector& ref_pic_set_lt_curr,
+      const H265Picture::Vector& ref_pic_set_st_curr_after,
+      const H265Picture::Vector& ref_pic_set_st_curr_before,
+      scoped_refptr<H265Picture> pic) override;
   Status SubmitSlice(const H265SPS* sps,
                      const H265PPS* pps,
                      const H265SliceHeader* slice_hdr,

@@ -90,11 +90,15 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     // before calling SubmitDecode().
     // Returns kOk if successful, kFail if there are errors, or kTryAgain if
     // the accelerator needs additional data before being able to proceed.
-    virtual Status SubmitFrameMetadata(const H265SPS* sps,
-                                       const H265PPS* pps,
-                                       const H265SliceHeader* slice_hdr,
-                                       const H265Picture::Vector& ref_pic_list,
-                                       scoped_refptr<H265Picture> pic) = 0;
+    virtual Status SubmitFrameMetadata(
+        const H265SPS* sps,
+        const H265PPS* pps,
+        const H265SliceHeader* slice_hdr,
+        const H265Picture::Vector& ref_pic_list,
+        const H265Picture::Vector& ref_pic_set_lt_curr,
+        const H265Picture::Vector& ref_pic_set_st_curr_after,
+        const H265Picture::Vector& ref_pic_set_st_curr_before,
+        scoped_refptr<H265Picture> pic) = 0;
 
     // Submit one slice for the current frame, passing the current |pps| and
     // |pic| (same as in SubmitFrameMetadata()), the parsed header for the
