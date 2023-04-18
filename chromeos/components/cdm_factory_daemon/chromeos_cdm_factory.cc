@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
@@ -73,14 +74,6 @@ void CreateFactoryOnTaskRunner(
     const std::string& key_system,
     cdm::mojom::BrowserCdmFactory::CreateFactoryCallback callback) {
   GetBrowserCdmFactoryRemote()->CreateFactory(key_system, std::move(callback));
-}
-
-void CreateFactoryCallback(
-    scoped_refptr<base::SingleThreadTaskRunner> runner,
-    cdm::mojom::BrowserCdmFactory::CreateFactoryCallback callback,
-    mojo::PendingRemote<cdm::mojom::CdmFactory> remote_factory) {
-  runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                             std::move(remote_factory)));
 }
 
 void GetOutputProtectionOnTaskRunner(
@@ -265,14 +258,11 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
         FROM_HERE,
         base::BindOnce(
             &CreateFactoryOnTaskRunner, cdm_config.key_system,
-            base::BindOnce(
-                &CreateFactoryCallback,
-                base::SingleThreadTaskRunner::GetCurrentDefault(),
-                base::BindOnce(
-                    &ChromeOsCdmFactory::OnCreateFactory,
-                    weak_factory_.GetWeakPtr(), cdm_config, session_message_cb,
-                    session_closed_cb, session_keys_change_cb,
-                    session_expiration_update_cb, std::move(cdm_created_cb)))));
+            base::BindPostTaskToCurrentDefault(base::BindOnce(
+                &ChromeOsCdmFactory::OnCreateFactory,
+                weak_factory_.GetWeakPtr(), cdm_config, session_message_cb,
+                session_closed_cb, session_keys_change_cb,
+                session_expiration_update_cb, std::move(cdm_created_cb)))));
     return;
   }
 
