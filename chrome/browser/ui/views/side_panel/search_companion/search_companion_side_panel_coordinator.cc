@@ -19,14 +19,20 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 
 SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
     Browser* browser)
     : BrowserUserData<SearchCompanionSidePanelCoordinator>(*browser),
       browser_(browser),
       // TODO(b/269331995): Localize menu item label.
-      name_(u"Companion"),
-      icon_(kJourneysIcon) {
+      name_(l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE)),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      icon_(vector_icons::kGoogleGLogoIcon) {
+#else
+      icon_(vector_icons::kSearchIcon) {
+#endif
   if (auto* template_url_service =
           TemplateURLServiceFactory::GetForProfile(browser->profile())) {
     template_url_service_observation_.Observe(template_url_service);
