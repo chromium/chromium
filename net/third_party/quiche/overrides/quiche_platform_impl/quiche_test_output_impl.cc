@@ -10,7 +10,6 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_logging.h"
@@ -28,8 +27,7 @@ void QuicheRecordTestOutputToFile(absl::string_view filename,
   }
 
   auto path = base::FilePath::FromUTF8Unsafe(output_dir)
-                  .Append(base::FilePath::FromUTF8Unsafe(
-                      base::StringViewToStringPiece(filename)));
+                  .Append(base::FilePath::FromUTF8Unsafe(filename));
 
   int bytes_written = base::WriteFile(path, data.data(), data.size());
   if (bytes_written < 0) {
@@ -55,8 +53,7 @@ bool QuicheLoadTestOutputImpl(absl::string_view filename, std::string* data) {
   }
 
   auto path = base::FilePath::FromUTF8Unsafe(output_dir)
-                  .Append(base::FilePath::FromUTF8Unsafe(
-                      base::StringViewToStringPiece(filename)));
+                  .Append(base::FilePath::FromUTF8Unsafe(filename));
 
   return base::ReadFileToString(path, data);
 }

@@ -949,13 +949,27 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-      r'/\b(absl|std)::(u16)?string_view\b',
+      r'/\babsl::string_view\b',
       (
-        'absl::string_view is banned and std::[u16]string_view are not allowed',
-        ' yet (https://crbug.com/691162). Use base::StringPiece[16] instead.',
+        'absl::string_view is a legacy spelling of std::string_view, which is ',
+        'not allowed yet (https://crbug.com/691162). Use base::StringPiece ',
+        'instead, unless std::string_view is needed to use with an external ',
+        'API.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::(u16)?string_view\b',
+      (
+        'std::[u16]string_view is not yet allowed (crbug.com/691162). Use ',
+        'base::StringPiece[16] instead, unless std::[u16]string_view is ',
+        'needed to use an external API.',
       ),
       True,
       [
+        # Needed to implement and test std::string_view interoperability.
+        r'base/strings/string_piece.*',
         # Needed to use liburlpattern API.
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
@@ -965,6 +979,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'net/test/embedded_test_server/.*',
         r'net/third_party/quiche/.*',
         r'services/network/web_transport\.cc',
+        # This code is in the process of being extracted into an external
+        # library, where //base will be unavailable.
+        r'net/cert/pki/.*',
+        r'net/der/.*',
+        # Needed to use APIs from the above.
+        r'net/cert/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
@@ -1126,15 +1146,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (
         'std::aligned_alloc() is not yet allowed (crbug.com/1412818). Use ',
         'base::AlignedAlloc() instead.',
-      ),
-      True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
-    ),
-    BanRule(
-      r'/\bstd::(u16)?string_view\b',
-      (
-        'std::[u16]string_view is not yet allowed (crbug.com/691162). Use ',
-        'base::StringPiece[16] instead.',
       ),
       True,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.

@@ -1198,7 +1198,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
     if (!tbs_certificate.ReadTag(der::kInteger, &serial_value_der))
       return false;
 
-    *serial_value = serial_value_der.AsStringPiece();
+    *serial_value = serial_value_der.AsStringView();
     return true;
   }
 

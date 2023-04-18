@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -256,7 +255,7 @@ class RtcEventLogOutput : public webrtc::RtcEventLogOutput {
   // webrtc::RtcEventLogOutput interface
   bool IsActive() const override { return true; }
   bool Write(absl::string_view output) override {
-    event_log_data_->Write(base::StringViewToStringPiece(output));
+    event_log_data_->Write(output);
     return true;
   }
 

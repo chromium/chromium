@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -257,8 +256,9 @@ int QuicChromiumClientStream::Handle::WriteStreamData(
   if (!stream_)
     return net_error_;
 
-  if (stream_->WriteStreamData(base::StringPieceToStringView(data), fin))
+  if (stream_->WriteStreamData(data, fin)) {
     return HandleIOComplete(OK);
+  }
 
   SetCallback(std::move(callback), &write_callback_);
   return ERR_IO_PENDING;

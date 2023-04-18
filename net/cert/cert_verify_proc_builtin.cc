@@ -87,7 +87,7 @@ base::Value::List PEMCertValueList(const ParsedCertificateList& certs) {
   base::Value::List value;
   for (const auto& cert : certs) {
     std::string pem;
-    X509Certificate::GetPEMEncodedFromDER(cert->der_cert().AsStringPiece(),
+    X509Certificate::GetPEMEncodedFromDER(cert->der_cert().AsStringView(),
                                           &pem);
     value.Append(std::move(pem));
   }
@@ -367,7 +367,7 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       return false;
 
     SHA256HashValue root_fingerprint;
-    crypto::SHA256HashString(root->der_cert().AsStringPiece(),
+    crypto::SHA256HashString(root->der_cert().AsStringView(),
                              root_fingerprint.data,
                              sizeof(root_fingerprint.data));
 
@@ -468,7 +468,7 @@ void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
 void AppendPublicKeyHashes(const der::Input& spki_bytes,
                            HashValueVector* hashes) {
   HashValue sha256(HASH_VALUE_SHA256);
-  crypto::SHA256HashString(spki_bytes.AsStringPiece(), sha256.data(),
+  crypto::SHA256HashString(spki_bytes.AsStringView(), sha256.data(),
                            crypto::kSHA256Length);
   hashes->push_back(sha256);
 }

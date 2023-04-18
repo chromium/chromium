@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -70,8 +69,7 @@ class Http2Connection::DataFrameSource
 
   bool Send(absl::string_view frame_header, size_t payload_length) override {
     std::string concatenated =
-        base::StrCat({base::StringViewToStringPiece(frame_header),
-                      chunks_.front().substr(0, payload_length)});
+        base::StrCat({frame_header, chunks_.front().substr(0, payload_length)});
     const int64_t result = connection_->OnReadyToSend(concatenated);
     // Write encountered error.
     if (result < 0) {

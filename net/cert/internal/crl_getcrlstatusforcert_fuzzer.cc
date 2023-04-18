@@ -13,7 +13,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const net::der::Input input_der(data, size);
 
   const std::string data_hash =
-      crypto::SHA256HashString(input_der.AsStringPiece());
+      crypto::SHA256HashString(input_der.AsStringView());
   const net::CrlVersion crl_version =
       (data_hash[0] % 2) ? net::CrlVersion::V2 : net::CrlVersion::V1;
   const size_t serial_len = data_hash[1] % (data_hash.size() - 2);

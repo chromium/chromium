@@ -79,7 +79,7 @@ bool CertHasMultipleEVPoliciesAndOneMatchesRoot(const X509Certificate* cert) {
     return false;
 
   SHA256HashValue root_fingerprint;
-  crypto::SHA256HashString(root->der_cert().AsStringPiece(),
+  crypto::SHA256HashString(root->der_cert().AsStringView(),
                            root_fingerprint.data,
                            sizeof(root_fingerprint.data));
 

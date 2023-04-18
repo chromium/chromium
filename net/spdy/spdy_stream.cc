@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -401,8 +400,7 @@ void SpdyStream::OnHeadersReceived(
       }
 
       int status;
-      if (!base::StringToInt(base::StringViewToStringPiece(it->second),
-                             &status)) {
+      if (!base::StringToInt(it->second, &status)) {
         const std::string error("Cannot parse :status.");
         LogStreamError(ERR_HTTP2_PROTOCOL_ERROR, error);
         session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR, error);

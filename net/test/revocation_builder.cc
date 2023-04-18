@@ -147,7 +147,7 @@ std::string EncodeOCSPResponse(OCSPResponse::ResponseStatus response_status,
                       CBS_ASN1_SEQUENCE) ||
         !CBB_add_asn1(&ocsp_response_bytes_sequence, &ocsp_response_type,
                       CBS_ASN1_OBJECT) ||
-        !CBBAddBytes(&ocsp_response_type, response_type.AsStringPiece()) ||
+        !CBBAddBytes(&ocsp_response_type, response_type.AsStringView()) ||
         !CBB_add_asn1(&ocsp_response_bytes_sequence,
                       &ocsp_response_octet_string, CBS_ASN1_OCTETSTRING) ||
         !CBBAddBytes(&ocsp_response_octet_string, response)) {

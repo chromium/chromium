@@ -1256,7 +1256,10 @@ abstraction on top of strings (e.g. for parsing).
 **Notes:**
 *** promo
 [Will be allowed soon](https://crbug.com/691162); for now, use
-`base::StringPiece[16]`.
+`base::StringPiece[16]`, unless interfacing with third-party code, in which
+case it is allowed. Note `base::StringPiece[16]` implicitly convert to and from
+the corresponding STL types, so one typically does not need to write the STL
+name.
 ***
 
 ### std::uncaught_exceptions <sup>[banned]</sup>
@@ -1721,8 +1724,12 @@ absl::string_view
 
 **Notes:**
 *** promo
-Banned due to only working with 8-bit characters. Keep using
-`base::StringPiece` from `base/strings/`.
+Originally banned due to only working with 8-bit characters. Now it is
+unnecessary because, in Chromium, it is the same type as `std::string_view`.
+Use `base::StringPiece` from `base/strings/`, unless interfacing with
+third-party code, in which case prefer to write the type as `std::string_view`.
+Note `base::StringPiece` implicitly converts to and from `std::string_view`, so
+one typically does not need to write the STL name.
 ***
 
 ### Strings Library <sup>[banned]</sup>

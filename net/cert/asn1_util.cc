@@ -190,7 +190,7 @@ bool ExtractSubjectFromDERCert(base::StringPiece cert,
   der::Input subject;
   if (!parser.ReadRawTLV(&subject))
     return false;
-  *subject_out = subject.AsStringPiece();
+  *subject_out = subject.AsStringView();
   return true;
 }
 
@@ -202,7 +202,7 @@ bool ExtractSPKIFromDERCert(base::StringPiece cert,
   der::Input spki;
   if (!parser.ReadRawTLV(&spki))
     return false;
-  *spki_out = spki.AsStringPiece();
+  *spki_out = spki.AsStringView();
   return true;
 }
 
@@ -231,7 +231,7 @@ bool ExtractSubjectPublicKeyFromSPKI(base::StringPiece spki,
   der::Input spk;
   if (!spki_parser.ReadTag(der::kBitString, &spk))
     return false;
-  *spk_out = spk.AsStringPiece();
+  *spk_out = spk.AsStringView();
   return true;
 }
 
@@ -302,8 +302,8 @@ bool ExtractSignatureAlgorithmsFromDERCert(
   if (!certificate.ReadRawTLV(&cert_algorithm))
     return false;
 
-  *cert_signature_algorithm_sequence = cert_algorithm.AsStringPiece();
-  *tbs_signature_algorithm_sequence = tbs_algorithm.AsStringPiece();
+  *cert_signature_algorithm_sequence = cert_algorithm.AsStringView();
+  *tbs_signature_algorithm_sequence = tbs_algorithm.AsStringView();
   return true;
 }
 
@@ -324,7 +324,7 @@ bool ExtractExtensionFromDERCert(base::StringPiece cert,
     return true;
 
   *out_extension_critical = extension.critical;
-  *out_contents = extension.value.AsStringPiece();
+  *out_contents = extension.value.AsStringView();
   return true;
 }
 

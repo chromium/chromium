@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -149,7 +148,7 @@ enum PushedStreamVaryResponseHeaderValues ParseVaryInPushedResponse(
   spdy::Http2HeaderBlock::iterator it = headers.find(kVary);
   if (it == headers.end())
     return kNoVaryHeader;
-  base::StringPiece value = base::StringViewToStringPiece(it->second);
+  base::StringPiece value = it->second;
   if (value.empty())
     return kVaryIsEmpty;
   if (value == kStar)

@@ -503,7 +503,7 @@ void CertBuilder::SetCaIssuersAndOCSPUrls(
     ASSERT_TRUE(CBB_add_asn1(&aia, &access_description, CBS_ASN1_SEQUENCE));
     ASSERT_TRUE(
         CBB_add_asn1(&access_description, &access_method, CBS_ASN1_OBJECT));
-    ASSERT_TRUE(CBBAddBytes(&access_method, entry.first.AsStringPiece()));
+    ASSERT_TRUE(CBBAddBytes(&access_method, entry.first.AsStringView()));
     ASSERT_TRUE(CBB_add_asn1(&access_description, &access_location,
                              CBS_ASN1_CONTEXT_SPECIFIC | 6));
     ASSERT_TRUE(CBBAddBytes(&access_location, entry.second.spec()));
@@ -673,7 +673,7 @@ void CertBuilder::SetExtendedKeyUsages(
   for (const auto& oid : purpose_oids) {
     CBB purpose_cbb;
     ASSERT_TRUE(CBB_add_asn1(&eku, &purpose_cbb, CBS_ASN1_OBJECT));
-    ASSERT_TRUE(CBBAddBytes(&purpose_cbb, oid.AsStringPiece()));
+    ASSERT_TRUE(CBBAddBytes(&purpose_cbb, oid.AsStringView()));
     ASSERT_TRUE(CBB_flush(&eku));
   }
   SetExtension(der::Input(kExtKeyUsageOid), FinishCBB(cbb.get()));

@@ -101,7 +101,7 @@ std::shared_ptr<const ParsedCertificate> FindLastCertWithUnknownIssuer(
 bool PerformAIAFetchAndAddResultToVector(scoped_refptr<CertNetFetcher> fetcher,
                                          std::string_view uri,
                                          ParsedCertificateList* cert_list) {
-  GURL url(base::StringPiece(uri.data(), uri.size()));
+  GURL url(uri);
   if (!url.is_valid())
     return false;
   std::unique_ptr<CertNetFetcher::Request> request(fetcher->FetchCaIssuers(

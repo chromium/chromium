@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -891,6 +892,21 @@ TEST(StringPieceTest, Find) {
   static_assert(foobar.find_last_not_of('a', 4) == 3, "");
   static_assert(foobar.find_last_not_of("ox", 2, 2) == 0, "");
   static_assert(foobar.find_last_not_of("ox", 2) == 0, "");
+}
+
+// Test that `base::StringPiece` and `std::string_view` are interoperable.
+TEST(StringPieceTest, StringPieceToStringView) {
+  constexpr StringPiece kPiece = "foo";
+  constexpr std::string_view kView = kPiece;
+  static_assert(kPiece.data() == kView.data());
+  static_assert(kPiece.size() == kView.size());
+}
+
+TEST(StringPieceTest, StringViewToStringPiece) {
+  constexpr std::string_view kView = "bar";
+  constexpr StringPiece kPiece = kView;
+  static_assert(kView.data() == kPiece.data());
+  static_assert(kView.size() == kPiece.size());
 }
 
 }  // namespace base

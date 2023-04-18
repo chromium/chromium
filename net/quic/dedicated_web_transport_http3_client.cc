@@ -8,7 +8,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/port_util.h"
@@ -752,7 +751,7 @@ void DedicatedWebTransportHttp3Client::
 
 void DedicatedWebTransportHttp3Client::OnDatagramReceived(
     absl::string_view datagram) {
-  visitor_->OnDatagramReceived(base::StringViewToStringPiece(datagram));
+  visitor_->OnDatagramReceived(datagram);
 }
 
 void DedicatedWebTransportHttp3Client::

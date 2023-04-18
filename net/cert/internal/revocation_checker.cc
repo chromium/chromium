@@ -51,11 +51,9 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
   // Check using stapled OCSP, if available.
   if (!stapled_ocsp_response.empty() && issuer_cert) {
     OCSPVerifyResult::ResponseStatus response_details;
-    OCSPRevocationStatus ocsp_status =
-        CheckOCSP(std::string_view(stapled_ocsp_response.data(),
-                                   stapled_ocsp_response.size()),
-                  cert, issuer_cert, base::Time::Now().ToTimeT(),
-                  max_age.InSeconds(), &response_details);
+    OCSPRevocationStatus ocsp_status = CheckOCSP(
+        stapled_ocsp_response, cert, issuer_cert, base::Time::Now().ToTimeT(),
+        max_age.InSeconds(), &response_details);
     if (stapled_ocsp_verify_result) {
       stapled_ocsp_verify_result->response_status = response_details;
       stapled_ocsp_verify_result->revocation_status = ocsp_status;
@@ -88,7 +86,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
     for (const auto& ocsp_uri : cert->ocsp_uris()) {
       // Only consider http:// URLs (https:// could create a circular
       // dependency).
-      GURL parsed_ocsp_url(base::StringPiece(ocsp_uri.data(), ocsp_uri.size()));
+      GURL parsed_ocsp_url(ocsp_uri);
       if (!parsed_ocsp_url.is_valid() ||
           !parsed_ocsp_url.SchemeIs(url::kHttpScheme)) {
         continue;
@@ -189,8 +187,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
                  ->uniform_resource_identifiers) {
           // Only consider http:// URLs (https:// could create a circular
           // dependency).
-          GURL parsed_crl_url(
-              base::StringPiece(crl_uri.data(), crl_uri.size()));
+          GURL parsed_crl_url(crl_uri);
           if (!parsed_crl_url.is_valid() ||
               !parsed_crl_url.SchemeIs(url::kHttpScheme)) {
             continue;
@@ -354,19 +351,19 @@ CRLSet::Result CheckChainRevocationUsingCRLSet(
 
     // Check for revocation using the certificate's SPKI.
     std::string spki_hash =
-        crypto::SHA256HashString(cert->tbs().spki_tlv.AsStringPiece());
+        crypto::SHA256HashString(cert->tbs().spki_tlv.AsStringView());
     CRLSet::Result result = crl_set->CheckSPKI(spki_hash);
 
     // Check for revocation using the certificate's Subject.
     if (result != CRLSet::REVOKED) {
-      result = crl_set->CheckSubject(cert->tbs().subject_tlv.AsStringPiece(),
+      result = crl_set->CheckSubject(cert->tbs().subject_tlv.AsStringView(),
                                      spki_hash);
     }
 
     // Check for revocation using the certificate's serial number and issuer's
     // SPKI.
     if (result != CRLSet::REVOKED && !is_root) {
-      result = crl_set->CheckSerial(cert->tbs().serial_number.AsStringPiece(),
+      result = crl_set->CheckSerial(cert->tbs().serial_number.AsStringView(),
                                     issuer_spki_hash);
     }
 

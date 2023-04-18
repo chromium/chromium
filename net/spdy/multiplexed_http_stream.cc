@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/strings/abseil_string_conversions.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
@@ -65,9 +64,9 @@ void MultiplexedHttpStream::DispatchRequestHeadersCallback(
   if (!request_headers_callback_)
     return;
   HttpRawRequestHeaders raw_headers;
-  for (const auto& entry : spdy_headers)
-    raw_headers.Add(base::StringViewToStringPiece(entry.first),
-                    base::StringViewToStringPiece(entry.second));
+  for (const auto& entry : spdy_headers) {
+    raw_headers.Add(entry.first, entry.second);
+  }
   request_headers_callback_.Run(std::move(raw_headers));
 }
 

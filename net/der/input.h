@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net::der {
@@ -39,9 +38,6 @@ class NET_EXPORT_PRIVATE Input {
   constexpr explicit Input(const uint8_t* data, size_t len)
       : data_(data), len_(len) {}
 
-  // Creates an Input from a base::StringPiece.
-  explicit Input(base::StringPiece sp);
-
   // Creates an Input from a std::string_view
   explicit Input(std::string_view sp);
 
@@ -61,11 +57,6 @@ class NET_EXPORT_PRIVATE Input {
 
   // Returns a copy of the data represented by this object as a std::string.
   std::string AsString() const;
-
-  // Returns a StringPiece pointing to the same data as the Input. The resulting
-  // StringPiece must not outlive the data that was used to construct this
-  // Input.
-  base::StringPiece AsStringPiece() const;
 
   // Returns a std::string_view pointing to the same data as the Input. The
   // resulting string_view must not outlive the data that was used to construct
