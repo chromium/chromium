@@ -219,7 +219,7 @@ TEST_P(CreateOCSPGetURLTest, Basic) {
   // Try to extract the encoded data and compare against |request_data|.
   //
   // A known answer output test would be better as this just reverses the logic
-  // from the implementaiton file.
+  // from the implementation file.
   std::string b64 = url.spec().substr(GetParam().size() + 1);
 
   // Hex un-escape the data.

@@ -311,7 +311,7 @@ TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
   EXPECT_FALSE(lazy_decoder_->FrameIsReceivedAtIndex(0));
-  // Anything <= 10ms is clamped to 100ms. See the implementaiton for details.
+  // Anything <= 10ms is clamped to 100ms. See the implementation for details.
   EXPECT_EQ(base::Milliseconds(100), lazy_decoder_->FrameDurationAtIndex(0));
 
   frame_count_ = 2;
