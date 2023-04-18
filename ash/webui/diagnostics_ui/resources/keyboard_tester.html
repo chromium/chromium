@@ -27,6 +27,10 @@
     --cr-dialog-body-padding-horizontal: 24px;
   }
 
+  :host-context(body.jelly-enabled) keyboard-diagram {
+    --diagram-bg-color: var(--cros-sys-base_elevated);
+  }
+
   :host-context(body.jelly-enabled) #help {
     color: var( --cros-text-color-primary);
   }
