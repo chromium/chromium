@@ -200,7 +200,8 @@ void BindStorageServiceFilesystemImpl(
     const base::FilePath& directory_path,
     mojo::PendingReceiver<storage::mojom::Directory> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<storage::FilesystemImpl>(directory_path),
+      std::make_unique<storage::FilesystemImpl>(
+          directory_path, storage::FilesystemImpl::ClientType::kUntrusted),
       std::move(receiver));
 }
 #endif

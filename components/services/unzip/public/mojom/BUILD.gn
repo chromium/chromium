@@ -8,7 +8,7 @@ mojom("mojom") {
   sources = [ "unzipper.mojom" ]
 
   public_deps = [
-    "//components/services/filesystem/public/mojom",
+    "//components/services/storage/public/mojom/filesystem",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]

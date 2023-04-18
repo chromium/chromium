@@ -76,15 +76,18 @@ class FilesystemProxyTest : public testing::TestWithParam<bool> {
       // restricted FilesystemProxy behavior.
       mojo::PendingRemote<mojom::Directory> remote;
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(
-                         [](const base::FilePath& root,
-                            mojo::PendingReceiver<mojom::Directory> receiver) {
-                           mojo::MakeSelfOwnedReceiver(
-                               std::make_unique<FilesystemImpl>(root),
-                               std::move(receiver));
-                         },
-                         root, remote.InitWithNewPipeAndPassReceiver()));
+          ->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](const base::FilePath& root,
+                     mojo::PendingReceiver<mojom::Directory> receiver) {
+                    mojo::MakeSelfOwnedReceiver(
+                        std::make_unique<FilesystemImpl>(
+                            root,
+                            storage::FilesystemImpl::ClientType::kUntrusted),
+                        std::move(receiver));
+                  },
+                  root, remote.InitWithNewPipeAndPassReceiver()));
       proxy_ = std::make_unique<FilesystemProxy>(
           FilesystemProxy::RESTRICTED, root, std::move(remote),
           base::ThreadPool::CreateSequencedTaskRunner({}));

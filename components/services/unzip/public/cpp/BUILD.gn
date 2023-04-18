@@ -11,7 +11,7 @@ source_set("cpp") {
   ]
 
   public_deps = [
-    "//components/services/filesystem:lib",
+    "//components/services/storage/public/cpp/filesystem",
     "//components/services/unzip/public/mojom",
   ]
 }

@@ -85,7 +85,6 @@ class ZipFileUnpacker : public base::RefCountedThreadSafe<ZipFileUnpacker> {
 
   base::File zip_file_;
   scoped_refptr<UnzipParams> params_;
-  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote_;
   mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote_;
   mojo::PendingRemote<unzip::mojom::UnzipListener> listener_remote_;
 };
