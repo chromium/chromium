@@ -198,6 +198,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // PrefBackedBoolean that overrides ArticlesForYou switch for supervised
   // users.
   PrefBackedBoolean* _contentSuggestionForSupervisedUsersEnabled;
+  // PrefBackedBoolean for BottomOmnibox switch.
+  PrefBackedBoolean* _bottomOmniboxEnabled;
   // The item related to the switch for the show suggestions setting.
   TableViewSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the safety check.
@@ -251,6 +253,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TabsSettingsCoordinator* _tabsCoordinator;
 }
 
+// The item related to the switch for the bottom omnibox settings.
+@property(nonatomic, strong, readonly) TableViewSwitchItem* bottomOmniboxItem;
 // The item related to the switch for the show feed settings.
 @property(nonatomic, strong, readonly) TableViewSwitchItem* feedSettingsItem;
 // The item related to the enterprise managed show feed settings.
@@ -274,6 +278,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @end
 
 @implementation SettingsTableViewController
+@synthesize bottomOmniboxItem = _bottomOmniboxItem;
 @synthesize dispatcher = _dispatcher;
 @synthesize managedFeedSettingsItem = _managedFeedSettingsItem;
 @synthesize feedSettingsItem = _feedSettingsItem;
@@ -337,6 +342,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         initWithPrefService:prefService
                    prefName:prefs::kArticlesForYouEnabled];
     [_articlesEnabled setObserver:self];
+
+    _bottomOmniboxEnabled =
+        [[PrefBackedBoolean alloc] initWithPrefService:prefService
+                                              prefName:prefs::kBottomOmnibox];
+    [_bottomOmniboxEnabled setObserver:self];
 
     _contentSuggestionPolicyEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
@@ -447,6 +457,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  if (base::FeatureList::IsEnabled(kBottomOmniboxSteadyState)) {
+    [model addItem:[self bottomOmniboxItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  };
   [model addItem:[self safetyCheckDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
@@ -885,6 +899,23 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return _voiceSearchDetailItem;
 }
 
+- (TableViewItem*)bottomOmniboxItem {
+  DCHECK(base::FeatureList::IsEnabled(kBottomOmniboxSteadyState));
+  if (!_bottomOmniboxItem) {
+    _bottomOmniboxItem =
+        [self switchItemWithType:SettingsItemTypeBottomOmnibox
+                              // TODO(crbug.com/1430093): add title.
+                              title:@"Bottom Omnibox"
+                             // TODO(crbug.com/1430093): add symbol.
+                             symbol:DefaultSettingsRootSymbol(kDiscoverSymbol)
+              // TODO(crbug.com/1430093): change background color.
+              symbolBackgroundColor:[UIColor colorNamed:kGreen500Color]
+            accessibilityIdentifier:kSettingsBottomOmniboxCellId];
+    _bottomOmniboxItem.on = [_bottomOmniboxEnabled value];
+  }
+  return _bottomOmniboxItem;
+}
+
 - (SettingsCheckItem*)safetyCheckDetailItem {
   NSString* safetyCheckTitle =
       l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_SAFETY_CHECK);
@@ -1155,6 +1186,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(articlesForYouSwitchToggled:)
+                      forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case SettingsItemTypeBottomOmnibox: {
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+      [switchCell.switchView addTarget:self
+                                action:@selector(bottomOmniboxSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -1484,6 +1523,21 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   BOOL newSwitchValue = sender.isOn;
   switchItem.on = newSwitchValue;
   [_articlesEnabled setValue:newSwitchValue];
+}
+
+- (void)bottomOmniboxSwitchToggled:(UISwitch*)sender {
+  DCHECK(base::FeatureList::IsEnabled(kBottomOmniboxSteadyState));
+  NSIndexPath* switchPath = [self.tableViewModel
+      indexPathForItemType:SettingsItemTypeBottomOmnibox
+         sectionIdentifier:SettingsSectionIdentifierAdvanced];
+
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+          [self.tableViewModel itemAtIndexPath:switchPath]);
+
+  BOOL newSwitchValue = sender.isOn;
+  switchItem.on = newSwitchValue;
+  [_bottomOmniboxEnabled setValue:newSwitchValue];
 }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -1903,6 +1957,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [_allowChromeSigninPreference stop];
   [_allowChromeSigninPreference setObserver:nil];
   _allowChromeSigninPreference = nil;
+
+  [_bottomOmniboxEnabled stop];
+  [_bottomOmniboxEnabled setObserver:nil];
+  _bottomOmniboxEnabled = nil;
 
   [_contentSuggestionPolicyEnabled stop];
   [_contentSuggestionPolicyEnabled setObserver:nil];

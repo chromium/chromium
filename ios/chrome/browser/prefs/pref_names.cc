@@ -15,6 +15,9 @@ const char kAppStoreRatingPolicyEnabled[] = "ios.app_store_rating_enabled";
 // Boolean that is true when Suggest support is enabled.
 const char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 
+// Boolean which indicates if the omnibox should be at the bottom of the screen.
+const char kBottomOmnibox[] = "ios.bottom_omnibox";
+
 // Boolean that is true when Browser Lockdown Mode is enabled.
 const char kBrowserLockdownModeEnabled[] = "ios.browser_lockdown_mode_enabled";
 
