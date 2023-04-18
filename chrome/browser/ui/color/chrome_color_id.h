@@ -372,6 +372,8 @@
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
+  E_CPONLY(kColorTabDividerFrameActive) \
+  E_CPONLY(kColorTabDividerFrameInactive) \
   E_CPONLY(kColorTabHoverCardBackground) \
   E_CPONLY(kColorTabHoverCardForeground) \
   /* The colors used for tab groups in the tabstrip. */ \

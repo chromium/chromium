@@ -58,4 +58,7 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorWebUiTabStripTabSeparator] =
       ui::SetAlpha(ui::kColorSysOnSurface, kWebUiTabStripTabSeparatorAlpha);
   mixer[kColorWebUiTabStripTabText] = {ui::kColorSysOnSurface};
+
+  mixer[kColorTabDividerFrameActive] = {ui::kColorSysOnHeaderDivider};
+  mixer[kColorTabDividerFrameInactive] = {ui::kColorSysOnHeaderDividerInactive};
 }

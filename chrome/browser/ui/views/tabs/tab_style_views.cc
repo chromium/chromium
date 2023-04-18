@@ -85,6 +85,9 @@ class GM2TabStyleViews : public TabStyleViews {
   void ShowHover(TabStyle::ShowHoverStyle style) override;
   void HideHover(TabStyle::HideHoverStyle style) override;
 
+  // Returns the color for the separator.
+  virtual SkColor GetTabSeparatorColor() const;
+
   // Painting helper functions:
   virtual SkColor GetTabBackgroundColor(TabActive active) const;
 
@@ -765,6 +768,11 @@ bool GM2TabStyleViews::ShouldPaintTabBackgroundColor(
       ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
 }
 
+SkColor GM2TabStyleViews::GetTabSeparatorColor() const {
+  CHECK(tab());
+  return tab_->controller()->GetTabSeparatorColor();
+}
+
 SkColor GM2TabStyleViews::GetTabBackgroundColor(TabActive active) const {
   CHECK(tab());
   SkColor color = tab_->controller()->GetTabBackgroundColor(
@@ -920,8 +928,7 @@ void GM2TabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
 
   TabStyle::SeparatorBounds separator_bounds = GetSeparatorBounds(scale);
 
-  const SkColor separator_base_color =
-      tab_->controller()->GetTabSeparatorColor();
+  const SkColor separator_base_color = GetTabSeparatorColor();
   const auto separator_color = [separator_base_color](float opacity) {
     return SkColorSetA(separator_base_color,
                        gfx::Tween::IntValueBetween(opacity, SK_AlphaTRANSPARENT,
@@ -989,6 +996,7 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
   SkColor GetTabBackgroundColor(TabActive active) const override;
   int GetStrokeThickness(bool should_paint_as_active = false) const override;
   void PaintBackgroundHover(gfx::Canvas* canvas, float scale) const override;
+  SkColor GetTabSeparatorColor() const override;
 };
 
 ChromeRefresh2023TabStyleViews::ChromeRefresh2023TabStyleViews(Tab* tab)
@@ -1043,6 +1051,19 @@ void ChromeRefresh2023TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
   flags.setColor(color_with_alpha_animation);
   canvas->DrawRect(gfx::ScaleToEnclosingRect(tab()->GetLocalBounds(), scale),
                    flags);
+}
+
+SkColor ChromeRefresh2023TabStyleViews::GetTabSeparatorColor() const {
+  CHECK(tab());
+  const auto* cp = tab()->GetWidget()->GetColorProvider();
+  DCHECK(cp);
+  if (!cp) {
+    return gfx::kPlaceholderColor;
+  }
+
+  return cp->GetColor(tab()->controller()->ShouldPaintAsActiveFrame()
+                          ? kColorTabDividerFrameActive
+                          : kColorTabDividerFrameInactive);
 }
 
 }  // namespace

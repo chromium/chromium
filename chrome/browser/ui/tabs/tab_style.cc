@@ -12,7 +12,8 @@ namespace {
 
 // Thickness in DIPs of the separator painted on the left and right edges of
 // the tab.
-constexpr int kSeparatorThickness = 1;
+constexpr int kGM2SeparatorThickness = 1;
+constexpr int kChromeRefreshSeparatorThickness = 2;
 
 // Returns the height of the separator between tabs.
 int GetSeparatorHeight() {
@@ -37,6 +38,7 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   ~ChromeRefresh2023TabStyle() override = default;
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
+  gfx::Size GetSeparatorSize() const override;
 };
 
 }  // namespace
@@ -47,7 +49,7 @@ int GM2TabStyle::GetStandardWidth() const {
   // The standard tab width is 240 DIP including both separators.
   constexpr int kTabWidth = 240;
   // The overlap includes one separator, so subtract it here.
-  return kTabWidth + GetTabOverlap() - kSeparatorThickness;
+  return kTabWidth + GetTabOverlap() - GetSeparatorSize().width();
 }
 
 int GM2TabStyle::GetPinnedWidth() const {
@@ -56,15 +58,15 @@ int GM2TabStyle::GetPinnedWidth() const {
 }
 
 int GM2TabStyle::GetTabOverlap() const {
-  return GetBottomCornerRadius() * 2 + kSeparatorThickness;
+  return GetBottomCornerRadius() * 2 + GetSeparatorSize().width();
 }
 
 int GM2TabStyle::GetDragHandleExtension(int height) const {
-  return (height - GetSeparatorHeight()) / 2 - 1;
+  return (height - GetSeparatorSize().height()) / 2 - 1;
 }
 
 gfx::Size GM2TabStyle::GetSeparatorSize() const {
-  return gfx::Size(kSeparatorThickness, GetSeparatorHeight());
+  return gfx::Size(kGM2SeparatorThickness, GetSeparatorHeight());
 }
 
 gfx::Size GM2TabStyle::GetPreviewImageSize() const {
@@ -97,6 +99,10 @@ int ChromeRefresh2023TabStyle::GetTopCornerRadius() const {
 
 int ChromeRefresh2023TabStyle::GetBottomCornerRadius() const {
   return 12;
+}
+
+gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
+  return gfx::Size(kChromeRefreshSeparatorThickness, GetSeparatorHeight());
 }
 
 // static
