@@ -284,6 +284,7 @@ struct MEDIA_EXPORT H265PPS {
   int row_height_minus1[kMaxNumTileRowHeight];
   bool loop_filter_across_tiles_enabled_flag;
   bool pps_loop_filter_across_slices_enabled_flag;
+  bool deblocking_filter_control_present_flag;
   bool deblocking_filter_override_enabled_flag;
   bool pps_deblocking_filter_disabled_flag;
   int pps_beta_offset_div2;

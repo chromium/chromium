@@ -742,9 +742,8 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
     READ_BOOL_OR_RETURN(&pps->loop_filter_across_tiles_enabled_flag);
   }
   READ_BOOL_OR_RETURN(&pps->pps_loop_filter_across_slices_enabled_flag);
-  bool deblocking_filter_control_present_flag;
-  READ_BOOL_OR_RETURN(&deblocking_filter_control_present_flag);
-  if (deblocking_filter_control_present_flag) {
+  READ_BOOL_OR_RETURN(&pps->deblocking_filter_control_present_flag);
+  if (pps->deblocking_filter_control_present_flag) {
     READ_BOOL_OR_RETURN(&pps->deblocking_filter_override_enabled_flag);
     READ_BOOL_OR_RETURN(&pps->pps_deblocking_filter_disabled_flag);
     if (!pps->pps_deblocking_filter_disabled_flag) {
