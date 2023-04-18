@@ -491,6 +491,7 @@ source_set("platform_api_types") {
   ]
   public_deps = [
     ":platform_base",
+    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -872,6 +873,7 @@ source_set("presence_internal") {
     ":presence_ldt_stub",
     ":presence_mediums",
     ":presence_types",
+    "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]
