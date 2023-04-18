@@ -21,6 +21,7 @@ _PER_LINE_TIMEOUT = .005  # Should be able to process 200 lines per second.
 _PROCESS_START_TIMEOUT = 20.0
 _MAX_RESTARTS = 4  # Should be plenty unless tool is crashing on start-up.
 _POOL_SIZE = 1
+_PASSTHROUH_ON_FAILURE = True
 ABI_REG = re.compile('ABI: \'(.+?)\'')
 
 
@@ -126,7 +127,7 @@ class PassThroughSymbolizer(ExpensiveLineTransformer):
 class PassThroughSymbolizerPool(ExpensiveLineTransformerPool):
   def __init__(self, device_abi):
     self._device_abi = device_abi
-    super().__init__(_MAX_RESTARTS, _POOL_SIZE)
+    super().__init__(_MAX_RESTARTS, _POOL_SIZE, _PASSTHROUH_ON_FAILURE)
 
   def CreateTransformer(self):
     return PassThroughSymbolizer(self._device_abi)

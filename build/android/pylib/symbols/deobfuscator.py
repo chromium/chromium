@@ -13,6 +13,7 @@ _PER_LINE_TIMEOUT = .005  # Should be able to process 200 lines per second.
 _PROCESS_START_TIMEOUT = 20.0
 _MAX_RESTARTS = 4  # Should be plenty unless tool is crashing on start-up.
 _POOL_SIZE = 4
+_PASSTHROUH_ON_FAILURE = False
 
 
 class Deobfuscator(ExpensiveLineTransformer):
@@ -39,7 +40,7 @@ class DeobfuscatorPool(ExpensiveLineTransformerPool):
     # /usr/bin/time -v build/android/stacktrace/java_deobfuscate.py \
     #     out/Release/apks/ChromePublic.apk.mapping
     self.mapping_path = mapping_path
-    super().__init__(_MAX_RESTARTS, _POOL_SIZE)
+    super().__init__(_MAX_RESTARTS, _POOL_SIZE, _PASSTHROUH_ON_FAILURE)
 
   @property
   def name(self):

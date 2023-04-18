@@ -174,9 +174,10 @@ class ExpensiveLineTransformer(ABC):
 
 
 class ExpensiveLineTransformerPool(ABC):
-  def __init__(self, max_restarts, pool_size):
+  def __init__(self, max_restarts, pool_size, passthrough_on_failure):
     self._max_restarts = max_restarts
     self._pool = [self.CreateTransformer() for _ in range(pool_size)]
+    self._passthrough_on_failure = passthrough_on_failure
     # Allow only one thread to select from the pool at a time.
     self._lock = threading.Lock()
     self._num_restarts = 0
@@ -193,6 +194,8 @@ class ExpensiveLineTransformerPool(ABC):
 
       # transformation is broken.
       if self._num_restarts == self._max_restarts:
+        if self._passthrough_on_failure:
+          return lines
         raise Exception('%s is broken.' % self.name)
 
       # Restart any closed transformer.
@@ -203,6 +206,9 @@ class ExpensiveLineTransformerPool(ABC):
           self._num_restarts += 1
           if self._num_restarts == self._max_restarts:
             logging.warning('%s: MAX_RESTARTS reached.', self.name)
+            if self._passthrough_on_failure:
+              return lines
+            raise Exception('%s is broken.' % self.name)
 
       selected = next((x for x in self._pool if x.IsReady()), self._pool[0])
       # Rotate the order so that next caller will not choose the same one.
