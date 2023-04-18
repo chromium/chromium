@@ -37,21 +37,16 @@
 namespace gpu {
 
 namespace {
-bool IsFormatSupported(viz::ResourceFormat resource_format) {
-  switch (resource_format) {
-    case viz::ResourceFormat::RGBA_8888:
-    case viz::ResourceFormat::RGBX_8888:
-    case viz::ResourceFormat::BGRA_8888:
-    case viz::ResourceFormat::BGRX_8888:
-    case viz::ResourceFormat::RGBA_F16:
-    case viz::ResourceFormat::RED_8:
-    case viz::ResourceFormat::RG_88:
-    case viz::ResourceFormat::BGRA_1010102:
-    case viz::ResourceFormat::RGBA_1010102:
-      return true;
-    default:
-      return false;
-  }
+bool IsFormatSupported(viz::SharedImageFormat format) {
+  return (format == viz::SinglePlaneFormat::kRGBA_8888) ||
+         (format == viz::SinglePlaneFormat::kRGBX_8888) ||
+         (format == viz::SinglePlaneFormat::kBGRA_8888) ||
+         (format == viz::SinglePlaneFormat::kBGRX_8888) ||
+         (format == viz::SinglePlaneFormat::kRGBA_F16) ||
+         (format == viz::SinglePlaneFormat::kR_8) ||
+         (format == viz::SinglePlaneFormat::kRG_88) ||
+         (format == viz::SinglePlaneFormat::kBGRA_1010102) ||
+         (format == viz::SinglePlaneFormat::kRGBA_1010102);
 }
 
 void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
@@ -138,9 +133,10 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
   max_texture_size_ = std::min(max_texture_size_, INT_MAX - 1);
 
   for (gfx::BufferFormat buffer_format : gpu_memory_buffer_formats_) {
-    viz::ResourceFormat resource_format = viz::GetResourceFormat(buffer_format);
-    if (IsFormatSupported(resource_format)) {
-      supported_formats_.insert(resource_format);
+    viz::SharedImageFormat format = viz::SharedImageFormat::SinglePlane(
+        viz::GetResourceFormat(buffer_format));
+    if (IsFormatSupported(format)) {
+      supported_formats_.insert(format);
     }
   }
 }
@@ -283,7 +279,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  if (!base::Contains(supported_formats_, format.resource_format())) {
+  if (!base::Contains(supported_formats_, format)) {
     LOG(ERROR) << "CreateSharedImage: SCANOUT shared images unavailable. "
                   "Format= "
                << format.ToString();
