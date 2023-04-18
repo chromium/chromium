@@ -212,13 +212,6 @@ void AutoclickScrollBubbleController::ShowBubble(
       gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
   bubble_view_->AddChildView(scroll_view_);
 
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    scroll_view_->SetPaintToLayer();
-    scroll_view_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   CollisionDetectionUtils::MarkWindowPriorityForCollisionDetection(

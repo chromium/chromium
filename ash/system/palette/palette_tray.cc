@@ -635,24 +635,12 @@ void PaletteTray::ShowBubble() {
   bubble_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
-  auto setup_layered_view = [](views::View* view) {
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (features::IsDarkLightModeEnabled())
-      return;
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   // Add title.
-  auto* title_view =
-      bubble_view->AddChildView(std::make_unique<TitleView>(this));
-  setup_layered_view(title_view);
+  bubble_view->AddChildView(std::make_unique<TitleView>(this));
 
   // Add horizontal separator between the title and tools.
   auto* separator =
       bubble_view->AddChildView(std::make_unique<views::Separator>());
-  setup_layered_view(separator);
   separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
@@ -663,7 +651,6 @@ void PaletteTray::ShowBubble() {
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
     bubble_view->AddChildView(view.view);
-    setup_layered_view(view.view);
   }
 
   // Show the bubble.

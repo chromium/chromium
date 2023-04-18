@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "cc/paint/paint_flags.h"
@@ -40,8 +39,7 @@ constexpr SkColor kShadowColorDark = SkColorSetARGB(0x4C, 0, 0, 0);
 constexpr SkColor kBackgroundColorDark = SkColorSetARGB(0xFF, 0x1A, 0x1A, 0x1D);
 
 bool ShouldUseDarkModeColors() {
-  return ash::features::IsDarkLightModeEnabled() &&
-         ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  return ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 }
 
 }  // namespace

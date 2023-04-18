@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -41,13 +40,6 @@ constexpr auto kLabelInsets = gfx::Insets::VH(0, 4);
 
 PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
                                                    bool show_image) {
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-  }
-
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
@@ -72,8 +64,7 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   content_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   content_container->SetInteriorMargin(
       gfx::Insets::VH(0, kBubbleHorizontalSidePaddingDip) +
-      (features::IsDarkLightModeEnabled() ? gfx::Insets::TLBR(0, 0, 16, 0)
-                                          : gfx::Insets()));
+      gfx::Insets::TLBR(0, 0, 16, 0));
 
   // Set up image if any.
   if (show_image) {

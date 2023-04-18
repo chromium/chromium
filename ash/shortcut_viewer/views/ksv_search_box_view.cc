@@ -192,8 +192,7 @@ bool KSVSearchBoxView::ShouldUseFocusedColors() {
 }
 
 bool KSVSearchBoxView::ShouldUseDarkThemeColors() {
-  return ash::features::IsDarkLightModeEnabled() &&
-         ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  return ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 }
 
 }  // namespace keyboard_shortcut_viewer

@@ -189,12 +189,11 @@ class BatteryIconView : public BatteryInfoViewBase {
     SetLayoutManager(std::move(layout));
 
     battery_image_ = AddChildView(std::make_unique<views::ImageView>());
-    if (features::IsDarkLightModeEnabled()) {
-      // The battery icon requires its own layer to properly render the masked
-      // outline of the badge within the battery icon.
-      battery_image_->SetPaintToLayer();
-      battery_image_->layer()->SetFillsBoundsOpaquely(false);
-    }
+    // The battery icon requires its own layer to properly render the masked
+    // outline of the badge within the battery icon.
+    battery_image_->SetPaintToLayer();
+    battery_image_->layer()->SetFillsBoundsOpaquely(false);
+
     ConfigureIcon();
 
     percentage_ = AddChildView(std::make_unique<views::Label>());

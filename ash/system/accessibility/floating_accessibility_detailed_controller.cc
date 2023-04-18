@@ -89,13 +89,6 @@ void FloatingAccessibilityDetailedController::Show(
       gfx::Size(kTrayMenuWidth, kDetailedViewHeightDip));
   bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
 
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    detailed_view_->SetPaintToLayer();
-    detailed_view_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_view_->SetCanActivate(true);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);

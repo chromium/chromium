@@ -699,9 +699,7 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<VPNFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<IMEFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
-  if (features::IsDarkLightModeEnabled()) {
-    AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
-  }
+  AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
   if (base::FeatureList::IsEnabled(features::kShelfParty)) {
     AddFeaturePodItem(std::make_unique<ShelfPartyFeaturePodController>());
   }

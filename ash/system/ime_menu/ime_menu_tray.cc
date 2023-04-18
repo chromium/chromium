@@ -395,35 +395,22 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
 
-  auto setup_layered_view = [](views::View* view) {
-    // In dark light mode, we switch TrayBubbleView to use a textured layer
-    // instead of solid color layer, so no need to create an extra layer here.
-    if (features::IsDarkLightModeEnabled())
-      return;
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   std::unique_ptr<TrayBubbleView> bubble_view =
       std::make_unique<TrayBubbleView>(init_params);
   bubble_view->set_margins(GetSecondaryBubbleInsets());
 
   // Add a title item with a separator on the top of the IME menu.
-  setup_layered_view(
-      bubble_view->AddChildView(std::make_unique<ImeTitleView>()));
+  bubble_view->AddChildView(std::make_unique<ImeTitleView>());
 
   // Adds IME list to the bubble.
   ime_list_view_ =
       bubble_view->AddChildView(std::make_unique<ImeMenuListView>());
   ime_list_view_->Init(ShouldShowKeyboardToggle(),
                        ImeListView::SHOW_SINGLE_IME);
-  setup_layered_view(ime_list_view_);
 
   if (ShouldShowBottomButtons()) {
-    setup_layered_view(
-        bubble_view->AddChildView(std::make_unique<ImeButtonsView>(
-            this, is_emoji_enabled_, is_handwriting_enabled_,
-            is_voice_enabled_)));
+    bubble_view->AddChildView(std::make_unique<ImeButtonsView>(
+        this, is_emoji_enabled_, is_handwriting_enabled_, is_voice_enabled_));
   }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);

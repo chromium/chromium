@@ -4,7 +4,6 @@
 
 #include "ash/system/privacy_screen/privacy_screen_toast_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -131,13 +130,6 @@ PrivacyScreenToastView::PrivacyScreenToastView(
 
   label_ = new PrivacyScreenToastLabelView();
   AddChildView(label_);
-
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-  }
 }
 
 PrivacyScreenToastView::~PrivacyScreenToastView() {

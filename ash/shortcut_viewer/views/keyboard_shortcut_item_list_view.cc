@@ -4,7 +4,6 @@
 
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_list_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -57,8 +56,7 @@ class HorizontalSeparator : public views::View {
 
   bool ShouldUseDarkModeColors() {
     DCHECK(color_provider_);
-    return ash::features::IsDarkLightModeEnabled() &&
-           ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+    return ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   }
 
  private:

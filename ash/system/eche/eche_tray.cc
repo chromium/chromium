@@ -642,13 +642,6 @@ void EcheTray::InitBubble(
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
       ->set_inside_border_insets(kBubblePadding);
 
-  // In dark light mode, we switch TrayBubbleView to use a textured layer
-  // instead of solid color layer, so no need to create an extra layer here.
-  if (!features::IsDarkLightModeEnabled()) {
-    header_view_->SetPaintToLayer();
-    header_view_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
   // Stop any in-progress prewearm channel operation.
   if (initializer_webview_) {
     initializer_webview_.reset();

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -224,8 +223,8 @@ class DragImageItemChipView : public DragImageItemView {
     // disabled. Otherwise, the view's background depends on theming.
     icon->SetImage(item->image().GetImageSkia(
         icon->GetPreferredSize(),
-        /*dark_background=*/features::IsDarkLightModeEnabled() &&
-            DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
+        /*dark_background=*/DarkLightModeControllerImpl::Get()
+            ->IsDarkModeEnabled()));
 
     // Label.
     auto* label = AddChildView(bubble_utils::CreateLabel(
@@ -277,8 +276,8 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
     // disabled. Otherwise, the view's background depends on theming.
     image->SetImage(item->image().GetImageSkia(
         image->GetPreferredSize(),
-        /*dark_background=*/features::IsDarkLightModeEnabled() &&
-            DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
+        /*dark_background=*/DarkLightModeControllerImpl::Get()
+            ->IsDarkModeEnabled()));
   }
 };
 
