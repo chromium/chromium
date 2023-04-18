@@ -552,23 +552,17 @@ void RuleSet::AddRule(StyleRule* rule,
 
 void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
                                       unsigned position) {
-  // Add a new interval only if the current layer is different from the last
-  // interval's layer. Note that the implicit outer layer may also be
-  // represented by a nullptr.
-  const CascadeLayer* last_interval_layer =
-      layer_intervals_.empty() ? implicit_outer_layer_.Get()
-                               : layer_intervals_.back().value.Get();
+  // nullptr in this context means “no layer”, i.e., the implicit outer layer.
   if (!cascade_layer) {
-    cascade_layer = implicit_outer_layer_;
-  }
-  if (cascade_layer == last_interval_layer) {
-    return;
+    if (layer_intervals_.empty()) {
+      // Don't create the implicit outer layer if we don't need to.
+      return;
+    } else {
+      cascade_layer = EnsureImplicitOuterLayer();
+    }
   }
 
-  if (!cascade_layer) {
-    cascade_layer = EnsureImplicitOuterLayer();
-  }
-  layer_intervals_.push_back(Interval<CascadeLayer>(cascade_layer, position));
+  AddRuleToIntervals(cascade_layer, position, layer_intervals_);
 }
 
 // Similar to AddRuleToLayerIntervals, but for container queries and @style
