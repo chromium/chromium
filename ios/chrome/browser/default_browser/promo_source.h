@@ -11,7 +11,8 @@ enum class DefaultBrowserPromoSource {
   kSettings = 0,
   kOmnibox,
   kExternalIntent,
-  kMaxValue = kExternalIntent,
+  kSetUpList,
+  kMaxValue = kSetUpList,
 };
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_SOURCE_H_

@@ -53534,6 +53534,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Settings"/>
   <int value="1" label="Omnibox"/>
   <int value="2" label="External Intent"/>
+  <int value="3" label="Set Up List"/>
 </enum>
 
 <enum name="IOSDefaultBrowserTailoredPromoType">
