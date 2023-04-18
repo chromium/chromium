@@ -85,6 +85,8 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/lacros64.pgo.txt" ]
     } else if (_pgo_target == "lacros-arm") {
       inputs = [ "//chrome/build/lacros-arm.pgo.txt" ]
+    } else if (_pgo_target == "lacros-arm64") {
+      inputs = [ "//chrome/build/lacros-arm64.pgo.txt" ]
     }
 
     if (_pgo_target != "" && pgo_data_path == "") {
