@@ -42,7 +42,6 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
   // views::View:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   views::Button* cancel_button_for_test() { return cancel_button_; }
@@ -51,6 +50,9 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
  private:
   RemovalConfirmationCallback confirm_callback_;
   std::unique_ptr<ViewShadow> view_shadow_;
+
+  // Whether Jelly style feature is enabled.
+  bool is_jellyroll_enabled_ = false;
 
   views::Label* title_ = nullptr;
   views::Label* body_ = nullptr;
