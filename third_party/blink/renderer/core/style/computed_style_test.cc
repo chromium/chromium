@@ -1910,4 +1910,26 @@ TEST_F(ComputedStyleTest, ViewTimelineInsetNoDiff) {
             ComputedStyle::ComputeDifference(style1.get(), style2.get()));
 }
 
+TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
+
+  builder1.SetContainerName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+  builder1.SetContainerType(kContainerTypeSize);
+  builder2.SetContainerName(MakeGarbageCollected<ScopedCSSNameList>(
+      HeapVector<Member<const ScopedCSSName>>(
+          1u, MakeGarbageCollected<ScopedCSSName>("test",
+                                                  /* tree_scope */ nullptr))));
+  builder2.SetContainerType(kContainerTypeSize);
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  EXPECT_EQ(ComputedStyle::Difference::kEqual,
+            ComputedStyle::ComputeDifference(style1.get(), style2.get()));
+}
+
 }  // namespace blink

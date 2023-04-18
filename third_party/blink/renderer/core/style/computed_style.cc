@@ -258,7 +258,8 @@ static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
       !new_style.IsContainerForSizeContainerQueries()) {
     return false;
   }
-  if ((old_style.ContainerName() != new_style.ContainerName()) ||
+  if (!base::ValuesEquivalent(old_style.ContainerName(),
+                              new_style.ContainerName()) ||
       (old_style.ContainerType() != new_style.ContainerType())) {
     return true;
   }
