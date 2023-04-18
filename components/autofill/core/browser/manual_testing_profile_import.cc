@@ -87,7 +87,9 @@ absl::optional<AutofillProfile::Source> GetProfileSourceFromDict(
 // Given a `dict` of "field-type" : "value" mappings, constructs an
 // AutofillProfile where each "field-type"  is set to the provided "value".
 // "field-type"s are converted to ServerFieldTypes using the `lookup_table`.
-// All verification statuses are set to `kUserVerified`.
+// All verification statuses are set to `kObserved`. Setting them to
+// `kUserVerified` is problematic, since the data model expects that only root
+// level (= setting-visible) nodes are user verified.
 // If a field type cannot be mapped, or if the resulting profile is not
 // `IsFullyStructuredProfile()`, absl::nullopt is returned.
 absl::optional<AutofillProfile> MakeProfile(
@@ -119,7 +121,7 @@ absl::optional<AutofillProfile> MakeProfile(
     }
     profile.SetRawInfoWithVerificationStatus(
         lookup_table.at(key), base::UTF8ToUTF16(value.GetString()),
-        VerificationStatus::kUserVerified);
+        VerificationStatus::kObserved);
   }
   if (!IsFullyStructuredProfile(profile)) {
     LOG(ERROR) << "Some profile is not fully structured.";

@@ -63,21 +63,21 @@ TEST_F(ManualTestingProfileImportTest, LoadProfilesFromFile_Valid) {
 
   AutofillProfile expected_profile1(AutofillProfile::Source::kLocalOrSyncable);
   expected_profile1.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"first last", VerificationStatus::kUserVerified);
+      NAME_FULL, u"first last", VerificationStatus::kObserved);
   expected_profile1.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"first", VerificationStatus::kUserVerified);
+      NAME_FIRST, u"first", VerificationStatus::kObserved);
   expected_profile1.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"last", VerificationStatus::kUserVerified);
+      NAME_LAST, u"last", VerificationStatus::kObserved);
 
   AutofillProfile expected_profile2(AutofillProfile::Source::kAccount);
   expected_profile2.set_initial_creator_id(999);
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"street 123",
-      VerificationStatus::kUserVerified);
+      VerificationStatus::kObserved);
   expected_profile2.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, u"street", VerificationStatus::kUserVerified);
+      ADDRESS_HOME_STREET_NAME, u"street", VerificationStatus::kObserved);
   expected_profile2.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_HOUSE_NUMBER, u"123", VerificationStatus::kUserVerified);
+      ADDRESS_HOME_HOUSE_NUMBER, u"123", VerificationStatus::kObserved);
 
   EXPECT_THAT(
       LoadProfilesFromFile(file_path),
