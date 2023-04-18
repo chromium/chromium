@@ -2524,10 +2524,7 @@ if (!is_android) {
     }
 
     if (is_win || is_linux || is_chromeos_ash) {
-      sources += [
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
-      ]
+      sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc" ]
     }
 
     if (is_mac) {
@@ -2541,6 +2538,7 @@ if (!is_android) {
       sources += [
         "../browser/media/webrtc/get_all_screen_media_browsertest.cc",
         "../browser/sessions/tab_restore_service_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
         "data/webui/chromeos/webui_resource_browsertest.cc",
       ]
       deps += [

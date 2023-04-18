@@ -1470,17 +1470,47 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
       << "No app installed for site: " << static_cast<int>(site);
 
   WebAppRegistrar& app_registrar = provider()->registrar_unsafe();
+#if BUILDFLAG(IS_CHROMEOS)
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
-  if (display_mode == blink::mojom::DisplayMode::kBrowser) {
+  bool is_open_in_app_browser =
+      (display_mode != blink::mojom::DisplayMode::kBrowser);
+  if (is_open_in_app_browser) {
+    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
+    active_app_id_ = app_id;
+  } else {
     ui_test_utils::UrlLoadObserver url_observer(
         app_registrar.GetAppLaunchUrl(app_id),
         content::NotificationService::AllSources());
     LaunchBrowserForWebAppInTab(profile(), app_id);
     url_observer.Wait();
-  } else {
-    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
-    active_app_id_ = app_id;
   }
+#else
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler(&test_web_ui);
+
+  auto event_ptr = app_home::mojom::ClickEvent::New();
+  event_ptr->button = 0.0;
+  event_ptr->alt_key = false;
+  event_ptr->ctrl_key = false;
+  event_ptr->meta_key = false;
+  event_ptr->shift_key = false;
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      app_registrar.GetAppLaunchUrl(app_id),
+      content::NotificationService::AllSources());
+  app_home_page_handler.LaunchApp(app_id, std::move(event_ptr));
+  url_observer.Wait();
+
+  // The app_browser_ is needed only for apps that open in a new window, and is
+  // nullptr for apps that launch in a tab.
+  app_browser_ = GetBrowserForAppId(profile(), app_id);
+  active_app_id_ = app_id;
+#endif
   AfterStateChangeAction();
 }
 
@@ -2876,7 +2906,7 @@ void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
   } else {
 #endif
     ASSERT_TRUE(previous_browser_state.has_value());
-    EXPECT_GT(most_recent_browser_state->tabs.size(),
+    EXPECT_GE(most_recent_browser_state->tabs.size(),
               previous_browser_state->tabs.size());
     int tab_diff = most_recent_browser_state->tabs.size() -
                    previous_browser_state->tabs.size();
@@ -3359,6 +3389,37 @@ void WebAppIntegrationTestDriver::CheckNoSubApps() {
 
   // Check that list() returned an empty dictionary.
   EXPECT_EQ(base::Value(base::Value::Type::DICT), result);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+
+  bool app_launched = false;
+  auto* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    // Bypass apps that open in standalone windows.
+    if (AppBrowserController::IsWebApp(browser)) {
+      continue;
+    }
+
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+      if (!app_id) {
+        continue;
+      }
+
+      if (*app_id == GetAppIdBySiteMode(site)) {
+        app_launched = true;
+        break;
+      }
+    }
+  }
+  EXPECT_TRUE(app_launched);
   AfterStateCheckAction();
 }
 

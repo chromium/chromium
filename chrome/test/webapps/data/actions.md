@@ -125,14 +125,13 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | delete_platform_shortcut | Site |  | 74 | Implemented | Delete the shortcut that lives on the operating system. Win/Mac/Linux only. | P2 |
 | delete_profile |  |  | 83 | Not Implemented | Delete the user profile. | P4 |
 | # Launching |
-| launch_from_chrome_apps | Site |  | 34 | Implemented | Launch the web app by navigating to chrome://apps, and then clicking on the app icon. |  |
 | launch_from_launch_icon | Site |  | 35 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the launch icon in the omnibox (intent picker), |  |
 | launch_from_menu_option | Site |  | 69 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the "Launch _" menu option in the 3-dot menu. | cliffordcheng@, P1 |
 | launch_from_platform_shortcut | Site |  | 1 | Implemented | Launch an app from a platform shortcut on the user's desktop or start menu. | cliffordcheng@, P0 |
 | launch | Site | launch_from_menu_option($1) & launch_from_launch_icon($1) & launch_from_chrome_apps($1) & launch_from_platform_shortcut($1) | 64 | Parameterized |  |  |
 | launch_not_from_platform_shortcut | Site | launch_from_menu_option($1) & launch_from_launch_icon($1) & launch_from_chrome_apps($1) | 135 | Parameterized |  |   |
 | launch_from_browser | Site | launch_from_menu_option($1) & launch_from_launch_icon($1) & launch_from_chrome_apps($1) | 65 | Parameterized |  |  |
-| launch_from_shortcut_or_list | Site | launch_from_chrome_apps($1) & launch_from_platform_shortcut($1) | 66 | Parameterized | All ways to launch an app that are still available for 'browser' apps. |  |
+| check_app_loaded_in_tab | Site |  | 163 | Implemented | Verify that the web app was launched in a tab after being clicked from chrome://apps. |  |
 | # Navigation |
 | navigate_browser | Site |  | 37 | Implemented | Navigate the browser to one of the static sites provided by the testing framework. |  |
 | navigate_notfound_url |  |  | 38 | Implemented | Navigate to a url that returns a 404 server error. |  |
@@ -169,9 +168,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_no_sub_apps |  |  | 142 | Implemented | Assuming we navigated to the (potential) parent site, call subApps.list() and check if the list is empty. |  |
 
 ### App Home
-
-TODO(dibyapal): Move more app home based actions here once they are integrated to above actions or newly implemented.
-
 Actions that the user can take by going to chrome://apps and either left clicking an app or right clicking an app and then taking actions from the context menu that opens.
 
 | # Action base name | Argument Types | Output Actions | Unique Identifier | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
@@ -192,3 +188,4 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | uninstall_from_list | Site |  | 10 | Implemented | Uninstall the webapp from wherever apps are listed by chrome. On WML, this is from chrome://apps, and on ChromeOS, this is from the 'launcher' |  |
 | create_shortcuts_from_list | Site |  | 72 | Implemented | "create shortcuts" in chrome://apps. Win/Mac/Linux only. | P2 |
 | open_app_settings_from_chrome_apps | Site |  | 96 | Implemented |  | phillis@ |
+| launch_from_chrome_apps | Site |  | 34 | Implemented | Launch the web app by navigating to chrome://apps, and then clicking on the app icon. |  |
