@@ -297,7 +297,16 @@ class PLATFORM_EXPORT Color {
   Color Light() const;
   Color Dark() const;
 
-  Color CombineWithAlpha(float other_alpha) const;
+  Color CombineWithAlpha(float other_alpha) const& {
+    Color color = *this;
+    color.alpha_ *= other_alpha;
+    return color;
+  }
+
+  Color&& CombineWithAlpha(float other_alpha) && {
+    alpha_ *= other_alpha;
+    return std::move(*this);
+  }
 
   // This is an implementation of Porter-Duff's "source-over" equation
   // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending,

@@ -63,10 +63,6 @@ int BlendComponent(int c, int a) {
   return static_cast<int>(c / alpha);
 }
 
-int ColorFloatToRGBAByte(float f) {
-  return ClampTo(static_cast<int>(lroundf(255.0f * f)), 0, 255);
-}
-
 // originally moved here from the CSS parser
 template <typename CharacterType>
 inline bool ParseHexColorInternal(const CharacterType* name,
@@ -1009,12 +1005,6 @@ Color Color::Dark() const {
   return Color(static_cast<int>(multiplier * r * scale_factor),
                static_cast<int>(multiplier * g * scale_factor),
                static_cast<int>(multiplier * b * scale_factor), Alpha());
-}
-
-Color Color::CombineWithAlpha(float other_alpha) const {
-  RGBA32 rgb_only = Rgb() & 0x00FFFFFF;
-  float override_alpha = (Alpha() / 255.f) * other_alpha;
-  return Color(rgb_only | ColorFloatToRGBAByte(override_alpha) << 24);
 }
 
 Color Color::Blend(const Color& source) const {

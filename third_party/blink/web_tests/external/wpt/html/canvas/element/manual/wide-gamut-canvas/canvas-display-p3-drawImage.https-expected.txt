@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 240 tests; 220 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 240 tests; 224 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS sRGB-FF0000FF.png, Context srgb, ImageData srgb, scaleImage=false
 PASS sRGB-FF0000FF.png, Context srgb, ImageData srgb, scaleImage=true
 PASS sRGB-FF0000FF.png, Context srgb, ImageData display-p3, scaleImage=false
@@ -230,15 +230,15 @@ PASS Display-P3-1-0-0.svg, Context srgb, ImageData display-p3, scaleImage=false
 PASS Display-P3-1-0-0.svg, Context srgb, ImageData display-p3, scaleImage=true
 PASS Display-P3-1-0-0.svg, Context display-p3, ImageData srgb, scaleImage=false
 PASS Display-P3-1-0-0.svg, Context display-p3, ImageData srgb, scaleImage=true
-FAIL Display-P3-1-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=false assert_true: Actual pixel value 234,51,35,255 is approximately equal to 255,0,0,255. expected true got false
-FAIL Display-P3-1-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=true assert_true: Actual pixel value 234,51,35,255 is approximately equal to 255,0,0,255. expected true got false
+PASS Display-P3-1-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=false
+PASS Display-P3-1-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=true
 PASS Display-P3-0.7333-0-0.svg, Context srgb, ImageData srgb, scaleImage=false
 PASS Display-P3-0.7333-0-0.svg, Context srgb, ImageData srgb, scaleImage=true
 PASS Display-P3-0.7333-0-0.svg, Context srgb, ImageData display-p3, scaleImage=false
 PASS Display-P3-0.7333-0-0.svg, Context srgb, ImageData display-p3, scaleImage=true
 PASS Display-P3-0.7333-0-0.svg, Context display-p3, ImageData srgb, scaleImage=false
 PASS Display-P3-0.7333-0-0.svg, Context display-p3, ImageData srgb, scaleImage=true
-FAIL Display-P3-0.7333-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=false assert_true: Actual pixel value 188,39,26,255 is approximately equal to 187,0,0,255. expected true got false
-FAIL Display-P3-0.7333-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=true assert_true: Actual pixel value 188,39,26,255 is approximately equal to 187,0,0,255. expected true got false
+PASS Display-P3-0.7333-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=false
+PASS Display-P3-0.7333-0-0.svg, Context display-p3, ImageData display-p3, scaleImage=true
 Harness: the test ran to completion.
 

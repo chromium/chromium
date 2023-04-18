@@ -84,8 +84,9 @@ bool SVGObjectPainter::PreparePaint(
     const Longhand& property = apply_to_fill
                                    ? To<Longhand>(GetCSSPropertyFill())
                                    : To<Longhand>(GetCSSPropertyStroke());
-    const Color color = style.VisitedDependentColor(property);
-    flags.setColor(ScaleAlpha(color.Rgb(), alpha));
+    flags.setColor(style.VisitedDependentColor(property)
+                       .CombineWithAlpha(alpha)
+                       .toSkColor4f());
     flags.setShader(nullptr);
     ApplyColorInterpolation(style, flags);
     return true;
