@@ -2741,7 +2741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ManageCardsPrompt{AutofillManageCardsPrompt}"
-    enum="AutofillManageCardsPrompt" expires_after="2023-06-01">
+    enum="AutofillManageCardsPrompt" expires_after="2024-04-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
