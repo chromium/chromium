@@ -634,6 +634,29 @@ TEST(CookieUtilTest, TestIsDomainMatch) {
   EXPECT_FALSE(cookie_util::IsDomainMatch(".example.de", "example.de.vu"));
 }
 
+TEST(CookieUtilTest, TestIsOnPath) {
+  EXPECT_TRUE(cookie_util::IsOnPath("/", "/"));
+  EXPECT_TRUE(cookie_util::IsOnPath("/", "/test"));
+  EXPECT_TRUE(cookie_util::IsOnPath("/", "/test/bar.html"));
+
+  // Test the empty string edge case.
+  EXPECT_FALSE(cookie_util::IsOnPath("/", std::string()));
+
+  EXPECT_FALSE(cookie_util::IsOnPath("/test", "/"));
+
+  EXPECT_TRUE(cookie_util::IsOnPath("/test", "/test"));
+  EXPECT_FALSE(cookie_util::IsOnPath("/test", "/testtest/"));
+
+  EXPECT_TRUE(cookie_util::IsOnPath("/test", "/test/bar.html"));
+  EXPECT_TRUE(cookie_util::IsOnPath("/test", "/test/sample/bar.html"));
+}
+
+TEST(CookieUtilTest, TestIsOnPathCaseSensitive) {
+  EXPECT_TRUE(cookie_util::IsOnPath("/test", "/test"));
+  EXPECT_FALSE(cookie_util::IsOnPath("/test", "/TEST"));
+  EXPECT_FALSE(cookie_util::IsOnPath("/TEST", "/test"));
+}
+
 using ::testing::AllOf;
 using SameSiteCookieContext = CookieOptions::SameSiteCookieContext;
 using ContextType = CookieOptions::SameSiteCookieContext::ContextType;
