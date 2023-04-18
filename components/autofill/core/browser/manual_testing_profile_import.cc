@@ -139,19 +139,6 @@ absl::optional<std::vector<AutofillProfile>> LoadProfilesFromJSONContent(
   return absl::nullopt;
 }
 
-// Reads the contents of `file`, parses it as a JSON file and converts its
-// content into AutofillProfiles.
-// If any step fails, an error message is logged and absl::nullopt is returned.
-absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
-    base::FilePath file) {
-  std::string file_content;
-  if (!base::ReadFileToString(file, &file_content)) {
-    LOG(ERROR) << "Failed to read file " << file.MaybeAsASCII() << ".";
-    return absl::nullopt;
-  }
-  return LoadProfilesFromJSONContent(file_content);
-}
-
 // Sets all of the `pdm`'s profiles to `profiles`, if the `pdm` still exists.
 void SetProfiles(base::WeakPtr<PersonalDataManager> pdm,
                  absl::optional<std::vector<AutofillProfile>> profiles) {
@@ -162,6 +149,16 @@ void SetProfiles(base::WeakPtr<PersonalDataManager> pdm,
 }
 
 }  // namespace
+
+absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
+    base::FilePath file) {
+  std::string file_content;
+  if (!base::ReadFileToString(file, &file_content)) {
+    LOG(ERROR) << "Failed to read file " << file.MaybeAsASCII() << ".";
+    return absl::nullopt;
+  }
+  return LoadProfilesFromJSONContent(file_content);
+}
 
 absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
     const base::Value& json) {

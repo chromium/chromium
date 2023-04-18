@@ -48,15 +48,22 @@ constexpr char kManualProfileImportForTestingFlag[] =
 constexpr char kManualProfileContentImportForTestingFlag[] =
     "autofill-profiles-content-for-manual-testing";
 
-// Given a description of fully structured profiles in the aforementioned JSON
-// format, converts it to a vector of AutofillProfiles.
-// If the JSON doesn't adhere to the above format, or if any of the profiles is
-// not fully structured, an error is logged and absl::nullopt is returned.
-// A profile is considered "fully structured" if `FinalizeAfterImport()` doesn't
-// change it. This condition exists to prevent profiles from silently changing,
-// since `FinalizeAfterImport()` is called when retrieving a profile from the
-// database. For example, if the structure is invalid because the last name is
-// not part of the full name, the routine will clear this information.
+// Reads the contents of `file`, parses it as a JSON file and converts its
+// content into AutofillProfiles.
+// If any step fails, an error message is logged and absl::nullopt is returned.
+absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
+    base::FilePath file);
+
+// Given a description of fully structured profiles in the aforementioned
+// JSON format, converts it to a vector of AutofillProfiles. If the JSON
+// doesn't adhere to the above format, or if any of the profiles is not
+// fully structured, an error is logged and absl::nullopt is returned. A
+// profile is considered "fully structured" if `FinalizeAfterImport()`
+// doesn't change it. This condition exists to prevent profiles from
+// silently changing, since `FinalizeAfterImport()` is called when
+// retrieving a profile from the database. For example, if the structure is
+// invalid because the last name is not part of the full name, the routine
+// will clear this information.
 absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
     const base::Value& json);
 
