@@ -294,6 +294,13 @@ class CC_EXPORT GpuImageDecodeCache
     // Release `data` and all entries in `images` and `pixmaps`.
     void ResetData();
 
+    // Check that images are non-nullptr only where pixmaps are non-empty.
+    void ValidateImagesMatchPixmaps() const {
+      for (int i = 0; i < SkYUVAInfo::kMaxPlanes; ++i) {
+        DCHECK_EQ(images[i] == nullptr, pixmaps[i].dimensions().isEmpty());
+      }
+    }
+
     std::unique_ptr<base::DiscardableMemory> data;
     sk_sp<SkImage> images[SkYUVAInfo::kMaxPlanes];
     SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
@@ -309,22 +316,37 @@ class CC_EXPORT GpuImageDecodeCache
     bool Lock();
     void Unlock();
 
-    void SetLockedData(DecodedAuxImageData aux_image_data, bool out_of_raster);
+    void SetLockedData(DecodedAuxImageData aux_image_data[kAuxImageCount],
+                       bool out_of_raster);
     void ResetData();
-    base::DiscardableMemory* data() const { return aux_image_data_.data.get(); }
+    bool HasData() const {
+      for (const auto& aux_image_data : aux_image_data_) {
+        if (aux_image_data.data) {
+          return true;
+        }
+      }
+      return false;
+    }
+    base::DiscardableMemory* data(AuxImage aux_image) const {
+      return aux_image_data_[AuxImageIndex(aux_image)].data.get();
+    }
 
     void SetBitmapImage(sk_sp<SkImage> image);
     void ResetBitmapImage();
 
-    sk_sp<SkImage> image(int plane = 0) const {
-      DCHECK(is_locked() || is_bitmap_backed_);
+    sk_sp<SkImage> image(int plane, AuxImage aux_image) const {
       DCHECK_LT(plane, SkYUVAInfo::kMaxPlanes);
-      return aux_image_data_.images[plane];
+      if (is_bitmap_backed_) {
+        DCHECK_EQ(aux_image, AuxImage::kDefault);
+      } else {
+        DCHECK(is_locked());
+      }
+      return aux_image_data_[AuxImageIndex(aux_image)].images[plane];
     }
 
-    const SkPixmap* pixmaps() const {
+    const SkPixmap* pixmaps(AuxImage aux_image) const {
       DCHECK(is_locked() || is_bitmap_backed_);
-      return aux_image_data_.pixmaps;
+      return aux_image_data_[AuxImageIndex(aux_image)].pixmaps;
     }
 
     bool can_do_hardware_accelerated_decode() const {
@@ -336,7 +358,9 @@ class CC_EXPORT GpuImageDecodeCache
     }
 
     // Test-only functions.
-    sk_sp<SkImage> ImageForTesting() const { return aux_image_data_.images[0]; }
+    sk_sp<SkImage> ImageForTesting() const {
+      return aux_image_data_[kAuxImageIndexDefault].images[0];
+    }
 
     bool decode_failure = false;
     // Similar to |task|, but only is generated if there is no associated upload
@@ -358,7 +382,7 @@ class CC_EXPORT GpuImageDecodeCache
     void ReportUsageStats() const;
 
     const bool is_bitmap_backed_;
-    DecodedAuxImageData aux_image_data_;
+    DecodedAuxImageData aux_image_data_[kAuxImageCount];
 
     // Keeps tracks of images that could go through hardware decode acceleration
     // though they're possibly prevented from doing so because of a disabled
@@ -555,17 +579,27 @@ class CC_EXPORT GpuImageDecodeCache
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
               bool do_hardware_accelerated_decode,
-              const ImageInfo& info);
+              ImageInfo image_info[kAuxImageCount]);
 
     bool IsGpuOrTransferCache() const;
     bool HasUploadedData() const;
     void ValidateBudgeted() const;
 
+    const ImageInfo& GetImageInfo(AuxImage aux_image) const {
+      switch (aux_image) {
+        case AuxImage::kDefault:
+          return info;
+        case AuxImage::kGainmap:
+          return gainmap_info;
+      }
+    }
+
     // Return the memory that is used by this image when decoded. This should
     // also equal the memory that is used on the GPU when this is uploaded.
     // In some circumstances the GPU memory usage is slightly different (e.g,
-    // when a gainmap or HDR tonemapping is applied).
-    size_t GetSize() const;
+    // when a gainmap or HDR tonemapping is applied). This includes the memory
+    // used by all auxiliary images.
+    size_t GetTotalSize() const;
 
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
@@ -580,6 +614,10 @@ class CC_EXPORT GpuImageDecodeCache
     // The RGBA or YUVA image info for the decoded image. The dimensions may be
     // smaller than the original size if the image needs to be downscaled.
     const ImageInfo info;
+
+    // The RGBA or YUVA image info for the decoded gainmap image. This will
+    // return false from IsEmpty if and only if the image has a gainmap.
+    const ImageInfo gainmap_info;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
     // deleted as soon as its ref count reaches zero.

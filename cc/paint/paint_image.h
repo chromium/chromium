@@ -41,7 +41,27 @@ class TextureBacking;
 
 enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
 
-enum class AuxImage { kDefault, kGainmap };
+enum class AuxImage : size_t { kDefault = 0, kGainmap = 1 };
+static constexpr std::array<AuxImage, 2> kAllAuxImages = {AuxImage::kDefault,
+                                                          AuxImage::kGainmap};
+constexpr size_t AuxImageIndex(AuxImage aux_image) {
+  return static_cast<size_t>(aux_image);
+}
+static constexpr size_t kAuxImageCount = 2;
+static constexpr size_t kAuxImageIndexDefault =
+    AuxImageIndex(AuxImage::kDefault);
+static constexpr size_t kAuxImageIndexGainmap =
+    AuxImageIndex(AuxImage::kGainmap);
+constexpr const char* AuxImageName(AuxImage aux_image) {
+  switch (aux_image) {
+    case AuxImage::kDefault:
+      return "default";
+      break;
+    case AuxImage::kGainmap:
+      return "gainmap";
+      break;
+  }
+}
 
 enum class YUVSubsampling { k410, k411, k420, k422, k440, k444, kUnknown };
 

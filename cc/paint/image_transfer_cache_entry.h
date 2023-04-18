@@ -60,10 +60,8 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
     // Constructor for YUVA images.
     Image(const SkPixmap yuva_pixmaps[],
-          SkYUVAInfo::PlaneConfig plane_config,
-          SkYUVAInfo::Subsampling subsampling,
-          const SkColorSpace* color_space,
-          SkYUVColorSpace yuv_color_space);
+          const SkYUVAInfo& yuva_info,
+          const SkColorSpace* color_space);
 
     // The pixmaps for each plane.
     std::array<const SkPixmap*, SkYUVAInfo::kMaxPlanes> pixmaps = {

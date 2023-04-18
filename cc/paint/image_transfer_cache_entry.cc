@@ -517,16 +517,20 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap* pixmap)
   pixmaps[0] = pixmap;
 }
 
-ClientImageTransferCacheEntry::Image::Image(
-    const SkPixmap yuva_pixmaps[],
-    SkYUVAInfo::PlaneConfig yuv_plane_config,
-    SkYUVAInfo::Subsampling yuv_subsampling,
-    const SkColorSpace* color_space,
-    SkYUVColorSpace yuv_color_space)
-    : yuv_plane_config(yuv_plane_config),
-      yuv_subsampling(yuv_subsampling),
-      yuv_color_space(yuv_color_space),
+ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
+                                            const SkYUVAInfo& yuva_info,
+                                            const SkColorSpace* color_space)
+    : yuv_plane_config(yuva_info.planeConfig()),
+      yuv_subsampling(yuva_info.subsampling()),
+      yuv_color_space(yuva_info.yuvColorSpace()),
       color_space(color_space) {
+  // The size of the first plane must equal the size specified in the
+  // SkYUVAInfo.
+  DCHECK(yuva_info.dimensions() == yuva_pixmaps[0].dimensions());
+  // We fail to serialize some parameters.
+  DCHECK_EQ(yuva_info.origin(), kTopLeft_SkEncodedOrigin);
+  DCHECK_EQ(yuva_info.sitingX(), SkYUVAInfo::Siting::kCentered);
+  DCHECK_EQ(yuva_info.sitingY(), SkYUVAInfo::Siting::kCentered);
   DCHECK(IsYUVAInfoValid(yuv_plane_config, yuv_subsampling, yuv_color_space));
   for (int i = 0; i < SkYUVAInfo::NumPlanes(yuv_plane_config); ++i) {
     pixmaps[i] = &yuva_pixmaps[i];
