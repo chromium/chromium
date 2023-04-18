@@ -176,19 +176,52 @@ export class DynamicColorElement extends WithPersonalizationStore {
     return isAutomaticSeedColorEnabled(colorScheme);
   }
 
-  private getColorSchemeAriaChecked_(
+  private getColorSchemeAriaPressed_(
       colorScheme: number, colorSchemeSelected: number|null): 'true'|'false' {
-    const checkedColorScheme = colorSchemeSelected || DEFAULT_COLOR_SCHEME;
-    return checkedColorScheme === colorScheme ? 'true' : 'false';
+    const pressedColorScheme = colorSchemeSelected || DEFAULT_COLOR_SCHEME;
+    return pressedColorScheme === colorScheme ? 'true' : 'false';
   }
 
-  private getStaticColorAriaChecked_(
+  private getColorSchemeAriaDescription_(colorScheme: ColorScheme): string {
+    switch (colorScheme) {
+      case ColorScheme.kTonalSpot:
+        return this.i18n('colorSchemeTonalSpot');
+      case ColorScheme.kExpressive:
+        return this.i18n('colorSchemeExpressive');
+      case ColorScheme.kNeutral:
+        return this.i18n('colorSchemeNeutral');
+      case ColorScheme.kVibrant:
+        return this.i18n('colorSchemeVibrant');
+      default:
+        console.warn('Invalid color scheme value.');
+        return '';
+    }
+  }
+
+  private getStaticColorAriaPressed_(
       staticColor: string, staticColorSelected: SkColor|null): 'true'|'false' {
-    const checkedStaticColor = staticColorSelected || DEFAULT_STATIC_COLOR;
-    return staticColor === convertToRgbHexStr(checkedStaticColor.value) ?
+    const pressedStaticColor = staticColorSelected || DEFAULT_STATIC_COLOR;
+    return staticColor === convertToRgbHexStr(pressedStaticColor.value) ?
         'true' :
         'false';
   }
+
+  private getStaticColorAriaDescription_(staticColor: StaticColor): string {
+    switch (staticColor) {
+      case StaticColor.kGoogleBlue:
+        return this.i18n('staticColorGoogleBlue');
+      case StaticColor.kLightPink:
+        return this.i18n('staticColorLightPink');
+      case StaticColor.kDarkGreen:
+        return this.i18n('staticColorDarkGreen');
+      case StaticColor.kLightPurple:
+        return this.i18n('staticColorLightPurple');
+      default:
+        console.warn('Invalid static color value.');
+        return '';
+    }
+  }
+
 
   private onStaticColorKeysPress_(
       e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {

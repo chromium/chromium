@@ -64,7 +64,7 @@
     display: none;
   }
 
-  cr-button[aria-checked='true'] iron-icon[icon='personalization:circle_checkmark'] {
+  cr-button[aria-pressed='true'] iron-icon[icon='personalization:circle_checkmark'] {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     bottom: -4px;
@@ -86,9 +86,8 @@
   <div id="themeHeader">
     <div id="themeTitle">$i18n{dynamicColorLabel}</div>
     <div id="dynamicColorToggleDescription">$i18n{dynamicColorDescription}</div>
-    <!-- TODO(b/253089237): Add the translated aria label. -->
     <cr-toggle checked="{{automaticSeedColorEnabled}}" id="dynamicColorToggle"
-        on-change="onToggleChanged_">
+        on-change="onToggleChanged_" aria-labelledby="dynamicColorToggleDescription">
     </cr-toggle>
   </div>
   <iron-a11y-keys id="colorSchemeKeys" keys="left right" on-keys-pressed="onColorSchemeKeysPress_">
@@ -105,7 +104,8 @@
           tabindex$="[[getColorSchemeTabIndex_(colorScheme.scheme)]]"
           on-click="onClickColorSchemeButton_"
           data-color-scheme-id$="[[colorScheme.scheme]]"
-          aria-checked$="[[getColorSchemeAriaChecked_(colorScheme.scheme, colorSchemeSelected_)]]">
+          aria-pressed$="[[getColorSchemeAriaPressed_(colorScheme.scheme, colorSchemeSelected_)]]"
+          aria-description$="[[getColorSchemeAriaDescription_(colorScheme.scheme)]]">
         <div class="container">
           <color-scheme-icon-svg scheme="[[colorScheme]]"></color-scheme-icon-svg>
           <iron-icon class="checkmark" icon="personalization:circle_checkmark"></iron-icon>
@@ -122,7 +122,8 @@
       <cr-button
           tabindex$="[[getStaticColorTabIndex_(staticColor.hexVal)]]"
           on-click="onClickStaticColorButton_"
-          aria-checked$="[[getStaticColorAriaChecked_(staticColor.hexVal, staticColorSelected_)]]">
+          aria-pressed$="[[getStaticColorAriaPressed_(staticColor.hexVal, staticColorSelected_)]]"
+          aria-description$="[[getStaticColorAriaDescription_(staticColor.enumVal)]]">
         <div class="container">
           <svg>
             <circle style$="fill: [[staticColor.hexVal]]" cx="24" cy="24" r="24"></circle>

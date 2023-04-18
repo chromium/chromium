@@ -2373,6 +2373,30 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_DESCRIPTION" desc="Description for dynamic color theme element in personalization hub">
           Use color sets that match your wallpaper
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_TONAL_SPOT" desc="Label for dynamic color tonal spot scheme in personalization hub">
+          Wallpaper tone
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_NEUTRAL" desc="Label for dynamic color neutral scheme in personalization hub">
+          Neutral
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_VIBRANT" desc="Label for dynamic color vibrant scheme in personalization hub">
+          Vibrant
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_COLOR_SCHEME_EXPRESSIVE" desc="Label for dynamic color expressive scheme in personalization hub">
+          Expressive
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_GOOGLE_BLUE" desc="Label for static color google blue in personalization hub">
+          Google blue
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_LIGHT_PINK" desc="Label for static color light pink in personalization hub">
+          Light pink
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_DARK_GREEN" desc="Label for static color dark green in personalization hub">
+          Dark green
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_STATIC_COLOR_LIGHT_PURPLE" desc="Label for static color light purple in personalization hub">
+          Light purple
+        </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE" desc="Label for dark color mode setting">
           Dark
         </message>
