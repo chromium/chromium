@@ -12035,8 +12035,10 @@ TEST_P(QuicStreamFactoryTest, OnCertDBChanged) {
   EXPECT_TRUE(stream);
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
 
-  // Change the CA cert and verify that stream saw the event.
-  factory_->OnCertDBChanged();
+  // Synthesize a CertDatabase change notification and verify that stream saw
+  // the event.
+  CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(factory_->is_quic_known_to_work_on_current_network());
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
