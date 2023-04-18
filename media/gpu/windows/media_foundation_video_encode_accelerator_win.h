@@ -16,6 +16,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -258,7 +259,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view_;
 
   // To expose client callbacks from VideoEncodeAccelerator.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // DXGI device manager for handling hardware input textures

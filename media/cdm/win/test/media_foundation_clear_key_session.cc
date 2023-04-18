@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/win/mf_helpers.h"
@@ -101,7 +102,7 @@ class MediaFoundationSimpleCdmPromise : public SimpleCdmPromise {
   }
 
  private:
-  PromiseState* promise_state_ = nullptr;
+  raw_ptr<PromiseState> promise_state_ = nullptr;
 };
 
 class MediaFoundationCdmSessionPromise : public NewSessionCdmPromise {
@@ -144,7 +145,7 @@ class MediaFoundationCdmSessionPromise : public NewSessionCdmPromise {
   }
 
  private:
-  PromiseState* promise_state_ = nullptr;
+  raw_ptr<PromiseState> promise_state_ = nullptr;
   SessionIdCB session_created_cb_;
 };
 
