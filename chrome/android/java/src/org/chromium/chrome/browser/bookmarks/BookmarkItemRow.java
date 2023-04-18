@@ -37,8 +37,8 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
      */
     public static BookmarkItemRow buildView(Context context, boolean isVisualRefreshEnabled) {
         BookmarkItemRow row = new BookmarkItemRow(context, null);
-        row.setupIconProperties(isVisualRefreshEnabled);
         BookmarkRow.buildView(row, context, isVisualRefreshEnabled);
+        row.setupIconProperties(isVisualRefreshEnabled);
         return row;
     }
 
@@ -48,9 +48,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     }
 
     void setupIconProperties(boolean isVisualRefreshEnabled) {
-        mMinIconSize = getResources().getDimensionPixelSize(isVisualRefreshEnabled
-                        ? R.dimen.bookmark_refresh_min_start_icon_size
-                        : R.dimen.default_favicon_min_size);
+        mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(isVisualRefreshEnabled
                         ? R.dimen.bookmark_refresh_preferred_start_icon_size
                         : R.dimen.default_favicon_size);

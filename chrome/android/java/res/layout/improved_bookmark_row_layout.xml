@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingVertical="8dp"
+    android:background="@drawable/rounded_rectangle_surface_0">
+
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/start_image"
+        android:layout_width="@dimen/improved_bookmark_icon_size"
+        android:layout_height="@dimen/improved_bookmark_icon_size"
+        android:layout_marginEnd="16dp"
+        android:scaleType="center"
+        android:importantForAccessibility="no"
+        android:background="@drawable/oval_surface_1"
+        app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+        app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+        app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+        app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius" />
+
+    <!-- Common title/description shared between list item views. -->
+    <include layout="@layout/title_and_description_layout" />
+
+    <include layout="@layout/improved_bookmark_row_end" />
+
+</LinearLayout>

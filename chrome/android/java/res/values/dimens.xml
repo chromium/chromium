@@ -219,11 +219,13 @@ found in the LICENSE file.
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
+    <!-- The size of the icon view, but not the size of the fetched image. -->
+    <dimen name="improved_bookmark_icon_size">48dp</dimen>
+    <!-- The size of the icon view and the size of the fetched image. -->
+    <dimen name="improved_bookmark_icon_visual_size">80dp</dimen>
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
-     <!-- We intentionally use px to avoid showing fewer favicons in some UIs on higher density devices. -->
-     <dimen name="bookmark_refresh_min_start_icon_size" tools:ignore="PxUsage">32px</dimen>
      <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
 
     <!-- Bookmark widget dimensions -->
