@@ -7,14 +7,20 @@ const blankURL = (base = location.origin) => new URL('/wpt_internal/attribution-
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {
       t.add_cleanup(() => internals.resetAttributionReporting());
-      t.add_cleanup(() => resetAttributionReports(eventLevelReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(aggregatableReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(eventLevelDebugReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(aggregatableDebugReportsUrl));
-      t.add_cleanup(() => resetAttributionReports(verboseDebugReportsUrl));
-      t.add_cleanup(() => resetRegisteredSources());
+      t.add_cleanup(() => resetWptServerStash());
+
+      await resetWptServerStash();
       return f(t);
     }, name);
+
+const resetWptServerStash = () => Promise.all([
+  resetAttributionReports(eventLevelReportsUrl),
+  resetAttributionReports(aggregatableReportsUrl),
+  resetAttributionReports(eventLevelDebugReportsUrl),
+  resetAttributionReports(aggregatableDebugReportsUrl),
+  resetAttributionReports(verboseDebugReportsUrl),
+  resetRegisteredSources(),
+]);
 
 const eventLevelReportsUrl =
     '/.well-known/attribution-reporting/report-event-attribution';

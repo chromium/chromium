@@ -34,6 +34,7 @@ def has_source(stash: Stash, source_id: str) -> bool:
         if not sources_set:
             return False
         if source_id not in sources_set:
+            stash.put(SOURCES, sources_set)
             return False
 
         sources_set.remove(source_id)
