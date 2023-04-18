@@ -28,6 +28,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/skia_helper.h"
 #include "components/viz/common/viz_utils.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display_embedder/image_context_impl.h"
 #include "components/viz/service/display_embedder/output_presenter_gl.h"
@@ -37,6 +38,7 @@
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 #include "components/viz/service/display_embedder/skia_output_device_webview.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
+#include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu_debug_capture.h"
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -1566,6 +1568,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   ScheduleCheckReadbackCompletion();
 }
 
+DBG_FLAG_FBOOL("skia_gpu.buffer_capture.enable", buffer_capture)
+
 void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     const std::vector<ImageContextImpl*>& image_contexts,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -1574,8 +1578,13 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bool is_gl = gpu_preferences_.gr_context_type == gpu::GrContextType::kGL;
-
   for (auto* context : image_contexts) {
+    if (buffer_capture()) {
+      AttemptDebuggerBufferCapture(context, context_state_.get(),
+                                   shared_image_representation_factory_.get(),
+                                   gr_context());
+    }
+
     // Prepare for accessing render pass.
     context->BeginAccessIfNecessary(
         context_state_.get(), shared_image_representation_factory_.get(),
