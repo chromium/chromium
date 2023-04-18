@@ -300,6 +300,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.BrowserThrottle.RedirectedExtensionUrlScheme"
+    enum="SafeBrowsingUrlScheme" expires_after="2023-07-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the scheme of the new URL that is redirected from a chrome-extension://
+    URL. Logged each time browser URL loader throttle receives a redirect
+    request and the scheme of the original URL is chrome-extension://. This
+    histogram can help us determine if it is safe to skip chrome-extension://
+    URLs when the request starts.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.BrowserThrottle.RedirectedOriginalUrlScheme"
     enum="SafeBrowsingUrlScheme" expires_after="2023-07-12">
   <owner>xinghuilu@chromium.org</owner>

@@ -389,9 +389,16 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
       "WillRedirectRequestAfterWillProcessResponse",
       will_process_response_count_ > 0);
 
+  // TODO(crbug.com/1410939): Below histograms are for debugging. Remove them
+  // afterwards.
   safe_browsing::scheme_logger::LogScheme(
       original_url_,
       "SafeBrowsing.BrowserThrottle.RedirectedOriginalUrlScheme");
+  if (original_url_.SchemeIs("chrome-extension")) {
+    safe_browsing::scheme_logger::LogScheme(
+        redirect_info->new_url,
+        "SafeBrowsing.BrowserThrottle.RedirectedExtensionUrlScheme");
+  }
 
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
