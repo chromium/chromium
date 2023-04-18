@@ -2144,19 +2144,23 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   ASSERT_NE(target_id, stable_id);
   md.shortcut_details->target_lookup_status = LookupStatus::kOk;
   md.type = FileMetadata::Type::kFile;
+  md.size = 10000;
+  md.available_offline = true;  // See b/278492340
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_FALSE(md.shortcut_details);
+  EXPECT_FALSE(md.available_offline);  // See b/278492340
+  EXPECT_EQ(Id(md.stable_id), target_id);
   EXPECT_EQ(manager.progress_.skipped_items, 0);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 1);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
   EXPECT_THAT(manager.listed_items_, SizeIs(1));
   EXPECT_THAT(manager.listed_items_,
               UnorderedElementsAre<PinManager::ListedItems::value_type>(
                   {target_id, dir_id}));
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(target_id));
-  EXPECT_FALSE(md.shortcut_details);
-  EXPECT_EQ(Id(md.stable_id), target_id);
   reset();
 
   // Valid shortcut to hosted doc.
@@ -2165,19 +2169,23 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   md.shortcut_details->target_stable_id = static_cast<int64_t>(target_id);
   md.stable_id = static_cast<int64_t>(stable_id);
   md.type = FileMetadata::Type::kHosted;
+  md.size = 0;
+  md.available_offline = true;  // See b/278492340
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_FALSE(md.shortcut_details);
+  EXPECT_FALSE(md.available_offline);  // See b/278492340
+  EXPECT_EQ(Id(md.stable_id), target_id);
   EXPECT_EQ(manager.progress_.skipped_items, 0);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 1);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
   EXPECT_THAT(manager.listed_items_, SizeIs(1));
   EXPECT_THAT(manager.listed_items_,
               UnorderedElementsAre<PinManager::ListedItems::value_type>(
                   {target_id, dir_id}));
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(target_id));
-  EXPECT_FALSE(md.shortcut_details);
-  EXPECT_EQ(Id(md.stable_id), target_id);
   reset();
 
   // Valid shortcut to directory.
@@ -2186,6 +2194,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   md.shortcut_details->target_stable_id = static_cast<int64_t>(target_id);
   md.stable_id = static_cast<int64_t>(stable_id);
   md.type = FileMetadata::Type::kDirectory;
+  md.size = 0;
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 0);

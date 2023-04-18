@@ -783,6 +783,10 @@ void PinManager::HandleQueryItem(Id dir_id,
     md.stable_id = md.shortcut_details->target_stable_id;
     id = Id(md.stable_id);
     md.shortcut_details.reset();
+
+    // Shortcuts have the available_offline flag incorrectly set (b/278492340).
+    // Reset this flag for shortcuts.
+    md.available_offline = md.pinned;
   }
 
   // Deduplicate items.
