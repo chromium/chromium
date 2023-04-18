@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
@@ -49,13 +49,6 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     std::vector<FakeTargetDeviceConnectionBroker*> instances_;
   };
 
-  class FakeAuthenticatedConnection
-      : public AuthenticatedConnection,
-        public base::SupportsWeakPtr<FakeAuthenticatedConnection> {
-   public:
-    using AuthenticatedConnection::AuthenticatedConnection;
-  };
-
   FakeTargetDeviceConnectionBroker();
   FakeTargetDeviceConnectionBroker(FakeTargetDeviceConnectionBroker&) = delete;
   FakeTargetDeviceConnectionBroker& operator=(
@@ -68,10 +61,11 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
                         bool use_pin_authentication,
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
+
   void InitiateConnection(const std::string& source_device_id);
   void AuthenticateConnection(const std::string& source_device_id);
-  void RejectConnection(const std::string& source_device_id);
-  void CloseConnection(const std::string& source_device_id);
+  void RejectConnection();
+  void CloseConnection(ConnectionClosedReason reason);
 
   void set_feature_support_status(FeatureSupportStatus feature_support_status) {
     feature_support_status_ = feature_support_status;
@@ -107,12 +101,13 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   size_t num_stop_advertising_calls_ = 0;
   FeatureSupportStatus feature_support_status_ =
       FeatureSupportStatus::kSupported;
-  ConnectionLifecycleListener* connection_lifecycle_listener_ = nullptr;
   ResultCallback on_start_advertising_callback_;
   base::OnceClosure on_stop_advertising_callback_;
-  std::unique_ptr<Connection> fake_connection_;
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
+
+  base::WeakPtrFactory<FakeTargetDeviceConnectionBroker> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash::quick_start

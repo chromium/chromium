@@ -22,8 +22,6 @@ source_set("connectivity") {
     "//url",
   ]
   sources = [
-    "authenticated_connection.cc",
-    "authenticated_connection.h",
     "connection.cc",
     "connection.h",
     "fast_pair_advertiser.cc",
@@ -80,7 +78,6 @@ source_set("unit_tests") {
     "//url",
   ]
   sources = [
-    "authenticated_connection_unittest.cc",
     "connection_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",

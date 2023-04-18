@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -140,8 +139,8 @@ void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
 }
 
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
-    const std::string& source_device_id,
-    base::WeakPtr<AuthenticatedConnection> connection) {
+    base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
+        authenticated_connection) {
   constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
@@ -150,15 +149,14 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   NotifyObservers();
 }
 
-void TargetDeviceBootstrapController::OnConnectionRejected(
-    const std::string& source_device_id) {
+void TargetDeviceBootstrapController::OnConnectionRejected() {
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_REJECTED;
   NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
-    const std::string& source_device_id) {
+    TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   NotifyObservers();

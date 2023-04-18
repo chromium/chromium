@@ -18,8 +18,6 @@ class NearbyConnectionsManager;
 
 namespace ash::quick_start {
 
-class AuthenticatedConnection;
-
 class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
  public:
@@ -93,10 +91,11 @@ class TargetDeviceBootstrapController
   void OnQRCodeVerificationRequested(
       const std::vector<uint8_t>& qr_code_data) override;
   void OnConnectionAuthenticated(
-      const std::string& source_device_id,
-      base::WeakPtr<AuthenticatedConnection> connection) override;
-  void OnConnectionRejected(const std::string& source_device_id) override;
-  void OnConnectionClosed(const std::string& source_device_id) override;
+      base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
+          authenticated_connection) override;
+  void OnConnectionRejected() override;
+  void OnConnectionClosed(
+      TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
  private:
   void NotifyObservers();

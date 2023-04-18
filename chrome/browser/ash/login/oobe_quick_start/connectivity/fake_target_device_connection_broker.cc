@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -80,32 +81,26 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
 
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
     const std::string& source_device_id) {
-  fake_connection_.reset();
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
   mojo::PendingRemote<mojom::QuickStartDecoder> remote;
   fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
   auto random_session_id = RandomSessionId();
-  auto fake_authenticated_connection =
-      std::make_unique<FakeAuthenticatedConnection>(
-          nearby_connection,
-          mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
-              fake_quick_start_decoder_->GetRemote()),
-          random_session_id, kSharedSecret, base::DoNothing());
-  connection_lifecycle_listener_->OnConnectionAuthenticated(
-      source_device_id, fake_authenticated_connection->AsWeakPtr());
-
-  fake_connection_ = std::move(fake_authenticated_connection);
+  auto connection = std::make_unique<Connection>(
+      nearby_connection, random_session_id, kSharedSecret, base::DoNothing(),
+      base::BindOnce(
+          &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
+          weak_ptr_factory_.GetWeakPtr()));
+  connection->MarkConnectionAuthenticated();
 }
 
-void FakeTargetDeviceConnectionBroker::RejectConnection(
-    const std::string& source_device_id) {
-  connection_lifecycle_listener_->OnConnectionRejected(source_device_id);
+void FakeTargetDeviceConnectionBroker::RejectConnection() {
+  connection_lifecycle_listener_->OnConnectionRejected();
 }
 
 void FakeTargetDeviceConnectionBroker::CloseConnection(
-    const std::string& source_device_id) {
-  connection_lifecycle_listener_->OnConnectionClosed(source_device_id);
+    ConnectionClosedReason reason) {
+  connection_lifecycle_listener_->OnConnectionClosed(reason);
 }
 
 }  // namespace ash::quick_start

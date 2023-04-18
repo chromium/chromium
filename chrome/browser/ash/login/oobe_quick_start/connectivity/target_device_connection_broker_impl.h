@@ -102,7 +102,6 @@ class TargetDeviceConnectionBrokerImpl
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   RandomSessionId random_session_id_;
   Connection::SharedSecret shared_secret_;
-  ConnectionLifecycleListener* connection_lifecycle_listener_ = nullptr;
   std::unique_ptr<Connection> connection_;
 
   base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;

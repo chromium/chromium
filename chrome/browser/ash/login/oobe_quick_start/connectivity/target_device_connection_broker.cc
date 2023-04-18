@@ -31,9 +31,16 @@ void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
   }
 }
 
+void TargetDeviceConnectionBroker::OnConnectionAuthenticated(
+    base::WeakPtr<AuthenticatedConnection> authenticated_connection) {
+  CHECK(connection_lifecycle_listener_);
+  connection_lifecycle_listener_->OnConnectionAuthenticated(
+      authenticated_connection);
+}
+
 std::vector<uint8_t> TargetDeviceConnectionBroker::GetQrCodeData(
     const RandomSessionId& random_session_id,
-    const Connection::SharedSecret shared_secret) const {
+    const SharedSecret shared_secret) const {
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
   std::string shared_secret_base64;
   base::Base64UrlEncode(shared_secret_str,

@@ -402,14 +402,18 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
   QS_LOG(INFO) << "Incoming Nearby Connection Accepted: endpoint_id="
                << endpoint_id;
 
-  // TODO: Handle Connection Closed in the Connection Broker
+  // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = std::make_unique<Connection>(
-      nearby_connection, random_session_id_, shared_secret_, base::DoNothing());
+      nearby_connection, random_session_id_, shared_secret_, base::DoNothing(),
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImpl::OnConnectionAuthenticated,
+          weak_ptr_factory_.GetWeakPtr()));
 
-  // TODO(b/234655072): Mark the connection_ authenticated if
-  // |use_pin_authentication_| is true. For pin verification, if the source
-  // device has accepted the Nearby Connection, then the connection is
-  // authenticated.
+  if (use_pin_authentication_) {
+    // For pin verification, if the source device has accepted the Nearby
+    // Connection, then the connection is authenticated.
+    connection_->MarkConnectionAuthenticated();
+  }
 }
 
 }  // namespace ash::quick_start
