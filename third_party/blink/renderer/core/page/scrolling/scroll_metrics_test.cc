@@ -156,36 +156,15 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   // Test touch scroll.
   Scroll(box, WebGestureDevice::kTouchscreen);
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // cc reports the below reasons because #box is not composited.
-    EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_TOUCH_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_TOUCH_TOTAL(3);
-  } else {
-    // cc reports the following reasons, because #box is not composited:
-    //   kNonFastScrollableRegion
-    //   kScrollingOnMainForAnyReason
-    //
-    // Then main reports these reasons when handling the forwarded event:
-    //   kNotOpaqueForTextAndLCDText
-    //   kScrollingOnMainForAnyReason (again)
-    //
-    EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_TOUCH_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
-    EXPECT_TOUCH_TOTAL(4);
-  }
+  // The below reasons are reported because #box is not composited.
+  EXPECT_TOUCH_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+  EXPECT_TOUCH_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+      1);
+  EXPECT_TOUCH_BUCKET(
+      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+  EXPECT_TOUCH_TOTAL(3);
 
   // Reset histogram tester.
   histogram_tester.emplace();
@@ -193,36 +172,15 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   // Test wheel scroll.
   Scroll(box, WebGestureDevice::kTouchpad);
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // cc reports the below reasons because #box is not composited.
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(3);
-  } else {
-    // cc reports the following reasons, because #box is not composited:
-    //   kNonFastScrollableRegion
-    //   kScrollingOnMainForAnyReason
-    //
-    // Then main reports these reasons when handling the forwarded event:
-    //   kNotOpaqueForTextAndLCDText
-    //   kScrollingOnMainForAnyReason (again)
-    //
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
-    EXPECT_WHEEL_TOTAL(4);
-  }
+  // The below reasons are reported because #box is not composited.
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+      1);
+  EXPECT_WHEEL_BUCKET(
+      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+  EXPECT_WHEEL_TOTAL(3);
 }
 
 TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
@@ -242,36 +200,16 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // cc reports the below reasons because #box is not composited.
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(3);
-  } else {
-    // cc reports the following reasons, because #box is not composited:
-    //   kNonFastScrollableRegion
-    //   kScrollingOnMainForAnyReason
-    //
-    // Then main reports these reasons when handling the forwarded event:
-    //   kNotOpaqueForTextAndLCDText
-    //   kScrollingOnMainForAnyReason (again)
-    //
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
-    EXPECT_WHEEL_TOTAL(4);
-  }
+
+  // The below reasons are reported because #box is not composited.
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+      1);
+  EXPECT_WHEEL_BUCKET(
+      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+  EXPECT_WHEEL_TOTAL(3);
 
   // Reset histogram tester.
   histogram_tester.emplace();
@@ -279,9 +217,11 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   box->setAttribute("class", "composited transform box");
   Compositor().BeginFrame();
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_FALSE(To<LayoutBox>(box->GetLayoutObject())
-                   ->GetScrollableArea()
-                   ->GetNonCompositedMainThreadScrollingReasons());
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    EXPECT_FALSE(To<LayoutBox>(box->GetLayoutObject())
+                     ->GetScrollableArea()
+                     ->GetNonCompositedMainThreadScrollingReasons());
+  }
 
   // Now that #box is composited, cc reports that we do not scroll on main.
   EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
@@ -305,36 +245,15 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
 
   Scroll(box, WebGestureDevice::kTouchpad);
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // cc reports the below reasons because #box is not composited.
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(3);
-  } else {
-    // cc reports the following reasons, because #box is not composited:
-    //   kNonFastScrollableRegion
-    //   kScrollingOnMainForAnyReason
-    //
-    // Then main reports these reasons when handling the forwarded event:
-    //   kNotOpaqueForTextAndLCDText
-    //   kScrollingOnMainForAnyReason (again)
-    //
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
-    EXPECT_WHEEL_TOTAL(4);
-  }
+  // The below reasons are reported because #box is not composited.
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+      1);
+  EXPECT_WHEEL_BUCKET(
+      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+  EXPECT_WHEEL_TOTAL(3);
 
   // Reset histogram tester.
   histogram_tester.emplace();
@@ -343,35 +262,18 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   UpdateAllLifecyclePhases();
   Scroll(box, WebGestureDevice::kTouchpad);
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // The overflow: hidden element is still a non-fast scroll region, so cc
-    // reports the following for the second scroll:
-    //   kNonFastScrollableRegion
-    //   kScrollingOnMainForAnyReason
-    //
-    // Since #box is overflow: hidden, the hit test returns the viewport, and
-    // so we do not log kNoScrollingLayer again.
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(2);
-  } else {
-    // The overflow: hidden element is still a non-fast scroll region, so cc
-    // reports the following for the second scroll:
-    //   kNonFastScrollableRegion
-    //   kScrollingOnMainForAnyReason
-    //
-    // Main does not scroll anything, because #box is overflow: hidden and the
-    // viewport does not overflow.
-    EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
-        1);
-    EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-    EXPECT_WHEEL_TOTAL(2);
-  }
+  // The overflow: hidden element is still a non-fast scroll region, so cc
+  // reports the following for the second scroll:
+  //   kNonFastScrollableRegion
+  //   kScrollingOnMainForAnyReason
+  //
+  // Since #box is overflow: hidden, the hit test returns the viewport, and
+  // so we do not log kNoScrollingLayer again.
+  EXPECT_WHEEL_BUCKET(
+      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+  EXPECT_WHEEL_BUCKET(
+      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+  EXPECT_WHEEL_TOTAL(2);
 }
 
 TEST_P(ScrollMetricsTest, NestedScrollersTest) {
@@ -429,7 +331,6 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
     //
     // Then main reports these reasons when handling the forwarded event:
     //   kNotOpaqueForTextAndLCDText (because ancestors are not composited)
-    //   kScrollingOnMainForAnyReason (again)
     //
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
@@ -437,8 +338,8 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
     EXPECT_WHEEL_BUCKET(
-        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 2);
-    EXPECT_WHEEL_TOTAL(4);
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(3);
   }
 }
 

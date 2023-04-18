@@ -191,9 +191,6 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   full_context.container_for_fixed_position = nullptr;
   context.fixed_position = context.current;
   context.fixed_position.fixed_position_children_fixed_to_root = true;
-
-  full_context.scroll_unification_enabled =
-      base::FeatureList::IsEnabled(::features::kScrollUnification);
 }
 
 namespace {
@@ -2310,7 +2307,7 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
   DCHECK(scrollable_area);
   MainThreadScrollingReasons reasons =
       full_context_.global_main_thread_scrolling_reasons;
-  if (full_context_.scroll_unification_enabled) {
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     reasons |= scrollable_area->GetNonCompositedMainThreadScrollingReasons();
   }
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {

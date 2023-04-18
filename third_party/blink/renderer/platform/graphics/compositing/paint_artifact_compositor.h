@@ -205,6 +205,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool DirectlySetScrollOffset(CompositorElementId,
                                const gfx::PointF& scroll_offset);
 
+  uint32_t GetMainThreadScrollingReasons(const ScrollPaintPropertyNode&) const;
+
   // The root layer of the tree managed by this object.
   cc::Layer* RootLayer() const { return root_layer_.get(); }
 

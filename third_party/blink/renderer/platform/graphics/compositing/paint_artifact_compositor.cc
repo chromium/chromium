@@ -1102,6 +1102,19 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
   return true;
 }
 
+uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
+    const ScrollPaintPropertyNode& scroll) const {
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    return scroll.GetMainThreadScrollingReasons();
+  }
+  CHECK(root_layer_);
+  if (!root_layer_->layer_tree_host()) {
+    return 0;
+  }
+  return PropertyTreeManager::GetMainThreadScrollingReasons(
+      *root_layer_->layer_tree_host(), scroll);
+}
+
 void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
   if (enabled == layer_debug_info_enabled_)
     return;

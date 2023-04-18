@@ -4609,10 +4609,12 @@ bool LocalFrameView::WillDoPaintHoldingForFCP() const {
 
 String LocalFrameView::MainThreadScrollingReasonsAsText() {
   MainThreadScrollingReasons reasons = 0;
-  DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
+  DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kPaintClean);
   const auto* properties = GetLayoutView()->FirstFragment().PaintProperties();
-  if (properties && properties->Scroll())
-    reasons = properties->Scroll()->GetMainThreadScrollingReasons();
+  if (properties && properties->Scroll()) {
+    reasons = paint_artifact_compositor_->GetMainThreadScrollingReasons(
+        *properties->Scroll());
+  }
   return String(cc::MainThreadScrollingReason::AsText(reasons).c_str());
 }
 

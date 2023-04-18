@@ -168,7 +168,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return state_.composited_scrolling_preference;
   }
 
-  // Return reason bitfield with values from cc::MainThreadScrollingReason.
+  // Note that this doesn't include non-composited main-thread scrolling
+  // reasons in CompositeScrollAfterPaint.
   MainThreadScrollingReasons GetMainThreadScrollingReasons() const {
     return state_.main_thread_scrolling_reasons;
   }

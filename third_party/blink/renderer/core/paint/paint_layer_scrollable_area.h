@@ -512,6 +512,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void InvalidatePaintForStickyDescendants();
 
   uint32_t GetNonCompositedMainThreadScrollingReasons() const {
+    DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
     return non_composited_main_thread_scrolling_reasons_;
   }
 

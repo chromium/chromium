@@ -900,6 +900,18 @@ void InputHandlerProxy::RecordScrollBegin(
   // main_thread_repaint_reasons instead of reasons_from_scroll_begin.
   reportable_reasons |= main_thread_repaint_reasons;
 
+  if (reportable_reasons &&
+      !base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    // In pre-ScrollUnification, there may be non-composited scroll nodes that
+    // are ancestors of composited scroll nodes. Don't report non-composited
+    // main-thread scrolling reasons here because ScrollManager will report
+    // them.
+    reportable_reasons &= ~cc::MainThreadScrollingReason::kNonCompositedReasons;
+    if (!reportable_reasons) {
+      reportable_reasons = cc::MainThreadScrollingReason::kNoScrollingLayer;
+    }
+  }
+
   RecordScrollReasonsMetric(device, reportable_reasons);
 }
 
