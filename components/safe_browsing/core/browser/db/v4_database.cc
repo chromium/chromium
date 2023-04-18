@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -97,6 +98,9 @@ void V4Database::CreateOnTaskRunner(
 
   if (!g_store_factory.Get())
     g_store_factory.Get() = std::make_unique<V4StoreFactory>();
+
+  SCOPED_CRASH_KEY_STRING256("SafeBrowsing", "database-path",
+                             base_path.AsUTF8Unsafe());
 
   if (!base::CreateDirectory(base_path))
     NOTREACHED();
