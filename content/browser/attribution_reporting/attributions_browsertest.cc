@@ -199,7 +199,7 @@ struct ExpectedReportWaiter {
     // valid GUID.
     const std::string* report_id = body.FindString("report_id");
     ASSERT_TRUE(report_id);
-    EXPECT_TRUE(base::GUID::ParseLowercase(*report_id).is_valid());
+    EXPECT_TRUE(base::Uuid::ParseLowercase(*report_id).is_valid());
 
     EXPECT_TRUE(body.FindDouble("randomized_trigger_rate"));
 

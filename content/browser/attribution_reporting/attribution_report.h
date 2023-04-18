@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -139,7 +139,7 @@ class CONTENT_EXPORT AttributionReport {
   AttributionReport(AttributionInfo attribution_info,
                     base::Time report_time,
                     base::Time initial_report_time,
-                    base::GUID external_report_id,
+                    base::Uuid external_report_id,
                     int failed_send_attempts,
                     Data data);
   AttributionReport(const AttributionReport&);
@@ -164,7 +164,7 @@ class CONTENT_EXPORT AttributionReport {
 
   base::Time initial_report_time() const { return initial_report_time_; }
 
-  const base::GUID& external_report_id() const { return external_report_id_; }
+  const base::Uuid& external_report_id() const { return external_report_id_; }
 
   int failed_send_attempts() const { return failed_send_attempts_; }
 
@@ -176,7 +176,7 @@ class CONTENT_EXPORT AttributionReport {
 
   void set_report_time(base::Time report_time);
 
-  void SetExternalReportIdForTesting(base::GUID external_report_id);
+  void SetExternalReportIdForTesting(base::Uuid external_report_id);
 
  private:
   // The attribution info.
@@ -190,7 +190,7 @@ class CONTENT_EXPORT AttributionReport {
 
   // External report ID for deduplicating reports received by the reporting
   // origin.
-  base::GUID external_report_id_;
+  base::Uuid external_report_id_;
 
   // Number of times the browser has tried and failed to send this report.
   int failed_send_attempts_;

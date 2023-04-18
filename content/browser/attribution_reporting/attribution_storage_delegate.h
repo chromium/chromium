@@ -9,10 +9,10 @@
 
 #include <vector>
 
-#include "base/guid.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
@@ -102,7 +102,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const = 0;
 
   // Returns a new report ID.
-  virtual base::GUID NewReportID() const = 0;
+  virtual base::Uuid NewReportID() const = 0;
 
   // Delays reports that missed their report time, such as the browser not
   // being open, or internet being disconnected. This gives them a noisy

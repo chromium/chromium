@@ -69,8 +69,8 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-base::GUID DefaultExternalReportID() {
-  return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
+base::Uuid DefaultExternalReportID() {
+  return base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }
 
 base::Time GetExpiryTimeForTesting(base::TimeDelta declared_expiry,
@@ -430,7 +430,7 @@ ReportBuilder& ReportBuilder::SetPriority(int64_t priority) {
 }
 
 ReportBuilder& ReportBuilder::SetExternalReportId(
-    base::GUID external_report_id) {
+    base::Uuid external_report_id) {
   external_report_id_ = std::move(external_report_id);
   return *this;
 }

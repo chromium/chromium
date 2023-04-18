@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_type.mojom.h"

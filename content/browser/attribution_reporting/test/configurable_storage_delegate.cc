@@ -96,7 +96,7 @@ ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
   return delete_expired_rate_limits_frequency_;
 }
 
-base::GUID ConfigurableStorageDelegate::NewReportID() const {
+base::Uuid ConfigurableStorageDelegate::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DefaultExternalReportID();
 }

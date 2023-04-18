@@ -18,7 +18,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"

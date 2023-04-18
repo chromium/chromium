@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"

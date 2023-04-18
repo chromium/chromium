@@ -13,12 +13,12 @@
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
@@ -175,9 +175,9 @@ base::Time AttributionStorageDelegateImpl::GetAggregatableReportTime(
   }
 }
 
-base::GUID AttributionStorageDelegateImpl::NewReportID() const {
+base::Uuid AttributionStorageDelegateImpl::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::GUID::GenerateRandomV4();
+  return base::Uuid::GenerateRandomV4();
 }
 
 absl::optional<AttributionStorageDelegate::OfflineReportDelayConfig>

@@ -72,7 +72,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
-  base::GUID NewReportID() const override;
+  base::Uuid NewReportID() const override;
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;

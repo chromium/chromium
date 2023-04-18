@@ -100,7 +100,7 @@ AttributionReport::AggregatableAttributionData::BudgetRequired() const {
 AttributionReport::AttributionReport(AttributionInfo attribution_info,
                                      base::Time report_time,
                                      base::Time initial_report_time,
-                                     base::GUID external_report_id,
+                                     base::Uuid external_report_id,
                                      int failed_send_attempts,
                                      Data data)
     : attribution_info_(std::move(attribution_info)),
@@ -231,7 +231,7 @@ void AttributionReport::set_report_time(base::Time report_time) {
 }
 
 void AttributionReport::SetExternalReportIdForTesting(
-    base::GUID external_report_id) {
+    base::Uuid external_report_id) {
   DCHECK(external_report_id.is_valid());
   external_report_id_ = std::move(external_report_id);
 }

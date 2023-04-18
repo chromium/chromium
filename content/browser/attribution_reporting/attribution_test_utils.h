@@ -13,8 +13,8 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -57,7 +57,7 @@ constexpr auto kSourceTypes =
                   attribution_reporting::mojom::SourceType::kMinValue,
                   attribution_reporting::mojom::SourceType::kMaxValue>::All();
 
-base::GUID DefaultExternalReportID();
+base::Uuid DefaultExternalReportID();
 
 base::Time GetExpiryTimeForTesting(base::TimeDelta declared_expiry,
                                    base::Time source_time);
@@ -268,7 +268,7 @@ class ReportBuilder {
 
   ReportBuilder& SetPriority(int64_t priority);
 
-  ReportBuilder& SetExternalReportId(base::GUID external_report_id);
+  ReportBuilder& SetExternalReportId(base::Uuid external_report_id);
 
   ReportBuilder& SetRandomizedTriggerRate(double rate);
 
@@ -295,7 +295,7 @@ class ReportBuilder {
   uint64_t trigger_data_ = 0;
   base::Time report_time_;
   int64_t priority_ = 0;
-  base::GUID external_report_id_;
+  base::Uuid external_report_id_;
   double randomized_trigger_rate_ = 0;
   AttributionReport::EventLevelData::Id report_id_{0};
   AttributionReport::AggregatableAttributionData::Id

@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,6 +27,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -1437,8 +1437,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   base::Time report_time = statement.ColumnTime(col++);
   base::Time initial_report_time = statement.ColumnTime(col++);
   int failed_send_attempts = statement.ColumnInt(col++);
-  base::GUID external_report_id =
-      base::GUID::ParseLowercase(statement.ColumnString(col++));
+  base::Uuid external_report_id =
+      base::Uuid::ParseLowercase(statement.ColumnString(col++));
   absl::optional<uint64_t> trigger_debug_key =
       ColumnUint64OrNull(statement, col++);
   auto context_origin =
@@ -2597,7 +2597,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
         trigger.attestation().has_value());
   }
 
-  base::GUID external_report_id =
+  base::Uuid external_report_id =
       trigger.attestation().has_value()
           ? trigger.attestation()->aggregatable_report_id()
           : delegate_->NewReportID();
