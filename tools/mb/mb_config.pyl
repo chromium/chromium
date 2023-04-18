@@ -909,13 +909,6 @@
       'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chromium_bot',
     },
 
-    # Manually triggered internal builders running on LUCI.
-    'luci.infra-internal.prod': {
-      'gn-builder-linux': 'gn_linux_upload',
-      'gn-builder-mac': 'release_bot',
-      'gn-builder-win': 'release_bot_x86_minimal_symbols',
-    },
-
     'official.chrome': {
       'fuchsia-arm64': 'official_fuchsia_arm64',
       'fuchsia-x64': 'official_fuchsia_x64',
@@ -2627,10 +2620,6 @@
       'official_optimize_reclient_trybot', 'fuchsia',
     ],
 
-    'gn_linux_upload': [
-      'gn_linux_upload', 'official', 'goma',
-    ],
-
     'gpu_fyi_tests_debug_trybot_reclient': [
       'gpu_fyi_tests', 'debug_bot_reclient', 'disable_nacl',
     ],
@@ -4272,14 +4261,6 @@
 
     'fuzzer': {
       'gn_args': 'enable_ipc_fuzzer=true',
-    },
-
-    'gn_linux_upload': {
-      # We don't want to require a runtime dependency on glib in the
-      # GN binary; ideally we could just turn glib off, but that doesn't
-      # actually work, so we need to pretend to be doing an ozone build
-      # in order for the flag to actually take effect.
-      'gn_args': 'use_ozone=true',
     },
 
     'goma': {
