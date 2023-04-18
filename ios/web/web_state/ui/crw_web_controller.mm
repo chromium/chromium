@@ -1855,15 +1855,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     }
   }
 
-  // Is it ok that newURL can be restore session URL?
-  if (!IsRestoreSessionUrl(_documentURL) && !IsRestoreSessionUrl(newURL)) {
-    bool ignore_host_change =
-        // On iOS13 document.write() can change URL origin for about:blank page.
-        (_documentURL.IsAboutBlank() && !self.webView.loading);
-    if (!ignore_host_change) {
-      DCHECK_EQ(_documentURL.host(), newURL.host());
-    }
-  }
   DCHECK(_documentURL != newURL);
 
   // If called during window.history.pushState or window.history.replaceState
