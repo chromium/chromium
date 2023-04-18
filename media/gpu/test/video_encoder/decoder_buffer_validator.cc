@@ -292,8 +292,18 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  if (num_temporal_layers_ == 1)
+  if (num_temporal_layers_ == 1) {
+    if (!header.refresh_entropy_probs) {
+      LOG(ERROR) << "refereh_entropy_probs should be true in non temporal "
+                    "layer encoding";
+      return false;
+    }
     return true;
+  } else if (header.refresh_entropy_probs) {
+    LOG(ERROR)
+        << "refereh_entropy_probs must be false in temporal layer encoding";
+    return false;
+  }
 
   if (!metadata.vp8) {
     LOG(ERROR) << "Metadata must be populated if temporal scalability is used.";
@@ -409,7 +419,9 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
   }
 
   BufferState new_buffer_state{};
-  if (max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1) {
+  const bool svc_encoding =
+      max_num_spatial_layers_ > 1 || num_temporal_layers_ > 1;
+  if (svc_encoding) {
     if (!metadata.vp9) {
       LOG(ERROR) << "Metadata must be populated if spatial/temporal "
                     "scalability is used.";
@@ -418,6 +430,11 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     if (!header.error_resilient_mode) {
       LOG(ERROR) << "Error resilient mode must be used if spatial or temporal "
                     "scaliblity is enabled.";
+      return false;
+    }
+    if (header.refresh_frame_context) {
+      LOG(ERROR) << "Frame context must not be refreshed in spatial or temporal"
+                    " scaliblity is enabled";
       return false;
     }
     new_buffer_state.spatial_id = metadata.vp9->spatial_idx;
@@ -436,6 +453,16 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     if (metadata.vp9->spatial_idx == cur_num_spatial_layers_ - 1)
       next_picture_id_++;
   } else {
+    if (header.error_resilient_mode) {
+      LOG(ERROR) << "Error resilient mode should not be used if neither spatial"
+                    "nor temporal scalablity is enabled";
+      return false;
+    }
+    if (!header.refresh_frame_context) {
+      LOG(ERROR) << "Frame context should be refreshed if neither spatial nor "
+                    "nor temporal scalablity is enabled";
+      return false;
+    }
     new_buffer_state.picture_id = next_picture_id_++;
   }
 
