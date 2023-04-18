@@ -24,6 +24,7 @@ import Protocol from 'devtools-protocol';
 
 import {CdpClient} from '../../CdpConnection';
 import {IEventManager} from '../events/EventManager';
+import {DefaultMap} from '../../../utils/DefaultMap';
 
 import {NetworkRequest} from './networkRequest';
 
@@ -34,10 +35,13 @@ export class NetworkProcessor {
    * Map of request ID to NetworkRequest objects. Needed as long as information
    * about requests comes from different events.
    */
-  readonly #requestMap = new Map<string, NetworkRequest>();
+  readonly #requestMap: DefaultMap<string, NetworkRequest>;
 
   private constructor(eventManager: IEventManager) {
     this.#eventManager = eventManager;
+    this.#requestMap = new DefaultMap<string, NetworkRequest>(
+      (requestId) => new NetworkRequest(requestId, this.#eventManager)
+    );
   }
 
   static async create(
@@ -97,10 +101,6 @@ export class NetworkProcessor {
   }
 
   #getOrCreateNetworkRequest(requestId: string): NetworkRequest {
-    if (!this.#requestMap.has(requestId)) {
-      const networkRequest = new NetworkRequest(requestId, this.#eventManager);
-      this.#requestMap.set(requestId, networkRequest);
-    }
-    return this.#requestMap.get(requestId)!;
+    return this.#requestMap.get(requestId);
   }
 }

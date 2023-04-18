@@ -25,6 +25,7 @@ import type {BidiServer} from '../../BidiServer.js';
 import {Buffer} from '../../../utils/buffer.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
 import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
+import {DefaultMap} from '../../../utils/DefaultMap.js';
 
 import {SubscriptionManager} from './SubscriptionManager.js';
 
@@ -96,10 +97,10 @@ export class EventManager implements IEventManager {
    * Needed for getting buffered events from all the contexts in case of
    * subscripting to all contexts.
    */
-  #eventToContextsMap = new Map<
+  #eventToContextsMap = new DefaultMap<
     string,
     Set<CommonDataTypes.BrowsingContext | null>
-  >();
+  >(() => new Set());
   /**
    * Maps `eventName` + `browsingContext` to buffer. Used to get buffered events
    * during subscription. Channel-agnostic.
@@ -258,10 +259,7 @@ export class EventManager implements IEventManager {
     }
     this.#eventBuffers.get(bufferMapKey)!.add(eventWrapper);
     // Add the context to the list of contexts having `eventName` events.
-    if (!this.#eventToContextsMap.has(eventName)) {
-      this.#eventToContextsMap.set(eventName, new Set());
-    }
-    this.#eventToContextsMap.get(eventName)!.add(eventWrapper.contextId);
+    this.#eventToContextsMap.get(eventName).add(eventWrapper.contextId);
   }
 
   /**
@@ -313,7 +311,7 @@ export class EventManager implements IEventManager {
 
     if (contextId === null) {
       // For global subscriptions, events buffered in each context should be sent back.
-      Array.from(this.#eventToContextsMap.get(eventName)?.keys() ?? [])
+      Array.from(this.#eventToContextsMap.get(eventName).keys())
         .filter(
           (_contextId) =>
             // Events without context are already in the result.
