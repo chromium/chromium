@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/values.h"
+#include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -119,7 +120,10 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
 }
 
 void BackgroundTracingRule::GenerateMetadataProto(
-    BackgroundTracingRule::MetadataProto* out) const {}
+    BackgroundTracingRule::MetadataProto* out) const {
+  uint32_t name_hash = variations::HashName(rule_id());
+  out->set_name_hash(name_hash);
+}
 
 void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
   if (auto trigger_chance = dict.FindDouble(kConfigRuleTriggerChance)) {
