@@ -163,6 +163,12 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
     {"importPasswordsDescriptionAccount",
      IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SYNCING_USERS},
+    {"importPasswordsSelectFile",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_SELECT_FILE_DESCRIPTION},
+    {"importPasswordsStorePickerA11yDescription",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_STORE_PICKER_ACCESSIBLE_NAME},
+    {"passwordsStoreOptionAccount",
+     IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_ACCOUNT},
     {"justNow", IDS_PASSWORD_MANAGER_UI_JUST_NOW},
     {"leakedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_LEAKED},
     {"localPasswordManager",
@@ -331,6 +337,12 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "importPasswordsDescriptionDevice",
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SIGNEDOUT_USERS,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
+  source->AddString(
+      "passwordsStoreOptionDevice",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_DEVICE,
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
 
