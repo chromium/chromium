@@ -48,7 +48,10 @@ template("chrome_test_apk_tmpl") {
     }
     if (!is_java_debug) {
       proguard_enabled = true
-      proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
+      proguard_configs = [
+        "//chrome/android/proguard/apk_for_test.flags",
+        "//base/android/jni_generator/manual_jni_registration_proguard.flags",
+      ]
       if (defined(invoker.proguard_configs)) {
         proguard_configs += invoker.proguard_configs
       }

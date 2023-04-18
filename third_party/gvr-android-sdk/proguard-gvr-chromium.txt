@@ -1,2 +1,7 @@
 -dontwarn com.google.common.logging.nano.Vr$**
 -dontwarn com.google.vr.**
+
+# Since we manually register, we need to keep every native method.
+-keepclasseswithmembers,includedescriptorclasses class com.google.vr.** {
+    native <methods>;
+}
