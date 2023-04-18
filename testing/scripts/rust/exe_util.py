@@ -5,7 +5,7 @@
 """
 
 import os
-import pty
+import subprocess
 import re
 
 # Regex for matching 7-bit and 8-bit C1 ANSI sequences.
@@ -37,15 +37,7 @@ def run_and_tee_output(args):
     Returns:
         The full executable output as an UTF-8 string.
     """
-    output_bytes = bytearray()
-
-    def read(fd):
-        data = os.read(fd, 1024)
-        output_bytes.extend(data)
-        return data
-
-    pty.spawn(args, read)
-
+    output_bytes = subprocess.check_output(args)
     # Strip ANSI / terminal escapes.
     output_bytes = _ANSI_ESCAPE_8BIT_REGEX.sub(b'', output_bytes)
 

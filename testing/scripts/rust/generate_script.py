@@ -19,26 +19,25 @@ def _parse_args(args):
                   'library for running Rust unit tests with support for ' \
                   'Chromium test filters, sharding, and test output.'
     parser = argparse.ArgumentParser(description=description)
-
     parser.add_argument('--script-path',
                         dest='script_path',
                         help='Where to write the bash script.',
                         metavar='FILEPATH',
                         required=True)
-
     parser.add_argument('--exe-dir',
                         dest='exe_dir',
                         help='Directory where the wrapped executables are',
                         metavar='PATH',
                         required=True)
-
     parser.add_argument('--rust-test-executables',
                         dest='rust_test_executables',
                         help='File listing one or more executables to wrap. ' \
                              '(basenames - no .exe extension or directory)',
                         metavar='FILEPATH',
                         required=True)
-
+    parser.add_argument('--make-bat',
+                        action='store_true',
+                        help='Generate a .bat file instead of a bash script')
     return parser.parse_args(args=args)
 
 
@@ -72,29 +71,36 @@ def _validate_if_test_executables_exist(exes):
 
 
 def _generate_script(args, should_validate_if_exes_exist=True):
-    res = '#!/bin/bash\n'
+    THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+    GEN_SCRIPT_DIR = os.path.dirname(args.script_path)
 
-    script_dir = os.path.dirname(args.script_path)
-    res += 'SCRIPT_DIR=`dirname $0`\n'
-
-    exe_dir = os.path.relpath(args.exe_dir, start=script_dir)
+    # Path from the .bat or bash script to the test exes.
+    exe_dir = os.path.relpath(args.exe_dir, start=GEN_SCRIPT_DIR)
     exe_dir = os.path.normpath(exe_dir)
-    res += 'EXE_DIR="$SCRIPT_DIR/{}"\n'.format(exe_dir)
 
-    generator_script_dir = os.path.dirname(__file__)
-    lib_dir = os.path.relpath(generator_script_dir, script_dir)
-    lib_dir = os.path.normpath(lib_dir)
-    res += 'LIB_DIR="$SCRIPT_DIR/{}"\n'.format(lib_dir)
+    # Path from the .bat or bash script to the python main.
+    main_dir = os.path.relpath(THIS_DIR, start=GEN_SCRIPT_DIR)
+    main_dir = os.path.normpath(main_dir)
 
     exes = _find_test_executables(args)
     if should_validate_if_exes_exist:
         _validate_if_test_executables_exist(exes)
 
-    res += 'env vpython3 "$LIB_DIR/rust_main_program.py" \\\n'
-    for exe in exes:
-        res += '    "--rust-test-executable=$EXE_DIR/{}" \\\n'.format(exe)
-    res += '    "$@"'
-
+    if args.make_bat:
+        res = '@echo off\n'
+        res += f'vpython3 "%~dp0\\{main_dir}\\rust_main_program.py" ^\n'
+        for exe in exes:
+            res += f'    "--rust-test-executable=%~dp0\\{exe_dir}\\{exe}" ^\n'
+        res += '    %*'
+    else:
+        res = '#!/bin/bash\n'
+        res += (f'env vpython3 '
+                f'"$(dirname $0)/{main_dir}/rust_main_program.py" \\\n')
+        for exe in exes:
+            res += (
+                f'    '
+                f'"--rust-test-executable=$(dirname $0)/{exe_dir}/{exe}" \\\n')
+        res += '    "$@"'
     return res
 
 

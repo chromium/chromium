@@ -9,8 +9,8 @@ from pyfakefs import fake_filesystem_unittest
 import tempfile
 import unittest
 
-from generate_bash_script import _parse_args
-from generate_bash_script import _generate_script
+from generate_script import _parse_args
+from generate_script import _generate_script
 
 
 class Tests(fake_filesystem_unittest.TestCase):
@@ -28,6 +28,7 @@ class Tests(fake_filesystem_unittest.TestCase):
         lib_dir = os.path.dirname(__file__)
         out_dir = os.path.join(lib_dir, '../../../out/rust')
         args = type('', (), {})()
+        args.make_bat = False
         args.script_path = os.path.join(out_dir, 'bin/run_foo_bar')
         args.exe_dir = out_dir
 
@@ -47,13 +48,42 @@ class Tests(fake_filesystem_unittest.TestCase):
 
         expected = '''
 #!/bin/bash
-SCRIPT_DIR=`dirname $0`
-EXE_DIR="$SCRIPT_DIR/.."
-LIB_DIR="$SCRIPT_DIR/../../../testing/scripts/rust"
-env vpython3 "$LIB_DIR/rust_main_program.py" \\
-    "--rust-test-executable=$EXE_DIR/bar" \\
-    "--rust-test-executable=$EXE_DIR/foo" \\
+env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" \\
+    "--rust-test-executable=$(dirname $0)/../bar" \\
+    "--rust-test-executable=$(dirname $0)/../foo" \\
     "$@"
+'''.strip()
+
+        self.assertEqual(expected, actual)
+
+    def test_generate_bat(self):
+        lib_dir = os.path.dirname(__file__)
+        out_dir = os.path.join(lib_dir, '../../../out/rust')
+        args = type('', (), {})()
+        args.make_bat = True
+        args.script_path = os.path.join(out_dir, 'bin/run_foo_bar')
+        args.exe_dir = out_dir
+
+        # pylint: disable=unexpected-keyword-arg
+        with tempfile.NamedTemporaryFile(delete=False,
+                                         mode='w',
+                                         encoding='utf-8') as f:
+            filepath = f.name
+            f.write("foo\n")
+            f.write("bar\n")
+        try:
+            args.rust_test_executables = filepath
+            actual = _generate_script(args,
+                                      should_validate_if_exes_exist=False)
+        finally:
+            os.remove(filepath)
+
+        expected = '''
+@echo off
+vpython3 "%~dp0\\../../../testing/scripts/rust\\rust_main_program.py" ^
+    "--rust-test-executable=%~dp0\\..\\bar" ^
+    "--rust-test-executable=%~dp0\\..\\foo" ^
+    %*
 '''.strip()
 
         self.assertEqual(expected, actual)
