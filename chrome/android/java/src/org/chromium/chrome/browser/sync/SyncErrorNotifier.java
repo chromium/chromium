@@ -9,6 +9,7 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -18,8 +19,6 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
 import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -28,7 +27,6 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -40,6 +38,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     private static final String TAG = "SyncUI";
     private final NotificationManagerProxy mNotificationManager;
     private final SyncService mSyncService;
+    private final TrustedVaultClient mTrustedVaultClient;
     private boolean mTrustedVaultNotificationShownOrCreating;
 
     private @Nullable static SyncErrorNotifier sInstance;
@@ -53,18 +52,21 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         ThreadUtils.assertOnUiThread();
         if (!sInitialized) {
             if (SyncService.get() != null) {
-                sInstance = new SyncErrorNotifier();
+                sInstance = new SyncErrorNotifier(
+                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+                        SyncService.get(), TrustedVaultClient.get());
             }
             sInitialized = true;
         }
         return sInstance;
     }
 
-    private SyncErrorNotifier() {
-        mNotificationManager =
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
-        mSyncService = SyncService.get();
-        assert mSyncService != null;
+    @VisibleForTesting
+    public SyncErrorNotifier(NotificationManagerProxy notificationManager, SyncService syncService,
+            TrustedVaultClient trustedVaultClient) {
+        mNotificationManager = notificationManager;
+        mSyncService = syncService;
+        mTrustedVaultClient = trustedVaultClient;
         mSyncService.addSyncStateChangedListener(this);
     }
 
@@ -173,10 +175,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
      * already exist or is being created; and b) there is a primary account with ConsentLevel.SYNC.
      */
     private void maybeShowKeyRetrievalNotification() {
-        CoreAccountInfo primaryAccountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC);
+        CoreAccountInfo primaryAccountInfo = mSyncService.getAccountInfo();
         // Check/set |mTrustedVaultNotificationShownOrCreating| here to ensure the notification is
         // not shown again immediately after cancelling (Sync state might be changed often) and
         // there is only one asynchronous createKeyRetrievalIntent() attempt at a time.
@@ -192,7 +191,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                         ? R.string.hint_sync_retrieve_keys_for_everything
                         : R.string.hint_sync_retrieve_keys_for_passwords);
 
-        TrustedVaultClient.get()
+        mTrustedVaultClient
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 // Cf. SyncTrustedVaultProxyActivity as to why use a proxy intent.
                 .then((realIntent)
