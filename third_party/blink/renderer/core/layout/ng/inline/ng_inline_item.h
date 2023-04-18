@@ -69,7 +69,7 @@ class CORE_EXPORT NGInlineItem {
                scoped_refptr<const ShapeResult>);
 
   NGInlineItemType Type() const { return type_; }
-  const char* NGInlineItemTypeToString(int val) const;
+  const char* NGInlineItemTypeToString(NGInlineItemType val) const;
 
   NGTextType TextType() const { return static_cast<NGTextType>(text_type_); }
   bool IsForcedLineBreak() const {

@@ -23,10 +23,6 @@ struct SameSizeAsNGInlineItem {
 
 ASSERT_SIZE(NGInlineItem, SameSizeAsNGInlineItem);
 
-const char* kNGInlineItemTypeStrings[] = {
-    "Text",     "Control",  "AtomicInline",        "OpenTag",
-    "CloseTag", "Floating", "OutOfFlowPositioned", "BidiControl"};
-
 // Returns true if this inline box is "empty", i.e. if the node contains only
 // empty items it will produce a single zero block-size line box.
 //
@@ -149,8 +145,32 @@ void NGInlineItem::ComputeBoxProperties() {
   is_empty_item_ = true;
 }
 
-const char* NGInlineItem::NGInlineItemTypeToString(int val) const {
-  return kNGInlineItemTypeStrings[val];
+const char* NGInlineItem::NGInlineItemTypeToString(NGInlineItemType val) const {
+  switch (val) {
+    case kText:
+      return "Text";
+    case kControl:
+      return "Control";
+    case kAtomicInline:
+      return "AtomicInline";
+    case kBlockInInline:
+      return "BlockInInline";
+    case kOpenTag:
+      return "OpenTag";
+    case kCloseTag:
+      return "CloseTag";
+    case kFloating:
+      return "Floating";
+    case kOutOfFlowPositioned:
+      return "OutOfFlowPositioned";
+    case kInitialLetterBox:
+      return "InitialLetterBox";
+    case kListMarker:
+      return "ListMerker";
+    case kBidiControl:
+      return "BidiControl";
+  }
+  NOTREACHED_NORETURN();
 }
 
 void NGInlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
