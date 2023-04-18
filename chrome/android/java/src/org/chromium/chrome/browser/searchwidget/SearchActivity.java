@@ -247,7 +247,7 @@ public class SearchActivity extends AsyncInitializationActivity
             VoiceToolbarButtonController::isToolbarMicEnabled,
             /*merchantTrustSignalsCoordinatorSupplier=*/null,
             new ActionChipsDelegateImpl(this, new OneshotSupplierImpl<>(),
-                getModalDialogManagerSupplier()), null,
+                getModalDialogManagerSupplier(), () -> null), null,
             ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
             /*OmniboxSuggestionsDropdownScrollListener=*/this,
             new OpenHistoryClustersDelegate() {

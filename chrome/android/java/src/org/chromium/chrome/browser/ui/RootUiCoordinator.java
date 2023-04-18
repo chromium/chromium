@@ -421,8 +421,9 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
 
-        mActionChipsDelegate = new ActionChipsDelegateImpl(
-                mActivity, mHistoryClustersCoordinatorSupplier, mModalDialogManagerSupplier);
+        mActionChipsDelegate =
+                new ActionChipsDelegateImpl(mActivity, mHistoryClustersCoordinatorSupplier,
+                        mModalDialogManagerSupplier, mActivityTabProvider);
 
         // This little bit of arithmetic is necessary because of Java doesn't like accepting
         // Supplier<BaseImpl> where Supplier<Base> is expected. We should remove the need for

@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.app.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -24,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,18 +40,19 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
-import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -57,6 +61,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Set;
@@ -100,10 +105,12 @@ public class ActionChipsDelegateImplUnitTest {
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock HistoryClustersCoordinator mHistoryClustersCoordinator;
+    private @Mock Tab mTab;
 
     private ShadowActivity mShadowActivity;
     private ShadowLooper mShadowLooper;
     private OneshotSupplierImpl<HistoryClustersCoordinator> mHistoryClustersCoordinatorSupplier;
+    private ObservableSupplierImpl<Tab> mTabSupplier;
     private ActionChipsDelegate mDelegate;
 
     @Before
@@ -113,9 +120,10 @@ public class ActionChipsDelegateImplUnitTest {
         mShadowLooper = ShadowLooper.shadowMainLooper();
 
         mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
+        mTabSupplier = new ObservableSupplierImpl<>();
 
-        mDelegate =
-                new ActionChipsDelegateImpl(activity, mHistoryClustersCoordinatorSupplier, null);
+        mDelegate = new ActionChipsDelegateImpl(
+                activity, mHistoryClustersCoordinatorSupplier, null, mTabSupplier);
     }
 
     @After
@@ -238,10 +246,24 @@ public class ActionChipsDelegateImplUnitTest {
         mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
 
         var intent = mShadowActivity.getNextStartedActivity();
-        assertEquals(HistoryActivity.class.getName(), intent.getComponent().getClassName());
-        assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_INCOGNITO_MODE, true));
-
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(UrlConstants.HISTORY_URL, intent.getDataString());
+        assertTrue(
+                intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.VIEW_CHROME_HISTORY);
+    }
+
+    @Test
+    public void executePedal_viewChromeHistory_fromTabbedActivity() {
+        mTabSupplier.set(mTab);
+        mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
+
+        var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTab, times(1)).loadUrl(loadParamsCaptor.capture());
+
+        var loadUrlParams = loadParamsCaptor.getValue();
+        assertNotNull(loadUrlParams);
+        assertEquals(UrlConstants.HISTORY_URL, loadUrlParams.getUrl());
     }
 
     @Test
