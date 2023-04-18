@@ -4433,6 +4433,104 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ReloadWebviewAccessibleResource) {
   EXPECT_EQ(webview_url, web_view_frame->GetLastCommittedURL());
 }
 
+// Tests that webviews cannot embed accessible resources in iframes.
+// https://crbug.com/1430991.
+IN_PROC_BROWSER_TEST_F(WebViewTest, CannotIframeWebviewAccessibleResource) {
+  TestHelper("testIframeWebviewAccessibleResource",
+             "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
+
+  content::RenderFrameHost* web_view_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  ASSERT_TRUE(web_view_frame);
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_view_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The frame should never have committed to the extension resource.
+  // The JS file verifies the load error.
+  EXPECT_EQ(GURL(), child_frame->GetLastCommittedURL());
+}
+
+// Tests that webviews navigated to accessible resources can call certain
+// extension APIs.
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       CallingExtensionAPIsFromWebviewAccessibleResource) {
+  TestHelper("testNavigateGuestToWebviewAccessibleResource",
+             "web_view/load_webview_accessible_resource", NO_TEST_SERVER);
+
+  content::WebContents* embedder_contents = GetEmbedderWebContents();
+  content::RenderFrameHost* web_view_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  ASSERT_TRUE(embedder_contents);
+  ASSERT_TRUE(web_view_frame);
+
+  // The embedder and the webview should be in separate site instances and
+  // processes, even though they're for the same extension.
+  EXPECT_NE(embedder_contents->GetPrimaryMainFrame()->GetProcess(),
+            web_view_frame->GetProcess());
+  EXPECT_NE(embedder_contents->GetPrimaryMainFrame()->GetSiteInstance(),
+            web_view_frame->GetSiteInstance());
+
+  GURL embedder_url(embedder_contents->GetLastCommittedURL());
+  GURL accessible_resource_url =
+      embedder_url.GetWithEmptyPath().Resolve("assets/foo.html");
+
+  EXPECT_EQ(accessible_resource_url, web_view_frame->GetLastCommittedURL());
+
+  // Try calling an extension API function. The extension frame, being embedded
+  // in a webview, has fewer permissions that other extension contexts*. Try the
+  // i18n.getAcceptLanguages() API. We choose this API because:
+  // - It is exposed to the embedded frame.
+  // - It is a "regular" extension API function that goes through the request /
+  //   response flow in ExtensionFunctionDispatcher, unlike extension message
+  //   APIs.
+  // *TODO(https://crbug.com/1430991): The exact set of APIs and type of
+  // context this is is a bit fuzzy. In practice, it's basically the same set
+  // as is exposed to content scripts.
+  std::string accept_languages_result;
+  static constexpr char kGetAcceptLanguages[] =
+      R"(chrome.i18n.getAcceptLanguages((languages) => {
+           let result = 'success';
+           if (chrome.runtime.lastError) {
+             result = 'Error: ' + chrome.runtime.lastError;
+           } else if (!languages || !Array.isArray(languages) ||
+                      !languages.includes('en')) {
+             result = 'Invalid return result: ' + JSON.stringify(languages);
+           }
+           domAutomationController.send(result);
+         });)";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_view_frame, kGetAcceptLanguages, &accept_languages_result));
+  EXPECT_EQ("success", accept_languages_result);
+
+  // Finally, try accessing a privileged API, which shouldn't be available to
+  // the embedded resource.
+  // TODO(https://crbug.com/1430991): Even though the API call should fail, the
+  // bindings are unexpectedly available here. Instead, we should just be able
+  // to test `!chrome.app.window`.
+  std::string app_window_result;
+  static constexpr char kCallAppWindowCreate[] =
+      R"(if (chrome.app && chrome.app.window && chrome.app.window.create) {
+           chrome.app.window.create('embedder.html', {}, (res) => {
+             let reply = 'success';
+             if (!chrome.runtime.lastError) {
+               reply = 'No last error found. Result Type: ' + typeof res;
+             } else if (chrome.runtime.lastError.message !=
+                            'Access to extension API denied.') {
+               reply = 'Unexpected last error: ' +
+                       chrome.runtime.lastError.message;
+             }
+             domAutomationController.send(reply);
+           });
+         } else {
+           domAutomationController.send(
+               'Unexpectedly missing `chrome.app.window.create`');
+         })";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_view_frame, kCallAppWindowCreate, &app_window_result));
+  EXPECT_EQ("success", app_window_result);
+}
+
 // Tests that a WebView can navigate an iframe to a blob URL that it creates
 // while its main frame is at a WebView accessible resource.
 IN_PROC_BROWSER_TEST_F(WebViewTest, BlobInWebviewAccessibleResource) {

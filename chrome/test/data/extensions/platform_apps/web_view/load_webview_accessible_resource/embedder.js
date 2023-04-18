@@ -10,6 +10,8 @@ window.runTest = function(testName) {
     testLoadWebviewAccessibleResource();
   } else if (testName == 'testReloadWebviewAccessibleResource') {
     testReloadWebviewAccessibleResource();
+  } else if (testName == 'testIframeWebviewAccessibleResource') {
+    testIframeWebviewAccessibleResource();
   } else if (testName == 'testBlobInWebviewAccessibleResource') {
     testBlobInWebviewAccessibleResource();
   } else if (testName == 'testLoadWebviewInaccessibleResource') {
@@ -128,6 +130,36 @@ function testReloadWebviewAccessibleResource() {
     }
   });
   webview.src = '/assets/foo.html';
+}
+
+function testIframeWebviewAccessibleResource() {
+  var webview = document.querySelector('webview');
+
+  webview.addEventListener('loadstop', function() {
+    // Attempt to load an accessible resource in an iframe.
+    // This should fail.
+    const accessibleResource = chrome.runtime.getURL('assets/foo.html');
+    const code =
+        `let iframe = document.createElement('iframe');
+         iframe.src = '${accessibleResource}';
+         iframe.onload = () => {
+           // We don't expect this load to succeed, so if it does, it's
+           // considered a test failure.
+           console.error('Iframe unexpectedly loaded');
+           chrome.test.sendMessage('TEST_FAILED');
+         };
+         document.body.appendChild(iframe); console.error('Added')`;
+    webview.executeScript({code});
+  }, {once: true});
+  webview.onloadabort = (e) => {
+    if (e.reason == 'ERR_BLOCKED_BY_CLIENT') {
+      chrome.test.sendMessage('TEST_PASSED');
+    } else {
+      console.error('Unexpected error: ' + e.toString());
+      chrome.test.sendMessage('TEST_FAILED');
+    }
+  };
+  webview.src = embedder.guestURL;
 }
 
 function testBlobInWebviewAccessibleResource() {
