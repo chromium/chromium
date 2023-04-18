@@ -531,7 +531,7 @@ bool AndroidVideoEncodeAccelerator::SetInputBufferLayout() {
 
 void AndroidVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(status.is_ok());
+  CHECK(!status.is_ok());
   CHECK(log_);
   MEDIA_LOG(ERROR, log_) << status.message();
   LOG(ERROR) << "Call NotifyErrorStatus(): code="
