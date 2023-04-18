@@ -19,17 +19,6 @@ namespace content {
 class LargestContentfulPaintTestBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<bool> {
- public:
-  LargestContentfulPaintTestBrowserTest() {
-    if (GetParam()) {
-      features_.InitWithFeatures(
-          /*enabled_features=*/
-          {blink::features::kReportFCPOnlyOnSuccessfulCommit},
-          /*disabled_features=*/
-          {features::kSkipCommitsIfNotSynchronizingCompositorState});
-    }
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -70,7 +59,7 @@ class LargestContentfulPaintTestBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(LargestContentfulPaintTestBrowserTest,
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTestBrowserTest,
                        NonTAOImageLCPRenderTime) {
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/cross-origin-non-tao-image.html"));
@@ -83,7 +72,4 @@ IN_PROC_BROWSER_TEST_P(LargestContentfulPaintTestBrowserTest,
   EXPECT_NEAR(lcpStartTime, fcpStartTime, 0.01);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LargestContentfulPaintTestBrowserTest,
-                         ::testing::Bool());
 }  // namespace content

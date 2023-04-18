@@ -10923,32 +10923,6 @@
             ]
         }
     ],
-    "ReportFCPOnlyOnSuccessfulCommit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "ReportFCPOnCommitAndDontSkip",
-                    "enable_features": [
-                        "ReportFCPOnlyOnSuccessfulCommit"
-                    ],
-                    "disable_features": [
-                        "SkipCommitsIfNotSynchronizingCompositorState"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReportingServiceFlushPrefsOnUploadInBackground": [
         {
             "platforms": [

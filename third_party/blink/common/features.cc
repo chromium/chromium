@@ -1258,10 +1258,6 @@ const base::FeatureParam<bool> kAllExceptLegacyWindowsPlatform = {
 const base::FeatureParam<bool> kLegacyWindowsPlatform = {
     &kReduceUserAgentPlatformOsCpu, "legacy_windows_platform", true};
 
-BASE_FEATURE(kReportFCPOnlyOnSuccessfulCommit,
-             "ReportFCPOnlyOnSuccessfulCommit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Source Location blocking BFCache is captured
 // to send it to the browser.
 BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,

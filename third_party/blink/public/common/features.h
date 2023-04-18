@@ -578,11 +578,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLegacyWindowsPlatform;
 
-// If enabled, we only report FCP if there’s a successful commit to the
-// compositor. Otherwise, FCP may be reported if first BeginMainFrame results in
-// a commit failure (see crbug.com/1257607).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFCPOnlyOnSuccessfulCommit);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRegisterJSSourceLocationBlockingBFCache);
 

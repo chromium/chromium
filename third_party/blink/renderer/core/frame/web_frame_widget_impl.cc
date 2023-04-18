@@ -3128,12 +3128,9 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason,
                               base::TimeTicks timestamp) override {
-    if (base::FeatureList::IsEnabled(
-            features::kReportFCPOnlyOnSuccessfulCommit)) {
-      if (reason != DidNotSwapReason::SWAP_FAILS &&
-          reason != DidNotSwapReason::COMMIT_NO_UPDATE) {
-        return DidNotSwapAction::KEEP_ACTIVE;
-      }
+    if (reason != DidNotSwapReason::SWAP_FAILS &&
+        reason != DidNotSwapReason::COMMIT_NO_UPDATE) {
+      return DidNotSwapAction::KEEP_ACTIVE;
     }
 
     DidNotSwapAction action = DidNotSwapAction::BREAK_PROMISE;
