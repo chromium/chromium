@@ -1513,7 +1513,7 @@ ci.builder(
     name = "build-perf-android",
     description_html = """\
 This builder measures Android build performance with and without remote caches.<br/>\
-The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel-compilator">android-arm64-rel-compilator</a>.\
 """,
     executable = "recipe:chrome_build/build_perf",
     builder_spec = builder_config.builder_spec(
@@ -1556,7 +1556,7 @@ ci.builder(
     name = "build-perf-android-siso",
     description_html = """\
 This builder measures Android build performance with Siso<br/>\
-The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel-compilator">android-arm64-rel-compilator</a>.\
 """,
     executable = "recipe:chrome_build/build_perf_siso",
     builder_spec = builder_config.builder_spec(

@@ -403,13 +403,13 @@
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64_reclient',
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
-      # Keep in sync with android-pie-arm64-rel
-      'build-perf-android': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
-      'build-perf-android-siso': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_siso',
+      # Keep in sync with android-arm64-rel
+      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
+      'build-perf-android-siso': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso',
       # Keep in sync with linux-rel
       'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'build-perf-linux-siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
-      # Keep in sync with win10_chromium_x64_rel_ng
+      # Keep in sync with win-rel
       'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'build-perf-windows-siso': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
       # TODO(crbug.com/1235218): remove after the migration.
@@ -1680,11 +1680,6 @@
       'strip_debug_info', 'webview_monochrome',
     ],
 
-    'android_release_bot_minimal_symbols_arm64_webview_monochrome_siso': [
-      'android', 'release_bot', 'minimal_symbols', 'arm64',
-      'strip_debug_info', 'webview_monochrome', 'no_goma', 'no_reclient',
-    ],
-
     'android_release_bot_minimal_symbols_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'strip_debug_info',
     ],
@@ -1740,6 +1735,13 @@
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
+      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
+      'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'no_reclient',
     ],
 
     'android_release_trybot_arm64_webview_monochrome_reclient': [
