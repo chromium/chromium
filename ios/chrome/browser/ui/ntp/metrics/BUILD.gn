@@ -14,8 +14,6 @@ source_set("metrics") {
     "feed_session_recorder+testing.h",
     "feed_session_recorder.h",
     "feed_session_recorder.mm",
-    "metrics.h",
-    "metrics.mm",
     "new_tab_page_metrics_recorder.h",
     "new_tab_page_metrics_recorder.mm",
   ]

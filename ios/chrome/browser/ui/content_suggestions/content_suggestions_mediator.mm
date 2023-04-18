@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
-#import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -499,9 +498,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
   [self.NTPMetrics recordContentSuggestionsActionForType:
                        IOSContentSuggestionsActionType::kMostVisitedTile];
-  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileOpened];
-  RecordNTPTileClick(mostVisitedIndex, item.source, item.titleSource,
-                     item.attributes, GURL());
+  [self.contentSuggestionsMetricsRecorder
+      recordMostVisitedTileOpened:item
+                          atIndex:mostVisitedIndex];
 }
 
 // Shows a snackbar with an action to undo the removal of the most visited item
@@ -657,6 +656,14 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   for (ContentSuggestionsMostVisitedItem* item in self.freshMostVisitedItems) {
     item.commandHandler = commandHandler;
   }
+}
+
+- (void)setContentSuggestionsMetricsRecorder:
+    (ContentSuggestionsMetricsRecorder*)contentSuggestionsMetricsRecorder {
+  CHECK(self.faviconMediator);
+  _contentSuggestionsMetricsRecorder = contentSuggestionsMetricsRecorder;
+  self.faviconMediator.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
 }
 
 - (BOOL)contentSuggestionsEnabled {

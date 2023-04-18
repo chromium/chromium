@@ -15,6 +15,7 @@ class LargeIconService;
 
 @protocol ContentSuggestionsCollectionConsumer;
 @protocol ContentSuggestionsConsumer;
+@class ContentSuggestionsMetricsRecorder;
 @class ContentSuggestionsMostVisitedItem;
 @class FaviconAttributesProvider;
 class LargeIconCache;
@@ -44,6 +45,10 @@ class LargeIconCache;
 
 // Fetches the favicon for this `item`.
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, assign)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 @end
 

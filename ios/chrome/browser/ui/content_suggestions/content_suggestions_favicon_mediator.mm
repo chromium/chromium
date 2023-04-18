@@ -10,10 +10,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
-#import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -101,8 +101,8 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
   for (size_t i = 0; i < _mostVisitedDataForLogging.size(); ++i) {
     ntp_tiles::NTPTile& ntpTile = _mostVisitedDataForLogging[i];
     if (ntpTile.url == item.URL) {
-      RecordNTPTileImpression(i, ntpTile.source, ntpTile.title_source,
-                              item.attributes, ntpTile.url);
+      [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
+                                                                 atIndex:i];
       // Reset the URL to be sure to log the impression only once.
       ntpTile.url = GURL();
       break;

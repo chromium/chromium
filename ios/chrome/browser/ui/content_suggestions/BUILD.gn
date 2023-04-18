@@ -135,11 +135,15 @@ source_set("metrics") {
   deps = [
     ":content_suggestions_constant",
     "//base",
+    "//components/favicon_base",
+    "//components/ntp_tiles",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/favicon",
   ]
 }
 

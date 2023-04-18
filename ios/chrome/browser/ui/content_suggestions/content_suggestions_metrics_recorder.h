@@ -11,6 +11,8 @@
 
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
+@class ContentSuggestionsMostVisitedItem;
+
 // Metrics recorder for the content suggestions.
 @interface ContentSuggestionsMetricsRecorder : NSObject
 
@@ -29,8 +31,13 @@ typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 // Logs the most visited tiles being shown.
 - (void)recordMostVisitedTilesShown;
 
-// Logs a most visited tile being opened
-- (void)recordMostVisitedTileOpened;
+// Logs a single most visited tile `item` being shown at `index`.
+- (void)recordMostVisitedTileShown:(ContentSuggestionsMostVisitedItem*)item
+                           atIndex:(NSInteger)index;
+
+// Logs a most visited tile `item` being opened at `index`.
+- (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
+                            atIndex:(NSInteger)index;
 
 // Logs a most visited tile being removed.
 - (void)recordMostVisitedTileRemoved;
