@@ -362,8 +362,10 @@ static constexpr const char* const kChromeUrls[] = {
     // TODO(crbug.com/1102129): DCHECK failure in
     // ArcGraphicsTracingHandler::ArcGraphicsTracingHandler.
     // "chrome://arc-graphics-tracing",
+    "chrome://app-disabled",
     "chrome://cryptohome",
     "chrome://drive-internals",
+    "chrome://emoji-picker",
     "chrome://family-link-user-internals",
     "chrome://help-app",
     "chrome://linux-proxy-config",
@@ -372,6 +374,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://power",
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
+    "chrome://set-time",
     "chrome://slow",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
