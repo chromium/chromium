@@ -74,7 +74,7 @@ class PepperVideoEncoderHost : public ppapi::host::ResourceHost,
   void BitstreamBufferReady(
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
-  void NotifyError(media::VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const media::EncoderStatus& status) override;
 
   // ResourceHost implementation.
   int32_t OnResourceMessageReceived(
