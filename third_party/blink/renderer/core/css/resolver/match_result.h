@@ -67,13 +67,45 @@ struct CORE_EXPORT MatchedProperties {
   Data types_;
 };
 
+// This is a duplicate of the above, except that we do not have a pointer for 'properties'.
+// Instead, we store the id of the pointer, for deterministic replay.  We cannot alter
+// the above struct, because the Member<> is required for garbage collection tracing.
+struct CORE_EXPORT RecordReplayMatchedProperties {
+  DISALLOW_NEW();
+
+ public:
+  RecordReplayMatchedProperties();
+
+  int record_replay_id_properties;
+
+  struct Data {
+    unsigned link_match_type : 2;
+    unsigned valid_property_filter : 3;
+    CascadeOrigin origin;
+    // This is approximately equivalent to the 'shadow-including tree order'.
+    // It can be used to evaluate the 'Shadow Tree' criteria. Note that the
+    // number stored here is 'local' to each origin (user, author), and is
+    // not used at all for the UA origin. Hence, it is not possible to compare
+    // tree_orders from two different origins.
+    //
+    // https://drafts.csswg.org/css-scoping/#shadow-cascading
+    uint16_t tree_order;
+    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
+    uint16_t layer_order;
+    bool is_inline_style;
+  };
+  Data types_;
+};
+
 }  // namespace blink
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::RecordReplayMatchedProperties)
 
 namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
+using RecordReplayMatchedPropertiesVector = HeapVector<RecordReplayMatchedProperties, 64>;
 
 class AddMatchedPropertiesOptions {
   STACK_ALLOCATED();
@@ -188,6 +220,10 @@ class CORE_EXPORT MatchResult {
     return matched_properties_;
   }
 
+  const RecordReplayMatchedPropertiesVector& GetRecordReplayMatchedProperties() const {
+    return record_replay_matched_properties_;
+  }
+
   // Reset the MatchResult to its initial state, as if no MatchedProperties
   // objects were added.
   void Reset();
@@ -199,6 +235,7 @@ class CORE_EXPORT MatchResult {
 
  private:
   MatchedPropertiesVector matched_properties_;
+  RecordReplayMatchedPropertiesVector record_replay_matched_properties_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};

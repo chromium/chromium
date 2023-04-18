@@ -39,9 +39,9 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
 }
 
 void FontFallbackMap::Remove(const FontDescription& font_description) {
-  recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::Remove #0 %d %s",
-    record_replay_id_,
-    font_description.ToString().Utf8().data());
+  recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::Remove #0 %d %u",
+    record_replay_id_, StringHash::GetHash(font_description.ToString()));
+    
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
   DCHECK_NE(iter, fallback_list_for_description_.end());
