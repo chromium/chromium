@@ -108,9 +108,13 @@ def get_tsc_paths(board):
 
     resources_dir = os.path.join(target_gen_dir, 'ui/webui/resources/tsc/*')
 
+    lit_d_ts = os.path.join(
+        root_dir, 'third_party/material_web_components/lit_exports.d.ts')
+
     return {
         '//resources/*': [os.path.relpath(resources_dir)],
         'chrome://resources/*': [os.path.relpath(resources_dir)],
+        'chrome://resources/mwc/lit/index.js': [os.path.relpath(lit_d_ts)],
     }
 
 
@@ -139,6 +143,16 @@ def make_mojom_symlink(board):
         os.symlink(generated_mojom_dir, target)
 
 
+def get_tsc_references(board):
+    root_dir = get_chromium_root()
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+    mwc_tsconfig_path = os.path.join(
+        target_gen_dir,
+        'third_party/material_web_components/tsconfig_library.json')
+
+    return [{'path': os.path.relpath(mwc_tsconfig_path)}]
+
+
 def generate_tsconfig(board):
     cca_root = os.getcwd()
     # TODO(pihsun): This needs to be in sync with BUILD.gn, have some heuristic
@@ -164,6 +178,11 @@ def generate_tsconfig(board):
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
     # TODO(b:269971867): Remove this once we have type definition for ffmpeg.js
     tsconfig['compilerOptions']['allowJs'] = True
+    tsconfig['compilerOptions']['plugins'] = [{
+        "name": "ts-lit-plugin",
+        "strict": True
+    }]
+    tsconfig['references'] = get_tsc_references(board)
 
     with open(os.path.join(cca_root, 'tsconfig.json'), 'w') as f:
         json.dump(tsconfig, f)
@@ -284,6 +303,10 @@ def lint(args):
         run_node(cmd)
     except subprocess.CalledProcessError as e:
         print('ESLint check failed, return code =', e.returncode)
+    # TODO(pihsun): Add lit-analyzer to the check. It's not included in the
+    # chrome source tree and can be manually installed with `npm install -g
+    # lit-analyzer ts-lit-plugin`. Maybe this can be added as an optional check
+    # for now?
 
 
 def tsc(args):
