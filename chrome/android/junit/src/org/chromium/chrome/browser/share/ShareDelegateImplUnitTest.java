@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.core.os.BuildCompat;
@@ -27,6 +28,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
@@ -34,7 +36,9 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareContentType;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowAndroidShareSheetController;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowBuildCompatForU;
@@ -52,8 +56,12 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit test for {@link ShareDelegateImpl} that mocked out most native class calls.
@@ -120,12 +128,18 @@ public class ShareDelegateImplUnitTest {
     public void shareWithSharingHub() {
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Sharing.SharingHubAndroid.ShareContentType")
+                        .expectAnyRecord("Sharing.SharingHubAndroid.Opened")
+                        .build();
         ShareParams shareParams = new ShareParams.Builder(mWindowAndroid, "", "").build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         mShareDelegate.share(shareParams, chromeShareExtras, ShareOrigin.OVERFLOW_MENU);
 
         Assert.assertTrue("ShareSheetCoordinator not used.",
                 ShadowShareSheetCoordinator.sChromeShareSheetShowed);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -133,6 +147,11 @@ public class ShareDelegateImplUnitTest {
     public void shareLastUsedComponent() {
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Sharing.SharingHubAndroid.ShareContentType")
+                        .expectNoRecords("Sharing.SharingHubAndroid.Opened")
+                        .build();
         ShareParams shareParams = new ShareParams.Builder(mWindowAndroid, "", "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setShareDirectly(true).build();
@@ -142,12 +161,19 @@ public class ShareDelegateImplUnitTest {
                 ShadowShareSheetCoordinator.sChromeShareSheetShowed);
         Assert.assertTrue("ShareWithLastUsedComponentCalled not called.",
                 ShadowShareHelper.sShareWithLastUsedComponentCalled);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void shareWithAndroidShareSheetForU() {
         ShadowBuildCompatForU.sIsAtLeastU = true;
         Assert.assertFalse("ShareHub enabled.", mShareDelegate.isSharingHubEnabled());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Sharing.DefaultSharesheetAndroid.ShareContentType")
+                        .expectAnyRecord("Sharing.DefaultSharesheetAndroid.Opened")
+                        .build();
 
         ShareParams shareParams = new ShareParams.Builder(mWindowAndroid, "", "").build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
@@ -157,11 +183,138 @@ public class ShareDelegateImplUnitTest {
                 ShadowShareSheetCoordinator.sChromeShareSheetShowed);
         Assert.assertTrue("shareWithSystemShareSheetUi not called.",
                 ShadowAndroidShareSheetController.sShareWithSystemShareSheetUiCalled);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void androidShareSheetDisableNonU() {
         Assert.assertTrue("ShareHub should be enabled T-.", mShareDelegate.isSharingHubEnabled());
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_link() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.LINK.", ShareContentType.LINK,
+                ShareDelegateImpl.getShareContentType(params, extras));
+
+        params = new ShareParams.Builder(mWindowAndroid, "title", JUnitTestGURLs.EXAMPLE_URL)
+                         .setPreviewImageUri(Uri.parse("content://path/to/preview"))
+                         .setBypassFixingDomDistillerUrl(true)
+                         .build();
+        extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals(
+                "Title and preview does not impact types. Expected ShareContentType.LINK.",
+                ShareContentType.LINK, ShareDelegateImpl.getShareContentType(params, extras));
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_linkWithText() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setText("text")
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.TEXT_WITH_LINK.",
+                ShareContentType.TEXT_WITH_LINK,
+                ShareDelegateImpl.getShareContentType(params, extras));
+
+        params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.TEXT_FRAGMENT_URL)
+                         .setBypassFixingDomDistillerUrl(true)
+                         .setText("text")
+                         .setLinkToTextSuccessful(true)
+                         .build();
+        extras = new ChromeShareExtras.Builder()
+                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                         .build();
+        Assert.assertEquals("Expected ShareContentType.TEXT_WITH_LINK.",
+                ShareContentType.TEXT_WITH_LINK,
+                ShareDelegateImpl.getShareContentType(params, extras));
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_Image() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", "")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(Uri.parse("content://path/to/image1"))
+                                     .setFileContentType("image/png")
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.IMAGE.", ShareContentType.IMAGE,
+                ShareDelegateImpl.getShareContentType(params, extras));
+
+        // Multiple image should be the same.
+        params = new ShareParams.Builder(mWindowAndroid, "", "")
+                         .setBypassFixingDomDistillerUrl(true)
+                         .setFileUris(new ArrayList<>(List.of(Uri.parse("content://path/to/image1"),
+                                 Uri.parse("content://path/to/image2"))))
+                         .setLinkToTextSuccessful(true)
+                         .setFileContentType("image/png")
+                         .build();
+        extras = new ChromeShareExtras.Builder()
+                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                         .build();
+        Assert.assertEquals("Expected ShareContentType.IMAGE.", ShareContentType.IMAGE,
+                ShareDelegateImpl.getShareContentType(params, extras));
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_imageWithLink() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(Uri.parse("content://path/to/image1"))
+                                     .setFileContentType("image/png")
+                                     .setText("text") // text is ignored.
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.IMAGE_WITH_LINK.",
+                ShareContentType.IMAGE_WITH_LINK,
+                ShareDelegateImpl.getShareContentType(params, extras));
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_files() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(Uri.parse("content://path/to/video1"))
+                                     .setFileContentType("video/mp4")
+                                     .setText("text") // text is ignored.
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.FILES.", ShareContentType.FILES,
+                ShareDelegateImpl.getShareContentType(params, extras));
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_text() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", "")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setPreviewImageUri(Uri.parse(
+                                             "content://path/to/preview")) // preview is ignored.
+                                     .setText("text")
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.TEXT.", ShareContentType.TEXT,
+                ShareDelegateImpl.getShareContentType(params, extras));
+    }
+
+    @Test
+    @Config(shadows = ShadowGURL.class)
+    public void testGetShareContentType_unknown() {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, "", "")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+        Assert.assertEquals("Expected ShareContentType.UNKNOWN.", ShareContentType.UNKNOWN,
+                ShareDelegateImpl.getShareContentType(params, extras));
     }
 
     @Implements(ShareHelper.class)

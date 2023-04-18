@@ -94291,6 +94291,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="App"/>
 </enum>
 
+<enum name="SharingContentTypeAndroid">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Text"/>
+  <int value="2" label="Text with link"/>
+  <int value="3" label="Link"/>
+  <int value="4" label="Image"/>
+  <int value="5" label="Image with link"/>
+  <int value="6" label="Files"/>
+</enum>
+
 <enum name="SharingDeviceRegistrationResult">
   <int value="0" label="Operation is successful"/>
   <int value="1" label="Failed with Sync not ready"/>

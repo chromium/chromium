@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
@@ -40,6 +42,8 @@ import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.Set;
 
 /**
  * Implementation of share interface. Mostly a wrapper around ShareSheetCoordinator.
@@ -286,12 +290,65 @@ public class ShareDelegateImpl implements ShareDelegate {
                                 AppHooks.get().getImageEditorModuleProvider(),
                                 TrackerFactory.getTrackerForProfile(profile), profile);
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Sharing.SharingHubAndroid.ShareContentType",
+                        getShareContentType(params, chromeShareExtras), ShareContentType.COUNT);
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.DefaultSharesheetAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Sharing.DefaultSharesheetAndroid.ShareContentType",
+                        getShareContentType(params, chromeShareExtras), ShareContentType.COUNT);
                 AndroidShareSheetController.showShareSheet(params, chromeShareExtras, controller,
                         tabProvider, tabModelSelectorSupplier, profileSupplier, printCallback);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Sharing.SharingHubAndroid.ShareContentType",
+                        getShareContentType(params, chromeShareExtras), ShareContentType.COUNT);
             }
         }
+    }
+
+    // These values are recorded as histogram values. Entries should not be
+    // renumbered and numeric values should never be reused.
+    @IntDef({ShareContentType.UNKNOWN, ShareContentType.TEXT, ShareContentType.TEXT_WITH_LINK,
+            ShareContentType.LINK, ShareContentType.IMAGE, ShareContentType.IMAGE_WITH_LINK,
+            ShareContentType.FILES, ShareContentType.COUNT})
+    @interface ShareContentType {
+        int UNKNOWN = 0;
+        int TEXT = 1;
+        int TEXT_WITH_LINK = 2;
+        int LINK = 3;
+        int IMAGE = 4;
+        int IMAGE_WITH_LINK = 5;
+        int FILES = 6;
+
+        int COUNT = 7;
+    }
+
+    static @ShareContentType int getShareContentType(
+            ShareParams params, ChromeShareExtras chromeShareExtras) {
+        @ContentType
+        Set<Integer> types = ShareContentTypeHelper.getContentTypes(params, chromeShareExtras);
+        if (types.contains(ContentType.OTHER_FILE_TYPE)) {
+            return ShareContentType.FILES;
+        }
+        if (types.contains(ContentType.IMAGE_AND_LINK)) {
+            return ShareContentType.IMAGE_WITH_LINK;
+        }
+        if (types.contains(ContentType.IMAGE)) {
+            return ShareContentType.IMAGE;
+        }
+        if (types.contains(ContentType.HIGHLIGHTED_TEXT)
+                || types.contains(ContentType.LINK_AND_TEXT)) {
+            return ShareContentType.TEXT_WITH_LINK;
+        }
+        if (types.contains(ContentType.LINK_PAGE_NOT_VISIBLE)
+                || types.contains(ContentType.LINK_PAGE_VISIBLE)) {
+            return ShareContentType.LINK;
+        }
+        if (types.contains(ContentType.TEXT)) {
+            return ShareContentType.TEXT;
+        }
+        return ShareContentType.UNKNOWN;
     }
 }
