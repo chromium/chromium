@@ -72,4 +72,9 @@ void BubbleView::AddedToWidget() {
   }
 }
 
+void BubbleView::ChildPreferredSizeChanged(View* child) {
+  PreferredSizeChanged();
+  SizeToContents();
+}
+
 }  // namespace ash::video_conference

@@ -7,6 +7,10 @@
 
 #include "ash/system/tray/tray_bubble_view.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
 class VideoConferenceTrayController;
@@ -25,6 +29,7 @@ class BubbleView : public TrayBubbleView {
 
   // views::View:
   void AddedToWidget() override;
+  void ChildPreferredSizeChanged(View* child) override;
 
  private:
   // Unowned by `BubbleView`.

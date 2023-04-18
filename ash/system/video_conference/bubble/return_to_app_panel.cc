@@ -12,11 +12,15 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
@@ -34,6 +38,8 @@ const int kReturnToAppButtonTopRowSpacing = 12;
 const int kReturnToAppButtonSpacing = 16;
 const int kReturnToAppButtonIconsSpacing = 2;
 const int kReturnToAppIconSize = 20;
+
+constexpr auto kPanelBoundsChangeAnimationDuration = base::Milliseconds(200);
 
 // Creates a view containing camera, microphone, and screen share icons that
 // shows capturing state of a media app.
@@ -197,6 +203,9 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
 
   // TODO(b/253646076): Double check accessible name for this button.
   SetAccessibleName(display_text);
+
+  // When we show the bubble for the first time, only the top row is visible.
+  SetVisible(is_top_row);
 }
 
 ReturnToAppButton::~ReturnToAppButton() = default;
@@ -217,6 +226,12 @@ void ReturnToAppButton::OnButtonClicked(const base::UnguessableToken& id) {
     return;
   }
 
+  // If the expand/collapse animation is running, we should not toggle the state
+  // (to avoid spam clicking this button and snapping the animation).
+  if (panel_->IsExpandCollapseAnimationRunning()) {
+    return;
+  }
+
   // For summary row, toggle the expand state.
   expanded_ = !expanded_;
 
@@ -232,6 +247,64 @@ void ReturnToAppButton::OnButtonClicked(const base::UnguessableToken& id) {
 }
 
 // -----------------------------------------------------------------------------
+// ReturnToAppContainer:
+
+ReturnToAppPanel::ReturnToAppContainer::ReturnToAppContainer()
+    : views::AnimationDelegateViews(this),
+      animation_(std::make_unique<gfx::LinearAnimation>(
+          kPanelBoundsChangeAnimationDuration,
+          gfx::LinearAnimation::kDefaultFrameRate,
+          /*delegate=*/this)) {}
+
+ReturnToAppPanel::ReturnToAppContainer::~ReturnToAppContainer() = default;
+
+void ReturnToAppPanel::ReturnToAppContainer::StartExpandCollapseAnimation() {
+  // Animation should be guarded not to perform in `ReturnToAppButton` if
+  // there's a current running animation.
+  CHECK(!animation_->is_animating());
+
+  animation_->Start();
+}
+
+void ReturnToAppPanel::ReturnToAppContainer::AnimationProgressed(
+    const gfx::Animation* animation) {
+  PreferredSizeChanged();
+}
+
+void ReturnToAppPanel::ReturnToAppContainer::AnimationEnded(
+    const gfx::Animation* animation) {
+  PreferredSizeChanged();
+}
+
+void ReturnToAppPanel::ReturnToAppContainer::AnimationCanceled(
+    const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
+
+gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize()
+    const {
+  gfx::Size size = views::View::CalculatePreferredSize();
+
+  if (!animation_->is_animating()) {
+    return size;
+  }
+
+  auto tween_type = expanded_target_ ? gfx::Tween::ACCEL_20_DECEL_100
+                                     : gfx::Tween::ACCEL_40_DECEL_100_3;
+
+  // The height will be determined by adding the extra height with the previous
+  // height of the container before the animation starts. The extra height will
+  // be a positive value when the panel is expanding, and negative if the panel
+  // is collapsing.
+  double extra_height =
+      (size.height() - height_before_animation_) *
+      gfx::Tween::CalculateValue(tween_type, animation_->GetCurrentValue());
+
+  size.set_height(height_before_animation_ + extra_height);
+  return size;
+}
+
+// -----------------------------------------------------------------------------
 // ReturnToAppPanel:
 
 ReturnToAppPanel::ReturnToAppPanel() {
@@ -243,7 +316,7 @@ ReturnToAppPanel::ReturnToAppPanel() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetInteriorMargin(gfx::Insets::TLBR(16, 16, 0, 16));
 
-  auto container_view = std::make_unique<views::View>();
+  auto container_view = std::make_unique<ReturnToAppContainer>();
   container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -268,7 +341,14 @@ ReturnToAppPanel::~ReturnToAppPanel() {
   }
 }
 
+bool ReturnToAppPanel::IsExpandCollapseAnimationRunning() {
+  return container_view_->animation()->is_animating();
+}
+
 void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
+  container_view_->set_height_before_animation(
+      container_view_->GetPreferredSize().height());
+
   for (auto* child : container_view_->children()) {
     // Skip the first child since we always show the summary row. Otherwise,
     // show the other rows if `expanded` and vice versa.
@@ -277,6 +357,20 @@ void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
     }
     child->SetVisible(expanded);
   }
+
+  // In tests, widget might be null and the animation, in some cases, might be
+  // configured to have zero duration.
+  if (GetWidget() &&
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
+          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+    container_view_->set_expanded_target(expanded);
+    container_view_->StartExpandCollapseAnimation();
+  } else {
+    PreferredSizeChanged();
+  }
+}
+
+void ReturnToAppPanel::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
 
@@ -333,8 +427,6 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         app->is_capturing_microphone, app->is_capturing_screen,
         GetMediaAppDisplayText(app)));
   }
-
-  OnExpandedStateChanged(false);
 }
 
 }  // namespace ash::video_conference

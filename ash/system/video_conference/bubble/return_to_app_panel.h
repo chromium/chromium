@@ -5,18 +5,26 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_RETURN_TO_APP_PANEL_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_RETURN_TO_APP_PANEL_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace base {
 class UnguessableToken;
 }  // namespace base
+
+namespace gfx {
+class Animation;
+class LinearAnimation;
+}  // namespace gfx
 
 namespace views {
 class ImageView;
@@ -124,21 +132,72 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
   ReturnToAppPanel& operator=(const ReturnToAppPanel&) = delete;
   ~ReturnToAppPanel() override;
 
+  // True if the container is running its expand/collapse animation.
+  bool IsExpandCollapseAnimationRunning();
+
   int max_capturing_count() { return max_capturing_count_; }
 
  private:
   friend class ReturnToAppPanelTest;
   friend class VideoConferenceIntegrationTest;
 
+  // The container that is the parent of all the buttons inside this panel.
+  // Mainly used to handle expand/collapse animation.
+  class ReturnToAppContainer : public views::View,
+                               public views::AnimationDelegateViews {
+   public:
+    ReturnToAppContainer();
+    ReturnToAppContainer(const ReturnToAppContainer&) = delete;
+    ReturnToAppContainer& operator=(const ReturnToAppContainer&) = delete;
+    ~ReturnToAppContainer() override;
+
+    // Starts the expand/collapse animation.
+    void StartExpandCollapseAnimation();
+
+    gfx::LinearAnimation* animation() { return animation_.get(); }
+
+    void set_height_before_animation(int height_before_animation) {
+      height_before_animation_ = height_before_animation;
+    }
+
+    void set_expanded_target(bool expanded_target) {
+      expanded_target_ = expanded_target;
+    }
+
+   private:
+    friend class ReturnToAppPanelTest;
+
+    // views::AnimationDelegateViews:
+    void AnimationProgressed(const gfx::Animation* animation) override;
+    void AnimationEnded(const gfx::Animation* animation) override;
+    void AnimationCanceled(const gfx::Animation* animation) override;
+
+    // views::View:
+    gfx::Size CalculatePreferredSize() const override;
+
+    // Animation used for the expand/collapse animation.
+    std::unique_ptr<gfx::LinearAnimation> animation_;
+
+    // Keeps track of the height of the panel before animation starts. This is
+    // used for the expand/collapse animation.
+    int height_before_animation_ = 0;
+
+    // Target expand state of the panel after the animation is completed.
+    bool expanded_target_ = false;
+  };
+
   // ReturnToAppButton::Observer:
   void OnExpandedStateChanged(bool expanded) override;
+
+  // views::View:
+  void ChildPreferredSizeChanged(View* child) override;
 
   // Used by the ctor to add `ReturnToAppButton`(s) to the panel.
   void AddButtonsToPanel(MediaApps apps);
 
   // The container of the panel, which contains all the views and is used for
   // setting padding and background painting. Owned by the views hierarchy.
-  views::View* container_view_ = nullptr;
+  ReturnToAppContainer* container_view_ = nullptr;
 
   // The view at the top of the panel, summarizing the information of all media
   // apps. This pointer will be null when there's one or fewer media apps. Owned

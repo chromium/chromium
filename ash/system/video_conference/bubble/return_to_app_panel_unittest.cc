@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -19,6 +20,8 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
@@ -105,11 +108,32 @@ class ReturnToAppPanelTest : public AshTestBase {
             BubbleViewID::kReturnToApp));
   }
 
-  views::View* GetReturnToAppContainer(ReturnToAppPanel* panel) {
+  ReturnToAppPanel::ReturnToAppContainer* GetReturnToAppContainer(
+      ReturnToAppPanel* panel) {
     return panel->container_view_;
   }
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
+
+  // Get the instance that handle bounds change for the expand/collapse
+  // animation.
+  gfx::LinearAnimation* GetBoundsChangeAnimation() {
+    return GetReturnToAppContainer(GetReturnToAppPanel())->animation_.get();
+  }
+
+  void AnimateToValue(double animation_value) {
+    auto* animation = GetBoundsChangeAnimation();
+    EXPECT_TRUE(animation->is_animating());
+    animation->SetCurrentValue(animation_value);
+    GetReturnToAppContainer(GetReturnToAppPanel())
+        ->AnimationProgressed(animation);
+  }
+
+  void SimulateAnimationEnded() {
+    auto* animation = GetBoundsChangeAnimation();
+    animation->End();
+    GetReturnToAppContainer(GetReturnToAppPanel())->AnimationEnded(animation);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -289,6 +313,9 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
 }
 
 TEST_F(ReturnToAppPanelTest, ReturnToApp) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
   auto app_id1 = base::UnguessableToken::Create();
   auto app_id2 = base::UnguessableToken::Create();
 
@@ -327,6 +354,115 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
 
   LeftClickOn(second_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id2]);
+}
+
+TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+  ASSERT_FALSE(summary_row->expanded());
+
+  auto panel_initial_height = return_to_app_panel->size().height();
+  auto* vc_bubble = video_conference_tray()->GetBubbleView();
+  auto bubble_initial_height = vc_bubble->size().height();
+
+  // The animation should start after we click the summary row to expand the
+  // panel.
+  LeftClickOn(summary_row);
+  EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
+
+  AnimateToValue(0.5);
+
+  auto panel_mid_animation_height = return_to_app_panel->size().height();
+  auto bubble_mid_animation_height = vc_bubble->size().height();
+
+  // Make sure that the panel is expanding and the bubble is also expanding in
+  // the same amount.
+  EXPECT_GT(panel_mid_animation_height, panel_initial_height);
+  EXPECT_EQ(panel_mid_animation_height - panel_initial_height,
+            bubble_mid_animation_height - bubble_initial_height);
+
+  // Test the same thing when animation ends.
+  SimulateAnimationEnded();
+
+  auto panel_end_animation_height = return_to_app_panel->size().height();
+  auto bubble_end_animation_height = vc_bubble->size().height();
+
+  EXPECT_GT(panel_end_animation_height, panel_mid_animation_height);
+  EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
+            bubble_end_animation_height - bubble_mid_animation_height);
+}
+
+TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+
+  LeftClickOn(summary_row);
+  SimulateAnimationEnded();
+  ASSERT_TRUE(summary_row->expanded());
+
+  auto panel_initial_height = return_to_app_panel->size().height();
+  auto* vc_bubble = video_conference_tray()->GetBubbleView();
+  auto bubble_initial_height = vc_bubble->size().height();
+
+  // The animation should start after we click the summary row again to collapse
+  // the panel.
+  LeftClickOn(summary_row);
+  EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
+
+  AnimateToValue(0.5);
+
+  auto panel_mid_animation_height = return_to_app_panel->size().height();
+  auto bubble_mid_animation_height = vc_bubble->size().height();
+
+  // Make sure that the panel is collapsing and the bubble is also collapsing in
+  // the same amount.
+  EXPECT_LT(panel_mid_animation_height, panel_initial_height);
+  EXPECT_EQ(panel_mid_animation_height - panel_initial_height,
+            bubble_mid_animation_height - bubble_initial_height);
+
+  // Test the same thing when animation ends.
+  SimulateAnimationEnded();
+
+  auto panel_end_animation_height = return_to_app_panel->size().height();
+  auto bubble_end_animation_height = vc_bubble->size().height();
+
+  EXPECT_LT(panel_end_animation_height, panel_mid_animation_height);
+  EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
+            bubble_end_animation_height - bubble_mid_animation_height);
 }
 
 }  // namespace ash::video_conference
