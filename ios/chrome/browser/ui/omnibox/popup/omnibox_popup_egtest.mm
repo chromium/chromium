@@ -108,10 +108,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }  //  namespace
 
 @interface OmniboxPopupTestCase : ChromeTestCase
-
 @end
 
-@implementation OmniboxPopupTestCase
+@implementation OmniboxPopupTestCase {
+  GURL _URL1;
+  GURL _URL2;
+  GURL _URL3;
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -136,6 +139,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  _URL1 = self.testServer->GetURL(kPage1URL);
+  _URL2 = self.testServer->GetURL(kPage2URL);
+  _URL3 = self.testServer->GetURL(kPage3URL);
 
   [ChromeEarlGrey clearBrowsingHistory];
 }
@@ -175,15 +182,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the switch to open tab button isn't displayed for the current tab.
 - (void)testNotSwitchButtonOnCurrentTab {
-  GURL URL2 = self.testServer->GetURL(kPage2URL);
-
   // Open the first page.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPage1URL)];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Open the second page in another tab.
   [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:URL2];
+  [ChromeEarlGrey loadURL:_URL2];
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 
   // Type the URL of the first page in the omnibox to trigger it as suggestion.
@@ -192,94 +197,112 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
 
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL2)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL2)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL2)]
+  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL2)]
       assertWithMatcher:grey_not(grey_interactable())];
+}
+
+// Test that swiping left on a historical suggestion and tapping
+// the delete button , removes the suggestions.
+- (void)testDeleteHistoricalSuggestion {
+  [self populateHistory];
+  NSString* omniboxInput = [NSString
+      stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL3.host()),
+                       base::SysUTF8ToNSString(_URL3.port())];
+
+  [ChromeEarlGreyUI focusOmniboxAndType:omniboxInput];
+
+  // Swipe one of the historical suggestions, to the left.
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
+
+  // Delete button is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
+                                          @"UISwipeActionStandardButton")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the delete button.
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
+                                          @"UISwipeActionStandardButton")]
+      performAction:grey_tap()];
+
+  // Historical suggestion with URL1 is now deleted.
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the incognito tabs aren't displayed as "opened" tab in the
 // non-incognito suggestions and vice-versa.
 - (void)testIncognitoSeparation {
-  GURL URL1 = self.testServer->GetURL(kPage1URL);
-  GURL URL2 = self.testServer->GetURL(kPage2URL);
-  GURL URL3 = self.testServer->GetURL(kPage3URL);
-
-  // Add all the pages to the history.
-  [ChromeEarlGrey loadURL:URL1];
-  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
-  [ChromeEarlGrey loadURL:URL2];
-  [ChromeEarlGrey waitForWebStateContainingText:kPage2];
-  [ChromeEarlGrey loadURL:URL3];
-  [ChromeEarlGrey waitForWebStateContainingText:kPage3];
+  [self populateHistory];
   [[self class] closeAllTabs];
 
   // Load page 1 in non-incognito and page 2 in incognito.
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey loadURL:URL2];
+  [ChromeEarlGrey loadURL:_URL2];
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 
   // Open page 3 in non-incognito.
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey loadURL:URL3];
+  [ChromeEarlGrey loadURL:_URL3];
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
-  NSString* omniboxInput =
-      [NSString stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(URL3.host()),
-                                 base::SysUTF8ToNSString(URL3.port())];
+  NSString* omniboxInput = [NSString
+      stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL3.host()),
+                       base::SysUTF8ToNSString(_URL3.port())];
   [ChromeEarlGreyUI focusOmniboxAndType:omniboxInput];
 
   // Check that we have the switch button for the first page.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(grey_ancestor(PopupRowWithUrl(URL1)),
+          grey_allOf(grey_ancestor(PopupRowWithUrl(_URL1)),
                      grey_accessibilityID(
                          kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
                      nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that we have the suggestion for the second page, but not the switch.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL2)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL2)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL2)]
+  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL2)]
       assertWithMatcher:grey_nil()];
 
   // Open page 3 in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey loadURL:URL3];
+  [ChromeEarlGrey loadURL:_URL3];
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(URL3.host())];
+  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(_URL3.host())];
 
   // Check that we have the switch button for the second page.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(grey_ancestor(PopupRowWithUrl(URL2)),
+          grey_allOf(grey_ancestor(PopupRowWithUrl(_URL2)),
                      grey_accessibilityID(
                          kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
                      nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that we have the suggestion for the first page, but not the switch.
-  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL1)]
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL1)]
+  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL1)]
       assertWithMatcher:grey_nil()];
 }
 
 - (void)testCloseNTPWhenSwitching {
   // Open the first page.
-  GURL URL1 = self.testServer->GetURL(kPage1URL);
-  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Open a new tab and switch to the first tab.
   [ChromeEarlGrey openNewTab];
-  NSString* omniboxInput =
-      [NSString stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(URL1.host()),
-                                 base::SysUTF8ToNSString(URL1.port())];
+  NSString* omniboxInput = [NSString
+      stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL1.host()),
+                       base::SysUTF8ToNSString(_URL1.port())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -287,7 +310,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(omniboxInput)];
 
-  TapSwitchToTabButton(URL1);
+  TapSwitchToTabButton(_URL1);
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Check that the other tab is closed.
@@ -296,13 +319,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)testDontCloseNTPWhenSwitchingWithForwardHistory {
   // Open the first page.
-  GURL URL1 = self.testServer->GetURL(kPage1URL);
-  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Open a new tab, navigate to a page and go back to have forward history.
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
   [ChromeEarlGrey goBack];
 
@@ -312,14 +334,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(base::SysUTF8ToNSString(URL1.host()))];
+      performAction:grey_typeText(base::SysUTF8ToNSString(_URL1.host()))];
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:SwitchTabElementForUrl(
-                                                       URL1)];
-  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL1)]
+                                                       _URL1)];
+  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL1)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
@@ -330,10 +352,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that switching to closed tab opens the tab in foreground, except if it
 // is from NTP without history.
 - (void)testSwitchToClosedTab {
-  GURL URL1 = self.testServer->GetURL(kPage1URL);
-
   // Open the first page.
-  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Open a new tab and load another URL.
@@ -346,14 +366,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Make sure that the "Switch to Open Tab" element is visible, scrolling the
   // popup if necessary.
-  ScrollToSwitchToTabElement(URL1);
+  ScrollToSwitchToTabElement(_URL1);
 
   // Close the first page.
   [ChromeEarlGrey closeTabAtIndex:0];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Try to switch to the first tab.
-  TapSwitchToTabButton(URL1);
+  TapSwitchToTabButton(_URL1);
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -366,21 +386,19 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // multiple buttons.
 - (void)testMultiplePageOpened {
   // Open the first page.
-  GURL URL1 = self.testServer->GetURL(kPage1URL);
-  [ChromeEarlGrey loadURL:URL1];
+  [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
   // Open the second page in a new tab.
   [ChromeEarlGrey openNewTab];
-  GURL URL2 = self.testServer->GetURL(kPage2URL);
-  [ChromeEarlGrey loadURL:URL2];
+  [ChromeEarlGrey loadURL:_URL2];
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 
   // Start typing url of the two opened pages in a new tab.
   [ChromeEarlGrey openNewTab];
-  NSString* omniboxInput =
-      [NSString stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(URL1.host()),
-                                 base::SysUTF8ToNSString(URL1.port())];
+  NSString* omniboxInput = [NSString
+      stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL1.host()),
+                       base::SysUTF8ToNSString(_URL1.port())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -393,10 +411,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // here.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:SwitchTabElementForUrl(
-                                                       URL1)];
+                                                       _URL1)];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:SwitchTabElementForUrl(
-                                                       URL2)];
+                                                       _URL2)];
 }
 
 // Test that on iPhones, when the popup is scrolled, the keyboard is dismissed
@@ -490,6 +508,19 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // The keyboard should be dismissed.
   GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
                   @"Keyboard Should not be Shown");
+}
+
+#pragma mark - Helpers
+
+// Populate history by visiting the 3 different pages.
+- (void)populateHistory {
+  // Add all the pages to the history.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage2];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 }
 
 @end
