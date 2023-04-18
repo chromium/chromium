@@ -20,7 +20,13 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -2985,6 +2991,19 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
         wait_for_item.Quit();
       });
   wait_for_item.Run();
+
+  // The video recording and / or the GIF recording progress notifications can
+  // get in the way while tapping on the holding space tray button. Therefore,
+  // we must wait until the notification animation completes before attempting
+  // to tap on it.
+  // TODO(b/275558519): This should not be needed, since the notification should
+  // not overlap the shelf.
+  MessagePopupAnimationWaiter(ash::Shell::GetPrimaryRootWindowController()
+                                  ->shelf()
+                                  ->GetStatusAreaWidget()
+                                  ->unified_system_tray()
+                                  ->GetMessagePopupCollection())
+      .Wait();
 
   // Verify that the screen recording appears in holding space UI.
   test_api().Show();
