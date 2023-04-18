@@ -580,6 +580,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   }
 
   if (!request_delegate_->IsVirtualEnvironmentEnabled() &&
+      !disable_tls_check_ &&
       !GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
           GetRenderFrameHost(), caller_origin)) {
     CompleteMakeCredentialRequest(
@@ -890,6 +891,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     return;
   }
   if (!request_delegate_->IsVirtualEnvironmentEnabled() &&
+      !disable_tls_check_ &&
       !GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
           GetRenderFrameHost(), caller_origin)) {
     CompleteGetAssertionRequest(
@@ -1994,6 +1996,10 @@ void AuthenticatorCommonImpl::Cleanup() {
 
 void AuthenticatorCommonImpl::DisableUI() {
   disable_ui_ = true;
+}
+
+void AuthenticatorCommonImpl::DisableTLSCheck() {
+  disable_tls_check_ = true;
 }
 
 RenderFrameHost* AuthenticatorCommonImpl::GetRenderFrameHost() const {

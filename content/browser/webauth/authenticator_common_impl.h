@@ -92,6 +92,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void Cancel() override;
   void Cleanup() override;
   void DisableUI() override;
+  void DisableTLSCheck() override;
   RenderFrameHost* GetRenderFrameHost() const override;
   void EnableRequestProxyExtensionsAPISupport() override;
 
@@ -234,6 +235,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       get_assertion_response_callback_;
   std::string client_data_json_;
   bool disable_ui_ = false;
+  bool disable_tls_check_ = false;
   url::Origin caller_origin_;
   std::string relying_party_id_;
   scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;

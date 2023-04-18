@@ -49,6 +49,7 @@
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -8624,9 +8625,15 @@ class InternalAuthenticatorImplTest : public AuthenticatorTestBase {
  protected:
   InternalAuthenticatorImplTest() = default;
 
+  void SetUp() override {
+    AuthenticatorTestBase::SetUp();
+    old_client_ = SetBrowserClientForTesting(&test_client_);
+  }
+
   void TearDown() override {
     // The |RenderFrameHost| must outlive |AuthenticatorImpl|.
     internal_authenticator_impl_.reset();
+    SetBrowserClientForTesting(old_client_);
     AuthenticatorTestBase::TearDown();
   }
 
@@ -8646,7 +8653,41 @@ class InternalAuthenticatorImplTest : public AuthenticatorTestBase {
 
  protected:
   std::unique_ptr<InternalAuthenticatorImpl> internal_authenticator_impl_;
+  TestAuthenticatorContentBrowserClient test_client_;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
+
+// Regression test for crbug.com/1433416.
+TEST_F(InternalAuthenticatorImplTest, MakeCredentialSkipTLSCheck) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  InternalAuthenticatorImpl* authenticator =
+      GetAuthenticator(url::Origin::Create(GURL(kTestOrigin1)));
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->is_webauthn_security_level_acceptable = false;
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  TestMakeCredentialCallback callback;
+  authenticator->MakeCredential(std::move(options), callback.callback());
+  callback.WaitForCallback();
+  EXPECT_EQ(callback.status(), blink::mojom::AuthenticatorStatus::SUCCESS);
+}
+
+// Regression test for crbug.com/1433416.
+TEST_F(InternalAuthenticatorImplTest, GetAssertionSkipTLSCheck) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  InternalAuthenticatorImpl* authenticator =
+      GetAuthenticator(url::Origin::Create(GURL(kTestOrigin1)));
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->is_webauthn_security_level_acceptable = false;
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id, options->relying_party_id));
+  TestGetAssertionCallback callback;
+  authenticator->GetAssertion(std::move(options), callback.callback());
+  callback.WaitForCallback();
+  EXPECT_EQ(callback.status(), blink::mojom::AuthenticatorStatus::SUCCESS);
+}
 
 // Verify behavior for various combinations of origins and RP IDs.
 TEST_F(InternalAuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
