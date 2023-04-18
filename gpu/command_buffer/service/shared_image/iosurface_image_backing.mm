@@ -25,6 +25,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
+#include "ui/gl/scoped_make_current.h"
 
 #include <EGL/egl.h>
 
@@ -115,16 +116,21 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
 IOSurfaceBackingEGLState::IOSurfaceBackingEGLState(
     Client* client,
     EGLDisplay egl_display,
+    gl::GLContext* gl_context,
+    gl::GLSurface* gl_surface,
     GLuint gl_target,
     std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures)
     : client_(client),
       egl_display_(egl_display),
+      context_(gl_context),
+      surface_(gl_surface),
       gl_target_(gl_target),
       gl_textures_(std::move(gl_textures)) {
   client_->IOSurfaceBackingEGLStateBeingCreated(this);
 }
 
 IOSurfaceBackingEGLState::~IOSurfaceBackingEGLState() {
+  ui::ScopedMakeCurrent smc(context_.get(), surface_.get());
   client_->IOSurfaceBackingEGLStateBeingDestroyed(this, !context_lost_);
   DCHECK(gl_textures_.empty());
 }
@@ -629,7 +635,8 @@ IOSurfaceImageBacking::~IOSurfaceImageBacking() {
 
 scoped_refptr<IOSurfaceBackingEGLState>
 IOSurfaceImageBacking::RetainGLTexture() {
-  gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
+  gl::GLContext* context = gl::GLContext::GetCurrent();
+  gl::GLDisplayEGL* display = context ? context->GetGLDisplayEGL() : nullptr;
   if (!display) {
     LOG(ERROR) << "No GLDisplayEGL current.";
     return nullptr;
@@ -653,7 +660,8 @@ IOSurfaceImageBacking::RetainGLTexture() {
     gl_textures.push_back(std::move(gl_texture));
   }
 
-  return new IOSurfaceBackingEGLState(this, egl_display, gl_target_,
+  return new IOSurfaceBackingEGLState(this, egl_display, context,
+                                      gl::GLSurface::GetCurrent(), gl_target_,
                                       std::move(gl_textures));
 }
 

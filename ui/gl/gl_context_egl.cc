@@ -544,6 +544,12 @@ bool GLContextEGL::IsCurrent(GLSurface* surface) {
       return false;
   }
 
+  if (gl_display_) {
+    if (gl_display_->GetDisplay() != eglGetCurrentDisplay()) {
+      return false;
+    }
+  }
+
   return true;
 }
 
