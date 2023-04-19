@@ -21,6 +21,7 @@ include_rules = [
   "+components/crash/core/app",
   "+components/domain_reliability",
   "+components/download/public/common",
+  "+components/enterprise",
   "+components/favicon/core",
   "+components/feature_engagement",
   "+components/find_in_page",
