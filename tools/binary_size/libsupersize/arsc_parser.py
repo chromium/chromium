@@ -2,9 +2,10 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Utilities for optimistically parsing ARSC files.
+"""Utilities for ARSC file parsing.
 
-This file performs shallow parsing for binary size analysis at chunk level.
+This file provides tools to performs shallow parsing for binary size analysis at
+chunk level, without comprehensive error detection.
 ARSC file format are extracted from:
 https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h
 https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/ResourceTypes.cpp
@@ -106,7 +107,8 @@ class _ArscStreamReader(stream_reader.StreamReader):
 
   def NextArscChunk(self, parent=None):
     chunk_type = self.PeekArscHeaderType()
-    arsc_class = self.GetArscResTypeToClassMap().get(chunk_type, None)
+    arsc_class = self.GetArscResTypeToClassMap().get(chunk_type)
+    assert arsc_class, 'Failed to get class for chunk_type = %d' % chunk_type
     return arsc_class(self, parent=parent)
 
 
@@ -398,10 +400,8 @@ class ArscStringPool(ArscChunk):
     ]
 
     # Clone to enable lazy string read without polluting |reader|. This is
-    # deleted when no longer needed, to release reference.
+    # cleared when no longer needed.
     self.reader = reader.Clone()
-
-    # Skipping parsing styles.
 
   def __str__(self):
     return self.StrHelper('STRING_POOL', {'string_count': self.string_count})
@@ -434,7 +434,7 @@ class ArscStringPool(ArscChunk):
         info.data.decode(encoding, errors='surrogatepass')
         for info in self.string_infos
     ]
-    del self.reader
+    self.reader = None
     return ret
 
   def GetString(self, idx):
@@ -532,13 +532,13 @@ class ArscResTablePackage(ArscChunk):
 class ArscResTableType(ArscChunk):
   """_RES_TABLE_TYPE_TYPE chunk for resources of a common type and config.
 
-  Following the header, the struct consinsts of a pointer table for resource
-  entries, followed by resource data (not parsed). The pointer table can be
-  dense or sparse.
+  Following the header, the struct consinsts of a (relative) pointer table for
+  resource entries, followed by resource data (not parsed). The pointer table
+  can be dense or sparse.
   * Dense tables use NO_ENTRY to mark resources unavailable for |config|. These
     pointers are counted in |padding|.
-  * Sparse tables stores index-pointer tuples that can be looked up using
-    binary search. Currently we don't support these.
+  * Sparse tables stores sorted (index, pointer) pairs and uses binary search.
+    Currently we don't support these.
 
   Fields:
     type_str: Name of the common type, e.g., "drawable", "layout", "string".
