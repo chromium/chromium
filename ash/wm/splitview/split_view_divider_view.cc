@@ -20,7 +20,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -139,10 +138,8 @@ void SplitViewDividerView::OnThemeChanged() {
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kOpaque));
 
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1));
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1));
 }
 
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {

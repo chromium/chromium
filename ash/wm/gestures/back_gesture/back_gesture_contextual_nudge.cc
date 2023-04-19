@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -51,16 +50,6 @@ constexpr int kLabelCornerRadius = 16;
 
 // Top and bottom inset of the label.
 constexpr int kLabelTopBottomInset = 6;
-
-// Shadow values for the back nudge circle.
-// TODO (michelefan@): remove the shadow for the back gesture nudge after D/L
-// flag is enabled by default.
-constexpr int kBackNudgeShadowOffsetY1 = 1;
-constexpr int kBackNudgeShadowBlurRadius1 = 2;
-constexpr SkColor kBackNudgeShadowColor1 = SkColorSetA(SK_ColorBLACK, 0x4D);
-constexpr int kBackNudgeShadowOffsetY2 = 2;
-constexpr int kBackNudgeShadowBlurRadius2 = 6;
-constexpr SkColor kBackNudgeShadowColor2 = SkColorSetA(SK_ColorBLACK, 0x26);
 
 // Duration of the pause before sliding in to show the nudge.
 constexpr base::TimeDelta kPauseBeforeShowAnimationDuration = base::Seconds(10);
@@ -254,17 +243,6 @@ class BackGestureContextualNudge::ContextualNudgeView
       circle_flags.setColor(
           color_provider->GetColor(kColorAshShieldAndBaseOpaque));
 
-      if (!chromeos::features::IsDarkLightModeEnabled()) {
-        gfx::ShadowValues shadows;
-        shadows.push_back(gfx::ShadowValue(
-            gfx::Vector2d(0, kBackNudgeShadowOffsetY1),
-            kBackNudgeShadowBlurRadius1, kBackNudgeShadowColor1));
-        shadows.push_back(gfx::ShadowValue(
-            gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
-            kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
-        circle_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
-      }
-
       gfx::PointF center_point;
       if (base::i18n::IsRTL()) {
         const gfx::Point right_center = GetLocalBounds().right_center();
@@ -277,10 +255,8 @@ class BackGestureContextualNudge::ContextualNudgeView
       }
       canvas->DrawCircle(center_point, kCircleRadius, circle_flags);
 
-      if (chromeos::features::IsDarkLightModeEnabled()) {
-        // Draw highlight border circles for the affordance.
-        DrawCircleHighlightBorder(this, canvas, center_point, kCircleRadius);
-      }
+      // Draw highlight border circles for the affordance.
+      DrawCircleHighlightBorder(this, canvas, center_point, kCircleRadius);
 
       // Draw the black round rectangle around the text.
       cc::PaintFlags round_rect_flags;
@@ -293,11 +269,9 @@ class BackGestureContextualNudge::ContextualNudgeView
           gfx::Insets::VH(-kLabelTopBottomInset, -kLabelCornerRadius));
       canvas->DrawRoundRect(label_bounds, kLabelCornerRadius, round_rect_flags);
 
-      if (chromeos::features::IsDarkLightModeEnabled()) {
-        // Draw highlight border for the black round rectangle around the text.
-        DrawRoundRectHighlightBorder(this, canvas, label_bounds,
-                                     kLabelCornerRadius);
-      }
+      // Draw highlight border for the black round rectangle around the text.
+      DrawRoundRectHighlightBorder(this, canvas, label_bounds,
+                                   kLabelCornerRadius);
     }
 
     // ui::ImplicitAnimationObserver:

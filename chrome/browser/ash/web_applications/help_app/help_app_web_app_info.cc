@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -44,17 +42,12 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
       },
       *info);
 
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    info->theme_color = cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
-    info->dark_mode_theme_color = cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
-    info->background_color = info->theme_color;
-    info->dark_mode_background_color = info->dark_mode_theme_color;
-  } else {
-    info->theme_color = 0xffffffff;
-    info->background_color = 0xffffffff;
-  }
+  info->theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+  info->dark_mode_theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
 
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
