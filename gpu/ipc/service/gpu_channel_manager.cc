@@ -56,6 +56,7 @@
 #endif
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
@@ -64,6 +65,11 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "gpu/ipc/service/built_in_shader_cache_loader.h"
+#include "gpu/ipc/service/built_in_shader_cache_writer.h"
 #endif
 
 namespace gpu {
@@ -383,7 +389,6 @@ GpuChannelManager::GpuChannelManager(
 
 GpuChannelManager::~GpuChannelManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
   // Clear |gpu_channels_| first to prevent reentrancy problems from GpuChannel
   // destructor.
   auto gpu_channels = std::move(gpu_channels_);
@@ -426,8 +431,25 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
 
     // Use the EGL blob cache extension for the passthrough decoder.
     if (use_passthrough_cmd_decoder()) {
-      program_cache_ = std::make_unique<gles2::PassthroughProgramCache>(
-          gpu_preferences_.gpu_program_cache_size, disable_disk_cache);
+      gles2::PassthroughProgramCache::ValueAddedHook* value_add_hook = nullptr;
+#if BUILDFLAG(IS_MAC)
+      if (base::FeatureList::IsEnabled(
+              features::kWriteMetalShaderCacheToDisk)) {
+        shader_cache_writer_ = std::make_unique<BuiltInShaderCacheWriter>();
+        value_add_hook = shader_cache_writer_.get();
+      }
+#endif
+      std::unique_ptr<gles2::PassthroughProgramCache> cache =
+          std::make_unique<gles2::PassthroughProgramCache>(
+              gpu_preferences_.gpu_program_cache_size, disable_disk_cache,
+              value_add_hook);
+#if BUILDFLAG(IS_MAC)
+      auto entries = BuiltInShaderCacheLoader::TakeEntries();
+      for (auto& entry : *entries) {
+        cache->Set(std::move(entry.key), std::move(entry.value));
+      }
+#endif
+      program_cache_ = std::move(cache);
     } else {
       program_cache_ = std::make_unique<gles2::MemoryProgramCache>(
           gpu_preferences_.gpu_program_cache_size, disable_disk_cache,

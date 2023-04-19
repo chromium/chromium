@@ -24,6 +24,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_display_egl_util.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 
@@ -142,6 +143,21 @@ using ui::GetLastEGLErrorString;
 namespace gl {
 
 namespace {
+
+void AdjustAngleFeaturesFromChromeFeatures(
+    std::vector<std::string>& enabled_angle_features,
+    std::vector<std::string>& disabled_angle_features) {
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kWriteMetalShaderCacheToDisk)) {
+    disabled_angle_features.push_back("enableParallelMtlLibraryCompilation");
+    enabled_angle_features.push_back("compileMetalShaders");
+    enabled_angle_features.push_back("disableProgramCaching");
+  }
+  if (base::FeatureList::IsEnabled(features::kUseBuiltInMetalShaderCache)) {
+    enabled_angle_features.push_back("loadMetalShadersFromBlobCache");
+  }
+#endif
+}
 
 std::vector<const char*> GetAttribArrayFromStringVector(
     const std::vector<std::string>& strings) {
@@ -729,6 +745,9 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
   std::vector<std::string> disabled_angle_features =
       GetStringVectorFromCommandLine(command_line,
                                      switches::kDisableANGLEFeatures);
+
+  AdjustAngleFeaturesFromChromeFeatures(enabled_angle_features,
+                                        disabled_angle_features);
 
   bool disable_all_angle_features =
       command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds);
