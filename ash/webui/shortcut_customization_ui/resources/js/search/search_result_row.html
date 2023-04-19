@@ -1,14 +1,25 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style cros-color-overrides">
   :host {
     width: 100%;
+    --result-bg-color-selected: var(--cros-highlight-color);
+    --result-bg-color-not-selected-hover: var(--cros-highlight-color-hover);
+  }
+
+  :host-context(body.jelly-enabled) {
+    --result-bg-color-selected: var(--cros-sys-highlight_shape);
+    --result-bg-color-not-selected-hover: var(--cros-sys-hover_on_subtle);
+  }
+
+  :host-context(body.jelly-enabled) #description {
+    color: var(--cros-sys-on_surface);
   }
 
   :host([selected]) [focus-row-container] {
-    background-color: var(--cros-highlight-color);
+    background-color: var(--result-bg-color-selected);
   }
 
   :host(:not([selected])) [focus-row-container]:hover {
-    background-color: var(--cros-highlight-color-hover);
+    background-color: var(--result-bg-color-not-selected-hover);
   }
 
   #searchResultRowInner {
