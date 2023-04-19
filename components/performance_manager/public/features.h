@@ -101,6 +101,21 @@ BASE_DECLARE_FEATURE(kDiscardedTabTreatment);
 BASE_DECLARE_FEATURE(kMemoryUsageInHovercards);
 // This enables improved UI for adding site exceptions for tab discarding.
 BASE_DECLARE_FEATURE(kDiscardExceptionsImprovements);
+// This enables improved UI for highlighting memory savings in the page action
+// chip and dialog.
+BASE_DECLARE_FEATURE(kMemorySavingsReportingImprovements);
+
+// The minimum time between instances where the chip is shown in expanded mode.
+extern const base::FeatureParam<base::TimeDelta>
+    kExpandedHighEfficiencyChipFrequency;
+
+// The minimum discard savings that a tab must have for the chip to be expanded.
+extern const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes;
+
+// The minimum time a tab must be discarded before the chip can be shown
+// expanded.
+extern const base::FeatureParam<base::TimeDelta>
+    kExpandedHighEfficiencyChipDiscardedDuration;
 
 #endif
 

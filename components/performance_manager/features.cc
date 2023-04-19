@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -95,6 +96,22 @@ BASE_FEATURE(kMemoryUsageInHovercards,
 BASE_FEATURE(kDiscardExceptionsImprovements,
              "DiscardExceptionsImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMemorySavingsReportingImprovements,
+             "MemorySavingsReportingImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kExpandedHighEfficiencyChipFrequency{
+    &kMemorySavingsReportingImprovements,
+    "expanded_high_efficiency_chip_frequency", base::Days(1)};
+
+const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes{
+    &kMemorySavingsReportingImprovements,
+    "expanded_high_efficiency_chip_threshold_bytes", 200 * 1024 * 1024};
+
+const base::FeatureParam<base::TimeDelta>
+    kExpandedHighEfficiencyChipDiscardedDuration{
+        &kMemorySavingsReportingImprovements,
+        "expanded_high_efficiency_chip_discarded_duration", base::Hours(6)};
 
 #endif
 
