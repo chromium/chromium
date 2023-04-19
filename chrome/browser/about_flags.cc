@@ -3133,7 +3133,9 @@ constexpr FeatureEntry::FeatureVariation kLensImageFormatVariations[] = {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 constexpr FeatureEntry::FeatureParam kCscVariation[] = {
     {"companion-homepage-url",
-     "https://lens-staging.corp.google.com/companion"}};
+     "https://lens-staging.corp.google.com/companion"},
+    {"companion-image-upload-url",
+     "https://lens-staging.corp.google.com/v2/upload"}};
 
 constexpr FeatureEntry::FeatureVariation kCscVariations[] = {
     {"with staging URL", kCscVariation, std::size(kCscVariation), nullptr}};
