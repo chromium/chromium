@@ -21,7 +21,7 @@ import {DefaultMap} from './DefaultMap.js';
 
 const expect = chai.expect;
 
-describe.only('DefaultMap', () => {
+describe('DefaultMap', () => {
   it('returns the default value when key does not exist', () => {
     const defaultValue = 42;
 
