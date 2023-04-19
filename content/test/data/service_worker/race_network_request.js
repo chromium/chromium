@@ -1,32 +1,23 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-const OFFLINE_MAIN_RESOURCE_URL =
-    'race_network_request_from_fetch_handler.html';
-const OFFLINE_SUB_RESOURCE_URL = 'hello-from-sw.txt';
-const CACHE_NAME = 'race_network_request';
-
-self.addEventListener('install', e => {
-  const modifyHeader = response => {
-    const customHeaders = new Headers(response.headers);
-    customHeaders.append('X-Response-From', 'fetch-handler');
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: customHeaders
-    });
+const composeCustomResponse = () => {
+  const headers = new Headers();
+  headers.append('Content-Type', 'text/html');
+  headers.append('X-Response-From', 'fetch-handler');
+  const options = {
+    status: 200,
+    statusText: 'Custom response from fetch handler',
+    headers
   };
 
+  return new Response(
+      '[ServiceWorkerRaceNetworkRequest] Response from the fetch handler',
+      options);
+};
+
+self.addEventListener('install', e => {
   self.skipWaiting();
-  e.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    const main_resource_response = await fetch(OFFLINE_MAIN_RESOURCE_URL);
-    const sub_resource_response = await fetch(OFFLINE_SUB_RESOURCE_URL);
-    await cache.put(
-        OFFLINE_MAIN_RESOURCE_URL, modifyHeader(main_resource_response));
-    await cache.put(
-        OFFLINE_SUB_RESOURCE_URL, modifyHeader(sub_resource_response));
-  })());
 });
 
 self.addEventListener('activate', e => {
@@ -38,26 +29,22 @@ self.addEventListener("fetch", async e => {
   const url = new URL(request.url);
 
   // Force fallback
-  if (url.search.includes('fallback')) {
+  if (url.search.includes('sw_fallback')) {
     return;
   }
 
-  // Force timeout
+  // Force slow response
   let timeout = Promise.resolve();
-  if (url.search.includes('timeout')) {
+  if (url.search.includes('sw_slow')) {
     timeout = new Promise(resolve => setTimeout(resolve, 1500));
   }
 
   // Force respond from the cache
-  if (url.search.includes('respond_from_fetch_handler')) {
-    const is_navigation_request = request.mode == 'navigate';
+  if (url.search.includes('sw_respond')) {
     e.respondWith(
       (async () => {
         await timeout;
-        const cache = await caches.open(CACHE_NAME);
-        return await cache.match(
-            is_navigation_request ? OFFLINE_MAIN_RESOURCE_URL :
-                                    OFFLINE_SUB_RESOURCE_URL);
+        return composeCustomResponse();
       })()
     );
   }
