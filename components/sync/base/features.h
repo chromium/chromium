@@ -193,6 +193,9 @@ BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
 BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
 #endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
 
+// If enabled, ignore GetUpdates retry delay command from the server.
+BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

@@ -155,4 +155,8 @@ BASE_FEATURE(kSyncWebauthnCredentials,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
 
+BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
+             "SyncIgnoreGetUpdatesRetryDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer
