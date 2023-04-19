@@ -20,6 +20,7 @@
 #include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -122,6 +123,9 @@ struct AttributionReportJsonConverter {
               bool ok = AdjustScheduledReportTime(report_body,
                                                   report.initial_report_time());
               DCHECK(ok);
+            },
+            [](const AttributionReport::NullAggregatableData&) {
+              NOTREACHED();
             },
         },
         report.data());
@@ -320,6 +324,9 @@ class AttributionEventHandler : public AttributionObserver {
         reports = is_debug_report ? &debug_aggregatable_reports_
                                   : &aggregatable_reports_;
         break;
+      case AttributionReport::Type::kNullAggregatable:
+        // TODO(linnan): Consider supporting null reports in interop tests.
+        return;
     }
 
     reports->Append(json_converter_.ToJson(report, is_debug_report));

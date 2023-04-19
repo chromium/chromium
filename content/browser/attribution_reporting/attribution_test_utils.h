@@ -285,6 +285,8 @@ class ReportBuilder {
 
   AttributionReport BuildAggregatableAttribution() const;
 
+  AttributionReport BuildNullAggregatable() const;
+
  private:
   AttributionInfo attribution_info_;
   StoredSource source_;
@@ -323,8 +325,14 @@ bool operator==(const AggregatableHistogramContribution& a,
 bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b);
 
+bool operator==(const AttributionReport::CommonAggregatableData& a,
+                const AttributionReport::CommonAggregatableData& b);
+
 bool operator==(const AttributionReport::AggregatableAttributionData& a,
                 const AttributionReport::AggregatableAttributionData& b);
+
+bool operator==(const AttributionReport::NullAggregatableData& a,
+                const AttributionReport::NullAggregatableData& b);
 
 bool operator==(const AttributionReport& a, const AttributionReport& b);
 
@@ -359,14 +367,17 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data);
 
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionReport::CommonAggregatableData&);
+
 std::ostream& operator<<(
     std::ostream& out,
     const AttributionReport::AggregatableAttributionData& data);
 
-std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
-
 std::ostream& operator<<(std::ostream& out,
-                         AttributionReport::Type report_type);
+                         const AttributionReport::NullAggregatableData&);
+
+std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 
@@ -454,7 +465,7 @@ MATCHER_P(TriggerDestinationOriginIs, matcher, "") {
 // Report matchers
 
 MATCHER_P(ReportSourceIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.GetStoredSource(), result_listener);
+  return ExplainMatchResult(matcher, *arg.GetStoredSource(), result_listener);
 }
 
 MATCHER_P(ReportTimeIs, matcher, "") {
@@ -515,7 +526,7 @@ MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
 }
 
 MATCHER_P(AggregationCoordinatorIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.aggregation_coordinator,
+  return ExplainMatchResult(matcher, arg.common_data.aggregation_coordinator,
                             result_listener);
 }
 

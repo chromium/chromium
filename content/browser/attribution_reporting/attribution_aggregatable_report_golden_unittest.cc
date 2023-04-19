@@ -125,7 +125,7 @@ class AttributionAggregatableReportGoldenLatestVersionTest
                   absl::get_if<AttributionReport::AggregatableAttributionData>(
                       &report.data());
               ASSERT_TRUE(data);
-              data->assembled_report = std::move(*assembled_report);
+              data->common_data.assembled_report = std::move(*assembled_report);
               EXPECT_TRUE(VerifyReport(
                   report.ReportBody(), std::move(expected_report).TakeDict(),
                   *base64_encoded_expected_cleartext_payload))

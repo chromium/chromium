@@ -236,6 +236,8 @@ void RecordNetworkConnectionTypeOnFailure(
           "Conversions.AggregatableReport.NetworkConnectionTypeOnFailure",
           connection_type);
       break;
+    case AttributionReport::Type::kNullAggregatable:
+      break;
   }
 }
 
@@ -288,6 +290,8 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
           now - report.report_time(), base::Seconds(1), base::Days(1), 50);
       break;
     }
+    case AttributionReport::Type::kNullAggregatable:
+      break;
   }
 }
 
@@ -304,6 +308,8 @@ void LogMetricsOnReportCompleted(const AttributionReport& report,
       base::UmaHistogramEnumeration(
           "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
+      break;
+    case AttributionReport::Type::kNullAggregatable:
       break;
   }
 }
@@ -338,6 +344,8 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
           time_since_original_report_time, base::Seconds(1), base::Days(24),
           /*bucket_count=*/50);
+      break;
+    case AttributionReport::Type::kNullAggregatable:
       break;
   }
 }
@@ -420,13 +428,25 @@ AttributionManagerImpl::CreateWithNewDbForTesting(
 
 bool AttributionManagerImpl::IsReportAllowed(
     const AttributionReport& report) const {
-  const CommonSourceInfo& common_info = report.GetStoredSource().common_info();
+  const attribution_reporting::SuitableOrigin* source_origin = absl::visit(
+      base::Overloaded{
+          [](const AttributionReport::EventLevelData& data) {
+            return &data.source.common_info().source_origin();
+          },
+          [](const AttributionReport::AggregatableAttributionData& data) {
+            return &data.source.common_info().source_origin();
+          },
+          [&](const AttributionReport::NullAggregatableData&) {
+            return &report.attribution_info().context_origin;
+          },
+      },
+      report.data());
   return IsOperationAllowed(
       storage_partition_.get(),
       ContentBrowserClient::AttributionReportingOperation::kReport,
-      /*rfh=*/nullptr, &*common_info.source_origin(),
+      /*rfh=*/nullptr, &**source_origin,
       &*report.attribution_info().context_origin,
-      &*common_info.reporting_origin());
+      &*report.GetReportingOrigin());
 }
 
 // static
@@ -592,6 +612,13 @@ void AttributionManagerImpl::StoreSource(StorableSource source,
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
                            weak_factory_.GetWeakPtr(), std::move(source),
                            cleared_debug_key, is_debug_cookie_set));
+}
+
+void AttributionManagerImpl::StoreAttributionReportForTesting(
+    AttributionReport report) {
+  attribution_storage_
+      .AsyncCall(&AttributionStorage::StoreAttributionReportForTesting)
+      .WithArgs(std::move(report));
 }
 
 void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
@@ -809,7 +836,9 @@ void AttributionManagerImpl::OnReportStored(
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   const AttributionInfo& attribution_info = report.attribution_info();
-  if (!attribution_info.debug_key || !report.GetStoredSource().debug_key() ||
+  const StoredSource* source = report.GetStoredSource();
+  DCHECK(source);
+  if (!attribution_info.debug_key || !source->debug_key() ||
       !IsReportAllowed(report)) {
     return;
   }
@@ -1014,6 +1043,7 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
                                  std::move(callback));
       break;
     case AttributionReport::Type::kAggregatableAttribution:
+    case AttributionReport::Type::kNullAggregatable:
       AssembleAggregatableReport(std::move(report), is_debug_report,
                                  std::move(callback));
       break;
@@ -1146,10 +1176,18 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
     return;
   }
 
-  auto* data = absl::get_if<AttributionReport::AggregatableAttributionData>(
-      &report.data());
-  DCHECK(data);
-  data->assembled_report = std::move(assembled_report);
+  absl::visit(
+      base::Overloaded{
+          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+          [&](AttributionReport::AggregatableAttributionData& data) {
+            data.common_data.assembled_report = std::move(assembled_report);
+          },
+          [&](AttributionReport::NullAggregatableData& data) {
+            data.common_data.assembled_report = std::move(assembled_report);
+          },
+      },
+      report.data());
+
   RecordAssembleAggregatableReportStatus(
       AssembleAggregatableReportStatus::kSuccess);
 

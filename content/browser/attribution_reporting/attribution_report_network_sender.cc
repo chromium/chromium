@@ -167,9 +167,9 @@ void AttributionReportNetworkSender::OnReportSent(
                   : !internal_ok             ? Status::kInternalError
                                              : Status::kExternalError;
 
-  const char* status_metric;
-  const char* http_response_or_net_error_code_metric;
-  const char* retry_succeed_metric;
+  const char* status_metric = nullptr;
+  const char* http_response_or_net_error_code_metric = nullptr;
+  const char* retry_succeed_metric = nullptr;
 
   switch (report.GetReportType()) {
     case AttributionReport::Type::kEventLevel:
@@ -198,17 +198,21 @@ void AttributionReportNetworkSender::OnReportSent(
               ? "Conversions.DebugReport.ReportRetrySucceedAggregatable"
               : "Conversions.ReportRetrySucceedAggregatable";
       break;
+    case AttributionReport::Type::kNullAggregatable:
+      break;
   }
 
-  base::UmaHistogramEnumeration(status_metric, status);
+  if (status_metric) {
+    base::UmaHistogramEnumeration(status_metric, status);
 
-  // Since net errors are always negative and HTTP errors are always positive,
-  // it is fine to combine these in a single histogram.
-  base::UmaHistogramSparse(http_response_or_net_error_code_metric,
-                           internal_ok ? response_code : net_error);
+    // Since net errors are always negative and HTTP errors are always positive,
+    // it is fine to combine these in a single histogram.
+    base::UmaHistogramSparse(http_response_or_net_error_code_metric,
+                             internal_ok ? response_code : net_error);
 
-  if (loader->GetNumRetries() > 0) {
-    base::UmaHistogramBoolean(retry_succeed_metric, status == Status::kOk);
+    if (loader->GetNumRetries() > 0) {
+      base::UmaHistogramBoolean(retry_succeed_metric, status == Status::kOk);
+    }
   }
 
   loaders_in_progress_.erase(it);

@@ -19,12 +19,14 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
 namespace content {
 
@@ -180,6 +182,26 @@ TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
               aggregation_coordinator)
         << aggregation_coordinator;
   }
+}
+
+TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
+  absl::optional<AggregatableReportRequest> request =
+      CreateAggregatableReportRequest(
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(base::Time::FromJavaTime(1234567890123))
+                            .BuildStored())
+              .BuildNullAggregatable());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_THAT(request->payload_contents().contributions,
+              ElementsAre(blink::mojom::AggregatableReportHistogramContribution(
+                  /*bucket=*/0, /*value=*/0)));
+  EXPECT_EQ(request->payload_contents().aggregation_coordinator,
+            ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud);
+  const std::string* source_registration_time =
+      request->shared_info().additional_fields.FindString(
+          "source_registration_time");
+  ASSERT_TRUE(source_registration_time);
+  EXPECT_EQ(*source_registration_time, "1234483200");
 }
 
 }  // namespace content

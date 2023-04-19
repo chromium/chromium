@@ -11,6 +11,8 @@ enum ReportType {
   // An aggregatable report.
   // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
   kAggregatableAttribution = 1,
+  // A null aggregatable report.
+  kNullAggregatable = 2,
 };
 
 enum OsRegistrationType {

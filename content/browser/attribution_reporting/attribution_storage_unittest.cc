@@ -3455,4 +3455,13 @@ TEST_F(AttributionStorageTest, NoEventTriggerData_NotRegisteredReturned) {
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
+TEST_F(AttributionStorageTest, StoreNullAggregatableReport) {
+  AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
+                                           SourceBuilder().BuildStored())
+                                 .BuildNullAggregatable();
+  storage()->StoreAttributionReportForTesting(report);
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
+              ElementsAre(report));
+}
+
 }  // namespace content

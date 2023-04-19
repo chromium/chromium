@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -120,33 +122,47 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
 
 absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {
-  const auto* data =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(data);
+  base::Time source_time;
+  absl::optional<uint64_t> source_debug_key;
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
+  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator;
+
+  absl::visit(
+      base::Overloaded{
+          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+          [&](const AttributionReport::AggregatableAttributionData& data) {
+            source_time = data.source.common_info().source_time();
+            source_debug_key = data.source.debug_key();
+            aggregation_coordinator = data.common_data.aggregation_coordinator;
+            base::ranges::transform(
+                data.contributions, std::back_inserter(contributions),
+                [](const auto& contribution) {
+                  return blink::mojom::AggregatableReportHistogramContribution(
+                      /*bucket=*/contribution.key(),
+                      /*value=*/base::checked_cast<int32_t>(
+                          contribution.value()));
+                });
+          },
+          [&](const AttributionReport::NullAggregatableData& data) {
+            source_time = data.fake_source_time;
+            aggregation_coordinator = data.common_data.aggregation_coordinator;
+            contributions.emplace_back(/*bucket=*/0, /*value=*/0);
+          },
+      },
+      report.data());
 
   const AttributionInfo& attribution_info = report.attribution_info();
 
   AggregatableReportSharedInfo::DebugMode debug_mode =
-      data->source.debug_key().has_value() &&
-              attribution_info.debug_key.has_value()
+      source_debug_key.has_value() && attribution_info.debug_key.has_value()
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
-  std::vector<blink::mojom::AggregatableReportHistogramContribution>
-      contributions;
-  base::ranges::transform(
-      data->contributions, std::back_inserter(contributions),
-      [](const auto& contribution) {
-        return blink::mojom::AggregatableReportHistogramContribution(
-            /*bucket=*/contribution.key(),
-            /*value=*/base::checked_cast<int32_t>(contribution.value()));
-      });
-
   base::Value::Dict additional_fields;
-  additional_fields.Set("source_registration_time",
-                        SerializeTimeRoundedDownToWholeDayInSeconds(
-                            data->source.common_info().source_time()));
+  additional_fields.Set(
+      "source_registration_time",
+      SerializeTimeRoundedDownToWholeDayInSeconds(source_time));
   additional_fields.Set(
       "attribution_destination",
       net::SchemefulSite(attribution_info.context_origin).Serialize());
@@ -155,13 +171,12 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           AggregationServicePayloadContents::Operation::kHistogram,
           std::move(contributions),
           blink::mojom::AggregationServiceMode::kDefault,
-          data->aggregation_coordinator),
+          aggregation_coordinator),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
-          data->source.common_info().reporting_origin(), debug_mode,
-          std::move(additional_fields),
-          AttributionReport::AggregatableAttributionData::kVersion,
-          AttributionReport::AggregatableAttributionData::kApiIdentifier));
+          report.GetReportingOrigin(), debug_mode, std::move(additional_fields),
+          AttributionReport::CommonAggregatableData::kVersion,
+          AttributionReport::CommonAggregatableData::kApiIdentifier));
 }
 
 }  // namespace content

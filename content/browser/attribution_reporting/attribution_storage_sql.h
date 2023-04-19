@@ -323,6 +323,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool StoreAttributionReport(AttributionReport& report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  void StoreAttributionReportForTesting(AttributionReport) override;
+
   // If set, database errors will not crash the client when run in debug mode.
   bool ignore_errors_for_testing_ = false;
 

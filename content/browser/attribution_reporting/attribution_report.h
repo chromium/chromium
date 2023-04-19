@@ -71,13 +71,44 @@ class CONTENT_EXPORT AttributionReport {
     // `attribution_test_utils.h` should also be updated.
   };
 
+  struct CONTENT_EXPORT CommonAggregatableData {
+    CommonAggregatableData(::aggregation_service::mojom::AggregationCoordinator,
+                           absl::optional<std::string> attestation_token);
+    CommonAggregatableData();
+    CommonAggregatableData(const CommonAggregatableData&);
+    CommonAggregatableData(CommonAggregatableData&&);
+    CommonAggregatableData& operator=(const CommonAggregatableData&);
+    CommonAggregatableData& operator=(CommonAggregatableData&&);
+    ~CommonAggregatableData();
+
+    // When updating the string, update the goldens and version history too, see
+    // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md
+    static constexpr char kVersion[] = "0.1";
+
+    // Enum string identifying this API for use in reports.
+    static constexpr char kApiIdentifier[] = "attribution-reporting";
+
+    // The report assembled by the aggregation service. If null, the report has
+    // not been assembled yet.
+    absl::optional<AggregatableReport> assembled_report;
+
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator =
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault;
+
+    // A token that can be sent alongside the report to complete trigger
+    // attestation.
+    absl::optional<std::string> attestation_token;
+
+    // When adding new members, the corresponding `operator==()` definition in
+    // `attribution_test_utils.h` should also be updated.
+  };
+
   // Struct that contains the data specific to the aggregatable report.
   struct CONTENT_EXPORT AggregatableAttributionData {
     AggregatableAttributionData(
+        CommonAggregatableData,
         std::vector<AggregatableHistogramContribution> contributions,
-        ::aggregation_service::mojom::AggregationCoordinator
-            aggregation_coordinator,
-        absl::optional<std::string> attestation_token,
         StoredSource);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
@@ -88,26 +119,10 @@ class CONTENT_EXPORT AttributionReport {
     // Returns the sum of the contributions (values) across all buckets.
     base::CheckedNumeric<int64_t> BudgetRequired() const;
 
-    // When updating the string, update the goldens and version history too, see
-    // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md
-    static constexpr char kVersion[] = "0.1";
-
-    // Enum string identifying this API for use in reports.
-    static constexpr char kApiIdentifier[] = "attribution-reporting";
+    CommonAggregatableData common_data;
 
     // The historgram contributions.
     std::vector<AggregatableHistogramContribution> contributions;
-
-    // The report assembled by the aggregation service. If null, the report has
-    // not been assembled yet.
-    absl::optional<AggregatableReport> assembled_report;
-
-    // A token that can be sent alongside the report to complete trigger
-    // attestation.
-    absl::optional<std::string> attestation_token;
-
-    ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator;
 
     StoredSource source;
 
@@ -115,7 +130,27 @@ class CONTENT_EXPORT AttributionReport {
     // `attribution_test_utils.h` should also be updated.
   };
 
-  using Data = absl::variant<EventLevelData, AggregatableAttributionData>;
+  struct CONTENT_EXPORT NullAggregatableData {
+    NullAggregatableData(CommonAggregatableData,
+                         attribution_reporting::SuitableOrigin reporting_origin,
+                         base::Time fake_source_time);
+    NullAggregatableData(const NullAggregatableData&);
+    NullAggregatableData(NullAggregatableData&&);
+    NullAggregatableData& operator=(const NullAggregatableData&);
+    NullAggregatableData& operator=(NullAggregatableData&&);
+    ~NullAggregatableData();
+
+    CommonAggregatableData common_data;
+    attribution_reporting::SuitableOrigin reporting_origin;
+    base::Time fake_source_time;
+
+    // When adding new members, the corresponding `operator==()` definition in
+    // `attribution_test_utils.h` should also be updated.
+  };
+
+  using Data = absl::variant<EventLevelData,
+                             AggregatableAttributionData,
+                             NullAggregatableData>;
 
   // Returns the minimum non-null time of `a` and `b`, or `absl::nullopt` if
   // both are null.
@@ -161,7 +196,9 @@ class CONTENT_EXPORT AttributionReport {
 
   Type GetReportType() const { return static_cast<Type>(data_.index()); }
 
-  const StoredSource& GetStoredSource() const;
+  const StoredSource* GetStoredSource() const;
+
+  const attribution_reporting::SuitableOrigin& GetReportingOrigin() const;
 
   void set_id(Id id) { id_ = id; }
 

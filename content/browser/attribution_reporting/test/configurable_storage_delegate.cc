@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -160,6 +161,9 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       config_.aggregate_limit.max_reports_per_destination = max;
+      break;
+    case AttributionReport::Type::kNullAggregatable:
+      NOTREACHED();
       break;
   }
 }

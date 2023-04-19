@@ -98,6 +98,13 @@ struct AttributionAggregatableMetadataRecord {
   std::vector<Contribution> contributions;
 };
 
+struct AttributionNullAggregatableMetadataRecord {
+  absl::optional<::aggregation_service::mojom::AggregationCoordinator>
+      coordinator =
+          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
+  absl::optional<int64_t> fake_source_time;
+};
+
 std::string CreateSerializedFilterData(
     const attribution_reporting::FilterValues& filter_values) {
   proto::AttributionFilterData msg;
@@ -138,8 +145,8 @@ std::string SerializeReportMetadata(
   proto::AttributionAggregatableMetadata msg;
 
   if (record.coordinator) {
-    msg.set_coordinator(
-        static_cast<proto::AttributionAggregatableMetadata_Coordinator>(
+    msg.mutable_common_data()->set_coordinator(
+        static_cast<proto::AttributionCommonAggregatableMetadata_Coordinator>(
             *record.coordinator));
   }
 
@@ -155,6 +162,26 @@ std::string SerializeReportMetadata(
     if (contribution.value) {
       contribution_msg->set_value(*contribution.value);
     }
+  }
+
+  std::string str;
+  bool success = msg.SerializeToString(&str);
+  CHECK(success);
+  return str;
+}
+
+std::string SerializeReportMetadata(
+    const AttributionNullAggregatableMetadataRecord& record) {
+  proto::AttributionNullAggregatableMetadata msg;
+
+  if (record.coordinator) {
+    msg.mutable_common_data()->set_coordinator(
+        static_cast<proto::AttributionCommonAggregatableMetadata_Coordinator>(
+            *record.coordinator));
+  }
+
+  if (record.fake_source_time) {
+    msg.set_fake_source_time(*record.fake_source_time);
   }
 
   std::string str;
@@ -408,7 +435,8 @@ TEST_F(AttributionStorageSqlTest,
   const auto* data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
-  EXPECT_EQ(data->attestation_token.value(), trigger_attestation->token());
+  EXPECT_EQ(data->common_data.attestation_token.value(),
+            trigger_attestation->token());
 
   CloseDatabase();
 }
@@ -442,7 +470,7 @@ TEST_F(AttributionStorageSqlTest,
   const auto* data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
-  EXPECT_FALSE(data->attestation_token.has_value());
+  EXPECT_FALSE(data->common_data.attestation_token.has_value());
 
   CloseDatabase();
 }
@@ -478,7 +506,7 @@ TEST_F(
   const auto* data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
-  EXPECT_FALSE(data->attestation_token.has_value());
+  EXPECT_FALSE(data->common_data.attestation_token.has_value());
 
   CloseDatabase();
 }
@@ -1625,6 +1653,80 @@ TEST_F(AttributionStorageSqlTest,
     if (test_case.max_budget) {
       delegate()->set_aggregatable_budget_per_source(*test_case.max_budget);
     }
+    EXPECT_THAT(
+        storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+        SizeIs(test_case.valid))
+        << test_case.desc;
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    CloseDatabase();
+  }
+}
+
+TEST_F(AttributionStorageSqlTest,
+       InvalidNullAggregatableMetadata_FailsDeserialization) {
+  const struct {
+    const char* desc;
+    absl::variant<AttributionNullAggregatableMetadataRecord, std::string>
+        record;
+    bool valid;
+  } kTestCases[] = {
+      {
+          .desc = "invalid_proto",
+          .record = "!",
+          .valid = false,
+      },
+      {
+          .desc = "missing_fake_source_time",
+          .record = AttributionNullAggregatableMetadataRecord(),
+          .valid = false,
+      },
+      {
+          .desc = "missing_coordinator",
+          .record =
+              AttributionNullAggregatableMetadataRecord{
+                  .coordinator = absl::nullopt,
+                  .fake_source_time = 12345678900,
+              },
+          .valid = false,
+      },
+      {
+          .desc = "valid",
+          .record =
+              AttributionNullAggregatableMetadataRecord{
+                  .fake_source_time = 12345678900,
+              },
+          .valid = true,
+      },
+  };
+
+  for (auto test_case : kTestCases) {
+    OpenDatabase();
+    // Create the tables.
+    storage()->StoreSource(SourceBuilder().Build());
+    auto sources = storage()->GetActiveSources();
+    ASSERT_THAT(sources, SizeIs(1));
+    CloseDatabase();
+
+    std::string metadata = absl::visit(
+        base::Overloaded{
+            [](const AttributionNullAggregatableMetadataRecord& record) {
+              return SerializeReportMetadata(record);
+            },
+            [](const std::string& str) { return str; },
+        },
+        test_case.record);
+
+    StoreAttributionReport(AttributionReportRecord{
+        .report_id = 1,
+        .source_id = -1,
+        .external_report_id = DefaultExternalReportID().AsLowercaseString(),
+        .report_type =
+            static_cast<int>(AttributionReport::Type::kNullAggregatable),
+        .metadata = metadata,
+    });
+
+    OpenDatabase();
     EXPECT_THAT(
         storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
         SizeIs(test_case.valid))
