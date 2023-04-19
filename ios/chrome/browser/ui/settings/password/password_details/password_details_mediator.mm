@@ -404,6 +404,17 @@ bool SupportsMuteOperation(password_manager::InsecureType insecure_type) {
   [_delegate showDismissWarningDialogWithPasswordDetails:password];
 }
 
+- (void)restoreWarningForCurrentPassword {
+  // Restoring a warning is only available in the
+  // DetailsContext::kDismissedWarnings context, which is always showing only 1
+  // credential.
+  CHECK(_credentials.size() == 1);
+  password_manager::CredentialUIEntry credential = _credentials[0];
+  _manager->UnmuteCredential(credential);
+  base::Erase(_credentials, credential);
+  [self providePasswordsToConsumer];
+}
+
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {

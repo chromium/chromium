@@ -77,6 +77,9 @@ class IOSChromePasswordCheckManager
   // Mutes the provided compromised credential.
   void MuteCredential(const password_manager::CredentialUIEntry& credential);
 
+  // Unmutes the provided muted compromised credential.
+  void UnmuteCredential(const password_manager::CredentialUIEntry& credential);
+
  private:
   friend class base::RefCounted<IOSChromePasswordCheckManager>;
   friend class IOSChromePasswordCheckManagerProxy;

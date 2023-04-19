@@ -65,6 +65,9 @@ enum class DetailsContext {
 // Whether password is compromised or not.
 @property(nonatomic, assign, getter=isCompromised) BOOL compromised;
 
+// Whether password is muted or not.
+@property(nonatomic, assign, getter=isMuted) BOOL muted;
+
 // URL which allows to change the password of compromised credential.
 @property(nonatomic, readonly) absl::optional<GURL> changePasswordURL;
 

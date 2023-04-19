@@ -109,6 +109,12 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
   }
 }
 
+// Returns true if the "Restore Warning" button should be shown.
+bool ShouldAllowToRestoreWarning(DetailsContext context) {
+  return password_manager::features::IsPasswordCheckupEnabled() &&
+         context == DetailsContext::kDismissedWarnings;
+}
+
 }  // namespace
 
 #pragma mark - PasswordDetailsInfoItem
@@ -421,6 +427,17 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
   return item;
 }
 
+- (TableViewTextItem*)restoreWarningItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:PasswordDetailsItemTypeRestoreWarningButton];
+  item.text = l10n_util::GetNSString(IDS_IOS_RESTORE_WARNING);
+  item.textColor = self.tableView.editing
+                       ? [UIColor colorNamed:kTextSecondaryColor]
+                       : [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
 - (TableViewTextItem*)deleteButtonItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
   TableViewTextItem* item = [[TableViewTextItem alloc]
@@ -548,9 +565,14 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
       if (!self.tableView.editing) {
         [self didTapDismissWarningButtonAtPasswordIndex:GetPasswordIndex(
                                                             indexPath.section)];
-        [self.tableView
-            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
-                          animated:YES];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+      }
+      break;
+    case PasswordDetailsItemTypeRestoreWarningButton:
+      if (!self.tableView.editing) {
+        [self didTapRestoreWarningButtonAtPasswordIndex:GetPasswordIndex(
+                                                            indexPath.section)];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       }
       break;
     case PasswordDetailsItemTypeDeleteButton:
@@ -559,9 +581,7 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
             [self.tableView cellForRowAtIndexPath:indexPath];
         [self didTapDeleteButton:cell
                  atPasswordIndex:GetPasswordIndex(indexPath.section)];
-        [self.tableView
-            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
-                          animated:YES];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       }
       break;
     case PasswordDetailsItemTypeMoveToAccountButton:
@@ -570,9 +590,7 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
             [self.tableView cellForRowAtIndexPath:indexPath];
         [self didTapMoveButton:cell
                atPasswordIndex:GetPasswordIndex(indexPath.section)];
-        [self.tableView
-            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
-                          animated:YES];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       }
       break;
     case PasswordDetailsItemTypeChangePasswordRecommendation:
@@ -715,6 +733,7 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeChangePasswordButton:
     case PasswordDetailsItemTypeDismissWarningButton:
+    case PasswordDetailsItemTypeRestoreWarningButton:
     case PasswordDetailsItemTypeDeleteButton:
       break;
   }
@@ -1011,6 +1030,7 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
     case PasswordDetailsItemTypeChangePasswordButton:
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeDismissWarningButton:
+    case PasswordDetailsItemTypeRestoreWarningButton:
     case PasswordDetailsItemTypeDeleteButton:
     case PasswordDetailsItemTypeMoveToAccountButton:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
@@ -1170,7 +1190,8 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
 
     [model addSectionWithIdentifier:SectionIdentifierSite];
     [model addSectionWithIdentifier:SectionIdentifierPassword];
-    if (passwordDetails.compromised) {
+    if (passwordDetails.compromised ||
+        passwordDetails.context == DetailsContext::kDismissedWarnings) {
       [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
     }
     if (passwordDetails.shouldOfferToMoveToAccount) {
@@ -1219,7 +1240,8 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
         [model setFooter:footer forSectionWithIdentifier:sectionForPassword];
       }
 
-      if (passwordDetails.isCompromised) {
+      if (passwordDetails.isCompromised ||
+          passwordDetails.context == DetailsContext::kDismissedWarnings) {
         [model addItem:[self changePasswordRecommendationItem]
             toSectionWithIdentifier:sectionForCompromisedInfo];
 
@@ -1230,6 +1252,9 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
 
         if (ShouldAllowToDismissWarning(passwordDetails.context)) {
           [model addItem:[self dismissWarningItem]
+              toSectionWithIdentifier:sectionForCompromisedInfo];
+        } else if (ShouldAllowToRestoreWarning(passwordDetails.context)) {
+          [model addItem:[self restoreWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
       }
@@ -1455,6 +1480,12 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
   CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
   CHECK(self.delegate);
   [self.delegate dismissWarningForPassword:self.passwords[passwordIndex]];
+}
+
+- (void)didTapRestoreWarningButtonAtPasswordIndex:(NSUInteger)passwordIndex {
+  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(self.delegate);
+  [self.delegate restoreWarningForCurrentPassword];
 }
 
 - (void)didTapDeleteButton:(UITableViewCell*)cell

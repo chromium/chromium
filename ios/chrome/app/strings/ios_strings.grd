@@ -2995,6 +2995,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_DISMISS_WARNING_DIALOG_DISMISS_BUTTON" desc="Button of the dialog presented to the user when they want to dismiss a compromised password warning. Button is used to confirm that they want to dismiss the warning. [iOS only]">
         Dismiss
       </message>
+      <message name="IDS_IOS_RESTORE_WARNING" desc="Button or dialog title which is shown on Password Details Screen to allow the user to restore a dismissed compromised password warning. [iOS only]" meaning="Title-cased">
+        Restore Warning
+      </message>
       <message name="IDS_IOS_DELETE_PASSWORD_DESCRIPTION" desc="Message at the top of the confirmation alert when the user tapped delete password button. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
         Deleting this password will not delete your account on <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>.
       </message>

@@ -110,6 +110,8 @@ constexpr char kNote[] = "note";
 
 @property(nonatomic, assign) BOOL dismissWarningCalled;
 
+@property(nonatomic, assign) BOOL restoreWarningCalled;
+
 @end
 
 @implementation FakePasswordDetailsDelegate
@@ -158,6 +160,10 @@ constexpr char kNote[] = "note";
 
 - (void)dismissWarningForPassword:(PasswordDetails*)password {
   self.dismissWarningCalled = YES;
+}
+
+- (void)restoreWarningForCurrentPassword {
+  self.restoreWarningCalled = YES;
 }
 
 @end
@@ -216,16 +222,18 @@ class PasswordDetailsTableViewControllerTest
                    std::string username = kUsername,
                    std::string password = kPassword,
                    std::string note = kNote,
-                   bool isCompromised = false) {
+                   bool is_compromised = false,
+                   DetailsContext context = DetailsContext::kGeneral) {
     std::vector<std::string> websites = {website};
-    SetPassword(websites, username, password, note, isCompromised);
+    SetPassword(websites, username, password, note, is_compromised, context);
   }
 
   void SetPassword(const std::vector<std::string>& websites,
                    std::string username = kUsername,
                    std::string password = kPassword,
                    std::string note = kNote,
-                   bool isCompromised = false) {
+                   bool is_compromised = false,
+                   DetailsContext context = DetailsContext::kGeneral) {
     std::vector<password_manager::PasswordForm> forms;
     for (const auto& website : websites) {
       auto form = password_manager::PasswordForm();
@@ -244,7 +252,8 @@ class PasswordDetailsTableViewControllerTest
     NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
     PasswordDetails* passwordDetails = [[PasswordDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(forms)];
-    passwordDetails.compromised = isCompromised;
+    passwordDetails.context = context;
+    passwordDetails.compromised = is_compromised;
     [passwords addObject:passwordDetails];
 
     PasswordDetailsTableViewController* passwords_controller =
@@ -591,6 +600,31 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_DISMISS_WARNING, 2, 2);
 }
 
+// Tests that muted compromised password is displayed properly.
+// kIOSPasswordCheckup feature needs to be enabled.
+TEST_F(PasswordDetailsTableViewControllerTest,
+       TestMutedCompromisedPasswordWithKIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  SetPassword(kExampleCom, kUsername, kPassword, kNote, false,
+              DetailsContext::kDismissedWarnings);
+  EXPECT_EQ(3, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(3, NumberOfItemsInSection(2));
+  CheckStackedDetailsCellDetails(@[ @"http://www.example.com/" ], 0, 0);
+  CheckEditCellText(@"test@egmail.com", 1, 0);
+  CheckEditCellText(kMaskedPassword, 1, 1);
+
+  CheckDetailItemTextWithId(
+      IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 2, 0);
+  CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 2, 1);
+
+  CheckTextCellTextWithId(IDS_IOS_RESTORE_WARNING, 2, 2);
+}
+
 // Tests the “Change Password on Website” button.
 TEST_P(PasswordGroupingTest, TestChangePasswordOnWebsite) {
   SetPassword(kExampleCom, kUsername, kPassword, kNote, true);
@@ -640,6 +674,30 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestDismissWarning) {
       didSelectRowAtIndexPath:indexPath];
 
   EXPECT_TRUE(delegate().dismissWarningCalled);
+}
+
+// Tests the “Restore Warning” button. kIOSPasswordCheckup feature needs to be
+// enabled.
+TEST_F(PasswordDetailsTableViewControllerTest, TestRestoreWarning) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  SetPassword(kExampleCom, kUsername, kPassword, kNote, false,
+              DetailsContext::kDismissedWarnings);
+  PasswordDetailsTableViewController* password_details =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  EXPECT_FALSE(delegate().restoreWarningCalled);
+
+  TableViewModel* model = password_details.tableViewModel;
+  NSIndexPath* indexPath =
+      [model indexPathForItemType:PasswordDetailsItemTypeRestoreWarningButton];
+  [password_details tableView:password_details.tableView
+      didSelectRowAtIndexPath:indexPath];
+
+  EXPECT_TRUE(delegate().restoreWarningCalled);
 }
 
 // Tests that password is shown/hidden.
