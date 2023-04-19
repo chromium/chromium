@@ -124,8 +124,10 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
 #if BUILDFLAG(IS_CHROMEOS)
   // Note: Don't set is_unsupported_ = true here. AllowGssapiLibraryLoad()
   // might change to true during a session.
-  if (!http_auth_preferences()->AllowGssapiLibraryLoad())
+  if (!http_auth_preferences() ||
+      !http_auth_preferences()->AllowGssapiLibraryLoad()) {
     return ERR_UNSUPPORTED_AUTH_SCHEME;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (!auth_library_->Init(net_log)) {
     is_unsupported_ = true;
