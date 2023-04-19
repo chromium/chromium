@@ -53525,6 +53525,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Password Copied"/>
   <int value="2" label="Password Saved"/>
   <int value="3" label="Autofill Used"/>
+  <int value="4" label="Set Up List"/>
 </enum>
 
 <enum name="IOSDefaultBrowserFullscreenPromoAction">

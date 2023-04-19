@@ -195,3 +195,33 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
           kRemindMeLater,
       1);
 }
+
+// Tests the flow when the trigger is the SetUpList. It should go directly to
+// LearnMore and the primary CTA should go to settings.
+TEST_F(CredentialProviderPromoCoordinatorTest, SetUpListTrigger) {
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnSetUpListHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
+      0);
+  // Trigger the promo with SetUpList. The primary CTA of the promo, when
+  // triggered from SetUpList, is 'go to settings'.
+  [credential_provider_promo_command_handler_
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SetUpList];
+
+  // Perform the action. Coordinator will record the action 'go to settings'.
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+  [(id<ConfirmationAlertActionHandler>)
+          coordinator_ confirmationAlertPrimaryAction];
+
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnSetUpListHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
+      0);
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnSetUpListHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::
+          kGoToSettings,
+      1);
+}

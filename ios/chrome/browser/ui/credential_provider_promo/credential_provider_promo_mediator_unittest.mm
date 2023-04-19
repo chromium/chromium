@@ -186,6 +186,16 @@ TEST_F(CredentialProviderPromoMediatorTest,
                                                          promoSeen:NO]);
 }
 
+// Tests that the promo will always be displayed when the trigger is SetUpList.
+TEST_F(CredentialProviderPromoMediatorTest,
+       CredentialProviderPromoSetUpListTrigger) {
+  local_state_.Get()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo,
+                                 true);
+  EXPECT_TRUE([mediator_ canShowCredentialProviderPromoWithTrigger:
+                             CredentialProviderPromoTrigger::SetUpList
+                                                         promoSeen:YES]);
+}
+
 // Tests that the consumer content is correctly set when the promo:
 // - Is a “First Step” promo
 // - Was triggered by the user copying a password

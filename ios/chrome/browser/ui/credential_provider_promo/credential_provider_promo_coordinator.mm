@@ -97,7 +97,12 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
           self.browser->GetBrowserState());
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
-  self.promoContext = CredentialProviderPromoContext::kFirstStep;
+  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
+    // If this is coming from the SetUpList, force to go directly to LearnMore.
+    self.promoContext = CredentialProviderPromoContext::kLearnMore;
+  } else {
+    self.promoContext = CredentialProviderPromoContext::kFirstStep;
+  }
   [self.mediator configureConsumerWithTrigger:trigger
                                       context:self.promoContext];
   self.trigger = trigger;

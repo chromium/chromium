@@ -17,6 +17,8 @@ extern const char
 extern const char kIOSCredentialProviderPromoOnAutofillUsedHistogram[];
 extern const char
     kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram[];
+extern const char kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram[];
+extern const char kIOSCredentialProviderPromoOnSetUpListHistogram[];
 
 namespace credential_provider_promo {
 

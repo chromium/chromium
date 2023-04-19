@@ -29,6 +29,10 @@ const char kIOSCredentialProviderPromoOnAutofillUsedHistogram[] =
 const char kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram[] =
     "IOS.CredentialProviderExtension.Promo."
     "OnSuccessfulLoginWithAutofilledPassword.IsReminder";
+const char kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnSetUpList.IsReminder";
+const char kIOSCredentialProviderPromoOnSetUpListHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnSetUpList";
 
 namespace credential_provider_promo {
 
@@ -63,6 +67,11 @@ void RecordAction(IOSCredentialProviderPromoSource source,
       name = is_reminder
                  ? kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram
                  : kIOSCredentialProviderPromoOnAutofillUsedHistogram;
+      break;
+    case IOSCredentialProviderPromoSource::kSetUpList:
+      name = is_reminder
+                 ? kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram
+                 : kIOSCredentialProviderPromoOnSetUpListHistogram;
       break;
     case IOSCredentialProviderPromoSource::kUnknown:
       NOTREACHED();

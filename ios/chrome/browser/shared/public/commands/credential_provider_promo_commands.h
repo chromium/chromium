@@ -12,6 +12,8 @@ enum class CredentialProviderPromoTrigger {
                                          // existing password.
   RemindMeLater,                         // User has tapped Remind Me Later in
                                          // the promo before.
+  SetUpList,                             // User has clicked the Autofill item
+                                         // in the Set Up List on the NTP.
 };
 
 // Commands to show app-wide promos.
