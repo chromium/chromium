@@ -126,6 +126,10 @@ function onBulkPinningProgress(progress) {
   $('bulk-pinning-listed-shortcuts').innerText = progress.listed_shortcuts;
   $('bulk-pinning-active-queries').innerText = progress.active_queries;
   $('bulk-pinning-max-active-queries').innerText = progress.max_active_queries;
+  $('bulk-pinning-time-spent-listing-items').innerText =
+      progress.time_spent_listing_items;
+  $('bulk-pinning-time-spent-pinning-files').innerText =
+      progress.time_spent_pinning_files;
 }
 
 function updateStartupArguments(args) {

@@ -666,6 +666,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     d.Set("listed_shortcuts", ToString(progress.listed_shortcuts));
     d.Set("active_queries", ToString(progress.active_queries));
     d.Set("max_active_queries", ToString(progress.max_active_queries));
+    d.Set("time_spent_listing_items",
+          drivefs::pinning::ToString(progress.time_spent_listing_items));
+    d.Set("time_spent_pinning_files",
+          drivefs::pinning::ToString(progress.time_spent_pinning_files));
     MaybeCallJavascript("onBulkPinningProgress", base::Value(std::move(d)));
   }
 

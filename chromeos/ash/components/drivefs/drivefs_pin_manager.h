@@ -45,8 +45,12 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
 using pin_manager_types::mojom::Stage;
+
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::string ToString(Stage stage);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+std::string ToString(base::TimeDelta time_delta);
 
 // When the manager is setting up, this struct maintains all the information
 // gathered.
@@ -111,6 +115,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 
   // Stage of the setup process.
   Stage stage = Stage::kStopped;
+
+  base::TimeDelta time_spent_listing_items;
+  base::TimeDelta time_spent_pinning_files;
 
   // Has the PinManager ever emptied its set of tracking items?
   bool emptied_queue = false;

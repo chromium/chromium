@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -102,16 +103,16 @@ ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
 
   const double seconds = ms / 1000.0;
   if (seconds < 60) {
-    return out << std::setprecision(2) << seconds << " seconds";
+    return out << base::StringPrintf("%.1f seconds", seconds);
   }
 
   const double minutes = seconds / 60.0;
   if (minutes < 60) {
-    return out << std::setprecision(2) << minutes << " minutes";
+    return out << base::StringPrintf("%.1f minutes", minutes);
   }
 
   const double hours = minutes / 60.0;
-  return out << std::setprecision(2) << hours << " hours";
+  return out << base::StringPrintf("%.1f hours", hours);
 }
 
 ostream& operator<<(ostream& out, Quoter<Path> q) {
@@ -318,6 +319,10 @@ bool InProgress(const Stage stage) {
 
 std::string ToString(Stage stage) {
   return (std::ostringstream() << Quote(stage)).str();
+}
+
+std::string ToString(TimeDelta time_delta) {
+  return (std::ostringstream() << Quote(time_delta)).str();
 }
 
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
@@ -719,6 +724,8 @@ void PinManager::OnSearchResult(const Id dir_id,
     }
   }
 
+  progress_.time_spent_listing_items = timer_.Elapsed();
+
   if (items.empty()) {
     VLOG(1) << "Visited " << dir_id << " " << Quote(dir_path);
 
@@ -729,7 +736,8 @@ void PinManager::OnSearchResult(const Id dir_id,
       return;
     }
 
-    VLOG(1) << "Finished listing files in " << Quote(timer_.Elapsed());
+    VLOG(1) << "Finished listing files in "
+            << Quote(progress_.time_spent_listing_items);
     VLOG(1) << NiceNum << "Total queries: " << progress_.total_queries;
     VLOG(1) << NiceNum
             << "Max active queries: " << progress_.max_active_queries;
@@ -752,8 +760,9 @@ void PinManager::OnSearchResult(const Id dir_id,
   }
 
   VLOG(1) << NiceNum << "Listed " << progress_.listed_items << " items in "
-          << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
-          << " items, Tracking " << files_to_track_.size() << " files";
+          << Quote(progress_.time_spent_listing_items) << ", Skipped "
+          << progress_.skipped_items << " items, Tracking "
+          << files_to_track_.size() << " files";
   NotifyProgress();
   GetNextPage(dir_id, std::move(dir_path), std::move(query));
 }
@@ -953,27 +962,37 @@ void PinManager::PinSomeFiles() {
     DCHECK_EQ(progress_.syncing_files, CountPinnedFiles());
   }
 
+  if (!progress_.emptied_queue) {
+    progress_.time_spent_pinning_files = timer_.Elapsed();
+  }
+
+  bool notify_progress = false;
   if (progress_timer_.Elapsed() >= base::Seconds(1)) {
+    notify_progress = true;
     VLOG(1) << NiceNum << "Progress "
             << Percentage(progress_.pinned_bytes, progress_.bytes_to_pin)
             << "%: Synced " << HumanReadableSize(progress_.pinned_bytes)
-            << " and " << progress_.pinned_files << " files, Syncing "
+            << " and " << progress_.pinned_files << " files in "
+            << Quote(progress_.time_spent_pinning_files) << ", Syncing "
             << progress_.syncing_files << " files";
     progress_timer_ = {};
   }
 
   if (files_to_track_.empty() && !progress_.emptied_queue) {
+    notify_progress = true;
     progress_.emptied_queue = true;
     LOG_IF(ERROR, progress_.failed_files > 0)
         << NiceNum << "Failed to pin " << progress_.failed_files << " files";
     VLOG(1) << NiceNum << "Pinned " << progress_.pinned_files << " files and "
             << HumanReadableSize(progress_.pinned_bytes) << " in "
-            << Quote(timer_.Elapsed());
+            << Quote(progress_.time_spent_pinning_files);
     VLOG(2) << NiceNum << "Useful events: " << progress_.useful_events;
     VLOG(2) << NiceNum << "Duplicated events: " << progress_.duplicated_events;
   }
 
-  NotifyProgress();
+  if (notify_progress) {
+    NotifyProgress();
+  }
 }
 
 void PinManager::OnFilePinned(const Id id,
