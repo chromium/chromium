@@ -179,6 +179,13 @@ AddressTrackerLinux::AddressTrackerLinux(
 
 AddressTrackerLinux::~AddressTrackerLinux() = default;
 
+void AddressTrackerLinux::InitWithFdForTesting(base::ScopedFD fd) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  netlink_fd_ = std::move(fd);
+  DumpInitialAddressesAndWatch();
+}
+
 void AddressTrackerLinux::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_ANDROID)
@@ -216,63 +223,7 @@ void AddressTrackerLinux::Init() {
     }
   }
 
-  // Request dump of addresses.
-  struct sockaddr_nl peer = {};
-  peer.nl_family = AF_NETLINK;
-
-  struct {
-    struct nlmsghdr header;
-    struct rtgenmsg msg;
-  } request = {};
-
-  request.header.nlmsg_len = NLMSG_LENGTH(sizeof(request.msg));
-  request.header.nlmsg_type = RTM_GETADDR;
-  request.header.nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP;
-  request.header.nlmsg_pid = 0;  // This field is opaque to netlink.
-  request.msg.rtgen_family = AF_UNSPEC;
-
-  rv = HANDLE_EINTR(
-      sendto(netlink_fd_.get(), &request, request.header.nlmsg_len, 0,
-             reinterpret_cast<struct sockaddr*>(&peer), sizeof(peer)));
-  if (rv < 0) {
-    PLOG(ERROR) << "Could not send NETLINK request";
-    AbortAndForceOnline();
-    return;
-  }
-
-  // Consume pending message to populate the AddressMap, but don't notify.
-  // Sending another request without first reading responses results in EBUSY.
-  bool address_changed;
-  bool link_changed;
-  bool tunnel_changed;
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
-
-  // Request dump of link state
-  request.header.nlmsg_type = RTM_GETLINK;
-
-  rv = HANDLE_EINTR(
-      sendto(netlink_fd_.get(), &request, request.header.nlmsg_len, 0,
-             reinterpret_cast<struct sockaddr*>(&peer), sizeof(peer)));
-  if (rv < 0) {
-    PLOG(ERROR) << "Could not send NETLINK request";
-    AbortAndForceOnline();
-    return;
-  }
-
-  // Consume pending message to populate links_online_, but don't notify.
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
-  {
-    AddressTrackerAutoLock lock(*this, connection_type_lock_);
-    connection_type_initialized_ = true;
-    connection_type_initialized_cv_.Broadcast();
-  }
-
-  if (tracking_) {
-    watcher_ = base::FileDescriptorWatcher::WatchReadable(
-        netlink_fd_.get(),
-        base::BindRepeating(&AddressTrackerLinux::OnFileCanReadWithoutBlocking,
-                            base::Unretained(this)));
-  }
+  DumpInitialAddressesAndWatch();
 }
 
 bool AddressTrackerLinux::DidTrackingInitSucceedForTesting() const {
@@ -350,6 +301,68 @@ AddressTrackerLinux::GetCurrentConnectionType() {
   }
   threads_waiting_for_connection_type_initialization_--;
   return current_connection_type_;
+}
+
+void AddressTrackerLinux::DumpInitialAddressesAndWatch() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Request dump of addresses.
+  struct sockaddr_nl peer = {};
+  peer.nl_family = AF_NETLINK;
+
+  struct {
+    struct nlmsghdr header;
+    struct rtgenmsg msg;
+  } request = {};
+
+  request.header.nlmsg_len = NLMSG_LENGTH(sizeof(request.msg));
+  request.header.nlmsg_type = RTM_GETADDR;
+  request.header.nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP;
+  request.header.nlmsg_pid = 0;  // This field is opaque to netlink.
+  request.msg.rtgen_family = AF_UNSPEC;
+
+  int rv = HANDLE_EINTR(
+      sendto(netlink_fd_.get(), &request, request.header.nlmsg_len, 0,
+             reinterpret_cast<struct sockaddr*>(&peer), sizeof(peer)));
+  if (rv < 0) {
+    PLOG(ERROR) << "Could not send NETLINK request";
+    AbortAndForceOnline();
+    return;
+  }
+
+  // Consume pending message to populate the AddressMap, but don't notify.
+  // Sending another request without first reading responses results in EBUSY.
+  bool address_changed;
+  bool link_changed;
+  bool tunnel_changed;
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+
+  // Request dump of link state
+  request.header.nlmsg_type = RTM_GETLINK;
+
+  rv = HANDLE_EINTR(
+      sendto(netlink_fd_.get(), &request, request.header.nlmsg_len, 0,
+             reinterpret_cast<struct sockaddr*>(&peer), sizeof(peer)));
+  if (rv < 0) {
+    PLOG(ERROR) << "Could not send NETLINK request";
+    AbortAndForceOnline();
+    return;
+  }
+
+  // Consume pending message to populate links_online_, but don't notify.
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  {
+    AddressTrackerAutoLock lock(*this, connection_type_lock_);
+    connection_type_initialized_ = true;
+    connection_type_initialized_cv_.Broadcast();
+  }
+
+  if (tracking_) {
+    watcher_ = base::FileDescriptorWatcher::WatchReadable(
+        netlink_fd_.get(),
+        base::BindRepeating(&AddressTrackerLinux::OnFileCanReadWithoutBlocking,
+                            base::Unretained(this)));
+  }
 }
 
 void AddressTrackerLinux::ReadMessages(bool* address_changed,

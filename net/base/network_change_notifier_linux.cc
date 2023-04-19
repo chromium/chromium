@@ -36,8 +36,10 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
     return &address_tracker_;
   }
 
-  // Begin watching for DNS and netlink changes.
+  // Begin watching for netlink changes.
   void Init();
+
+  void InitForTesting(base::ScopedFD netlink_fd);  // IN-TEST
 
  private:
   void OnIPAddressChanged();
@@ -65,6 +67,12 @@ void NetworkChangeNotifierLinux::BlockingThreadObjects::Init() {
   last_type_ = GetCurrentConnectionType();
 }
 
+void NetworkChangeNotifierLinux::BlockingThreadObjects::InitForTesting(
+    base::ScopedFD netlink_fd) {
+  address_tracker_.InitWithFdForTesting(std::move(netlink_fd));  // IN-TEST
+  last_type_ = GetCurrentConnectionType();
+}
+
 void NetworkChangeNotifierLinux::BlockingThreadObjects::OnIPAddressChanged() {
   NetworkChangeNotifier::NotifyObserversOfIPAddressChange();
   // When the IP address of a network interface is added/deleted, the
@@ -84,8 +92,29 @@ void NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged() {
   }
 }
 
+// static
+std::unique_ptr<NetworkChangeNotifierLinux>
+NetworkChangeNotifierLinux::CreateWithSocketForTesting(
+    const std::unordered_set<std::string>& ignored_interfaces,
+    base::ScopedFD netlink_fd) {
+  auto ncn_linux = std::make_unique<NetworkChangeNotifierLinux>(
+      ignored_interfaces, /*initialize_blocking_thread_objects=*/false,
+      base::PassKey<NetworkChangeNotifierLinux>());
+  ncn_linux->InitBlockingThreadObjectsForTesting(  // IN-TEST
+      std::move(netlink_fd));
+  return ncn_linux;
+}
+
 NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
     const std::unordered_set<std::string>& ignored_interfaces)
+    : NetworkChangeNotifierLinux(ignored_interfaces,
+                                 /*initialize_blocking_thread_objects*/ true,
+                                 base::PassKey<NetworkChangeNotifierLinux>()) {}
+
+NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
+    const std::unordered_set<std::string>& ignored_interfaces,
+    bool initialize_blocking_thread_objects,
+    base::PassKey<NetworkChangeNotifierLinux>)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsLinux()),
       blocking_thread_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
@@ -96,12 +125,14 @@ NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
           // NetworkChangeNotifierLinux outlives
           // TaskEnvironment. https://crbug.com/938126
           base::OnTaskRunnerDeleter(blocking_thread_runner_)) {
-  blocking_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NetworkChangeNotifierLinux::BlockingThreadObjects::Init,
-                     // The Unretained pointer is safe here because it's
-                     // posted before the deleter can post.
-                     base::Unretained(blocking_thread_objects_.get())));
+  if (initialize_blocking_thread_objects) {
+    blocking_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&NetworkChangeNotifierLinux::BlockingThreadObjects::Init,
+                       // The Unretained pointer is safe here because it's
+                       // posted before the deleter can post.
+                       base::Unretained(blocking_thread_objects_.get())));
+  }
 }
 
 NetworkChangeNotifierLinux::~NetworkChangeNotifierLinux() {
@@ -119,6 +150,19 @@ NetworkChangeNotifierLinux::NetworkChangeCalculatorParamsLinux() {
   params.connection_type_offline_delay_ = base::Milliseconds(1500);
   params.connection_type_online_delay_ = base::Milliseconds(500);
   return params;
+}
+
+void NetworkChangeNotifierLinux::InitBlockingThreadObjectsForTesting(
+    base::ScopedFD netlink_fd) {
+  DCHECK(blocking_thread_objects_);
+  blocking_thread_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &NetworkChangeNotifierLinux::BlockingThreadObjects::InitForTesting,
+          // The Unretained pointer is safe here because it's
+          // posted before the deleter can post.
+          base::Unretained(blocking_thread_objects_.get()),
+          std::move(netlink_fd)));
 }
 
 NetworkChangeNotifier::ConnectionType

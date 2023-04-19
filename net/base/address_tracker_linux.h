@@ -34,6 +34,10 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
+namespace net::test {
+class AddressTrackerLinuxTest;
+}
+
 namespace net::internal {
 
 // Keeps track of network interface addresses using rtnetlink. Used by
@@ -74,6 +78,10 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // configuration is available through GetOnlineLinks() and
   // GetAddressMap().
   void Init();
+
+  // Same as Init(), except instead of creating and binding a netlink socket,
+  // this AddressTrackerLinux will send and receive messages from |fd|.
+  void InitWithFdForTesting(base::ScopedFD fd);
 
   // AddressMapOwnerLinux implementation (callable on any thread):
   AddressMap GetAddressMap() const override;
@@ -117,7 +125,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   static bool IsTunnelInterfaceName(const char* name);
 
  private:
-  friend class AddressTrackerLinuxTest;
+  friend class net::test::AddressTrackerLinuxTest;
   FRIEND_TEST_ALL_PREFIXES(AddressTrackerLinuxNetlinkTest,
                            TestInitializeTwoTrackers);
   FRIEND_TEST_ALL_PREFIXES(AddressTrackerLinuxNetlinkTest,
@@ -143,6 +151,10 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // in |interface_index|. |ifname| should be a buffer of size IFNAMSIZ. The
   // function should return a pointer to |ifname|.
   typedef char* (*GetInterfaceNameFunction)(int interface_index, char* ifname);
+
+  // Retrieves a dump of the current AddressMap and set of online links as part
+  // of initialization. Expects |netlink_fd_| to exist already.
+  void DumpInitialAddressesAndWatch();
 
   // Sets |*address_changed| to indicate whether |address_map_| changed and
   // sets |*link_changed| to indicate if |online_links_| changed and sets
