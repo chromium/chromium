@@ -921,17 +921,13 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
 }
 
 void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
-  if (!connection_->zcr_color_manager())
-    return;
-
-  if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::INVALID ||
-      color_space.GetTransferID() == gfx::ColorSpace::TransferID::INVALID ||
-      color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::INVALID ||
-      color_space.GetRangeID() == gfx::ColorSpace::RangeID::INVALID) {
-    DLOG(ERROR)
-        << "WaylandSurface::SetColorSpace: Encountered invalid surface.";
+  if (!connection_->zcr_color_manager()) {
     return;
   }
+  if (!color_space.IsValid()) {
+    return;
+  }
+
   auto wayland_zcr_color_space =
       connection_->zcr_color_manager()->GetColorSpace(color_space);
   if (wayland_zcr_color_space != nullptr)
