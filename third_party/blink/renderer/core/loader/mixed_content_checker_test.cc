@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -257,12 +259,20 @@ TEST(MixedContentCheckerTest, DetectUpgradeableMixedContent) {
   mojo::Remote<mojom::blink::ContentSecurityNotifier> notifier_remote;
   notifier_remote.Bind(mock_notifier.BindNewPipeAndPassRemote());
 
-  EXPECT_TRUE(MixedContentChecker::ShouldBlockFetch(
+  const bool blocked = MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::AUDIO,
       network::mojom::blink::IPAddressSpace::kPublic, http_ip_address_audio_url,
       ResourceRequest::RedirectStatus::kNoRedirect, http_ip_address_audio_url,
       absl::optional<String>(), ReportingDisposition::kSuppressReporting,
-      *notifier_remote));
+      *notifier_remote);
+
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
+  // Mixed Content from an insecure IP address is not blocked for Fuchsia Cast
+  // Receivers.
+  EXPECT_FALSE(blocked);
+#else
+  EXPECT_TRUE(blocked);
+#endif  // BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
 }
 
 class TestFetchClientSettingsObject : public FetchClientSettingsObject {
