@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
+#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 
 #include <algorithm>
 
@@ -14,28 +14,28 @@
 
 namespace ash {
 
-AmbientMultiScreenMetricsRecorder::AmbientMultiScreenMetricsRecorder(
-    AmbientTheme theme)
+AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(AmbientTheme theme)
     : theme_(theme) {}
 
-AmbientMultiScreenMetricsRecorder::~AmbientMultiScreenMetricsRecorder() {
+AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
   base::UmaHistogramCounts100(
       base::StrCat({"Ash.AmbientMode.ScreenCount.", ToString(theme_)}),
       num_registered_screens_);
 }
 
-void AmbientMultiScreenMetricsRecorder::RegisterScreen(
+void AmbientSessionMetricsRecorder::RegisterScreen(
     lottie::Animation* animation) {
   ++num_registered_screens_;
-  if (!animation)
+  if (!animation) {
     return;
+  }
 
   DCHECK(!animation_observations_.IsObservingSource(animation));
   registered_animations_.insert(animation);
   animation_observations_.AddObservation(animation);
 }
 
-void AmbientMultiScreenMetricsRecorder::AnimationFramePainted(
+void AmbientSessionMetricsRecorder::AnimationFramePainted(
     const lottie::Animation* animation,
     float t) {
   if (registered_animations_.size() <= 1u) {
@@ -94,7 +94,7 @@ void AmbientMultiScreenMetricsRecorder::AnimationFramePainted(
 #undef MUTLISCREEN_OFFSET_NAME
 }
 
-void AmbientMultiScreenMetricsRecorder::AnimationIsDeleting(
+void AmbientSessionMetricsRecorder::AnimationIsDeleting(
     const lottie::Animation* animation) {
   animation_observations_.RemoveObservation(
       const_cast<lottie::Animation*>(animation));
@@ -105,7 +105,7 @@ void AmbientMultiScreenMetricsRecorder::AnimationIsDeleting(
 }
 
 absl::optional<base::TimeDelta>
-AmbientMultiScreenMetricsRecorder::GetOffsetBetweenAnimations(
+AmbientSessionMetricsRecorder::GetOffsetBetweenAnimations(
     const lottie::Animation& animation_l,
     const lottie::Animation& animation_r) const {
   absl::optional<float> current_progress_l = animation_l.GetCurrentProgress();
@@ -159,7 +159,7 @@ AmbientMultiScreenMetricsRecorder::GetOffsetBetweenAnimations(
 }
 
 // static
-bool AmbientMultiScreenMetricsRecorder::IsPlaybackConfigValid(
+bool AmbientSessionMetricsRecorder::IsPlaybackConfigValid(
     const absl::optional<lottie::Animation::PlaybackConfig>& playback_config) {
   return playback_config &&
          // The logic in GetOffsetBetweenAnimations() assumes animation time

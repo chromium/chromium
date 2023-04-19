@@ -16,7 +16,7 @@ namespace ash {
 class AmbientAnimationFrameRateController;
 class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
-class AmbientMultiScreenMetricsRecorder;
+class AmbientSessionMetricsRecorder;
 class AmbientViewDelegateImpl;
 
 namespace ambient {
@@ -40,16 +40,15 @@ class ASH_EXPORT AmbientContainerView : public views::View {
       AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<AmbientAnimationStaticResources>
           animation_static_resources,
-      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder,
+      AmbientSessionMetricsRecorder* session_metrics_recorder,
       AmbientAnimationFrameRateController* frame_rate_controller);
 
   // |main_rendering_view| should contain the primary content; it becomes a
   // child of |AmbientContainerView|, and |AmbientContainerView| sets up some
   // parameters in the view hierarchy that are common to all ambient UIs.
-  AmbientContainerView(
-      AmbientTheme theme,
-      std::unique_ptr<views::View> main_rendering_view,
-      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
+  AmbientContainerView(AmbientTheme theme,
+                       std::unique_ptr<views::View> main_rendering_view,
+                       AmbientSessionMetricsRecorder* session_metrics_recorder);
   ~AmbientContainerView() override;
 
  private:

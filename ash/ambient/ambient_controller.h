@@ -58,8 +58,8 @@ class AmbientAnimationFrameRateController;
 class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
-class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
+class AmbientSessionMetricsRecorder;
 class AmbientUiSettings;
 
 // Class to handle all ambient mode functionalities.
@@ -331,8 +331,7 @@ class ASH_EXPORT AmbientController
   // the controller.
   bool is_initialized_ = false;
 
-  std::unique_ptr<AmbientMultiScreenMetricsRecorder>
-      multi_screen_metrics_recorder_;
+  std::unique_ptr<AmbientSessionMetricsRecorder> session_metrics_recorder_;
   std::unique_ptr<AmbientUiLauncher> ambient_ui_launcher_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};

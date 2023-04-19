@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "ash/ambient/ambient_view_delegate_impl.h"
-#include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
+#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
@@ -182,7 +182,7 @@ AmbientAnimationView::AmbientAnimationView(
     AmbientViewDelegateImpl* view_delegate,
     AmbientAnimationProgressTracker* progress_tracker,
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
-    AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder,
+    AmbientSessionMetricsRecorder* session_metrics_recorder,
     AmbientAnimationFrameRateController* frame_rate_controller)
     : view_delegate_(view_delegate),
       progress_tracker_(progress_tracker),
@@ -194,13 +194,13 @@ AmbientAnimationView::AmbientAnimationView(
   DCHECK(view_delegate_);
   DCHECK(frame_rate_controller_);
   SetID(AmbientViewID::kAmbientAnimationView);
-  Init(multi_screen_metrics_recorder);
+  Init(session_metrics_recorder);
 }
 
 AmbientAnimationView::~AmbientAnimationView() = default;
 
 void AmbientAnimationView::Init(
-    AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder) {
+    AmbientSessionMetricsRecorder* session_metrics_recorder) {
   SetUseDefaultFillLayout(true);
 
   views::View* animation_container_view =
@@ -223,8 +223,8 @@ void AmbientAnimationView::Init(
       static_resources_->GetSkottieWrapper(), cc::SkottieColorMap(),
       &animation_photo_provider_);
   animation_observer_.Observe(animation.get());
-  DCHECK(multi_screen_metrics_recorder);
-  multi_screen_metrics_recorder->RegisterScreen(animation.get());
+  DCHECK(session_metrics_recorder);
+  session_metrics_recorder->RegisterScreen(animation.get());
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_);
   animation_attribution_provider_ =

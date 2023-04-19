@@ -14,7 +14,7 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_video_ui_launcher.h"
-#include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
+#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
@@ -303,9 +303,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // Should stop observing AssistantInteractionModel when ambient screen is
       // not shown.
       AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-
-      frame_rate_controller_.reset();
-      multi_screen_metrics_recorder_.reset();
 
       // |start_time_| may be empty in case of |AmbientUiVisibility::kHidden| if
       // ambient mode has just started.
@@ -1023,7 +1020,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   if (ambient_ui_launcher_) {
     container_view = std::make_unique<AmbientContainerView>(
         current_theme, ambient_ui_launcher_->CreateView(),
-        multi_screen_metrics_recorder_.get());
+        session_metrics_recorder_.get());
   } else {
     // TODO(b/274164306): Everything should use
     // |AmbientUiLauncher::CreateView()| when slideshow and animation themes
@@ -1032,7 +1029,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
         &delegate_, ambient_animation_progress_tracker_.get(),
         AmbientAnimationStaticResources::Create(current_theme,
                                                 /*serializable=*/true),
-        multi_screen_metrics_recorder_.get(), frame_rate_controller_.get());
+        session_metrics_recorder_.get(), frame_rate_controller_.get());
   }
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
@@ -1133,6 +1130,9 @@ void AmbientController::StartRefreshingImages() {
 
 void AmbientController::StopScreensaver() {
   CloseAllWidgets(close_widgets_immediately_);
+  frame_rate_controller_.reset();
+  session_metrics_recorder_.reset();
+
   if (ambient_ui_launcher_) {
     ambient_ui_launcher_->Finalize();
     return;
@@ -1154,9 +1154,8 @@ void AmbientController::MaybeStartScreenSaver() {
   // Add observer for assistant interaction model
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 
-  multi_screen_metrics_recorder_ =
-      std::make_unique<AmbientMultiScreenMetricsRecorder>(
-          GetCurrentUiSettings().theme());
+  session_metrics_recorder_ = std::make_unique<AmbientSessionMetricsRecorder>(
+      GetCurrentUiSettings().theme());
   frame_rate_controller_ =
       std::make_unique<AmbientAnimationFrameRateController>(
           Shell::Get()->frame_throttling_controller());

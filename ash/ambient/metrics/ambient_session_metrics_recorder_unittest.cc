@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
+#include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 
 #include <string>
 
@@ -24,7 +24,7 @@ namespace {
 using ::testing::Eq;
 }  // namespace
 
-class AmbientMultiScreenMetricsRecorderTest : public ::testing::Test {
+class AmbientSessionMetricsRecorderTest : public ::testing::Test {
  protected:
   struct Harness {
     static constexpr gfx::Size kTestSize = gfx::Size(100, 100);
@@ -39,9 +39,9 @@ class AmbientMultiScreenMetricsRecorderTest : public ::testing::Test {
                                         kTotalAnimationDuration.InSecondsF())) {
     }
 
-    // In the real code, AmbientMultiScreenMetricsRecorder outlives the
+    // In the real code, AmbientSessionMetricsRecorder outlives the
     // animations, so simulate that in tests here.
-    AmbientMultiScreenMetricsRecorder recorder;
+    AmbientSessionMetricsRecorder recorder;
     lottie::Animation animation_1;
     lottie::Animation animation_2;
     gfx::Canvas canvas;
@@ -51,8 +51,8 @@ class AmbientMultiScreenMetricsRecorderTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-class AmbientMultiScreenMetricsRecorderTestForAllThemes
-    : public AmbientMultiScreenMetricsRecorderTest,
+class AmbientSessionMetricsRecorderTestForAllThemes
+    : public AmbientSessionMetricsRecorderTest,
       public ::testing::WithParamInterface<AmbientTheme> {
  protected:
   std::string GetMetricNameForTheme(base::StringPiece prefix) {
@@ -61,11 +61,11 @@ class AmbientMultiScreenMetricsRecorderTestForAllThemes
 };
 
 INSTANTIATE_TEST_SUITE_P(AllAnimationThemes,
-                         AmbientMultiScreenMetricsRecorderTestForAllThemes,
+                         AmbientSessionMetricsRecorderTestForAllThemes,
                          testing::Values(AmbientTheme::kFeelTheBreeze,
                                          AmbientTheme::kFloatOnBy));
 
-TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes, RecordsScreenCount) {
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsScreenCount) {
   base::HistogramTester histogram_tester;
   {
     Harness harness(GetParam());
@@ -93,8 +93,7 @@ TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes, RecordsScreenCount) {
       /*expected_count=*/1);
 }
 
-TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
-       RecordsTimestampOffset) {
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsTimestampOffset) {
   static constexpr base::TimeDelta kFrameInterval = base::Milliseconds(100);
   base::HistogramTester histogram_tester;
 
@@ -124,7 +123,7 @@ TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
       kFrameInterval, 1);
 }
 
-TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
        RecordsMeanTimestampOffsetWithDifferentCycleStartOffsets) {
   base::HistogramTester histogram_tester;
 
@@ -182,7 +181,7 @@ TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
       GetMetricNameForTheme("Ash.AmbientMode.MultiScreenOffset."), 6);
 }
 
-TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
        DoesNotRecordMeanTimestampOffsetForSingleScreen) {
   static constexpr base::TimeDelta kFrameInterval = base::Milliseconds(100);
   base::HistogramTester histogram_tester;
@@ -199,10 +198,10 @@ TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
       "Ash.AmbientMode.MultiScreenOffset.FeelTheBreeze", 0);
 }
 
-TEST_F(AmbientMultiScreenMetricsRecorderTest, HandlesNullAnimations) {
+TEST_F(AmbientSessionMetricsRecorderTest, HandlesNullAnimations) {
   base::HistogramTester histogram_tester;
   {
-    AmbientMultiScreenMetricsRecorder recorder(AmbientTheme::kSlideshow);
+    AmbientSessionMetricsRecorder recorder(AmbientTheme::kSlideshow);
     recorder.RegisterScreen(nullptr);
     recorder.RegisterScreen(nullptr);
   }

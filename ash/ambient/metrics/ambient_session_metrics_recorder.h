@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_AMBIENT_METRICS_AMBIENT_MULTI_SCREEN_METRICS_RECORDER_H_
-#define ASH_AMBIENT_METRICS_AMBIENT_MULTI_SCREEN_METRICS_RECORDER_H_
+#ifndef ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
+#define ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
 #include "ash/constants/ambient_theme.h"
@@ -17,27 +17,25 @@
 
 namespace ash {
 
-// Records metrics for multi-screen usage in ambient mode:
-// * The number of screens active during ambient mode.
-// * The average instantaneous offset in timestamp between the animations
-//   playing on each screen. This metric is not recorded for single-screen
-//   ambient mode sessions.
-// AmbientMultiScreenMetricsRecorder's lifetime is meant to match that of a
-// single ambient mode session. Per-session metrics are recorded in its
-// destructor.
-class ASH_EXPORT AmbientMultiScreenMetricsRecorder
+// AmbientSessionMetricsRecorder's lifetime is meant to match that of a
+// single ambient session:
+// * Construction     - Ambient session starts by preparing any assets needed
+//                      for rendering.
+// * RegisterScreen() - Ambient session is rendering. There is one call for each
+//                      screen (display).
+// * Destruction      - Ambient session ends.
+class ASH_EXPORT AmbientSessionMetricsRecorder
     : public lottie::AnimationObserver {
  public:
-  explicit AmbientMultiScreenMetricsRecorder(AmbientTheme theme);
-  AmbientMultiScreenMetricsRecorder(const AmbientMultiScreenMetricsRecorder&) =
-      delete;
-  AmbientMultiScreenMetricsRecorder& operator=(
-      const AmbientMultiScreenMetricsRecorder&) = delete;
-  ~AmbientMultiScreenMetricsRecorder() override;
+  explicit AmbientSessionMetricsRecorder(AmbientTheme theme);
+  AmbientSessionMetricsRecorder(const AmbientSessionMetricsRecorder&) = delete;
+  AmbientSessionMetricsRecorder& operator=(
+      const AmbientSessionMetricsRecorder&) = delete;
+  ~AmbientSessionMetricsRecorder() override;
 
   // Registers a screen and its corresponding |animation|. |animation| may be
   // null if the ambient UI does not have an associated animation (ex: slideshow
-  // mode). AmbientMultiScreenMetricsRecorder may outlive the incoming
+  // mode). AmbientSessionMetricsRecorder may outlive the incoming
   // |animation| if desired.
   void RegisterScreen(lottie::Animation* animation);
 
@@ -70,4 +68,4 @@ class ASH_EXPORT AmbientMultiScreenMetricsRecorder
 
 }  // namespace ash
 
-#endif  // ASH_AMBIENT_METRICS_AMBIENT_MULTI_SCREEN_METRICS_RECORDER_H_
+#endif  // ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
