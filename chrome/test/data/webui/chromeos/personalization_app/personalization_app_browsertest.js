@@ -19,12 +19,19 @@ const DEFAULT_WALLPAPER_NAME = 'Default Wallpaper';
 /**
  * Wait until `func` returns a truthy value.
  * If `timeoutMs` milliseconds elapse, will reject with `message`.
- * Polls every `intervalMs` milliseconds.
+ * `message` may either be a string, or function. It will be called with the
+ * final value returned by `func`. Polls every `intervalMs` milliseconds.
  * Resolves with the final value of `func`.
  */
 async function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
+  const messageType = typeof message;
+  if (messageType !== 'string' && messageType !== 'function') {
+    throw new Error(
+        `message must be a string|function but received ${messageType}`);
+  }
   let rejectTimer = null;
   let pollTimer = null;
+  let value;
 
   function cleanup() {
     if (rejectTimer) {
@@ -38,11 +45,13 @@ async function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
   return new Promise((resolve, reject) => {
     rejectTimer = window.setTimeout(() => {
       cleanup();
-      reject(new Error(message));
+      const errorMessage =
+          messageType === 'function' ? message(value) : message;
+      reject(new Error(errorMessage));
     }, timeoutMs);
 
     pollTimer = window.setInterval(() => {
-      const value = func();
+      value = func();
       if (value) {
         cleanup();
         resolve(value);
@@ -120,12 +129,10 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
       const theme = getRouter()
                         .shadowRoot.querySelector('personalization-main')
                         .shadowRoot.querySelector('personalization-theme');
-      await waitUntil(
+      const lightButton = await waitUntil(
           () => theme.shadowRoot.getElementById('lightMode'),
           'failed to find light button');
-      const lightButton = theme.shadowRoot.getElementById('lightMode');
-      assertTrue(!!lightButton);
-      assertEquals(lightButton.getAttribute('aria-pressed'), 'true');
+      assertEquals('true', lightButton.getAttribute('aria-pressed'));
       const darkButton = theme.shadowRoot.getElementById('darkMode');
       assertTrue(!!darkButton);
       assertEquals(darkButton.getAttribute('aria-pressed'), 'false');
@@ -136,11 +143,10 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
                           .shadowRoot.querySelector('personalization-main')
                           .shadowRoot.querySelector('user-preview');
 
-      await waitUntil(
+      const email = await waitUntil(
           () => preview.shadowRoot.getElementById('email'),
           'failed to find user email');
-      assertEquals(
-          'fake-email', preview.shadowRoot.getElementById('email').innerText);
+      assertEquals('fake-email', email.innerText);
       assertEquals(
           'Fake Name', preview.shadowRoot.getElementById('name').innerText);
     });
@@ -347,11 +353,15 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
       assertFalse(gridItem.selected, 'wallpaper tile does not start selected');
       gridItem.click();
 
+      const expectedImageTitle =
+          'fake_attribution_fake_collection_id_2_asset_id_31_line_0';
       await waitUntil(
           () =>
               textContainer.querySelector('#imageTitle').textContent.trim() ===
-              'fake_attribution_fake_collection_id_2_asset_id_31_line_0',
-          'failed waiting for text to update after selecting wallpaper');
+              expectedImageTitle,
+          () => `failed waiting for expected image title ` +
+              `${expectedImageTitle} after selecting wallpaper. ` +
+              `html:\n${textContainer.outerHTML}`);
 
       assertEquals(
           'fake_attribution_fake_collection_id_2_asset_id_31_line_1',
@@ -458,7 +468,9 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           /^Daily Refresh\: fake_google_photos_photo_id_\d$/;
       await waitUntil(
           () => dailyRefreshRegex.test(imageTitle.textContent.trim()),
-          'Daily refresh set to a google photos image');
+          () => `Expected Daily refresh text to match regex ` +
+              `${dailyRefreshRegex.source} but received:\n` +
+              `${imageTitle.outerHTML}`);
 
       assertEquals(
           null, getSharedAlbumDialog(),
