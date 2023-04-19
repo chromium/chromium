@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -34,63 +33,32 @@ namespace gpu {
 
 bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
     viz::SharedImageFormat format) {
-  if (format.is_multi_plane()) {
-    if (format == viz::MultiPlaneFormat::kNV12 ||
-        format == viz::MultiPlaneFormat::kYV12) {
-      return true;
-    }
-    return false;
-  }
-
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-    case viz::ResourceFormat::BGRA_8888:
-    case viz::ResourceFormat::RED_8:
-    case viz::ResourceFormat::RG_88:
-    case viz::ResourceFormat::RGBX_8888:
-    case viz::ResourceFormat::BGRX_8888:
-      return true;
-    default:
-      return false;
-  }
+  return (format == viz::MultiPlaneFormat::kNV12 ||
+          format == viz::MultiPlaneFormat::kYV12 ||
+          format == viz::SinglePlaneFormat::kRGBA_8888 ||
+          format == viz::SinglePlaneFormat::kBGRA_8888 ||
+          format == viz::SinglePlaneFormat::kR_8 ||
+          format == viz::SinglePlaneFormat::kRG_88 ||
+          format == viz::SinglePlaneFormat::kRGBX_8888 ||
+          format == viz::SinglePlaneFormat::kBGRX_8888);
 }
 
 bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     viz::SharedImageFormat format) {
-  if (format.is_multi_plane()) {
-    if (format == viz::MultiPlaneFormat::kNV12 ||
-        format == viz::MultiPlaneFormat::kYV12) {
-      return true;
-    }
-    return false;
-  }
-
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-    case viz::ResourceFormat::RGBA_4444:
-    case viz::ResourceFormat::BGRA_8888:
-    case viz::ResourceFormat::RED_8:
-    case viz::ResourceFormat::RG_88:
-    case viz::ResourceFormat::RGBA_F16:
-    case viz::ResourceFormat::R16_EXT:
-    case viz::ResourceFormat::RG16_EXT:
-    case viz::ResourceFormat::RGBX_8888:
-    case viz::ResourceFormat::BGRX_8888:
-    case viz::ResourceFormat::RGBA_1010102:
-    case viz::ResourceFormat::BGRA_1010102:
-      return true;
-    case viz::ResourceFormat::ALPHA_8:
-    case viz::ResourceFormat::LUMINANCE_8:
-    case viz::ResourceFormat::RGB_565:
-    case viz::ResourceFormat::BGR_565:
-    case viz::ResourceFormat::ETC1:
-    case viz::ResourceFormat::LUMINANCE_F16:
-    case viz::ResourceFormat::YVU_420:
-    case viz::ResourceFormat::YUV_420_BIPLANAR:
-    case viz::ResourceFormat::YUVA_420_TRIPLANAR:
-    case viz::ResourceFormat::P010:
-      return false;
-  }
+  return (format == viz::MultiPlaneFormat::kNV12 ||
+          format == viz::MultiPlaneFormat::kYV12 ||
+          format == viz::SinglePlaneFormat::kRGBA_8888 ||
+          format == viz::SinglePlaneFormat::kRGBA_4444 ||
+          format == viz::SinglePlaneFormat::kBGRA_8888 ||
+          format == viz::SinglePlaneFormat::kR_8 ||
+          format == viz::SinglePlaneFormat::kRG_88 ||
+          format == viz::SinglePlaneFormat::kRGBA_F16 ||
+          format == viz::SinglePlaneFormat::kR_16 ||
+          format == viz::SinglePlaneFormat::kRG_1616 ||
+          format == viz::SinglePlaneFormat::kRGBX_8888 ||
+          format == viz::SinglePlaneFormat::kBGRX_8888 ||
+          format == viz::SinglePlaneFormat::kRGBA_1010102 ||
+          format == viz::SinglePlaneFormat::kBGRA_1010102);
 }
 
 GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
