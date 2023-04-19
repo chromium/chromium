@@ -249,9 +249,13 @@ void SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript() {
 
 // static
 net::DohProviderEntry::List SecureDnsHandler::GetFilteredProviders() {
-  return secure_dns::ProvidersForCountry(
-      secure_dns::SelectEnabledProviders(net::DohProviderEntry::GetList()),
-      country_codes::GetCurrentCountryID());
+  // Note: Check whether each provider is enabled *after* filtering based on
+  // country code so that if we are doing experimentation via Finch for a
+  // regional provider, the experiment groups will be less likely to include
+  // users from other regions unnecessarily (since a client will be included in
+  // the experiment if the provider feature flag is checked).
+  return secure_dns::SelectEnabledProviders(secure_dns::ProvidersForCountry(
+      net::DohProviderEntry::GetList(), country_codes::GetCurrentCountryID()));
 }
 
 }  // namespace settings
