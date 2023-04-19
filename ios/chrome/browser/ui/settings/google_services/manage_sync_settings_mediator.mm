@@ -80,6 +80,21 @@ UIImageConfiguration* AccessoryConfiguration() {
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
+// Returns true if the initial sync setup is currently ongoing. Sync initial
+// setup is considered to finished iff:
+//   1. User is signed in with sync enabled and the sync setup was completed.
+//   OR
+//   2. User is not signed in or has disabled sync.
+// Otherwise we consider that the initial setup is still pending.
+// Note that if the user visits the Advanced Settings during the opt-in flow,
+// the Sync consent is not granted yet. In this case, IsSyncRequested() is
+// set to true, indicating that the sync was requested but the initial setup
+// has not been finished yet.
+bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
+  return sync_setup_service->IsSyncRequested() &&
+         !sync_setup_service->IsFirstSetupComplete();
+}
+
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <
@@ -783,7 +798,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Updates the sync errors section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
-  if (self.syncSetupService->IsInitialSetupOngoing()) {
+  if (IsInitialSyncSetupOngoing(self.syncSetupService)) {
     return;
   }
 

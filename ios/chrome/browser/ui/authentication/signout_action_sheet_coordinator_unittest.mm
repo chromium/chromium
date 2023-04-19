@@ -66,8 +66,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
-    sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+    sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
+        SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
   // Identity services.
@@ -105,14 +105,14 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   id<SystemIdentity> identity_ = nil;
 
-  syncer::MockSyncService* sync_service_mock_ = nullptr;
+  SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
 };
 
 // Tests that a signed-in user with Sync enabled will have an action sheet with
 // a sign-out title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
   authentication_service()->SignIn(identity_);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(true));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -125,7 +125,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
 // no title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
   authentication_service()->SignIn(identity_);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(false));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -142,7 +142,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
                               static_cast<int>(BrowserSigninMode::kForced));
 
   authentication_service()->SignIn(identity_);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(false));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -156,7 +156,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 // sheet with a sign-out title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
   authentication_service()->SignIn(identity_);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(true));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
@@ -169,7 +169,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
 // sheet with no title.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
   authentication_service()->SignIn(identity_);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+  ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
       .WillByDefault(testing::Return(false));
 
   SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
