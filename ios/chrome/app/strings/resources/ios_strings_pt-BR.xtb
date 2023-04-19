@@ -134,6 +134,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="1832848789136765277">Para garantir o acesso aos seus dados sincronizados, confirme sua identidade</translation>
+<translation id="1836891464494477513">{count,plural, =1{Favorito salvo na sua Conta do Google {email}}one{Favorito salvo na sua Conta do Google {email}}other{Favoritos salvos na sua Conta do Google {email}}}</translation>
 <translation id="1870148520156231997">Mostrar senha</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
@@ -326,7 +327,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Criar nova guia anônima.</translation>
 <translation id="3146109040683991651">Definir o Chrome como o navegador padrão</translation>
-<translation id="3152169319860972623">O Check-up de senha analisa suas senhas salvas e avisa você sobre violações on-line. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salvar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo...</translation>
@@ -1045,6 +1045,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7845466610722898">Mostrar "Lista de leitura"</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione "Ativar" no menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
+<translation id="7852017611907717397">DESFAZER</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Falha no download</translation>
 <translation id="785938070103630874">Abrir senhas, formas de pagamento, endereço e mais</translation>

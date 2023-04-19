@@ -34,6 +34,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1148499908455722006">Abrir a caixa de diálogo de informações da conta <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
+<translation id="1160215328209699296">ativado e em uso</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Seu cabo USB-C pode não se conectar a telas corretamente</translation>
 <translation id="1175572348579024023">Rolar</translation>
@@ -241,6 +242,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2049240716062114887">O nome do espaço de trabalho foi mudado para <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Visualização da câmera ativada</translation>
 <translation id="2067602449040652523">Brilho do teclado</translation>
+<translation id="2075520525463668108">Ativar ou desativar o recurso <ph name="CAPTURE_MEDIUM" />. O recurso <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Deslize para a direita com quatro dedos para acessar o próximo espaço de trabalho</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2083190527011054446">Boa noite, <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2487915095798731898">Participar</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
 <translation id="2509468283778169019">CAPS LOCK está ativado</translation>
+<translation id="2514415433888497495">Parar o recurso <ph name="CAPTURE_MEDIUM" />. O recurso <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Desbloquear as janelas</translation>
 <translation id="2530896289327917474">Ativar ou desativar Caret Browsing</translation>
@@ -1520,6 +1523,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
+<translation id="8079538659226626406">Compartilhamento de tela</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
 <translation id="8091153018031979607">Início: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Atualizações automáticas</translation>

@@ -326,7 +326,6 @@
 <translation id="3131206671572504478">ყველას დაბლოკვა</translation>
 <translation id="313283613037595347">ახალი ინკოგნიტო ჩანართის შექმნა.</translation>
 <translation id="3146109040683991651">Chrome-ის დაყენება ნაგულისხმევ ბრაუზერად</translation>
-<translation id="3152169319860972623">პაროლების შემოწმების ფუნქცია შეამოწმებს თქვენ მიერ შენახულ პაროლებს და გაგაფრთხილებთ, თუ ინტერნეტში გაჟონილი მონაცემები მოიძებნება. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">ბარათის შენახვა</translation>
 <translation id="3157387275655328056">საკითხავ სიაში დამატება</translation>
 <translation id="3157684681743766797">ყველას მონიშვნა…</translation>
@@ -347,6 +346,7 @@
 <translation id="3244271242291266297">თთ</translation>
 <translation id="3245744387817103524">ცვლილების შენახვა ვერ მოხერხდა.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
+<translation id="3260117527409269737">ეს მისამართი შეინახება მხოლოდ Chrome-ში. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />).</translation>
 <translation id="3264775633254836593">პაროლების ავტომატური შევსება</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
 <translation id="3272527697863656322">გაუქმება</translation>

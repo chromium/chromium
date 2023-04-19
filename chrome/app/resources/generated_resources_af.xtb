@@ -2227,6 +2227,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2852385257476173980">’n Lys werwe wat jy besoek, kan hier verskyn terwyl jy deur die web blaai</translation>
 <translation id="285241945869362924">Skep outomaties onderskrifte vir oudio en video. Oudio en onderskrifte verlaat nooit jou toestel nie.</translation>
 <translation id="2856776373509145513">Skep 'n nuwe houer</translation>
+<translation id="2859741939921354763">Voer wagwoorde in na <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Stelselopdatering voltooi. Herbegin asseblief die stelsel.</translation>
 <translation id="2861941300086904918">Toestelspesifieke kliënt se sekuriteitsbestuurder</translation>
 <translation id="2862815659905780618">Verwyder Linux-ontwikkelingomgewing</translation>
@@ -4308,6 +4309,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="47158868804223727">Klik die groepnaam om dit uit of in te vou</translation>
 <translation id="4716483597559580346">Powerwash vir bykomende sekuriteit</translation>
 <translation id="471759229191973607">Verander tema</translation>
+<translation id="4718046540206070045">Meer as ’n blaaier</translation>
 <translation id="4718564115458102525">Geen sleutelbord bespeur nie</translation>
 <translation id="4722735765955348426">Wagwoord vir <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deel tans jou skerm.</translation>
@@ -5456,6 +5458,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5787146423283493983">Sleutelooreenkoms</translation>
 <translation id="5787420647064736989">Toestelnaam</translation>
 <translation id="5788367137662787332">Jammer, ten minste een deel van die toestel <ph name="DEVICE_LABEL" /> kon nie gekoppel word nie.</translation>
+<translation id="5789581866075720267">Kies ’n CSV-lêer om wagwoorde na <ph name="BRAND" /> op hierdie toestel in te voer.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Suksesvol</translation>
 <translation id="5790651917470750848">Poortaanstuur bestaan reeds</translation>
@@ -5700,6 +5703,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5984222099446776634">Onlangs besoek</translation>
 <translation id="5985458664595100876">Ongeldige URL-formaat. Gesteunde formate is \\server\share en smb://server/share.</translation>
 <translation id="598810097218913399">Verwyder toewysing</translation>
+<translation id="5989629029899728491">Ná webkoekies</translation>
 <translation id="5990266201903445068">Net Wi-Fi</translation>
 <translation id="5990386583461751448">Vertaal</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Vra jou administrateur om hierdie program te verwyder om te verseker dat jy kan aanhou deur die web blaai.}other{Vra jou administrateur om hierdie programme te verwyder om te verseker dat jy kan aanhou deur die web blaai.}}</translation>
@@ -5810,6 +5814,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – deel van naamlose groep</translation>
 <translation id="6085886413119427067">Bepaal hoe om met 'n beveiligde verbinding aan webwerwe te koppel</translation>
 <translation id="6086004606538989567">Die rekening wat jy geverifieer het, is nie gemagtig om toegang tot hierdie toestel te kry nie.</translation>
+<translation id="6086347269144967242">Lees aangehegte toestelinligting en -data</translation>
 <translation id="6086846494333236931">Deur jou administrateur geïnstalleer</translation>
 <translation id="6087746524533454243">Soek jy na die blaaier se Meer Oor Bladsy? Besoek</translation>
 <translation id="6087960857463881712">Ongelooflike gesig</translation>
@@ -8378,6 +8383,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Jy het hierdie toestel reeds geregistreer. Jy hoef dit nie weer te registreer nie.</translation>
 <translation id="8357388086258943206">Kon nie Linux installeer nie</translation>
+<translation id="8357591920094529889">Hierdie gids help jou om die belangrike keuses wat jy het terwyl jy Chrome gebruik, te verstaan. En dit help jou om daardie keuses te maak sodat Chrome werk soos jy wil hê dit moet.</translation>
 <translation id="8358685469073206162">Stel bladsye terug?</translation>
 <translation id="8358912028636606457">Die uitsaai van oortjieoudio word nie op hierdie toestel gesteun nie.</translation>
 <translation id="835951711479681002">Stoor in jou Google-rekening</translation>
@@ -8431,6 +8437,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8398877366907290961">Gaan nogtans voort</translation>
 <translation id="8399282673057829204">Bekyk wagwoord</translation>
 <translation id="8401432541486058167">Verskaf die PIN wat met jou slimkaart geassosieer word.</translation>
+<translation id="8403618281196981152">Jou data in Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
 <translation id="8405046151008197676">Kry hoogtepunte van die jongste opdatering</translation>
 <translation id="8407199357649073301">Loglêervlak:</translation>
@@ -8490,6 +8497,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8460932807646981183">Bestuur soekenjins en werfsoektog</translation>
 <translation id="84613761564611563">Netwerkopstelling-UI versoek. Wag asseblief …</translation>
 <translation id="8461914792118322307">Instaanbediener</translation>
+<translation id="8461973047386722744">Geen wagwoorde gekry nie</translation>
 <translation id="8463001014623882202">Kon nie magtig nie</translation>
 <translation id="846374874681391779">Aflaaibalk</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> is gedeaktiveer.</translation>
@@ -8548,6 +8556,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8512476990829870887">Beëindig proses</translation>
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>
 <translation id="8513108775083588393">Outodraai</translation>
+<translation id="8513357934662532537">Kies ’n CSV-lêer om wagwoorde na <ph name="BRAND" /> in te voer vir <ph name="USER_EMAIL" />.</translation>
 <translation id="8514746246728959655">Probeer 'n ander sekuriteitsleutel</translation>
 <translation id="8514955299594277296">Moenie werwe toelaat om data op jou toestel te stoor nie (nie aanbeveel nie)</translation>
 <translation id="8517759303731677493">Wysig …</translation>

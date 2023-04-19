@@ -307,6 +307,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1658918301167915956">bluetooth cihazlar</translation>
 <translation id="1662550410081243962">Ödeme yöntemlerini kaydet ve doldur</translation>
 <translation id="1663943134801823270">Kartlar ve adresler Chrome'dan alınmaktadır. Bu bilgileri <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'dan yönetebilirsiniz.</translation>
+<translation id="1668071460721346172">E-posta alın</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> dilindeki sayfalar artık <ph name="TARGET_LANGUAGE" /> diline çevrilecek</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
 <translation id="1682696192498422849">Önce kısa kenar</translation>
@@ -367,6 +368,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1806174020048213474">Bu uygulama kablosuz ağ kimlik bilgileri yüklemek için izin istiyor. Kurulumdan sonra <ph name="DEVICE_TYPE" /> cihazınız katılımcı kablosuz ağlara otomatik olarak bağlanacaktır. Bu kimlik bilgilerini kaldırmak için uygulamayı kaldırın.</translation>
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1807528111851433570">Başlangıç sayfası</translation>
+<translation id="180757923930449935">(64-bit emülasyonlu)</translation>
 <translation id="180991881384371158">CVC'niz, kartınızın arka tarafında yer alır. Bu, imza kutusunun sağ üst tarafında bulunan son 3 hanedir.</translation>
 <translation id="181000283860817563">Birden fazla sitedeki fiyatları takip edin</translation>
 <translation id="1810391395243432441">Ekran kilidinizle şifreleri koruyun</translation>
@@ -1586,6 +1588,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4877083676943085827">{COUNT,plural, =0{Yok}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> araması</translation>
 <translation id="4879491255372875719">Otomatik (varsayılan)</translation>
+<translation id="4879723019639546076">Bu adres yalnızca Chrome'a kaydedilir. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="ACCOUNT" />) kaydedin.</translation>
 <translation id="4880827082731008257">Geçmişte ara</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4881808915112408168">24 x 31,5 inç</translation>
@@ -2143,6 +2146,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6279183038361895380">İmlecinizi göstermek için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="6280223929691119688">Bu adrese teslimat yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
+<translation id="6284517535531159884">Varyasyon Çekirdek Türü</translation>
 <translation id="6285507000506177184">Chrome'da indirilenleri yönetin düğmesi. Chrome'da indirdiğiniz dosyaları yönetmek için Enter'a basın</translation>
 <translation id="6289939620939689042">Sayfa Rengi</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2316,6 +2320,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6716672519412350405"><ph name="URL" />, çevrenizin 3D haritasını oluşturmak ve kamera konumunu takip etmek istiyor</translation>
 <translation id="6718612893943028815">Kamera kullanılsın mı?</translation>
 <translation id="6721678857435001674">Güvenlik Anahtarınızın markasını ve modelini görme</translation>
+<translation id="6726832600570791992">(32-bit emülasyonlu)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Verileriniz <ph name="TIME" /> tarihinde <ph name="BEGIN_LINK" />senkronizasyon parolanızla<ph name="END_LINK" /> şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>

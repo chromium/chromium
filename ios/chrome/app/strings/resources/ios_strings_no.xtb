@@ -134,6 +134,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1820259098641718022">Lagt til i leselisten</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Passord utsatt for sikkerhetsbrudd}=1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="1832848789136765277">For å sikre at du alltid har tilgang til de synkroniserte dataene dine, må du bekrefte at det er deg</translation>
+<translation id="1836891464494477513">{count,plural, =1{Bokmerket er lagret i Google-kontoen din, {email}}other{Bokmerkene er lagret i Google-kontoen din, {email}}}</translation>
 <translation id="1870148520156231997">Vis passordet</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
@@ -326,7 +327,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3131206671572504478">Blokkér alle</translation>
 <translation id="313283613037595347">Åpne ny inkognitofane.</translation>
 <translation id="3146109040683991651">Angi Chrome som standardnettleser</translation>
-<translation id="3152169319860972623">Passordsjekken gjennomgår de lagrede passordene dine og advarer deg om eventuelle sikkerhetsbrudd på nettet. <ph name="BEGIN_LINK" />Finn ut mer.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Lagre kortet</translation>
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157684681743766797">Merk alle…</translation>
@@ -347,6 +347,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Kunne ikke lagre endringen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Denne adressen er bare lagret i Chrome. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Autofyll passord</translation>
 <translation id="3268451620468152448">Åpne faner</translation>
 <translation id="3272527697863656322">Avbryt</translation>
@@ -1044,6 +1045,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7845466610722898">Vis leselisten</translation>
 <translation id="784551991304901159">For å se innhold, velg «Slå på» på menyen</translation>
 <translation id="7846158885638438868">{count,plural, =1{Lagret som bokmerke i «{title}»}other{Lagret som bokmerke i «{title}»}}</translation>
+<translation id="7852017611907717397">ANGRE</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7856733331829174190">Kunne ikke laste ned</translation>
 <translation id="785938070103630874">Åpne passord, betalingsmåter eller adresse med mer</translation>

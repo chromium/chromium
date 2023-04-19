@@ -2212,6 +2212,7 @@
 <translation id="2852385257476173980">آپ کے ویب براؤز کرتے ہی سائٹس کی ایک فہرست یہاں ظاہر ہو سکتی ہے</translation>
 <translation id="285241945869362924">یہ خصوصیت آڈیو اور ویڈیو کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے۔ آڈیو اور کیپشنز ہمیشہ آلے پر ہی رہتے ہیں۔</translation>
 <translation id="2856776373509145513">ایک نیا کنٹینر تخلیق کریں</translation>
+<translation id="2859741939921354763"><ph name="BRAND" /> میں پاس ورڈز درآمد کریں</translation>
 <translation id="2861301611394761800">سسٹم اپ ڈیٹ مکمل ہوگیا۔ براہ کرم سسٹم کو دوبارہ شروع کریں۔</translation>
 <translation id="2861941300086904918">‏Native Client سیکیورٹی مینیجر</translation>
 <translation id="2862815659905780618">‏Linux ڈیولپمنٹ ماحول کو ہٹائیں</translation>
@@ -4290,6 +4291,7 @@
 <translation id="47158868804223727">گروپ کے نام کو پھیلانے یا سکیڑنے کے لیے اس پر کلک کریں</translation>
 <translation id="4716483597559580346">‏Powerwash برائے اضافی سیکیورٹی</translation>
 <translation id="471759229191973607">تھیم تبدیل کریں</translation>
+<translation id="4718046540206070045">ایک براؤزر سے زیادہ</translation>
 <translation id="4718564115458102525">کوئی کی بورڈ نہیں ملا</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> کے لیے پاس ورڈ</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> آپ کی اسکرین کا اشتراک کر رہی ہے۔</translation>
@@ -5435,6 +5437,7 @@
 <translation id="5787146423283493983">کلیدی اقرارنامہ</translation>
 <translation id="5787420647064736989">آلہ کا نام</translation>
 <translation id="5788367137662787332">معذرت، کم از کم ایک حصہ آلہ <ph name="DEVICE_LABEL" /> پر ماؤنٹ نہیں کیا جا سکا۔</translation>
+<translation id="5789581866075720267">‏اس آلے پر <ph name="BRAND" /> میں پاس ورڈز درآمد کرنے کے لیے، ایک CSV فائل منتخب کریں۔</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5790651917470750848">پورٹ فارورڈ پہلے سے ہی دستیاب ہے</translation>
@@ -5679,6 +5682,7 @@
 <translation id="5984222099446776634">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="5985458664595100876">‏URL کا فارمیٹ غلط ہے۔ تعاون یافتہ فارمیٹس ‎\\server\share اور smb://server/share ہیں۔</translation>
 <translation id="598810097218913399">تفویض ہٹائیں</translation>
+<translation id="5989629029899728491">کوکیز سے زیادہ</translation>
 <translation id="5990266201903445068">‏صرف Wi-Fi</translation>
 <translation id="5990386583461751448">ترجمہ شدہ</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ویب کی براؤزنگ جاری رکھنے کو یقینی بنانے کے لیے، اپنے منتظم سے اس ایپلیکیشن کو ہٹانے کا مطالبہ کریں۔}other{ویب کی براؤزنگ جاری رکھنے کو یقینی بنانے کے لیے، اپنے منتظم سے ان ایپلیکیشنز کو ہٹانے کا مطالبہ کریں۔}}</translation>
@@ -5789,6 +5793,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - بغیر نام والے گروپ کا حصہ</translation>
 <translation id="6085886413119427067">کسی محفوظ کنکشن پر ویب سائٹس سے منسلک ہونے کے طریقے کا تعین کرتا ہے</translation>
 <translation id="6086004606538989567">آپ کے توثیق کردہ اکاؤنٹ کو اس آلے تک رسائی حاصل کرنے کی اجازت نہیں ہے۔</translation>
+<translation id="6086347269144967242">منسلکہ آلے کی معلومات اور ڈیٹا پڑھیں</translation>
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="6087746524533454243">براؤزر کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="6087960857463881712">زبردست چہرہ</translation>
@@ -8353,6 +8358,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">آپ نے پہلے ہی اس آلے پر رجسٹرڈ کیا ہے۔ آپ کو اسے دوبارہ رجسٹر کرنے کی ضرورت نہیں ہے۔</translation>
 <translation id="8357388086258943206">‏Linux انسٹال کرنے میں خرابی</translation>
+<translation id="8357591920094529889">‏یہ گائیڈ آپ کو ان اہم انتخابوں کو سمجھنے میں مدد کرتی ہے جو آپ کے پاس Chrome استعمال کرتے وقت دستیاب ہیں۔ اور یہ آپ کو وہ انتخابات کرنے میں مدد کرتی ہے تاکہ Chrome آپ کی مرضی کے مطابق کام کرے۔</translation>
 <translation id="8358685469073206162">صفحات بحال کریں؟</translation>
 <translation id="8358912028636606457">ٹیب آڈیو کاسٹ کرنا اس آلہ پر تعاون یافتہ نہیں ہے۔</translation>
 <translation id="835951711479681002">‏اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
@@ -8406,6 +8412,7 @@
 <translation id="8398877366907290961">بہر صورت آگے بڑھیں</translation>
 <translation id="8399282673057829204">پاس ورڈ دیکھیں</translation>
 <translation id="8401432541486058167">‏وہ PIN فراہم کریں جو آپ کے اسمارٹ کارڈ کے ساتھ وابستہ ہے۔</translation>
+<translation id="8403618281196981152">‏Chrome میں آپ کا ڈیٹا</translation>
 <translation id="8403807918453631441">جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو <ph name="BRAND" /> انہیں چیک کر سکتا ہے</translation>
 <translation id="8405046151008197676">تازہ ترین اپ ڈیٹ سے ہائی لائٹس حاصل کریں</translation>
 <translation id="8407199357649073301">لاگ کی سطح:</translation>
@@ -8465,6 +8472,7 @@
 <translation id="8460932807646981183">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="84613761564611563">‏نیٹ ورک کنفیگر UI کی درخواست کی گئی، براہ کرم انتظار کریں…</translation>
 <translation id="8461914792118322307">پراکسی</translation>
+<translation id="8461973047386722744">کوئی پاس ورڈ نہیں ملا</translation>
 <translation id="8463001014623882202">اجازت دہندگی ناکام ہو گئی</translation>
 <translation id="846374874681391779">ڈاؤن لوڈز بار</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> غیر فعال ہے۔</translation>
@@ -8523,6 +8531,7 @@
 <translation id="8512476990829870887">کارروائی ختم کریں</translation>
 <translation id="851263357009351303"><ph name="HOST" /> کو تصاویر دکھانے کی ہمیشہ اجازت دیں</translation>
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
+<translation id="8513357934662532537">‏<ph name="USER_EMAIL" /> کے لیے <ph name="BRAND" /> میں پاس ورڈز درآمد کرنے کی خاطر، ایک CSV فائل منتخب کریں۔</translation>
 <translation id="8514746246728959655">کوئی مختلف سیکیورٹی کلید آزمائیں</translation>
 <translation id="8514955299594277296">سائٹس کو اپنے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہ دیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="8517759303731677493">ترمیم کریں…</translation>

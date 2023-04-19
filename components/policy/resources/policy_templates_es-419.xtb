@@ -4844,13 +4844,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5448022937220253000">Elegir qué sucede con los datos del usuario después de inhabilitar <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API de Event.path estará disponible.</translation>
 <translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es falso y <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si no se establece.</translation>
-<translation id="5452167809842762761">Se quitó esta política en la versión M114. Si bien se inhabilitó para CECPQ2, CECPQ2 se inhabilitó de manera predeterminada y será reemplazado por Kyber, el mecanismo KEM de criptografía poscuántica elegido por NIST, nuevamente vinculado con nuestro acuerdo de clave clásica estándar, X25519.
-
-Si habilitas esta política o no la estableces, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado para CECPQ2, un algoritmo de establecimiento de claves poscuántico de TLS.
-
-      CECPQ2 genera mensajes de TLS más grandes que, en casos muy específicos, pueden producir errores en ciertos hardware de redes. Puedes establecer esta política como falsa para inhabilitar CECPQ2 mientras se resuelven los problemas de redes.
-
-      Esta política es una medida temporal y se quitará en las futuras versiones de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Cuando un usuario alterna entre dispositivos con <ph name="PRODUCT_OS_NAME" />, el servicio de <ph name="PRODUCT_NAME" /> V2 abrirá las ventanas del navegador y de las apps del dispositivo anterior en el nuevo dispositivo.
 Si habilitas la política, se abrirán automáticamente las ventanas del navegador y de las apps del último dispositivo con <ph name="PRODUCT_OS_NAME" /> que utilizó el usuario actual al acceder.
 Si la inhabilitas o no la estableces, el restablecimiento completo de la configuración determinará qué se abrirá al acceder.</translation>

@@ -322,7 +322,6 @@
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
 <translation id="3146109040683991651">将 Chrome 浏览器设为默认浏览器</translation>
-<translation id="3152169319860972623">“密码安全检查”功能会检查您保存的密码，并在发现任何在线密码泄露事件时向您发出警告。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />。</translation>
 <translation id="3153862085237805241">保存卡片</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
@@ -343,6 +342,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">无法保存您的更改。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" />，第 <ph name="INDEX" /> 项建议（共 <ph name="NUM_SUGGESTIONS" /> 项）</translation>
+<translation id="3260117527409269737">此地址只会保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 帐号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="3264775633254836593">自动填充密码</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3272527697863656322">取消</translation>

@@ -17,11 +17,14 @@
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile pentru sistemul de operare Google Chrome Flex.</translation>
+<translation id="1341711321000856656">Poți comuta ca să vezi parolele din alt profil Chrome</translation>
 <translation id="1363996462118479832">Sistemul de operare Chrome nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Acest computer are deja o versiune mai recentă de Google Chrome. Dacă software-ul nu funcționează, dezinstalați Google Chrome și încercați din nou.</translation>
 <translation id="139993653570221430">Poți să te răzgândești oricând în setările Chrome. Versiunile de încercare respectă modul actual de difuzare a anunțurilor, prin urmare nu vei vedea modificările imediat.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide.}=1{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Fereastra incognito nu se va mai deschide.}few{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # ferestre incognito nu se vor mai deschide.}other{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1434626383986940139">Aplicații Chrome Canary</translation>
+<translation id="1492280395845991349">Relansează ca să finalizezi actualizarea pentru Chrome</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome a fost conectat la un dispozitiv HID}=1{Google Chrome este conectat la un dispozitiv HID}few{Google Chrome este conectat la dispozitive HID}other{Google Chrome este conectat la dispozitive HID}}</translation>
 <translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -91,6 +94,7 @@
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
 <translation id="2665296953892887393">Contribuie la îmbunătățirea browserului Google Chrome trimițând rapoarte de blocare și <ph name="UMA_LINK" /> la Google</translation>
 <translation id="2689103672227170538">Această extensie a modificat ce pagină se afișează când pornești Chrome.</translation>
+<translation id="2712234843277364121">Relansează pentru a actualiza. Filele se vor redeschide.</translation>
 <translation id="2742320827292110288">Avertisment: Google Chrome nu poate împiedica extensiile să înregistreze istoricul navigării. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="2765403129283291972">Chrome are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
 <translation id="2770231113462710648">Schimbă browserul prestabilit la:</translation>
@@ -273,6 +277,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de un minut. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}few{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}other{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # de minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}}</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
+<translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>
 <translation id="6493527311031785448">Google Chrome încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
@@ -403,6 +408,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8989968390305463310">Istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge automat categoriile de interese în permanență, în fiecare lună. Categoriile de interese se pot actualiza dacă nu le elimini.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Este disponibilă o actualizare Chrome}=1{Este disponibilă o actualizare Chrome}few{O actualizare Chrome este disponibilă de # zile}other{O actualizare Chrome este disponibilă de # de zile}}</translation>
 <translation id="9053892488859122171">Sistemul de operare Chrome Flex</translation>
+<translation id="9054037008353851982">Relansează pentru a actualiza. Filele se vor redeschide.</translation>
 <translation id="911206726377975832">Ștergi și datele de navigare?</translation>
 <translation id="9138603949443464873">Pentru a aplica modificările, relansează Chrome</translation>
 <translation id="9195993889682885387">Chrome îți poate estima interesele pe baza istoricului tău de navigare din ultimele câteva săptămâni. Aceste informații rămân pe dispozitivul tău.</translation>

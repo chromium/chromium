@@ -17,6 +17,7 @@
 <translation id="1278833599417554002">&amp;Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1302523850133262269">ಇತ್ತೀಚಿನ ಸಿಸ್ಟಂ ನವೀಕರಣಗಳನ್ನು Chrome ಸ್ಥಾಪಿಸುವಾಗ ದಯವಿಟ್ಟು ಕಾಯಿರಿ.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> ನ ನೀತಿಯ ಪ್ರಕಾರ ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ಈ ಕೆಳಗಿನ ಸೇವಾ ನಿಯಮಗಳನ್ನು ಓದಿ, ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸಬೇಕಾಗುತ್ತದೆ. ಈ ನಿಯಮಗಳು Google ChromeOS Flex ನಿಯಮಗಳನ್ನು ವಿಸ್ತರಿಸುವುದಿಲ್ಲ, ಮಾರ್ಪಡಿಸುವುದಿಲ್ಲ, ಅಥವಾ ಸೀಮಿತಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="1341711321000856656">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ನೀವು ಇನ್ನೊಂದು Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="1363996462118479832">ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ಎದುರಾದ ದೋಷದಿಂದಾಗಿ ChromeOS ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="137466361146087520">Google Chrome ಬೀಟಾ</translation>
 <translation id="1399397803214730675">ಈ ಕಂಪ್ಯೂಟರ್ ಈಗಾಗಲೇ ತೀರಾ ಇತ್ತೀಚಿನ Google Chrome ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿದೆ. ಸಾಫ್ಟ್‌ವೇರ್ ಕಾರ್ಯ ನಿರ್ವಹಿಸದೆ ಇದ್ದರೆ, ದಯವಿಟ್ಟು Google Chrome ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -327,7 +328,7 @@
 <translation id="7626032353295482388">Chrome ಗೆ ಸ್ವಾಗತ</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> ನ ನೀತಿಯ ಪ್ರಕಾರ ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ಈ ಕೆಳಗಿನ ಸೇವಾ ನಿಯಮಗಳನ್ನು ಓದಿ, ಅವುಗಳಿಗೆ ಸಮ್ಮತಿಸಬೇಕಾಗುತ್ತದೆ. ಈ ನಿಯಮಗಳು Google ChromeOS ನಿಯಮಗಳನ್ನು ವಿಸ್ತರಿಸುವುದಿಲ್ಲ, ಮಾರ್ಪಡಿಸುವುದಿಲ್ಲ, ಅಥವಾ ಸೀಮಿತಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="7629695634924605473">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಎಂದಾದರೂ ಹ್ಯಾಕ್‌ ಆಗಿವೆಯೇ ಎಂಬುದನ್ನು Chrome ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>
-<translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಪ್ರವೇಶ ಪಡೆಯುವುದಕ್ಕಾಗಿ <ph name="ALTERNATIVE_BROWSER_NAME" /> ಅನ್ನು ತೆರೆಯಲು ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Google Chrome ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
+<translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯುವುದಕ್ಕಾಗಿ <ph name="ALTERNATIVE_BROWSER_NAME" /> ಅನ್ನು ತೆರೆಯಲು ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Google Chrome ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7651907282515937834">Chrome ಎಂಟರ್‌ಪ್ರೈಸ್ ಲೋಗೋ</translation>
 <translation id="7655455401911432608">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಎಂದರೆ, ಈ ಸಾಧನದಲ್ಲಿ Chrome ಬಳಸುವಾಗ ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳ ದಾಖಲೆ.</translation>

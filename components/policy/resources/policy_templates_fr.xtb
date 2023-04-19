@@ -4756,13 +4756,6 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 <translation id="5448022937220253000">Choisissez ce qu'il advient des données utilisateur une fois <ph name="LACROS_NAME" /> désactivé</translation>
 <translation id="5449690328792750354">L'API Event.path sera disponible.</translation>
 <translation id="5452024130413254050">Détermine si les VM utilisant cette configuration ont accès à un module vTPM (la valeur par défaut est "false", et <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si la règle n'est pas configurée).</translation>
-<translation id="5452167809842762761">Cette règle a été supprimée dans M114. Elle servait à désactiver CECPQ2, mais CECPQ2 a été désactivé par défaut et sera remplacé par Kyber, le KEM post-quantique choisi par le NIST, Kyber, une fois encore associé à X25519, notre clé-contrat classique standard.
-
-Si cette règle est activée ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour CECPQ2, un algorithme de clé-contrat post-quantique dans TLS.
-
-      CECPQ2 entraîne une augmentation de la taille des messages TLS, ce qui peut déclencher (dans des cas très rares) des bugs dans certains matériels de mise en réseau. Vous pouvez définir cette règle sur "False" pour désactiver CECPQ2 jusqu'à ce que les problèmes de réseau soient résolus.
-
-      Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service <ph name="PRODUCT_NAME" /> V2 rétablit sur le nouvel appareil les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil précédent.
 Si vous activez cette règle, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.
 Si vous la désactivez ou que vous ne la configurez pas, les paramètres de restauration complète déterminent quels éléments doivent être lancés à la connexion.</translation>

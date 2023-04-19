@@ -322,7 +322,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3131206671572504478">Bloker alle</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
 <translation id="3146109040683991651">Angiv Chrome som standardbrowser</translation>
-<translation id="3152169319860972623">Adgangskodetjek gennemgår dine gemte adgangskoder og advarer dig om eventuelle læk på nettet. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Gem kortet</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157684681743766797">Markér alle…</translation>
@@ -343,6 +342,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Din ændring kunne ikke gemmes.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> af <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Denne adresse gemmes kun i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Autoudfyld adgangskoder</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
 <translation id="3272527697863656322">Annuller</translation>

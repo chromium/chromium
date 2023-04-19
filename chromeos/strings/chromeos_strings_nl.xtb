@@ -481,7 +481,7 @@
 <translation id="5154917547274118687">Geheugen</translation>
 <translation id="5160857336552977725">Log in bij je <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Instellingen voor Snelle antwoorden</translation>
-<translation id="5168185087976003268">Batterijprestaties</translation>
+<translation id="5168185087976003268">Batterijconditie</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -729,6 +729,7 @@
 <translation id="7281657306185710294">Een koel briesje</translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
 <translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
+<translation id="7297726121602187087">Donkergroen</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Vraag het aan de experts op het Helpforum van Chromebook</translation>
@@ -763,6 +764,7 @@
 <translation id="7570674786725311828">USB-touchscreen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Verplaats met de muis of pijltoetsen.</translation>
+<translation id="7618774594543487847">Neutraal</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>

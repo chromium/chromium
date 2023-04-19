@@ -2202,6 +2202,7 @@
 <translation id="2852385257476173980">当您浏览网页时，此处可能会列出您访问过的网站</translation>
 <translation id="285241945869362924">自动为音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
 <translation id="2856776373509145513">创建一个新容器</translation>
+<translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
 <translation id="2861941300086904918">Native Client 安全管理器</translation>
 <translation id="2862815659905780618">移除 Linux 开发环境</translation>
@@ -4277,6 +4278,7 @@
 <translation id="47158868804223727">点击相应的分组名称以展开或收起该分组</translation>
 <translation id="4716483597559580346">执行 Powerwash 操作以提高安全性</translation>
 <translation id="471759229191973607">更改主题</translation>
+<translation id="4718046540206070045">不止是浏览器</translation>
 <translation id="4718564115458102525">未检测到键盘</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />正在共享您的屏幕。</translation>
@@ -5421,6 +5423,7 @@
 <translation id="5787146423283493983">密钥协议</translation>
 <translation id="5787420647064736989">设备名称</translation>
 <translation id="5788367137662787332">抱歉，“<ph name="DEVICE_LABEL" />”设备上至少有一个分区无法加载。</translation>
+<translation id="5789581866075720267">如需将密码导入此设备上的 <ph name="BRAND" />，请选择一个 CSV 文件。</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5790651917470750848">端口转发已存在</translation>
@@ -5664,6 +5667,7 @@
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="5985458664595100876">网址格式无效。支持的格式为 \\server\share 和 smb://server/share。</translation>
 <translation id="598810097218913399">移除分配关系</translation>
+<translation id="5989629029899728491">使用 Cookie 以外的方式</translation>
 <translation id="5990266201903445068">仅限 WLAN</translation>
 <translation id="5990386583461751448">已翻译</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{为确保您能够继续浏览网页，请让您的管理员卸载这款应用。}other{为确保您能够继续浏览网页，请让您的管理员卸载这些应用。}}</translation>
@@ -5774,6 +5778,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
 <translation id="6086004606538989567">您已验证的帐号无权访问此设备。</translation>
+<translation id="6086347269144967242">读取所连设备的相关信息和数据</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
@@ -8339,6 +8344,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /> 项</translation>
 <translation id="8356409598322585307">您已注册此设备。无需再次注册。</translation>
 <translation id="8357388086258943206">安装 Linux 时出错</translation>
+<translation id="8357591920094529889">本指南旨在帮助您了解您使用 Chrome 时有哪些可用的重要选项。它可协助您做出相应选择，以使 Chrome 按照您期望的方式运行。</translation>
 <translation id="8358685469073206162">要恢复页面吗？</translation>
 <translation id="8358912028636606457">此设备不支持投放标签页中的音频。</translation>
 <translation id="835951711479681002">保存到您的 Google 帐号中</translation>
@@ -8392,6 +8398,7 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8399282673057829204">查看密码</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
+<translation id="8403618281196981152">您在 Chrome 中的数据</translation>
 <translation id="8403807918453631441">您需要先保存密码，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
@@ -8451,6 +8458,7 @@
 <translation id="8460932807646981183">管理搜索引擎和网站搜索</translation>
 <translation id="84613761564611563">正在显示请求的网络配置界面，请稍候…</translation>
 <translation id="8461914792118322307">代理</translation>
+<translation id="8461973047386722744">找不到任何密码</translation>
 <translation id="8463001014623882202">授权失败</translation>
 <translation id="846374874681391779">下载内容栏</translation>
 <translation id="8463955938112983119">“<ph name="PLUGIN_NAME" />”已被停用。</translation>
@@ -8509,6 +8517,7 @@
 <translation id="8512476990829870887">结束进程</translation>
 <translation id="851263357009351303">始终允许 <ph name="HOST" /> 显示图片</translation>
 <translation id="8513108775083588393">自动旋转屏幕</translation>
+<translation id="8513357934662532537">如需将密码导入 <ph name="USER_EMAIL" /> 的 <ph name="BRAND" />，请选择一个 CSV 文件。</translation>
 <translation id="8514746246728959655">尝试改用一个不同的安全密钥</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="8517759303731677493">修改…</translation>

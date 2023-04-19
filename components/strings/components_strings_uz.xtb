@@ -511,6 +511,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2166049586286450108">Administratorning barcha ma’lumotlarga to‘liq ruxsati</translation>
 <translation id="2166378884831602661">Bu sayt bilan xavfsiz aloqa o‘rnatib bo‘lmaydi</translation>
 <translation id="2168151236314517198">Bu kontentni chop etishni administrator taqiqlagan</translation>
+<translation id="2176974405772725904">Manzilni hisobda saqlash</translation>
 <translation id="2181821976797666341">Qoidalar</translation>
 <translation id="2183608646556468874">Telefon raqami</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ta manzil}other{# ta manzil}}</translation>
@@ -1734,6 +1735,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Ekstra</translation>
 <translation id="5234764350956374838">Yopish</translation>
+<translation id="5238301240406177137">Hisobda saqlash</translation>
 <translation id="5239623327352565343">Joylashuv axborotiga kirishga ruxsat berilgan</translation>
 <translation id="5242889659037569123">Chamadon va sayohat aksessuarlari</translation>
 <translation id="5244732203286792411">Yuklanmoqda…
@@ -2250,6 +2252,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
 <translation id="6547208576736763147">Chapdan 2 ta teshik ochish</translation>
 <translation id="6549443526281184652">Kostyumlar</translation>
+<translation id="6551873053534932690">Manzil hisobda saqlansinmi?</translation>
 <translation id="6554732001434021288">Oxirgi tashrif: <ph name="NUM_DAYS" /> kun oldin</translation>
 <translation id="6556866813142980365">Qaytarish</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>

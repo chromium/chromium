@@ -134,6 +134,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1820259098641718022">Toegevoegd aan leeslijst</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Gehackt wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="1832848789136765277">Bevestig dat jij het bent zodat je altijd toegang hebt tot je synchronisatiegegevens</translation>
+<translation id="1836891464494477513">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{Bookmarks opgeslagen in je Google-account {email}}}</translation>
 <translation id="1870148520156231997">Wachtwoord bekijken</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1883255238294161206">Lijst samenvouwen</translation>
@@ -326,7 +327,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3131206671572504478">Alles blokkeren</translation>
 <translation id="313283613037595347">Nieuw incognitotabblad maken</translation>
 <translation id="3146109040683991651">Chrome instellen als standaardbrowser</translation>
-<translation id="3152169319860972623">Wachtwoordcheck beoordeelt je opgeslagen wachtwoorden en waarschuwt je voor online lekken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Pas opslaan</translation>
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157684681743766797">Alles markeren…</translation>
@@ -347,6 +347,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">De wijziging kan niet worden opgeslagen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Dit adres wordt alleen opgeslagen in Chrome. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="USER_EMAIL" />).</translation>
 <translation id="3264775633254836593">Wachtwoorden automatisch invullen</translation>
 <translation id="3268451620468152448">Geopende tabbladen</translation>
 <translation id="3272527697863656322">Annuleren</translation>
@@ -1044,6 +1045,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7845466610722898">Leeslijst tonen</translation>
 <translation id="784551991304901159">Als je content wilt zien, selecteer je Aanzetten in het menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Gebookmarkt in {title}}other{Gebookmarkt in {title}}}</translation>
+<translation id="7852017611907717397">ONGEDAAN MAKEN</translation>
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="785938070103630874">Open Wachtwoorden, Betaalmethoden of Adres en meer</translation>

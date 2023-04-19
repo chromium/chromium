@@ -225,6 +225,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1978498689038657292">Testu-idazketa</translation>
 <translation id="1980808257969311265">Sartu <ph name="EVENT_SUMMARY" /> gertaeran</translation>
 <translation id="1982717156487272186">Erakutsi aurreko astekoak</translation>
+<translation id="1986150224850161328">Ziurtatu telefonoa eta Chromebook-a sare berean daudela, eta saiatu berriro. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Ezin da kapturatu edukia</translation>
 <translation id="1990046457226896323">Deskargatu dira hizketa-fitxategiak</translation>
 <translation id="1993072747612765854">Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz</translation>
@@ -373,6 +374,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2761723519669354964">Ireki apaleko elementu nabarmendua</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="2782591952652094792">Irten edukia kapturatzeko modutik</translation>
+<translation id="2785499565474703580">1 gailu dago konektatuta</translation>
 <translation id="2791421900609674576">Gomendioak ikusiko dituzu utzi zenuen tokitik jarraitu ahal izateko. Haiek kentzeko, eduki itzazu sakatuta.</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2797741504905337289">Apal-festa</translation>
@@ -1278,6 +1280,7 @@ Berriki instalatu da</translation>
 <translation id="6941333068993625698">Bidali oharrak</translation>
 <translation id="6942518653766415536">Grabaketaren formatuaren menua</translation>
 <translation id="6945221475159498467">Hautatu</translation>
+<translation id="6945922087561257829">Telefonoa sare mugikorrera konektatuta dago. Ziurtatu telefonoa eta Chromebook-a wifi-sare berean daudela, eta saiatu berriro. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Ez dago aktibatuta. Jarri operadorearekin harremanetan.</translation>
 <translation id="6961121602502368900">Telefonoa isilarazteko aukera ez dago erabilgarri laneko profilean</translation>
 <translation id="6961840794482373852">Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Orrian gora egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + gora egiteko gezi-tekla.</translation>
@@ -1332,6 +1335,7 @@ Berriki instalatu da</translation>
 <translation id="7188494361780961876">Pantailaren goiko ezkerreko izkinara eraman da menua.</translation>
 <translation id="7189412385142492784">Zer distantziatara dago Artizarra</translation>
 <translation id="7198435252016571249">Atxiki egin da kamera beheko eskuinaldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
+<translation id="7219573373513695352">Ez dago gailurik konektatuta</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook hau berrabiarazi egin behar da eguneratzea aplikatzeko. Baliteke minutu bat behar izatea.</translation>
 <translation id="7256634071279256947">Atzeko mikrofonoa</translation>
 <translation id="7258828758145722155">Atzo editatu zen</translation>
@@ -1481,6 +1485,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7902625623987030061">Ukitu hatz-marken sentsorea</translation>
 <translation id="7904094684485781019">Kontu honen administratzaileak saio-hasiera anitzerako baimenak kendu ditu.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> gailu daude konektatuta</translation>
 <translation id="7930731167419639574">Hizketa gailuan bertan prozesatzen da orain eta diktaketak konexiorik gabe funtzionatzen du</translation>
 <translation id="7932451802722951285">Ireki Google Calendar-en</translation>
 <translation id="7933084174919150729">Profil nagusian soilik erabil daiteke Google-ren Laguntzailea.</translation>

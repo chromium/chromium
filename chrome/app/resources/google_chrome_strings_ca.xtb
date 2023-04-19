@@ -21,7 +21,9 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Aquest equip ja disposa d'una versió més recent de Google Chrome. Si el programari no funciona, desinstal·leu Google Chrome i torneu-ho a provar.</translation>
 <translation id="139993653570221430">Si canvies d'opinió, pots modificar la configuració de Chrome en qualsevol moment. Com que les proves s'executen en paral·lel a la manera actual de difondre els anuncis, no veuràs els canvis de seguida.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals.}=1{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. La finestra d'incògnit no es tornarà a obrir.}other{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="1434626383986940139">Aplicacions de Chrome Canary</translation>
+<translation id="1492280395845991349">Reinicia per finalitzar l'actualització de Chrome</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome estava connectat a un dispositiu HID}=1{Google Chrome està connectat a un dispositiu HID}other{Google Chrome està connectat a dispositius HID}}</translation>
 <translation id="1507198376417198979">Personalitza el teu perfil de Chrome nou</translation>
 <translation id="1516530951338665275">Google Chrome necessita accedir al Bluetooth per continuar 
@@ -92,6 +94,7 @@
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
 <translation id="2665296953892887393">Ajudeu a millorar Google Chrome; envieu informes d'error i <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2689103672227170538">Aquesta extensió ha canviat la pàgina que es mostra quan inicieu Chrome.</translation>
+<translation id="2712234843277364121">Reinicia per actualitzar: les pestanyes es tornaran a obrir</translation>
 <translation id="2742320827292110288">Advertiment: Google Chrome no pot evitar que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode d'incògnit, desselecciona aquesta opció.</translation>
 <translation id="2765403129283291972">Per visitar aquest lloc web, Chrome necessita permís per accedir al micròfon</translation>
 <translation id="2770231113462710648">Canvia el navegador predeterminat a:</translation>
@@ -274,6 +277,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{El teu administrador suprimeix automàticament les dades de navegació quan no es fan servir durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes que estan obertes, continuaran així.}other{El teu administrador suprimeix automàticament les dades de navegació quan no s'utilitzen durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes que estan obertes, continuaran així.}}</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
+<translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
 <translation id="6493527311031785448">Google Chrome està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
@@ -404,6 +408,7 @@
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
+<translation id="9054037008353851982">Reinicia per actualitzar: les pestanyes es tornaran a obrir</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>
 <translation id="9138603949443464873">Torna a iniciar Chrome perquè s'apliquin els canvis</translation>
 <translation id="9195993889682885387">Chrome pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>

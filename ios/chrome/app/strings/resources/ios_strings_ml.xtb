@@ -326,7 +326,6 @@
 <translation id="3131206671572504478">എല്ലാം ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="313283613037595347">പുതിയ അദൃശ്യ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="3146109040683991651">ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
-<translation id="3152169319860972623">പാസ്‌വേഡ് പരിശോധന നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ അവലോകനം ചെയ്യുകയും ഓൺലൈൻ ലംഘനങ്ങളുണ്ടെങ്കിൽ അവയെക്കുറിച്ച് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">കാർഡ് സംരക്ഷിക്കുക</translation>
 <translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="3157684681743766797">എല്ലാം അടയാളപ്പെടുത്തുക…</translation>
@@ -347,6 +346,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിക്കാനായില്ല.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">ഈ വിലാസം Chrome-ൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
 <translation id="3264775633254836593">പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="3272527697863656322">റദ്ദാക്കുക</translation>

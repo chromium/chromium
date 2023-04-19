@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">Szöveges bevitel</translation>
 <translation id="1980808257969311265">Csatlakozás a következőhöz: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Az előző hét megjelenítése</translation>
+<translation id="1986150224850161328">Győződjön meg arról, hogy a telefon és a Chromebook ugyanahhoz a hálózathoz csatlakozik, majd próbálja újra. <ph name="LEARN_MORE" />.</translation>
 <translation id="1989113344093894667">Nem lehet rögzíteni tartalmat</translation>
 <translation id="1990046457226896323">Beszédfájlok letöltve</translation>
 <translation id="1993072747612765854">További információ a legújabb <ph name="SYSTEM_APP_NAME" />-frissítésről</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">Kiemelt elem megnyitása a polcról</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> kezelője: <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Kilépés a rögzítés módból</translation>
+<translation id="2785499565474703580">1 csatlakoztatott eszköz</translation>
 <translation id="2791421900609674576">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Érintéssel és nyomva tartással eltávolíthatja az ajánlásokat.</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1280,7 @@ Frissen telepítve</translation>
 <translation id="6941333068993625698">Visszajelzés küldése</translation>
 <translation id="6942518653766415536">Rögzítési formátum menüje</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
+<translation id="6945922087561257829">Telefonja mobilhálózathoz csatlakozik. Győződjön meg arról, hogy a telefon és a Chromebook ugyanahhoz a Wi-Fi-hálózathoz csatlakozik, majd próbálja újra. <ph name="LEARN_MORE" />.</translation>
 <translation id="6960565108681981554">Nincs aktiválva. Forduljon a szolgáltatójához.</translation>
 <translation id="6961121602502368900">A Telefon némítása funkció nem használható munkaprofillal</translation>
 <translation id="6961840794482373852">Az Alt + Felfelé nyíl billentyűparancs módosult. A Felfelé nyíl billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Felfelé nyíl.</translation>
@@ -1332,6 +1335,7 @@ Frissen telepítve</translation>
 <translation id="7188494361780961876">A menü a képernyő bal felső sarkába került.</translation>
 <translation id="7189412385142492784">Milyen messze van a Vénusz?</translation>
 <translation id="7198435252016571249">Kamera a jobb alsó sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
+<translation id="7219573373513695352">Nincsenek csatlakoztatott eszközök</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. A Chromebookot újra kell indítani a frissítés alkalmazásához. Ez akár egy percig is eltarthat.</translation>
 <translation id="7256634071279256947">Hátulsó mikrofon</translation>
 <translation id="7258828758145722155">Tegnap szerkesztette</translation>
@@ -1482,6 +1486,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7902625623987030061">Érintse meg az ujjlenyomat-érzékelőt</translation>
 <translation id="7904094684485781019">A fiók rendszergazdája letiltotta a többfiókos bejelentkezést.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> csatlakoztatott eszköz</translation>
 <translation id="7930731167419639574">A beszéd feldolgozása helyben történik, a diktálás pedig offline működik.</translation>
 <translation id="7932451802722951285">Megnyitás a Google Naptárban</translation>
 <translation id="7933084174919150729">A Google Segéd csak az elsődleges profilhoz áll rendelkezésre.</translation>

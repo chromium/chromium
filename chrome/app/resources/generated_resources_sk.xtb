@@ -4054,6 +4054,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="450552327874992444">Slovo už bolo pridané</translation>
 <translation id="4507128560633489176">Dáta boli vymazané.</translation>
 <translation id="4507373251891673233">Zablokovali ste všetky rozšírenia z webu <ph name="HOST" /></translation>
+<translation id="4508032221004253235">Týmto povolíte aplikáciám a webom s povoleným prístupom k polohe a systému ChromeOS používať polohu na základe vašej siete Wi‑Fi alebo mobilných sietí. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Nastavenia dostupnosti</translation>
 <translation id="4508765956121923607">&amp;Zobraziť zdrojový kód</translation>
 <translation id="4509421746503122514">Aktualizovať novým spustením</translation>
@@ -4846,6 +4847,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5235750401727657667">Nahradiť stránku, ktorá sa zobrazí pri otvorení novej karty</translation>
 <translation id="5236374273162681467">Ak ich chcete ľahko používať vo všetkých svojich zariadeniach, môžete si ich presunúť do účtu Google</translation>
 <translation id="523862956770478816">Povolenia webu</translation>
+<translation id="5239752869099890912">Ak chcete na tomto webe používať pre tieto rozšírenia aktualizované nastavenia, znova načítajte túto stránku</translation>
 <translation id="5242724311594467048">Povoliť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Skúste to znova o chvíľu</translation>
 <translation id="5244474230056479698">Synchronizácia do účtu <ph name="EMAIL" /></translation>
@@ -8123,6 +8125,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8138997515734480534">Stav virtuálneho počítača <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Súbory na Disku Google</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">Povoľte aplikáciám, webom a časovému pásmu systému používať polohu na základe služieb určovania polohy Google. Ak je prístup k polohe vypnutý, vaša poloha sa stále môže dať zistiť podľa adresy IP.</translation>
 <translation id="8141418916163800697">Ďalšie funkcie môžete nakonfigurovať v nastaveniach Telefónneho centra</translation>
 <translation id="8141584439523427891">Otvára sa alternatívny prehliadač</translation>
 <translation id="8141725884565838206">Správa hesiel</translation>
@@ -8195,6 +8198,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8195737548602430447">Automaticky prekladajte titulky do cieľového jazyka.</translation>
 <translation id="8197673340773315084">Pridajte názov alebo štítok, napríklad Práca alebo Osobné</translation>
 <translation id="8198456017687137612">Karta prenosu</translation>
+<translation id="8198511718495409170">Ak chcete na tomto webe používať pre rozšírenie <ph name="EXTENSION_NAME" /> aktualizované nastavenia, znova načítajte túto stránku</translation>
 <translation id="8199300056570174101">Vlastnosti siete (služba) a zariadenia</translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8200789660596905522">Nezabudnite prijať žiadosť o prenos v zariadení <ph name="DEVICE_NAME" />.</translation>

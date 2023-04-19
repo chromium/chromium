@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">ब्लूटूथ डिव्हाइस</translation>
 <translation id="1662550410081243962">पेमेंट पद्धती सेव्ह करा आणि भरा</translation>
 <translation id="1663943134801823270">कार्ड आणि पत्ते Chrome कडील आहेत. तुम्ही त्यांना <ph name="BEGIN_LINK" />सेटिंग्‍ज<ph name="END_LINK" /> मधून व्यवस्थापित करू शकता.</translation>
+<translation id="1668071460721346172">ईमेल मिळवा</translation>
 <translation id="1671391448414634642">आतापासून <ph name="SOURCE_LANGUAGE" />मधील पेज <ph name="TARGET_LANGUAGE" />मध्ये भाषांतरित केली जातील.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ते <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">शॉर्ट एज प्रथम</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">हे ॲप वाय-फाय क्रेडेंशियल इंस्टॉल करण्यासाठी परवानगीची विनंती करत आहे. सेट केल्यानंतर, तुमचे <ph name="DEVICE_TYPE" /> सहभागी वाय-फाय नेटवर्कशी आपोआप कनेक्ट होईल. ही क्रेडेंशियल काढून टाकण्यासाठी, अ‍ॅप अनइंस्टॉल करा.</translation>
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1807528111851433570">शीट सुरू करा</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">तुमचा CVC हा तुमच्या कार्डच्या मागील बाजूस असतो. CVC म्हणजे स्वाक्षरीच्या बॉक्सच्या सर्वात वरती उजवीकडील शेवटचे तीन अंक.</translation>
 <translation id="181000283860817563">एकाहून अधिक साइटवरील किमती ट्रॅक करा</translation>
 <translation id="1810391395243432441">तुमचे स्क्रीन लॉक वापरून पासवर्ड संरक्षित करा</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">पूर्ण ॲडमिन ॲक्सेस</translation>
 <translation id="2166378884831602661">ही साइट सुरक्षित कनेक्शन प्रदान करू शकत नाही</translation>
 <translation id="2168151236314517198">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे हा आशय प्रिंट करणे ब्लॉक केले आहे</translation>
+<translation id="2176974405772725904">खात्यामध्ये पत्ता सेव्ह करा</translation>
 <translation id="2181821976797666341">धोरणे</translation>
 <translation id="2183608646556468874">फोन नंबर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 पत्ता}other{# पत्ते}}</translation>
@@ -1223,6 +1226,7 @@
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4040350669425716613">महाविद्यालये आणि विद्यापीठे</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
+<translation id="4047620889508350431">तुम्ही आता तुमच्या Google खाते मधील पत्ते वापरू शकता.</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4063063121357725926">Google ला तुमच्या कार्टसाठी सवलती शोधण्याकरिता तुम्हाला मदत करू द्या</translation>
@@ -1585,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{काहीही नाही}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> शोधा</translation>
 <translation id="4879491255372875719">आपोआप (डीफॉल्ट)</translation>
+<translation id="4879723019639546076">हा पत्ता फक्त Chrome वर सेव्ह केला आहे. तो सर्व Google उत्पादनांवर वापरण्यासाठी, तुमच्या Google खाते (<ph name="ACCOUNT" />) मध्ये सेव्ह करा.</translation>
 <translation id="4880827082731008257">इतिहास शोध</translation>
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4881808915112408168">२४ x ३१.५ इं</translation>
@@ -1735,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 अतिरिक्त</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
+<translation id="5238301240406177137">खाते मध्ये सेव्ह करा</translation>
 <translation id="5239623327352565343">स्थानाला अनुमती आहे</translation>
 <translation id="5242889659037569123">सामान आणि प्रवासाशी संबंधित ॲक्सेसरी</translation>
 <translation id="5244732203286792411">लोड करत आहे…
@@ -2143,6 +2149,7 @@
 <translation id="6279183038361895380">तुमचा कर्सर दर्शविण्‍यासाठी |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="6280223929691119688">या पत्त्यावर देऊ शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
+<translation id="6284517535531159884">व्हेरिएशन सीड प्रकार</translation>
 <translation id="6285507000506177184">Chrome मधील डाउनलोड व्यवस्थापित करा बटण, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी, एंटर प्रेस करा</translation>
 <translation id="6289939620939689042">पेजचा रंग</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2259,7 @@
 <translation id="6545864417968258051">ब्लूटूथ स्कॅन करत आहे</translation>
 <translation id="6547208576736763147">ड्युअल पंच लेफ्ट</translation>
 <translation id="6549443526281184652">पोशाख</translation>
+<translation id="6551873053534932690">खात्यामध्ये पत्ता सेव्ह करायचा का?</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
 <translation id="6556866813142980365">पुन्हा करा</translation>
 <translation id="6557715786897013164">१४ x १७ इं</translation>
@@ -2316,6 +2324,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> ला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा आणि कॅमेर्‍याचे स्थान ट्रॅक करायचे आहे</translation>
 <translation id="6718612893943028815">कॅमेरा वापरायचा का?</translation>
 <translation id="6721678857435001674">तुमच्या सिक्युरिटी कीची निर्मिती आणि मॉडेल पहा</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">कॅमेरा</translation>
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>

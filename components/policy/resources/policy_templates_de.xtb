@@ -244,6 +244,15 @@ Wenn diese Richtlinie deaktiviert ist, bietet der clientseitige Phishing-Schutz 
       Standardwert ist RollbackDisabled.</translation>
 <translation id="1221359380862872747">Bei Demo-Anmeldung angegebene URLs laden</translation>
 <translation id="1221955019309484560">Updates für alle Komponenten aktivieren</translation>
+<translation id="1222694988453895594">Ermöglicht das Erstellen einer Liste mit Protokollen. Außerdem kannst du mit jedem Protokoll eine Liste mit zugelassenen Quellmustern verknüpfen, durch die eine externe App gestartet werden kann, ohne beim Nutzer nachzufragen. Das abschließende Trennzeichen darf nicht gemeinsam mit dem Protokoll angegeben werden. Gib also beispielsweise „skype“ ein statt „skype:“ oder „skype://“.
+
+Wenn diese Richtlinie konfiguriert ist, darf ein Protokoll nur dann ohne Nachfrage eine externe App starten, wenn es auf der Liste aufgeführt ist und die Quelle der Website, durch die das Protokoll gestartet werden soll, mit einem der Muster in der Liste „allowed_origins“ des jeweiligen Protokolls übereinstimmt. Wenn eine der Bedingungen nicht erfüllt ist, wird die Nachfrage beim Starten externer Protokolle nicht durch die Richtlinie übersprungen.
+
+Wenn diese Richtlinie nicht konfiguriert ist, können standardmäßig keine Protokolle ohne Nachfrage gestartet werden. Nutzer können für einzelne Protokolle oder Websites auf die Aufforderung verzichten, es sei denn, die Richtlinie <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> ist deaktiviert. Diese Richtlinie hat keine Auswirkung auf vom Nutzer festgelegte Ausnahmen für einzelne Protokolle oder Websites.
+
+Es werden ähnliche URL-Muster wie in der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> verwendet. Sie sind unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschrieben.
+
+Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@query“-Elemente enthalten. Muster, die „/path“- oder „@query“-Elemente enthalten, werden ignoriert.</translation>
 <translation id="1223789468190631420">Safe Browsing-Aktivierungsstatus für vertrauenswürdige Quellen</translation>
 <translation id="123018742985150697">Übereinstimmung von lokalem Nutzer und dem Inhaber des Hosts für den Remote-Zugriff voraussetzen</translation>
 <translation id="123081309365616809">Streamen von Inhalten an das Gerät aktivieren</translation>
@@ -3945,6 +3954,7 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 <translation id="4693779768620889402">Erweiterungsbasierte Ziele</translation>
 <translation id="4694138212536142867">Melden des Hardwarestatus auf Geräten aktivieren</translation>
 <translation id="4697581738794063407">Funktion zum Filtern von URL-Parametern konfigurieren</translation>
+<translation id="4698895924806859508">Keine Netzwerkereignisse melden</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4699592681017489215">Mit dieser Richtlinie kann ein lokaler Parameter konfiguriert werden, der dazu dient, DNS-Abfangprüfungen zu deaktivieren. Durch die Prüfungen wird ermittelt, ob sich der Browser hinter einem Proxy befindet, der unbekannte Hostnamen weiterleitet.
 
@@ -4745,13 +4755,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="5448022937220253000">Festlegen, was mit Nutzerdaten geschehen soll, nachdem <ph name="LACROS_NAME" /> deaktiviert wurde</translation>
 <translation id="5449690328792750354">Die Event.path API ist verfügbar.</translation>
 <translation id="5452024130413254050">Bestimmt, ob VMs, für die diese Konfiguration verwendet wird, Zugriff auf ein vTPM haben. Der Standardwert ist „false“ und „<ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />“, falls nicht konfiguriert.</translation>
-<translation id="5452167809842762761">Diese Richtlinie wurde in M114 entfernt. Sie diente zur Deaktivierung von CECPQ2, aber CECPQ2 ist mittlerweile standardmäßig deaktiviert. Es wird eine eigenständige Richtlinie eingeführt, um die Ersetzung von CECPQ2 zu steuern. Diese Ersetzung kombiniert die standardmäßige Schlüsselvereinbarung X25519 mit der vom NIST ausgewählten Post-Quanten-KEM Kyber.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für CECPQ2. Das ist ein Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS.
-
-      CECPQ2 führt zu größeren TLS-Mitteilungen, wodurch in äußerst seltenen Fällen Fehler in der Netzwerkhardware auftreten können. Während die Netzwerkprobleme behoben werden, kann diese Richtlinie auf „False“ gesetzt werden, um CECPQ2 zu deaktivieren.
-
-      Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="5454128917282602937">Wenn ein Nutzer zwischen <ph name="PRODUCT_OS_NAME" />-Geräten wechselt, werden vom Dienst <ph name="PRODUCT_NAME" /> Version 2 die Browser- und App-Fenster vom vorherigen Gerät auf dem neuen Gerät gestartet.
 Wenn die Richtlinie aktiviert ist, werden Browser- und App-Fenster vom zuletzt verwendeten <ph name="PRODUCT_OS_NAME" />-Gerät des aktuellen Nutzers bei der Anmeldung automatisch geöffnet.
 Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstellungen zur vollständigen Wiederherstellung festgelegt, was bei der Anmeldung geöffnet wird.</translation>
@@ -6622,6 +6625,13 @@ Wenn die Richtlinie <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> kon
 
       Ist sie deaktiviert oder nicht konfiguriert, kann WebDriver inkompatible Richtlinien nicht überschreiben.</translation>
 <translation id="7145335384492396213">Standardmodus PIN-Druck</translation>
+<translation id="7145764791559889135">Mit dieser Richtlinie wird das Kopieren von Daten in die Zwischenablage auf bestimmten URLs blockiert.
+
+      Mit den URL-Listen <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> und <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> wird gesteuert, welche Websites in die Zwischenablage schreiben dürfen. Wenn ein URL-Muster in der Liste „Enable“ enthalten und in der Liste „Disable“ nicht enthalten ist, kann die betreffende Website nicht in die Zwischenablage schreiben. Ist die URL in keiner der beiden Listen enthalten, ist das Kopieren nicht blockiert.
+
+Es werden ähnliche URL-Muster wie in der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> verwendet. Sie sind unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschrieben.
+
+Unter <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> ist die minimale Datenmenge in Byte angegeben, die die Musterprüfung auslöst. Das bedeutet, dass ein Schreibvorgang in die Zwischenablage auf einer blockierten URL zulässig ist, wenn die Menge der kopierten Daten unter dem Wert in diesem Feld liegt. Wenn der Wert nicht festgelegt ist, gilt der Standardwert von 100 Byte.</translation>
 <translation id="7146198347561863646">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, sind Wakelocks für die Energieverwaltung zugelassen. Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
 
       Wenn die Richtlinie deaktiviert wird, werden Wakelock-Anfragen ignoriert.</translation>
@@ -6917,6 +6927,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Hinweis: Falls das Gerät in den Ruhemodus versetzt werden soll, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="7477149584454865826">Boolescher Parameter, der angibt, ob zum Einrichten des Druckers IPP Everywhere verwendet werden soll.</translation>
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
+<translation id="7479408102162550711">Netzwerkereignisse melden</translation>
 <translation id="7480826412572122600">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise-Connector „<ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei in Chrome heruntergeladen wird.
 
       Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie von einer bestimmten Seite heruntergeladen wird, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem „enable“-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein „disable“-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
@@ -7284,6 +7295,10 @@ werden abgelehnt.</translation>
       Ist die Richtlinie auf „False“ festgelegt oder nicht konfiguriert, werden <ph name="FLASH_PLUGIN_NAME" />-Inhalte anderer Herkunft oder kleine Inhalte ggf. blockiert.
 
       Hinweis: Wenn du konfigurieren möchtest, welche Websites <ph name="FLASH_PLUGIN_NAME" /> ausführen dürfen, findest du unter den folgenden Richtlinien weitere Informationen: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7804859754080118507">Ereignisse zu Netzwerkverbindung und Signalstärke auf registrierten Geräten melden.
+
+      Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
+      Ist sie auf „true“ gesetzt, werden die Netzwerkereignisse des Geräts gemeldet.</translation>
 <translation id="780629758750905699">Hinzufügen von Family Link-Konten auf diesem Gerät erlauben</translation>
 <translation id="7807120658089613760">Deaktiviert die Kamera, Browser- und Betriebssystemeinstellungen, Scanfunktionen, den Web Store, Canvas sowie die Funktionen „Crosh“ und „Entdecken“</translation>
 <translation id="7807139251387225825">Liste von Typen, die von der Synchronisierung ausgeschlossen werden sollen</translation>

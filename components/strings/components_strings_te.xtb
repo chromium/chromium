@@ -309,6 +309,7 @@
 <translation id="1658918301167915956">బ్లూటూత్ పరికరాలు</translation>
 <translation id="1662550410081243962">పేమెంట్ ఆప్షన్‌లను సేవ్ చేసి, ఆటోమేటిక్‌గా ఫిల్ చేయండి</translation>
 <translation id="1663943134801823270">కార్డ్‌లు మరియు అడ్రస్‌లు Chrome నుండి పొందినవి. మీరు <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" />లో వాటిని నిర్వహించవచ్చు.</translation>
+<translation id="1668071460721346172">ఈమెయిల్‌ను పొందండి</translation>
 <translation id="1671391448414634642">ఇప్పటి నుండి <ph name="SOURCE_LANGUAGE" /> భాషలో ఉన్న పేజీలు <ph name="TARGET_LANGUAGE" /> భాషలోకి అనువదించబడతాయి.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> నుండి <ph name="TARGET_LANGUAGE" />లోకి</translation>
 <translation id="1682696192498422849">పేజీని అడ్డంగా తిప్పి ప్రింట్ చేయి</translation>
@@ -369,6 +370,7 @@
 <translation id="1806174020048213474">ఈ యాప్ Wi-Fi ఆధారాలను ఇన్‌స్టాల్ చేయడానికి అనుమతిని రిక్వెస్ట్ చేస్తోంది. సెటప్ చేసిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> ఆటోమేటిక్‌గా పాల్గొనే Wi-Fi నెట్‌వర్క్‌లకు కనెక్ట్ అవుతుంది. ఈ ఆధారాలను తీసివేయడానికి, యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1807528111851433570">మొదటి షీట్</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">మీ CVC అన్నది మీ కార్డ్ వెనుక భాగాన ఉంటుంది. ఇది సంతకం పెట్టె ఎగువ కుడివైపు ఉండే చివరి 3 అంకెలు.</translation>
 <translation id="181000283860817563">పలు సైట్‌లలో ధరలను ట్రాక్ చేయండి</translation>
 <translation id="1810391395243432441">మీ స్క్రీన్ లాక్‌తో పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
@@ -512,6 +514,7 @@
 <translation id="2166049586286450108">పూర్తి నిర్వాహక యాక్సెస్</translation>
 <translation id="2166378884831602661">ఈ సైట్ సురక్షితమైన కనెక్షన్‌ను అందించలేకపోయింది</translation>
 <translation id="2168151236314517198">ఈ కంటెంట్ ప్రింట్ చేయడాన్ని అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది</translation>
+<translation id="2176974405772725904">అడ్రస్‌ను ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="2181821976797666341">విధానాలు</translation>
 <translation id="2183608646556468874">ఫోన్ నంబర్</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 అడ్రస్‌}other{# అడ్రస్‌లు}}</translation>
@@ -1588,6 +1591,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> శోధన</translation>
 <translation id="4879491255372875719">ఆటోమేటిక్ (డిఫాల్ట్)</translation>
+<translation id="4879723019639546076">ఈ అడ్రస్ కేవలం Chromeలో మాత్రమే సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించడానికి, మీ Google ఖాతా, (<ph name="ACCOUNT" />)లో సేవ్ చేయండి.</translation>
 <translation id="4880827082731008257">హిస్టరీలో సెర్చ్ చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4881808915112408168">24 x 31.5 అంగుళాలు</translation>
@@ -1738,6 +1742,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 అదనం</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
+<translation id="5238301240406177137">ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="5239623327352565343">లొకేషన్ అనుమతించబడింది</translation>
 <translation id="5242889659037569123">లగేజి &amp; ట్రావెల్ ఉపకరణాలు</translation>
 <translation id="5244732203286792411">లోడ్ అవుతోంది...
@@ -2145,6 +2150,7 @@
 <translation id="6279183038361895380">మీ కర్సర్‌ను చూపడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="6280223929691119688">ఈ అడ్రస్‌కు డెలివరీ చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="6284292079994426700">26 x 38 అంగుళాలు</translation>
+<translation id="6284517535531159884">వేరియేషన్‌ల సీడ్ రకం</translation>
 <translation id="6285507000506177184">'Chromeలో డౌన్‌లోడ్‌లను మేనేజ్ చేయండి' బటన్, Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను మేనేజ్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="6289939620939689042">పేజీ రంగు</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2254,6 +2260,7 @@
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
 <translation id="6547208576736763147">ఎడమవైపు రెండు రంధ్రాలు</translation>
 <translation id="6549443526281184652">కాస్ట్యూమ్స్</translation>
+<translation id="6551873053534932690">అడ్రస్‌ను ఖాతాలో సేవ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> రోజుల క్రితం చివరిగా సందర్శించారు</translation>
 <translation id="6556866813142980365">మళ్లీ చేయి</translation>
 <translation id="6557715786897013164">14 x 17 అంగుళాలు</translation>
@@ -2318,6 +2325,7 @@
 <translation id="6716672519412350405">మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించడానికి, కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి <ph name="URL" /> అనుమతి అడుగుతోంది</translation>
 <translation id="6718612893943028815">కెమెరాను ఉపయోగించాలా?</translation>
 <translation id="6721678857435001674">మీ భద్రతా కీ యొక్క తయారీదారు బ్రాండ్ పేరు మరియు మోడల్‌ని చూడండి</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">కెమెరా</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> తేదీన మీ <ph name="BEGIN_LINK" />సింక్‌ రహస్య పదబంధం <ph name="END_LINK" />తో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>

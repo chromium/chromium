@@ -34,6 +34,7 @@
 <translation id="1148499908455722006">Отвара дијалог са информацијама за корисника <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Упарени уређаји</translation>
+<translation id="1160215328209699296">укључено и у употреби</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабл се не повезује правилно са екранима</translation>
 <translation id="1175572348579024023">Померај</translation>
@@ -225,6 +226,7 @@
 <translation id="1978498689038657292">Унос текста</translation>
 <translation id="1980808257969311265">Придружи се догађају <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Прикажите претходну недељу</translation>
+<translation id="1986150224850161328">Уверите се да су телефон и Chromebook на истој мрежи, па пробајте поново. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Снимање садржаја није успело</translation>
 <translation id="1990046457226896323">Преузети су фајлови говора</translation>
 <translation id="1993072747612765854">Сазнајте више о најновијем ажурирању за: <ph name="SYSTEM_APP_NAME" /></translation>
@@ -240,6 +242,7 @@
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Преглед камере је укључен</translation>
 <translation id="2067602449040652523">Осветљеност тастатуре</translation>
+<translation id="2075520525463668108">Укључи/искључи функцију <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Превуците удесно помоћу четири прста да бисте прешли на следећу радну површину</translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2083190527011054446">Лаку ноћ, <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +327,7 @@
 <translation id="2487915095798731898">Придружи ме</translation>
 <translation id="2501920221385095727">Лепљиви тастери</translation>
 <translation id="2509468283778169019">CAPS LOCK је укључен</translation>
+<translation id="2514415433888497495">Заустави <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Откључај прозоре</translation>
 <translation id="2530896289327917474">Укључите или искључите навигацију курсором</translation>
@@ -373,6 +377,7 @@
 <translation id="2761723519669354964">Отворите истакнуту ставку са полице</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
+<translation id="2785499565474703580">1 уређај је повезан</translation>
 <translation id="2791421900609674576">Видећете препоруке да бисте могли да наставите тамо где сте стали.  Можете да додирнете и задржите да бисте уклонили препоруке.</translation>
 <translation id="2792498699870441125">Alt + тастер за претрагу</translation>
 <translation id="2797741504905337289">Журка на полици</translation>
@@ -1278,6 +1283,7 @@
 <translation id="6941333068993625698">Пошаљите повратне информације</translation>
 <translation id="6942518653766415536">Мени за формат снимања</translation>
 <translation id="6945221475159498467">Изабери</translation>
+<translation id="6945922087561257829">Телефон користи мобилну мрежу. Уверите се да су телефон и Chromebook на истој WiFi мрежи, па пробајте поново. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
@@ -1332,6 +1338,7 @@
 <translation id="7188494361780961876">Мени је премештен у горњи леви угао екрана.</translation>
 <translation id="7189412385142492784">Колико далеко је Венера</translation>
 <translation id="7198435252016571249">Камера је уклопљена у доњи десни угао. Неусаглашеност са површином система.</translation>
+<translation id="7219573373513695352">Ниједан уређај није повезан</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Овај Chromebook мора да се растартује ради примене ажурирања. Ово може да потраје највише 1 минут.</translation>
 <translation id="7256634071279256947">Задњи микрофон</translation>
 <translation id="7258828758145722155">Измењено јуче</translation>
@@ -1482,6 +1489,7 @@
 <translation id="7902625623987030061">Додирните сензор за отисак прста</translation>
 <translation id="7904094684485781019">Администратор за овај налог је забранио вишеструко пријављивање.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Повезаних уређаја: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Говор се сада локално обрађује и диктирање ради офлајн</translation>
 <translation id="7932451802722951285">Отвори у Google календару</translation>
 <translation id="7933084174919150729">Google помоћник је доступан само за примарни профил.</translation>
@@ -1516,6 +1524,7 @@
 <translation id="8051716679295756675">Шаблон под насловом <ph name="DESK_TEMPLATE_NAME" /> већ постоји</translation>
 <translation id="8052898407431791827">Копирано је у привремену меморију</translation>
 <translation id="8054466585765276473">Израчунавање времена трајања батерије.</translation>
+<translation id="8079538659226626406">Дељење садржаја екрана</translation>
 <translation id="8083540854303889870">Сачувано за касније</translation>
 <translation id="8091153018031979607">Почиње у <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Аутоматска ажурирања</translation>

@@ -34,6 +34,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1148499908455722006">Otevřít dialogové okno s informacemi o účtu <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
+<translation id="1160215328209699296">zapnutá a je používána</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Váš kabel USB-C se možná nedokáže správně připojit k displejům</translation>
 <translation id="1175572348579024023">Posunout</translation>
@@ -240,6 +241,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2049240716062114887">Název plochy byl změněn na <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Je zapnutý náhled kamery</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
+<translation id="2075520525463668108">Zapnout nebo vypnout funkci <ph name="CAPTURE_MEDIUM" />. Funkce <ph name="CAPTURE_MEDIUM" /> je <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Na další plochu přejdete přejetím čtyřmi prsty doprava</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +326,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2487915095798731898">Připojit se</translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
 <translation id="2509468283778169019">CAPS LOCK je zapnutý</translation>
+<translation id="2514415433888497495">Vypnout funkci <ph name="CAPTURE_MEDIUM" />. Funkce <ph name="CAPTURE_MEDIUM" /> je <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Odemknout okna</translation>
 <translation id="2530896289327917474">Zapnout nebo vypnout procházení pomocí kurzoru</translation>
@@ -1515,6 +1518,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8051716679295756675">Šablona s názvem <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Zkopírováno do schránky</translation>
 <translation id="8054466585765276473">Výpočet doby výdrže baterie.</translation>
+<translation id="8079538659226626406">Sdílení obrazovky</translation>
 <translation id="8083540854303889870">Uloženo na později</translation>
 <translation id="8091153018031979607">Začíná v <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatické aktualizace</translation>

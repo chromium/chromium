@@ -22,7 +22,9 @@
 <translation id="137466361146087520">Google Chrome Béta</translation>
 <translation id="1399397803214730675">A számítógépen már megtalálható a Google Chrome újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Google Chrome-ot, majd próbálkozzon újra.</translation>
 <translation id="139993653570221430">Beállításait bármikor módosíthatja a Chrome-beállítások között. A próbaidőszak a jelenlegi hirdetésmegjelenítéssel párhuzamosan zajlik, így nem fognak azonnal megjelenni a változtatások.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni.}=1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Az inkognitó ablak nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-alkalmazások</translation>
+<translation id="1492280395845991349">Indítsa újra a Chrome frissítésének befejezéséhez</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{A Google Chrome HID-eszközhöz csatlakozott}=1{A Google Chrome HID-eszközhöz csatlakozik}other{A Google Chrome HID-eszközökhöz csatlakozik}}</translation>
 <translation id="1507198376417198979">Szabja személyre az új Chrome-profilját</translation>
 <translation id="1516530951338665275">A Google Chrome-nak Bluetooth-hozzáférésre van szükséges a párosítás 
@@ -93,6 +95,7 @@
 <translation id="2652691236519827073">Link megnyi&amp;tása új Chrome-lapon</translation>
 <translation id="2665296953892887393">Segítse a Google Chrome fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Ez a bővítmény módosította, hogy melyik oldal jelenik meg a Chrome indításakor.</translation>
+<translation id="2712234843277364121">Indítsa újra a frissítéshez – a lapok újra meg fognak nyílni</translation>
 <translation id="2742320827292110288">Figyelmeztetés: A Google Chrome nem tudja megakadályozni, hogy a bővítmények rögzítsék a böngészési előzményeket. A bővítmény inkognitó módban való használatának letiltásához törölje e lehetőség bejelölését.</translation>
 <translation id="2765403129283291972">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>
 <translation id="2770231113462710648">Alapértelmezett böngésző beállítása:</translation>
@@ -275,6 +278,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{A rendszergazda automatikusan törli a böngészési adatokat, ha 1 percig nincs használatban a böngésző. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is. A megnyitott lapok nyitva maradnak.}other{A rendszergazda automatikusan törli a böngészési adatokat, ha # percig nincs használatban a böngésző. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is. A megnyitott lapok nyitva maradnak.}}</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="6418662306461808273">Szeretne meglévő Chrome-profilra váltani?</translation>
+<translation id="648319183876919572">A Biztonságos Böngészés fokozott védelemmel funkció többet tesz a veszélyes webhelyekkel és letöltésekkel szembeni védekezésért</translation>
 <translation id="6493527311031785448">A Google Chrome megpróbálja a következőt: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">A Chrome-nak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
@@ -405,6 +409,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Rendelkezésre áll egy Chrome-frissítés}=1{Rendelkezésre áll egy Chrome-frissítés}other{# napja rendelkezésre áll egy Chrome-frissítés}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex rendszer</translation>
+<translation id="9054037008353851982">Indítsa újra a frissítéshez – a lapok újra meg fognak nyílni</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
 <translation id="9138603949443464873">A módosítások alkalmazásához indítsa újra a Chrome-ot</translation>
 <translation id="9195993889682885387">A Chrome meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>

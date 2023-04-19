@@ -326,7 +326,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3131206671572504478">Blokiraj sve</translation>
 <translation id="313283613037595347">Kreiranje nove anonimne kartice.</translation>
 <translation id="3146109040683991651">Postavite Chrome kao zadani preglednik</translation>
-<translation id="3152169319860972623">Provjera lozinke pregleda sačuvane lozinke i upozorava vas o online kršenjima. <ph name="BEGIN_LINK" />Saznajte više.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Sačuvajte karticu</translation>
 <translation id="3157387275655328056">Dodaj na Listu za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
@@ -347,6 +346,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Pohranjivanje promjene nije uspjelo.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> od <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Adresa se pohranjuje samo u Chrome. Da je koristite na Googleovim proizvodima, sačuvajte na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Automatski popuni lozinke</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
 <translation id="3272527697863656322">Otkaži</translation>

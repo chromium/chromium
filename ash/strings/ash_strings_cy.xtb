@@ -225,6 +225,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1978498689038657292">Mewnbwn testun</translation>
 <translation id="1980808257969311265">Ymuno <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Dangos yr wythnos flaenorol</translation>
+<translation id="1986150224850161328">Sicrhewch fod eich ffôn a'ch Chromebook ar yr un rhwydwaith ac yna rhowch gynnig arall arni. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Methu â thynnu sgrinlun o'r cynnwys</translation>
 <translation id="1990046457226896323">Wedi lawrlwytho ffeiliau lleferydd</translation>
 <translation id="1993072747612765854">Dysgu rhagor am y diweddariad <ph name="SYSTEM_APP_NAME" /> diweddaraf</translation>
@@ -373,6 +374,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2761723519669354964">Agor yr eitem sydd wedi'i hamlygu o'r silff</translation>
 <translation id="2778650143428714839">Mae <ph name="DEVICE_TYPE" /> yn cael ei reoli gan <ph name="MANAGER" />.</translation>
 <translation id="2782591952652094792">Gadael y modd tynnu sgrinlun</translation>
+<translation id="2785499565474703580">Mae 1 ddyfais wedi'i chysylltu</translation>
 <translation id="2791421900609674576">Byddwch yn gweld argymhellion fel eich bod yn gallu parhau lle y gwnaethoch adael. Gallwch gyffwrdd a daliwch i dynnu argymhellion.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Parti Silff</translation>
@@ -1277,6 +1279,7 @@ Gosodiad newydd</translation>
 <translation id="6941333068993625698">Cyflwyno adborth</translation>
 <translation id="6942518653766415536">Dewislen fformat recordio</translation>
 <translation id="6945221475159498467">Dewis</translation>
+<translation id="6945922087561257829">Mae eich ffôn yn defnyddio rhwydwaith symudol. Gwnewch yn siŵr bod eich ffôn a'ch Chromebook ar yr un rhwydwaith Wi-Fi ac yna rhowch gynnig arall arni. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Heb ei weithredu. Cysylltwch â'ch cludydd.</translation>
 <translation id="6961121602502368900">Nid yw Distewi'r Ffôn ar gael ar broffil gwaith</translation>
 <translation id="6961840794482373852">Mae'r llwybr byr bysellfwrdd Alt + Saeth i fyny wedi newid. I ddefnyddio'r fysell Page Up, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth i fyny.</translation>
@@ -1331,6 +1334,7 @@ Gosodiad newydd</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
 <translation id="7198435252016571249">Mae'r camera wedi'i snapio i'r gornel dde isaf. Gwrthdaro ag arwyneb y system.</translation>
+<translation id="7219573373513695352">Dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Mae angen i'r Chromebook hwn ailgychwyn i gymhwyso diweddariad. Gall hyn gymryd hyd at 1 funud.</translation>
 <translation id="7256634071279256947">Meicroffon cefn</translation>
 <translation id="7258828758145722155">Golygwyd ddoe</translation>
@@ -1481,6 +1485,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7902625623987030061">Cyffyrddwch â'r synhwyrydd olion bysedd</translation>
 <translation id="7904094684485781019">Mae gweinyddwr y cyfrif hwn wedi gwrthod mewngofnodi i fwy nag un cyfrif.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu</translation>
 <translation id="7930731167419639574">Mae Llefarydd bellach yn cael ei brosesu'n lleol ac mae Arddweud yn gweithio all-lein</translation>
 <translation id="7932451802722951285">Agor yn Google Calendar</translation>
 <translation id="7933084174919150729">Dim ond ar gyfer y prif broffil y mae Google Assistant ar gael.</translation>

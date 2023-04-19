@@ -225,6 +225,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1978498689038657292">Inserimento testo</translation>
 <translation id="1980808257969311265">Unisciti a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostra la settimana precedente</translation>
+<translation id="1986150224850161328">Assicurati che il telefono e Chromebook siano collegati alla stessa rete, quindi riprova. <ph name="LEARN_MORE" />:</translation>
 <translation id="1989113344093894667">Impossibile acquisire i contenuti</translation>
 <translation id="1990046457226896323">File di contenuti vocali scaricati</translation>
 <translation id="1993072747612765854">Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Esci dalla modalità di acquisizione</translation>
+<translation id="2785499565474703580">1 dispositivo connesso</translation>
 <translation id="2791421900609674576">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi toccare i consigli e tenere premuto per rimuoverli.</translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1274,6 +1276,7 @@ Nuova installazione</translation>
 <translation id="6941333068993625698">Consente di inviare feedback</translation>
 <translation id="6942518653766415536">Menu del formato di registrazione</translation>
 <translation id="6945221475159498467">Seleziona</translation>
+<translation id="6945922087561257829">Il tuo telefono è connesso a una rete mobile. Assicurati che il telefono e Chromebook siano collegati alla stessa rete Wi-Fi, quindi riprova. <ph name="LEARN_MORE" />:</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
@@ -1328,6 +1331,7 @@ Nuova installazione</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>
+<translation id="7219573373513695352">Nessun dispositivo collegato</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
 <translation id="7256634071279256947">Microfono posteriore</translation>
 <translation id="7258828758145722155">Modificato ieri</translation>
@@ -1478,6 +1482,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7902625623987030061">Tocca il sensore di impronte digitali</translation>
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivi connessi</translation>
 <translation id="7930731167419639574">Ciò che dici ora viene elaborato localmente e la dettatura funziona offline.</translation>
 <translation id="7932451802722951285">Apri in Google Calendar</translation>
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>

@@ -729,6 +729,7 @@
 <translation id="7281657306185710294">Сэвшээ салхийг мэдэр</translation>
 <translation id="7287310195820267359">Дэлгэцийн зургийн цуглуулга</translation>
 <translation id="7297226631177386107">HTTPS вебсайтуудад галт хана дундуур холбогдох боломжгүй</translation>
+<translation id="7297726121602187087">Бараан ногоон</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook-н тусламжийн хэлэлцүүлгийн мэргэжилтнүүдээс асуугаарай</translation>
@@ -763,6 +764,7 @@
 <translation id="7570674786725311828">USB мэдрэмтгий дэлгэц</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7613724632293948900">Хулгана эсвэл суман товчоор дахин байрлуулна уу.</translation>
+<translation id="7618774594543487847">Завсрын</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>

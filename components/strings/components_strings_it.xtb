@@ -307,6 +307,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1658918301167915956">dispositivi Bluetooth</translation>
 <translation id="1662550410081243962">Salva e compila i metodi di pagamento</translation>
 <translation id="1663943134801823270">Carte di credito e indirizzi provengono da Chrome. Puoi gestirli in <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Ricevi un'email</translation>
 <translation id="1671391448414634642">D'ora in poi, le pagine in <ph name="SOURCE_LANGUAGE" /> verranno tradotte in <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Da <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Prima il lato corto</translation>
@@ -367,6 +368,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1806174020048213474">Questa app richiede l'autorizzazione per installare le credenziali Wi-Fi. Dopo la configurazione, il tuo <ph name="DEVICE_TYPE" /> si connetterà automaticamente alle reti Wi-Fi partecipanti. Per rimuovere queste credenziali, disinstalla l'app.</translation>
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1807528111851433570">Primo foglio</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Il CVC si trova sul retro della tua carta. Sono le ultime 3 cifre in alto a destra della casella della firma.</translation>
 <translation id="181000283860817563">Monitora i prezzi su più siti</translation>
 <translation id="1810391395243432441">Proteggi le password con il blocco schermo</translation>
@@ -510,6 +512,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2166049586286450108">Accesso amministrativo completo</translation>
 <translation id="2166378884831602661">Il sito non può fornire una connessione protetta</translation>
 <translation id="2168151236314517198">La stampa di questi contenuti è stata bloccata dal criterio dell'amministratore</translation>
+<translation id="2176974405772725904">Salva l'indirizzo nell'account</translation>
 <translation id="2181821976797666341">Criteri</translation>
 <translation id="2183608646556468874">Numero di telefono</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 indirizzo}other{# indirizzi}}</translation>
@@ -1584,6 +1587,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4877083676943085827">{COUNT,plural, =0{Nessuna}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Ricerca di <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automatica (impostazione predefinita)</translation>
+<translation id="4879723019639546076">Questo indirizzo viene salvato solo su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Cerca nella cronologia</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4881808915112408168">24 x 31,5 in</translation>
@@ -1734,6 +1738,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5238301240406177137">Salva nell'account</translation>
 <translation id="5239623327352565343">Posizione consentita</translation>
 <translation id="5242889659037569123">Bagagli e accessori da viaggio</translation>
 <translation id="5244732203286792411">Caricamento in corso…
@@ -2140,6 +2145,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6279183038361895380">Premi |<ph name="ACCELERATOR" />| per mostrare il puntatore</translation>
 <translation id="6280223929691119688">Impossibile consegnare all'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="6284292079994426700">66,0 × 96,5 cm</translation>
+<translation id="6284517535531159884">Tipo di origine varianti</translation>
 <translation id="6285507000506177184">Pulsante Gestisci i download in Chrome, premi Invio per gestire i file che hai scaricato in Chrome</translation>
 <translation id="6289939620939689042">Colore pagina</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2249,6 +2255,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
 <translation id="6547208576736763147">Perforatura doppia a sinistra</translation>
 <translation id="6549443526281184652">Costumi</translation>
+<translation id="6551873053534932690">Salvare l'indirizzo nell'account?</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
 <translation id="6556866813142980365">Ripeti</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
@@ -2313,6 +2320,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6716672519412350405"><ph name="URL" /> vorrebbe creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera</translation>
 <translation id="6718612893943028815">Usare la videocamera?</translation>
 <translation id="6721678857435001674">Accedere a marca e modello del token di sicurezza</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>

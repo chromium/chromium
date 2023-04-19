@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">পাঠ ইনপুট</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />ত যোগদান কৰক</translation>
 <translation id="1982717156487272186">পূৰ্বৱৰ্তী সপ্তাহ দেখুৱাওক</translation>
+<translation id="1986150224850161328">আপোনাৰ ফ’ন আৰু Chromebook একেটা নেটৱৰ্কতে থকাটো নিশ্চিত কৰক আৰু তাৰ পাছত পুনৰ চেষ্টা কৰক। <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">সমল কেপচাৰ কৰিব নোৱাৰি</translation>
 <translation id="1990046457226896323">কথনৰ ফাইল ডাউনল’ড কৰা হৈছে</translation>
 <translation id="1993072747612765854">শেহতীয়া <ph name="SYSTEM_APP_NAME" /> আপডে’ট সম্পর্কে অধিক জানক</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">শ্বেল্ফৰ পৰা হাইলাইট কৰা বস্তু খোলক</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="2782591952652094792">কেপচাৰ ম'ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="2785499565474703580">১ টা ডিভাইচ সংযোগ কৰা হৈছে</translation>
 <translation id="2791421900609674576">আপুনি চুপাৰিছ দেখা পাব যাতে আপুনি য'ত এৰিছিল তাৰ পৰাই পুনৰ আৰম্ভ কৰিব পাৰে।  আপুনি চুপাৰিছ আঁতৰাবলৈ স্পর্শ কৰি কিছুসময় ধৰি থাকিব পাৰে।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6941333068993625698">মতামত দাখিল কৰক</translation>
 <translation id="6942518653766415536">ৰেকৰ্ডিঙৰ ফৰ্মেটৰ মেনু</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
+<translation id="6945922087561257829">আপোনাৰ ফ’নটোৱে এটা ম’বাইল নেটৱৰ্ক ব্যৱহাৰ কৰি আছে। আপোনাৰ ফ’ন আৰু Chromebook একেটা ৱাই-ফাই নেটৱৰ্কতে থকাটো নিশ্চিত কৰক আৰু তাৰ পাছত পুনৰ চেষ্টা কৰক। <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">সক্ৰিয় কৰা হোৱা নাই। আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="6961121602502368900">কৰ্মস্থানৰ প্ৰ’ফাইলত নীৰৱ ফ’ন উপলব্ধ নহয়</translation>
 <translation id="6961840794482373852">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + আপ এৰ'টো সলনি হৈছে। পেজ আপ কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + আপ এৰ' টিপক।</translation>
@@ -1331,6 +1334,7 @@
 <translation id="7188494361780961876">স্ক্ৰীনখনৰ ওপৰৰ বাওঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="7189412385142492784">শুক্ৰ গ্ৰহলৈ কিমান দূৰ</translation>
 <translation id="7198435252016571249">কেমেৰা তলৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে। ছিষ্টেম ছাৰ্ফেচৰ সৈতে সংঘাত।</translation>
+<translation id="7219573373513695352">কোনো ডিভাইচ সংযোগ কৰা হোৱা নাই</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ এই Chromebookটো ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক। এইটোৱে ১ মিনিট পৰ্যন্ত সময় লগাব পাৰে।</translation>
 <translation id="7256634071279256947">ডিভাইচৰ পিছফালে থকা মাইক্ৰ’ফ’ন</translation>
 <translation id="7258828758145722155">কালি সম্পাদনা কৰিছিল</translation>
@@ -1481,6 +1485,7 @@
 <translation id="7902625623987030061">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰক</translation>
 <translation id="7904094684485781019">এই একাউণ্টটোৰ প্ৰশাসককে একাধিক ছাইন ইন কৰাৰ অনুমতি দিয়া নাই।</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> টা ডিভাইচ সংযোগ কৰা হৈছে</translation>
 <translation id="7930731167419639574">এতিয়া কথন স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হৈছে আৰু শ্ৰুতলিপিৰ সুবিধাটোৱে অফলাইনত কাম কৰে</translation>
 <translation id="7932451802722951285">Google calendarত খোলক</translation>
 <translation id="7933084174919150729">Google Assistant কেৱল প্ৰাথমিক প্ৰ’ফাইলৰ বাবে উপলব্ধ।</translation>

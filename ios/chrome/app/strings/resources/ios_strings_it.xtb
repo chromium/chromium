@@ -70,6 +70,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1375321115329958930">Password salvate</translation>
 <translation id="1377255359165588604">La sincronizzazione si è interrotta.</translation>
 <translation id="1377321085342047638">Numero carta</translation>
+<translation id="1377508275003315939">Password</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="138618066238211776">Continua come <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Ultime quattro settimane</translation>
@@ -123,6 +124,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
 <translation id="1752547299766512813">Salva password</translation>
 <translation id="1753905327828125965">Più visitati</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} password inefficace}other{{count} password inefficaci}}</translation>
 <translation id="1767766085187034454">Google Traduttore</translation>
 <translation id="1789803444939621101">Ti diamo il bentornato <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nome del titolare della carta</translation>
@@ -229,6 +231,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2576499762020411840">Usa e salva le password nel tuo Account Google</translation>
 <translation id="2578571896248130439">Invia pagina web</translation>
 <translation id="2584132361465095047">Aggiungi account…</translation>
+<translation id="2587010742985678408">{count,plural, =0{Nessuna password compromessa}=1{{count} password compromessa}other{{count} password compromesse}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Le schede aperte che non vengono usate per uno o più giorni vengono spostate nella sezione Schede non attive in modo da poterti concentrare facilmente sulle schede che utilizzi di più. Puoi modificare questa preferenza in qualsiasi momento nelle impostazioni.}other{Le schede aperte che non vengono usate per {COUNT} o più giorni vengono spostate nella sezione Schede non attive in modo da poterti concentrare facilmente sulle schede che utilizzi di più. Puoi modificare questa preferenza in qualsiasi momento nelle impostazioni.}}</translation>
 <translation id="2600682495497606169">Cancella cookie del sito</translation>
 <translation id="2609008503159898744">Chiudere tutte le schede?</translation>
@@ -272,6 +275,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2797029671965852011">Mostra la cronologia</translation>
 <translation id="2800683595868705743">Chiudi selettore di schede</translation>
 <translation id="2815198996063984598">2. Tocca App browser predefinita</translation>
+<translation id="2818821771744632548">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPhone. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="2822917246944009066">Scheda bloccata</translation>
 <translation id="2830972654601096923">Gestisci indirizzi…</translation>
 <translation id="2834399722155632105">3. Tocca Opzioni password</translation>
@@ -322,7 +326,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3131206671572504478">Blocca tutti</translation>
 <translation id="313283613037595347">Crea nuova scheda di navigazione in incognito.</translation>
 <translation id="3146109040683991651">Imposta Chrome come browser predefinito</translation>
-<translation id="3152169319860972623">La funzionalità Controllo password controlla le tue password salvate e ti avvisa in caso di violazioni online. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salva carta</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157684681743766797">Segna tutti come...</translation>
@@ -343,6 +346,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> di <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Questo indirizzo viene salvato solo su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Compila automaticamente le password</translation>
 <translation id="3268451620468152448">Schede aperte</translation>
 <translation id="3272527697863656322">Annulla</translation>
@@ -532,6 +536,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4620246317052452550">Pagine che hai letto</translation>
 <translation id="4620888520263267479">Mostra anteprime link</translation>
 <translation id="4630540211544979320">Traduci pagine</translation>
+<translation id="4631335160486397366"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
@@ -666,6 +671,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5520466080178053306">Tocca Gestore delle password, quindi Aggiungi</translation>
 <translation id="5525095647255982834">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo.</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} password inefficace}other{{COUNT} password inefficaci}}</translation>
 <translation id="5542540507657872337">Schede trovate: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
@@ -796,6 +802,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
 <translation id="6324669097367352121">Impostazioni accesso</translation>
+<translation id="6331180460633101391"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="6337234675334993532">Crittografia</translation>
 <translation id="633809752005859102">Si è verificato un problema. Stiamo cercando una soluzione.</translation>
 <translation id="6340285871011301182">Traduzione parziale non disponibile.</translation>
@@ -1107,6 +1114,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Solo su questo dispositivo</translation>
+<translation id="826614135184049678">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPad. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="8271720166617117963">Accetta e accedi</translation>
 <translation id="8278938988428169257">Inserisci una parola o una frase</translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1155,6 +1163,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8620640915598389714">Modifica</translation>
 <translation id="8626393685701737946">Puoi cambiare la visualizzazione predefinita del sito in Desktop in Impostazioni &gt; Impostazioni contenuti</translation>
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8663764600409216912">Stai utilizzando password che sembrano difficili da indovinare</translation>
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>

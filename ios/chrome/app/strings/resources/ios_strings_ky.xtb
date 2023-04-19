@@ -70,6 +70,7 @@
 <translation id="1375321115329958930">Сакталган сырсөздөр</translation>
 <translation id="1377255359165588604">Шайкештирүү иштебей калды.</translation>
 <translation id="1377321085342047638">Карт номер</translation>
+<translation id="1377508275003315939">Сырсөздөр</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> катары улантуу</translation>
 <translation id="1400642268715879018">Акыркы 4 аптада</translation>
@@ -123,6 +124,7 @@
 <translation id="1750238553597293878">Google аккаунтуңуздагы сырсөздөрдү колдоно бериңиз</translation>
 <translation id="1752547299766512813">Сырсздрдү сакт</translation>
 <translation id="1753905327828125965">Көп көрүлгөн</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} начар сырсөз бар}other{{count} начар сырсөз бар}}</translation>
 <translation id="1767766085187034454">Google Котормочу</translation>
 <translation id="1789803444939621101">Кайтып келишиңиз менен, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Карта ээсинин аты-жөнү</translation>
@@ -229,6 +231,7 @@
 <translation id="2576499762020411840">Google аккаунтуңуздагы сырсөздөрдү колдонуп жана сактоо</translation>
 <translation id="2578571896248130439">Веб-баракчаны жөнөтүңүз</translation>
 <translation id="2584132361465095047">Аккаунт кошуу…</translation>
+<translation id="2587010742985678408">{count,plural, =0{Уурдалган сырсөздөр жок}=1{{count} уурдалган сырсөз бар}other{{count} уурдалган сырсөз бар}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Бир же андан ашуун күн колдонулбаган өтмөктөр жигерсиз болуп калгандыктан, эң көп пайдаланган өтмөктөрүңүзгө оңой өтөсүз. Муну каалаган убакта параметрлерден өзгөртө аласыз.}other{{COUNT} же андан ашуун күн колдонулбаган өтмөктөр жигерсиз болуп калгандыктан, эң көп пайдаланган өтмөктөрүңүзгө оңой өтөсүз. Муну каалаган убакта параметрлерден өзгөртө аласыз.}}</translation>
 <translation id="2600682495497606169">Сайттын cookie файлдарын өчүрүү</translation>
 <translation id="2609008503159898744">Бардык өтмөктөр жабылсынбы?</translation>
@@ -272,6 +275,7 @@
 <translation id="2797029671965852011">Таржымалды көрсөтүү</translation>
 <translation id="2800683595868705743">Өтмөк которуштургучтан кетүү</translation>
 <translation id="2815198996063984598">2. Демейки серепчи колдонмосун басыңыз</translation>
+<translation id="2818821771744632548">iPhone'ду баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="2822917246944009066">Өтмөк кадалды</translation>
 <translation id="2830972654601096923">Даректерди башкаруу…</translation>
 <translation id="2834399722155632105">3. Сырсөздүн параметрлерин таптап коюңуз</translation>
@@ -322,7 +326,6 @@
 <translation id="3131206671572504478">Баарын бөгөттөө</translation>
 <translation id="313283613037595347">Жаңы жашыруун өтмөк түзүү.</translation>
 <translation id="3146109040683991651">Chrome'ду демейки серепчи катары коюу</translation>
-<translation id="3152169319860972623">Сырсөздөрдү текшерүү функциясы сакталган сырсөздөрүңүздү карап чыгып, уурдалгандыгы тууралуу эскертип турат. <ph name="BEGIN_LINK" />Кененирээк.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Карточканы сактоо</translation>
 <translation id="3157387275655328056">Окуу тизмесине кошуу</translation>
 <translation id="3157684681743766797">Баарын белгилөө…</translation>
@@ -532,6 +535,7 @@
 <translation id="4620246317052452550">Сиз окуган барактар</translation>
 <translation id="4620888520263267479">Шилтемелерди карап көрүүлөрдү көрсөтүү</translation>
 <translation id="4630540211544979320">Барактарды которуу</translation>
+<translation id="4631335160486397366">Кайра колдонулган <ph name="COUNT" /> сырсөз бар</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
 <translation id="4636930964841734540">Маалымат</translation>
 <translation id="4642472735733036929">Бааларга көз салуу токтотулду</translation>
@@ -666,6 +670,7 @@
 <translation id="5520466080178053306">Сырсөздөрдү башкаргычты таптап, андан кийин Кошуу дегенди таптаңыз</translation>
 <translation id="5525095647255982834">Бул өтмөктү башка түзмөккө жөнөтүү үчүн ошол түзмөктөн Chrome'го кириңиз.</translation>
 <translation id="5525269841082836315">Купя сөз айкшын тзүү</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} начар сырсөз бар}other{{COUNT} начар сырсөз бар}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> табылды</translation>
 <translation id="5548760955356983418">Handoff аркылуу вебсайтты ушул түзмөктөн серептеп баштап, Mac компьютериңизде улантып кете аласыз. Учурда ачылып турган вебсайт Мас компьютериңиздин Dock тактасында көрүнөт.
 
@@ -796,6 +801,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6293101329759844770">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>
 <translation id="6321526113093607004">Кыстармаларга кошуу</translation>
 <translation id="6324669097367352121">Жөндөөлөргө кирүү</translation>
+<translation id="6331180460633101391">Кайра колдонулган <ph name="COUNT" /> сырсөз бар</translation>
 <translation id="6337234675334993532">Шифрлөө</translation>
 <translation id="633809752005859102">Бир жерден олуттуу ката кетти. Ошонун үстүнөн иштейин деп жатабыз.</translation>
 <translation id="6340285871011301182">Жарым-жартылай которуу жеткиликсиз.</translation>
@@ -1107,6 +1113,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8264966119170358612">Айрым сырсөздөрүңүздү Google'дан тышкары жерде кимдир бирөө билип алды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Ушул түзмөктө гана</translation>
+<translation id="826614135184049678">iPad'ды баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="8271720166617117963">Кабыл алуу жана кирүү</translation>
 <translation id="8278938988428169257">Сөз же сөз айкашын киргизиңиз</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1155,6 +1162,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8620640915598389714">Түзөтүү</translation>
 <translation id="8626393685701737946">Параметрлер &gt; Контент параметрлери бөлүмүнө өтүп, сайттын демейки көрүнүшүн иш тактага өзгөртсөңүз болот</translation>
 <translation id="8636825310635137004">Өтмөктөрүңүздү башка түзмөктөрүңүздөн алуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Уурдалган сырсөздөр жок}=1{{COUNT} уурдалган сырсөз бар}other{{COUNT} уурдалган сырсөз бар}}</translation>
 <translation id="8654802032646794042">Жокко чыгаруу</translation>
 <translation id="8663764600409216912">Божомолдоп билип алууга мүмкүн болбогон сырсөздөрдү колдонуп жатасыз</translation>
 <translation id="8668210798914567634">Бул барак Окуу тизмеңизге сакталды.</translation>

@@ -34,6 +34,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1150989369772528668">ಕ್ಯಾಲೆಂಡರ್</translation>
 <translation id="1153356358378277386">ಜೋಡಿ ಮಾಡಲಾದ ಸಾಧನಗಳು</translation>
+<translation id="1160215328209699296">ಆನ್ ಆಗಿದೆ ಮತ್ತು ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">ನಿಮ್ಮ USB-C ಕೇಬಲ್ ಡಿಸ್‌ಪ್ಲೇಗಳಿಗೆ ಸರಿಯಾಗಿ ಕನೆಕ್ಟ್ ಆಗದಿರಬಹುದು</translation>
 <translation id="1175572348579024023">ಸ್ಕ್ರಾಲ್</translation>
@@ -240,6 +241,7 @@
 <translation id="2049240716062114887">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು <ph name="DESK_NAME" /> ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2064048859448024834">ಕ್ಯಾಮರಾ ಪೂರ್ವವೀಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="2067602449040652523">ಕೀಬೋರ್ಡ್ ಪ್ರಖರತೆ</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="CAPTURE_MEDIUM" /> ಈಗ <ph name="CAPTURE_STATE" /> ಸ್ಥಿತಿಯಲ್ಲಿದೆ</translation>
 <translation id="2078034614700056995">ಮುಂದಿನ ಡೆಸ್ಕ್‌ಗೆ ಬದಲಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="2083190527011054446">ಶುಭ ರಾತ್ರಿ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
@@ -324,6 +326,7 @@
 <translation id="2487915095798731898">ಸೇರ್ಪಡೆಗೊಳ್ಳು</translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
 <translation id="2509468283778169019">CAPS LOCK ಆನ್ ಆಗಿದೆ</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> ನಿಲ್ಲಿಸಿ. <ph name="CAPTURE_MEDIUM" /> ಈಗ <ph name="CAPTURE_STATE" /> ಸ್ಥಿತಿಯಲ್ಲಿದೆ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Windows ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="2530896289327917474">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
@@ -1515,6 +1518,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ಹೆಸರಿನ ಟೆಂಪ್ಲೇಟ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="8052898407431791827">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="8054466585765276473">ಬ್ಯಾಟರಿ ಸಮಯವನ್ನು ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="8079538659226626406">ಸ್ಕ್ರೀನ್‌‌ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ</translation>
 <translation id="8083540854303889870">ನಂತರ ಬಳಕೆಗಾಗಿ ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> ಸಮಯಕ್ಕೆ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="8091387634532529612">ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>

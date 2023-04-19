@@ -24,7 +24,9 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Ovaj računar već ima noviju verziju Google Chrome pregledača. Ako softver ne funkcioniše, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
 <translation id="139993653570221430">Možete da se predomislite u bilo kom trenutku u Chrome podešavanjima. Probe se obavljaju paralelno uz trenutni način prikazivanja oglasa, pa nećete odmah videti promene.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti.}=1{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary aplikacije</translation>
+<translation id="1492280395845991349">Ponovo pokrenite da biste dovršili ažuriranje Chrome-a</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome je bio povezan sa HID uređajem}=1{Google Chrome je povezan sa HID uređajem}one{Google Chrome je povezan sa HID uređajima}few{Google Chrome je povezan sa HID uređajima}other{Google Chrome je povezan sa HID uređajima}}</translation>
 <translation id="1507198376417198979">Prilagodite novi Chrome profil</translation>
 <translation id="1516530951338665275">Google Chrome zahteva pristup Bluetooth-u radi nastavljanja sa 
@@ -97,6 +99,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2652691236519827073">Otvori link u novoj Chrome &amp;kartici</translation>
 <translation id="2665296953892887393">Pomozite nam da poboljšamo Google Chrome tako što ćete Google-u slati izveštaje o otkazivanju i <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Ovaj dodatak je promenio stranicu koja se prikazuje kada pokrenete Chrome.</translation>
+<translation id="2712234843277364121">Ponovo pokrenite radi ažuriranja – kartice će se ponovo otvoriti</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može da spreči dodatke da snimaju vašu istoriju pregledanja. Da biste onemogućili ovaj dodatak u režimu bez arhiviranja, poništite izbor ove opcije.</translation>
 <translation id="2765403129283291972">Chrome traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
 <translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
@@ -283,6 +286,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Administrator automatski briše podatke pregledanja kada se ne koriste 1 minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}one{Administrator automatski briše podatke pregledanja kada se ne koriste # minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}few{Administrator automatski briše podatke pregledanja kada se ne koriste # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}other{Administrator automatski briše podatke pregledanja kada se ne koriste # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}}</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6418662306461808273">Želite da pređete na postojeći Chrome profil?</translation>
+<translation id="648319183876919572">Poboljšano bezbedno pregledanje doprinosi zaštiti od opasnih veb-sajtova i preuzimanja</translation>
 <translation id="6493527311031785448">Google Chrome pokušava da <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome-u treba dozvola za kameru da bi napravio 3D mapu okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Programerska verzija Google Chrome-a</translation>
@@ -413,6 +417,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ažuriranje za Chrome je dostupno}=1{Ažuriranje za Chrome je dostupno}one{Ažuriranje za Chrome je dostupno već # dan}few{Ažuriranje za Chrome je dostupno već # dana}other{Ažuriranje za Chrome je dostupno već # dana}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex sistem</translation>
+<translation id="9054037008353851982">Ponovo pokrenite radi ažuriranja – kartice će se ponovo otvoriti</translation>
 <translation id="911206726377975832">Želite li da izbrišete i podatke pregledanja?</translation>
 <translation id="9138603949443464873">Da biste primenili promene, ponovo pokrenite Chrome</translation>
 <translation id="9195993889682885387">Chrome može da proceni interesovanja na osnovu istorije pregledanja iz poslednjih nekoliko nedelja. Te informacije ostaju na uređaju.</translation>

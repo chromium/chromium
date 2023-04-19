@@ -326,7 +326,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3131206671572504478">Hammasini bloklash</translation>
 <translation id="313283613037595347">Yangi inkognito varaq ochish.</translation>
 <translation id="3146109040683991651">Chrome brauzerini asosiy deb sozlash</translation>
-<translation id="3152169319860972623">Parol tekshiruvi saqlangan parollaringizni tekshiradi va har qanday onlayn axborot sizib chiqish haqida sizni ogohlantiradi. <ph name="BEGIN_LINK" />Batafsil.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Bildirgini saqlash</translation>
 <translation id="3157387275655328056">Mutolaa ro‘yxatiga qo‘shish</translation>
 <translation id="3157684681743766797">Hammasini belgilash…</translation>
@@ -347,6 +346,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3244271242291266297">OO</translation>
 <translation id="3245744387817103524">Oʻzgarish saqlanmadi.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Bu manzil faqat Chromega saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="USER_EMAIL" />) saqlang.</translation>
 <translation id="3264775633254836593">Parollarni avtomatik kiritish</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
 <translation id="3272527697863656322">Bekor qilish</translation>
@@ -834,7 +834,7 @@ Ma’lumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Si
 <translation id="6429213933892582367">Parol sozlamalarini oching</translation>
 <translation id="6434591244308415567">Xatolik yuz berdi. Keyinroq urining.</translation>
 <translation id="6435236283694032571">Saqlangan sahifalarga kiritish</translation>
-<translation id="6439338047467462846">Hammasiga ruxsat berish</translation>
+<translation id="6439338047467462846">Hammasiga ruxsat</translation>
 <translation id="6442697326824312960">Tabni bo‘shatish</translation>
 <translation id="6445051938772793705">Mamlakat</translation>
 <translation id="6445981559479772097">Xabar yuborildi.</translation>

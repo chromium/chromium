@@ -326,7 +326,6 @@
 <translation id="3131206671572504478">બધી બ્લૉક કરો</translation>
 <translation id="313283613037595347">નવી છૂપી ટૅબ બનાવો.</translation>
 <translation id="3146109040683991651">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
-<translation id="3152169319860972623">'પાસવર્ડની તપાસ' નામની સુવિધા તમારા સાચવેલા પાસવર્ડનો રિવ્યૂ કરે છે અને કોઈપણ ઑનલાઇન ઉલ્લંઘન અંગે તમને ચેતવણી આપે છે. <ph name="BEGIN_LINK" />વધુ જાણો.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">કાર્ડ સાચવો</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157684681743766797">તમામને આ રીતે ચિહ્નિત કરો…</translation>
@@ -347,6 +346,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">તમારો ફેરફાર સાચવી શકાયો નથી.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" /> માનું <ph name="INDEX" /></translation>
+<translation id="3260117527409269737">આ ઍડ્રેસ માત્ર Chromeમાં સાચવવામાં આવે છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવો.</translation>
 <translation id="3264775633254836593">ઑટોમૅટિક રીતે પાસવર્ડ ભરો</translation>
 <translation id="3268451620468152448">ઓપન ટેબ્સ</translation>
 <translation id="3272527697863656322">રદ કરો</translation>

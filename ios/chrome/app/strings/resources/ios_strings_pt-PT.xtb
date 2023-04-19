@@ -134,6 +134,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Palavras-passe comprometidas}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="1832848789136765277">Para se certificar de que pode sempre aceder aos seus dados de sincronização, valide a sua identidade</translation>
+<translation id="1836891464494477513">{count,plural, =1{Marcador guardado na sua Conta Google {email}}other{Marcadores guardados na sua Conta Google {email}}}</translation>
 <translation id="1870148520156231997">Mostrar palavra-passe</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1883255238294161206">Fechar lista</translation>
@@ -326,7 +327,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
 <translation id="3146109040683991651">Definir o Chrome como o navegador predefinido</translation>
-<translation id="3152169319860972623">A Verificação de Palavra-passe verifica as suas palavras-passe guardadas e avisa sobre eventuais violações online. <ph name="BEGIN_LINK" />Saiba mais.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Guardar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo…</translation>
@@ -1045,6 +1045,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Adicionado aos marcadores em "{title}"}other{Adicionados aos marcadores em "{title}"}}</translation>
+<translation id="7852017611907717397">ANULAR</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>

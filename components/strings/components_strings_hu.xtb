@@ -307,6 +307,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1658918301167915956">Bluetooth-eszközök</translation>
 <translation id="1662550410081243962">Fizetési módok mentése és kitöltése</translation>
 <translation id="1663943134801823270">A kártyák és a címek a Chrome-ból származnak. A <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> kezelheti őket.</translation>
+<translation id="1668071460721346172">E-mail kérése</translation>
 <translation id="1671391448414634642">A(z) <ph name="SOURCE_LANGUAGE" /> nyelvű oldalak mostantól le lesznek fordítva <ph name="TARGET_LANGUAGE" /> nyelvre.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> nyelvről <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
 <translation id="1682696192498422849">Rövid él először</translation>
@@ -367,6 +368,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1806174020048213474">Ez az alkalmazás engedélyt kér a Wi-Fi-hálózathoz tartozó hitelesítési adatok telepítésére. A beállítás után a(z) <ph name="DEVICE_TYPE" /> automatikusan csatlakozik az egyik Wi-Fi-hálózathoz. A hitelesítési adatok eltávolításához távolítsa el az alkalmazást.</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1807528111851433570">Indítási lap</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">A CVC-kód a kártyája hátulján található. Ez az aláírásmező jobb felső sarkában található utolsó 3 számjegy.</translation>
 <translation id="181000283860817563">Árak nyomon követése több webhelyen</translation>
 <translation id="1810391395243432441">Megvédheti jelszavait a képernyőzár segítségével</translation>
@@ -1585,6 +1587,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4877083676943085827">{COUNT,plural, =0{Nincs}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> keresése</translation>
 <translation id="4879491255372875719">Automatikus (alapértelmezett)</translation>
+<translation id="4879723019639546076">Ez a cím csak a Chrome-ba van elmentve. Ha szeretné más Google-termékekben is használni, mentse el a Google-fiókjába (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Keresés az előzmények között</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
 <translation id="4881808915112408168">24 × 31,5 hüvelyk</translation>
@@ -2143,6 +2146,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6279183038361895380">Az egérmutató megjelenítéséhez nyomja meg a következő billentyűt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Erre a címre nem lehetséges a kézbesítés. Válasszon másik címet.</translation>
 <translation id="6284292079994426700">26 × 38 hüvelyk</translation>
+<translation id="6284517535531159884">Változatok forrástípusa</translation>
 <translation id="6285507000506177184">Letöltések kezelése a Chrome-ban gomb. Nyomja le az Enter billentyűt a Chrome-ban letöltött fájlok kezeléséhez.</translation>
 <translation id="6289939620939689042">Oldalszín</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2317,6 +2321,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6716672519412350405">A(z) <ph name="URL" /> 3D-s térképet szeretne készíteni az Ön környezetéről, és követni szeretné a kamera pozícióját</translation>
 <translation id="6718612893943028815">Engedélyezi a kamera használatát?</translation>
 <translation id="6721678857435001674">Biztonsági hardverkulcsa gyártmányának és típusának megtekintése</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Adatai titkosítva lettek <ph name="BEGIN_LINK" />összetett szinkronizálási jelszavával<ph name="END_LINK" /> a következő időpontban: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>

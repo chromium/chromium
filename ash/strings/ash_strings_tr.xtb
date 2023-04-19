@@ -225,6 +225,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1978498689038657292">Metin girişi</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> etkinliğine katılın</translation>
 <translation id="1982717156487272186">Önceki haftayı göster</translation>
+<translation id="1986150224850161328">Telefonunuz ile Chromebook'unuzun aynı ağda olduğundan emin olup tekrar deneyin. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">İçeriğin ekran görüntüsü alınamıyor</translation>
 <translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1993072747612765854">En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin</translation>
@@ -373,6 +374,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2761723519669354964">Rafta vurgulanan öğeyi açın</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="2782591952652094792">Ekran görüntüsü alma modundan çıkılıyor</translation>
+<translation id="2785499565474703580">1 cihaz bağlandı</translation>
 <translation id="2791421900609674576">Kaldığınız yerden devam edebilmeniz için öneriler gösterilir. Dokunup basılı tutarak önerileri kaldırabilirsiniz.</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@ Yeni yüklenmiş</translation>
 <translation id="6941333068993625698">Geri bildirim gönderir</translation>
 <translation id="6942518653766415536">Kayıt biçimi menüsü</translation>
 <translation id="6945221475159498467">Seç</translation>
+<translation id="6945922087561257829">Telefonunuz bir mobil ağ kullanıyor. Telefonunuz ile Chromebook'unuzun aynı kablosuz ağda olduğundan emin olup tekrar deneyin. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Etkin değil. Operatörünüzle iletişime geçin.</translation>
 <translation id="6961121602502368900">Telefonu sessize alma özelliği, iş profilinde kullanılamaz</translation>
 <translation id="6961840794482373852">Alt + Yukarı Ok klavye kısayolu değişti. Page Up tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Yukarı Ok tuşlarına basın.</translation>
@@ -1331,6 +1334,7 @@ Yeni yüklenmiş</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>
 <translation id="7198435252016571249">Kamera sağ alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
+<translation id="7219573373513695352">Bağlı cihaz yok</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Bir güncellemenin uygulanması için bu Chromebook'un yeniden başlatılması gerekiyor. Bu işlem bir dakika kadar sürebilir.</translation>
 <translation id="7256634071279256947">Arka mikrofon</translation>
 <translation id="7258828758145722155">Dün düzenlendi</translation>
@@ -1481,6 +1485,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7902625623987030061">Parmak izi sensörüne dokunun</translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> cihaz bağlandı</translation>
 <translation id="7930731167419639574">Konuşma artık yerel olarak işlenip çevrimdışı olarak çalışacaktır</translation>
 <translation id="7932451802722951285">Google Takvim'de aç</translation>
 <translation id="7933084174919150729">Google Asistan yalnızca birincil profilde kullanılabilir.</translation>

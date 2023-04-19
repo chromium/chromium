@@ -225,6 +225,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1978498689038657292">Tekstisisestus</translation>
 <translation id="1980808257969311265">Liitu: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Kuva eelmine nädal</translation>
+<translation id="1986150224850161328">Veenduge, et teie telefon ja Chromebook oleksid samas võrgus, ning seejärel proovige uuesti. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Ei saa sisu jäädvustada</translation>
 <translation id="1990046457226896323">Kõnefailid laaditi alla</translation>
 <translation id="1993072747612765854">Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta</translation>
@@ -373,6 +374,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2761723519669354964">Riiulil esile tõstetud üksuse avamine</translation>
 <translation id="2778650143428714839">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Välju jäädvustusrežiimist</translation>
+<translation id="2785499565474703580">1 seade on ühendatud</translation>
 <translation id="2791421900609674576">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite pikalt puudutada.</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1280,7 @@ Uus installimine</translation>
 <translation id="6941333068993625698">Võimaldab saata tagasisidet</translation>
 <translation id="6942518653766415536">Salvestise vormingu menüü</translation>
 <translation id="6945221475159498467">Vali</translation>
+<translation id="6945922087561257829">Teie telefon kasutab mobiilsidevõrku. Veenduge, et teie telefon ja Chromebook oleksid samas WiFi-võrgus, ning seejärel proovige uuesti. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Aktiveerimata. Võtke oma operaatoriga ühendust.</translation>
 <translation id="6961121602502368900">Telefoni vaigistamine pole tööprofiilil saadaval</translation>
 <translation id="6961840794482373852">Klaviatuuri otseteed Alt + ülesnool on muudetud. Lehe võrra üles klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülesnoolt.</translation>
@@ -1332,6 +1335,7 @@ Uus installimine</translation>
 <translation id="7188494361780961876">Menüü teisaldati ekraanikuva vasakusse ülanurka.</translation>
 <translation id="7189412385142492784">Kui kaugel on Veenus</translation>
 <translation id="7198435252016571249">Kaamera kinnitati paremasse alanurka. Konflikt süsteemi platvormiga.</translation>
+<translation id="7219573373513695352">Ühendatud seadmeid pole</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. See Chromebook tuleb värskenduse rakendamiseks taaskäivitada. Selleks võib kuluda kuni 1 minut.</translation>
 <translation id="7256634071279256947">Tagumine mikrofon</translation>
 <translation id="7258828758145722155">Eile muudetud</translation>
@@ -1482,6 +1486,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7902625623987030061">Puudutage sõrmejäljeandurit</translation>
 <translation id="7904094684485781019">Selle konto administraator on mitmesse kontosse sisselogimise keelanud.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> seadet on ühendatud</translation>
 <translation id="7930731167419639574">Kõnet töödeldakse nüüd kohalikult ja dikteerimine töötab võrguühenduseta</translation>
 <translation id="7932451802722951285">Ava Google’i kalendris</translation>
 <translation id="7933084174919150729">Google'i assistent on saadaval ainult peamisel profiilil.</translation>

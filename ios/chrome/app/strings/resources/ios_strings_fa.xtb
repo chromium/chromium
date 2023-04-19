@@ -70,6 +70,7 @@
 <translation id="1375321115329958930">رمزهای ورود ذخیره شده</translation>
 <translation id="1377255359165588604">همگام‌سازی متوقف شد.</translation>
 <translation id="1377321085342047638">شماره کارت</translation>
+<translation id="1377508275003315939">گذرواژه‌ها</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="138618066238211776">ادامه دادن به‌عنوان <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">۴ هفته گذشته</translation>
@@ -123,6 +124,7 @@
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
 <translation id="1753905327828125965">بیشترین موارد بازدید شده</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} گذرواژه ضعیف}one{{count} گذرواژه ضعیف}other{{count} گذرواژه ضعیف}}</translation>
 <translation id="1767766085187034454">‏ترجمه Google</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />، مجدداً خوش آمدید</translation>
 <translation id="1803264062614276815">نام صاحب کارت</translation>
@@ -229,6 +231,7 @@
 <translation id="2576499762020411840">‏استفاده و ذخیره گذرواژه‌ها در «حساب Google» شما</translation>
 <translation id="2578571896248130439">ارسال صفحه وب</translation>
 <translation id="2584132361465095047">افزودن حساب…</translation>
+<translation id="2587010742985678408">{count,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{{count} گذرواژه لورفته}one{{count} گذرواژه لورفته}other{{count} گذرواژه لورفته}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{برگه‌های بازی که یک روز یا بیشتر از آن‌ها استفاده نشده باشد به «برگه‌های غیرفعال» منتقل می‌شود تا بتوانید به‌راحتی روی برگه‌های پراستفاده‌تان تمرکز کنید. هرزمان بخواهید می‌توانید این ویژگی را در تنظیمات تغییر دهید.}one{برگه‌های بازی که {COUNT} روز یا بیشتر از آن‌ها استفاده نشده باشد به «برگه‌های غیرفعال» منتقل می‌شود تا بتوانید به‌راحتی روی برگه‌های پراستفاده‌تان تمرکز کنید. هرزمان بخواهید می‌توانید این ویژگی را در تنظیمات تغییر دهید.}other{برگه‌های بازی که {COUNT} روز یا بیشتر از آن‌ها استفاده نشده باشد به «برگه‌های غیرفعال» منتقل می‌شود تا بتوانید به‌راحتی روی برگه‌های پراستفاده‌تان تمرکز کنید. هرزمان بخواهید می‌توانید این ویژگی را در تنظیمات تغییر دهید.}}</translation>
 <translation id="2600682495497606169">پاک کردن کوکی‌های سایت</translation>
 <translation id="2609008503159898744">همه برگه‌ها بسته شود؟</translation>
@@ -272,6 +275,7 @@
 <translation id="2797029671965852011">نمایش سابقه</translation>
 <translation id="2800683595868705743">از تعویض‌کننده برگه خارج شوید</translation>
 <translation id="2815198996063984598">۲. روی برنامه مرور پیش‌فرض ضربه بزنید</translation>
+<translation id="2818821771744632548">‏به‌عنوان بخشی از بازنشانی iPhone، از سیستم حساب <ph name="USER_NAME" /> خارج شدید. برای ورود مجدد به سیستم، روی «ادامه» در زیر ضربه بزنید.</translation>
 <translation id="2822917246944009066">برگه سنجاق شد</translation>
 <translation id="2830972654601096923">مدیریت نشانی‌ها…</translation>
 <translation id="2834399722155632105">۳. روی «گزینه‌های گذرواژه» ضربه بزنید</translation>
@@ -322,7 +326,6 @@
 <translation id="3131206671572504478">مسدود کردن همه</translation>
 <translation id="313283613037595347">ایجاد «برگه ناشناس» جدید</translation>
 <translation id="3146109040683991651">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
-<translation id="3152169319860972623">«بازبینی گذرواژه» گذرواژه‌های ذخیره‌شده را مرور می‌کند و موارد نقض در فضای آنلاین را به شما هشدار می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">ذخیره کردن کارت</translation>
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="3157684681743766797">علامت‌گذاری همه...</translation>
@@ -343,6 +346,7 @@
 <translation id="3244271242291266297">ماه</translation>
 <translation id="3245744387817103524">تغییر ذخیره نشد.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، ‏<ph name="ADDITIONAL_INFO" />، ‏<ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">‏این نشانی فقط در Chrome ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>
 <translation id="3264775633254836593">تکمیل خودکار گذرواژه‌ها</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
 <translation id="3272527697863656322">لغو</translation>
@@ -532,6 +536,7 @@
 <translation id="4620246317052452550">صفحه‌هایی که خوانده‌اید</translation>
 <translation id="4620888520263267479">نمایش پیش‌نمایش‌های پیوند</translation>
 <translation id="4630540211544979320">ترجمه صفحات</translation>
+<translation id="4631335160486397366"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
 <translation id="4636930964841734540">اطلاعات</translation>
 <translation id="4642472735733036929">ردیابی قیمت متوقف شد</translation>
@@ -666,6 +671,7 @@
 <translation id="5520466080178053306">روی «مدیر گذرواژه» و سپس روی «افزودن» ضربه بزنید</translation>
 <translation id="5525095647255982834">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید.</translation>
 <translation id="5525269841082836315">ایجاد گذرعبارت</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} گذرواژه ضعیف}one{{COUNT} گذرواژه ضعیف}other{{COUNT} گذرواژه ضعیف}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> برگه پیدا شد</translation>
 <translation id="5548760955356983418">‏با Handoff می‌توانید شروع به مرور وب‌سایت در این دستگاه کنید و سپس به‌آسانی در دستگاه Mac خود به مرور ادامه دهید. وب‌سایتی که اکنون باز است در Dock (لنگرگاه) شما در Mac نمایان می‌شود.
 
@@ -796,6 +802,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6293101329759844770">‏برای روشن کردن «مرور ایمن»، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را باز کنید و روی «مرور ایمن» ضربه بزنید.</translation>
 <translation id="6321526113093607004">افزودن به نشانک‌ها</translation>
 <translation id="6324669097367352121">تنظیمات ورود به سیستم</translation>
+<translation id="6331180460633101391"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
 <translation id="6337234675334993532">رمزگذاری</translation>
 <translation id="633809752005859102">یک مشکل جدی روی داد. برای رفع آن تلاش خواهیم کرد.</translation>
 <translation id="6340285871011301182">ترجمه جزئی دردسترس نیست.</translation>
@@ -1107,6 +1114,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8264966119170358612">‏برخی‌از گذرواژه‌های ذخیره‌شده‌تان به‌دلیل سرقت اطلاعات شبکه در سایت غیر Google لو رفته‌اند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">فقط در این دستگاه</translation>
+<translation id="826614135184049678">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم حساب <ph name="USER_NAME" /> خارج شدید. برای ورود مجدد به سیستم، روی «ادامه» در زیر ضربه بزنید.</translation>
 <translation id="8271720166617117963">پذیرفتن و ورود به سیستم</translation>
 <translation id="8278938988428169257">واژه یا عبارتی وارد کنید</translation>
 <translation id="8281781826761538115">پیش‌فرض - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1155,6 +1163,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8620640915598389714">ویرایش</translation>
 <translation id="8626393685701737946">می‌توانید در «تنظیمات &gt; تنظیمات محتوا»، نمای سایت پیش‌فرض را به میز کار تغییر دهید</translation>
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="8654802032646794042">لغو</translation>
 <translation id="8663764600409216912">از گذرواژه‌هایی استفاده می‌کنید که حدس زدنشان سخت به‌نظر می‌رسد</translation>
 <translation id="8668210798914567634">این صفحه در «فهرست خواندن» شما ذخیره شده است.</translation>

@@ -322,7 +322,6 @@
 <translation id="3131206671572504478">บล็อกทั้งหมด</translation>
 <translation id="313283613037595347">สร้างแท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3146109040683991651">ตั้งค่า Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
-<translation id="3152169319860972623">การตรวจสอบรหัสผ่านจะตรวจสอบรหัสผ่านที่บันทึกไว้และเตือนคุณเมื่อมีการละเมิดทางออนไลน์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">บันทึกบัตร</translation>
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157684681743766797">ทำเครื่องหมายทั้งหมด…</translation>
@@ -343,6 +342,7 @@
 <translation id="3244271242291266297">ดด</translation>
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">ที่อยู่นี้จะบันทึกไว้ใน Chrome เท่านั้น หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="USER_EMAIL" /></translation>
 <translation id="3264775633254836593">ป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="3268451620468152448">แท็บที่เปิดอยู่</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>

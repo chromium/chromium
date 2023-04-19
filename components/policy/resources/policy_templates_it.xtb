@@ -245,6 +245,15 @@ Se questo criterio viene disattivato, la protezione contro il phishing lato clie
       L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="1221359380862872747">Carica gli URL specificati all'accesso demo</translation>
 <translation id="1221955019309484560">Attiva gli aggiornamenti per tutti i componenti</translation>
+<translation id="1222694988453895594">Consente di impostare un elenco di protocolli, e per ogni protocollo un elenco associato di pattern di origini consentite, che possono lanciare un'applicazione esterna senza chiedere conferma all'utente. Il separatore finale non deve essere incluso nell'elenco di protocolli, quindi usa "skype" anziché "skype:" o "skype://".
+
+Se questo criterio viene impostato, un protocollo sarà autorizzato a lanciare un'applicazione esterna senza chiedere conferma in base al criterio soltanto se il protocollo è nell'elenco e se l'origine del sito che prova a lanciare il protocollo corrisponde a uno dei pattern di origini nell'elenco allowed_origins del protocollo. Se una delle condizioni è falsa, la richiesta di lancio di un protocollo esterno non sarà omessa, in base al criterio.
+
+Se questo criterio non viene impostato, per impostazione predefinita nessun protocollo può essere lanciato senza chiedere conferma. Gli utenti possono disattivare le richieste di conferma per ogni singolo protocollo/sito, a meno che il criterio <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> sia impostato su Disattivato. Questo criterio non influisce sulle esenzioni delle richieste di conferma per ogni singolo protocollo/sito impostate dagli utenti.
+
+Per i pattern corrispondenti alle origini viene usato un formato simile a quello usato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+I pattern corrispondenti alle origini di questo criterio non possono però contenere elementi "/path" o "@query". I pattern contenenti un elemento "/path" o "@query" verranno ignorati.</translation>
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
 <translation id="123018742985150697">Richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
@@ -3956,6 +3965,7 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
 <translation id="4693779768620889402">Destinazioni basate su estensioni</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
+<translation id="4698895924806859508">Non segnalare eventi di rete</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699592681017489215">Questo criterio consente di configurare un'opzione locale che permette di disattivare i controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.
 
@@ -4762,13 +4772,6 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5448022937220253000">Scegli cosa fare con i dati utente dopo la disattivazione di <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">L'API Event.path sarà disponibile.</translation>
 <translation id="5452024130413254050">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false e, se il criterio non viene configurato, viene usato il valore <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
-<translation id="5452167809842762761">Questo criterio è stato rimosso nella versione M114. Serviva per disattivare CECPQ2, ma CECPQ2 è stato disattivato per impostazione predefinita e verrà sostituito da Kyber, un meccanismo di incapsulamento della chiave (KEM) post-quantistico selezionato dal NIST, nuovamente associato al nostro accordo chiave classico standard, X25519.
-
-Se questo criterio non viene configurato o se viene attivato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita di CECPQ2, un algoritmo di accordo chiave post-quantistico in TLS.
-
-      CECPQ2 comporta la generazione di messaggi TLS di dimensioni maggiori che, in rarissimi casi, potrebbero attivare bug in alcuni componenti hardware di rete. Questo criterio può essere impostato su False per disattivare ECPQ2 durante la risoluzione dei problemi di rete.
-
-      Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro dello stesso tipo, il servizio <ph name="PRODUCT_NAME" /> V2 avvia le finestre del browser e delle app del dispositivo precedente su quello nuovo.
 Se il criterio viene impostato su Enabled, le finestre del browser e delle app verranno avviate automaticamente al momento dell'accesso dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> utilizzato dall'utente corrente.
 Se il criterio viene impostato su Disabled o se non viene configurato, gli elementi da avviare al momento dell'accesso verranno determinati in base alle impostazioni di ripristino totale.</translation>
@@ -6654,6 +6657,13 @@ Se il criterio viene impostato, l'elenco dei valori predefiniti viene esteso con
 
       Se il criterio viene disattivato o se non viene configurato, WebDriver non potrà sostituire i criteri non compatibili.</translation>
 <translation id="7145335384492396213">Modalità di stampa PIN predefinita</translation>
+<translation id="7145764791559889135">Questo criterio impedisce la copia dei dati negli appunti per URL specifici.
+
+      Gli elenchi di URL<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> consentono di controllare a quali siti è consentito scrivere negli appunti. La scrittura negli appunti viene bloccata se l'URL corrisponde a un pattern in "enable" e non corrisponde a un pattern in "disable". La copia non viene bloccata se l'URL non corrisponde ad alcun pattern.
+
+Per i pattern corrispondenti alle origini viene usato un formato simile a quello usato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+La dimensione <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la quantità minima di dati in byte che attiva il controllo dei pattern. Ciò significa che la scrittura negli appunti da un URL bloccato sarebbe consentita se la dimensione dei dati copiati fosse inferiore al valore specificato in questo campo. Se il campo non viene impostato, il valore predefinito è 100 byte.</translation>
 <translation id="7146198347561863646">Se il criterio viene impostato su Attivato o se non viene configurato, sono consentiti wakelock per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
       Se il criterio viene impostato su Disattivato, le richieste di wakelock vengono ignorate.</translation>
@@ -6950,6 +6960,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
       Nota: se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="7477149584454865826">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante.</translation>
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
+<translation id="7479408102162550711">Segnala eventi di rete</translation>
 <translation id="7480826412572122600">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene scaricato in Chrome.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene scaricato da una pagina specifica e quali tag includere nella richiesta di analisi di questo file. Un tag che corrisponde a un pattern "attivato" viene incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a questo tag, purché nessun pattern "disattivato" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno 1 tag deve essere incluso nella richiesta.
@@ -7319,6 +7330,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio viene impostato su Falso o se non viene configurato, i contenuti <ph name="FLASH_PLUGIN_NAME" /> di altre origini o i contenuti ridotti potrebbero essere bloccati.
 
       Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla questi criteri: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7804859754080118507">Segnala gli eventi di intensità del segnale e di connessione di rete sui dispositivi registrati.
+
+      Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
+      Se è impostato su Vero, gli eventi di rete del dispositivo verranno segnalati.</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807120658089613760">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora e Crosh da disattivare</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>

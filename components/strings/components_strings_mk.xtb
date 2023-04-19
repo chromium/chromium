@@ -510,6 +510,7 @@
 <translation id="2166049586286450108">Целосен пристап на администраторот</translation>
 <translation id="2166378884831602661">Сајтот не може да даде безбедна врска</translation>
 <translation id="2168151236314517198">Администраторското правило го блокира печатењето на содржиниве</translation>
+<translation id="2176974405772725904">Зачувајте ја адресата на сметката</translation>
 <translation id="2181821976797666341">Политики</translation>
 <translation id="2183608646556468874">Телефонски број</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адреса}one{# адреса}other{# адреси}}</translation>
@@ -1737,6 +1738,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Отфрли</translation>
+<translation id="5238301240406177137">Зачувајте на сметката</translation>
 <translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5242889659037569123">Додатоци за багаж и патување</translation>
 <translation id="5244732203286792411">Се вчитува…
@@ -2253,6 +2255,7 @@
 <translation id="6545864417968258051">Скенирање за Bluetooth</translation>
 <translation id="6547208576736763147">Две дупки лево</translation>
 <translation id="6549443526281184652">Костими</translation>
+<translation id="6551873053534932690">Дали да се зачува адресата на сметката?</translation>
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
 <translation id="6556866813142980365">Повтори</translation>
 <translation id="6557715786897013164">14 x 17 инчи</translation>

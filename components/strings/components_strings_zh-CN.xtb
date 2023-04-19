@@ -510,6 +510,7 @@
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
 <translation id="2166378884831602661">此网站无法提供安全连接</translation>
 <translation id="2168151236314517198">管理员政策禁止打印此内容</translation>
+<translation id="2176974405772725904">将地址保存到帐号</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2183608646556468874">电话号码</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
@@ -1732,6 +1733,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">关闭</translation>
+<translation id="5238301240406177137">保存到帐号</translation>
 <translation id="5239623327352565343">已授予位置信息使用权限</translation>
 <translation id="5242889659037569123">行李与旅行用品</translation>
 <translation id="5244732203286792411">正在加载…
@@ -2247,6 +2249,7 @@
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6547208576736763147">双孔（左侧）</translation>
 <translation id="6549443526281184652">特殊场合服装</translation>
+<translation id="6551873053534932690">将地址保存到帐号？</translation>
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 英寸</translation>

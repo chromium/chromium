@@ -34,6 +34,7 @@
 <translation id="1148499908455722006">打開 <ph name="USER_NAME" /> 嘅資料對話框</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
+<translation id="1160215328209699296">已開啟且正在使用中</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">您的 USB-C 連接線可能未妥善連接顯示屏</translation>
 <translation id="1175572348579024023">捲動</translation>
@@ -225,6 +226,7 @@
 <translation id="1978498689038657292">文字輸入</translation>
 <translation id="1980808257969311265">加入 <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">顯示上星期的活動</translation>
+<translation id="1986150224850161328">請確定手機和 Chromebook 已連接同一網絡，然後再試一次。<ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">無法擷取內容</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1993072747612765854">進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新</translation>
@@ -240,6 +242,7 @@
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
 <translation id="2064048859448024834">開咗攝錄機預覽</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
+<translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">請用四隻手指向右滑動以切換至下一個桌面</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安：</translation>
@@ -324,6 +327,7 @@
 <translation id="2487915095798731898">加入</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
+<translation id="2514415433888497495">停止<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">解鎖視窗</translation>
 <translation id="2530896289327917474">開啟或關閉「鍵盤瀏覽」功能</translation>
@@ -373,6 +377,7 @@
 <translation id="2761723519669354964">開啟捷徑列的突顯項目</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">結束擷取模式</translation>
+<translation id="2785499565474703580">已連接 1 部裝置</translation>
 <translation id="2791421900609674576">系統會顯示建議，讓您繼續使用上次開啟的內容。只要輕觸並按住建議即可移除。</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
 <translation id="2797741504905337289">捷徑列群組</translation>
@@ -1275,6 +1280,7 @@
 <translation id="6941333068993625698">提交意見</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6945922087561257829">手機正在使用流動網絡。請確保手機和 Chromebook 已連接同一 Wi-Fi 網絡，然後再試一次。<ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
 <translation id="6961121602502368900">工作設定檔不支援將手機設定為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上箭咀。</translation>
@@ -1329,6 +1335,7 @@
 <translation id="7188494361780961876">已經將選單移去螢幕左上角。</translation>
 <translation id="7189412385142492784">金星距離幾遠</translation>
 <translation id="7198435252016571249">攝錄機已經對齊右下角，同系統平台有衝突。</translation>
+<translation id="7219573373513695352">未連接到任何裝置</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新啟動才能套用更新。過程可能需時 1 分鐘。</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7258828758145722155">昨天編輯過</translation>
@@ -1479,6 +1486,7 @@
 <translation id="7902625623987030061">請輕觸指紋感應器</translation>
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">已連接 <ph name="DEVICECOUNT" /> 部裝置</translation>
 <translation id="7930731167419639574">語音處理程序已在本機執行，語音輸入功能會離線運作</translation>
 <translation id="7932451802722951285">在「Google 日曆」中開啟</translation>
 <translation id="7933084174919150729">「Google 助理」僅適用於主要設定檔。</translation>
@@ -1513,6 +1521,7 @@
 <translation id="8051716679295756675">名為「<ph name="DESK_TEMPLATE_NAME" />」的範本已存在</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
+<translation id="8079538659226626406">分享螢幕畫面</translation>
 <translation id="8083540854303889870">已儲存以供日後使用</translation>
 <translation id="8091153018031979607">開始時間：<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自動更新</translation>

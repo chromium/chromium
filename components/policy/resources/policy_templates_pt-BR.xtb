@@ -2307,6 +2307,33 @@ Essa política é temporária e vai ser removida.</translation>
 <translation id="3125472566440502628">Desativar o recurso Selecionar para ouvir</translation>
 <translation id="3126748868885248792">Botão direito como principal</translation>
 <translation id="3128072319047570212">Configurações de keygen</translation>
+<translation id="3129155711165832367">Os certificados X.509 podem codificar restrições, como as de nome,
+em extensões do certificado. A RFC 5280 especifica que a aplicação dessas
+restrições a certificados de âncoras de confiança é opcional. Da versão 112 em diante
+do <ph name="PRODUCT_NAME" />, essas restrições
+em certificados carregados do repositório de certificados da plataforma passam a ser
+aplicadas.
+
+Esta política existe como uma desativação temporária caso uma empresa encontre
+problemas com as restrições codificadas nas raízes particulares. Nesse caso, esta
+política pode ser usada para desativar temporariamente a aplicação das restrições
+enquanto corrige os problemas de certificado.
+
+Quando esta política for deixada sem definição ou for ativada,
+o <ph name="PRODUCT_NAME" /> vai aplicar
+restrições codificadas a âncoras de confiança carregadas pelo repositório de confiança da plataforma.
+
+Quando ela for desativada,
+o <ph name="PRODUCT_NAME" /> não vai aplicar
+restrições codificadas a âncoras de confiança carregadas do repositório de confiança da plataforma.
+
+Na versão 112 do <ph name="PRODUCT_NAME" />,
+esta política não terá efeito se a
+<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />
+for desativada.
+
+Esta política será removida na
+versão 115 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3131703464330936425">Não permitir roaming de dados móveis</translation>
 <translation id="3135820765957090754">Se esta definição estiver ativada, os usuários poderão sincronizar configurações de rede Wi-Fi entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado. Antes que as configurações sejam sincronizadas, os usuários precisam aceitar esse recurso explicitamente concluindo um fluxo de configuração.
 
@@ -4845,13 +4872,6 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5448022937220253000">Escolher o que acontece com os dados do usuário depois que o <ph name="LACROS_NAME" /> é desativado</translation>
 <translation id="5449690328792750354">A API Event.path vai estar disponível.</translation>
 <translation id="5452024130413254050">Controla se as VMs que usam essa configuração têm acesso a um vTPM. O padrão é falso e <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> quando não é definido.</translation>
-<translation id="5452167809842762761">Esta política foi removida na versão M114. Ela desativava o CECPQ2, mas ele foi desativado por padrão e será substituído por um método de encapsulamento de chave (KEM, na sigla em inglês) pós-quântico do NIST (Kyber), novamente junto ao nosso acordo de chave clássico padrão (X25519).
-
-Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão para o CECPQ2, um algoritmo de acordo de chave pós-quântico em TLS.
-
-      O CECPQ2 resulta em mensagens TLS maiores que, em casos muito raros, podem causar bugs em alguns hardwares de rede. Esta política pode ser definida como "falsa" para desativar o CECPQ2 enquanto problemas de rede são solucionados.
-
-      Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Quando um usuário alterna entre os dispositivos <ph name="PRODUCT_OS_NAME" />, o serviço <ph name="PRODUCT_NAME" /> V2 abre as janelas do navegador e de apps do dispositivo anterior.
 Se a política for ativada, as janelas do navegador e de apps do último dispositivo <ph name="PRODUCT_OS_NAME" /> usado pelo usuário atual serão abertas automaticamente após o login.
 Se a política for desativada ou deixada sem definição, as configurações de restauração completa vão determinar o que será aberto após o login.</translation>

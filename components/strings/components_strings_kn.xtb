@@ -509,6 +509,7 @@
 <translation id="2166049586286450108">ಪೂರ್ಣ ನಿರ್ವಾಹಕ ಪ್ರವೇಶ</translation>
 <translation id="2166378884831602661">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತ ಸಂಪರ್ಕವನ್ನು ಒದಗಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2168151236314517198">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಈ ವಿಷಯವನ್ನು ಪ್ರಿಂಟ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="2176974405772725904">ಖಾತೆಯಲ್ಲಿ ವಿಳಾಸವನ್ನು ಉಳಿಸಿ</translation>
 <translation id="2181821976797666341">ನಿಯಮಗಳು</translation>
 <translation id="2183608646556468874">ಫೋನ್ ಸಂಖ್ಯೆ</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ವಿಳಾಸ}one{# ವಿಳಾಸಗಳು}other{# ವಿಳಾಸಗಳು}}</translation>
@@ -1221,6 +1222,7 @@
 <translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4040350669425716613">ಕಾಲೇಜುಗಳು ಮತ್ತು ವಿಶ್ವವಿದ್ಯಾನಿಲಯಗಳು</translation>
 <translation id="4047351652147966654">18 x 24 ಇಂಚು</translation>
+<translation id="4047620889508350431">ಈಗ ನೀವು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ವಿಳಾಸಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
 <translation id="4063063121357725926">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕುವ ಸಲುವಾಗಿ ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
@@ -1733,6 +1735,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
+<translation id="5238301240406177137">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="5239623327352565343">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5242889659037569123">ಲಗೇಜ್ ಮತ್ತು ಪ್ರಯಾಣ ಆ್ಯಕ್ಸೆಸರಿಗಳು</translation>
 <translation id="5244732203286792411">ಲೋಡ್ ಆಗುತ್ತಿದೆ...
@@ -2248,6 +2251,7 @@
 <translation id="6545864417968258051">ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್</translation>
 <translation id="6547208576736763147">ಎಡಭಾಗದಲ್ಲಿ ಎರಡು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6549443526281184652">ಉಡುಪುಗಳು</translation>
+<translation id="6551873053534932690">ಖಾತೆಯಲ್ಲಿ ವಿಳಾಸವನ್ನು ಉಳಿಸಬೇಕೇ?</translation>
 <translation id="6554732001434021288">ಕೊನೆಯದಾಗಿ <ph name="NUM_DAYS" /> ದಿನಗಳ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="6556866813142980365">ಪುನಃ ಮಾಡು</translation>
 <translation id="6557715786897013164">14 x 17 ಇಂಚು</translation>

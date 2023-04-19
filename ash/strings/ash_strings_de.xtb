@@ -225,6 +225,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1978498689038657292">Texteingabe</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> beitreten</translation>
 <translation id="1982717156487272186">Vorherige Woche anzeigen</translation>
+<translation id="1986150224850161328">Achte darauf, dass sich dein Smartphone und dein Chromebook im selben Netzwerk befinden, und versuche es dann noch einmal. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Inhalt kann nicht aufgenommen werden</translation>
 <translation id="1990046457226896323">Sprachdateien heruntergeladen</translation>
 <translation id="1993072747612765854">Weitere Informationen zum aktuellen <ph name="SYSTEM_APP_NAME" />-Update</translation>
@@ -373,6 +374,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2761723519669354964">Hervorgehobenes Element in der Ablage öffnen</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Aufnahmemodus beenden</translation>
+<translation id="2785499565474703580">1 Gerät verbunden</translation>
 <translation id="2791421900609674576">Empfehlungen werden angezeigt, damit du dort fortfahren kannst, wo du aufgehört hast. Durch Berühren und Halten kannst du Empfehlungen entfernen.</translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1276,6 +1278,7 @@ Neuinstallation</translation>
 <translation id="6941333068993625698">Feedback geben</translation>
 <translation id="6942518653766415536">Menü für Aufnahmeformat</translation>
 <translation id="6945221475159498467">Auswählen</translation>
+<translation id="6945922087561257829">Dein Smartphone ist mit einem Mobilfunknetz verbunden. Achte darauf, dass dein Smartphone und dein Chromebook mit demselben WLAN verbunden sind, und versuche es dann noch einmal. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Nicht aktiviert. Wende dich bitte an deinen Mobilfunkanbieter.</translation>
 <translation id="6961121602502368900">„Smartphone stummschalten“ ist im Arbeitsprofil nicht verfügbar</translation>
 <translation id="6961840794482373852">Die Tastenkombination Alt + Aufwärtspfeil hat sich geändert. Wenn du jetzt die Seite-nach-oben-Taste benötigst, drücke <ph name="LAUNCHER_KEY_NAME" />-Taste + Aufwärtspfeil.</translation>
@@ -1330,6 +1333,7 @@ Neuinstallation</translation>
 <translation id="7188494361780961876">Menü wurde nach links oben auf dem Bildschirm verschoben.</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7198435252016571249">Kamera ist an der unteren rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
+<translation id="7219573373513695352">Keine verbundenen Geräte</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
 <translation id="7258828758145722155">Gestern bearbeitet</translation>
@@ -1480,6 +1484,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7902625623987030061">Fingerabdrucksensor berühren</translation>
 <translation id="7904094684485781019">Der Administrator dieses Kontos hat keine Mehrfachanmeldung zugelassen.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> Geräte verbunden</translation>
 <translation id="7930731167419639574">Die Sprachdateien werden nun lokal verarbeitet und die Spracheingabe funktioniert offline</translation>
 <translation id="7932451802722951285">In Google Kalender öffnen</translation>
 <translation id="7933084174919150729">Google Assistant ist nur für das Hauptprofil verfügbar.</translation>

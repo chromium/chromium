@@ -225,6 +225,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1978498689038657292">Introducere text</translation>
 <translation id="1980808257969311265">Participă la <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Afișează săptămâna trecută</translation>
+<translation id="1986150224850161328">Verifică dacă telefonul și Chromebookul sunt în aceeași rețea, apoi încearcă din nou. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Nu se poate captura conținutul</translation>
 <translation id="1990046457226896323">Fișierele de redare în scris a vorbirii s-au descărcat</translation>
 <translation id="1993072747612765854">Află mai multe despre cea mai recentă actualizare <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2761723519669354964">Deschide elementul evidențiat de pe raft</translation>
 <translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ieși din modul de capturare</translation>
+<translation id="2785499565474703580">Un dispozitiv conectat</translation>
 <translation id="2791421900609674576">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți să atingi lung ca să elimini recomandările.</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@ Instalare nouă</translation>
 <translation id="6941333068993625698">Trimite feedback</translation>
 <translation id="6942518653766415536">Meniu cu formatul de înregistrare</translation>
 <translation id="6945221475159498467">Selectează</translation>
+<translation id="6945922087561257829">Telefonul folosește o rețea mobilă. Verifică dacă telefonul și Chromebookul sunt în aceeași rețea Wi-Fi, apoi încearcă din nou. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
 <translation id="6961121602502368900">Dezactivarea sunetului telefonului nu este disponibilă în profilul de serviciu</translation>
 <translation id="6961840794482373852">Comanda rapidă de la tastatură Alt + săgeată în sus s-a schimbat. Ca să folosești tasta Page Up, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în sus.</translation>
@@ -1331,6 +1334,7 @@ Instalare nouă</translation>
 <translation id="7188494361780961876">Meniul a fost mutat în colțul din stânga sus al ecranului.</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
+<translation id="7219573373513695352">Niciun dispozitiv conectat</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este necesară repornirea Chromebookului pentru aplicarea unei actualizări. Poate dura cel mult un minut.</translation>
 <translation id="7256634071279256947">Microfonul din spate</translation>
 <translation id="7258828758145722155">Editat ieri</translation>
@@ -1481,6 +1485,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7902625623987030061">Atinge senzorul de amprentă</translation>
 <translation id="7904094684485781019">Administratorul acestui cont a dezactivat conectarea multiplă.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispozitive conectate</translation>
 <translation id="7930731167419639574">Vorbirea este acum procesată local și Dictarea funcționează offline</translation>
 <translation id="7932451802722951285">Deschide în Google Calendar</translation>
 <translation id="7933084174919150729">Asistentul Google este disponibil numai pentru profilul principal.</translation>

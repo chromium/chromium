@@ -801,6 +801,7 @@
 <translation id="1666232093776384142">ปิดใช้การป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วง</translation>
 <translation id="1667842670298352129">ฟังการอ่านออกเสียงข้อความที่เจาะจง ก่อนอื่นให้เลือกไอคอน "เลือกเพื่อให้อ่าน" ที่ด้านล่างของหน้าจอแล้วไฮไลต์ข้อความ คุณยังใช้แป้นพิมพ์ลัด: ไฮไลต์ข้อความ แล้วกดแป้นค้นหา + S ได้ด้วย</translation>
 <translation id="1668435968811469751">ลงทะเบียนด้วยตนเอง</translation>
+<translation id="1668804837842452164">บันทึกไปยัง <ph name="BRAND" /> สําหรับ <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">ดูข้อมูลเกี่ยวกับคำแนะนำ</translation>
 <translation id="1670399744444387456">พื้นฐาน</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ต้องการดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
@@ -1566,6 +1567,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> ระบบจะรีบูตระหว่างการดำเนินการ</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ขออนุญาตเพิ่มเติม</translation>
+<translation id="2306794767168143227">บันทึกไปยัง <ph name="BRAND" /> ในอุปกรณ์นี้</translation>
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
 <translation id="2307553512430195144">หากคุณยอมรับ Google Assistant จะรออยู่ในโหมดสแตนด์บายเพื่อตรวจจับเสียงพูด "Ok Google" และ Voice Match ทำให้รู้ว่าคนที่กำลังพูดคือ <ph name="SUPERVISED_USER_NAME" />
     <ph name="BR" />
@@ -2210,6 +2212,7 @@
 <translation id="2852385257476173980">รายการเว็บไซต์ที่คุณเข้าชมอาจปรากฏที่นี่เมื่อคุณท่องเว็บ</translation>
 <translation id="285241945869362924">สร้างคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายแทนเสียงออกไปจากอุปกรณ์</translation>
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
+<translation id="2859741939921354763">นำเข้ารหัสผ่านไปยัง<ph name="BRAND" /></translation>
 <translation id="2861301611394761800">การอัปเดตระบบเสร็จสมบูรณ์ โปรดรีสตาร์ทระบบ</translation>
 <translation id="2861941300086904918">ตัวจัดการความปลอดภัยไคลเอ็นต์ในระบบ</translation>
 <translation id="2862815659905780618">นำสภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux ออก</translation>
@@ -4289,6 +4292,7 @@
 <translation id="47158868804223727">คลิกชื่อกลุ่มเพื่อขยายหรือยุบ</translation>
 <translation id="4716483597559580346">Powerwash เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="471759229191973607">เปลี่ยนธีม</translation>
+<translation id="4718046540206070045">เป็นมากกว่าเบราว์เซอร์</translation>
 <translation id="4718564115458102525">ไม่พบแป้นพิมพ์</translation>
 <translation id="4722735765955348426">รหัสผ่านของ <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> กำลังแชร์หน้าจอของคุณ</translation>
@@ -5434,6 +5438,7 @@
 <translation id="5787146423283493983">ข้อตกลงเกี่ยวกับคีย์</translation>
 <translation id="5787420647064736989">ชื่ออุปกรณ์</translation>
 <translation id="5788367137662787332">ขออภัย ไม่สามารถติดตั้งอย่างน้อยหนึ่งพาร์ทิชันลงในอุปกรณ์ <ph name="DEVICE_LABEL" /> ได้</translation>
+<translation id="5789581866075720267">หากต้องการนำเข้ารหัสผ่านไปยัง<ph name="BRAND" /> ในอุปกรณ์นี้ ให้เลือกไฟล์ CSV</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5790651917470750848">มีการส่งต่อพอร์ตอยู่แล้ว</translation>
@@ -5677,6 +5682,7 @@
 <translation id="5984222099446776634">เข้าชมล่าสุด</translation>
 <translation id="5985458664595100876">รูปแบบ URL ไม่ถูกต้อง รูปแบบที่รองรับคือ \\server\share และ smb://server/share</translation>
 <translation id="598810097218913399">นำการกำหนดออก</translation>
+<translation id="5989629029899728491">ไม่ใช่แค่คุกกี้</translation>
 <translation id="5990266201903445068">Wi-Fi เท่านั้น</translation>
 <translation id="5990386583461751448">แปลแล้ว</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{โปรดขอให้ผู้ดูแลระบบนำแอปพลิเคชันนี้ออกเพื่อให้คุณท่องเว็บได้ต่อไป}other{โปรดขอให้ผู้ดูแลระบบนำแอปพลิเคชันนี้ออกเพื่อให้คุณท่องเว็บได้ต่อไป}}</translation>
@@ -5787,6 +5793,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ส่วนหนึ่งของกลุ่มที่ไม่มีชื่อ</translation>
 <translation id="6085886413119427067">กำหนดวิธีเชื่อมต่อเว็บไซต์ผ่านการเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="6086004606538989567">บัญชีที่คุณยืนยันไม่ได้รับอนุญาตให้เข้าถึงอุปกรณ์นี้</translation>
+<translation id="6086347269144967242">อ่านข้อมูลและรายละเอียดอุปกรณ์ที่แนบมาด้วย</translation>
 <translation id="6086846494333236931">ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="6087746524533454243">หากต้องการดูหน้าข้อมูลเกี่ยวกับเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="6087960857463881712">ใบหน้าเจ๋ง</translation>
@@ -8353,6 +8360,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">คุณลงทะเบียนอุปกรณ์นี้แล้ว ไม่จำเป็นต้องลงทะเบียนซ้ำ</translation>
 <translation id="8357388086258943206">เกิดข้อผิดพลาดขณะติดตั้ง Linux</translation>
+<translation id="8357591920094529889">คำแนะนำนี้จะช่วยให้เข้าใจตัวเลือกสำคัญที่คุณมีเมื่อใช้ Chrome และช่วยในการตัดสินใจเพื่อให้ Chrome ทำงานในแบบที่คุณต้องการ</translation>
 <translation id="8358685469073206162">ต้องการกู้คืนหน้าเว็บไหม</translation>
 <translation id="8358912028636606457">อุปกรณ์นี้ไม่รองรับการแคสต์เสียงแท็บ</translation>
 <translation id="835951711479681002">บันทึกในบัญชี Google</translation>
@@ -8406,6 +8414,7 @@
 <translation id="8398877366907290961">ดำเนินการต่อ</translation>
 <translation id="8399282673057829204">ดูรหัสผ่าน</translation>
 <translation id="8401432541486058167">ใส่ PIN ที่เชื่อมโยงกับสมาร์ทการ์ดของคุณ</translation>
+<translation id="8403618281196981152">ข้อมูลของคุณใน Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" />จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="8405046151008197676">ดูไฮไลต์จากอัปเดตล่าสุด</translation>
 <translation id="8407199357649073301">ระดับบันทึก:</translation>
@@ -8465,6 +8474,7 @@
 <translation id="8460932807646981183">จัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์</translation>
 <translation id="84613761564611563">ขอ UI การกำหนดค่าเครือข่ายแล้ว โปรดรอ...</translation>
 <translation id="8461914792118322307">พร็อกซี</translation>
+<translation id="8461973047386722744">ไม่พบรหัสผ่าน</translation>
 <translation id="8463001014623882202">การให้สิทธิ์ไม่สำเร็จ</translation>
 <translation id="846374874681391779">แถบดาวน์โหลด</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> ปิดอยู่</translation>
@@ -8523,6 +8533,7 @@
 <translation id="8512476990829870887">สิ้นสุดกระบวนการ</translation>
 <translation id="851263357009351303">อนุญาตให้ <ph name="HOST" /> แสดงภาพเสมอ</translation>
 <translation id="8513108775083588393">หมุนอัตโนมัติ</translation>
+<translation id="8513357934662532537">หากต้องการนำเข้ารหัสผ่านไปยัง<ph name="BRAND" /> สำหรับ <ph name="USER_EMAIL" /> ให้เลือกไฟล์ CSV</translation>
 <translation id="8514746246728959655">ลองใช้คีย์ความปลอดภัยอื่น</translation>
 <translation id="8514955299594277296">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลลงในอุปกรณ์ (ไม่แนะนำ)</translation>
 <translation id="8517759303731677493">แก้ไข…</translation>

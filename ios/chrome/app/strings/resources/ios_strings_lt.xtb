@@ -70,6 +70,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1375321115329958930">Išsaugoti slaptažodžiai</translation>
 <translation id="1377255359165588604">Sinchronizavimas nebeveikia.</translation>
 <translation id="1377321085342047638">Kort. Nr.</translation>
+<translation id="1377508275003315939">Slaptažodžiai</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="138618066238211776">Tęsti kaip <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Pastarosios 4 savaitės</translation>
@@ -123,6 +124,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1750238553597293878">Toliau naudokite slaptažodžius „Google“ paskyroje</translation>
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
 <translation id="1753905327828125965">Dažniausiai lankomi</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} nesudėtingas slaptažodis}one{{count} nesudėtingas slaptažodis}few{{count} nesudėtingi slaptažodžiai}many{{count} nesudėtingo slaptažodžio}other{{count} nesudėtingų slaptažodžių}}</translation>
 <translation id="1767766085187034454">„Google“ vertėjas</translation>
 <translation id="1789803444939621101">Sveiki sugrįžę, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kortelės savininko vardas</translation>
@@ -229,6 +231,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2576499762020411840">Naudoti ir išsaugoti slaptažodžius „Google“ paskyroje</translation>
 <translation id="2578571896248130439">Siųsti tinklalapį</translation>
 <translation id="2584132361465095047">Pridėti paskyrą...</translation>
+<translation id="2587010742985678408">{count,plural, =0{Pažeistų slaptažodžių nėra}=1{{count} pažeistas slaptažodis}one{{count} pažeistas slaptažodis}few{{count} pažeisti slaptažodžiai}many{{count} pažeisto slaptažodžio}other{{count} pažeistų slaptažodžių}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Atidaryti skirtukai, kurie nenaudojami vieną dieną ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}one{Atidaryti skirtukai, kurie nenaudojami {COUNT} dieną ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}few{Atidaryti skirtukai, kurie nenaudojami {COUNT} dienas ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}many{Atidaryti skirtukai, kurie nenaudojami {COUNT} dienos ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}other{Atidaryti skirtukai, kurie nenaudojami {COUNT} dienų ar ilgiau, perkeliami į Neaktyvius skirtukus, kad galėtumėte lengvai sutelkti dėmesį į dažniausiai naudojamus skirtukus. Tai galite bet kada pakeisti skiltyje „Nustatymai“.}}</translation>
 <translation id="2600682495497606169">Valyti svetainės slapukus</translation>
 <translation id="2609008503159898744">Uždaryti visus skirtukus?</translation>
@@ -272,6 +275,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2797029671965852011">Rodyti istoriją</translation>
 <translation id="2800683595868705743">Išjungti skirtukų perjungiklį</translation>
 <translation id="2815198996063984598">2. Palieskite „Numatytoji naršyklės programa“</translation>
+<translation id="2818821771744632548">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPhone“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
 <translation id="2822917246944009066">Skirtukas prisegtas</translation>
 <translation id="2830972654601096923">Tvarkyti adresus...</translation>
 <translation id="2834399722155632105">3. Palieskite „Slaptažodžio parinktys“</translation>
@@ -322,7 +326,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3131206671572504478">Blokuoti viską</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
 <translation id="3146109040683991651">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
-<translation id="3152169319860972623">Naudojant slaptažodžio tikrinimo funkciją peržiūrimi išsaugoti slaptažodžiai ir įspėjama apie visus internetinius pažeidimus. <ph name="BEGIN_LINK" />Sužinokite daugiau.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Kortelės išsaugojimas</translation>
 <translation id="3157387275655328056">Pridėti prie skaitomų sąrašo</translation>
 <translation id="3157684681743766797">Pažymėti visus...</translation>
@@ -343,6 +346,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Pakeitimo nepavyko išsaugoti.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> iš <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Šis adresas išsaugotas tik naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="3264775633254836593">Automatinis slaptažodžių pildymas</translation>
 <translation id="3268451620468152448">Atidaryti skirtukai</translation>
 <translation id="3272527697863656322">Atšaukti</translation>
@@ -532,6 +536,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4620246317052452550">Perskaityti puslapiai</translation>
 <translation id="4620888520263267479">Nuorodų peržiūrų rodymas</translation>
 <translation id="4630540211544979320">Versti puslapius</translation>
+<translation id="4631335160486397366">Pakartotinai naudojamų slaptažodžių: <ph name="COUNT" /></translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
 <translation id="4636930964841734540">Informacija</translation>
 <translation id="4642472735733036929">Kainų stebėjimas sustabdytas</translation>
@@ -666,6 +671,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5520466080178053306">Palieskite „Slaptažodžių tvarkyklė“, tada palieskite „Pridėti“</translation>
 <translation id="5525095647255982834">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ čia</translation>
 <translation id="5525269841082836315">Kurti slaptafrazę</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} nesudėtingas slaptažodis}one{{COUNT} nesudėtingas slaptažodis}few{{COUNT} nesudėtingi slaptažodžiai}many{{COUNT} nesudėtingo slaptažodžio}other{{COUNT} nesudėtingų slaptažodžių}}</translation>
 <translation id="5542540507657872337">Rasta: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Naudodami „Handoff“ galite pradėti naršyti svetainę šiame įrenginyje ir lengvai tęsti darbą „Mac“ įrenginiu. Dabartinė atidaryta svetainė bus rodoma „Mac“ įrenginio doke.
 
@@ -796,6 +802,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6293101329759844770">Jei norite įjungti saugų naršymą, atidarykite skiltį <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" /> ir palieskite „Saugus naršymas“.</translation>
 <translation id="6321526113093607004">Pridėti prie žymių</translation>
 <translation id="6324669097367352121">Prisijungimo nustat.</translation>
+<translation id="6331180460633101391">Pakartotinai naudojamų slaptažodžių: <ph name="COUNT" /></translation>
 <translation id="6337234675334993532">Šifruotė</translation>
 <translation id="633809752005859102">Kažkas tikrai nepavyko. Pasistengsime tai ištaisyti.</translation>
 <translation id="6340285871011301182">Dalinis vertimas nepasiekiamas.</translation>
@@ -1107,6 +1114,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8264966119170358612">Kai kurie jūsų išsaugoti slaptažodžiai buvo atskleisti dėl ne „Google“ duomenų saugos pažeidimo. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Tik šiame įrenginyje</translation>
+<translation id="826614135184049678">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPad“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
 <translation id="8271720166617117963">Sutikti ir prisijungti</translation>
 <translation id="8278938988428169257">Įveskite žodį ar frazę</translation>
 <translation id="8281781826761538115">Numatytoji – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1155,6 +1163,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8620640915598389714">Redaguoti</translation>
 <translation id="8626393685701737946">Galite pakeisti numatytąjį svetainės rodinį į stalinį kompiuterį skiltyje „Nustatymai“ &gt; „Turinio nustatymai“</translation>
 <translation id="8636825310635137004">Jei norite pasiekti skirtukus iš kitų įrenginių, įjunkite sinchronizavimą.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Pažeistų slaptažodžių nėra}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="8654802032646794042">Atšaukti</translation>
 <translation id="8663764600409216912">Naudojate slaptažodžius, kuriuos turėtų būti sunku atspėti</translation>
 <translation id="8668210798914567634">Puslapis išsaugotas skaitymo sąraše.</translation>

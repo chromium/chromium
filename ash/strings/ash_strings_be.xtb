@@ -34,6 +34,7 @@
 <translation id="1148499908455722006">Адкрыць дыялогавае акно інфармацыі аб уліковым запісе "<ph name="USER_NAME" />"</translation>
 <translation id="1150989369772528668">Каляндар</translation>
 <translation id="1153356358378277386">Спалучаныя прылады</translation>
+<translation id="1160215328209699296">уключана і выкарыстоўваецца</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Кабель USB-C можа не падключацца да дысплэяў належным чынам</translation>
 <translation id="1175572348579024023">Прагартаць</translation>
@@ -225,6 +226,7 @@
 <translation id="1978498689038657292">Увод тэксту</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />: далучыцца</translation>
 <translation id="1982717156487272186">Паказаць папярэдні тыдзень</translation>
+<translation id="1986150224850161328">Упэўніцеся, што тэлефон і прылада падключаны да адной сеткі і паўтарыце спробу. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Здыманне змесціва немагчымае</translation>
 <translation id="1990046457226896323">Файлы для ператварэння маўлення ў тэкст спампаваны</translation>
 <translation id="1993072747612765854">Даведацца больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" /></translation>
@@ -240,6 +242,7 @@
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />: уключыць/выключыць. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2083190527011054446">Добрай ночы, <ph name="GIVEN_NAME" />!</translation>
@@ -324,6 +327,7 @@
 <translation id="2487915095798731898">Далучыцца</translation>
 <translation id="2501920221385095727">Заліпанне клавіш</translation>
 <translation id="2509468283778169019">CAPS LOCK уключаны</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />: выключыць. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Разблакіраваць вокны</translation>
 <translation id="2530896289327917474">Уключыць або выключыць навігацыю клавішамі</translation>
@@ -373,6 +377,7 @@
 <translation id="2761723519669354964">Адкрыць на панэлі доступу вылучаны элемент</translation>
 <translation id="2778650143428714839">Прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Выйсці з рэжыму здымання</translation>
+<translation id="2785499565474703580">Падключана 1 прылада</translation>
 <translation id="2791421900609674576">Выкарыстоўвайце рэкамендацыі, каб працягваць работу з таго месца, на якім вы спыніліся. Каб выдаліць рэкамендацыю, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="2792498699870441125">Alt+Пошук</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1282,7 @@
 <translation id="6941333068993625698">Адправіць водгук</translation>
 <translation id="6942518653766415536">Меню фарматаў запісу</translation>
 <translation id="6945221475159498467">Выбраць</translation>
+<translation id="6945922087561257829">На тэлефоне выкарыстоўваецца мабільная сетка. Упэўніцеся, што тэлефон і прылада падключаны да адной сеткі Wi-Fi і паўтарыце спробу. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Сетка не актывавана. Звярніцеся да аператара.</translation>
 <translation id="6961121602502368900">Функцыя "Тэлефон без гуку" недаступная пры выкарыстанні працоўнага профілю</translation>
 <translation id="6961840794482373852">Змянілася прызначэнне спалучэння клавіш Alt + стрэлка ўверх. Каб выканаць дзеянне клавішы Page Up, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўверх.</translation>
@@ -1331,6 +1337,7 @@
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
+<translation id="7219573373513695352">Няма падключаных прылад</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256634071279256947">Задні мікрафон</translation>
 <translation id="7258828758145722155">Зменена ўчора</translation>
@@ -1481,6 +1488,7 @@
 <translation id="7902625623987030061">Дакраніцеся да сканера адбіткаў пальцаў</translation>
 <translation id="7904094684485781019">Адміністратар уліковага запісу забараніў уваход у некалькі ўліковых запісаў.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Падключана прылад: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай.</translation>
 <translation id="7932451802722951285">Адкрыць у Google Календары</translation>
 <translation id="7933084174919150729">Памочнік Google даступны толькі ў асноўным профілі.</translation>
@@ -1515,6 +1523,7 @@
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
+<translation id="8079538659226626406">Абагуліць экран</translation>
 <translation id="8083540854303889870">Захавана на будучыню</translation>
 <translation id="8091153018031979607">Пачынаецца ў <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Аўтаматычныя абнаўленні</translation>

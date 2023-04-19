@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">прылады Bluetooth</translation>
 <translation id="1662550410081243962">Захоўваць і запаўняць даныя спосабаў аплаты</translation>
 <translation id="1663943134801823270">Даныя крэдытных картак і адрасы паходзяць з браўзера Chrome. Кіраваць імі можна ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Атрымаць электронны ліст</translation>
 <translation id="1671391448414634642">Цяпер старонкі на мове <ph name="SOURCE_LANGUAGE" /> будуць перакладацца на мову <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Спачатку кароткі край</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Гэта праграма запытвае дазвол усталяваць уліковыя даныя Wi-Fi. Пасля наладжвання ваша прылада (<ph name="DEVICE_TYPE" />) зможа аўтаматычна падключацца да сетак Wi-Fi. Каб выдаліць гэтыя ўліковыя даныя, неабходна выдаліць праграму.</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1807528111851433570">Пачатковы аркуш</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Код CVC размешчаны на заднім баку карткі. Гэта апошнія тры лічбы ў правым верхнім вугле поля для подпісу.</translation>
 <translation id="181000283860817563">Адсочваць цэны на некалькіх сайтах</translation>
 <translation id="1810391395243432441">Абараніце паролі з дапамогай блакіроўкі экрана</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">Поўны доступ адміністратара</translation>
 <translation id="2166378884831602661">Гэты сайт не можа забяспечыць бяспечнае падключэнне</translation>
 <translation id="2168151236314517198">Палітыка, зададзеная адміністратарам, блакіруе магчымасць друкавання гэтага змесціва</translation>
+<translation id="2176974405772725904">Захаваць адрас ва ўліковым запісе</translation>
 <translation id="2181821976797666341">Палітыкі</translation>
 <translation id="2183608646556468874">Нумар тэлефона</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрас}one{# адрас}few{# адрасы}many{# адрасоў}other{# адраса}}</translation>
@@ -1585,6 +1588,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Няма}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пошук па запыце "<ph name="TEXT" />"</translation>
 <translation id="4879491255372875719">Аўтаматычна (стандартна)</translation>
+<translation id="4879723019639546076">Гэты адрас будзе захаваны толькі ў Chrome. Каб выкарыстоўваць яго ў прадуктах Google, захавайце яго ва Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Гісторыя пошуку</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4881808915112408168">24 x 31,5 цалі</translation>
@@ -1735,6 +1739,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
+<translation id="5238301240406177137">Захаваць ва ўліковым запісе</translation>
 <translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
 <translation id="5242889659037569123">Багаж і турыстычныя аксесуары</translation>
 <translation id="5244732203286792411">Загрузка...
@@ -2142,6 +2147,7 @@
 <translation id="6279183038361895380">Націсніце "<ph name="ACCELERATOR" />", каб убачыць курсор</translation>
 <translation id="6280223929691119688">Немагчыма адправіць на гэты адрас. Выберыце іншы адрас.</translation>
 <translation id="6284292079994426700">26 x 38 цаляў</translation>
+<translation id="6284517535531159884">Тып зыходнага матэрыялу для мадыфікацый</translation>
 <translation id="6285507000506177184">Кнопка "Кіраваць спампоўкамі ў Chrome". Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце Enter</translation>
 <translation id="6289939620939689042">Колер старонкі</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2251,6 +2257,7 @@
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6547208576736763147">Дзве дзіркі злева</translation>
 <translation id="6549443526281184652">Касцюмы</translation>
+<translation id="6551873053534932690">Захаваць адрас ва ўліковым запісе?</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6556866813142980365">Узнавіць</translation>
 <translation id="6557715786897013164">14 x 17 цаляў</translation>
@@ -2315,6 +2322,7 @@
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="6718612893943028815">Выкарыстоўваць камеру?</translation>
 <translation id="6721678857435001674">Даведацца пра марку і мадэль ключа бяспекі</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>

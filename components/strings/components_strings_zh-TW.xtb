@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">藍牙裝置</translation>
 <translation id="1662550410081243962">儲存及填入付款方式</translation>
 <translation id="1663943134801823270">信用卡和地址資訊皆來自 Chrome。你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面管理這些資訊。</translation>
+<translation id="1668071460721346172">接收驗證電子郵件</translation>
 <translation id="1671391448414634642">從現在起，系統會將<ph name="SOURCE_LANGUAGE" />網頁翻譯成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">先從短邊開始</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">這個應用程式要求你授權安裝 Wi-Fi 憑證。設定完成後，<ph name="DEVICE_TYPE" /> 將自動連線到設定好的 Wi-Fi 網路。如要移除這些憑證，請解除安裝應用程式。</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1807528111851433570">起始工作表</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">信用卡驗證碼位於卡片背面，即簽名欄右上方數字的最後 3 位數。</translation>
 <translation id="181000283860817563">追蹤多個網站上的價格</translation>
 <translation id="1810391395243432441">使用螢幕鎖定功能保護密碼</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">完整管理員存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
 <translation id="2168151236314517198">系統管理員政策禁止列印此內容</translation>
+<translation id="2176974405772725904">將地址儲存到帳戶</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2183608646556468874">電話號碼</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
@@ -1586,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{無}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">搜尋「<ph name="TEXT" />」</translation>
 <translation id="4879491255372875719">自動 (預設)</translation>
+<translation id="4879723019639546076">這個地址只會儲存到 Chrome 中。如要將這項資訊用於各項 Google 產品，請儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4881808915112408168">24 x 31.5 吋</translation>
@@ -1736,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">關閉</translation>
+<translation id="5238301240406177137">儲存到帳戶</translation>
 <translation id="5239623327352565343">允許存取位置資訊</translation>
 <translation id="5242889659037569123">行李箱與旅遊配備</translation>
 <translation id="5244732203286792411">載入中...
@@ -2143,6 +2148,7 @@
 <translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
 <translation id="6280223929691119688">快遞無法送貨到這個地址，請改用其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
+<translation id="6284517535531159884">種子類型變化版本</translation>
 <translation id="6285507000506177184">[管理 Chrome 下載內容] 按鈕；按下 Enter 鍵即可管理在 Chrome 中下載的檔案</translation>
 <translation id="6289939620939689042">頁面顏色</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2258,7 @@
 <translation id="6545864417968258051">藍牙掃描</translation>
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6549443526281184652">變裝道具</translation>
+<translation id="6551873053534932690">要將地址儲存到帳戶嗎？</translation>
 <translation id="6554732001434021288">上次造訪日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 吋</translation>
@@ -2316,6 +2323,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> 要求根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="6718612893943028815">要使用攝影機嗎？</translation>
 <translation id="6721678857435001674">查看安全金鑰的製造商和型號</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">攝影機</translation>
 <translation id="6738516213925468394">你在 <ph name="TIME" />已使用<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />將資料加密。如要開始同步處理資料，請輸入通關密語。</translation>

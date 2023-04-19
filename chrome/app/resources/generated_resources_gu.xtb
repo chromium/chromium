@@ -2210,6 +2210,7 @@
 <translation id="2852385257476173980">જ્યારે તમે વેબ બ્રાઉઝ કરશો, ત્યારે તમે મુલાકાત લો છો તે સાઇટની સૂચિ અહીં દેખાઈ શકે છે</translation>
 <translation id="285241945869362924">ઑડિયો અને વીડિયો માટે ઑટોમૅટિક રીતે કૅપ્શન બનાવે છે. ઑડિયો અને કૅપ્શન તમારા ડિવાઇસમાં હંમેશાં રહે છે.</translation>
 <translation id="2856776373509145513">નવું કન્ટેનર બનાવો</translation>
+<translation id="2859741939921354763"><ph name="BRAND" />માં પાસવર્ડ આયાત કરો</translation>
 <translation id="2861301611394761800">સિસ્ટમ અપડેટ પૂર્ણ થયું. કૃપા કરીને સિસ્ટમ પુનઃપ્રારંભ કરો.</translation>
 <translation id="2861941300086904918">નેટિવ ક્લાયન્ટ સિક્યુરિટી મેનેજર</translation>
 <translation id="2862815659905780618">Linux ડેવલપમેન્ટ વાતાવરણ કાઢી નાખો</translation>
@@ -4290,6 +4291,7 @@
 <translation id="47158868804223727">ગ્રૂપને મોટું કે નાનું કરવા માટે, તેના નામ પર ક્લિક કરો</translation>
 <translation id="4716483597559580346">વધારાની સુરક્ષા માટે પાવરવૉશ</translation>
 <translation id="471759229191973607">થીમ બદલો</translation>
+<translation id="4718046540206070045">બ્રાઉઝર કરતાં વધુ</translation>
 <translation id="4718564115458102525">કોઈ કીબોર્ડ મળ્યું નથી</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> માટેનો પાસવર્ડ</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> તમારી સ્ક્રીનને શેર કરી રહી છે.</translation>
@@ -5438,6 +5440,7 @@
 <translation id="5787146423283493983">કી એગ્રીમેન્ટ</translation>
 <translation id="5787420647064736989">ડિવાઇસનું નામ</translation>
 <translation id="5788367137662787332">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> પર ઓછામાં ઓછું એક પાર્ટિશન માઉન્ટ કરી શકાયું નથી.</translation>
+<translation id="5789581866075720267">આ ડિવાઇસ પર <ph name="BRAND" />માં પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">સફળતા</translation>
 <translation id="5790651917470750848">પોર્ટ ફૉરવર્ડ પહેલેથી જ અસ્તિત્વમાં છે</translation>
@@ -5683,6 +5686,7 @@ USB ડિવાઇસ</translation>
 <translation id="5984222099446776634">હાલમાં મુલાકાત લીધેલા</translation>
 <translation id="5985458664595100876">અમાન્ય URL ફોર્મેટ. સમર્થિત ફોર્મેટ \\server\share અને smb://server/share મુજબનું છે.</translation>
 <translation id="598810097218913399">સોંપણી કાઢી નાખો</translation>
+<translation id="5989629029899728491">કુકી કરતાં વધુ</translation>
 <translation id="5990266201903445068">ફક્ત વાઇ-ફાઇ</translation>
 <translation id="5990386583461751448">અનુવાદિત</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશન કાઢી નાખવાનું કહો.}one{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશનો કાઢી નાખવાનું કહો.}other{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશનો કાઢી નાખવાનું કહો.}}</translation>
@@ -5793,6 +5797,7 @@ USB ડિવાઇસ</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - નામ વિનાના ગ્રૂપનો ભાગ છે</translation>
 <translation id="6085886413119427067">સુરક્ષિત કનેક્શન પર વેબસાઇટ સાથે કેવી રીતે કનેક્ટ કરવું તે નક્કી કરે છે</translation>
 <translation id="6086004606538989567">તમારા દ્વારા ચકાસાયેલું એકાઉન્ટ આ ડિવાઇસનો ઍક્સેસ કરવા માટે અધિકૃત નથી.</translation>
+<translation id="6086347269144967242">ડિવાઇસની જોડાણ કરવામાં આવેલી માહિતી અને ડેટા વાંચો</translation>
 <translation id="6086846494333236931">તમારા વ્યવસ્થાપક દ્વારા ઇન્સ્ટોલ કરાયું</translation>
 <translation id="6087746524533454243">શું બ્રાઉઝરની માહિતી ધરાવતું પેજ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="6087960857463881712">અદ્ભુત ચહેરો</translation>
@@ -8358,6 +8363,7 @@ USB ડિવાઇસ</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">તમે પહેલેથી જ આ ડિવાઇસ રજિસ્ટર કરાવ્યું છે. તમારે ફરીથી રજિસ્ટર કરવાની જરૂર નથી.</translation>
 <translation id="8357388086258943206">Linux ઇન્સ્ટૉલ કરતી વખતે ભૂલ આવી</translation>
+<translation id="8357591920094529889">તમે જેમ-જેમ Chromeનો ઉપયોગ કરો છો તેમ-તેમ આ ગાઇડ તમને તમારી મહત્ત્વની પસંદગીઓને સમજવામાં સહાય કરે છે. અને તે પસંદગીઓ કરવામાં આ તમારી સહાય કરે છે, જેથી Chrome તમે ઇચ્છો તે રીતે કાર્ય કરે.</translation>
 <translation id="8358685469073206162">પેજને રિસ્ટોર કરીએ?</translation>
 <translation id="8358912028636606457">આ ડિવાઇસ પર ટૅબ ઑડિયો કાસ્ટ કરવાની સુવિધા નથી.</translation>
 <translation id="835951711479681002">તમારા Google એકાઉન્ટમાં સાચવો</translation>
@@ -8411,6 +8417,7 @@ USB ડિવાઇસ</translation>
 <translation id="8398877366907290961">કોઈપણ રીતે આગળ વધારો</translation>
 <translation id="8399282673057829204">પાસવર્ડ જુઓ</translation>
 <translation id="8401432541486058167">તમારા સ્માર્ટ કાર્ડ સાથે સંકળાયેલો હોય તે પિન પ્રદાન કરો.</translation>
+<translation id="8403618281196981152">Chromeમાં તમારો ડેટા</translation>
 <translation id="8403807918453631441">જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે <ph name="BRAND" /> તેને ચેક કરી શકે છે</translation>
 <translation id="8405046151008197676">એકદમ નવી અપડેટની હાઇલાઇટ મેળવો</translation>
 <translation id="8407199357649073301">લૉગ લેવલ:</translation>
@@ -8470,6 +8477,7 @@ USB ડિવાઇસ</translation>
 <translation id="8460932807646981183">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા મેનેજ કરો</translation>
 <translation id="84613761564611563">નેટવર્ક કોન્ફિગર UIની વિનંતી કરી, કૃપા કરીને રાહ જુઓ...</translation>
 <translation id="8461914792118322307">પ્રૉક્સી</translation>
+<translation id="8461973047386722744">કોઈ પાસવર્ડ મળ્યો નથી</translation>
 <translation id="8463001014623882202">અધિકરણ નિષ્ફળ</translation>
 <translation id="846374874681391779">ડાઉનલોડ બાર</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> અક્ષમ કર્યું.</translation>
@@ -8528,6 +8536,7 @@ USB ડિવાઇસ</translation>
 <translation id="8512476990829870887">પ્રક્રિયાનો અંત કરો</translation>
 <translation id="851263357009351303"><ph name="HOST" />ને હંમેશાં છબી બતાવવાની મંજૂરી આપો</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
+<translation id="8513357934662532537"><ph name="USER_EMAIL" /> માટે <ph name="BRAND" />માં પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો.</translation>
 <translation id="8514746246728959655">અલગ સુરક્ષા કોડ અજમાવી જુઓ</translation>
 <translation id="8514955299594277296">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપશો નહીં (સુઝાવ આપવામાં આવતો નથી)</translation>
 <translation id="8517759303731677493">ફેરફાર કરો…</translation>

@@ -1252,7 +1252,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2048554637254265991">Fejl i opstart af containeradministration. Prøv igen.</translation>
 <translation id="2048653237708779538">Handlingen er ikke tilgængelig</translation>
 <translation id="204914487372604757">Opret genvej</translation>
-<translation id="2050339315714019657">Stående</translation>
+<translation id="2050339315714019657">Portræt</translation>
 <translation id="2051555741181591333">Deaktiver hotspot automatisk</translation>
 <translation id="2052572566310583903">Installeret på dine andre enheder</translation>
 <translation id="2053105195397337973">Vi undersøger mulighederne for at begrænse sporing og samtidig give websites mulighed for at forhindre annoncespam og -svindel.</translation>
@@ -2226,6 +2226,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2852385257476173980">En liste over websites, du besøger, kan vises her, når du surfer på nettet</translation>
 <translation id="285241945869362924">Der genereres automatisk undertekster til lyd- og videoindhold. Lyden og underteksterne forlader aldrig enheden.</translation>
 <translation id="2856776373509145513">Opret en ny container</translation>
+<translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Opdateringen af systemet er fuldført. Genstart systemet.</translation>
 <translation id="2861941300086904918">Sikkerhedsadministrator for Native Client</translation>
 <translation id="2862815659905780618">Fjern Linux-udviklingsmiljø</translation>
@@ -4305,6 +4306,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="47158868804223727">Klik på gruppenavnet for at udvide eller skjule det</translation>
 <translation id="4716483597559580346">Udfør powerwash som et ekstra sikkerhedsniveau</translation>
 <translation id="471759229191973607">Skift tema</translation>
+<translation id="4718046540206070045">Mere end en browser</translation>
 <translation id="4718564115458102525">Der blev ikke registreret et tastatur</translation>
 <translation id="4722735765955348426">Adgangskode til <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler din skærm.</translation>
@@ -5451,6 +5453,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5787146423283493983">Nøgleoverensstemmelse</translation>
 <translation id="5787420647064736989">Enhedsnavn</translation>
 <translation id="5788367137662787332">Vi beklager, men der kunne ikke oprettes forbindelse til mindst én partition på enheden <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789581866075720267">Vælg en CSV-fil for at importere adgangskoder til <ph name="BRAND" /> på denne enhed.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Fuldført</translation>
 <translation id="5790651917470750848">Omdirigeringen af port findes allerede</translation>
@@ -5695,6 +5698,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5984222099446776634">Besøgt for nylig</translation>
 <translation id="5985458664595100876">Ugyldigt webadresseformat. De understøttede formater er \\server\share og smb://server/share.</translation>
 <translation id="598810097218913399">Fjern tildeling</translation>
+<translation id="5989629029899728491">Mere end cookies</translation>
 <translation id="5990266201903445068">Kun Wi-Fi</translation>
 <translation id="5990386583461751448">Oversat</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}one{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}other{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne disse apps.}}</translation>
@@ -5805,6 +5809,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del af en unavngiven gruppe</translation>
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
 <translation id="6086004606538989567">Den konto, du har verificeret, har ikke adgangstilladelse til denne enhed.</translation>
+<translation id="6086347269144967242">Læse vedhæftede enhedsoplysninger og -data</translation>
 <translation id="6086846494333236931">Installeret af din administrator</translation>
 <translation id="6087746524533454243">Leder du efter siden Om for browseren? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-smiley</translation>
@@ -8371,6 +8376,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Du har allerede registreret denne enhed. Du behøver ikke at registrere den igen.</translation>
 <translation id="8357388086258943206">Der opstod en fejl under installationen af Linux</translation>
+<translation id="8357591920094529889">Denne vejledning hjælper dig med at forstå vigtige valg, du kan foretage, når du bruger Chrome. Og den hjælper dig med at træffe disse valg, så Chrome kan fungere på den måde, der passer dig bedst.</translation>
 <translation id="8358685469073206162">Vil du gendanne siderne?</translation>
 <translation id="8358912028636606457">Det er ikke muligt at caste lyd fra faner på denne enhed.</translation>
 <translation id="835951711479681002">Gem på din Google-konto</translation>
@@ -8424,6 +8430,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8398877366907290961">Fortsæt alligevel</translation>
 <translation id="8399282673057829204">Se adgangskode</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
+<translation id="8403618281196981152">Dine data i Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="8405046151008197676">Få højdepunkter fra den seneste opdatering</translation>
 <translation id="8407199357649073301">Logfilsniveau:</translation>
@@ -8483,6 +8490,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8460932807646981183">Administrer søgemaskiner og websitesøgning</translation>
 <translation id="84613761564611563">Der er anmodet om grænseflade for netværkskonfiguration. Vent...</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8461973047386722744">Der blev ikke fundet nogen adgangskoder</translation>
 <translation id="8463001014623882202">Godkendelse mislykkedes</translation>
 <translation id="846374874681391779">Downloadlinje</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> er deaktiveret.</translation>
@@ -8541,6 +8549,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8512476990829870887">Afslut proces</translation>
 <translation id="851263357009351303">Tillad altid, at <ph name="HOST" /> viser billeder</translation>
 <translation id="8513108775083588393">Autoroter</translation>
+<translation id="8513357934662532537">Vælg en CSV-fil for at importere adgangskoder til <ph name="BRAND" /> for <ph name="USER_EMAIL" />.</translation>
 <translation id="8514746246728959655">Prøv med en anden sikkerhedsnøgle</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="8517759303731677493">Rediger…</translation>

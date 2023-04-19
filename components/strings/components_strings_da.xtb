@@ -510,6 +510,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2166049586286450108">Fuld administratoradgang</translation>
 <translation id="2166378884831602661">Dette website kan ikke levere en sikker forbindelse</translation>
 <translation id="2168151236314517198">Administratorpolitikken tillader ikke, at du udskriver dette indhold</translation>
+<translation id="2176974405772725904">Gem adressen på kontoen</translation>
 <translation id="2181821976797666341">Politikker</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresser}}</translation>
@@ -1736,6 +1737,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Luk</translation>
+<translation id="5238301240406177137">Gem på din konto</translation>
 <translation id="5239623327352565343">Adgang til lokation er tilladt</translation>
 <translation id="5242889659037569123">Bagagetasker og rejsetilbehør</translation>
 <translation id="5244732203286792411">Indlæser…
@@ -2252,6 +2254,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
 <translation id="6547208576736763147">To huller i venstre side</translation>
 <translation id="6549443526281184652">Kostumer</translation>
+<translation id="6551873053534932690">Vil du gemme adressen på kontoen?</translation>
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
 <translation id="6556866813142980365">Gør det igen</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>

@@ -805,6 +805,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1666232093776384142">Disable data access protection for peripherals</translation>
 <translation id="1667842670298352129">Hear specific text read aloud. First, select the Select to Speak icon at the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search + S.</translation>
 <translation id="1668435968811469751">Enrol manually</translation>
+<translation id="1668804837842452164">Save to <ph name="BRAND" /> for <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Learn about suggestions</translation>
 <translation id="1670399744444387456">Basic</translation>
 <translation id="1673137583248014546"><ph name="URL" /> wants to see the make and model of your security key</translation>
@@ -1582,6 +1583,7 @@ You can manage this account’s settings by installing the Family Link app on yo
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> The system will reboot during the process.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
+<translation id="2306794767168143227">Save to <ph name="BRAND" /> on this device</translation>
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="2307553512430195144">If you agree, Google Assistant will wait in standby mode to detect ‘Hey Google’ and can recognise it is <ph name="SUPERVISED_USER_NAME" /> speaking with Voice Match.
     <ph name="BR" />

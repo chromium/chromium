@@ -70,6 +70,7 @@
 <translation id="1375321115329958930">सेव्ह केलेले पासवर्ड</translation>
 <translation id="1377255359165588604">संकालनाने कार्य करणे थांबविले आहे.</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
+<translation id="1377508275003315939">पासवर्ड</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
 <translation id="1400642268715879018">मागील 4 आठवडे</translation>
@@ -123,6 +124,7 @@
 <translation id="1750238553597293878">तुमच्या Google खाते मधील पासवर्ड वापरणे सुरू ठेवा</translation>
 <translation id="1752547299766512813">पासवर्ड सेव्ह करा</translation>
 <translation id="1753905327828125965">सर्वाधिक भेट दिलेले</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} कमकुवत पासवर्ड}other{{count} कमकुवत पासवर्ड}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />, तुमचे पुन्हा स्वागत आहे</translation>
 <translation id="1803264062614276815">कार्डधारकाचे नाव</translation>
@@ -229,6 +231,7 @@
 <translation id="2576499762020411840">तुमच्या Google खाते मधील पासवर्ड वापरा आणि त्यामध्ये ते सेव्ह करा</translation>
 <translation id="2578571896248130439">वेबपेज पाठवा</translation>
 <translation id="2584132361465095047">खाते जोडा...</translation>
+<translation id="2587010742985678408">{count,plural, =0{No Compromised Passwords}=1{{count} धोक्यात असलेला पासवर्ड}other{{count} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{एक दिवस किंवा त्यापेक्षा जास्त काळापासून न वापरलेले उघडे असलेले टॅब इनॅक्टिव्ह टॅबमध्ये हलवले जातात, जेणेकरून तुम्हाला तुम्ही सर्वात जास्त वापरत असलेल्या टॅबवर सहजपणे लक्ष केंद्रित करता येईल. तुम्ही हे सेटिंग्जमध्ये कधीही बदलू शकता.}other{{COUNT} दिवस किंवा त्यापेक्षा जास्त काळापासून न वापरलेले उघडे असलेले टॅब इनॅक्टिव्ह टॅबमध्ये हलवले जातात, जेणेकरून तुम्हाला तुम्ही सर्वात जास्त वापरत असलेल्या टॅबवर सहजपणे लक्ष केंद्रित करता येईल. तुम्ही हे सेटिंग्जमध्ये कधीही बदलू शकता.}}</translation>
 <translation id="2600682495497606169">साइट कुकी साफ करा</translation>
 <translation id="2609008503159898744">सर्व टॅब बंद करायचे आहेत का?</translation>
@@ -272,6 +275,7 @@
 <translation id="2797029671965852011">इतिहास दाखवा</translation>
 <translation id="2800683595868705743">टॅब स्विचर सोडा</translation>
 <translation id="2815198996063984598">२. डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा</translation>
+<translation id="2818821771744632548">तुमच्या iPhone रीसेटचा भाग म्हणून तुम्हाला <ph name="USER_NAME" /> खात्यामधून साइन आउट केले गेले होते. पुन्हा साइन इन करण्यासाठी, खाली "पुढे सुरू ठेवा" वर टॅप करा.</translation>
 <translation id="2822917246944009066">टॅब पिन केला</translation>
 <translation id="2830972654601096923">पत्ते व्यवस्थापित करा...</translation>
 <translation id="2834399722155632105">३. पासवर्ड पर्याय वर टॅप करा</translation>
@@ -322,7 +326,6 @@
 <translation id="3131206671572504478">सर्व ब्लॉक करा</translation>
 <translation id="313283613037595347">नवीन गुप्त टॅब तयार करा.</translation>
 <translation id="3146109040683991651">Chrome ला डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
-<translation id="3152169319860972623">पासवर्ड तपासणी हे तुमच्या सेव्ह केलेल्या पासवर्डचे पुनरावलोकन करते आणि कोणतेही ऑनलाइन भंग आढळल्यास, तुम्हाला चेतावणी देते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">कार्ड सेव्ह करा</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
@@ -343,6 +346,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">तुमचा बदल सेव्ह करता आला नाही.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3260117527409269737">हा पत्ता फक्त Chrome वर सेव्ह केला आहे. Google उत्पादनांवर तो वापरण्यासाठी, तो तुमच्या Google खाते <ph name="USER_EMAIL" /> वर सेव्ह करा.</translation>
 <translation id="3264775633254836593">पासवर्ड ऑटोफिल करा</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3272527697863656322">रद्द करा</translation>
@@ -532,6 +536,7 @@
 <translation id="4620246317052452550">तुम्ही वाचलेली पृष्‍ठे</translation>
 <translation id="4620888520263267479">लिंकची पूर्वावलोकने दाखवा</translation>
 <translation id="4630540211544979320">पेजचे भाषांतर करा</translation>
+<translation id="4631335160486397366"><ph name="COUNT" /> पुन्हा वापरलेले पासवर्ड</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
 <translation id="4636930964841734540">माहिती</translation>
 <translation id="4642472735733036929">किमतीचा माग ठेवणे थांबले आहे</translation>
@@ -666,6 +671,7 @@
 <translation id="5520466080178053306">Password Manager वर टॅप करा त्यानंतर जोडा वर टॅप करा</translation>
 <translation id="5525095647255982834">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chrome मध्ये साइन इन करा.</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} कमकुवत पासवर्ड}other{{COUNT} कमकुवत पासवर्ड}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> आढळले</translation>
 <translation id="5548760955356983418">Handoff तुम्हाला या डिव्हाइसवर ब्राउझिंग सुरू करू आणि त्यानंतर आपल्या Mac वर सहजपणे सुरू ठेऊ देते. वर्तमान उघडलेली वेबसाइट आपल्या Mac च्या डॉकवर दिसून येईल.
 
@@ -797,6 +803,7 @@
 करा.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
 <translation id="6324669097367352121">साइन इन सेटिंग्ज</translation>
+<translation id="6331180460633101391"><ph name="COUNT" /> पुन्हा वापरलेले पासवर्ड</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>
 <translation id="633809752005859102">खरोखर काहीतरी चूक झाली. आम्ही त्यावर कार्य करू.</translation>
 <translation id="6340285871011301182">आंशिक भाषांतर उपलब्ध नाही.</translation>
@@ -1108,6 +1115,7 @@
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8264966119170358612">तुमचे सेव्ह केलेले काही पासवर्ड हे Google ऐवजी तृतीय पक्षाच्या डेटा भंगामध्ये उघड झाले होते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">फक्त या डिव्हाइसवर</translation>
+<translation id="826614135184049678">तुमच्या iPad रीसेटचा भाग म्हणून तुम्हाला <ph name="USER_NAME" /> खात्यामधून साइन आउट केले गेले होते. पुन्हा साइन इन करण्यासाठी, खाली "पुढे सुरू ठेवा" वर टॅप करा.</translation>
 <translation id="8271720166617117963">स्वीकार करा आणि साइन इन करा</translation>
 <translation id="8278938988428169257">शब्द किंवा वाक्य एंटर करा</translation>
 <translation id="8281781826761538115">डीफॉल्ट - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1156,6 +1164,7 @@
 <translation id="8620640915598389714">संपादित करा</translation>
 <translation id="8626393685701737946">तुम्ही सेटिंग्ज &gt; आशय सेटिंग्ज मधून डीफॉल्ट साइट दृश्य डेस्कटॉप मोडमध्ये बदलू शकता</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="8654802032646794042">रद्द करा</translation>
 <translation id="8663764600409216912">तुम्ही असे पासवर्ड वापरत आहात ज्यांचा अंदाज लावणे कठीण आहे</translation>
 <translation id="8668210798914567634">हे पृष्‍ठ आपल्या वाचन सूचीमध्ये सेव्ह केले गेले आहे.</translation>

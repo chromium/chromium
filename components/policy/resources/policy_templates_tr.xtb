@@ -3978,6 +3978,7 @@ Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uyg
 <translation id="4693779768620889402">Uzantı tabanlı hedefler</translation>
 <translation id="4694138212536142867">Cihaz donanım durumu raporlamasını etkinleştir</translation>
 <translation id="4697581738794063407">URL parametre filtresi özelliğini kontrol et</translation>
+<translation id="4698895924806859508">Ağ etkinliklerini raporlama</translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
 <translation id="4699592681017489215">Bu politika, DNS müdahale kontrollerin devre dışı bırakmak için kullanılabilen yerel bir anahtarı yapılandırır. Kontroller, tarayıcının bilinmeyen ana bilgisayar adlarına yönlendirme yapan bir proxy'nin arkasında olup olmadığını anlamaya çalışır.
 
@@ -4787,13 +4788,6 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="5448022937220253000"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerine ne olacağını seçin</translation>
 <translation id="5449690328792750354">Event.path API kullanılabilir.</translation>
 <translation id="5452024130413254050">Bu yapılandırmayı kullanan sanal makinelerin, vTPM'ye erişip erişemediğini kontrol eder, ayarlanmadığı takdirde varsayılan olarak yanlış ve <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> değerini alır.</translation>
-<translation id="5452167809842762761">Bu politika M114'te kaldırılmıştır. Devre dışı bırakılmış CECPQ2 için geçerli olmuş, ancak CECPQ2 varsayılan olarak devre dışı bırakılmıştır ve bunun yerini, yine standart klasik anahtar sözleşmemiz X25519 ile birlikte, NIST'nin seçtiği kuantum sonrası KEM alacaktır.
-
-Bu politika yapılandırılmaz veya etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, TLS'deki kuantum sonrası anahtar anlaşması algoritması CECPQ2 için varsayılan kullanıma sunma işlemini uygular.
-
-      CECPQ2, çok nadir durumlarda bazı ağ donanımlarında hata oluşmasını tetikleyebilen daha büyük TLS mesajlarına yol açar. Ağ sorunları çözülürken CECPQ2'yi devre dışı bırakmak için bu politika Yanlış değerine ayarlanabilir.
-
-      Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır.</translation>
 <translation id="5454128917282602937">Kullanıcı <ph name="PRODUCT_OS_NAME" /> cihazları arasında geçiş yaptığında <ph name="PRODUCT_NAME" /> V2 hizmeti, daha önce kullandığınız cihazdaki tarayıcı ve uygulama pencerelerini yeni cihazda başlatır.
 Politika, Etkin değerine ayarlanırsa mevcut kullanıcının son kullandığı <ph name="PRODUCT_OS_NAME" /> cihazdaki tarayıcı pencereleri giriş yapıldıktan sonra otomatik olarak açılır.
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa giriş yapıldıktan sonra nelerin açılacağı, tam geri yükleme ayarları tarafından belirlenir.</translation>
@@ -6987,6 +6981,7 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
       Not: Uygulanacak işlem Askıya Alma ise <ph name="PRODUCT_OS_NAME" />, askıya almadan önce ekranı kilitleyecek veya kilitlemeyecek şekilde ayrı olarak ayarlanabilir.</translation>
 <translation id="7477149584454865826">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i.</translation>
 <translation id="7477231245051133709">Mono ses erişilebilirlik özelliklerini etkinleştir</translation>
+<translation id="7479408102162550711">Ağ etkinliklerini raporla</translation>
 <translation id="7480826412572122600">Chrome'da bir dosya indirildiğinde tetiklenen <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Bağlayıcı'ya uygulanacak Chrome Enterprise Connectors hizmetleri ayarlarının listesidir.
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> alanları, bağlayıcı belirli bir sayfadan indirildiğinde analiz için dosya gönderip göndermemesi gerektiğini ve bu dosyanın analiz isteğine hangi etiketlerin dahil edileceğini belirlemek üzere kullanılır. Sayfa URL'si etiketle ilişkilendirilen desenle eşleşirse "etkinleştir" desenine karşılık gelen bu etiket analiz isteğine dahil edilir. Ancak, aynı etikete sahip "devre dışı bırak" deseni sayfa URL'si ile eşleşirse dahil edilmez. Analiz, isteğe en az 1 etiket dahil edilecekse gerçekleşir.
@@ -7362,6 +7357,10 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
       Politikanın Yanlış değerine ayarlanması ya da ayarlanmadan bırakılması diğer kaynaklardan gelen <ph name="FLASH_PLUGIN_NAME" /> içerikleri veya küçük içerikleri engelleyebilir.
 
       Not: <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştırabilen web sitelerini kontrol etmek için şu politikalara bakın: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7804859754080118507">Kayıtlı cihazlarda ağ bağlantısı ve sinyal gücü etkinliklerini raporla.
+
+      Bu politika yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
+      Doğru değerine ayarlanırsa cihazın ağ etkinlikleri raporlanır.</translation>
 <translation id="780629758750905699">Family Link hesaplarının cihaza eklenmesine izin ver</translation>
 <translation id="7807120658089613760">Devre dışı bırakılacak kamera, tarayıcı ayarları, OS ayarları, tarama, web mağazası, tuval, keşfet ve crosh özelliklerini yapılandır</translation>
 <translation id="7807139251387225825">Senkronizasyonun dışında tutulması gereken türlerin listesi</translation>

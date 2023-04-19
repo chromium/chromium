@@ -34,6 +34,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
+<translation id="1160215328209699296">aan en in gebruik</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Je USB-C-kabel sluit misschien niet goed aan op schermen</translation>
 <translation id="1175572348579024023">Scrollen</translation>
@@ -241,6 +242,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
 <translation id="2067602449040652523">Toetsenbordhelderheid</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> schakelen. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Swipe met 4 vingers naar rechts om naar het volgende bureau te schakelen</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2083190527011054446">Goedenacht <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2487915095798731898">Deelnemen</translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
 <translation id="2509468283778169019">CAPS LOCK staat aan</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> stoppen. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">De vensters ontgrendelen</translation>
 <translation id="2530896289327917474">Browsen met navigatietoetsen aan- of uitzetten</translation>
@@ -601,7 +604,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> koppelen</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
-<translation id="3796198851576711985">batterijstatus</translation>
+<translation id="3796198851576711985">batterijconditie</translation>
 <translation id="3796746699333205839">Een app gebruikt je camera en microfoon</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799080171973636491">Je hebt op de sneltoets van het vergrootglas voor volledig scherm gedrukt. Wil je deze functie aanzetten?</translation>
@@ -894,7 +897,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5150070631291639005">Privacyinstellingen</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
-<translation id="5163434717504750796">Batterijstatus <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Aantal cycli <ph name="CYCLE_COUNT" /></translation>
+<translation id="5163434717504750796">Batterijconditie <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Aantal cycli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Bureau opslaan als template</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
@@ -1517,6 +1520,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
+<translation id="8079538659226626406">Scherm delen</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
 <translation id="8091153018031979607">Begint om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische updates</translation>

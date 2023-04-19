@@ -244,6 +244,15 @@ Als je dit beleid niet toepast, is bescherming tegen phishing aan de clientzijde
       De standaardinstelling is RollbackDisabled.</translation>
 <translation id="1221359380862872747">Gespecificeerde URL's laden in demo-aanmeldvenster</translation>
 <translation id="1221955019309484560">Updates aanzetten voor alle componenten</translation>
+<translation id="1222694988453895594">Hiermee kun je een lijst met protocollen instellen (en voor elk protocol een gekoppelde lijst met toegestane herkomstpatronen) die een externe app kunnen starten zonder prompt aan de gebruiker. Het scheidingsteken achteraan moet niet worden opgenomen bij de vermelding van het protocol. Vermeld bijvoorbeeld 'skype' in plaats van 'skype:' of 'skype://'.
+
+Als dit beleid is ingesteld, kan een protocol volgens het beleid een externe app alleen starten zonder prompt aan de gebruiker als het protocol in de lijst wordt vermeld en de herkomst van de site die probeert het protocol te starten, overeenkomt met een van de herkomstpatronen in de lijst allowed_origins van dat protocol. Als een van de voorwaarden False is, wordt de prompt voor starten via een extern protocol volgens het beleid niet overgeslagen.
+
+Als dit beleid niet is ingesteld, kunnen protocollen standaard niet worden gestart zonder prompt. Gebruikers kunnen zich voor specifieke protocollen/sites afmelden voor prompts, tenzij het beleid <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> is uitgezet. Dit beleid heeft geen invloed op promptuitzonderingen voor specifieke protocollen/sites die zijn ingesteld door gebruikers.
+
+De patronen voor overeenkomende oorsprong gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze worden gedocumenteerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@query'-elementen bevatten. Patronen die een '/path'- of '@query'-element bevatten, worden genegeerd.</translation>
 <translation id="1223789468190631420">Inschakelstatus van Safe Browsing voor vertrouwde bronnen</translation>
 <translation id="123018742985150697">Vereisen dat de lokale gebruiker en de eigenaar van de host voor externe toegang overeenkomen</translation>
 <translation id="123081309365616809">Casten van content naar apparaat aanzetten</translation>
@@ -2267,6 +2276,17 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 <translation id="3125472566440502628">'Selecteer om voor te lezen' uitzetten</translation>
 <translation id="3126748868885248792">Rechterknop is primair</translation>
 <translation id="3128072319047570212">Instellingen voor sleutelgenerator</translation>
+<translation id="3129155711165832367">X.509-certificaten kunnen beperkingen, zoals naambeperkingen, coderen in extensies in het certificaat. RFC 5280 bepaalt dat het afdwingen van dergelijke beperkingen voor vertrouwensankercertificaten optioneel is. Vanaf <ph name="PRODUCT_NAME" /> 112 worden dergelijke beperkingen afgedwongen in certificaten die worden geladen vanuit de certificaatopslag van het platform.
+
+Dit beleid bestaat als tijdelijke afmelding voor als een bedrijf problemen ondervindt met de beperkingen die in hun eigen roots zijn gecodeerd. In dat geval kan dit beleid worden gebruikt om het afdwingen van de beperkingen tijdelijk uit te zetten en de certificaatproblemen te verhelpen.
+
+Als je dit beleid toepast of niet instelt, dwingt <ph name="PRODUCT_NAME" /> beperkingen af die zijn gecodeerd in vertrouwensankers die zijn geladen vanuit de vertrouwde opslag van het platform.
+
+Als je dit beleid niet toepast, dwingt <ph name="PRODUCT_NAME" /> geen beperkingen af die zijn gecodeerd in vertrouwensankers die zijn geladen vanuit de vertrouwde opslag van het platform.
+
+In <ph name="PRODUCT_NAME" /> 112 heeft dit beleid geen effect als het beleid <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> niet wordt toegepast.
+
+Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> 115.</translation>
 <translation id="3131703464330936425">Geen mobiele dataroaming toestaan</translation>
 <translation id="3135820765957090754">Als je deze instelling aanzet, mogen gebruikers wifi-netwerkconfiguraties synchroniseren tussen hun <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon. Voordat wifi-netwerkconfiguraties kunnen worden gesynchroniseerd, moeten gebruikers deze functie expliciet toestaan door een instelprocedure te doorlopen.
 
@@ -4740,13 +4760,6 @@ Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 <translation id="5448022937220253000">Kies wat er gebeurt met gebruikersgegevens nadat <ph name="LACROS_NAME" /> is uitgezet</translation>
 <translation id="5449690328792750354">Event.path API komt beschikbaar.</translation>
 <translation id="5452024130413254050">Bepaalt of VM's die deze configuratie gebruiken toegang hebben tot een vTPM. Dit beleid wordt standaard ingesteld op False en <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> als het niet is ingesteld.</translation>
-<translation id="5452167809842762761">Dit beleid is verwijderd in M114. Het diende om CECPQ2 uit te zetten, maar CECPQ2 is standaard uitgezet en wordt vervangen door Kyber, de door NIST gekozen post-kwantum KEM (Key Encapsulation Method), wederom gekoppeld aan onze standaard klassieke sleutelovereenkomst, X25519.
-
-Als je dit beleid toepast of niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor CECPQ2, een algoritme voor post-quantum sleutelovereenkomst in TLS.
-
-      CECPQ2 resulteert in grotere TLS-berichten die in zeer zeldzame gevallen bugs kunnen veroorzaken in bepaalde netwerkhardware. Je kunt dit beleid instellen op False om CECPQ2 uit te zetten terwijl de netwerkproblemen worden opgelost.
-
-      Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" /> V2-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
 Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.
 Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
@@ -6612,6 +6625,13 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Als het beleid niet wordt toegepast of niet is ingesteld, mag WebDriver niet-geschikte beleidsregels niet overschrijven.</translation>
 <translation id="7145335384492396213">Standaardmodus voor afdrukken met pincode</translation>
+<translation id="7145764791559889135">Met dit beleid blokkeer je het kopiëren van gegevens naar het klembord voor specifieke URL's.
+
+De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> bepalen welke sites naar het klembord mogen schrijven. Een schrijfactie naar het klembord wordt geblokkeerd als de URL overeenkomt met een patroon in 'enable' en niet overeenkomt met een patroon in 'disable'. Een kopieeractie wordt niet geblokkeerd als de URL met geen enkel patroon overeenkomt.
+
+De patronen voor overeenkomende oorsprong gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze worden gedocumenteerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.</translation>
 <translation id="7146198347561863646">Als je het beleid toepast of niet instelt, zijn wake locks voor stroombeheer toegestaan. Extensies kunnen wake locks aanvragen via de API voor de stroombeheerextensie en via ARC-apps.
 
       Als je het beleid niet toepast, worden wake lock-verzoeken genegeerd.</translation>

@@ -248,6 +248,15 @@ Jika kebijakan ini disetel ke nonaktif, perlindungan dari phishing sisi klien ti
       Default adalah RollbackDisabled.</translation>
 <translation id="1221359380862872747">Muat url yang ditentukan di proses masuk demo</translation>
 <translation id="1221955019309484560">Aktifkan update untuk semua komponen</translation>
+<translation id="1222694988453895594">Memungkinkan Anda menyetel daftar protokol, dan daftar terkait pola origin yang diizinkan untuk setiap protokol, yang dapat meluncurkan aplikasi eksternal tanpa meminta izin pengguna. Pemisah di akhir tidak boleh disertakan saat mencantumkan protokol, jadi cantumkan "skype" bukan "skype:" atau "skype://".
+
+Jika kebijakan ini disetel, protokol hanya akan diizinkan oleh kebijakan untuk meluncurkan aplikasi eksternal tanpa meminta izin jika protokol tersebut tercantum, dan origin situs yang mencoba meluncurkan protokol tersebut cocok dengan pola origin dalam daftar allowed_origins protokol. Jika salah satu kondisinya tidak terpenuhi, permintaan izin peluncuran protokol eksternal tidak akan dihilangkan oleh kebijakan.
+
+Jika kebijakan ini tidak disetel, secara default tidak ada protokol yang dapat diluncurkan tanpa meminta izin. Pengguna dapat memilih tidak dimintai izin per protokol/per situs kecuali jika kebijakan <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> disetel ke Nonaktif. Kebijakan ini tidak memengaruhi pengecualian permintaan izin per protokol/per situs yang disetel pengguna.
+
+Pola yang cocok dengan origin akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Namun, pola yang cocok dengan origin untuk kebijakan ini tidak boleh berisi elemen "/path" atau "@query". Semua pola yang berisi elemen "/path" atau "@query" akan diabaikan.</translation>
 <translation id="1223789468190631420">Safe Browsing mengaktifkan status untuk sumber tepercaya</translation>
 <translation id="123018742985150697">Wajibkan kecocokan antara pengguna lokal dan pemilik host akses jarak jauh</translation>
 <translation id="123081309365616809">Mengaktifkan casting konten ke perangkat</translation>
@@ -4848,13 +4857,6 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5448022937220253000">Memilih apa yang akan terjadi pada data pengguna setelah <ph name="LACROS_NAME" /> dinonaktifkan</translation>
 <translation id="5449690328792750354">Event.path API akan tersedia.</translation>
 <translation id="5452024130413254050">Mengontrol apakah VM yang menggunakan konfigurasi ini memiliki akses ke vTPM. Setelan defaultnya adalah salah (false), dan <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> jika tidak disetel.</translation>
-<translation id="5452167809842762761">Kebijakan ini dihapus di M114. Kebijakan ini berfungsi untuk menonaktifkan CECPQ2, tetapi CECPQ2 dinonaktifkan secara default dan akan digantikan dengan KEM pasca-kuantum pilihan NIST, Kyber, digabungkan lagi dengan perjanjian kunci klasik standar kami, X25519.
-
-Jika kebijakan ini tidak dikonfigurasi, atau disetel ke aktif, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk CECPQ2, algoritma perjanjian kunci pasca-kuantum di TLS.
-
-      CECPQ2 menghasilkan pesan TLS yang lebih besar yang, sangat jarang terjadi, dapat memicu bug di beberapa hardware jaringan. Kebijakan ini dapat disetel ke Salah (False) untuk menonaktifkan CECPQ2 saat masalah jaringan diselesaikan.
-
-      Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang.</translation>
 <translation id="5454128917282602937">Saat pengguna beralih antar-perangkat <ph name="PRODUCT_OS_NAME" />, Layanan <ph name="PRODUCT_NAME" /> V2 akan meluncurkan jendela aplikasi dan browser dari perangkat sebelumnya ke perangkat baru.
 Jika kebijakan disetel ke Aktif, jendela aplikasi dan browser dari perangkat <ph name="PRODUCT_OS_NAME" /> yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.
 Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh akan menentukan jendela aplikasi dan browser mana yang diluncurkan saat login.</translation>
@@ -6791,6 +6793,13 @@ Jika ditetapkan, daftar nilai default akan diperluas dengan nilai yang baru diko
 
       Jika kebijakan ini disetel ke nonaktif atau tidak dikonfigurasi, WebDriver tidak akan diizinkan menggantikan kebijakan yang tidak kompatibel.</translation>
 <translation id="7145335384492396213">Mode pencetakan PIN default</translation>
+<translation id="7145764791559889135">Kebijakan ini memblokir penyalinan data ke papan klip pada URL tertentu.
+
+Daftar URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> mengontrol situs mana yang diizinkan untuk menulis ke papan klip. Penulisan di papan klip diblokir jika URL cocok dengan pola di daftar 'aktifkan' dan tidak cocok dengan pola di daftar 'nonaktifkan'. Penyalinan tidak diblokir jika URL tidak cocok dengan pola apa pun.
+
+Pola yang cocok dengan origin akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan jumlah minimum data dalam byte yang memicu pemeriksaan pola. Hal ini berarti bahwa penulisan di papan klip dari URL yang diblokir akan diizinkan jika ukuran data yang disalin lebih kecil dari nilai yang ditentukan dalam kolom ini. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.</translation>
 <translation id="7146198347561863646">Jika kebijakan disetel ke Aktif atau tidak disetel, penguncian layar saat aktif akan diizinkan untuk pengelolaan daya. Ekstensi dapat meminta penguncian layar saat aktif melalui aplikasi ARC dan API ekstensi pengelolaan daya.
 
       Jika kebijakan disetel ke Nonaktif, permintaan penguncian layar saat aktif akan diabaikan.</translation>

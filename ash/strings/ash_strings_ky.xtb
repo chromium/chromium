@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">Текст киргизүү</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> кошулуу</translation>
 <translation id="1982717156487272186">Мурунку аптаны көрсөтүү</translation>
+<translation id="1986150224850161328">Телефонуңуз менен Chromebook бир тармакка туташып турганын текшерип, кайталап көрүңүз. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Мазмун сүрөткө тартылган жок</translation>
 <translation id="1990046457226896323">Кеп файлдары жүктөлүп алынды</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> колдонмосундагы жаңыртуу жөнүндө кененирээк маалымат алуу</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">Текчедеги бөлүнүп көрсөтүлгөн нерсени ачуу</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
 <translation id="2782591952652094792">Сүрөткө тартуу режиминен чыгуу</translation>
+<translation id="2785499565474703580">1 түзмөк туташып турат</translation>
 <translation id="2791421900609674576">Токтогон жериңизден улантуу үчүн сунуштарды көрөсүз. Сунуштарды өчүрүү үчүн коё бербей басып туруңуз.</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6941333068993625698">Пикир билдирүү</translation>
 <translation id="6942518653766415536">Жаздыруунун форматынын менюсу</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
+<translation id="6945922087561257829">Телефонуңуз мобилдик тармакты колдонуп жатат. Телефонуңуз менен Chromebook бир Wi-Fi тармагына туташып турганын текшерип, кайталап көрүңүз. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Жандырылган эмес. Байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="6961121602502368900">Жумуш профилинде телефондун үнүн басууга болбойт</translation>
 <translation id="6961840794482373852">Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Барактын өйдө жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + өйдө жебени басыңыз.</translation>
@@ -1331,6 +1334,7 @@
 <translation id="7188494361780961876">Меню экрандын жогорку сол бурчуна жылдырылды.</translation>
 <translation id="7189412385142492784">Венера канчалык алыс жайгашкан?</translation>
 <translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
+<translation id="7219573373513695352">Бир да түзмөк туташкан эмес</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңыртууну колдонуу үчүн Chromebook'ту өчүрүп күйгүзүү керек. Бул 1 мүнөткө созулушу мүмкүн.</translation>
 <translation id="7256634071279256947">Арткы микрофон</translation>
 <translation id="7258828758145722155">Кечээ түзөтүлгөн</translation>
@@ -1481,6 +1485,7 @@
 <translation id="7902625623987030061">Манжа изинин сенсорун басыңыз</translation>
 <translation id="7904094684485781019">Администратор бул аккаунтка бир нече профиль менен кирүүгө тыюу салган.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> түзмөк туташып турат</translation>
 <translation id="7930731167419639574">Кеп эми түзмөктө иштетилип, Текстти айтып терүү оффлайнда иштейт</translation>
 <translation id="7932451802722951285">Google Жылнаамада ачуу</translation>
 <translation id="7933084174919150729">Google Жардамчы колдонуучунун негизги профилинде гана иштейт.</translation>

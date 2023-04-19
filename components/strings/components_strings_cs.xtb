@@ -510,6 +510,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2166049586286450108">Úplný přístup administrátora</translation>
 <translation id="2166378884831602661">Tento web nemůže poskytnout zabezpečené připojení</translation>
 <translation id="2168151236314517198">Tisk tohoto obsahu zakazují zásady administrátora</translation>
+<translation id="2176974405772725904">Uložení adresy do účtu</translation>
 <translation id="2181821976797666341">Zásady</translation>
 <translation id="2183608646556468874">Telefonní číslo</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}few{# adresy}many{# adresy}other{# adres}}</translation>
@@ -1732,6 +1733,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Zavřít</translation>
+<translation id="5238301240406177137">Uložit do účtu</translation>
 <translation id="5239623327352565343">Poloha je povolena</translation>
 <translation id="5242889659037569123">Zavazadla a cestovní příslušenství</translation>
 <translation id="5244732203286792411">Načítání…
@@ -2247,6 +2249,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6545864417968258051">Vyhledávání Bluetooth</translation>
 <translation id="6547208576736763147">Dva otvory vlevo</translation>
 <translation id="6549443526281184652">Kostýmy</translation>
+<translation id="6551873053534932690">Uložit adresu do účtu?</translation>
 <translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="6556866813142980365">Opakovat</translation>
 <translation id="6557715786897013164">14 × 17″</translation>

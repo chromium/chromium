@@ -512,6 +512,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2166049586286450108">Volle administrateurtoegang</translation>
 <translation id="2166378884831602661">Hierdie werf kan nie 'n veilige verbinding bied nie</translation>
 <translation id="2168151236314517198">Administrateursbeleid verhoed dat hierdie inhoud gedruk kan word</translation>
+<translation id="2176974405772725904">Stoor adres in rekening</translation>
 <translation id="2181821976797666341">Beleide</translation>
 <translation id="2183608646556468874">Foonnommer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adresse}}</translation>
@@ -1739,6 +1740,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Verwerp</translation>
+<translation id="5238301240406177137">Stoor in rekening</translation>
 <translation id="5239623327352565343">Ligging toegelaat</translation>
 <translation id="5242889659037569123">Bagasie en reisbykomstighede</translation>
 <translation id="5244732203286792411">Laai tans …
@@ -2256,6 +2258,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6545864417968258051">Bluetooth-opsporing</translation>
 <translation id="6547208576736763147">Dubbelpons links</translation>
 <translation id="6549443526281184652">Kostuums</translation>
+<translation id="6551873053534932690">Stoor adres in rekening?</translation>
 <translation id="6554732001434021288">Laas <ph name="NUM_DAYS" /> dae gelede besoek</translation>
 <translation id="6556866813142980365">Herdoen</translation>
 <translation id="6557715786897013164">14x17 dm.</translation>

@@ -2214,6 +2214,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2852385257476173980">Internetdan foydalanishingiz davomida siz ochgan saytlar roʻyxati shu yerda chiqishi mumkin</translation>
 <translation id="285241945869362924">Audio va video ijrosida taglavhalarni avtomatik yaratadi. Audio va taglavhalar qurilmaning oʻzida qayta ishlanadi.</translation>
 <translation id="2856776373509145513">Yangi konteyner yaratish</translation>
+<translation id="2859741939921354763">Parollarni <ph name="BRAND" /> ga import qilish</translation>
 <translation id="2861301611394761800">Tizim yangilandi. Endi kompyuterni qayta ishga tushiring.</translation>
 <translation id="2861941300086904918">Xavfsizlik menejeri – Native Client</translation>
 <translation id="2862815659905780618">Linux dasturlash muhitini olib tashlash</translation>
@@ -4295,6 +4296,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="47158868804223727">Guruh nomini bosib, uni yoyish yoki yigʻish mumkin</translation>
 <translation id="4716483597559580346">Xavfsizlikni oshirish uchun qurilmani zavod sozlamalariga qaytaring</translation>
 <translation id="471759229191973607">Mavzuni almashtirish</translation>
+<translation id="4718046540206070045">Faqatgina brauzer emas</translation>
 <translation id="4718564115458102525">Klaviatura aniqlanmadi</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> hisobi paroli</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekraningizni uzatmoqda.</translation>
@@ -5442,6 +5444,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5787146423283493983">Asosiy kelishuv</translation>
 <translation id="5787420647064736989">Qurilma nomi</translation>
 <translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> qurilmasida bir yoki undan ortiq bo‘lim qo‘shib bo‘lmadi.</translation>
+<translation id="5789581866075720267">Bu qurilmada parollarni <ph name="BRAND" /> ga import qilish uchun CSV faylni tanlang.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Bajarildi</translation>
 <translation id="5790651917470750848">Port allaqachon uzatilmoqda</translation>
@@ -5686,6 +5689,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5984222099446776634">So‘nggi ochilgan sahifalar</translation>
 <translation id="5985458664595100876">URL manzil yaroqsiz kiritildi. Faqat \\server\share yoki smb://server/share kabi formatlar ishlaydi xolos.</translation>
 <translation id="598810097218913399">Tayinlovni bekor qilish</translation>
+<translation id="5989629029899728491">Cookie fayllardan tashqari</translation>
 <translation id="5990266201903445068">Faqat Wi-Fi</translation>
 <translation id="5990386583461751448">Tarjima qilindi</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Initernetda ishlashda davom etish uchun administratordan bu ilovani olib tashlashni so‘rang.}other{Initernetda ishlashda davom etish uchun administratordan bu ilovalarni olib tashlashni so‘rang.}}</translation>
@@ -5796,6 +5800,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – nomsiz guruhning qismi</translation>
 <translation id="6085886413119427067">Xavfsiz aloqadan foydalanadigan saytlarga qanday ulanishini aniqlaydi</translation>
 <translation id="6086004606538989567">Siz kirgan hisob bu qurilmadan foydalana olmaydi.</translation>
+<translation id="6086347269144967242">Biriktirilgan qurilma haqidagi axborot va uning maʼlumotlarini oʻqish</translation>
 <translation id="6086846494333236931">Administratoringiz tomonidan o‘rnatilgan</translation>
 <translation id="6087746524533454243">Brauzer haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="6087960857463881712">Hayratdagi yuz</translation>
@@ -8363,6 +8368,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Bu qurilma allaqachon qayd qilingan. Uni qaytadan registratsiya qilish shart emas.</translation>
 <translation id="8357388086258943206">Linux oʻrnatilishida xatolik yuz berdi</translation>
+<translation id="8357591920094529889">Bu qoʻllanma Chrome bilan ishlashdagi muhim maqsadlarni tanlashga yordam beradi. Shuningdek, Chrome bilan istalgan tarzda ishlash uchun tanlangan maqsadlarni bajarishga yordam beradi.</translation>
 <translation id="8358685469073206162">Sahifalar tiklansinmi?</translation>
 <translation id="8358912028636606457">Bu qurilma varaqdagi ovozni translatsiya qila olmaydi.</translation>
 <translation id="835951711479681002">Google hisobingizga saqlash</translation>
@@ -8416,6 +8422,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8398877366907290961">Davom etish</translation>
 <translation id="8399282673057829204">Parolni ochish</translation>
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
+<translation id="8403618281196981152">Chromedagi maʼlumotlar</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> faqat saqlangan parollaringizni tekshira oladi</translation>
 <translation id="8405046151008197676">Oxirgi yangilanishdagi asosiy oʻzgarishlar</translation>
 <translation id="8407199357649073301">Jurnalga yozish darajasi:</translation>
@@ -8475,6 +8482,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8460932807646981183">Qidiruv vositalari va sayt qidiruvini boshqarish</translation>
 <translation id="84613761564611563">Tarmoqni sozlash interfeysi so‘raldi, kutib turing...</translation>
 <translation id="8461914792118322307">Proksi-server sozlamalari</translation>
+<translation id="8461973047386722744">Hech qanday parol topilmadi</translation>
 <translation id="8463001014623882202">Hisob tekshiruv bajarilmadi</translation>
 <translation id="846374874681391779">Yuklanmalar paneli</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> o‘chiq.</translation>
@@ -8533,6 +8541,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>
 <translation id="8513108775083588393">Avto-burilish</translation>
+<translation id="8513357934662532537"><ph name="USER_EMAIL" /> parollarini <ph name="BRAND" /> ga import qilish uchun CSV faylni tanlang.</translation>
 <translation id="8514746246728959655">Boshqa elektron kalit bilan urining</translation>
 <translation id="8514955299594277296">Saytlarga maʼlumotlarni qurilmangizga saqlashga ruxsat bermang (tavsiya etilmaydi)</translation>
 <translation id="8517759303731677493">Tahrirlash…</translation>

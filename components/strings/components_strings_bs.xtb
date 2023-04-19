@@ -512,6 +512,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2166049586286450108">Puni administratorski pristup</translation>
 <translation id="2166378884831602661">Ova web lokacija ne može obezbijediti sigurnu vezu</translation>
 <translation id="2168151236314517198">Administratorska pravila blokiraju štampanje ovog sadržaja</translation>
+<translation id="2176974405772725904">Sačuvajte adresu na račun</translation>
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2183608646556468874">Broj telefona</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
@@ -1226,6 +1227,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4040350669425716613">Fakulteti i univerziteti</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
+<translation id="4047620889508350431">Sada možete upotrebljavati adrese sa svojeg Google računa.</translation>
 <translation id="405399507749852140">Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4063063121357725926">Dozvolite Googleu da vam pomogne da pronađete popuste za sadržaj kolica</translation>
@@ -1739,6 +1741,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5238301240406177137">Sačuvajte na račun</translation>
 <translation id="5239623327352565343">Lokacija je dozvoljena</translation>
 <translation id="5242889659037569123">Prtljaga i putna oprema</translation>
 <translation id="5244732203286792411">Učitavanje…
@@ -2256,6 +2259,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6545864417968258051">Skeniranje Bluetootha</translation>
 <translation id="6547208576736763147">Dvostruko bušenje na lijevoj strani</translation>
 <translation id="6549443526281184652">Kostimi</translation>
+<translation id="6551873053534932690">Sačuvati adresu na račun?</translation>
 <translation id="6554732001434021288">Posljednji put je posjećeno prije <ph name="NUM_DAYS" /> dan(a)</translation>
 <translation id="6556866813142980365">Ponovi</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>

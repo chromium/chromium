@@ -225,6 +225,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1978498689038657292">Teksto įvestis</translation>
 <translation id="1980808257969311265">Prisijungti prie: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Rodyti ankstesnę savaitę</translation>
+<translation id="1986150224850161328">Įsitikinkite, kad telefonas ir „Chromebook“ prijungti prie to paties tinklo, tada bandykite dar kartą. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Negalima užfiksuoti turinio</translation>
 <translation id="1990046457226896323">Kalbos failai atsisiųsti</translation>
 <translation id="1993072747612765854">Sužinokite daugiau apie naujausią „<ph name="SYSTEM_APP_NAME" />“ naujinį</translation>
@@ -373,6 +374,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2761723519669354964">Atidaryti paryškintą elementą iš lentynos</translation>
 <translation id="2778650143428714839">„<ph name="DEVICE_TYPE" />“ tvarko <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Išjungti užfiksavimo režimą</translation>
+<translation id="2785499565474703580">Prijungtas 1 įrenginys</translation>
 <translation id="2791421900609674576">Matysite rekomendacijas, kad galėtumėte tęsti nuo ten, kur baigėte. Palieskite ir palaikykite, jei norite pašalinti rekomendacijas.</translation>
 <translation id="2792498699870441125">„Alt“ + paieškos klavišas</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@ Naujas įdiegimas</translation>
 <translation id="6941333068993625698">Pateikti atsiliepimą</translation>
 <translation id="6942518653766415536">Įrašo formato meniu</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
+<translation id="6945922087561257829">Telefone naudojamas mobiliojo ryšio tinklas. Įsitikinkite, kad telefonas ir „Chromebook“ prijungti prie to paties „Wi-Fi“ tinklo, tada bandykite dar kartą. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Nesuaktyvinta. Susisiekite su operatoriumi.</translation>
 <translation id="6961121602502368900">Telefono nutildymo funkcija nepasiekiama darbo profilyje</translation>
 <translation id="6961840794482373852">Pakeistas spartusis klavišas „Alt“ + rodyklė aukštyn. Jei norite naudoti klavišą „Page Up“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę aukštyn.</translation>
@@ -1331,6 +1334,7 @@ Naujas įdiegimas</translation>
 <translation id="7188494361780961876">Meniu perkeltas į viršutinį kairįjį ekrano kampą.</translation>
 <translation id="7189412385142492784">Kaip toli yra Venera</translation>
 <translation id="7198435252016571249">Fotoaparato peržiūra pridėta apatiniame dešiniajame kampe. Nesuderinama su sistemos platforma.</translation>
+<translation id="7219573373513695352">Nėra susietų įrenginių</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kad būtų pritaikytas naujinys, šį „Chromebook“ reikia paleisti iš naujo. Tai gali užtrukti iki minutės</translation>
 <translation id="7256634071279256947">Užpakalinis mikrofonas</translation>
 <translation id="7258828758145722155">Redaguota vakar</translation>
@@ -1481,6 +1485,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7902625623987030061">Palieskite kontrolinio kodo jutiklį</translation>
 <translation id="7904094684485781019">Šios paskyros administratorius neleidžia naudoti kelių paskyrų.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Prijungtų įrenginių: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Kalba dabar apdorojama vietoje ir diktavimas veikia neprisijungus</translation>
 <translation id="7932451802722951285">Atidaryti „Google“ kalendoriuje</translation>
 <translation id="7933084174919150729">„Google“ padėjėjas pasiekiamas tik pagrindiniame profilyje.</translation>

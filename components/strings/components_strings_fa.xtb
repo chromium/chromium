@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">دستگاه‌های بلوتوث</translation>
 <translation id="1662550410081243962">ذخیره و تکمیل روش‌های پرداخت</translation>
 <translation id="1663943134801823270">‏کارت‌ها و نشانی‌ها از Chrome‌ هستند. می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> مدیریت کنید.</translation>
+<translation id="1668071460721346172">دریافت ایمیل</translation>
 <translation id="1671391448414634642">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">ابتدا لبه کوتاه</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید.</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1807528111851433570">صفحه شروع</translation>
+<translation id="180757923930449935">(۶۴ بیتی شبیه‌سازی‌شده)</translation>
 <translation id="180991881384371158">‏کد تأیید کارت (CVC) پشت کارتتان درج شده است. این کد همان ۳ رقم آخر درج‌شده در بالا سمت راست چارگوش امضا است.</translation>
 <translation id="181000283860817563">پیگیری قیمت‌ها در چندین سایت</translation>
 <translation id="1810391395243432441">با قفل صفحه از گذرواژه‌ها محافظت کنید</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">دسترسی کامل سرپرست</translation>
 <translation id="2166378884831602661">این سایت نمی‌تواند اتصالی ایمن ارائه دهد</translation>
 <translation id="2168151236314517198">خط‌مشی سرپرست چاپ این محتوا را مسدود کرده است</translation>
+<translation id="2176974405772725904">ذخیره نشانی در حساب</translation>
 <translation id="2181821976797666341">خط‌ مشی‌ها</translation>
 <translation id="2183608646556468874">شماره تلفن</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{۱ نشانی}one{# نشانی}other{# نشانی}}</translation>
@@ -1586,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{هیچ‌کدام}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />، <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />، <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">جستجوی <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">خودکار (پیش‌فرض)</translation>
+<translation id="4879723019639546076">‏این نشانی فقط در Chrome ذخیره شده است. برای استفاده از آن در سراسر محصولات Google، آن را در «حساب Google» (<ph name="ACCOUNT" />) ذخیره کنید.</translation>
 <translation id="4880827082731008257">سابقه جستجو</translation>
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4881808915112408168">۳۱٫۵ × ۲۴ اینچ</translation>
@@ -1736,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">رد کردن</translation>
+<translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="5239623327352565343">مکان مجاز است</translation>
 <translation id="5242889659037569123">لوازم سفر و چمدان</translation>
 <translation id="5244732203286792411">درحال بار کردن…
@@ -2143,6 +2148,7 @@
 <translation id="6279183038361895380">برای نمایش نشان‌گر |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="6280223929691119688">تحویل به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="6284292079994426700">۳۸ × ۲۶ اینچ</translation>
+<translation id="6284517535531159884">نوع پیگردی گونه‌ها</translation>
 <translation id="6285507000506177184">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، کلید «ورود» را فشار دهید</translation>
 <translation id="6289939620939689042">رنگ صفحه</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2258,7 @@
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
 <translation id="6547208576736763147">دو سوراخ در چپ</translation>
 <translation id="6549443526281184652">لباس مناسبتی</translation>
+<translation id="6551873053534932690">نشانی در حساب ذخیره شود؟</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
 <translation id="6556866813142980365">انجام مجدد</translation>
 <translation id="6557715786897013164">۱۷ × ۱۴ اینچ</translation>
@@ -2316,6 +2323,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> می‌خواهد نقشه‌ای سه‌بعدی از محیط ایجاد کند و موقعیت دوربین را ردیابی کند</translation>
 <translation id="6718612893943028815">از دوربین استفاده شود؟</translation>
 <translation id="6721678857435001674">ساخت و مدل «کلید امنیتی» خود را ببینید</translation>
+<translation id="6726832600570791992">(۳۲ بیتی شبیه‌سازی‌شده)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">دوربین</translation>
 <translation id="6738516213925468394">داده‌ها با  <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> شما در <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>

@@ -225,6 +225,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1978498689038657292">Introducció de text</translation>
 <translation id="1980808257969311265">Uneix-te a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostra la setmana anterior</translation>
+<translation id="1986150224850161328">Assegura't que el telèfon i el Chromebook estiguin connectats a la mateixa xarxa i torna-ho a provar. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">No es pot capturar contingut</translation>
 <translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
 <translation id="1993072747612765854">Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2761723519669354964">Obre l'element marcat del prestatge</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionat per <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Surt del mode de captura</translation>
+<translation id="2785499565474703580">1 dispositiu connectat</translation>
 <translation id="2791421900609674576">Veuràs recomanacions per poder continuar des d'on ho vas deixar. Pots mantenir premuda qualsevol recomanació per suprimir-la.</translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
 <translation id="2797741504905337289">Grup de prestatges</translation>
@@ -1277,6 +1279,7 @@ Instal·lació nova</translation>
 <translation id="6941333068993625698">Envia suggeriments</translation>
 <translation id="6942518653766415536">Menú de format de gravació</translation>
 <translation id="6945221475159498467">Selecciona</translation>
+<translation id="6945922087561257829">El telèfon està utilitzant una xarxa mòbil. Assegura't que el telèfon i el Chromebook estiguin connectats a la mateixa xarxa Wi‐Fi i torna-ho a provar. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">No està activada. Contacta amb l'operador.</translation>
 <translation id="6961121602502368900">Silencia el telèfon no està disponible al perfil de treball</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
@@ -1331,6 +1334,7 @@ Instal·lació nova</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>
 <translation id="7198435252016571249">La càmera s'ha ajustat a l'extrem inferior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
+<translation id="7219573373513695352">Cap dispositiu connectat</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Aquest Chromebook s'ha de reiniciar perquè s'apliqui una actualització. Aquest procés pot tardar fins a 1 minut</translation>
 <translation id="7256634071279256947">Micròfon posterior</translation>
 <translation id="7258828758145722155">Editat ahir</translation>
@@ -1478,6 +1482,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7902625623987030061">Toca el sensor d'empremtes digitals</translation>
 <translation id="7904094684485781019">L'administrador d'aquest compte no ha permès l'inici de sessió múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositius connectats</translation>
 <translation id="7930731167419639574">La parla ara es processa localment i l'opció de dictat funciona sense connexió.</translation>
 <translation id="7932451802722951285">Obre a Google Calendar</translation>
 <translation id="7933084174919150729">L'Assistent de Google només està disponible per al perfil principal.</translation>

@@ -512,6 +512,7 @@
 <translation id="2166049586286450108">പൂർണ്ണമായ അഡ്‌മിൻ ആക്‌സസ്</translation>
 <translation id="2166378884831602661">ഈ സൈറ്റിന് സുരക്ഷിതമായ കണക്ഷൻ നൽകാനാകില്ല</translation>
 <translation id="2168151236314517198">ഈ ഉള്ളടക്കം പ്രിന്റ് ചെയ്യുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="2176974405772725904">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="2181821976797666341">നയങ്ങൾ</translation>
 <translation id="2183608646556468874">ഫോണ്‍ നമ്പര്‍</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{ഒരു വിലാസം}other{# വിലാസങ്ങൾ}}</translation>
@@ -1738,6 +1739,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 എക്‌സ്ട്രാ</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
+<translation id="5238301240406177137">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="5239623327352565343">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചു</translation>
 <translation id="5242889659037569123">ലഗേജും യാത്രാ ആക്‌സസറികളും</translation>
 <translation id="5244732203286792411">ലോഡ് ചെയ്യുന്നു...
@@ -2255,6 +2257,7 @@
 <translation id="6545864417968258051">Bluetooth സ്‌കാനിംഗ്</translation>
 <translation id="6547208576736763147">ഇടതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="6549443526281184652">വേഷവിധാനങ്ങൾ</translation>
+<translation id="6551873053534932690">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="6554732001434021288">അവസാനം സന്ദർശിച്ചത് <ph name="NUM_DAYS" /> ദിവസം മുമ്പായിരുന്നു</translation>
 <translation id="6556866813142980365">വീണ്ടും ചെയ്യുക</translation>
 <translation id="6557715786897013164">14 x 17 ഇഞ്ച്</translation>

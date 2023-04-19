@@ -70,6 +70,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1375321115329958930">Gespeicherte Passwörter</translation>
 <translation id="1377255359165588604">Die Synchronisierung funktioniert nicht mehr.</translation>
 <translation id="1377321085342047638">Kartennummer</translation>
+<translation id="1377508275003315939">Passwörter</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="138618066238211776">Als „<ph name="USER_NAME" />“ fortfahren</translation>
 <translation id="1400642268715879018">Letzte 4 Wochen</translation>
@@ -123,6 +124,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1750238553597293878">Passwörter in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="1752547299766512813">Passwörter speichern</translation>
 <translation id="1753905327828125965">Meistbesucht</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} schwaches Passwort}other{{count} schwache Passwörter}}</translation>
 <translation id="1767766085187034454">Google Übersetzer</translation>
 <translation id="1789803444939621101">Willkommen zurück, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Name des Karteninhabers</translation>
@@ -229,6 +231,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2576499762020411840">Passwort im Google-Konto speichern &amp; nutzen</translation>
 <translation id="2578571896248130439">Webseite senden</translation>
 <translation id="2584132361465095047">Konto hinzufügen...</translation>
+<translation id="2587010742985678408">{count,plural, =0{Keine gehackten Passwörter}=1{{count} gehacktes Passwort}other{{count} gehackte Passwörter}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Geöffnete Tabs, die einen Tag oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}other{Geöffnete Tabs, die {COUNT} Tage oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}}</translation>
 <translation id="2600682495497606169">Website-Cookies löschen</translation>
 <translation id="2609008503159898744">Alle Tabs schließen?</translation>
@@ -272,6 +275,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2797029671965852011">Verlauf anzeigen</translation>
 <translation id="2800683595868705743">Tab-Wechsler beenden</translation>
 <translation id="2815198996063984598">2. Tippe auf „Standard-Browser-App“</translation>
+<translation id="2818821771744632548">Du wurdest beim Zurücksetzen deines iPhones von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="2822917246944009066">Tab angepinnt</translation>
 <translation id="2830972654601096923">Adressen verwalten…</translation>
 <translation id="2834399722155632105">3. Tippe auf „Passwortoptionen“</translation>
@@ -322,7 +326,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3131206671572504478">Alle blockieren</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
 <translation id="3146109040683991651">Chrome als Standardbrowser festlegen</translation>
-<translation id="3152169319860972623">Der Passwortcheck prüft deine gespeicherten Passwörter und warnt dich im Fall von Datenpannen. <ph name="BEGIN_LINK" />Weitere Informationen.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Karte speichern</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
@@ -343,6 +346,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Deine Änderung konnte nicht gespeichert werden.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Diese Adresse wird nur in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Passwörter automatisch ausfüllen lassen</translation>
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
 <translation id="3272527697863656322">Abbrechen</translation>
@@ -532,6 +536,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4620246317052452550">Seiten, die du gelesen hast</translation>
 <translation id="4620888520263267479">Linkvorschau</translation>
 <translation id="4630540211544979320">Seiten übersetzen</translation>
+<translation id="4631335160486397366"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Preisbeobachtung gestoppt</translation>
@@ -666,6 +671,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5520466080178053306">Auf „Passwortmanager“ und dann auf „Hinzufügen“ tippen</translation>
 <translation id="5525095647255982834">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an.</translation>
 <translation id="5525269841082836315">Passphrase erstellen</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gefunden</translation>
 <translation id="5548760955356983418">Mit Handoff kannst du auf diesem Gerät auf einer Website stöbern und dann einfach auf deinem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock deines Macs angezeigt.
 
@@ -796,6 +802,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6293101329759844770">Wenn du Safe Browsing aktivieren möchtest, öffne <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippe auf „Safe Browsing“.</translation>
 <translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
 <translation id="6324669097367352121">Anmeldeeinstellungen</translation>
+<translation id="6331180460633101391"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
 <translation id="633809752005859102">Es ist ein schwerwiegendes Problem aufgetreten. Wir arbeiten daran.</translation>
 <translation id="6340285871011301182">Teilweise Übersetzung ist nicht verfügbar.</translation>
@@ -1107,6 +1114,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Nur auf diesem Gerät</translation>
+<translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="8271720166617117963">Akzeptieren und anmelden</translation>
 <translation id="8278938988428169257">Wort oder Wortgruppe eingeben</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
@@ -1155,6 +1163,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8620640915598389714">Bearbeiten</translation>
 <translation id="8626393685701737946">Du kannst unter Einstellungen &gt; Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Keine gehackten Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="8654802032646794042">Abbrechen</translation>
 <translation id="8663764600409216912">Du verwendest Passwörter, die nicht einfach zu erraten sein dürften</translation>
 <translation id="8668210798914567634">Diese Seite wurde in deiner Leseliste gespeichert.</translation>

@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">bluetooth түзмөктөрү</translation>
 <translation id="1662550410081243962">Төлөм ыкмаларын сактоо жана автоматтык түрдө толтуруу</translation>
 <translation id="1663943134801823270">Карточкалар жана даректер Chrome’дон алынган. Аларды <ph name="BEGIN_LINK" />Жөндөөлөрдөн<ph name="END_LINK" /> башкарсаңыз болот.</translation>
+<translation id="1668071460721346172">Электрондук кат алуу</translation>
 <translation id="1671391448414634642">Мындан кийин <ph name="SOURCE_LANGUAGE" /> тилиндеги барактар <ph name="TARGET_LANGUAGE" /> тилине которулат.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тилинен <ph name="TARGET_LANGUAGE" /> тилине</translation>
 <translation id="1682696192498422849">Биринчи туурасы боюнча</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Бул колдонмо Wi‑Fi эсептик дайындарын орнотууга уруксат сурап жатат. Тууралагандан кийин <ph name="DEVICE_TYPE" /> катышуучу Wi-Fi тармактарына автоматтык түрдө туташат. Бул эсептик дайындарды өчүрүү үчүн колдонмону чыгарып салыңыз.</translation>
 <translation id="1807246157184219062">Ачык</translation>
 <translation id="1807528111851433570">Баштоо барагы</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC кодуңуз картаңыздын артында жайгашкан. Ал колтамга кутусунан өйдө турган оң жактагы 3 орундуу сан.</translation>
 <translation id="181000283860817563">Бир нече сайттагы бааларга көз салуу</translation>
 <translation id="1810391395243432441">Сырсөздөрдү экрандын кулпусу менен коргоңуз</translation>
@@ -1585,6 +1587,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Жок}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> деп издөө</translation>
 <translation id="4879491255372875719">Автоматтык (демейки)</translation>
+<translation id="4879723019639546076">Бул дарек Chrome'го гана сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT" />) сактаңыз.</translation>
 <translation id="4880827082731008257">Издөө таржымалы</translation>
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйм</translation>
@@ -2142,6 +2145,7 @@
 <translation id="6279183038361895380">Курсоруңузду көрсөтүү үчүн |<ph name="ACCELERATOR" />| дегенди басыңыз</translation>
 <translation id="6280223929691119688">Бул дарекке жеткирүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
+<translation id="6284517535531159884">Модификациялар булагынын түрү</translation>
 <translation id="6285507000506177184">"Chrome'до жүктөлүп алынгандарды башкаруу" баскычы, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн Enter баскычын басыңыз</translation>
 <translation id="6289939620939689042">Барактын түсү</translation>
 <translation id="6293309776179964942">JIS B5 (182mm x 257mm)</translation>
@@ -2315,6 +2319,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> айланаңыздын 3D картасын түзүүгө же камераңыздын абалына көз салууга уруксат сурап жатат</translation>
 <translation id="6718612893943028815">Камера колдонулсунбу?</translation>
 <translation id="6721678857435001674">Коопсуздук ачкычынын өндүрүүчүсүн жана үлгүсүн көрүү</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Дайын-даректериңиз <ph name="BEGIN_LINK" />шайкештирүүчү өткөрүүчү сүйлөм<ph name="END_LINK" /> менен <ph name="TIME" /> шифрлеген. Шайкештирип баштоо үчүн, аны киргизиңиз.</translation>

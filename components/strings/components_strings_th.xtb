@@ -510,6 +510,7 @@
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
 <translation id="2166378884831602661">เว็บไซต์นี้ไม่สามารถให้การเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="2168151236314517198">นโยบายของผู้ดูแลระบบบล็อกการพิมพ์เนื้อหานี้ไว้</translation>
+<translation id="2176974405772725904">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="2181821976797666341">นโยบาย</translation>
 <translation id="2183608646556468874">หมายเลขโทรศัพท์</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{ที่อยู่ 1 รายการ}other{ที่อยู่ # รายการ}}</translation>
@@ -1736,6 +1737,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">ปิด</translation>
+<translation id="5238301240406177137">บันทึกในบัญชี</translation>
 <translation id="5239623327352565343">อนุญาตให้เข้าถึงตําแหน่ง</translation>
 <translation id="5242889659037569123">กระเป๋าและอุปกรณ์สำหรับการเดินทาง</translation>
 <translation id="5244732203286792411">กำลังโหลด...
@@ -2252,6 +2254,7 @@
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6547208576736763147">เจาะรูด้านซ้าย 2 รู</translation>
 <translation id="6549443526281184652">เครื่องแต่งกาย</translation>
+<translation id="6551873053534932690">บันทึกที่อยู่ในบัญชีไหม</translation>
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6557715786897013164">14 x 17 นิ้ว</translation>

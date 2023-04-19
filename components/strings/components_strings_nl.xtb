@@ -512,6 +512,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2166049586286450108">Volledige beheerderstoegang</translation>
 <translation id="2166378884831602661">Deze site kan geen beveiligde verbinding leveren</translation>
 <translation id="2168151236314517198">Het afdrukken van deze content is geblokkeerd op basis van het beheerdersbeleid</translation>
+<translation id="2176974405772725904">Adres opslaan in account</translation>
 <translation id="2181821976797666341">Beleid</translation>
 <translation id="2183608646556468874">Telefoonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adressen}}</translation>
@@ -1734,6 +1735,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Sluiten</translation>
+<translation id="5238301240406177137">Opslaan in account</translation>
 <translation id="5239623327352565343">Locatie toegestaan</translation>
 <translation id="5242889659037569123">Koffers en reisaccessoires</translation>
 <translation id="5244732203286792411">Laden...
@@ -2250,6 +2252,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
 <translation id="6547208576736763147">Twee perforaties links</translation>
 <translation id="6549443526281184652">Kostuums</translation>
+<translation id="6551873053534932690">Adres opslaan in account?</translation>
 <translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
 <translation id="6556866813142980365">Opnieuw</translation>
 <translation id="6557715786897013164">14 x 17 inch</translation>

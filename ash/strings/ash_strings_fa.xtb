@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">ورودی نوشتاری</translation>
 <translation id="1980808257969311265">پیوستن به <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">نمایش هفته گذشته</translation>
+<translation id="1986150224850161328">‏مطمئن شوید تلفن و Chromebook به یک شبکه متصل باشند و سپس دوباره امتحان کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">نمی‌توان محتوا را ضبط کرد</translation>
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
 <translation id="1993072747612765854">درباره جدیدترین به‌روزرسانی‌ <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">باز کردن مورد برجسته‌شده در قفسه</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">خروج از حالت ضبط</translation>
+<translation id="2785499565474703580">یک دستگاه متصل است</translation>
 <translation id="2791421900609674576">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید لمس کنید و نگه دارید.</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
 <translation id="2797741504905337289">گروه قفسه‌ها</translation>
@@ -1276,6 +1278,7 @@
 <translation id="6941333068993625698">ارسال بازخورد</translation>
 <translation id="6942518653766415536">منوی قالب ضبط</translation>
 <translation id="6945221475159498467">انتخاب</translation>
+<translation id="6945922087561257829">‏تلفن شما از شبکه تلفن همراه استفاده می‌کند. مطمئن شوید تلفن و Chromebook به یک شبکه Wi-Fi متصل باشند و سپس دوباره امتحان کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="6961121602502368900">«بی‌صدا کردن تلفن» در نمایه کاری دردسترس نیست</translation>
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
@@ -1330,6 +1333,7 @@
 <translation id="7188494361780961876">منو به گوشه راست بالای صفحه منتقل شد.</translation>
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
+<translation id="7219573373513695352">دستگاهی متصل نیست</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
 <translation id="7256634071279256947">میکروفون پشت</translation>
 <translation id="7258828758145722155">دیروز ویرایش شده است</translation>
@@ -1480,6 +1484,7 @@
 <translation id="7902625623987030061">حسگر اثر انگشت را لمس کنید</translation>
 <translation id="7904094684485781019">سرپرست این حساب اجازه ورود چندگانه به سیستم را نمی‌دهد.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> دستگاه متصل است</translation>
 <translation id="7930731167419639574">اکنون گفتار در دستگاه پردازش می‌شود و «تایپ صوتی» به‌صورت آفلاین کار می‌کند</translation>
 <translation id="7932451802722951285">‏باز کردن در «تقویم Google»</translation>
 <translation id="7933084174919150729">‏«دستیار Google» فقط برای نمایه اصلی دردسترس است.</translation>

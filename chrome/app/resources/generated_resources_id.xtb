@@ -2225,6 +2225,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2852385257476173980">Daftar situs yang Anda kunjungi dapat muncul di sini saat Anda menjelajahi web</translation>
 <translation id="285241945869362924">Otomatis membuat teks untuk audio dan video. Audio dan teks hanya ada di perangkat Anda.</translation>
 <translation id="2856776373509145513">Buat penampung baru</translation>
+<translation id="2859741939921354763">Impor sandi ke <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Pembaruan sistem selesai. Mulai ulang sistem.</translation>
 <translation id="2861941300086904918">Pengelola keamanan Program Asli</translation>
 <translation id="2862815659905780618">Hapus lingkungan pengembangan Linux</translation>
@@ -4304,6 +4305,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="47158868804223727">Klik nama grup untuk memperluas atau menciutkannya</translation>
 <translation id="4716483597559580346">Powerwash untuk keamanan tambahan</translation>
 <translation id="471759229191973607">Ubah tema</translation>
+<translation id="4718046540206070045">Lebih dari sekadar browser</translation>
 <translation id="4718564115458102525">Tidak ada keyboard terdeteksi</translation>
 <translation id="4722735765955348426">Sandi untuk <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> berbagi layar Anda.</translation>
@@ -5450,6 +5452,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5787146423283493983">Perjanjian Kunci</translation>
 <translation id="5787420647064736989">Nama perangkat</translation>
 <translation id="5788367137662787332">Maaf, setidaknya satu partisi pada perangkat <ph name="DEVICE_LABEL" /> tidak dapat dipasang.</translation>
+<translation id="5789581866075720267">Untuk mengimpor sandi ke <ph name="BRAND" /> di perangkat ini, pilih file CSV.</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5790085346892983794">Berhasil</translation>
 <translation id="5790651917470750848">Port penerusan sudah ada</translation>
@@ -5694,6 +5697,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5984222099446776634">Barusan Dikunjungi</translation>
 <translation id="5985458664595100876">Format URL tidak valid. Format yang didukung adalah \\server\share dan smb://server/share.</translation>
 <translation id="598810097218913399">Hapus penetapan</translation>
+<translation id="5989629029899728491">Lebih dari sekadar cookie</translation>
 <translation id="5990266201903445068">Khusus Wi-Fi</translation>
 <translation id="5990386583461751448">Diterjemahkan</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Untuk memastikan bahwa Anda tetap dapat mengakses web, minta administrator untuk menghapus aplikasi ini.}other{Untuk memastikan bahwa Anda tetap dapat mengakses web, minta administrator untuk menghapus aplikasi berikut.}}</translation>
@@ -5804,6 +5808,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Bagian dari grup tanpa nama</translation>
 <translation id="6085886413119427067">Menentukan cara terhubung ke situs melalui koneksi yang aman</translation>
 <translation id="6086004606538989567">Akun yang Anda verifikasi tidak diizinkan untuk mengakses perangkat ini.</translation>
+<translation id="6086347269144967242">Membaca informasi dan data perangkat yang terpasang</translation>
 <translation id="6086846494333236931">Dipasang oleh administrator Anda</translation>
 <translation id="6087746524533454243">Mencari halaman tentang browser? Buka</translation>
 <translation id="6087960857463881712">Wajah keren</translation>
@@ -8368,6 +8373,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Anda sudah mendaftarkan perangkat ini. Anda tidak perlu mendaftarkannya lagi.</translation>
 <translation id="8357388086258943206">Error saat menginstal Linux</translation>
+<translation id="8357591920094529889">Panduan ini membantu Anda memahami pilihan penting yang Anda miliki ketika menggunakan Chrome. Pantuan ini membantu Anda membuat pilihan tersebut, sehingga Chrome berfungsi sesuai keinginan Anda.</translation>
 <translation id="8358685469073206162">Pulihkan halaman?</translation>
 <translation id="8358912028636606457">Mentransmisikan audio tab tidak didukung di perangkat ini.</translation>
 <translation id="835951711479681002">Simpan di Akun Google Anda</translation>
@@ -8421,6 +8427,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8398877366907290961">Tetap lanjutkan</translation>
 <translation id="8399282673057829204">Lihat sandi</translation>
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
+<translation id="8403618281196981152">Data Anda di Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> dapat memeriksa sandi saat Anda menyimpannya</translation>
 <translation id="8405046151008197676">Dapatkan sorotan dari update terakhir</translation>
 <translation id="8407199357649073301">Tingkat Log:</translation>
@@ -8480,6 +8487,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8460932807646981183">Kelola mesin telusur dan penelusuran situs</translation>
 <translation id="84613761564611563">Antarmuka konfigurasi jaringan diminta, harap tunggu...</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8461973047386722744">Sandi tidak ditemukan</translation>
 <translation id="8463001014623882202">Otorisasi Gagal</translation>
 <translation id="846374874681391779">Kotak download</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> dinonaktifkan.</translation>
@@ -8538,6 +8546,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8512476990829870887">Akhiri Proses</translation>
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>
+<translation id="8513357934662532537">Untuk mengimpor sandi ke <ph name="BRAND" /> untuk <ph name="USER_EMAIL" />, pilih file CSV.</translation>
 <translation id="8514746246728959655">Coba kunci keamanan lain</translation>
 <translation id="8514955299594277296">Jangan izinkan situs menyimpan data di perangkat Anda (tidak direkomendasikan)</translation>
 <translation id="8517759303731677493">Edit…</translation>

@@ -132,6 +132,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1820259098641718022">Přidáno do seznamu četby</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Prolomená hesla}=1{{COUNT} prolomené heslo}few{{COUNT} prolomená hesla}many{{COUNT} prolomeného hesla}other{{COUNT} prolomených hesel}}</translation>
 <translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svou totožnost</translation>
+<translation id="1836891464494477513">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{Záložky byly uloženy do vašeho účtu Google {email}}many{Záložky byly uloženy do vašeho účtu Google {email}}other{Záložky byly uloženy do vašeho účtu Google {email}}}</translation>
 <translation id="1870148520156231997">Zobrazit heslo</translation>
 <translation id="1872096359983322073">Svítilna</translation>
 <translation id="1883255238294161206">Sbalit seznam</translation>
@@ -322,7 +323,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3131206671572504478">Blokovat vše</translation>
 <translation id="313283613037595347">Vytvořit novou anonymní kartu.</translation>
 <translation id="3146109040683991651">Nastavit Chrome jako výchozí prohlížeč</translation>
-<translation id="3152169319860972623">Kontrola hesel zkontroluje vaše uložená hesla a upozorní vás na jakékoli úniky hesel online. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Uložit kartu</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="3157684681743766797">Označit vše…</translation>
@@ -343,6 +343,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Změnu nebylo možné uložit.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Tato adresa je uložena pouze v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Automatické vyplnění hesel</translation>
 <translation id="3268451620468152448">Otevřené karty</translation>
 <translation id="3272527697863656322">Zrušit</translation>
@@ -1037,6 +1038,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7845466610722898">Zobrazit seznam četby</translation>
 <translation id="784551991304901159">Pokud chcete zobrazit obsah, v nabídce vyberte Zapnout</translation>
 <translation id="7846158885638438868">{count,plural, =1{Záložka byla přidána do složky „{title}“}few{Záložky byly přidány do složky „{title}“}many{Záložky byly přidány do složky „{title}“}other{Záložky byly přidány do složky „{title}“}}</translation>
+<translation id="7852017611907717397">VRÁTIT ZPĚT</translation>
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7856733331829174190">Stažení se nezdařilo</translation>
 <translation id="785938070103630874">Otevřete hesla, platební metody, adresy a podobně.</translation>

@@ -132,6 +132,7 @@
 <translation id="1820259098641718022">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}=1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="1832848789136765277">ನಿಮ್ಮ ಸಿಂಕ್ ಡೇಟಾವನ್ನು ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಲು, ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
+<translation id="1836891464494477513">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, {email}}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ, {email}}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ, {email}}}</translation>
 <translation id="1870148520156231997">ಪಾಸ್‌ವರ್ಡ್‌ ತೋರಿಸಿ</translation>
 <translation id="1872096359983322073">ಟಾರ್ಚ್</translation>
 <translation id="1883255238294161206">ಪಟ್ಟಿಯನ್ನು ಸಂಕುಚಿಸಿ</translation>
@@ -322,7 +323,6 @@
 <translation id="3131206671572504478">ಎಲ್ಲವನ್ನೂ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="313283613037595347">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ರಚಿಸಿ</translation>
 <translation id="3146109040683991651">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
-<translation id="3152169319860972623">ಪಾಸ್‌ವರ್ಡ್ ಪರೀಕ್ಷೆಯು ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸುತ್ತದೆ ಮತ್ತು ಯಾವುದೇ ಆನ್‌ಲೈನ್ ಉಲ್ಲಂಘನೆಗಳ ಕುರಿತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">ಕಾರ್ಡ್‌ ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="3157387275655328056">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="3157684681743766797">ಎಲ್ಲವನ್ನೂ ಗುರುತಿಸಿ…</translation>
@@ -343,6 +343,7 @@
 <translation id="3244271242291266297">ಮಿಮೀ</translation>
 <translation id="3245744387817103524">ನಿಮ್ಮ ಬದಲಾವಣೆಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3260117527409269737">ಈ ವಿಳಾಸವನ್ನು Chrome ಗೆ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ. ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು, ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">ಆಟೋಫಿಲ್ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="3268451620468152448">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="3272527697863656322">ರದ್ದುಮಾಡಿ</translation>
@@ -1037,6 +1038,7 @@
 <translation id="7845466610722898">ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="784551991304901159">ವಿಷಯವನ್ನು ನೋಡಲು, ಮೆನುವಿನಿಂದ 'ಆನ್ ಮಾಡಿ' ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7846158885638438868">{count,plural, =1{"{title}" ನಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ}one{"{title}" ನಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ}other{"{title}" ನಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7852017611907717397">ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="7853202427316060426">ಚಟುವಟಿಕೆ</translation>
 <translation id="7856733331829174190">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="785938070103630874">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಅಥವಾ ವಿಳಾಸ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ತೆರೆಯಿರಿ</translation>

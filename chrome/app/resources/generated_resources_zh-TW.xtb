@@ -496,6 +496,7 @@
             <ph name="LINE_BREAKS" />
            書籤、歷史記錄及已儲存的密碼不會受到影響。</translation>
 <translation id="1425040197660226913">無法上傳，請使用小於 20 MB 的圖片。</translation>
+<translation id="1425282319410216613">下載完成後不再顯示</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">「<ph name="APP_NAME" />」已遭封鎖</translation>
 <translation id="1426870617281699524">請點選 [再試一次] 並接受電腦顯示的提示</translation>
@@ -801,6 +802,7 @@
 <translation id="1666232093776384142">停用周邊裝置的資料存取權防護功能</translation>
 <translation id="1667842670298352129">讓系統大聲朗讀特定文字內容。請先選取畫面底部的「隨選朗讀」圖示，然後顯目顯示所需文字。你也可以使用鍵盤快速鍵：醒目顯示文字，然後按下搜尋鍵 + S 鍵。</translation>
 <translation id="1668435968811469751">手動註冊</translation>
+<translation id="1668804837842452164">儲存至 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
 <translation id="1668979692599483141">瞭解建議功能</translation>
 <translation id="1670399744444387456">基本</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 要求查看安全金鑰的製造商和型號</translation>
@@ -1566,6 +1568,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在過程中重新啟動。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
+<translation id="2306794767168143227">儲存至這部裝置的 <ph name="BRAND" /></translation>
 <translation id="2307462900900812319">設定網路</translation>
 <translation id="2307553512430195144">如果你同意，Google 助理會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能辨識<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
@@ -1902,6 +1905,7 @@
 <translation id="25899519884572181">結束閱讀器模式</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
+<translation id="2598710988533271874">有新版 Chrome 可安裝</translation>
 <translation id="2599048253926156421">使用者名稱已複製到剪貼簿</translation>
 <translation id="2602501489742255173">向上滑動即可開始使用</translation>
 <translation id="2603115962224169880">清理電腦</translation>
@@ -2210,6 +2214,7 @@
 <translation id="2852385257476173980">瀏覽網路時，你造訪的網站清單可能會顯示在這裡</translation>
 <translation id="285241945869362924">自動建立音訊和視訊的字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2856776373509145513">建立新容器</translation>
+<translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861941300086904918">Native Client 安全性管理員</translation>
 <translation id="2862815659905780618">移除 Linux 開發環境</translation>
@@ -3666,6 +3671,7 @@
 <translation id="4144468798716165316">快速指令</translation>
 <translation id="4146026355784316281">一律使用系統檢視器開啟</translation>
 <translation id="4146785383423576110">重設與清理</translation>
+<translation id="4147099377280085053">選取點字表</translation>
 <translation id="4147911968024186208">請再試一次。如果這個錯誤再次發生，請與你的產品支援代表聯絡。</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4150569944729499860">畫面內容</translation>
@@ -3887,6 +3893,7 @@
 <translation id="4366138410738374926">已開始列印</translation>
 <translation id="4367513928820380646">查看已移除的權限</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
+<translation id="436926121798828366">你隨時可以前往「<ph name="SETTINGS_LINK" />」變更這項設定</translation>
 <translation id="4369735607080757018">在網站間分享少數類型的資料，以評估廣告成效，例如你在哪個時段看到廣告</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4374805630006466253">使用其他手機或平板電腦</translation>
@@ -4288,6 +4295,7 @@
 <translation id="47158868804223727">按一下以展開或收合群組名稱</translation>
 <translation id="4716483597559580346">執行 Powerwash 以提升安全性</translation>
 <translation id="471759229191973607">變更主題</translation>
+<translation id="4718046540206070045">不只是瀏覽器</translation>
 <translation id="4718564115458102525">未偵測到鍵盤</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用你的畫面。</translation>
@@ -5223,6 +5231,7 @@
 <translation id="558170650521898289">Microsoft Windows 硬體驅動程式驗證</translation>
 <translation id="5581876958763461074">所有記事</translation>
 <translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
+<translation id="5582634344048669777">8 點</translation>
 <translation id="5582839680698949063">主選單</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">要儲存使用者名稱嗎？</translation>
@@ -5433,6 +5442,7 @@
 <translation id="5787146423283493983">金鑰協議</translation>
 <translation id="5787420647064736989">裝置名稱</translation>
 <translation id="5788367137662787332">很抱歉，<ph name="DEVICE_LABEL" /> 裝置上至少有一個分割區無法掛載。</translation>
+<translation id="5789581866075720267">如要在這部裝置上將密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案。</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">成功</translation>
 <translation id="5790651917470750848">轉送連接埠已經存在</translation>
@@ -5676,6 +5686,7 @@
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
 <translation id="598810097218913399">移除指派設定</translation>
+<translation id="5989629029899728491">使用 Cookie 以外的方式</translation>
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
@@ -5786,6 +5797,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名群組</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
 <translation id="6086004606538989567">你驗證的帳戶未經授權，無法存取這部裝置。</translation>
+<translation id="6086347269144967242">讀取附加的裝置資訊和資料</translation>
 <translation id="6086846494333236931">由您的管理員安裝</translation>
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">好看的臉蛋</translation>
@@ -5876,6 +5888,7 @@
 <translation id="6164832038898943453">新增要自動翻譯的語言</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166185671393271715">將密碼匯入 Chrome 中</translation>
+<translation id="6166659775803431">在你的購物車中</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169967265765719844">你可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -6773,6 +6786,7 @@
 <translation id="6968288415730398122">如要設定螢幕鎖定，請輸入你的密碼</translation>
 <translation id="6969047215179982698">關閉鄰近分享功能</translation>
 <translation id="6969216690072714773">請輸入這部裝置的相關資訊或更新現有資訊。</translation>
+<translation id="696942486482903620">將密碼儲存到 Google 帳戶後，你可以在這部裝置和任何已登入帳戶的裝置上使用這些密碼</translation>
 <translation id="6970480684834282392">啟動類型</translation>
 <translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 個密碼。</translation>
 <translation id="6970856801391541997">列印特定網頁</translation>
@@ -7037,6 +7051,7 @@
 <translation id="7222204278952406003">Chrome 是你的預設瀏覽器</translation>
 <translation id="7222232353993864120">電子郵件地址</translation>
 <translation id="7222235798733126207">限制網站之間分享的資訊</translation>
+<translation id="7222335051802562841">完成更新</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群組中有 1 個網站}other{<ph name="FPS_OWNER" /> 的群組中有 {MEMBERS} 個網站}}</translation>
 <translation id="7225082563376899794">填入密碼時使用 Windows Hello 驗證</translation>
 <translation id="7225179976675429563">找不到網路類型</translation>
@@ -7228,6 +7243,7 @@
 <translation id="7400447915166857470">要改回 <ph name="OLD_SEARCH_PROVIDER" /> 嗎？</translation>
 <translation id="7400839060291901923">在 <ph name="PHONE_NAME" /> 上設定連線</translation>
 <translation id="7401778920660465883">關閉這則訊息</translation>
+<translation id="7402198013420237102">要將已儲存的密碼移至你的 Google 帳戶嗎？</translation>
 <translation id="7403642243184989645">正在下載資源</translation>
 <translation id="7404065585741198296">接上 USB 傳輸線的手機</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{1 小時前已執行安全檢查}other{{NUM_HOURS} 小時前已執行安全檢查}}</translation>
@@ -8353,6 +8369,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">你已註冊這部裝置，因此不必再次註冊。</translation>
 <translation id="8357388086258943206">安裝 Linux 時發生錯誤</translation>
+<translation id="8357591920094529889">本指南可協助你瞭解使用 Chrome 時可執行哪些重要選擇，並協助你做出合適的選擇，讓 Chrome 按照你期望的方式運作。</translation>
 <translation id="8358685469073206162">你要還原網頁嗎？</translation>
 <translation id="8358912028636606457">這個裝置不支援分頁音訊投放功能。</translation>
 <translation id="835951711479681002">儲存在 Google 帳戶中</translation>
@@ -8406,6 +8423,7 @@
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8399282673057829204">查看密碼</translation>
 <translation id="8401432541486058167">請輸入與智慧型卡片相關聯的 PIN 碼。</translation>
+<translation id="8403618281196981152">你在 Chrome 中的資料</translation>
 <translation id="8403807918453631441"><ph name="BRAND" />可以檢查你儲存的密碼</translation>
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
@@ -8465,6 +8483,7 @@
 <translation id="8460932807646981183">管理搜尋引擎和網站搜尋</translation>
 <translation id="84613761564611563">網路設定使用者介面要求已送出，請稍候...</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8461973047386722744">找不到密碼</translation>
 <translation id="8463001014623882202">授權失敗</translation>
 <translation id="846374874681391779">下載內容列</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> 已停用。</translation>
@@ -8523,6 +8542,7 @@
 <translation id="8512476990829870887">結束處理程序</translation>
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
+<translation id="8513357934662532537">如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案。</translation>
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="8517759303731677493">編輯…</translation>
@@ -9363,6 +9383,7 @@
 <translation id="952471655966876828">裝置開啟或處於使用狀態時，會自動連線</translation>
 <translation id="953434574221655299">可以偵測你使用裝置的時間</translation>
 <translation id="956500788634395331">系統已限制可能有害的擴充功能</translation>
+<translation id="957179356621191750">6 點</translation>
 <translation id="957960681186851048">這個網站試圖自動下載多個檔案</translation>
 <translation id="960987915827980018">剩下約 1 個小時</translation>
 <translation id="962802172452141067">書籤資料夾樹狀結構</translation>

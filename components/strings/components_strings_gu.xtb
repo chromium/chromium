@@ -512,6 +512,7 @@
 <translation id="2166049586286450108">સંપૂર્ણ વ્યવસ્થાપક ઍક્સેસ</translation>
 <translation id="2166378884831602661">આ સાઇટ એક સુરક્ષિત કનેક્શન આપી શકતી નથી</translation>
 <translation id="2168151236314517198">વ્યવસ્થાપક પૉલિસીને કારણે આ કન્ટેન્ટ પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
+<translation id="2176974405772725904">એકાઉન્ટમાં ઍડ્રેસ સાચવો</translation>
 <translation id="2181821976797666341">પૉલિસીઓ</translation>
 <translation id="2183608646556468874">ફોન નંબર</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 સરનામું}one{# સરનામાં}other{# સરનામાં}}</translation>
@@ -1739,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
+<translation id="5238301240406177137">એકાઉન્ટમાં સાચવો</translation>
 <translation id="5239623327352565343">લોકેશનની મંજૂરી છે</translation>
 <translation id="5242889659037569123">સામાન અને મુસાફરીની વસ્તુ</translation>
 <translation id="5244732203286792411">લોડ કરી રહ્યાં છીએ…
@@ -2256,6 +2258,7 @@
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="6547208576736763147">ડાબી બાજુએ બે ચતુષ્કોણ કાણાં પાડો</translation>
 <translation id="6549443526281184652">પોશાકો</translation>
+<translation id="6551873053534932690">એકાઉન્ટમાં ઍડ્રેસ સાચવીએ?</translation>
 <translation id="6554732001434021288">છેલ્લે <ph name="NUM_DAYS" /> દિવસ પહેલાં મુલાકાત લીધી</translation>
 <translation id="6556866813142980365">ફરી કરો</translation>
 <translation id="6557715786897013164">14 x 17 ઇંચ</translation>

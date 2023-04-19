@@ -34,6 +34,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1148499908455722006">Åpne dialogboksen for informasjon om <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
+<translation id="1160215328209699296">på og i bruk</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C-kabelen din kobler seg kanskje ikke til skjermer på riktig måte</translation>
 <translation id="1175572348579024023">Rull</translation>
@@ -241,6 +242,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Kameraforhåndsvisningen er på</translation>
 <translation id="2067602449040652523">Lysstyrke på tastaturet</translation>
+<translation id="2075520525463668108">Slå av/på <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Sveip til høyre med fire fingre for å bytte til neste skrivebord</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
@@ -325,6 +327,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2487915095798731898">Bli med</translation>
 <translation id="2501920221385095727">Trege taster</translation>
 <translation id="2509468283778169019">Caps Lock er på</translation>
+<translation id="2514415433888497495">Stopp <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> er <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Lås opp vinduene</translation>
 <translation id="2530896289327917474">Slå markørsurfing på eller av</translation>
@@ -1520,6 +1523,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8051716679295756675">Det finnes allerede en mal med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
+<translation id="8079538659226626406">Skjermdeling</translation>
 <translation id="8083540854303889870">Lagret for senere bruk</translation>
 <translation id="8091153018031979607">Starter kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiske oppdateringer</translation>

@@ -4769,13 +4769,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5448022937220253000">Elige qué ocurrirá con los datos de usuario después de que se inhabilite <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API Event.path estará disponible.</translation>
 <translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es false y, si no se establece, es <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
-<translation id="5452167809842762761">Esta política se retiró en la versión M114. Servía para inhabilitar CECPQ2, pero CECPQ2 se ha inhabilitado de forma predeterminada y se sustituirá por una combinación de Kyber, el KEM poscuántico elegido por el NIST, y X25519, nuestro clásico algoritmo de acuerdo de claves estándar.
-
-Si esta política se habilita o no se configura, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado de CECPQ2, un algoritmo de acuerdo de claves poscuántico en TLS.
-
-      CECPQ2 genera mensajes de TLS más grandes que, en muy raras ocasiones, pueden provocar errores en algunos equipos de hardware de redes. A esta política se le puede asignar el valor False para inhabilitar CECPQ2 mientras se resuelven los problemas de redes.
-
-      Esta política es una medida temporal y se eliminará en futuras versiones de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Cuando un usuario cambie de un dispositivo <ph name="PRODUCT_OS_NAME" /> a otro, la versión 2 del servicio <ph name="PRODUCT_NAME" /> abrirá las ventanas de navegador y de aplicaciones del dispositivo anterior en el nuevo.
 Si se habilita esta política, se abrirán las ventanas de navegador y de aplicaciones del último dispositivo <ph name="PRODUCT_OS_NAME" /> utilizado por el usuario actual automáticamente al iniciar sesión.
 Si se inhabilita la política o no se establece, la configuración de restauración completa determinará qué debe abrirse al iniciar sesión.</translation>

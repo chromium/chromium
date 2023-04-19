@@ -512,6 +512,7 @@
 <translation id="2166049586286450108">ადმინისტრატორის სრული წვდომა</translation>
 <translation id="2166378884831602661">ეს საიტი ვერ უზრუნველყოფს დაცულ კავშირს</translation>
 <translation id="2168151236314517198">ამ კონტენტის ბეჭდვა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
+<translation id="2176974405772725904">შეინახეთ მისამართი ანგარიშში</translation>
 <translation id="2181821976797666341">წესები</translation>
 <translation id="2183608646556468874">ტელეფონის ნომერი</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 მისამართი}other{# მისამართი}}</translation>
@@ -1226,6 +1227,7 @@
 <translation id="4031179711345676612">მიკროფონი დაშვებულია</translation>
 <translation id="4040350669425716613">კოლეჯები და უნივერსიტეტები</translation>
 <translation id="4047351652147966654">18 x 24 დუიმი</translation>
+<translation id="4047620889508350431">ამიერიდან შეგიძლიათ გამოიყენოთ მისამართები თქვენი Google ანგარიშიდან.</translation>
 <translation id="405399507749852140">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს რომელიმე საიტზე</translation>
 <translation id="4056223980640387499">სეპია</translation>
 <translation id="4063063121357725926">მიეცით უფლება Google-ს, დაგეხმაროთ ფასდაკლებების პოვნაში თქვენს კალათებში არსებული პროდუქტებისთვის</translation>
@@ -1739,6 +1741,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
+<translation id="5238301240406177137">ანგარიშში შენახვა</translation>
 <translation id="5239623327352565343">მდებარეობაზე წვდომა დაშვებულია</translation>
 <translation id="5242889659037569123">სამგზავრო ჩანთები და სამოგზაურო აქსესუარები</translation>
 <translation id="5244732203286792411">მიმდინარეობს ჩატვირთვა...
@@ -2256,6 +2259,7 @@
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
 <translation id="6547208576736763147">ორმაგად გახვრეტა მარცხნივ</translation>
 <translation id="6549443526281184652">კოსტიუმები</translation>
+<translation id="6551873053534932690">გსურთ, შეინახოთ მისამართი ანგარიშში?</translation>
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
 <translation id="6556866813142980365">გამეორება</translation>
 <translation id="6557715786897013164">14 x 17 დუიმი</translation>
