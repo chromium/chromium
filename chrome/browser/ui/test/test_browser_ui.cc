@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_switches.h"
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -119,6 +120,15 @@ void TestBrowserUi::SetPixelMatchAlgorithm(
 
 void TestBrowserUi::ShowAndVerifyUi() {
   PreShow();
+#if BUILDFLAG(IS_WIN)
+  // Gold files for pixel tests are for light mode, so if dark mode is not
+  // forced, and host is in dark mode, skip test.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceDarkMode) &&
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    GTEST_SKIP() << "Host is in dark mode; skipping test";
+  }
+#endif  // BUILDFLAG(IS_WIN)
   ShowUi(NameFromTestCase());
   ASSERT_TRUE(VerifyUi());
   if (IsInteractiveUi())
