@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
 namespace {
 
@@ -135,28 +136,8 @@ BASE_FEATURE(kCacheResultsInDeviceMontiorMac,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 NSArray<AVCaptureDevice*>* ListCameras() {
-  // The awkward repeated if statements are required for the compiler to
-  // recognise that the contained code is protected by an API version check.
-  if (@available(macOS 10.15, *)) {
-    if (base::FeatureList::IsEnabled(
-            kUseAVCaptureDeviceDiscoverySessionDeviceMonitor)) {
-      // Query for all camera device types available on macOS. The others in the
-      // enum are only supported on iOS/iPadOS.
-      NSArray* captureDeviceType = @[
-        AVCaptureDeviceTypeBuiltInWideAngleCamera,
-        AVCaptureDeviceTypeExternalUnknown
-      ];
-
-      AVCaptureDeviceDiscoverySession* deviceDescoverySession =
-          [AVCaptureDeviceDiscoverySession
-              discoverySessionWithDeviceTypes:captureDeviceType
-                                    mediaType:AVMediaTypeVideo
-                                     position:
-                                         AVCaptureDevicePositionUnspecified];
-      return deviceDescoverySession.devices;
-    }
-  }
-  return [AVCaptureDevice devices];
+  return media::GetVideoCaptureDevices(base::FeatureList::IsEnabled(
+      kUseAVCaptureDeviceDiscoverySessionDeviceMonitor));
 }
 
 }  // namespace

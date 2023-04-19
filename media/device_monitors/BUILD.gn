@@ -29,6 +29,7 @@ source_set("device_monitors") {
   }
 
   if (is_mac) {
+    deps += [ "//media/base/mac" ]
     sources += [
       "device_monitor_mac.h",
       "device_monitor_mac.mm",
