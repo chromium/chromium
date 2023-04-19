@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 
 #include "base/json/json_reader.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc::input_overlay {

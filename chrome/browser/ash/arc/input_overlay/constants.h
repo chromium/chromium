@@ -9,6 +9,14 @@
 
 namespace arc::input_overlay {
 
+// About Json strings.
+constexpr char kMouseAction[] = "mouse_action";
+constexpr char kPrimaryClick[] = "primary_click";
+constexpr char kSecondaryClick[] = "secondary_click";
+constexpr char kHoverMove[] = "hover_move";
+constexpr char kPrimaryDragMove[] = "primary_drag_move";
+constexpr char kSecondaryDragMove[] = "secondary_drag_move";
+
 // System version for AlphaV2.
 constexpr char kSystemVersionAlphaV2[] = "0.2";
 
