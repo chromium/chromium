@@ -84,7 +84,8 @@ class VideoRendererImplTest : public testing::Test {
         decoder_(nullptr),
         demuxer_stream_(DemuxerStream::VIDEO),
         simulate_decode_delay_(false),
-        expect_init_success_(true) {
+        expect_init_success_(true),
+        time_source_(&tick_clock_) {
     null_video_sink_ = std::make_unique<NullVideoSink>(
         false, base::Seconds(1.0 / 60),
         base::BindRepeating(&MockCB::FrameReceived,
@@ -99,7 +100,6 @@ class VideoRendererImplTest : public testing::Test {
         true, &media_log_, nullptr, 0);
     renderer_->SetTickClockForTesting(&tick_clock_);
     null_video_sink_->set_tick_clock_for_testing(&tick_clock_);
-    time_source_.SetTickClockForTesting(&tick_clock_);
 
     // Start wallclock time at a non-zero value.
     AdvanceWallclockTimeInMs(12345);
