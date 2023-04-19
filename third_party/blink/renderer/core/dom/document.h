@@ -1213,7 +1213,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // service is unavailable).
   ScriptPromise hasPrivateToken(ScriptState* script_state,
                                 const String& issuer,
-                                const String& type,
                                 ExceptionState&);
 
   // Sends a query via Mojo to ask whether the user has a redemption record.

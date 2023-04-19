@@ -1128,9 +1128,9 @@ TEST_F(DocumentTest, HandlesDisconnectDuringHasPrivateToken) {
 
   Document& document = scope.GetDocument();
 
-  auto promise = document.hasPrivateToken(
-      scope.GetScriptState(), "https://issuer.example", "private-state-token",
-      scope.GetExceptionState());
+  auto promise =
+      document.hasPrivateToken(scope.GetScriptState(), "https://issuer.example",
+                               scope.GetExceptionState());
   DocumentTest::SimulateTrustTokenQueryAnswererConnectionError(&document);
 
   ASSERT_TRUE(promise.IsAssociatedWith(scope.GetScriptState()));
@@ -1153,9 +1153,8 @@ TEST_F(DocumentTest, RejectsHasPrivateTokenCallFromNonHttpNonHttpsDocument) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasPrivateToken");
 
-  auto promise =
-      document.hasPrivateToken(script_state, "https://issuer.example",
-                               "private-state-token", exception_state);
+  auto promise = document.hasPrivateToken(
+      script_state, "https://issuer.example", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1269,9 +1268,8 @@ TEST_F(DocumentTest, HasPrivateTokenSuccess) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasPrivateToken");
 
-  auto promise =
-      document.hasPrivateToken(script_state, "https://issuer.example",
-                               "private-state-token", exception_state);
+  auto promise = document.hasPrivateToken(
+      script_state, "https://issuer.example", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1298,9 +1296,8 @@ TEST_F(DocumentTest, HasPrivateTokenSuccessWithFalseValue) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasPrivateToken");
 
-  auto promise =
-      document.hasPrivateToken(script_state, "https://issuer.example",
-                               "private-state-token", exception_state);
+  auto promise = document.hasPrivateToken(
+      script_state, "https://issuer.example", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1327,9 +1324,8 @@ TEST_F(DocumentTest, HasPrivateTokenOperationError) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasPrivateToken");
 
-  auto promise =
-      document.hasPrivateToken(script_state, "https://issuer.example",
-                               "private-state-token", exception_state);
+  auto promise = document.hasPrivateToken(
+      script_state, "https://issuer.example", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1358,9 +1354,8 @@ TEST_F(DocumentTest, HasPrivateTokenInvalidArgument) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasPrivateToken");
 
-  auto promise =
-      document.hasPrivateToken(script_state, "https://issuer.example",
-                               "private-state-token", exception_state);
+  auto promise = document.hasPrivateToken(
+      script_state, "https://issuer.example", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1389,9 +1384,8 @@ TEST_F(DocumentTest, HasPrivateTokenResourceExhausted) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasPrivateToken");
 
-  auto promise =
-      document.hasPrivateToken(script_state, "https://issuer.example",
-                               "private-state-token", exception_state);
+  auto promise = document.hasPrivateToken(
+      script_state, "https://issuer.example", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();

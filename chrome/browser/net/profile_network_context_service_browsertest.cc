@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
     try {
       await fetch("/issue", {privateToken: {version: 1,
                                           operation: 'token-request'}});
-      return await document.hasPrivateToken($1, 'private-state-token');
+      return await document.hasPrivateToken($1);
     } catch {
       return false;
     }
