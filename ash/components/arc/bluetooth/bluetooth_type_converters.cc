@@ -277,11 +277,16 @@ TypeConverter<floss::BtSdpHeaderOverlay, bluez::BluetoothServiceRecordBlueZ>::
         }
         const std::string* uuid =
             protocol_record_sequence[0].value().GetIfString();
-        int uuid_actual;
-        if (!base::StringToInt(*uuid, &uuid_actual)) {
+        if (!uuid) {
+          continue;
+        }
+        std::vector<uint8_t> uuid_as_bytes =
+            device::BluetoothUUID(*uuid).GetBytes();
+        if (uuid_as_bytes.empty()) {
           break;
         }
-        if (uuid_actual != UUID_PROTOCOL_RFCOMM) {
+        if ((static_cast<uint16_t>(uuid_as_bytes[2] << 8) |
+             static_cast<uint16_t>(uuid_as_bytes[3])) != UUID_PROTOCOL_RFCOMM) {
           continue;
         }
         absl::optional<int> channel_number =
