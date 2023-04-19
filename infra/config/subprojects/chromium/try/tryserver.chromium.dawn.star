@@ -7,7 +7,6 @@ load("//lib/branches.star", "branches")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
-load("//project.star", "settings")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
@@ -36,9 +35,6 @@ try_.builder(
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
     main_list_view = "try",
-    properties = {
-        "root_solution_revision": settings.ref,
-    },
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -68,9 +64,6 @@ try_.builder(
         "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
     ],
     main_list_view = "try",
-    properties = {
-        "root_solution_revision": settings.ref,
-    },
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -101,9 +94,6 @@ try_.builder(
     ],
     os = os.MAC_ANY,
     main_list_view = "try",
-    properties = {
-        "root_solution_revision": settings.ref,
-    },
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -134,9 +124,6 @@ try_.builder(
     ],
     os = os.WINDOWS_ANY,
     main_list_view = "try",
-    properties = {
-        "root_solution_revision": settings.ref,
-    },
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -167,9 +154,6 @@ try_.builder(
     ],
     os = os.WINDOWS_ANY,
     main_list_view = "try",
-    properties = {
-        "root_solution_revision": settings.ref,
-    },
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
