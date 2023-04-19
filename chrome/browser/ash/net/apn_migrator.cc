@@ -290,6 +290,18 @@ void ApnMigrator::OnGetManagedProperties(
       pre_revamp_custom_apn->apn_types = {ApnType::kAttach, ApnType::kDefault};
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
+    } else if (!last_connected_attach_apn && last_connected_default_apn &&
+               pre_revamp_custom_apn->access_point_name ==
+                   (*last_connected_default_apn)->access_point_name) {
+      NET_LOG(EVENT) << "Network has no last connected attach APN but has "
+                        "a last connected default APN that matches the "
+                        "saved custom APN, migrating APN: "
+                     << guid << " in the Enabled state with Apn type Default";
+
+      pre_revamp_custom_apn->state = ApnState::kEnabled;
+      pre_revamp_custom_apn->apn_types = {ApnType::kDefault};
+      remote_cros_network_config_->CreateCustomApn(
+          guid, std::move(pre_revamp_custom_apn));
     }
   // TODO(b/162365553): Implement other cases of |last_connected_attach_apn|
   // and |last_connected_default_apn|.
