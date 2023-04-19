@@ -1,4 +1,7 @@
 <style include="cr-icons cr-shared-style"></style>
+<if expr="chromeos_ash">
+  <style include="cros-color-overrides"></style>
+</if>
 <style>
   #center-content {
     align-items: center;
@@ -48,10 +51,6 @@
     font-size: 10px;
     line-height: 12px;
     position: relative;
-  }
-
-  #buttonContents {
-    display: contents;
   }
 
   .card-icon {
@@ -117,22 +116,22 @@
           $i18n{nearbyShareOnboardingPageDeviceVisibility}
         </div>
         <cr-button id="visibilityButton"
-          on-click="switchToVisibilitySelectionView_"
-          aria-label="$i18n{nearbyShareOnboardingPageDeviceVisibility}
-              [[getVisibilitySelectionButtonText_()]]
-              [[getVisibilitySelectionButtonHelpText_()]]">
-          <div id = "buttonContents">
-            <iron-icon
+            on-click="switchToVisibilitySelectionView_"
+            aria-label="$i18n{nearbyShareOnboardingPageDeviceVisibility}
+                [[getVisibilitySelectionButtonText_()]]
+                [[getVisibilitySelectionButtonHelpText_()]]">
+          <iron-icon slot="prefix-icon"
               icon="nearby20:[[getVisibilitySelectionButtonIcon_()]]"
               class="card-icon">
-            </iron-icon>
-            <div id="visibilityModeLabel" class="card-label"
-              aria-hidden="true">
-              [[getVisibilitySelectionButtonText_()]]
-            </div>
-            <iron-icon id="arrowForward" icon="nearby20:chevron-right">
-            </iron-icon>
+          </iron-icon>
+          <div id="visibilityModeLabel" class="card-label"
+            aria-hidden="true">
+            [[getVisibilitySelectionButtonText_()]]
           </div>
+          <iron-icon slot="suffix-icon"
+              id="arrowForward"
+              icon="nearby20:chevron-right">
+          </iron-icon>
         </cr-button>
         <div id="deviceVisibilityHelp" aria-hidden="true">
           [[getVisibilitySelectionButtonHelpText_()]]
