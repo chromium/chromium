@@ -479,11 +479,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   expire_timer_.Stop();
   stop_timer_.Stop();
 
-  // Cancel any pending requests to the scoring model and invalidate the WeakPtr
-  // to prevent its callbacks from being called.
-  scoring_model_task_tracker_.TryCancelAll();
-  scoring_model_weak_ptr_ = nullptr;
-
   // Start the new query.
   sync_pass_done_ = false;
   // Use `start_time` rather than `metrics.start_time_` for
@@ -944,6 +939,9 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
 void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed) {
+  // Cancel the scoring model when updating `result_`.
+  CancelUrlScoringModel();
+
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.AutocompletionTime.UpdateResult");
 
@@ -1015,19 +1013,17 @@ void AutocompleteController::UpdateResult(
         input_, template_url_service_, triggered_feature_service_,
         preserve_default_after_transfer ? preserve_default_match : nullptr);
   } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
-    // The async ML scoring is only run once all the providers are done. Use a
-    // WeakPtr since the model is not owned and `this` may no longer be alive.
-    // `AnnotateResultAndNotifyChanged()` is called when the async ML scoring
-    // is done.
+    // The async scoring model is only run once all the providers are done. Use
+    // a WeakPtr since the model is not owned and `this` may no longer be alive.
+    // `AnnotateResultAndNotifyChanged()` is called when the model is done.
     // TODO(crbug.com/1405555): Deduplicate the matches before running the
     //  model in order to combine the signals. Optionally also trim the matches
     //  prior to running the model.
     // TODO(crbug.com/1405555): Investigate preserving the default match when
     //  reranking the matches using the model.
-    scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
     RunUrlScoringModel(base::BindOnce(
         &AutocompleteController::AnnotateResultAndNotifyChanged,
-        scoring_model_weak_ptr_, last_default_match,
+        weak_ptr_factory_.GetWeakPtr(), last_default_match,
         last_default_associated_keyword, force_notify_default_match_changed));
     return;
   } else {
@@ -1403,16 +1399,15 @@ void AutocompleteController::StopHelper(bool clear_result,
     provider->Stop(clear_result, due_to_user_inactivity);
   }
 
-  // Cancel any pending requests to the scoring model and invalidate the WeakPtr
-  // to prevent its callbacks from being called.
-  scoring_model_task_tracker_.TryCancelAll();
-  scoring_model_weak_ptr_ = nullptr;
-
   expire_timer_.Stop();
   stop_timer_.Stop();
   done_ = true;
   if (clear_result && !result_.empty()) {
+    // Cancel the scoring model when updating `result_`.
+    CancelUrlScoringModel();
+
     result_.Reset();
+
     // Pass false to clear only the popup and not the edit. Passing true would,
     // e.g., discard the selected suggestion when closing the omnibox.
     DelayedNotifyChanged(false);
@@ -1522,6 +1517,44 @@ bool AutocompleteController::ShouldRunProvider(
   return true;
 }
 
+void AutocompleteController::RunUrlScoringModel(
+    base::OnceClosure completion_callback) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::RunUrlScoringModel");
+
+  auto barrier_callback =
+      base::BarrierCallback<std::tuple<absl::optional<float>, size_t, GURL>>(
+          result_.size(),
+          base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
+                         weak_ptr_factory_.GetWeakPtr(), input_,
+                         base::ElapsedTimer(), std::move(completion_callback)));
+
+  for (size_t match_index = 0; match_index < result_.matches_.size();
+       match_index++) {
+    auto* match = result_.match_at(match_index);
+    // The scoring model only supports URL matches - bookmarks, history, etc.
+    // Call the model for those types and directly invoke the model callback for
+    // any other match type.
+    if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
+        omnibox::GROUP_OTHER_NAVS) {
+      barrier_callback.Run(
+          std::make_tuple(absl::nullopt, match_index, match->destination_url));
+      continue;
+    }
+
+    provider_client_->GetAutocompleteScoringModelService()
+        ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
+                                    match->scoring_signals, match_index,
+                                    match->destination_url, barrier_callback);
+  }
+}
+
+void AutocompleteController::CancelUrlScoringModel() {
+  // Try to cancel any pending requests to the scoring model and invalidate the
+  // WeakPtr to prevent its callbacks from being called.
+  scoring_model_task_tracker_.TryCancelAll();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void AutocompleteController::OnUrlScoringModelDone(
     AutocompleteInput input,
     const base::ElapsedTimer elapsed_timer,
@@ -1530,8 +1563,8 @@ void AutocompleteController::OnUrlScoringModelDone(
         outputs_and_match_info) {
   TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
   // The goal is to redistribute the existing relevance scores among the URL
-  // suggestions according to the ML model output values. Construct two max
-  // heaps for the (legacy) relevance score and the output scores.
+  // suggestions according to the model output values. Construct two max heaps
+  // for the (legacy) relevance score and the output scores.
   std::priority_queue<int> relevance_heap;
   std::priority_queue<std::pair<float, size_t>> output_and_match_index_heap;
   for (auto& [output, index, destination_url] : outputs_and_match_info) {
@@ -1594,35 +1627,4 @@ void AutocompleteController::OnUrlScoringModelDone(
   }
 
   std::move(completion_callback).Run();
-}
-
-void AutocompleteController::RunUrlScoringModel(
-    base::OnceClosure completion_callback) {
-  TRACE_EVENT0("omnibox", "AutocompleteController::RunUrlScoringModel");
-
-  auto barrier_callback =
-      base::BarrierCallback<std::tuple<absl::optional<float>, size_t, GURL>>(
-          result_.size(),
-          base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                         scoring_model_weak_ptr_, input_, base::ElapsedTimer(),
-                         std::move(completion_callback)));
-
-  for (size_t match_index = 0; match_index < result_.matches_.size();
-       match_index++) {
-    auto* match = result_.match_at(match_index);
-    // The ML scoring model only supports URL matches - bookmarks, history, etc.
-    // Call the model for those types and directly invoke the model callback for
-    // any other match type.
-    if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
-        omnibox::GROUP_OTHER_NAVS) {
-      barrier_callback.Run(
-          std::make_tuple(absl::nullopt, match_index, match->destination_url));
-      continue;
-    }
-
-    provider_client_->GetAutocompleteScoringModelService()
-        ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
-                                    match->scoring_signals, match_index,
-                                    match->destination_url, barrier_callback);
-  }
 }
