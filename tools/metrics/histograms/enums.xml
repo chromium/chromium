@@ -73608,8 +73608,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Browser tab using the active user Profile"/>
   <int value="4" label="Browser tab using an OTR Profile"/>
   <int value="5" label="Dialog using an incognito Profile (deprecated)"/>
-  <int value="6" label="Dialog using an OTR Profile due to policy"/>
-  <int value="7" label="Dialog using an OTR Profile due to parential controls"/>
+  <int value="6" label="Normal browser tab (OTR policy disabled)"/>
+  <int value="7" label="Normal browser tab (Parental controls)"/>
 </enum>
 
 <enum name="NetworkPortalSigninSource">

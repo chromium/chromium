@@ -125,7 +125,8 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
     }
     case SigninMode::kIncognitoDialogDisabled:
     case SigninMode::kIncognitoDialogParental: {
-      ShowDialog(GetOTROrActiveProfile(), url);
+      // TODO(b/271942666): Remove these modes entirely.
+      ShowTab(ProfileManager::GetActiveUserProfile(), url);
       break;
     }
   }
@@ -151,7 +152,9 @@ NetworkPortalSigninController::GetSigninMode() const {
     return SigninMode::kSigninDialog;
   }
 
-  // This pref defaults to true but may be set to false by policy.
+  // This pref defaults to true, but if a policy is active the policy value
+  // defaults to false ("any captive portal authentication pages are shown in a
+  // regular tab [if a proxy is active]").
   // Note: Generally we always want to show the portal signin UI in an incognito
   // tab to avoid providing cookies, see b/245578628 for details.
   const bool ignore_proxy = profile->GetPrefs()->GetBoolean(
@@ -243,10 +246,10 @@ std::ostream& operator<<(
       stream << "OTR Tab";
       break;
     case NetworkPortalSigninController::SigninMode::kIncognitoDialogDisabled:
-      stream << "OTR Dialog (Disabled)";
+      stream << "Incognito mode disabled, showing in normal tab";
       break;
     case NetworkPortalSigninController::SigninMode::kIncognitoDialogParental:
-      stream << "OTR Dialog (Parental)";
+      stream << "Parental mode disables Incognito, showing in normal tab";
       break;
   }
   return stream;

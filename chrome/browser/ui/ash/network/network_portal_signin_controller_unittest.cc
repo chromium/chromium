@@ -281,7 +281,8 @@ TEST_F(NetworkPortalSigninControllerTest,
   IncognitoModePrefs::SetAvailability(
       GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   ShowSignin();
-  EXPECT_EQ(controller_->dialog_url(), expected_url);
+  EXPECT_EQ(controller_->tab_url(), expected_url);
+  EXPECT_FALSE(controller_->profile()->IsOffTheRecord());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, ProxyPref) {
