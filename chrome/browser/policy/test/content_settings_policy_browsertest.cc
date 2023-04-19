@@ -204,15 +204,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, MAYBE_Block) {
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
   UpdateProviderPolicy(policies);
 
-  std::string rejection;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})"
-      "  .then(() => { domAutomationController.send('Success'); },"
-      "        reason => {"
-      "      domAutomationController.send(reason.name + ': ' + reason.message);"
-      "  });",
-      &rejection));
+  std::string rejection =
+      content::EvalJs(
+          web_contents,
+          "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})"
+          "  .then(() => 'Success',"
+          "        reason => reason.name + ': ' + reason.message"
+          "  );")
+          .ExtractString();
   EXPECT_THAT(rejection, testing::MatchesRegex("NotFoundError: .*policy.*"));
 }
 
@@ -452,17 +451,18 @@ IN_PROC_BROWSER_TEST_F(SensorsPolicyTest, BlockSensorApi) {
   // Set the policy to block Sensors.
   SetDefault(kBlockAll);
 
-  std::string rejection;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "const sensor = new AmbientLightSensor();"
-      "sensor.onreading = () => { domAutomationController.send('Success'); };"
-      "sensor.onerror = (event) => {"
-      "  domAutomationController.send(event.error.name + ': ' + "
-      "event.error.message);"
-      "};"
-      "sensor.start();",
-      &rejection));
+  std::string rejection =
+      content::EvalJs(
+          web_contents,
+          "const sensor = new AmbientLightSensor();"
+          "new Promise(resolve => {"
+          "  sensor.onreading = () => { resolve('Success'); };"
+          "  sensor.onerror = (event) => {"
+          "    resolve(event.error.name + ': ' +  event.error.message);"
+          "  };"
+          "  sensor.start();"
+          "});")
+          .ExtractString();
   EXPECT_THAT(rejection,
               testing::MatchesRegex("NotAllowedError: .*Permissions.*"));
 }

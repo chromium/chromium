@@ -1527,13 +1527,9 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   EXPECT_TRUE(focus_listener.WaitUntilSatisfied());
 
   // Verify the text inside the <input> is "A B X D".
-  std::string value;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(guest_rfh,
-                                            "window.domAutomationController."
-                                            "send(document.querySelector('"
-                                            "input').value)",
-                                            &value));
-  EXPECT_EQ("A B X D", value);
+  EXPECT_EQ("A B X D", content::EvalJs(guest_rfh,
+                                       "document.querySelector('"
+                                       "input').value"));
 
   // Now commit "C" to to replace the range (4, 5).
   // For OOPIF guests, the target for IME is the RWH for the guest's main frame.
@@ -1545,13 +1541,9 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   EXPECT_TRUE(input_listener.WaitUntilSatisfied());
 
   // Get the input value from the guest.
-  value.clear();
-  ASSERT_TRUE(ExecuteScriptAndExtractString(guest_rfh,
-                                            "window.domAutomationController."
-                                            "send(document.querySelector('"
-                                            "input').value)",
-                                            &value));
-  EXPECT_EQ("A B C D", value);
+  EXPECT_EQ("A B C D", content::EvalJs(guest_rfh,
+                                       "document.querySelector('"
+                                       "input').value"));
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1587,15 +1579,10 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
 
   // Clear the string as it already contains some text. Then verify the text in
   // the <input> is empty.
-  std::string value;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      guest_view->GetGuestMainFrame(),
-      "var input = document.querySelector('input');"
-      "input.value = '';"
-      "window.domAutomationController.send("
-      "    document.querySelector('input').value)",
-      &value));
-  EXPECT_EQ("", value);
+  EXPECT_EQ("", content::EvalJs(guest_view->GetGuestMainFrame(),
+                                "var input = document.querySelector('input');"
+                                "input.value = '';"
+                                "document.querySelector('input').value"));
 
   // Now set some composition text which should lead to an update in composition
   // range information.

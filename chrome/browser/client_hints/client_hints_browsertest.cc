@@ -1903,11 +1903,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
       blink::UserAgentOverride::UserAgentOnly("foo"), false);
   // Not enabled first.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  std::string header_value;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
+  std::string header_value =
+      EvalJs(web_contents, "document.body.textContent;").ExtractString();
   EXPECT_EQ(std::string::npos, header_value.find("foo")) << header_value;
 
   // Actually turn it on.
@@ -1916,16 +1913,12 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
       ->SetIsOverridingUserAgent(true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
+  header_value =
+      EvalJs(web_contents, "document.body.textContent;").ExtractString();
   EXPECT_EQ("foo\nNone\nNone", header_value);
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractString(web_contents,
-                                    "window.domAutomationController.send(JSON."
-                                    "stringify(navigator.userAgentData));",
-                                    &header_value));
+  header_value =
+      EvalJs(web_contents, "JSON.stringify(navigator.userAgentData);")
+          .ExtractString();
   EXPECT_EQ(R"({"brands":[],"mobile":false,"platform":""})", header_value);
 
   // Now actually provide values for the hints.
@@ -1937,16 +1930,12 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
       "Foobarnator", "3.14");
   web_contents->SetUserAgentOverride(ua_override, false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
+  header_value =
+      EvalJs(web_contents, "document.body.textContent;").ExtractString();
   EXPECT_EQ("foobar\n\"Foobarnator\";v=\"3.14\"\n?1", header_value);
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractString(web_contents,
-                                    "window.domAutomationController.send(JSON."
-                                    "stringify(navigator.userAgentData));",
-                                    &header_value));
+  header_value =
+      EvalJs(web_contents, "JSON.stringify(navigator.userAgentData);")
+          .ExtractString();
   const std::string kExpected =
       "{\"brands\":[{\"brand\":\"Foobarnator\",\"version\":\"3.14\"}],"
       "\"mobile\":true,\"platform\":\"\"}";
@@ -1986,17 +1975,12 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUAOverrideBrowserTest,
   // false values.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
 
-  std::string header_value;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
+  std::string header_value =
+      EvalJs(web_contents, "document.body.textContent;").ExtractString();
   EXPECT_EQ("foo\n\n?0", header_value);
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractString(web_contents,
-                                    "window.domAutomationController.send(JSON."
-                                    "stringify(navigator.userAgentData));",
-                                    &header_value));
+  header_value =
+      EvalJs(web_contents, "JSON.stringify(navigator.userAgentData);")
+          .ExtractString();
   EXPECT_EQ(R"({"brands":[],"mobile":false,"platform":""})", header_value);
 }
 

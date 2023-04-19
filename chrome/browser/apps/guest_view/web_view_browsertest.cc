@@ -2565,21 +2565,16 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DOMStorageIsolation) {
                                {.launch_as_platform_app = true}));
   // Verify that the browser tab's local/session storage does not have the same
   // values which were stored by the webviews.
-  std::string output;
   std::string get_local_storage(
-      "window.domAutomationController.send("
-      "window.localStorage.getItem('foo') || 'badval')");
+      "window.localStorage.getItem('foo') || 'badval'");
   std::string get_session_storage(
-      "window.domAutomationController.send("
-      "window.localStorage.getItem('baz') || 'badval')");
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetWebContentsAt(0),
-      get_local_storage.c_str(), &output));
-  EXPECT_STREQ("badval", output.c_str());
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetWebContentsAt(0),
-      get_session_storage.c_str(), &output));
-  EXPECT_STREQ("badval", output.c_str());
+      "window.localStorage.getItem('baz') || 'badval'");
+  EXPECT_EQ("badval",
+            content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                            get_local_storage));
+  EXPECT_EQ("badval",
+            content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                            get_session_storage));
 }
 
 // This tests how guestviews should or should not be able to find each other
@@ -4487,48 +4482,45 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
   // *TODO(https://crbug.com/1430991): The exact set of APIs and type of
   // context this is is a bit fuzzy. In practice, it's basically the same set
   // as is exposed to content scripts.
-  std::string accept_languages_result;
   static constexpr char kGetAcceptLanguages[] =
-      R"(chrome.i18n.getAcceptLanguages((languages) => {
-           let result = 'success';
-           if (chrome.runtime.lastError) {
-             result = 'Error: ' + chrome.runtime.lastError;
-           } else if (!languages || !Array.isArray(languages) ||
-                      !languages.includes('en')) {
-             result = 'Invalid return result: ' + JSON.stringify(languages);
-           }
-           domAutomationController.send(result);
+      R"(new Promise(resolve => {
+           chrome.i18n.getAcceptLanguages((languages) => {
+             let result = 'success';
+             if (chrome.runtime.lastError) {
+               result = 'Error: ' + chrome.runtime.lastError;
+             } else if (!languages || !Array.isArray(languages) ||
+                        !languages.includes('en')) {
+               result = 'Invalid return result: ' + JSON.stringify(languages);
+             }
+             resolve(result);
+           });
          });)";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_view_frame, kGetAcceptLanguages, &accept_languages_result));
-  EXPECT_EQ("success", accept_languages_result);
+  EXPECT_EQ("success", content::EvalJs(web_view_frame, kGetAcceptLanguages));
 
   // Finally, try accessing a privileged API, which shouldn't be available to
   // the embedded resource.
   // TODO(https://crbug.com/1430991): Even though the API call should fail, the
   // bindings are unexpectedly available here. Instead, we should just be able
   // to test `!chrome.app.window`.
-  std::string app_window_result;
   static constexpr char kCallAppWindowCreate[] =
       R"(if (chrome.app && chrome.app.window && chrome.app.window.create) {
-           chrome.app.window.create('embedder.html', {}, (res) => {
-             let reply = 'success';
-             if (!chrome.runtime.lastError) {
-               reply = 'No last error found. Result Type: ' + typeof res;
-             } else if (chrome.runtime.lastError.message !=
-                            'Access to extension API denied.') {
-               reply = 'Unexpected last error: ' +
-                       chrome.runtime.lastError.message;
-             }
-             domAutomationController.send(reply);
+           new Promise(resolve => {
+             chrome.app.window.create('embedder.html', {}, (res) => {
+               let reply = 'success';
+               if (!chrome.runtime.lastError) {
+                 reply = 'No last error found. Result Type: ' + typeof res;
+               } else if (chrome.runtime.lastError.message !=
+                              'Access to extension API denied.') {
+                 reply = 'Unexpected last error: ' +
+                         chrome.runtime.lastError.message;
+               }
+               resolve(reply);
+             });
            });
          } else {
-           domAutomationController.send(
-               'Unexpectedly missing `chrome.app.window.create`');
+            'Unexpectedly missing `chrome.app.window.create`';
          })";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_view_frame, kCallAppWindowCreate, &app_window_result));
-  EXPECT_EQ("success", app_window_result);
+  EXPECT_EQ("success", content::EvalJs(web_view_frame, kCallAppWindowCreate));
 }
 
 // Tests that a WebView can navigate an iframe to a blob URL that it creates
@@ -4552,12 +4544,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, BlobInWebviewAccessibleResource) {
   content::RenderFrameHost* blob_frame = ChildFrameAt(webview_rfh, 0);
   EXPECT_TRUE(blob_frame->GetLastCommittedURL().SchemeIsBlob());
 
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      blob_frame,
-      "window.domAutomationController.send(document.body.innerText);",
-      &result));
-  EXPECT_EQ("Blob content", result);
+  EXPECT_EQ("Blob content",
+            content::EvalJs(blob_frame, "document.body.innerText;"));
 }
 
 // Tests that a WebView cannot load a webview-inaccessible resource. See

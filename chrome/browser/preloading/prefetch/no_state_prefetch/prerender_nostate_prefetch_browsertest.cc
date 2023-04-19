@@ -969,10 +969,11 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(
       current_browser()->tab_strip_model()->GetActiveWebContents()));
 
-  std::string html_content;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      current_browser()->tab_strip_model()->GetActiveWebContents(),
-      "domAutomationController.send(document.body.innerHTML)", &html_content));
+  std::string html_content =
+      content::EvalJs(
+          current_browser()->tab_strip_model()->GetActiveWebContents(),
+          "document.body.innerHTML")
+          .ExtractString();
 
   // For any cross origin navigation (including prerender), SameSite Strict
   // cookies should not be sent, but Lax should.
@@ -998,10 +999,11 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(
       current_browser()->tab_strip_model()->GetActiveWebContents()));
 
-  std::string html_content;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      current_browser()->tab_strip_model()->GetActiveWebContents(),
-      "domAutomationController.send(document.body.innerHTML)", &html_content));
+  std::string html_content =
+      content::EvalJs(
+          current_browser()->tab_strip_model()->GetActiveWebContents(),
+          "document.body.innerHTML")
+          .ExtractString();
 
   // For any same origin navigation (including prerender), SameSite Strict
   // cookies should not be sent, but Lax should.

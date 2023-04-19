@@ -150,14 +150,12 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   EXPECT_TRUE(content::WaitForLoadStop(window->web_contents()));
 
   // Check whether the app can retrieve an OAuth2 access token.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      window->web_contents(),
-      "chrome.identity.getAuthToken({ 'interactive': false }, function(token) {"
-      "    window.domAutomationController.send(token);"
-      "});",
-      &result));
-  EXPECT_EQ(kTestAccessToken, result);
+  EXPECT_EQ(kTestAccessToken,
+            content::EvalJs(window->web_contents(),
+                            "new Promise(resolve => {"
+                            "  chrome.identity.getAuthToken({ 'interactive': "
+                            "    false }, resolve);"
+                            "});"));
 
   // Verify that the session is not considered to be logged in with a GAIA
   // account.

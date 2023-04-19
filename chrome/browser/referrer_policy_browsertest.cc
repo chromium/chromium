@@ -674,11 +674,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   content::RenderFrameHost* frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameIsChildOfMainFrame));
-  std::string title;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      frame,
-      "window.domAutomationController.send(document.title)",
-      &title));
+  std::string title = content::EvalJs(frame, "document.title").ExtractString();
   EXPECT_EQ("Referrer is " + https_server_.GetURL("/").spec(), title);
 
   // Reload the iframe.
@@ -699,10 +695,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
       base::BindRepeating(&content::FrameIsChildOfMainFrame));
 
   // Verify that the full url of the iframe was used as referrer.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      frame,
-      "window.domAutomationController.send(document.title)",
-      &title));
+  title = content::EvalJs(frame, "document.title").ExtractString();
   EXPECT_EQ(
       "Referrer is " + embedded_test_server()
                            ->GetURL("/referrer_policy/referrer-policy-log.html")

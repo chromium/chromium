@@ -50,8 +50,8 @@ class WakeLockBrowserTest : public InProcessBrowserTest {
 
   // Shorthand for starting the embedded web server and navigating to
   // simple.html.
-  // Tests calling this usually call content::ExecuteScriptAndExtractString()
-  // afterwards to run custom code on the dummy page.
+  // Tests calling this usually call content::EvalJs() afterwards to run custom
+  // code on the dummy page.
   void NavigateToSimplePage();
 
   // Registers a handle for "/js-response" in the embedded web server that

@@ -502,12 +502,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   // The middle tab only should have visible disposition.
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-    std::string document_visibility_state;
-    const char kGetStateJS[] =
-        "window.domAutomationController.send("
-        "window.document.visibilityState);";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        contents, kGetStateJS, &document_visibility_state));
+    const char kGetStateJS[] = "window.document.visibilityState;";
+    std::string document_visibility_state =
+        content::EvalJs(contents, kGetStateJS).ExtractString();
     if (i == 1) {
       EXPECT_EQ("visible", document_visibility_state);
     } else {

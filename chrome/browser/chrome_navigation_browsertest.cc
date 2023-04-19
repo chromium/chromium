@@ -218,11 +218,7 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
     {
       // Double-check that main_contents has expected window.name set.
       // This is a sanity check of test setup; this is not a product test.
-      std::string name_of_main_contents_window;
-      EXPECT_TRUE(ExecuteScriptAndExtractString(
-          main_contents, "window.domAutomationController.send(window.name)",
-          &name_of_main_contents_window));
-      EXPECT_EQ("main_contents", name_of_main_contents_window);
+      EXPECT_EQ("main_contents", EvalJs(main_contents, "window.name"));
 
       // Verify that the new contents doesn't have a window.opener set.
       bool window_opener_cast_to_bool = true;
@@ -270,13 +266,10 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
     // Verify that the new contents cannot find the old contents via
     // window.open. (i.e. window.open should open a new window, rather than
     // returning a reference to main_contents / old window).
-    std::string location_of_opened_window;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        new_contents,
-        "w = window.open('', 'main_contents');"
-        "window.domAutomationController.send(w.location.href);",
-        &location_of_opened_window));
-    EXPECT_EQ(url::kAboutBlankURL, location_of_opened_window);
+    EXPECT_EQ(url::kAboutBlankURL,
+              EvalJs(new_contents,
+                     "w = window.open('', 'main_contents');"
+                     "w.location.href;"));
   }
 };
 
@@ -545,17 +538,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::RenderFrameHost* error_host =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   std::string location;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      error_host,
-      "location='javascript:domAutomationController.send(location.href)';",
-      &location));
-  EXPECT_EQ(location, content::kUnreachableWebDataURL);
+  EXPECT_EQ(
+      EvalJs(
+          error_host,
+          "location='javascript:domAutomationController.send(location.href)';",
+          content::EXECUTE_SCRIPT_USE_MANUAL_REPLY),
+      content::kUnreachableWebDataURL);
 
   // The error page should have a unique origin.
-  std::string origin;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      error_host, "domAutomationController.send(self.origin);", &origin));
-  EXPECT_EQ("null", origin);
+  EXPECT_EQ("null", EvalJs(error_host, "self.origin;"));
 }
 
 // Test that web pages can't navigate to an error page URL, either directly or
@@ -629,12 +620,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // the error page content to be populated asynchronously by scripts after
   // DidFinishLoad.
   while (true) {
-    std::string content;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        web_contents,
-        "domAutomationController.send("
-        "    document.body ? document.body.innerText : '');",
-        &content));
+    std::string content =
+        EvalJs(web_contents, "document.body ? document.body.innerText : '';")
+            .ExtractString();
     if (content.find("HTTP ERROR 404") != std::string::npos)
       break;
     base::RunLoop run_loop;

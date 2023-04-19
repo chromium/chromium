@@ -2512,15 +2512,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
   ASSERT_TRUE(guest_mainframe);
 
   const std::string script =
-      "window.domAutomationController.send("
-      "    window.getComputedStyle(document.body, null)."
-      "    getPropertyValue('background-color'))";
-  std::string outer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(GetActiveWebContents(),
-                                                     script, &outer));
-  std::string inner;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractString(guest_mainframe, script, &inner));
+      "window.getComputedStyle(document.body, null)."
+      "getPropertyValue('background-color')";
+  std::string outer =
+      content::EvalJs(GetActiveWebContents(), script).ExtractString();
+  std::string inner = content::EvalJs(guest_mainframe, script).ExtractString();
   EXPECT_EQ(inner, outer);
 }
 

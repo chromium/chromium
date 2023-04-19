@@ -488,11 +488,7 @@ class WizardControllerTest : public OobeBaseTest {
   }
 
   std::string JSExecuteStringExpression(const std::string& expression) {
-    std::string result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send(" + expression + ");", &result));
-    return result;
+    return content::EvalJs(GetWebContents(), expression).ExtractString();
   }
 
   void CheckCurrentScreen(OobeScreenId screen) {

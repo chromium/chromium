@@ -466,28 +466,24 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   std::string GetEditableValue() {
-    std::string output;
     std::string script;
     switch (editable_type()) {
       case EditableType::kTextArea:
       case EditableType::kInput:
-        script =
-            "window.domAutomationController.send("
-            "document.getElementById('input').value)";
+        script = "document.getElementById('input').value";
         break;
       case EditableType::kContentEditable:
       case EditableType::kFormattedContentEditable:
         // Replace all non-breaking spaces with regular spaces. Otherwise,
         // string comparisons will unexpectedly fail.
         script =
-            "window.domAutomationController.send("
             "document.getElementById('input').innerText.replaceAll("
-            "'\u00a0', ' '));";
+            "'\u00a0', ' ');";
         break;
     }
-    CHECK(ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
-    return output;
+    return content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                           script)
+        .ExtractString();
   }
 
   void WaitForEditableValue(const std::string& value) {

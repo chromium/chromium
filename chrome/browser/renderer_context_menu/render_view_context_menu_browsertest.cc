@@ -1200,19 +1200,12 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
   // Verify that it's the correct tab.
   ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
   // Verify that the text on the page matches |kCorrectReferrer|.
-  std::string actual_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab,
-      "window.domAutomationController.send(window.document.body.textContent);",
-      &actual_referrer));
-  ASSERT_EQ(kCorrectReferrer, actual_referrer);
+  ASSERT_EQ(kCorrectReferrer,
+            content::EvalJs(tab, "window.document.body.textContent;"));
 
   // Verify that the referrer on the page matches |kCorrectReferrer|.
-  std::string page_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(window.document.referrer);",
-      &page_referrer));
-  ASSERT_EQ(kCorrectReferrer, page_referrer);
+  ASSERT_EQ(kCorrectReferrer,
+            content::EvalJs(tab, "window.document.referrer;"));
 }
 
 // Verify that "Open Link in Incognito Window " doesn't send referrer URL.
@@ -1228,8 +1221,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
   // Set up referrer URL with fragment.
   const GURL kReferrerWithFragment("http://foo.com/test#fragment");
-  const std::string kNoneReferrer("None");
-  const std::string kEmptyReferrer("");
 
   // Set up menu with link URL.
   content::ContextMenuParams context_menu_params;
@@ -1250,20 +1241,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
   // Verify that it's the correct tab.
   ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
-  // Verify that the text on the page matches |kNoneReferrer|.
-  std::string actual_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab,
-      "window.domAutomationController.send(window.document.body.textContent);",
-      &actual_referrer));
-  ASSERT_EQ(kNoneReferrer, actual_referrer);
+  // Verify that the text on the page is "None".
+  ASSERT_EQ("None", content::EvalJs(tab, "window.document.body.textContent;"));
 
-  // Verify that the referrer on the page matches |kEmptyReferrer|.
-  std::string page_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(window.document.referrer);",
-      &page_referrer));
-  ASSERT_EQ(kEmptyReferrer, page_referrer);
+  // Verify that the referrer on the page is "".
+  ASSERT_EQ("", content::EvalJs(tab, "window.document.referrer;"));
 }
 
 // Check filename on clicking "Save Link As" via a "real" context menu.
@@ -1759,21 +1741,10 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
   ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
 
   // Verify that the header text echoed on the page doesn't reveal `kReferrer`.
-  const std::string kNoneReferrer("None");
-  std::string actual_referrer;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab,
-      "window.domAutomationController.send(window.document.body.textContent);",
-      &actual_referrer));
-  ASSERT_EQ(kNoneReferrer, actual_referrer);
+  ASSERT_EQ("None", content::EvalJs(tab, "window.document.body.textContent;"));
 
   // Verify that the javascript referrer is empty.
-  std::string page_referrer;
-  const std::string kEmptyReferrer("");
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "window.domAutomationController.send(window.document.referrer);",
-      &page_referrer));
-  ASSERT_EQ(kEmptyReferrer, page_referrer);
+  ASSERT_EQ("", content::EvalJs(tab, "window.document.referrer;"));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

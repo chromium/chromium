@@ -101,13 +101,8 @@ class PasswordGenerationInteractiveTest
   }
 
   std::string GetFocusedElement() {
-    std::string focused_element;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        WebContents(),
-        "window.domAutomationController.send("
-        "    document.activeElement.id)",
-        &focused_element));
-    return focused_element;
+    return content::EvalJs(WebContents(), "document.activeElement.id")
+        .ExtractString();
   }
 
   void FocusPasswordField() {

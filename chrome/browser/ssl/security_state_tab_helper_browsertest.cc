@@ -110,14 +110,16 @@ using safe_browsing::LoginReputationClientResponse;
 using safe_browsing::RequestOutcome;
 
 const char kCreateFilesystemUrlJavascript[] =
-    "window.webkitRequestFileSystem(window.TEMPORARY, 4096, function(fs) {"
-    "  fs.root.getFile('test.html', {create: true}, function(fileEntry) {"
-    "    fileEntry.createWriter(function(writer) {"
-    "      writer.onwriteend = function(e) {"
-    "        window.domAutomationController.send(fileEntry.toURL());"
-    "      };"
-    "      var blob = new Blob(['<html>hello</html>'], {type: 'text/html'});"
-    "      writer.write(blob);"
+    "new Promise(resolve => {"
+    "  window.webkitRequestFileSystem(window.TEMPORARY, 4096, function(fs) {"
+    "    fs.root.getFile('test.html', {create: true}, function(fileEntry) {"
+    "      fileEntry.createWriter(function(writer) {"
+    "        writer.onwriteend = function(e) {"
+    "          resolve(fileEntry.toURL());"
+    "        };"
+    "        var blob = new Blob(['<html>hello</html>'], {type: 'text/html'});"
+    "        writer.write(blob);"
+    "      });"
     "    });"
     "  });"
     "});";
@@ -125,7 +127,7 @@ const char kCreateFilesystemUrlJavascript[] =
 const char kCreateBlobUrlJavascript[] =
     "var blob = new Blob(['<html>hello</html>'],"
     "                    {type: 'text/html'});"
-    "window.domAutomationController.send(URL.createObjectURL(blob));";
+    "URL.createObjectURL(blob);";
 
 enum CertificateStatus { VALID_CERTIFICATE, INVALID_CERTIFICATE };
 
@@ -330,9 +332,8 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
             "/empty.html")));
 
     // Create a URL and navigate to it.
-    std::string blob_or_filesystem_url;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        contents, javascript, &blob_or_filesystem_url));
+    std::string blob_or_filesystem_url =
+        content::EvalJs(contents, javascript).ExtractString();
     EXPECT_TRUE(GURL(blob_or_filesystem_url).SchemeIs(scheme));
 
     ASSERT_TRUE(

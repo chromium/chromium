@@ -208,10 +208,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistNonStandardScheme) {
   // Ensure the blocking page mentions the scheme.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      contents, "domAutomationController.send(document.body.textContent);",
-      &result));
+  std::string result =
+      content::EvalJs(contents, "document.body.textContent;").ExtractString();
   EXPECT_THAT(result, testing::HasSubstr("mailto"));
 }
 
@@ -307,21 +305,15 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistSubresources) {
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  std::string blocklisted_image_load_result;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(imageLoadResult)",
-      &blocklisted_image_load_result));
-  EXPECT_EQ("success", blocklisted_image_load_result);
+  EXPECT_EQ("success", content::EvalJs(
+                           browser()->tab_strip_model()->GetActiveWebContents(),
+                           "imageLoadResult"));
 
-  std::string blocklisted_iframe_load_result;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(iframeLoadResult)",
-      &blocklisted_iframe_load_result));
-  EXPECT_EQ("error", blocklisted_iframe_load_result);
+  EXPECT_EQ("error", content::EvalJs(
+                         browser()->tab_strip_model()->GetActiveWebContents(),
+                         "iframeLoadResult"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistClientRedirect) {

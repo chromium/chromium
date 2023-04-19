@@ -206,11 +206,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   // Check that JS storage APIs can be accessed successfully.
   EXPECT_TRUE(
       content::ExecuteScript(frame_host, "localStorage['foo'] = 'bar'"));
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame_host, "window.domAutomationController.send(localStorage['foo']);",
-      &result));
-  EXPECT_EQ(result, "bar");
+  EXPECT_EQ(content::EvalJs(frame_host, "localStorage['foo'];"), "bar");
   bool is_object_created = false;
   EXPECT_TRUE(ExecuteScriptAndExtractBool(
       frame_host,

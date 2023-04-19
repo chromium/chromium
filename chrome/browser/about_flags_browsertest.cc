@@ -87,16 +87,15 @@ void ToggleEnableDropdown(content::WebContents* contents,
 
 std::string GetOriginListText(content::WebContents* contents,
                               const char* experiment_id) {
-  std::string text;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      contents,
-      base::StringPrintf(
-          "var k = document.getElementById('%s');"
-          "var s = k.getElementsByClassName('experiment-origin-list-value')[0];"
-          "window.domAutomationController.send(s.value );",
-          experiment_id),
-      &text));
-  return text;
+  return content::EvalJs(
+             contents,
+             base::StringPrintf(
+                 "var k = document.getElementById('%s');"
+                 "var s = "
+                 "k.getElementsByClassName('experiment-origin-list-value')[0];"
+                 "s.value;",
+                 experiment_id))
+      .ExtractString();
 }
 
 bool IsDropdownEnabled(content::WebContents* contents,

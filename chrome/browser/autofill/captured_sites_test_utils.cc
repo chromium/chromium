@@ -2068,21 +2068,21 @@ bool TestRecipeReplayer::GetElementProperty(
     const std::string& element_xpath,
     const std::string& get_property_function_body,
     std::string* property) {
-  return ExecuteScriptAndExtractString(
-      frame,
-      base::StringPrintf(
-          "window.domAutomationController.send("
-          "    (function() {"
-          "      try {"
-          "        var element = function() {"
-          "          return automation_helper.getElementByXpath(`%s`);"
-          "        }();"
-          "        return function(target){%s}(element);"
-          "      } catch (ex) {}"
-          "      return 'Exception encountered';"
-          "    })());",
-          element_xpath.c_str(), get_property_function_body.c_str()),
-      property);
+  *property =
+      content::EvalJs(
+          frame, base::StringPrintf(
+                     "(function() {"
+                     "  try {"
+                     "    var element = function() {"
+                     "      return automation_helper.getElementByXpath(`%s`);"
+                     "    }();"
+                     "    return function(target){%s}(element);"
+                     "  } catch (ex) {}"
+                     "  return 'Exception encountered';"
+                     "})();",
+                     element_xpath.c_str(), get_property_function_body.c_str()))
+          .ExtractString();
+  return true;
 }
 
 bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
@@ -2194,28 +2194,22 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
     const std::string& target_element_xpath,
     content::RenderFrameHost* frame,
     gfx::Rect* output_rect) {
-  std::string rect_str;
   const std::string get_element_bounding_rect_js(base::StringPrintf(
-      "window.domAutomationController.send("
-      "    (function() {"
-      "       try {"
-      "         const element = automation_helper.getElementByXpath(`%s`);"
-      "         const rect = element.getBoundingClientRect();"
-      "         return Math.round(rect.left) + ',' + "
-      "                Math.round(rect.top) + ',' + "
-      "                Math.round(rect.width) + ',' + "
-      "                Math.round(rect.height);"
-      "       } catch(ex) {}"
-      "       return '';"
-      "    })());",
+      "(function() {"
+      "   try {"
+      "     const element = automation_helper.getElementByXpath(`%s`);"
+      "     const rect = element.getBoundingClientRect();"
+      "     return Math.round(rect.left) + ',' + "
+      "            Math.round(rect.top) + ',' + "
+      "            Math.round(rect.width) + ',' + "
+      "            Math.round(rect.height);"
+      "   } catch(ex) {}"
+      "   return '';"
+      "})();",
       target_element_xpath.c_str()));
 
-  if (!content::ExecuteScriptAndExtractString(
-          frame, get_element_bounding_rect_js, &rect_str)) {
-    ADD_FAILURE()
-        << "Failed to run script to extract target element's bounding rect!";
-    return false;
-  }
+  std::string rect_str =
+      content::EvalJs(frame, get_element_bounding_rect_js).ExtractString();
 
   if (rect_str.empty()) {
     ADD_FAILURE() << "Failed to extract target element's bounding rect!";

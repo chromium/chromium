@@ -57,13 +57,8 @@ std::string GetWebViewContentsById(const std::string& element_id) {
   content::WaitForLoadStop(
       content::WebContents::FromRenderFrameHost(FindFrame(element_id)));
 
-  std::string text;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      FindFrame(element_id),
-      "window.domAutomationController.send(document.body.textContent);",
-      &text));
-
-  return text;
+  return content::EvalJs(FindFrame(element_id), "document.body.textContent;")
+      .ExtractString();
 }
 
 }  // namespace test

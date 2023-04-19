@@ -298,12 +298,9 @@ class CookieSettingsTest
  private:
   // Read a cookie via JavaScript.
   std::string JSReadCookie(Browser* browser) {
-    std::string cookies;
-    bool rv = content::ExecuteScriptAndExtractString(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send(document.cookie)", &cookies);
-    CHECK(rv);
-    return cookies;
+    return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                           "document.cookie")
+        .ExtractString();
   }
 
   // Read a cookie with JavaScript cookie-store API

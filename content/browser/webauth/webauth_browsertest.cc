@@ -1428,9 +1428,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), GetHttpsURL("www.acme.com", "/page_with_iframe.html")));
 
-  // The plain ExecuteScriptAndExtractString cannot be used because
-  // NavigateIframeToURL uses it internally and they get confused about which
-  // message is for whom.
+  // The plain EvalJs cannot be used because NavigateIframeToURL uses it
+  // internally and they get confused about which message is for whom.
   absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
       shell()->web_contents(),
       SendViaDomAutomationController(
@@ -1489,9 +1488,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 
     CreateParameters parameters;
     parameters.attestation = "direct";
-    // The plain ExecuteScriptAndExtractString cannot be used because
-    // NavigateIframeToURL uses it internally and they get confused about which
-    // message is for whom.
+    // The plain EvalJs cannot be used because NavigateIframeToURL uses it
+    // internally and they get confused about which message is for whom.
     absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
         shell()->web_contents(),
         SendViaDomAutomationController(

@@ -239,12 +239,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
   // Verifies the JS Array of userMediaRequests matches |requests|.
   void VerifyMediaRequest(const std::vector<UserMediaRequestEntry>& requests) {
-    string json_requests;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(),
-                                      "window.domAutomationController.send("
-                                      "    JSON.stringify(userMediaRequests));",
-                                      &json_requests));
+    string json_requests =
+        EvalJs(shell(), "JSON.stringify(userMediaRequests);").ExtractString();
     base::Value::List list_request = base::test::ParseJsonList(json_requests);
 
     EXPECT_EQ(requests.size(), list_request.size());
@@ -306,9 +302,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
          << (i + 1)
          << "];"
             "var cell = row.lastChild;"
-            "window.domAutomationController.send(cell.firstChild.textContent);";
-      ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), ss.str(), &result));
-      EXPECT_EQ(pc.events_[i].type + pc.events_[i].value, result);
+            "cell.firstChild.textContent;";
+      EXPECT_EQ(pc.events_[i].type + pc.events_[i].value,
+                EvalJs(shell(), ss.str()));
     }
   }
 
@@ -371,16 +367,13 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
                            const string& value) {
     VerifyElementWithId(table_id + "-" + name);
 
-    string result;
-    ASSERT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "var row = document.getElementById('" + table_id + "-" + name +
-            "');"
-            "var name = row.cells[0].textContent;"
-            "var value = row.cells[1].textContent;"
-            "window.domAutomationController.send(name + ':' + value)",
-        &result));
-    EXPECT_EQ(name + ":" + value, result);
+    EXPECT_EQ(name + ":" + value,
+              EvalJs(shell(), "var row = document.getElementById('" + table_id +
+                                  "-" + name +
+                                  "');"
+                                  "var name = row.cells[0].textContent;"
+                                  "var value = row.cells[1].textContent;"
+                                  "name + ':' + value"));
   }
 
   // Verifies that the graph data series consistent with pc.stats_.
@@ -418,24 +411,22 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     EXPECT_TRUE(result);
 
     std::stringstream ss;
-    ss << "var dp = peerConnectionDataStore['" << pc_id << "']"
-          ".getDataSeries('" << graph_id << "').dataPoints_[" << index << "];"
-          "window.domAutomationController.send(dp.value.toString())";
-    string actual_value;
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(), ss.str(), &actual_value));
-    EXPECT_EQ(value, actual_value);
+    ss << "var dp = peerConnectionDataStore['" << pc_id
+       << "']"
+          ".getDataSeries('"
+       << graph_id << "').dataPoints_[" << index
+       << "];"
+          "dp.value.toString()";
+    EXPECT_EQ(value, EvalJs(shell(), ss.str()));
   }
 
   // Get the JSON string of the ssrc info from the page.
   string GetSsrcInfo(const string& ssrc_id) {
-    string result;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "window.domAutomationController.send(JSON.stringify("
-           "ssrcInfoManager.streamInfoContainer_['" + ssrc_id + "']))",
-        &result));
-    return result;
+    return EvalJs(shell(),
+                  "JSON.stringify("
+                  "ssrcInfoManager.streamInfoContainer_['" +
+                      ssrc_id + "'])")
+        .ExtractString();
   }
 
   int GetSsrcInfoBlockCount(Shell* shell) {
@@ -763,12 +754,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
       ");"));
 
   // Verifies the peer connection data store can be created without stats.
-  string dump_json;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send("
-      "    JSON.stringify(peerConnectionDataStore));",
-      &dump_json));
+  string dump_json = EvalJs(shell(), "JSON.stringify(peerConnectionDataStore);")
+                         .ExtractString();
   VerifyPageDumpStructure(base::test::ParseJsonDict(dump_json),
                           2 /*peer_connection_number*/, 2 /*update_number*/,
                           0 /*stats_number*/);
@@ -781,11 +768,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
   stats.values["framerate"] = "30";
   ExecuteAndVerifyAddStats(pc_0, type, id, stats);
 
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send("
-      "    JSON.stringify(peerConnectionDataStore));",
-      &dump_json));
+  dump_json = EvalJs(shell(), "JSON.stringify(peerConnectionDataStore);")
+                  .ExtractString();
   VerifyStatsDump(base::test::ParseJsonDict(dump_json), pc_0, type, id, stats);
 }
 

@@ -202,17 +202,15 @@ template <typename... T>
 void DispatchOnTestSuite(DevToolsWindow* window,
                          const char* method,
                          T... args) {
-  std::string result;
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
   // At first check that JavaScript part of the front-end is loaded by
   // checking that global variable uiTests exists(it's created after all js
   // files have been loaded) and has runTest method.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      wc,
-      "window.domAutomationController.send("
-      "    '' + (window.uiTests && (typeof uiTests.dispatchOnTestSuite)));",
-      &result));
-  ASSERT_EQ("function", result) << "DevTools front-end is broken.";
+  ASSERT_EQ(
+      "function",
+      content::EvalJs(
+          wc, "'' + (window.uiTests && (typeof uiTests.dispatchOnTestSuite))"))
+      << "DevTools front-end is broken.";
   LoadLegacyFilesInFrontend(window);
   DispatchOnTestSuiteSkipCheck(window, method, args...);
 }
@@ -1570,10 +1568,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
       devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
   EXPECT_EQ(devtools_instance, devtools_iframe_rfh->GetSiteInstance());
 
-  std::string message;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      devtools_iframe_rfh, "domAutomationController.send(self.origin)",
-      &message));
+  std::string message =
+      content::EvalJs(devtools_iframe_rfh, "self.origin").ExtractString();
   EXPECT_EQ(devtools_url.DeprecatedGetOriginAsURL().spec(), message + "/");
 }
 
@@ -2087,12 +2083,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestReattachAfterCrash) {
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestPageWithNoJavaScript) {
   OpenDevToolsWindow("about:blank", false);
   std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      main_web_contents(),
-      "window.domAutomationController.send("
-      "    '' + (window.uiTests && (typeof uiTests.dispatchOnTestSuite)));",
-      &result));
-  ASSERT_EQ("function", result) << "DevTools front-end is broken.";
+  ASSERT_EQ(
+      "function",
+      content::EvalJs(
+          main_web_contents(),
+          "'' + (window.uiTests && (typeof uiTests.dispatchOnTestSuite));"))
+      << "DevTools front-end is broken.";
   CloseDevToolsWindow();
 }
 

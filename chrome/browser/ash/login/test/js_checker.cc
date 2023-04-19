@@ -344,8 +344,7 @@ void JSChecker::GetIntImpl(const std::string& expression, int* result) {
 void JSChecker::GetStringImpl(const std::string& expression,
                               std::string* result) {
   CHECK(web_contents_);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_, WrapSend(expression), result));
+  *result = content::EvalJs(web_contents_, expression).ExtractString();
 }
 
 void JSChecker::ExpectVisiblePath(
