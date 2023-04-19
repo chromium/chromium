@@ -4,7 +4,6 @@
 
 #include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
 
-#include "base/guid.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
