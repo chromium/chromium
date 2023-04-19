@@ -53,24 +53,18 @@
 
     await dp.Preload.enable();
 
-    await new Promise(resolve => {
-      let count = 5;
-      dp.Preload.onRuleSetUpdated(ruleSet => {
-        // Format sourceText.
-        ruleSet.params.ruleSet.sourceText =
-            ruleSet.params.ruleSet.errorType === undefined ?
-            JSON.parse(ruleSet.params.ruleSet.sourceText) :
-            // Prevent failures due to non visible differences coming from LF.
-            ruleSet.params.ruleSet.sourceText.replaceAll(/[\n ]+/g, '');
-        testRunner.log(ruleSet);
+    void page.loadHTML(html);
 
-        --count;
-        if (count === 0) {
-          resolve();
-        }
-      });
-      void page.loadHTML(html);
-    });
+    for (let count = 0; count < 5; ++count) {
+      const {ruleSet} = (await dp.Preload.onceRuleSetUpdated()).params;
+
+      // Format sourceText.
+      ruleSet.sourceText = ruleSet.errorType === undefined ?
+          JSON.parse(ruleSet.sourceText) :
+          // Prevent failures due to non visible differences coming from LF.
+          ruleSet.sourceText.replaceAll(/[\n ]+/g, '');
+      testRunner.log(ruleSet);
+    }
 
     session.evaluate('document.getElementById("prefetch").remove();');
     testRunner.log(await dp.Preload.onceRuleSetRemoved());

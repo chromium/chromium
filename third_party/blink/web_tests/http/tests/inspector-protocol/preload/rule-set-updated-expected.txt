@@ -2,83 +2,53 @@
 Running test: testEnabled
 Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.
 {
-    method : Preload.ruleSetUpdated
-    params : {
-        ruleSet : {
-            id : <string>
-            loaderId : <string>
-            sourceText : {
-                prefetch : [
-                    [0] : {
-                        source : list
-                        urls : [
-                            [0] : /subresource.js
-                        ]
-                    }
+    id : <string>
+    loaderId : <string>
+    sourceText : {
+        prefetch : [
+            [0] : {
+                source : list
+                urls : [
+                    [0] : /subresource.js
                 ]
             }
-        }
+        ]
     }
-    sessionId : <string>
 }
 {
-    method : Preload.ruleSetUpdated
-    params : {
-        ruleSet : {
-            id : <string>
-            loaderId : <string>
-            sourceText : {
-                prerender : [
-                    [0] : {
-                        source : list
-                        urls : [
-                            [0] : /page.html
-                        ]
-                    }
+    id : <string>
+    loaderId : <string>
+    sourceText : {
+        prerender : [
+            [0] : {
+                source : list
+                urls : [
+                    [0] : /page.html
                 ]
             }
-        }
+        ]
     }
-    sessionId : <string>
 }
 {
-    method : Preload.ruleSetUpdated
-    params : {
-        ruleSet : {
-            errorMessage : Line: 4, column: 7, Syntax error.
-            errorType : SourceIsNotJsonObject
-            id : <string>
-            loaderId : <string>
-            sourceText : {"prefetch":[
-        }
-    }
-    sessionId : <string>
+    errorMessage : Line: 4, column: 7, Syntax error.
+    errorType : SourceIsNotJsonObject
+    id : <string>
+    loaderId : <string>
+    sourceText : {"prefetch":[
 }
 {
-    method : Preload.ruleSetUpdated
-    params : {
-        ruleSet : {
-            errorMessage : Parsed JSON must be an object.
-            errorType : SourceIsNotJsonObject
-            id : <string>
-            loaderId : <string>
-            sourceText : "invalid"
-        }
-    }
-    sessionId : <string>
+    errorMessage : Parsed JSON must be an object.
+    errorType : SourceIsNotJsonObject
+    id : <string>
+    loaderId : <string>
+    sourceText : "invalid"
 }
 {
-    method : Preload.ruleSetUpdated
-    params : {
-        ruleSet : {
-            errorMessage : A rule set for a key must be an array: path = ["prerender"]
-            errorType : InvalidRulesSkipped
-            id : <string>
-            loaderId : <string>
-            sourceText : {"prefetch":[{"source":"list","urls":["/subresource.js"]}],"prerender":"invalid"}
-        }
-    }
-    sessionId : <string>
+    errorMessage : A rule set for a key must be an array: path = ["prerender"]
+    errorType : InvalidRulesSkipped
+    id : <string>
+    loaderId : <string>
+    sourceText : {"prefetch":[{"source":"list","urls":["/subresource.js"]}],"prerender":"invalid"}
 }
 {
     method : Preload.ruleSetRemoved
