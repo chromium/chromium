@@ -26,6 +26,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
@@ -74,9 +75,13 @@ std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
                  policy::EnterpriseManagementAuthority::CLOUD)) {
     // Managed user.
     if (!store) {
-      auto* user_policy_manager = profile->GetUserCloudPolicyManager();
-      if (user_policy_manager) {
-        auto* core = user_policy_manager->core();
+      policy::CloudPolicyManager* policy_manager =
+          profile->GetUserCloudPolicyManager();
+      if (!policy_manager) {
+        policy_manager = profile->GetProfileCloudPolicyManager();
+      }
+      if (policy_manager) {
+        auto* core = policy_manager->core();
         if (core) {
           store = core->store();
         }

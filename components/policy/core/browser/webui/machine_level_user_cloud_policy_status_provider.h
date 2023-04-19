@@ -20,7 +20,6 @@ class CloudPolicyCore;
 // The following constants identify top-level keys in the dictionary returned by
 // and are specific to MachineLevelUserCloudPolicyStatusProvider.
 POLICY_EXPORT extern const char kDeviceIdKey[];
-POLICY_EXPORT extern const char kEnrollmentTokenKey[];
 POLICY_EXPORT extern const char kMachineKey[];
 
 struct POLICY_EXPORT MachineLevelUserCloudPolicyContext {

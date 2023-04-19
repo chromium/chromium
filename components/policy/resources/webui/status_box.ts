@@ -119,6 +119,11 @@ export class StatusBoxElement extends CustomElement {
       if (status.domain) {
         this.setLabelAndShow('.machine-enrollment-domain', status.domain);
       }
+    } else if (status.enrollmentToken) {
+      this.setLabelAndShow('.machine-enrollment-domain', status.domain);
+      this.setLabelAndShow('.machine-enrollment-token', status.enrollmentToken);
+      this.setLabelAndShow('.client-id', status.clientId);
+      this.setLabelAndShow('.profile-id', status.profileId);
     } else {
       // Populate the topmost item with the username.
       this.setLabelAndShow('.username', status.username);

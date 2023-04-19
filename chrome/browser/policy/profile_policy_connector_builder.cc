@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #else  // Non-ChromeOS.
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #endif
 
 namespace policy {
@@ -38,7 +38,7 @@ std::list<ConfigurationPolicyProvider*>* GetTestProviders() {
 std::unique_ptr<ProfilePolicyConnector>
 CreateProfilePolicyConnectorForBrowserContext(
     SchemaRegistry* schema_registry,
-    UserCloudPolicyManager* user_cloud_policy_manager,
+    CloudPolicyManager* cloud_policy_manager,
     ConfigurationPolicyProvider* policy_provider,
     policy::ChromeBrowserPolicyConnector* browser_policy_connector,
     bool force_immediate_load,
@@ -53,22 +53,22 @@ CreateProfilePolicyConnectorForBrowserContext(
     CHECK(user);
   }
 
-  // On ChromeOS, we always pass nullptr for the |user_cloud_policy_manager|.
+  // On ChromeOS, we always pass nullptr for the |cloud_policy_manager|.
   // This is because the |policy_provider| could be either a
   // UserCloudPolicyManagerAsh or a ActiveDirectoryPolicyManager, both of
   // which should be obtained via UserPolicyManagerFactoryChromeOS APIs.
-  CloudPolicyManager* cloud_policy_manager =
+  CloudPolicyManager* user_cloud_policy_manager =
       profile->GetUserCloudPolicyManagerAsh();
   ActiveDirectoryPolicyManager* active_directory_manager =
       profile->GetActiveDirectoryPolicyManager();
-  if (cloud_policy_manager) {
-    policy_store = cloud_policy_manager->core()->store();
+  if (user_cloud_policy_manager) {
+    policy_store = user_cloud_policy_manager->core()->store();
   } else if (active_directory_manager) {
     policy_store = active_directory_manager->store();
   }
 #else
-  if (user_cloud_policy_manager) {
-    policy_store = user_cloud_policy_manager->core()->store();
+  if (cloud_policy_manager) {
+    policy_store = cloud_policy_manager->core()->store();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -54,6 +54,7 @@ namespace policy {
 class AsyncPolicyProvider;
 class ConfigurationPolicyProvider;
 class ProfilePolicyConnector;
+class ProfileCloudPolicyManager;
 }  // namespace policy
 
 namespace sync_preferences {
@@ -146,6 +147,7 @@ class ProfileImpl : public Profile {
       override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
+  policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
@@ -267,6 +269,8 @@ class ProfileImpl : public Profile {
       active_directory_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+  std::unique_ptr<policy::ProfileCloudPolicyManager>
+      profile_cloud_policy_manager_;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<policy::AsyncPolicyProvider> user_policy_provider_;

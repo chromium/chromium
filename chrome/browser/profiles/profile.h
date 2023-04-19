@@ -45,6 +45,7 @@ class WebUI;
 namespace policy {
 class SchemaRegistryService;
 class ProfilePolicyConnector;
+class ProfileCloudPolicyManager;
 class UserCloudPolicyManager;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -357,6 +358,7 @@ class Profile : public content::BrowserContext {
 #else
   // Returns the UserCloudPolicyManager.
   virtual policy::UserCloudPolicyManager* GetUserCloudPolicyManager() = 0;
+  virtual policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() = 0;
 #endif
 
   virtual policy::ProfilePolicyConnector* GetProfilePolicyConnector() = 0;

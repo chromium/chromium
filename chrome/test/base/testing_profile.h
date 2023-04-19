@@ -158,6 +158,9 @@ class TestingProfile : public Profile {
     Builder& SetUserCloudPolicyManager(
         std::unique_ptr<policy::UserCloudPolicyManager>
             user_cloud_policy_manager);
+    Builder& SetProfileCloudPolicyManager(
+        std::unique_ptr<policy::ProfileCloudPolicyManager>
+            profile_cloud_policy_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Sets the PolicyService to be used by this profile.
@@ -207,6 +210,8 @@ class TestingProfile : public Profile {
         user_cloud_policy_manager_;
 #else
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+    std::unique_ptr<policy::ProfileCloudPolicyManager>
+        profile_cloud_policy_manager_;
 #endif
     std::unique_ptr<policy::PolicyService> policy_service_;
     TestingFactories testing_factories_;
@@ -357,6 +362,7 @@ class TestingProfile : public Profile {
       override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
+  policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
@@ -494,6 +500,8 @@ class TestingProfile : public Profile {
   std::unique_ptr<policy::UserCloudPolicyManagerAsh> user_cloud_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+  std::unique_ptr<policy::ProfileCloudPolicyManager>
+      profile_cloud_policy_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 

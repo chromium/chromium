@@ -37,6 +37,7 @@ const char kClientIdKey[] = "clientId";
 const char kUsernameKey[] = "username";
 const char kEnterpriseDomainManagerKey[] = "enterpriseDomainManager";
 const char kDomainKey[] = "domain";
+const char kEnrollmentTokenKey[] = "enrollmentToken";
 
 namespace {
 

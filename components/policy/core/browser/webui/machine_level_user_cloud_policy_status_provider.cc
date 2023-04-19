@@ -34,7 +34,6 @@ std::string GetMachineStatusDescriptionKey() {
 namespace policy {
 
 const char kDeviceIdKey[] = "deviceId";
-const char kEnrollmentTokenKey[] = "enrollmentToken";
 const char kMachineKey[] = "machine";
 
 MachineLevelUserCloudPolicyStatusProvider::

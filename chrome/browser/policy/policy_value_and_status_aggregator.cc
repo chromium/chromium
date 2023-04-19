@@ -55,6 +55,10 @@
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace {
 void AppendPolicyIdsToList(const base::Value::Dict& policy_values,
                            base::Value::List& policy_ids) {
@@ -100,11 +104,16 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
         active_directory_policy, profile);
   }
 #else  // BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManager* user_cloud_policy_manager =
+  policy::CloudPolicyManager* cloud_policy_manager =
       profile->GetUserCloudPolicyManager();
-  if (user_cloud_policy_manager) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (!cloud_policy_manager) {
+    cloud_policy_manager = profile->GetProfileCloudPolicyManager();
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAS(IS_LINUX)
+  if (cloud_policy_manager) {
     return std::make_unique<UserCloudPolicyStatusProvider>(
-        user_cloud_policy_manager->core(), profile);
+        cloud_policy_manager->core(), profile);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (profile->IsMainProfile()) {
