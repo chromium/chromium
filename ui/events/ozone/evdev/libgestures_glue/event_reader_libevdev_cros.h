@@ -87,7 +87,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
   // Returns true if this is a haptic touchpad, UI haptics are enabled, and it
   // is actively being touched.
-  bool CanHandleHapticFeedback();
+  bool CanHandleHapticFeedback() const;
 
   // Input modalities for this device.
   bool has_keyboard_;

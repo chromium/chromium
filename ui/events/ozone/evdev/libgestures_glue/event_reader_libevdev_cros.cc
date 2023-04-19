@@ -116,7 +116,7 @@ bool EventReaderLibevdevCros::HasHapticTouchpad() const {
   return haptic_touchpad_handler_ != nullptr;
 }
 
-bool EventReaderLibevdevCros::CanHandleHapticFeedback() {
+bool EventReaderLibevdevCros::CanHandleHapticFeedback() const {
   return haptic_touchpad_handler_ && haptic_feedback_enabled_ &&
          touch_count_ > 0;
 }
