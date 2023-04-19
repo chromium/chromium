@@ -4,11 +4,7 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/hotseat_widget.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/user_education_constants.h"
@@ -19,38 +15,16 @@
 #include "base/check_op.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
 
 // The singleton instance owned by the `UserEducationController`.
 WelcomeTourController* g_instance = nullptr;
-
-// Helpers ---------------------------------------------------------------------
-
-aura::Window* GetPrimaryRootWindow() {
-  auto* window_tree_host_manager = Shell::Get()->window_tree_host_manager();
-  return window_tree_host_manager
-             ? window_tree_host_manager->GetPrimaryRootWindow()
-             : nullptr;
-}
-
-Shelf* GetPrimaryShelf() {
-  auto* primary_root_window = GetPrimaryRootWindow();
-  return primary_root_window ? Shelf::ForWindow(primary_root_window) : nullptr;
-}
-
-HotseatWidget* GetPrimaryHotseatWidget() {
-  auto* primary_shelf = GetPrimaryShelf();
-  return primary_shelf ? primary_shelf->hotseat_widget() : nullptr;
-}
-
-ShelfView* GetPrimaryShelfView() {
-  auto* primary_hotseat_widget = GetPrimaryHotseatWidget();
-  return primary_hotseat_widget ? primary_hotseat_widget->GetShelfView()
-                                : nullptr;
-}
 
 }  // namespace
 
@@ -85,7 +59,10 @@ void WelcomeTourController::RemoveObserver(
 }
 
 ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
-  return views::ElementTrackerViews::GetContextForView(GetPrimaryShelfView());
+  return views::ElementTrackerViews::GetContextForView(
+      user_education_util::GetMatchingViewInRootWindow(
+          display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+          kShelfViewElementId));
 }
 
 // TODO(http://b/275616974): Implement tutorial descriptions.

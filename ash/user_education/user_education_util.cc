@@ -4,6 +4,9 @@
 
 #include "ash/user_education/user_education_util.h"
 
+#include <vector>
+
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/session/session_controller_impl.h"
@@ -11,6 +14,9 @@
 #include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/aura/window.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 
 namespace ash::user_education_util {
 namespace {
@@ -29,6 +35,13 @@ const AccountId& GetPrimaryAccountId() {
              : EmptyAccountId();
 }
 
+aura::Window* GetRootWindowForDisplayId(int64_t display_id) {
+  auto* window_tree_host_manager = Shell::Get()->window_tree_host_manager();
+  return window_tree_host_manager
+             ? window_tree_host_manager->GetRootWindowForDisplayId(display_id)
+             : nullptr;
+}
+
 session_manager::SessionState GetSessionState(
     const SessionControllerImpl* session_controller) {
   return session_controller ? session_controller->GetSessionState()
@@ -41,6 +54,26 @@ session_manager::SessionState GetSessionState(
 
 const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
+}
+
+views::View* GetMatchingViewInRootWindow(int64_t display_id,
+                                         ui::ElementIdentifier element_id) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  if (!root_window) {
+    return nullptr;
+  }
+
+  const std::vector<views::View*> matching_views =
+      views::ElementTrackerViews::GetInstance()
+          ->GetAllMatchingViewsInAnyContext(element_id);
+
+  for (views::View* matching_view : matching_views) {
+    if (root_window->Contains(matching_view->GetWidget()->GetNativeWindow())) {
+      return matching_view;
+    }
+  }
+
+  return nullptr;
 }
 
 bool IsPrimaryAccountActive() {
