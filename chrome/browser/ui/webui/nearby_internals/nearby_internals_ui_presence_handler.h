@@ -44,6 +44,9 @@ class NearbyInternalsPresenceHandler
 
   void Initialize(const base::Value::List& args);
   void HandleStartPresenceScan(const base::Value::List& args);
+  void HandleSyncPresenceCredentials(const base::Value::List& args);
+  void HandleFirstTimePresenceFlow(const base::Value::List& args);
+
   content::BrowserContext* const context_;
 
   base::WeakPtrFactory<NearbyInternalsPresenceHandler> weak_ptr_factory_{this};

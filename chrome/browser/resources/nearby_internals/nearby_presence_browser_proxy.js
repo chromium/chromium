@@ -12,15 +12,29 @@ export class NearbyPresenceBrowserProxy {
    * Initializes web contents in the WebUI handler.
    */
   initialize() {
-    chrome.send('initializePresenceHandler');
+    chrome.send('InitializePresenceHandler');
   }
 
   /**
-   * Send StartPresenceScan which will be received by the
-   * NearbyInternalsPresenceHandler.
+   * Triggers NearbyPresenceService to start a scan.
    */
   SendStartScan() {
     chrome.send('StartPresenceScan');
+  }
+
+  /**
+   * Tells NearbyPresenceService to sync Presence credentials.
+   */
+  SendSyncCredentials() {
+    chrome.send('SyncPresenceCredentials');
+  }
+
+  /**
+   * Tells NearbyPresenceService to start a first time flow for retreiving
+   * credentials.
+   */
+  SendFirstTimeFlow() {
+    chrome.send('FirstTimePresenceFlow');
   }
 }
 

@@ -15,14 +15,24 @@ NearbyInternalsPresenceHandler::~NearbyInternalsPresenceHandler() = default;
 
 void NearbyInternalsPresenceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "InitializePresenceHandler",
+      base::BindRepeating(&NearbyInternalsPresenceHandler::Initialize,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "StartPresenceScan",
       base::BindRepeating(
           &NearbyInternalsPresenceHandler::HandleStartPresenceScan,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "initializePresenceHandler",
-      base::BindRepeating(&NearbyInternalsPresenceHandler::Initialize,
-                          base::Unretained(this)));
+      "SyncPresenceCredentials",
+      base::BindRepeating(
+          &NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "FirstTimePresenceFlow",
+      base::BindRepeating(
+          &NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow,
+          base::Unretained(this)));
 }
 
 void NearbyInternalsPresenceHandler::OnJavascriptAllowed() {}
@@ -43,6 +53,30 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
                     << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter;
     service->StartScan(filter, this);
+  }
+}
+
+void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
+    const base::Value::List& args) {
+  ash::nearby::presence::NearbyPresenceService* service =
+      ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
+          context_);
+  if (service) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": NearbyPresenceService was retrieved successfully";
+    // TODO(b/276307539): Call NPS function to sync credentials.
+  }
+}
+
+void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
+    const base::Value::List& args) {
+  ash::nearby::presence::NearbyPresenceService* service =
+      ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
+          context_);
+  if (service) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": NearbyPresenceService was retrieved successfully";
+    // TODO(b/276307539): Call NPS function to initiate first time flow.
   }
 }
 
