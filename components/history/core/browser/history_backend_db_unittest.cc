@@ -531,9 +531,10 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadMimeType) {
 }
 
 bool IsValidRFC4122Ver4GUID(const std::string& guid) {
-  // base::IsValidUuid() doesn't restrict its validation to version (or subtype)
-  // 4 GUIDs as described in RFC 4122. So we check if base::IsValidUuid() thinks
-  // it's a valid GUID first, and then check the additional constraints.
+  // `base::Uuid::ParseCaseInsensitive().is_valid()` doesn't restrict its
+  // validation to version (or subtype) 4 GUIDs as described in RFC 4122. So we
+  // check if `base::Uuid::ParseCaseInsensitive().is_valid()` thinks it's a
+  // valid GUID first, and then check the additional constraints.
   //
   // * Bits 4-7 of time_hi_and_version should be set to 0b0100 == 4
   //   => guid[14] == '4'
@@ -543,7 +544,7 @@ bool IsValidRFC4122Ver4GUID(const std::string& guid) {
   //
   // * All other bits should be random or pseudo random.
   //   => http://dilbert.com/strip/2001-10-25
-  return base::IsValidUuid(guid) && guid[14] == '4' &&
+  return base::Uuid::ParseCaseInsensitive(guid).is_valid() && guid[14] == '4' &&
          (guid[19] == '8' || guid[19] == '9' || guid[19] == 'A' ||
           guid[19] == 'B' || guid[19] == 'a' || guid[19] == 'b');
 }
