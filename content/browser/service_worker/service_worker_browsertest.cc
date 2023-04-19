@@ -80,6 +80,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -5175,6 +5176,26 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_Post) {
+  SetupAndRegisterServiceWorker();
+  const std::string action = "/service_worker/mock_response?sw_slow&sw_respond";
+  EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(),
+                     "document.body.innerHTML = '<form action=\"" + action +
+                         "\" method=\"POST\"><button "
+                         "type=\"submit\">submit</button></form>'"));
+
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(
+      ExecJs(GetPrimaryMainFrame(), "document.querySelector('form').submit()"));
+  observer.Wait();
+
+  // RaceNetworkRequest only supports GET method. So the fetch handler is always
+  // involved for the navigation via POST.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   // Need to navigate to the page with slow response.
@@ -5285,6 +5306,25 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                    "fetch('/service_worker/mock_response?"
                    "sw_fallback&sw_slow').then(response => "
                    "response.text())"));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_NetworkRequest_Wins_Post) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  // RaceNetworkRequest only supports GET method. So the fetch handler is always
+  // involved for the request via POST.
+  const std::string script = R"(
+    const option = {
+      method: 'POST',
+      body: 'fake body text'
+    };
+    fetch('service_worker/mock_response?sw_slow&sw_respond', option)
+      .then(response => response.text());
+  )";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,

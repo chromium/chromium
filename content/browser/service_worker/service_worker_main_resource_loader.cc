@@ -27,6 +27,7 @@
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
@@ -222,6 +223,11 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
   if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
       features::ServiceWorkerBypassFetchHandlerTarget::
           kAllWithRaceNetworkRequest) {
+    return false;
+  }
+
+  // RaceNetworkRequest only supports GET method.
+  if (resource_request_.method != net::HttpRequestHeaders::kGetMethod) {
     return false;
   }
 

@@ -208,6 +208,11 @@ bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
     return false;
   }
 
+  // RaceNetworkRequest only supports GET method.
+  if (resource_request_.method != net::HttpRequestHeaders::kGetMethod) {
+    return false;
+  }
+
   DCHECK(!race_network_request_loader_client_);
   race_network_request_loader_client_.emplace(resource_request_,
                                               weak_factory_.GetWeakPtr());
