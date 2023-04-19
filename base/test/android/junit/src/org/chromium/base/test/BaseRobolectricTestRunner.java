@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Flag;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -68,6 +69,7 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
                 } finally {
                     CommandLineFlags.tearDownMethod();
                     CommandLineFlags.tearDownClass();
+                    ResettersForTesting.executeResetters();
                     ApplicationStatus.destroyForJUnitTests();
                     ContextUtils.clearApplicationContextForTests();
                     PathUtils.resetForTesting();
