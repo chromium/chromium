@@ -117,14 +117,8 @@ NSString* kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
 
 + (void)logSpotlightError:(NSError*)error {
   UMA_HISTOGRAM_SPARSE("IOSSpotlightErrorCode", error.code);
-  if (!error) {
-    return;
-  }
-  if ([self sharedLogger]) {
+  if (error) {
     [[self sharedLogger] logSpotlightError:error];
-  } else {
-    // Dump as much info from the wild as we can about the error.
-    base::debug::DumpWithoutCrashing();
   }
 }
 
