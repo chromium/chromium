@@ -5,7 +5,10 @@
 #ifndef ASH_AMBIENT_UI_AMBIENT_VIDEO_VIEW_H_
 #define ASH_AMBIENT_UI_AMBIENT_VIDEO_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "base/timer/timer.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -13,6 +16,9 @@ class FilePath;
 }  // namespace base
 
 namespace ash {
+
+class AmbientSlideshowPeripheralUi;
+class AmbientViewDelegate;
 
 // Plays a video on loop. The entire contents of the view are filled with the
 // rendered video. Internally, this is implemented by rendering a simple HTML
@@ -31,10 +37,17 @@ class ASH_EXPORT AmbientVideoView : public views::View {
   // in the allowlist in chrome/browser/net/chrome_network_delegate.cc, or the
   // webpage will fail to load.
   AmbientVideoView(const base::FilePath& video_path,
-                   const base::FilePath& html_path);
+                   const base::FilePath& html_path,
+                   AmbientViewDelegate* view_delegate);
   AmbientVideoView(const AmbientVideoView&) = delete;
   AmbientVideoView& operator=(const AmbientVideoView&) = delete;
   ~AmbientVideoView() override;
+
+ private:
+  // Per UX: Uses the exact same spec for peripheral UI elements (weather, time,
+  // etc) as the slideshow theme.
+  const std::unique_ptr<AmbientSlideshowPeripheralUi> peripheral_ui_;
+  base::RepeatingTimer peripheral_ui_jitter_timer_;
 };
 
 }  // namespace ash

@@ -13,6 +13,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/style/ash_color_id.h"
+#include "base/logging.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/layout/box_layout.h"
@@ -26,14 +27,29 @@ namespace {
 // Appearance.
 constexpr int kMediaStringMarginDip = 32;
 
+constexpr JitterCalculator::Config kDefaultGlanceableInfoJitterConfig = {
+    /*step_size=*/5,
+    /*x_min_translation=*/0,
+    /*x_max_translation=*/20,
+    /*y_min_translation=*/-20,
+    /*y_max_translation=*/0};
+
 }  // namespace
+
+std::unique_ptr<JitterCalculator>
+AmbientSlideshowPeripheralUi::CreateDefaultJitterCalculator() {
+  return std::make_unique<JitterCalculator>(kDefaultGlanceableInfoJitterConfig);
+}
 
 AmbientSlideshowPeripheralUi::AmbientSlideshowPeripheralUi(
     AmbientViewDelegate* delegate,
-    JitterCalculator* glanceable_info_jitter_calculator)
-    : glanceable_info_jitter_calculator_(glanceable_info_jitter_calculator) {
+    JitterCalculator* jitter_calculator)
+    : owned_jitter_calculator_(
+          jitter_calculator ? nullptr : CreateDefaultJitterCalculator()),
+      jitter_calculator_(jitter_calculator ? jitter_calculator
+                                           : owned_jitter_calculator_.get()) {
   CHECK(delegate);
-  CHECK(glanceable_info_jitter_calculator_);
+  CHECK(jitter_calculator_);
   SetID(AmbientViewID::kAmbientSlideshowPeripheralUi);
   InitLayout(delegate);
 }
@@ -89,9 +105,11 @@ MediaStringView::Settings AmbientSlideshowPeripheralUi::GetSettings() {
 }
 
 void AmbientSlideshowPeripheralUi::UpdateGlanceableInfoPosition() {
-  gfx::Vector2d jitter = glanceable_info_jitter_calculator_->Calculate();
+  gfx::Vector2d jitter = jitter_calculator_->Calculate();
   gfx::Transform transform;
   transform.Translate(jitter);
+
+  DVLOG(4) << "Shifting peripheral ui by " << jitter.ToString();
 
   ambient_info_view_->SetTextTransform(transform);
 

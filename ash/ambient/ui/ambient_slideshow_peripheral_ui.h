@@ -27,15 +27,24 @@ class AmbientSlideshowPeripheralUi : public views::View,
  public:
   METADATA_HEADER(AmbientSlideshowPeripheralUi);
 
-  AmbientSlideshowPeripheralUi(
-      AmbientViewDelegate* delegate,
-      JitterCalculator* glanceable_info_jitter_calculator);
+  // Returns a `JitterCalculator` with the recommended settings for all
+  // peripheral UI elements. Can be passed to the constructor via the
+  // `jitter_calculator` argument.
+  static std::unique_ptr<JitterCalculator> CreateDefaultJitterCalculator();
 
+  // If `jitter_calculator` is nullptr, a default `JitterCalculator` is
+  // instantiated and owned internally.
+  explicit AmbientSlideshowPeripheralUi(
+      AmbientViewDelegate* delegate,
+      JitterCalculator* jitter_calculator = nullptr);
   ~AmbientSlideshowPeripheralUi() override;
 
   // MediaStringView::Delegate:
   MediaStringView::Settings GetSettings() override;
 
+  // Applies jitter to all elements of the UI using the `jitter_calculator`
+  // provided in the constructor. The caller is responsible for invoking this at
+  // the desired frequency to prevent screen burn.
   void UpdateGlanceableInfoPosition();
 
   void UpdateImageDetails(const std::u16string& details,
@@ -44,7 +53,11 @@ class AmbientSlideshowPeripheralUi : public views::View,
  private:
   void InitLayout(AmbientViewDelegate* delegate);
 
-  const base::raw_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
+  // May be null if the caller provided a custom `jitter_calculator` in the
+  // constructor.
+  const std::unique_ptr<JitterCalculator> owned_jitter_calculator_;
+  // Never null. Always points to the `JitterCalculator` to use.
+  const base::raw_ptr<JitterCalculator> jitter_calculator_;
 
   AmbientInfoView* ambient_info_view_ = nullptr;
 

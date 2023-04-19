@@ -1212,8 +1212,8 @@ void AmbientController::CreateUiLauncher() {
     ambient_ui_launcher_ =
         std::make_unique<AmbientManagedSlideshowUiLauncher>(&delegate_);
   } else if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
-    ambient_ui_launcher_ =
-        std::make_unique<AmbientVideoUiLauncher>(GetPrimaryUserPrefService());
+    ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
+        GetPrimaryUserPrefService(), &delegate_);
   } else {
     // TODO(b/274164306): Remove when slideshow and animation themes are
     // migrated to AmbientUiLauncher.

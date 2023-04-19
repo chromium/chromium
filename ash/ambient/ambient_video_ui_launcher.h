@@ -16,11 +16,14 @@ class PrefService;
 
 namespace ash {
 
+class AmbientViewDelegate;
+
 // Launches |AmbientTheme::kVideo|. Pulls the current |AmbientVideo| selected
 // from pref storage when it's time to render the video.
 class AmbientVideoUiLauncher : public AmbientUiLauncher {
  public:
-  explicit AmbientVideoUiLauncher(PrefService* pref_service);
+  explicit AmbientVideoUiLauncher(PrefService* pref_service,
+                                  AmbientViewDelegate* view_delegate);
   AmbientVideoUiLauncher(const AmbientVideoUiLauncher&) = delete;
   AmbientVideoUiLauncher& operator=(const AmbientVideoUiLauncher&) = delete;
   ~AmbientVideoUiLauncher() override;
@@ -37,6 +40,7 @@ class AmbientVideoUiLauncher : public AmbientUiLauncher {
   bool is_active_ = false;
   AmbientVideo current_video_;
   const base::raw_ptr<PrefService> pref_service_;
+  const base::raw_ptr<AmbientViewDelegate> view_delegate_;
   std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 };
 

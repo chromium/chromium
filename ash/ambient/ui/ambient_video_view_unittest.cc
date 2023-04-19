@@ -4,6 +4,8 @@
 
 #include "ash/ambient/ui/ambient_video_view.h"
 
+#include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -20,15 +22,12 @@ namespace {
 using ::testing::Eq;
 using ::testing::NotNull;
 
-class AmbientVideoViewTest : public ::testing::Test {
- protected:
-  base::test::TaskEnvironment task_environment_;
-  TestAshWebViewFactory web_view_factory_;
-};
+using AmbientVideoViewTest = AmbientAshTestBase;
 
 TEST_F(AmbientVideoViewTest, NavigatesToCorrectURL) {
   AmbientVideoView view(base::FilePath("/path/to/video"),
-                        base::FilePath("/path/to/html"));
+                        base::FilePath("/path/to/html"),
+                        ambient_controller()->ambient_view_delegate());
   const TestAshWebView* web_view = static_cast<const TestAshWebView*>(
       view.GetViewByID(kAmbientVideoWebView));
   ASSERT_THAT(web_view, NotNull());
