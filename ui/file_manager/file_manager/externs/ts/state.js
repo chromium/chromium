@@ -244,7 +244,7 @@ export const SearchRecency = {
  * @typedef {{
  *   location: !SearchLocation,
  *   recency: SearchRecency,
- *   type:  chrome.fileManagerPrivate.FileCategory,
+ *   fileCategory:  chrome.fileManagerPrivate.FileCategory,
  * }}
  */
 export let SearchOptions;

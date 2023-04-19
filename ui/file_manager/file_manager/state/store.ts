@@ -68,7 +68,7 @@ export function getDefaultSearchOptions(): SearchOptions {
   return {
     location: SearchLocation.THIS_FOLDER,
     recency: SearchRecency.ANYTIME,
-    type: chrome.fileManagerPrivate.FileCategory.ALL,
+    fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
   } as SearchOptions;
 }
 

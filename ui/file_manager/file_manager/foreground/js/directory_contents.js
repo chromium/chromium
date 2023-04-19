@@ -458,7 +458,7 @@ export class SearchV2ContentScanner extends ContentScanner {
   async scan(
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
-    const category = this.options_.type;
+    const category = this.options_.fileCategory;
     const timestamp = getEarliestTimestamp(this.options_.recency, new Date());
     const maxResults = 100;
 

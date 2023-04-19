@@ -506,9 +506,10 @@ export class SearchContainer extends EventTarget {
         break;
       }
       case OptionKind.FILE_TYPE: {
-        const type = value as unknown as chrome.fileManagerPrivate.FileCategory;
-        if (type !== this.currentOptions_.type) {
-          this.currentOptions_.type = type;
+        const category =
+            value as unknown as chrome.fileManagerPrivate.FileCategory;
+        if (category !== this.currentOptions_.fileCategory) {
+          this.currentOptions_.fileCategory = category;
           this.updateSearchOptions_();
         }
         break;

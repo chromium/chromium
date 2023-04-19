@@ -79,7 +79,7 @@ function isRecentScan(entry, query, options) {
 function getFileCategory(entry, query, options) {
   if (query) {
     if (options) {
-      return options.type;
+      return options.fileCategory;
     }
   }
   return entry.fileCategory;
