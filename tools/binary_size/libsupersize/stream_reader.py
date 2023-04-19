@@ -66,6 +66,9 @@ class StreamReader:
   def Tell(self):
     return self._pos
 
+  def Skip(self, delta):
+    self._pos += delta
+
   def NextStruct(self, fmt):
     ret = struct.unpack_from(fmt, self._data, self._pos)
     self._pos += struct.calcsize(fmt)
