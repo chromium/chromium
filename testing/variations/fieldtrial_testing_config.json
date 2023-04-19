@@ -7028,9 +7028,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Module_Based_UI",
+                    "name": "Enabled_Cell_Based_UI",
                     "params": {
-                        "whats_new_module_based_layout": "true"
+                        "whats_new_module_based_layout": "false"
                     },
                     "enable_features": [
                         "WhatsNewIOS"

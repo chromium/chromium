@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
@@ -71,7 +73,13 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
+    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
     chrome_browser_state_ = test_cbs_builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        chrome_browser_state_.get(),
+        std::make_unique<FakeAuthenticationServiceDelegate>());
     large_icon_service_.reset(new favicon::LargeIconServiceImpl(
         &mock_favicon_service_, nullptr, 32, favicon_base::IconType::kTouchIcon,
         "test_chrome"));
