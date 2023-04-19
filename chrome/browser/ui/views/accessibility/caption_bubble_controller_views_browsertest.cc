@@ -7,6 +7,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -25,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
@@ -45,7 +47,10 @@ namespace captions {
 
 class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
  public:
-  CaptionBubbleControllerViewsTest() = default;
+  CaptionBubbleControllerViewsTest() {
+    scoped_feature_list_.InitAndEnableFeature(media::kLiveTranslate);
+  }
+
   ~CaptionBubbleControllerViewsTest() override = default;
   CaptionBubbleControllerViewsTest(const CaptionBubbleControllerViewsTest&) =
       delete;
@@ -55,7 +60,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   CaptionBubbleControllerViews* GetController() {
     if (!controller_) {
       controller_ = std::make_unique<CaptionBubbleControllerViews>(
-          browser()->profile()->GetPrefs());
+          browser()->profile()->GetPrefs(), "en-US" /* application_locale */);
     }
     return controller_.get();
   }
@@ -75,6 +80,12 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   views::Label* GetLabel() {
     return controller_ ? controller_->caption_bubble_->GetLabelForTesting()
                        : nullptr;
+  }
+
+  views::StyledLabel* GetLiveTranslateLabel() {
+    return controller_
+               ? controller_->caption_bubble_->GetLiveTranslateLabelForTesting()
+               : nullptr;
   }
 
   views::Label* GetTitle() {
@@ -263,6 +274,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CaptionBubbleControllerViews> controller_;
   std::unique_ptr<CaptionBubbleContext> caption_bubble_context_;
 };
@@ -1236,6 +1248,43 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
+  int line_height = 18;
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               false);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "en");
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "fr");
+
+  OnPartialTranscription("Penguins' feet change colors as they get older.");
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_FALSE(GetLiveTranslateLabel()->GetVisible());
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               true);
+  OnPartialTranscription(
+      "Sea otters can hold their breath for over 5 minutes.");
+  ASSERT_TRUE(GetLiveTranslateLabel()->GetVisible());
+  EXPECT_EQ("Translating French to English",
+            base::UTF16ToUTF8(GetLiveTranslateLabel()->GetText()));
+  EXPECT_EQ(line_height, GetLiveTranslateLabel()->GetLineHeight());
+
+  ui::CaptionStyle caption_style;
+  caption_style.text_size = "200%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(line_height * 2, GetLiveTranslateLabel()->GetLineHeight());
+  caption_style.text_size = "50%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(line_height / 2, GetLiveTranslateLabel()->GetLineHeight());
+
+  // Disabling Live Translate should hide the Live Translate label.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               false);
+  ASSERT_FALSE(GetLiveTranslateLabel()->GetVisible());
 }
 
 }  // namespace captions

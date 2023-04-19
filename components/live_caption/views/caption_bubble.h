@@ -23,6 +23,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/metadata/view_factory.h"
 
+class PrefChangeRegistrar;
+
 namespace base {
 class RetainingOneShotTimer;
 class TickClock;
@@ -70,6 +72,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(CaptionBubble);
   CaptionBubble(PrefService* profile_prefs,
+                const std::string& application_locale,
                 base::OnceClosure destroyed_callback);
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
@@ -93,6 +96,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
+  views::StyledLabel* GetLiveTranslateLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
@@ -119,6 +123,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnLiveTranslateEnabledChanged();
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnThemeChanged() override;
@@ -174,10 +179,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // The following methods set the caption bubble style based on the user's
   // preferences, which are stored in `caption_style_`.
   double GetTextScaleFactor();
-  const gfx::FontList GetFontList();
+  const gfx::FontList GetFontList(int font_size);
   void SetTextSizeAndFontFamily();
   void SetTextColor();
   void SetBackgroundColor();
+  void UpdateLiveTranslateLabelStyle(
+      views::StyledLabel::RangeStyleInfo label_style,
+      views::StyledLabel::RangeStyleInfo languages_style);
 
   // Places the bubble at the bottom center of the context widget for the active
   // model, ensuring that it's positioned where the user will spot it. If there
@@ -203,10 +211,16 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   void LogSessionEvent(SessionEvent event);
 
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
+  raw_ptr<views::StyledLabel> live_translate_label_;
+  std::u16string source_language_;
+  std::u16string target_language_;
+  std::vector<size_t> live_translate_label_offsets_;
   raw_ptr<views::ImageView> generic_error_icon_;
   raw_ptr<views::View> generic_error_message_;
   raw_ptr<views::ImageButton> back_to_tab_button_;
@@ -234,6 +248,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   OnErrorClickedCallback error_clicked_callback_;
   OnDoNotShowAgainClickedCallback error_silenced_callback_;
   base::ScopedClosureRunner destroyed_callback_;
+
+  const std::string application_locale_;
 
   // Whether the caption bubble is expanded to show more lines of text.
   bool is_expanded_;

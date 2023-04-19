@@ -37,4 +37,7 @@
   <message name="IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT" desc="Announcement to screen readers on ChromeOS when the Live Caption bubble appears to inform users of how to focus the bubble.">
     Live Caption visible, use window switcher to focus
   </message>
+  <message name="IDS_LIVE_CAPTION_TRANSLATED_CAPTIONS" desc="Label for the Live Caption bubble displaying the source and target translation languages.">
+    Translating <ph name="SOURCE">$1<ex>Spanish</ex></ph> to <ph name="TARGET">$2<ex>English</ex></ph>
+  </message>
 </grit-part>

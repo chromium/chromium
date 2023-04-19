@@ -109,6 +109,12 @@ void AddUiColorMixer(ColorProvider* provider,
       kColorLiveCaptionBubbleButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorLiveCaptionBubbleForegroundDefault] =
       GetColorWithMaxContrast(kColorLiveCaptionBubbleBackgroundDefault);
+  mixer[kColorLiveCaptionBubbleForegroundSecondary] = PickGoogleColor(
+      GetResultingPaintColor(
+          SetAlpha(kColorLiveCaptionBubbleForegroundDefault, 0x8C),
+          kColorLiveCaptionBubbleBackgroundDefault),
+      kColorLiveCaptionBubbleBackgroundDefault,
+      color_utils::kMinimumReadableContrastRatio);
   mixer[kColorLiveCaptionBubbleCheckbox] = PickGoogleColor(
       kColorAccent, kColorLiveCaptionBubbleBackgroundDefault, 6.0f);
   mixer[kColorLiveCaptionBubbleLink] = {kColorLiveCaptionBubbleCheckbox};

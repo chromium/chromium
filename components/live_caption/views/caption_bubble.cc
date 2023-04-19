@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,9 +20,11 @@
 #include "build/build_config.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -75,6 +78,7 @@ namespace {
 
 // Formatting constants
 static constexpr int kLineHeightDip = 24;
+static constexpr int kLiveTranslateLabelLineHeightDip = 18;
 static constexpr int kNumLinesCollapsed = 2;
 static constexpr int kNumLinesExpanded = 8;
 static constexpr int kCornerRadiusDip = 4;
@@ -88,6 +92,7 @@ static constexpr char kPrimaryFont[] = "Roboto";
 static constexpr char kSecondaryFont[] = "Arial";
 static constexpr char kTertiaryFont[] = "sans-serif";
 static constexpr int kFontSizePx = 16;
+static constexpr int kLiveTranslateLabelFontSizePx = 11;
 static constexpr double kDefaultRatioInParentX = 0.5;
 static constexpr double kDefaultRatioInParentY = 1;
 static constexpr int kErrorImageSizeDip = 20;
@@ -405,9 +410,11 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 #endif
 
 CaptionBubble::CaptionBubble(PrefService* profile_prefs,
+                             const std::string& application_locale,
                              base::OnceClosure destroyed_callback)
     : profile_prefs_(profile_prefs),
       destroyed_callback_(std::move(destroyed_callback)),
+      application_locale_(application_locale),
       is_expanded_(
           profile_prefs_->GetBoolean(prefs::kLiveCaptionBubbleExpanded)),
       is_pinned_(profile_prefs_->GetBoolean(prefs::kLiveCaptionBubblePinned)),
@@ -421,6 +428,13 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
   SetShowTitle(false);
   SetTitle(IDS_LIVE_CAPTION_BUBBLE_TITLE);
   set_has_parent(false);
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(profile_prefs_);
+  pref_change_registrar_->Add(
+      prefs::kLiveTranslateEnabled,
+      base::BindRepeating(&CaptionBubble::OnLiveTranslateEnabledChanged,
+                          base::Unretained(this)));
 
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, base::Seconds(kNoActivityIntervalSeconds),
@@ -539,6 +553,9 @@ void CaptionBubble::Init() {
   const std::u16string link =
       l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
 
+  media_foundation_renderer_error_text->SetText(l10n_util::GetStringFUTF16(
+      IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR, link));
+
   auto media_foundation_renderer_error_checkbox =
       std::make_unique<views::Checkbox>(
           l10n_util::GetStringUTF16(
@@ -621,6 +638,36 @@ void CaptionBubble::Init() {
       content_container->AddChildView(std::move(collapse_button));
 
   AddChildView(std::move(header_container));
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    views::View* live_translate_container = new views::View();
+    live_translate_container->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal,
+            gfx::Insets::TLBR(0, kSidePaddingDip, 0, kSidePaddingDip)));
+
+    auto live_translate_label = std::make_unique<views::StyledLabel>();
+    live_translate_label->SetVisible(
+        profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled));
+    live_translate_label->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
+    live_translate_label->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+    live_translate_label->GetViewAccessibility().OverrideIsIgnored(true);
+
+    source_language_ = speech::GetLanguageDisplayName(
+        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode),
+        application_locale_);
+    target_language_ = speech::GetLanguageDisplayName(
+        profile_prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode),
+        application_locale_);
+    std::u16string label_text = l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_TRANSLATED_CAPTIONS, source_language_,
+        target_language_, &live_translate_label_offsets_);
+    live_translate_label->SetText(label_text);
+    live_translate_label_ =
+        live_translate_container->AddChildView(std::move(live_translate_label));
+    AddChildView(std::move(live_translate_container));
+  }
+
   AddChildView(std::move(content_container));
 
   UpdateContentSize();
@@ -667,6 +714,12 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
   DCHECK_EQ(widget, GetWidget());
 
   ResetInactivityTimer();
+}
+
+void CaptionBubble::OnLiveTranslateEnabledChanged() {
+  live_translate_label_->SetVisible(
+      profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled));
+  Redraw();
 }
 
 void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -892,7 +945,7 @@ double CaptionBubble::GetTextScaleFactor() {
   }
   return textScaleFactor;
 }
-const gfx::FontList CaptionBubble::GetFontList() {
+const gfx::FontList CaptionBubble::GetFontList(int font_size) {
   std::vector<std::string> font_names;
   if (caption_style_) {
     std::string font_family =
@@ -906,14 +959,13 @@ const gfx::FontList CaptionBubble::GetFontList() {
 
   const gfx::FontList font_list = gfx::FontList(
       font_names, gfx::Font::FontStyle::NORMAL,
-      kFontSizePx * GetTextScaleFactor(), gfx::Font::Weight::NORMAL);
+      font_size * GetTextScaleFactor(), gfx::Font::Weight::NORMAL);
   return font_list;
 }
 
 void CaptionBubble::SetTextSizeAndFontFamily() {
   double textScaleFactor = GetTextScaleFactor();
-  const gfx::FontList font_list = GetFontList();
-
+  const gfx::FontList font_list = GetFontList(kFontSizePx);
   label_->SetFontList(font_list);
   title_->SetFontList(font_list.DeriveWithStyle(gfx::Font::FontStyle::ITALIC));
   generic_error_text_->SetFontList(font_list);
@@ -921,6 +973,10 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
   label_->SetMaximumWidth(kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
   title_->SetLineHeight(kLineHeightDip * textScaleFactor);
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    live_translate_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
+                                         textScaleFactor);
+  }
   generic_error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   generic_error_icon_->SetImageSize(
       gfx::Size(kErrorImageSizeDip * textScaleFactor,
@@ -952,14 +1008,33 @@ void CaptionBubble::SetTextColor() {
 
   generic_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+
+  // Update Live Translate label style
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    const gfx::FontList live_translate_font_list =
+        GetFontList(kLiveTranslateLabelFontSizePx);
+
+    views::StyledLabel::RangeStyleInfo live_translate_label_style;
+    live_translate_label_style.custom_font = live_translate_font_list;
+    live_translate_label_style.override_color = color_provider->GetColor(
+        ui::kColorLiveCaptionBubbleForegroundSecondary);
+
+    views::StyledLabel::RangeStyleInfo live_translate_language_style;
+    live_translate_language_style.custom_font = live_translate_font_list;
+    live_translate_language_style.override_color = text_color;
+
+    UpdateLiveTranslateLabelStyle(live_translate_label_style,
+                                  live_translate_language_style);
+  }
 #if BUILDFLAG(IS_WIN)
 
   const std::u16string link =
       l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
   size_t offset;
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR, link, &offset);
-  media_foundation_renderer_error_text_->SetText(text);
+      IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR,
+      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS),
+      &offset);
 
   media_foundation_renderer_error_text_->ClearStyleRanges();
   views::StyledLabel::RangeStyleInfo error_message_style;
@@ -1019,6 +1094,25 @@ void CaptionBubble::SetBackgroundColor() {
   set_color(background_color);
 }
 
+void CaptionBubble::UpdateLiveTranslateLabelStyle(
+    views::StyledLabel::RangeStyleInfo label_style,
+    views::StyledLabel::RangeStyleInfo languages_style) {
+  live_translate_label_->AddStyleRange(
+      gfx::Range(0, live_translate_label_offsets_[0]), label_style);
+  live_translate_label_->AddStyleRange(
+      gfx::Range(live_translate_label_offsets_[0],
+                 live_translate_label_offsets_[0] + source_language_.length()),
+      languages_style);
+  live_translate_label_->AddStyleRange(
+      gfx::Range(live_translate_label_offsets_[0] + source_language_.length(),
+                 live_translate_label_offsets_[1]),
+      label_style);
+  live_translate_label_->AddStyleRange(
+      gfx::Range(live_translate_label_offsets_[1],
+                 live_translate_label_offsets_[1] + target_language_.length()),
+      languages_style);
+}
+
 void CaptionBubble::RepositionInContextRect(CaptionBubbleModel::Id model_id,
                                             const gfx::Rect& context_rect) {
   // We shouldn't reposition ourselves into the context rect of a model that is
@@ -1051,6 +1145,7 @@ void CaptionBubble::UpdateContentSize() {
   int width = kMaxWidthDip * text_scale_factor;
   int content_height =
       kLineHeightDip * GetNumLinesVisible() * text_scale_factor;
+
   // The title takes up 1 line.
   int label_height = title_->GetVisible()
                          ? content_height - kLineHeightDip * text_scale_factor
@@ -1066,6 +1161,16 @@ void CaptionBubble::UpdateContentSize() {
         media_foundation_renderer_error_message_->GetPreferredSize().height();
   }
 #endif
+
+  // The Live Translate label takes up 1 line.
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+      live_translate_label_->GetVisible()) {
+    int live_translate_label_height =
+        kLiveTranslateLabelLineHeightDip * text_scale_factor;
+    live_translate_label_->SetPreferredSize(
+        gfx::Size(width - kSidePaddingDip, live_translate_label_height));
+    content_height += live_translate_label_height;
+  }
 
   // The header height is the same as the close button height. The footer height
   // is the same as the expand button height.
@@ -1159,6 +1264,10 @@ bool CaptionBubble::HasActivity() {
 
 views::Label* CaptionBubble::GetLabelForTesting() {
   return static_cast<views::Label*>(label_);
+}
+
+views::StyledLabel* CaptionBubble::GetLiveTranslateLabelForTesting() {
+  return static_cast<views::StyledLabel*>(live_translate_label_);
 }
 
 bool CaptionBubble::IsGenericErrorMessageVisibleForTesting() const {

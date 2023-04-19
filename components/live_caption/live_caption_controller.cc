@@ -41,10 +41,12 @@ namespace captions {
 LiveCaptionController::LiveCaptionController(
     PrefService* profile_prefs,
     PrefService* global_prefs,
+    const std::string& application_locale,
     content::BrowserContext* browser_context)
     : profile_prefs_(profile_prefs),
       global_prefs_(global_prefs),
-      browser_context_(browser_context) {
+      browser_context_(browser_context),
+      application_locale_(application_locale) {
   base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled2",
                             IsLiveCaptionFeatureSupported());
 
@@ -185,7 +187,8 @@ void LiveCaptionController::CreateUI() {
 
   is_ui_constructed_ = true;
 
-  caption_bubble_controller_ = CaptionBubbleController::Create(profile_prefs_);
+  caption_bubble_controller_ =
+      CaptionBubbleController::Create(profile_prefs_, application_locale_);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 
   // Observe native theme changes for caption style updates.
