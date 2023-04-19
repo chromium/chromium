@@ -887,8 +887,8 @@
       'linux-finch-smoke-chrome': 'official_reclient',
       'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
-      'win-arm64-dbg': 'chrome_branded_arm64_debug_reclient',
-      'win-arm64-rel': 'chrome_branded_arm64_release_reclient',
+      'win-arm64-dbg': 'gpu_tests_arm64_debug_reclient',
+      'win-arm64-rel': 'gpu_tests_arm64_release_reclient',
       'win-celab-rel': 'official_celab_release_bot',
       'win-finch-smoke-chrome': 'official_reclient',
     },
@@ -1993,14 +1993,6 @@
       'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'reclient',
     ],
 
-    'chrome_branded_arm64_debug_reclient': [
-      'debug_bot_reclient', 'chrome_branded', 'arm64', 'proprietary_codecs', 'ffmpeg_branding_chrome'
-    ],
-
-    'chrome_branded_arm64_release_reclient': [
-      'release_bot_reclient', 'chrome_branded', 'arm64', 'proprietary_codecs', 'ffmpeg_branding_chrome'
-    ],
-
     'chrome_branded_reclient_minimal_symbols': [
       'chrome_branded', 'minimal_symbols', 'release_bot_reclient',
     ],
@@ -2690,6 +2682,14 @@
 
     'gpu_tests_android_release_trybot_reclient': [
       'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'static_angle',
+    ],
+
+    'gpu_tests_arm64_debug_reclient': [
+      'gpu_tests', 'arm64', 'debug_bot_reclient'
+    ],
+
+    'gpu_tests_arm64_release_reclient': [
+      'gpu_tests', 'arm64', 'release_bot_reclient'
     ],
 
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient': [

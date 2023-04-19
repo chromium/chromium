@@ -77,7 +77,6 @@
   "win-arm64-dbg": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
-      "is_chrome_branded": true,
       "is_component_build": true,
       "is_debug": true,
       "proprietary_codecs": true,
@@ -90,7 +89,6 @@
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
-      "is_chrome_branded": true,
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
