@@ -18,9 +18,6 @@ html {
 
   --settings-error-color: var(--google-red-700);
 
-  /* Spacing between a control (e.g. checkbox) and its label. */
-  --settings-control-label-spacing: 20px;
-
   --iron-icon-fill-color: var(--google-grey-700);
   --iron-icon-height: var(--cr-icon-size);
   --iron-icon-width: var(--cr-icon-size);
