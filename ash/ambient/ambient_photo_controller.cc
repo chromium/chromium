@@ -25,7 +25,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
