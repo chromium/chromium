@@ -4285,32 +4285,6 @@
         ],
       },
     },
-    'replacements': {
-      # --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL
-      # flag is suspected for flakiness on MacBook Pro 2019,
-      # so use the old --force_high_performance_gpu flag there
-      # crbug.com/1421053, crbug.com/1424896, crbug.com/1251724
-      'Mac FYI Experimental Retina Release (AMD)': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-      'Mac FYI Retina ASAN (AMD)': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-      'Mac FYI Retina Release (AMD)': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-      'mac-angle-chromium-amd': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-    },
   },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
@@ -4405,32 +4379,6 @@
         'args': [
           '--enable-metal-debug-layers',
         ],
-      },
-    },
-    'replacements': {
-      # --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL
-      # flag is suspected for flakiness on MacBook Pro 2019,
-      # so use the old --force_high_performance_gpu flag there
-      # crbug.com/1421053, crbug.com/1424896, crbug.com/1251724
-      'Mac FYI Experimental Retina Release (AMD)': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-      'Mac FYI Retina ASAN (AMD)': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-      'Mac FYI Retina Release (AMD)': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
-      },
-      'mac-angle-chromium-amd': {
-        'args': {
-          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        },
       },
     },
   },
