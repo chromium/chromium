@@ -27,10 +27,65 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/modules/webaudio/delay_dsp_kernel.h"
+#include "third_party/blink/renderer/platform/audio/audio_delay_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 
 namespace blink {
+
+namespace {
+
+class DelayDSPKernel final : public AudioDelayDSPKernel {
+ public:
+  explicit DelayDSPKernel(DelayProcessor* processor)
+      : AudioDelayDSPKernel(processor, processor->RenderQuantumFrames()) {
+    DCHECK(processor);
+    DCHECK_GT(processor->SampleRate(), 0);
+
+    max_delay_time_ = processor->MaxDelayTime();
+    DCHECK_GE(max_delay_time_, 0);
+    DCHECK(!std::isnan(max_delay_time_));
+
+    buffer_.Allocate(BufferLengthForDelay(max_delay_time_,
+                                          processor->SampleRate(),
+                                          processor->RenderQuantumFrames()));
+    buffer_.Zero();
+  }
+
+ protected:
+  bool HasSampleAccurateValues() override {
+    return GetDelayProcessor()->DelayTime().HasSampleAccurateValues();
+  }
+
+  void CalculateSampleAccurateValues(float* delay_times,
+                                     uint32_t frames_to_process) override {
+    GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
+        delay_times, frames_to_process);
+  }
+
+  double DelayTime(float sample_rate) override {
+    return GetDelayProcessor()->DelayTime().FinalValue();
+  }
+
+  bool IsAudioRate() override {
+    return GetDelayProcessor()->DelayTime().IsAudioRate();
+  }
+
+  void ProcessOnlyAudioParams(uint32_t frames_to_process) override {
+    DCHECK_LE(frames_to_process, RenderQuantumFrames());
+
+    float values[RenderQuantumFrames()];
+
+    GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
+        values, frames_to_process);
+  }
+
+ private:
+  DelayProcessor* GetDelayProcessor() {
+    return static_cast<DelayProcessor*>(Processor());
+  }
+};
+
+}  // namespace
 
 DelayProcessor::DelayProcessor(float sample_rate,
                                unsigned number_of_channels,
