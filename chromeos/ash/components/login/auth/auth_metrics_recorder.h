@@ -77,6 +77,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   // Should be called at the beginning of the login.
   void ResetLoginData();
 
+  // Increments `knowledge_factor_auth_failure_count_` to reflect a failed
+  // attempt to authenticate with a knowledge auth factor.
+  void OnKnowledgeFactorAuthFailue();
+
   // Logs the auth failure action and reason.
   void OnAuthFailure(const AuthFailure::FailureReason& failure_reason);
 
@@ -125,6 +129,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   void OnRecoveryDone(CryptohomeRecoveryResult result,
                       const base::TimeDelta& time);
 
+  int knowledge_factor_auth_failure_count() {
+    return knowledge_factor_auth_failure_count_;
+  }
+
  private:
   friend class ChromeBrowserMainPartsAsh;
 
@@ -144,6 +152,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   void MaybeReportFlowMetrics();
 
   void Reset();
+
+  int knowledge_factor_auth_failure_count_ = 0;
 
   // All values should be reset to nullopt in `Reset()`;
   absl::optional<int> user_count_;

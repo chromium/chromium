@@ -53,6 +53,7 @@
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
@@ -104,6 +105,8 @@ constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
 constexpr char kFreeDiskSpace[] = "FREE_DISK_SPACE";
 constexpr char kTotalDiskSpace[] = "TOTAL_DISK_SPACE";
 constexpr char kChronosHomeDirectory[] = "/home/user/chronos";
+constexpr char kFailedKnowledgeFactorAttempts[] =
+    "FAILED_KNOWLEDGE_FACTOR_ATTEMPTS";
 #else
 constexpr char kOsVersionTag[] = "OS VERSION";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -428,6 +431,10 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
                                        : "disabled");
   response->emplace(kDemoModeConfigKey, ash::DemoSession::DemoConfigToString(
                                             ash::DemoSession::GetDemoConfig()));
+  response->emplace(
+      kFailedKnowledgeFactorAttempts,
+      base::NumberToString(ash::AuthMetricsRecorder::Get()
+                               ->knowledge_factor_auth_failure_count()));
   PopulateLocalStateSettings(response.get());
   PopulateOnboardingTime(response.get());
 

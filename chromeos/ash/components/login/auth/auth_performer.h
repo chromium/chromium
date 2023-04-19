@@ -90,6 +90,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void AuthenticateUsingKnowledgeKey(std::unique_ptr<UserContext> context,
                                      AuthOperationCallback callback);
 
+  // After attempting authentication with `AuthenticateUsingKnowledgeKey`, if
+  // attempt failed, record it in `AuthMetricsRecorder`.
+  void MaybeRecordKnowledgeFactorAuthFailure(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
+
   // Attempts to authenticate session using Key in `context`.
   // It is expected that the `challenge_response_keys` field is correctly filled
   // in the `context`.

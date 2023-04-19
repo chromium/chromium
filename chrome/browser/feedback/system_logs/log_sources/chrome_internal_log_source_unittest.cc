@@ -24,6 +24,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #endif
 
 namespace system_logs {
@@ -42,7 +43,26 @@ std::unique_ptr<SystemLogsResponse> GetChromeInternalLogs() {
   return response;
 }
 
-using ChromeInternalLogSourceTest = BrowserWithTestWindowTest;
+class ChromeInternalLogSourceTest : public BrowserWithTestWindowTest {
+ public:
+  ChromeInternalLogSourceTest() = default;
+  ChromeInternalLogSourceTest(const ChromeInternalLogSourceTest&) = delete;
+  ChromeInternalLogSourceTest& operator=(const ChromeInternalLogSourceTest&) =
+      delete;
+  ~ChromeInternalLogSourceTest() override = default;
+
+  void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auth_metrics_recorder_ = ash::AuthMetricsRecorder::CreateForTesting();
+#endif
+    BrowserWithTestWindowTest::SetUp();
+  }
+
+ protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+#endif
+};
 
 TEST_F(ChromeInternalLogSourceTest, VersionTagContainsActualVersion) {
   auto response = GetChromeInternalLogs();
@@ -97,6 +117,16 @@ TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
 
   EXPECT_EQ(free_disk_space, "1000");
   EXPECT_EQ(total_disk_space, "100000");
+}
+
+TEST_F(ChromeInternalLogSourceTest, KnowledgeFactorAuthFailuresPresent) {
+  auth_metrics_recorder_->OnKnowledgeFactorAuthFailue();
+
+  std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
+  auto knowledge_factor_auth_failure_count =
+      response->at("FAILED_KNOWLEDGE_FACTOR_ATTEMPTS");
+
+  EXPECT_EQ(knowledge_factor_auth_failure_count, "1");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -208,6 +208,10 @@ void AuthMetricsRecorder::ResetLoginData() {
   Reset();
 }
 
+void AuthMetricsRecorder::OnKnowledgeFactorAuthFailue() {
+  knowledge_factor_auth_failure_count_++;
+}
+
 void AuthMetricsRecorder::OnAuthFailure(
     const AuthFailure::FailureReason& reason) {
   base::RecordAction(base::UserMetricsAction("Login_Failure"));
@@ -329,6 +333,7 @@ void AuthMetricsRecorder::Reset() {
   is_login_offline_ = absl::nullopt;
   user_login_type_ = absl::nullopt;
   auth_surface_ = absl::nullopt;
+  knowledge_factor_auth_failure_count_ = 0;
 }
 
 }  // namespace ash
