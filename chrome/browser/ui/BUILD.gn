@@ -1635,6 +1635,8 @@ static_library("ui") {
       "webui/settings/custom_home_pages_table_model.h",
       "webui/settings/downloads_handler.cc",
       "webui/settings/downloads_handler.h",
+      "webui/settings/extensions_safety_check_handler.cc",
+      "webui/settings/extensions_safety_check_handler.h",
       "webui/settings/font_handler.cc",
       "webui/settings/font_handler.h",
       "webui/settings/hats_handler.cc",

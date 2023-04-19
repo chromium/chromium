@@ -3,6 +3,7 @@ file://chrome/browser/resources/settings/OWNERS
 per-file people_handler*=msalama@chromium.org
 per-file people_handler*=treib@chromium.org
 
+per-file extensions_safety_check_handler*=psarouthakis@google.com
 per-file hats_handler*=sauski@google.com
 per-file privacy_sandbox_handler*=file://components/privacy_sandbox/OWNERS
 per-file *site_settings*=msramek@chromium.org

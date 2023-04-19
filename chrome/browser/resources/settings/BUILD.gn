@@ -316,6 +316,7 @@ build_webui("build") {
     "reset_page/reset_browser_proxy.ts",
     "route.ts",
     "router.ts",
+    "safety_check_page/extensions_safety_check_browser_proxy.ts",
     "safety_check_page/safety_check_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.ts",
