@@ -13,6 +13,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
+#include "components/search/ntp_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -221,4 +222,32 @@ TEST_F(CartProcessorTest, TestCartToMojom) {
   ASSERT_EQ(cart_mojom->product_image_urls.size(), 2u);
   ASSERT_EQ(cart_mojom->product_image_urls[0], GURL(kMockProductImageURLA));
   ASSERT_EQ(cart_mojom->product_image_urls[1], GURL(kMockProductImageURLB));
+}
+
+TEST_F(CartProcessorTest, TestFakeCart) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpChromeCartInHistoryClusterModule,
+           {{ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam,
+             "6"}}},
+      },
+      {});
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  // Capture the cart mojom that is finally returned.
+  ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
+  base::MockCallback<
+      ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cart_mojom](ntp::history_clusters::cart::mojom::CartPtr cart) {
+            cart_mojom = std::move(cart);
+          }));
+
+  cart_processor().GetCartForCluster(std::move(cluster_mojom), callback.Get());
+
+  ASSERT_TRUE(cart_mojom);
+  ASSERT_EQ(cart_mojom->product_image_urls.size(), 6u);
 }

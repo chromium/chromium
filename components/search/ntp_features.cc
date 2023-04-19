@@ -323,6 +323,8 @@ const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
 const char kNtpHistoryClustersModuleDataParam[] =
     "NtpHistoryClustersModuleDataParam";
+const char kNtpChromeCartInHistoryClustersModuleDataParam[] =
+    "NtpChromeCartInHistoryClustersModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";

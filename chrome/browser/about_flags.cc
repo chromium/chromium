@@ -2066,6 +2066,34 @@ const FeatureEntry::FeatureVariation kNtpHistoryClustersModuleVariations[] = {
     {"- Fake Data - Layout 3", kNtpHistoryClustersModuleFakeData4Visits2Images,
      std::size(kNtpHistoryClustersModuleFakeData4Visits2Images), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kNtpChromeCartInHistoryClustersModuleFakeData0[] = {
+        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "0"}};
+const FeatureEntry::FeatureParam
+    kNtpChromeCartInHistoryClustersModuleFakeData1[] = {
+        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "1"}};
+const FeatureEntry::FeatureParam
+    kNtpChromeCartInHistoryClustersModuleFakeData2[] = {
+        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "3"}};
+const FeatureEntry::FeatureParam
+    kNtpChromeCartInHistoryClustersModuleFakeData3[] = {
+        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "6"}};
+
+const FeatureEntry::FeatureVariation
+    kNtpChromeCartInHistoryClustersModuleVariations[] = {
+        {" - Fake cart: 0 product image",
+         kNtpChromeCartInHistoryClustersModuleFakeData0,
+         std::size(kNtpChromeCartInHistoryClustersModuleFakeData0), nullptr},
+        {" - Fake cart: 1 product image",
+         kNtpChromeCartInHistoryClustersModuleFakeData1,
+         std::size(kNtpChromeCartInHistoryClustersModuleFakeData1), nullptr},
+        {" - Fake cart: 3 product images",
+         kNtpChromeCartInHistoryClustersModuleFakeData2,
+         std::size(kNtpChromeCartInHistoryClustersModuleFakeData2), nullptr},
+        {" - Fake cart: 6 product images",
+         kNtpChromeCartInHistoryClustersModuleFakeData3,
+         std::size(kNtpChromeCartInHistoryClustersModuleFakeData3), nullptr}};
+
 const FeatureEntry::FeatureParam kNtpMiddleSlotPromoDismissalFakeData[] = {
     {ntp_features::kNtpMiddleSlotPromoDismissalParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpMiddleSlotPromoDismissalVariations[] =
@@ -6155,7 +6183,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpChromeCartInHistoryClustersModuleName,
      flag_descriptions::kNtpChromeCartInHistoryClustersModuleDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpChromeCartInHistoryClusterModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ntp_features::kNtpChromeCartInHistoryClusterModule,
+         kNtpChromeCartInHistoryClustersModuleVariations,
+         "DesktopNtpModules")},
 
     {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
      flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
