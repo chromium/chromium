@@ -47,6 +47,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                  GrSurfaceOrigin surface_origin,
                                  SkAlphaType alpha_type,
                                  uint32_t usage,
+                                 base::StringPiece debug_label,
                                  gpu::SurfaceHandle surface_handle) override;
 
   gpu::Mailbox CreateSharedImage(SharedImageFormat format,
@@ -55,6 +56,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                  GrSurfaceOrigin surface_origin,
                                  SkAlphaType alpha_type,
                                  uint32_t usage,
+                                 base::StringPiece debug_label,
                                  base::span<const uint8_t> pixel_data) override;
 
   gpu::Mailbox CreateSharedImage(
@@ -64,6 +66,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
+      base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
   gpu::Mailbox CreateSharedImage(
@@ -73,7 +76,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override;
+      uint32_t usage,
+      base::StringPiece debug_label) override;
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;

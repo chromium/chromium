@@ -537,7 +537,8 @@ class VideoResourceUpdater::HardwarePlaneResource
     auto* sii = SharedImageInterface();
     mailbox_ = sii->CreateSharedImage(
         format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage, gpu::kNullSurfaceHandle);
+        kPremul_SkAlphaType, shared_image_usage, "VideoResourceUpdater",
+        gpu::kNullSurfaceHandle);
     ContextGL()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }

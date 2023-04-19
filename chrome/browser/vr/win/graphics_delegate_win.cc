@@ -189,7 +189,8 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
         gpu_memory_buffer_.get(), gpu_memory_buffer_manager_, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 |
-            gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT);
+            gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+        "VRGraphicsDelegate");
 
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }

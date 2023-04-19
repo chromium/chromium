@@ -317,7 +317,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       backing->mailbox = sii->CreateSharedImage(
           pool_resource.format(), pool_resource.size(),
           pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
+          kPremul_SkAlphaType, flags, "HeadsUpDisplayLayer",
+          gpu::kNullSurfaceHandle);
       if (gpu_raster) {
         auto* ri = raster_context_provider->RasterInterface();
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

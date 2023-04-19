@@ -1878,7 +1878,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           gpu_memory_buffer->SetColorSpace(color_space_);
           back_buffer_mailbox = sii->CreateSharedImage(
               gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
-              origin, back_buffer_alpha_type, usage | additional_usage_flags);
+              origin, back_buffer_alpha_type, usage | additional_usage_flags,
+              "WebGLDrawingBuffer");
 #if BUILDFLAG(IS_MAC)
           // A CHROMIUM_image backed texture requires a specialized set of
           // parameters on OSX.
@@ -1899,9 +1900,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         back_buffer_alpha_type = kUnpremul_SkAlphaType;
       }
 
-      back_buffer_mailbox = sii->CreateSharedImage(
-          color_buffer_format_, size, color_space_, origin,
-          back_buffer_alpha_type, usage, gpu::kNullSurfaceHandle);
+      back_buffer_mailbox =
+          sii->CreateSharedImage(color_buffer_format_, size, color_space_,
+                                 origin, back_buffer_alpha_type, usage,
+                                 "WebGLDrawingBuffer", gpu::kNullSurfaceHandle);
     }
   }
 

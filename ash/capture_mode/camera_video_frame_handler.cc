@@ -349,7 +349,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       mailboxes_[plane] = shared_image_interface->CreateSharedImage(
           gmb.get(), gmb_manager, buffer_planes_[plane],
           frame_info->color_space.value_or(gfx::ColorSpace()),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage);
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
+          "CameraVideoFrame");
     }
 
     // Since this is the first time we create the shared images in `mailboxes_`,

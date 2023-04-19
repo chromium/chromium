@@ -139,7 +139,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
           PlaneSharedImageFormat(num_channels, caps.texture_rg);
       holders_[plane].mailbox = sii->CreateSharedImage(
           format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, mailbox_usage, gpu::kNullSurfaceHandle);
+          kPremul_SkAlphaType, mailbox_usage, "VideoFrameYUV",
+          gpu::kNullSurfaceHandle);
       holders_[plane].texture_target = GL_TEXTURE_2D;
     }
 

@@ -369,7 +369,8 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
     DCHECK(sii);
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, pixels);
+        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestPixels",
+        pixels);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
     TransferableResource gl_resource = TransferableResource::MakeGpu(
@@ -661,7 +662,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
         child_context_provider_->SharedImageInterface()->CreateSharedImage(
             format, plane_size, gfx::ColorSpace::CreateREC709(),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, pixels);
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels", pixels);
     DCHECK(!mailboxes[i].mailbox.IsZero());
   }
 

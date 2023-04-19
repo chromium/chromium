@@ -89,7 +89,7 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   gpu::Mailbox mailbox = sii->CreateSharedImage(
       kSharedImageFormat, kBufferSize, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, flags, kNullSurfaceHandle);
+      kPremul_SkAlphaType, flags, "TestLabel", kNullSurfaceHandle);
   ri_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   // Call BeginRasterCHROMIUM.

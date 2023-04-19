@@ -160,7 +160,7 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   uploaded_resource.mailbox = sii->CreateSharedImage(
       format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, shared_image_usage,
+      kPremul_SkAlphaType, shared_image_usage, "SlimCompositorUIResource",
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();

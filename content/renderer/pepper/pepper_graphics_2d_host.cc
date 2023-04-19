@@ -690,7 +690,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       gpu_mailbox = sii->CreateSharedImage(
           format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
+          kPremul_SkAlphaType, usage, "PepperGraphics2DHost",
+          gpu::kNullSurfaceHandle);
       in_sync_token = sii->GenUnverifiedSyncToken();
     }
 

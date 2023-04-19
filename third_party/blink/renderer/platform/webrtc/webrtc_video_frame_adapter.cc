@@ -80,7 +80,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       return;
     mailbox = sii->CreateSharedImage(
         gpu_memory_buffer, GpuMemoryBufferManager(), plane, color_space,
-        surface_origin, alpha_type, usage);
+        surface_origin, alpha_type, usage, "WebRTCVideoFramePool");
     sync_token = sii->GenVerifiedSyncToken();
   }
 

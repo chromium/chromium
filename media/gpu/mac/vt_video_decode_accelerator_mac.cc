@@ -2290,15 +2290,17 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
       gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
       bool success;
+      constexpr char kDebugLabel[] = "VTVideoDecodeAccelerator";
       if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
         success = shared_image_stub->CreateSharedImage(
             mailbox, std::move(handle), si_format_, frame_size, color_space,
-            kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage);
+            kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
+            kDebugLabel);
       } else {
         success = shared_image_stub->CreateSharedImage(
             mailbox, std::move(handle), ToBufferFormat(si_format_),
             planes[plane], frame_size, color_space, kTopLeft_GrSurfaceOrigin,
-            kOpaque_SkAlphaType, shared_image_usage);
+            kOpaque_SkAlphaType, shared_image_usage, kDebugLabel);
       }
       if (!success) {
         DLOG(ERROR) << "Failed to create shared image";

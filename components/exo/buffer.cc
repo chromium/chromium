@@ -155,7 +155,7 @@ Buffer::Texture::Texture(
 
   mailbox_ = sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, size,
                                     color_space, kTopLeft_GrSurfaceOrigin,
-                                    kPremul_SkAlphaType, usage,
+                                    kPremul_SkAlphaType, usage, "ExoTexture",
                                     gpu::kNullSurfaceHandle);
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
@@ -193,7 +193,7 @@ Buffer::Texture::Texture(
   }
   mailbox_ = sii->CreateSharedImage(
       gpu_memory_buffer_, gpu_memory_buffer_manager, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture");
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();

@@ -547,7 +547,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
               gpu_memory_buffer_.get(),
               buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
               planes[plane], *(frame_info_->color_space),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+              "VideoCaptureFrameBuffer");
     } else {
       sii->UpdateSharedImage(
           buffer_context_->gmb_resources()->release_sync_token,

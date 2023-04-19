@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -1437,12 +1438,14 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,
+    base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CreateSharedImage,
                              base::Unretained(impl_on_gpu_.get()), mailbox,
-                             format, size, color_space, usage, surface_handle);
+                             format, size, color_space, usage,
+                             std::string(debug_label), surface_handle);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/false);
 

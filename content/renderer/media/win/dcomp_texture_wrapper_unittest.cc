@@ -36,7 +36,8 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override {
+      uint32_t usage,
+      base::StringPiece debug_label) override {
     return gpu::Mailbox();
   }
 };

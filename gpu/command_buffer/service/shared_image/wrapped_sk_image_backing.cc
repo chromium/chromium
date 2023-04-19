@@ -31,11 +31,10 @@ namespace gpu {
 
 namespace {
 
-// Given a usage and debug label string from the client, construct a string we
-// can pass to debugging tools.
-std::string GetLabel(uint32_t usage, const std::string& debug_label) {
-  return std::string("WrappedSkImage(" + CreateLabelForSharedImageUsage(usage) +
-                     ")" + "_" + debug_label);
+// Given a debug label string from the client, construct a string we can pass to
+// debugging tools.
+std::string GetLabel(const std::string& debug_label) {
+  return std::string("WrappedSkImage_" + debug_label);
 }
 
 }  // namespace
@@ -226,13 +225,12 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
             fallback_color, mipmap, is_renderable, is_protected, nullptr,
-            nullptr, GetLabel(usage(), debug_label));
+            nullptr, GetLabel(debug_label));
 #else
     texture.backend_texture =
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
-            mipmap, is_renderable, is_protected,
-            GetLabel(usage(), debug_label));
+            mipmap, is_renderable, is_protected, GetLabel(debug_label));
 #endif
 
     if (!texture.backend_texture.isValid()) {
@@ -277,7 +275,7 @@ bool WrappedSkImageBacking::InitializeWithData(const std::string& debug_label,
     textures_[0].backend_texture =
         context_state_->gr_context()->createBackendTexture(
             pixmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr,
-            GetLabel(usage(), debug_label));
+            GetLabel(debug_label));
   }
 
   if (!textures_[0].backend_texture.isValid()) {

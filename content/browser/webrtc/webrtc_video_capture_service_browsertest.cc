@@ -211,7 +211,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
               gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
               gpu::SHARED_IMAGE_USAGE_GLES2 |
               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-          gpu::kNullSurfaceHandle);
+          "TestLabel", gpu::kNullSurfaceHandle);
 
       gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
       gl->WaitSyncTokenCHROMIUM(sii_token.GetConstData());

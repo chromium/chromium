@@ -57,7 +57,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
-                         uint32_t usage);
+                         uint32_t usage,
+                         std::string debug_label);
   bool CreateSharedImage(const Mailbox& mailbox,
                          gfx::GpuMemoryBufferHandle handle,
                          viz::SharedImageFormat format,
@@ -65,7 +66,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
-                         uint32_t usage);
+                         uint32_t usage,
+                         std::string debug_label);
 
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
@@ -107,7 +109,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   // Wait on the sync token if any and destroy the shared image.
   void DestroySharedImage(const Mailbox& mailbox, const SyncToken& sync_token);
 
-  std::string GetLabel() const;
+  std::string GetLabel(const std::string& debug_label) const;
 
   raw_ptr<GpuChannel> channel_;
 

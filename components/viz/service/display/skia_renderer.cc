@@ -3223,7 +3223,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
 
   auto mailbox = skia_output_surface_->CreateSharedImage(
       requirements.format, requirements.size, requirements.color_space, usage,
-      gpu::kNullSurfaceHandle);
+      "RenderPassBacking", gpu::kNullSurfaceHandle);
   render_pass_backings_.emplace(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
@@ -3346,7 +3346,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_RASTER;
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, kOverlayUsage,
-        gpu::kNullSurfaceHandle);
+        "RenderPassOverlay", gpu::kNullSurfaceHandle);
     overlay_params.render_pass_backing = {buffer_size,
                                           /*generate_mipmap=*/false,
                                           color_space,

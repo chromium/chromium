@@ -73,6 +73,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage,
+                            base::StringPiece debug_label,
                             gpu::SurfaceHandle surface_handle) override;
 
   // Same behavior as the above, except that this version takes |pixel_data|
@@ -85,6 +86,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage,
+                            base::StringPiece debug_label,
                             base::span<const uint8_t> pixel_data) override;
 
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
@@ -93,6 +95,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage,
+                            base::StringPiece debug_label,
                             gfx::GpuMemoryBufferHandle buffer_handle) override;
 
   // |usage| is a combination of |SharedImageUsage| bits that describes which
@@ -112,7 +115,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
-                            uint32_t usage) override;
+                            uint32_t usage,
+                            base::StringPiece debug_label) override;
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.
@@ -197,6 +201,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // Only called on the gpu thread.
   bool MakeContextCurrent(bool needs_gl = false);
   bool LazyCreateSharedImageFactory();
+  // The "OnGpuThread" version of the methods accept a std::string for
+  // debug_label so it can be safely passed (copied) between threads without
+  // UAF.
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     viz::SharedImageFormat format,
                                     gpu::SurfaceHandle surface_handle,
@@ -205,6 +212,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                     GrSurfaceOrigin surface_origin,
                                     SkAlphaType alpha_type,
                                     uint32_t usage,
+                                    std::string debug_label,
                                     const SyncToken& sync_token);
   void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
                                             viz::SharedImageFormat format,
@@ -213,6 +221,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                             GrSurfaceOrigin surface_origin,
                                             SkAlphaType alpha_type,
                                             uint32_t usage,
+                                            std::string debug_label,
                                             const SyncToken& sync_token,
                                             std::vector<uint8_t> pixel_data);
 
@@ -225,6 +234,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                        GrSurfaceOrigin surface_origin,
                                        SkAlphaType alpha_type,
                                        uint32_t usage,
+                                       std::string debug_label,
                                        const SyncToken& sync_token);
   void UpdateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     const SyncToken& sync_token);

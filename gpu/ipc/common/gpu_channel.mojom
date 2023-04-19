@@ -556,6 +556,10 @@ struct CreateSharedImageParams {
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
 
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
+
   // The fence to release once the image is created.
   uint32 release_id;
 
@@ -584,6 +588,10 @@ struct CreateSharedImageWithDataParams {
   // Usage flags corresponding to values defined in
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
+
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
 
   // The fence to release once the image is created.
   uint32 release_id;
@@ -628,6 +636,10 @@ struct CreateSharedImageWithBufferParams {
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
 
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
+
   // The fence to release once the image is created.
   uint32 release_id;
 
@@ -661,6 +673,10 @@ struct CreateGMBSharedImageParams {
   // Usage flags corresponding to values defined in
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
+
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
 
   // The fence to release once the image is created.
   uint32 release_id;

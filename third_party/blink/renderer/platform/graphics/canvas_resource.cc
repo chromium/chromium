@@ -453,11 +453,13 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   if (gpu_memory_buffer_) {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         gpu_memory_buffer_.get(), gpu_memory_buffer_manager, GetColorSpace(),
-        surface_origin, surface_alpha_type, shared_image_usage_flags);
+        surface_origin, surface_alpha_type, shared_image_usage_flags,
+        "CanvasResourceRasterGmb");
   } else {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
-        surface_alpha_type, shared_image_usage_flags, gpu::kNullSurfaceHandle);
+        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster",
+        gpu::kNullSurfaceHandle);
   }
 
   // Wait for the mailbox to be ready to be used.

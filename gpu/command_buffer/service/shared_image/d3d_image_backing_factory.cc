@@ -339,7 +339,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    std::string debug_label_client,
+    std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
 
@@ -417,8 +417,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  const std::string debug_label =
-      "SharedImage_Texture2D" + CreateLabelForSharedImageUsage(usage);
+  debug_label = "D3DSharedImage_" + debug_label;
   d3d11_texture->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
                                 debug_label.c_str());
 

@@ -283,7 +283,7 @@ void FakeSkiaOutputSurface::CopyOutput(
     gpu::Mailbox local_mailbox = sii->CreateSharedImage(
         SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
+        gpu::SHARED_IMAGE_USAGE_GLES2, "CopyOutput", gpu::kNullSurfaceHandle);
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
     release_callbacks.push_back(base::BindPostTaskToCurrentDefault(
@@ -404,6 +404,7 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,
+    base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   return gpu::Mailbox::GenerateForSharedImage();
 }

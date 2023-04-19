@@ -68,7 +68,7 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
 
     if (!shared_image_stub->CreateSharedImage(
             mailbox, std::move(handle), format, plane, size, color_space,
-            surface_origin, alpha_type, usage)) {
+            surface_origin, alpha_type, usage, "MailboxVideoFrameConverter")) {
       return base::NullCallback();
     }
 

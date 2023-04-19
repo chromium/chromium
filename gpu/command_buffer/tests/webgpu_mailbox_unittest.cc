@@ -236,7 +236,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
@@ -423,7 +423,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmdBadMailboxMakesErrorTexture) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
@@ -459,7 +459,7 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
@@ -526,7 +526,7 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -600,7 +600,7 @@ TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -671,7 +671,7 @@ TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -756,7 +756,7 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -829,11 +829,11 @@ TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
   Mailbox mailbox_a = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   Mailbox mailbox_b = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   // Associate both mailboxes
   gpu::webgpu::ReservedTexture reservation_a =
@@ -868,12 +868,12 @@ TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
   Mailbox mailbox_a = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   Mailbox mailbox_b = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   // Two WebGPU devices to associate the shared images to.
   wgpu::Device device_a = GetNewDevice();
@@ -958,11 +958,11 @@ TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
   Mailbox mailbox1 = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   Mailbox mailbox2 = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
   webgpu()->AssociateMailbox(
       reservation1.deviceId, reservation1.deviceGeneration, reservation1.id,
       reservation1.generation, static_cast<WGPUTextureUsage>(desc1.usage),
@@ -983,7 +983,7 @@ TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
   Mailbox mailbox = sii->CreateSharedImage(
       GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
-      kNullSurfaceHandle);
+      "TestLabel", kNullSurfaceHandle);
 
   scoped_refptr<gl::GLContext> gl_context1;
   scoped_refptr<gl::GLContext> gl_context2;

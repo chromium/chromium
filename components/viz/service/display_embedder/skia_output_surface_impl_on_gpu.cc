@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -764,7 +765,8 @@ std::unique_ptr<gpu::SkiaImageRepresentation>
 SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
     SharedImageFormat format,
     const gfx::Size& size,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    base::StringPiece debug_label) {
   constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                               gpu::SHARED_IMAGE_USAGE_RASTER |
@@ -775,7 +777,7 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   bool result = shared_image_factory_->CreateSharedImage(
       mailbox, format, size, color_space, kBottomLeft_GrSurfaceOrigin,
       kUnpremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage,
-      "SkiaOutputSurface");
+      std::string(debug_label));
   if (!result) {
     DLOG(ERROR) << "Failed to create shared image.";
     return nullptr;
@@ -839,7 +841,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
           SinglePlaneFormat::kRGBA_8888,
           gfx::Size(geometry.result_bounds.width(),
                     geometry.result_bounds.height()),
-          color_space);
+          color_space, "CopyOutputInMemory");
 
       if (!representation) {
         DLOG(ERROR) << "Failed to create shared image.";
@@ -979,7 +981,8 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
     const auto resource_format =
         (i == 0) ? SinglePlaneFormat::kR_8 : SinglePlaneFormat::kRG_88;
     auto representation = CreateSharedImageRepresentationSkia(
-        resource_format, gfx::SkISizeToSize(plane_size), color_space);
+        resource_format, gfx::SkISizeToSize(plane_size), color_space,
+        "SurfacesForNV12Planes");
     if (!representation) {
       return false;
     }
@@ -2344,11 +2347,12 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     uint32_t usage,
+    std::string debug_label,
     gpu::SurfaceHandle surface_handle) {
   shared_image_factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
       format.HasAlpha() ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
-      surface_handle, usage, "SkiaOutputSurface");
+      surface_handle, usage, std::move(debug_label));
   skia_representations_.emplace(mailbox, nullptr);
 }
 

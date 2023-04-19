@@ -219,7 +219,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   gpu::MailboxHolder holder[media::VideoFrame::kMaxPlanes];
   gpu::Mailbox mailbox = sii->CreateSharedImage(
       gmb.get(), nullptr, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, usage);
+      kPremul_SkAlphaType, usage, "DCOMPTextureWrapperImpl");
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
   holder[0] = gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D);
 

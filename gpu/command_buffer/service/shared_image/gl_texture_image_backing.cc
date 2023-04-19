@@ -216,11 +216,13 @@ void GLTextureImageBacking::InitializeGLTexture(
     const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
     base::span<const uint8_t> pixel_data,
     gl::ProgressReporter* progress_reporter,
-    bool framebuffer_attachment_angle) {
+    bool framebuffer_attachment_angle,
+    std::string debug_label_from_client) {
+  // If the extension does not exist, pass an empty debug label to avoid
+  // subsequent crashes.
   std::string debug_label;
   if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
-    debug_label =
-        "SharedImage_GLTexture" + CreateLabelForSharedImageUsage(usage());
+    debug_label = "GLSharedImage_" + debug_label_from_client;
   }
 
   int num_planes = format().NumberOfPlanes();

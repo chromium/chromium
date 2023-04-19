@@ -71,9 +71,9 @@ GLTextureImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
-  return CreateSharedImageInternal(mailbox, format, surface_handle, size,
-                                   color_space, surface_origin, alpha_type,
-                                   usage, base::span<const uint8_t>());
+  return CreateSharedImageInternal(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, std::move(debug_label), base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -89,7 +89,7 @@ GLTextureImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> pixel_data) {
   return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
                                    color_space, surface_origin, alpha_type,
-                                   usage, pixel_data);
+                                   usage, std::move(debug_label), pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -184,6 +184,7 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
@@ -197,7 +198,8 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       use_passthrough_);
   result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
-                              progress_reporter_, framebuffer_attachment_angle);
+                              progress_reporter_, framebuffer_attachment_angle,
+                              std::move(debug_label));
 
   return std::move(result);
 }

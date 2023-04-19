@@ -33,7 +33,8 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
       base::span<const uint8_t> pixel_data,
       gl::ProgressReporter* progress_reporter,
-      bool framebuffer_attachment_angle);
+      bool framebuffer_attachment_angle,
+      std::string debug_label);
 
  private:
   // SharedImageBacking:

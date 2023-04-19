@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -266,6 +267,7 @@ class SkiaOutputSurfaceImplOnGpu
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          uint32_t usage,
+                         std::string debug_label,
                          gpu::SurfaceHandle surface_handle);
   void CreateSolidColorSharedImage(gpu::Mailbox mailbox,
                                    const SkColor4f& color,
@@ -351,7 +353,8 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<gpu::SkiaImageRepresentation>
   CreateSharedImageRepresentationSkia(SharedImageFormat format,
                                       const gfx::Size& size,
-                                      const gfx::ColorSpace& color_space);
+                                      const gfx::ColorSpace& color_space,
+                                      base::StringPiece debug_label);
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, renders
   // |surface| into |dest_surface|'s canvas, cropping and scaling the results

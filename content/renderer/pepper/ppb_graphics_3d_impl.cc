@@ -107,7 +107,7 @@ class PPB_Graphics3D_Impl::ColorBuffer {
                   : viz::SinglePlaneFormat::kRGBX_8888,
         shared_image_size, gfx::ColorSpace::CreateSRGB(),
         kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage,
-        gpu::SurfaceHandle());
+        "PPBGraphics3DImpl", gpu::SurfaceHandle());
 
     sync_token_ = sii_->GenVerifiedSyncToken();
   }

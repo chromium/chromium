@@ -365,7 +365,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     }
     backing_->mailbox = sii->CreateSharedImage(
         shared_image_format_, resource_size_, color_space_,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "GpuRasterTile",
         gpu::kNullSurfaceHandle);
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

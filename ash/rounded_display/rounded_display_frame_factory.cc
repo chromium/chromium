@@ -160,7 +160,8 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
       aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   resource->mailbox = sii->CreateSharedImage(
       gpu_memory_buffer.get(), gmb_manager, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      "RoundedDisplayFrameUi");
 
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;

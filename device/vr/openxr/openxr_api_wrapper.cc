@@ -756,7 +756,8 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
         gpu_memory_buffer.get(), nullptr,
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                         gfx::ColorSpace::TransferID::LINEAR),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage);
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+        "OpenXrSwapChain");
     mailbox_holder.sync_token = shared_image_interface->GenVerifiedSyncToken();
     mailbox_holder.texture_target = GL_TEXTURE_2D;
   }

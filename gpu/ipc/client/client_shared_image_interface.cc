@@ -83,11 +83,13 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(usage));
-  return AddMailbox(proxy_->CreateSharedImage(
-      format, size, color_space, surface_origin, alpha_type, usage));
+  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
+                                              surface_origin, alpha_type, usage,
+                                              debug_label));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
@@ -97,13 +99,14 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    base::StringPiece debug_label,
     base::span<const uint8_t> pixel_data) {
   // Pixel upload path only supports single-planar formats.
   DCHECK(format.is_single_plane());
   DCHECK(gpu::IsValidClientUsage(usage));
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
-                                              pixel_data));
+                                              debug_label, pixel_data));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
@@ -113,13 +116,14 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
   DCHECK(viz::HasEquivalentBufferFormat(format));
   DCHECK(format.is_multi_plane());
-  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
-                                              surface_origin, alpha_type, usage,
-                                              std::move(buffer_handle)));
+  return AddMailbox(proxy_->CreateSharedImage(
+      format, size, color_space, surface_origin, alpha_type, usage, debug_label,
+      std::move(buffer_handle)));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
@@ -129,11 +133,12 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    uint32_t usage,
+    base::StringPiece debug_label) {
   DCHECK(gpu::IsValidClientUsage(usage));
   return AddMailbox(proxy_->CreateSharedImage(
       gpu_memory_buffer->GetFormat(), plane, gpu_memory_buffer->GetSize(),
-      color_space, surface_origin, alpha_type, usage,
+      color_space, surface_origin, alpha_type, usage, debug_label,
       gpu_memory_buffer->CloneHandle()));
 }
 
