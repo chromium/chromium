@@ -28,8 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace eche_app {
+namespace ash::eche_app {
 
 namespace {
 
@@ -167,13 +166,18 @@ class EcheSignalerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    connection_status_handler_ =
+    eche_connection_status_handler_ =
         std::make_unique<eche_app::EcheConnectionStatusHandler>();
     apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
-        connection_status_handler_.get());
+        eche_connection_status_handler_.get());
     signaler_ = std::make_unique<EcheSignaler>(
         &fake_connector_, &fake_connection_manager_,
-        apps_launch_info_provider_.get());
+        apps_launch_info_provider_.get(),
+        eche_connection_status_handler_.get());
+  }
+
+  EcheConnectionStatusHandler* eche_connection_status_handler() {
+    return eche_connection_status_handler_.get();
   }
 
   std::vector<uint8_t> getSignal(std::string data) {
@@ -222,7 +226,7 @@ class EcheSignalerTest : public testing::Test {
   TaskRunner task_runner_;
   FakeEcheConnector fake_connector_{&task_runner_};
   secure_channel::FakeConnectionManager fake_connection_manager_;
-  std::unique_ptr<EcheConnectionStatusHandler> connection_status_handler_;
+  std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<EcheSignaler> signaler_;
   base::test::ScopedFeatureList feature_list_;
@@ -446,5 +450,30 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
   EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
 }
 
-}  // namespace eche_app
-}  // namespace ash
+TEST_F(EcheSignalerTest, OnRequestCloseConnnectionDoesNotStreamEventFailures) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA,
+                            features::kEcheNetworkConnectionState},
+      /*disabled_features=*/{});
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  FakeSystemInfoProvider fake_system_info_provider;
+  proto::ExoMessage message = getResponseMessage(
+      "123", "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1",
+      false);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectTotalCount("Eche.StreamEvent.ConnectionFail", 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  eche_connection_status_handler()->NotifyRequestCloseConnection();
+  task_runner_.WaitForResult();
+
+  histograms.ExpectTotalCount("Eche.StreamEvent.ConnectionFail", 0);
+  EXPECT_FALSE(signaler_->signaling_timeout_timer_for_test());
+}
+
+}  // namespace ash::eche_app

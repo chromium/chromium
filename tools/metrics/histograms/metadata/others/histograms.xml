@@ -5379,10 +5379,10 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Events logged the root cause of Eche connection failure. when triggered from
-    notificaiton and failed in last network connection check. Records when
-    signaling timeout on EcheSignaler or the tablet mode check on EcheTray
-    Separate from normal Eche.StreamEvent.ConnectionFail.
+    Events logged the root cause of Eche connection failure when triggered from
+    a notification and failed in last network connection check. Records when
+    signaling timeout on EcheSignaler or the tablet mode check on EcheTray.
+    Separate from Eche.StreamEvent.ConnectionFail.
   </summary>
 </histogram>
 
@@ -5394,8 +5394,9 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the success rate of app streaming when triggered from notificaiton
-    and failed in last network connection check. Separate from normal
-    Eche.StreamEvent histogram.
+    and failed in last network connection check. Recorded when the stream is
+    initialized in EcheTray or when it starts in EcheStreamStatusChangeHandler.
+    Separate from Eche.StreamEvent.
   </summary>
 </histogram>
 

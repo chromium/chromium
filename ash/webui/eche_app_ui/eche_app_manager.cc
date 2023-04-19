@@ -91,10 +91,11 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheConnectorImpl>(feature_status_provider_.get(),
                                               connection_manager_.get(),
                                               connection_scheduler_.get())),
-      signaler_(
-          std::make_unique<EcheSignaler>(eche_connector_.get(),
-                                         connection_manager_.get(),
-                                         apps_launch_info_provider_.get())),
+      signaler_(std::make_unique<EcheSignaler>(
+          eche_connector_.get(),
+          connection_manager_.get(),
+          apps_launch_info_provider_.get(),
+          eche_connection_status_handler_.get())),
       message_receiver_(
           std::make_unique<EcheMessageReceiverImpl>(connection_manager_.get())),
       eche_presence_manager_(std::make_unique<EchePresenceManager>(
