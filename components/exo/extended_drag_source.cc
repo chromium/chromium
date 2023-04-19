@@ -323,7 +323,6 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel) {
         if (auto* window_holder = self->dragged_window_holder_.get()) {
           if (auto* toplevel = window_holder->toplevel_window()) {
             toplevel->ClearProperty(ash::kIsDraggingTabsKey);
-            toplevel->ClearProperty(ash::kTabDraggingSourceWindowKey);
           }
         }
         self->dragged_window_holder_.reset();
@@ -357,10 +356,6 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
   aura::Window* toplevel = dragged_window_holder_->toplevel_window();
   DCHECK(toplevel);
   toplevel->SetProperty(ash::kIsDraggingTabsKey, true);
-  if (drag_source_window_ && drag_source_window_ != toplevel) {
-    toplevel->SetProperty(ash::kTabDraggingSourceWindowKey,
-                          drag_source_window_);
-  }
 }
 
 void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
