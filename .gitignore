@@ -211,6 +211,7 @@ vs-chromium-project.txt
 /components/gcm_driver.xml
 /components/history_clusters/internal
 /components/leveldb_proto_test_support.xml
+/components/metrics/internal
 /components/ntp_tiles/resources/internal
 /components/optimization_guide/internal
 /components/resources/default_100_percent/google_chrome
