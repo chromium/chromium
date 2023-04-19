@@ -496,6 +496,17 @@ void ServiceWorkerSubresourceLoader::OnFallback(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN);
 
+  // If the fetch response is handled by RaceNetworkRequest, the new fallback
+  // request is not dispatched. OnFallback doesn't delete the instance and flip
+  // the status. Those are handled in the process of RaceNetworkRequest
+  // handling.
+  // TODO(crbug.com/1432075) Fallback response shoudld be handled as a fallback.
+  // The response from RaceNetworkRequest is currently handled by the code path
+  // for the non-fallback case.
+  if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
+    return;
+  }
+
   // Hand over to the network loader.
   mojo::PendingRemote<network::mojom::URLLoaderClient> client;
   auto client_impl = std::make_unique<HeaderRewritingURLLoaderClient>(

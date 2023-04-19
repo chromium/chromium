@@ -5258,6 +5258,18 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
+  SetupAndRegisterServiceWorker();
+  // Network request is faster, and the fetch handler will fallback.
+  // This case the response from RaceNetworkRequset is used.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('/service_worker/mock_response?"
+                   "sw_fallback&sw_slow').then(response => "
+                   "response.text())"));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        Subresource_FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());

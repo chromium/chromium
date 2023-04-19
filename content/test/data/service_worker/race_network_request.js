@@ -28,15 +28,16 @@ self.addEventListener("fetch", async e => {
   const {request} = e;
   const url = new URL(request.url);
 
-  // Force fallback
-  if (url.search.includes('sw_fallback')) {
-    return;
-  }
-
   // Force slow response
   let timeout = Promise.resolve();
   if (url.search.includes('sw_slow')) {
     timeout = new Promise(resolve => setTimeout(resolve, 1500));
+  }
+
+  // Force fallback
+  if (url.search.includes('sw_fallback')) {
+    await timeout;
+    return;
   }
 
   // Force respond from the cache
