@@ -94,7 +94,9 @@ bool MojoUkmRecorder::ShouldDropEntry(const mojom::UkmEntry& entry) {
   }
 
   if (!params_->is_enabled) {
-    RecordDroppedEntry(entry.event_hash, DroppedDataReason::RECORDING_DISABLED);
+    RecordDroppedEntry(
+        entry.event_hash,
+        DroppedDataReason::RECORDING_DISABLED_REDUCE_ADDENTRYIPC);
     return true;
   }
   return false;
