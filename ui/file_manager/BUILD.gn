@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ash/webui/tools/ash_ts_library.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_definitions.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -119,12 +119,20 @@ preprocess_if_expr("preprocess_generated") {
   ]
 }
 
-ash_ts_library("build_ts") {
+ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   composite = true
-  use_lit = true
+
+  path_mappings = [
+    "tslib|" + rebase_path(
+            "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.d.ts",
+            target_gen_dir),
+    "chrome://resources/mwc/*|" + rebase_path(
+            "//third_party/material_web_components/components-chromium/node_modules/*",
+            target_gen_dir),
+  ]
 
   extra_deps = [
     ":copy_definitions_to_gen",
@@ -142,6 +150,7 @@ ash_ts_library("build_ts") {
     "//ash/webui/common/resources:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
+    "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
