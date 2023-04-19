@@ -1202,4 +1202,24 @@ TEST_F(PasswordCheckDelegateTest,
                         kUsername2)))));
 }
 
+TEST_F(PasswordCheckDelegateTest,
+       GetCredentialsWithReusedPasswordAvoidsSingleReuse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kPasswordManagerRedesign);
+
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleApp, kUsername2, kWeakPassword1));
+  RunUntilIdle();
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+
+  EXPECT_EQ(1u, delegate().GetCredentialsWithReusedPassword().size());
+
+  store().RemoveLogin(
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  RunUntilIdle();
+
+  EXPECT_THAT(delegate().GetCredentialsWithReusedPassword(), IsEmpty());
+}
+
 }  // namespace extensions
