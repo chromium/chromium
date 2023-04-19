@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener} from 'chrome://password-manager/password_manager.js';
+import {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './test_util.js';
@@ -68,6 +68,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'muteInsecureCredential',
       'optInForAccountStorage',
       'recordPasswordCheckInteraction',
+      'recordPasswordViewInteraction',
       'removeBlockedSite',
       'removeSavedPassword',
       'requestCredentialsDetails',
@@ -182,6 +183,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {
     this.methodCalled('recordPasswordCheckInteraction', interaction);
+  }
+
+  recordPasswordViewInteraction(interaction: PasswordViewPageInteractions) {
+    this.methodCalled('recordPasswordViewInteraction', interaction);
   }
 
   muteInsecureCredential(insecureCredential:

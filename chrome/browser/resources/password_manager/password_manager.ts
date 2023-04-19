@@ -21,7 +21,7 @@ export {PasswordDetailsCardElement} from './password_details_card.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';
 export {PasswordManagerAppElement} from './password_manager_app.js';
-export {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
+export {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from './password_manager_proxy.js';
 export {PasswordsExporterElement} from './passwords_exporter.js';
 export {PasswordsImporterElement} from './passwords_importer.js';
 export {PasswordsSectionElement} from './passwords_section.js';

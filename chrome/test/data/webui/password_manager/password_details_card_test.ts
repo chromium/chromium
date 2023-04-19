@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {EditPasswordDialogElement, Page, PasswordDetailsCardElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {EditPasswordDialogElement, Page, PasswordDetailsCardElement, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -81,6 +81,9 @@ suite('PasswordDetailsCardTest', function() {
 
     card.$.copyUsernameButton.click();
     await passwordManager.whenCalled('extendAuthValidity');
+    assertEquals(
+        PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
     assertTrue(card.$.toast.open);
     assertEquals(
@@ -106,6 +109,9 @@ suite('PasswordDetailsCardTest', function() {
         await passwordManager.whenCalled('requestPlaintextPassword');
     assertEquals(password.id, id);
     assertEquals(chrome.passwordsPrivate.PlaintextReason.COPY, reason);
+    assertEquals(
+        PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
     await flushTasks();
     assertTrue(card.$.toast.open);
@@ -158,6 +164,9 @@ suite('PasswordDetailsCardTest', function() {
         'icon-visibility', card.$.showPasswordButton.getAttribute('class'));
 
     card.$.showPasswordButton.click();
+    assertEquals(
+        PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
     assertEquals(
         loadTimeData.getString('hidePassword'),
@@ -181,6 +190,9 @@ suite('PasswordDetailsCardTest', function() {
     card.$.editButton.click();
     await eventToPromise('cr-dialog-open', card);
     await passwordManager.whenCalled('extendAuthValidity');
+    assertEquals(
+        PasswordViewPageInteractions.PASSWORD_EDIT_BUTTON_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
     await flushTasks();
 
     const editDialog =
@@ -205,6 +217,9 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(isVisible(card.$.deleteButton));
 
     card.$.deleteButton.click();
+    assertEquals(
+        PasswordViewPageInteractions.PASSWORD_DELETE_BUTTON_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
     const params = await passwordManager.whenCalled('removeSavedPassword');
     assertEquals(params.id, password.id);

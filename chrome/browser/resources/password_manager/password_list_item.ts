@@ -13,7 +13,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_list_item.html.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {Page, Router} from './router.js';
 
 export interface PasswordListItemElement {
@@ -88,6 +88,8 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
         })
         .catch(() => {});
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED);
   }
 
   private async onItemChanged_() {
