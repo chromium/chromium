@@ -301,6 +301,7 @@ EXPORTS
     ??BCord@absl@@QBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ??Bint128@absl@@QBENXZ
     ??EChunkIterator@Cord@absl@@QAEAAV012@XZ
+    ??Gabsl@@YA?AVDuration@0@V10@@Z
     ??Gdetail@cctz@time_internal@absl@@YA?AV?$civil_time@Uday_tag@detail@cctz@time_internal@absl@@@0123@V40123@_J@Z
     ??Gdetail@cctz@time_internal@absl@@YA?AV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@0123@V40123@_J@Z
     ??Kabsl@@YA?AVint128@0@V10@0@Z
@@ -311,6 +312,7 @@ EXPORTS
     ??R?$RandenPool@G@random_internal@absl@@QAEGXZ
     ??R?$RandenPool@I@random_internal@absl@@QAEIXZ
     ??R?$RandenPool@_K@random_internal@absl@@QAE_KXZ
+    ??R?$__less@VDuration@absl@@V12@@Cr@std@@QBE_NABVDuration@absl@@0@Z
     ??R?$default_delete@$$CBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@QBEXPBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ??R?$default_delete@ULogMessageData@LogMessage@log_internal@absl@@@Cr@std@@QBEXPAULogMessageData@LogMessage@log_internal@absl@@@Z
     ??XDuration@absl@@QAEAAV01@N@Z
@@ -424,6 +426,7 @@ EXPORTS
     ?Clear@Cord@absl@@QAEXXZ
     ?ClearBackingArray@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@_N@Z
     ?ClearCurrentThreadIdentity@base_internal@absl@@YAXXZ
+    ?ClearLogBacktraceLocation@absl@@YAXXZ
     ?ClearTimeZoneMapTestOnly@Impl@time_zone@cctz@time_internal@absl@@SAXXZ
     ?CombineContiguousImpl@MixingHashState@hash_internal@absl@@CA_K_KPBEIU?$integral_constant@H$03@Cr@std@@@Z
     ?CombineContiguousImpl@MixingHashState@hash_internal@absl@@CA_K_KPBEIU?$integral_constant@H$07@Cr@std@@@Z
@@ -641,6 +644,7 @@ EXPORTS
     ?Generate@?$RandenPool@_K@random_internal@absl@@KA_KXZ
     ?Generate@RandenHwAes@random_internal@absl@@SAXPBXPAX@Z
     ?Generate@RandenSlow@random_internal@absl@@SAXPBXPAX@Z
+    ?GetAndroidNativeTag@log_internal@absl@@YAPBDXZ
     ?GetAppendBuffer@CordRepBtree@cord_internal@absl@@QAE?AV?$Span@D@3@I@Z
     ?GetAppendBuffer@CordRepRing@cord_internal@absl@@QAE?AV?$Span@D@3@I@Z
     ?GetAppendBufferSlow@CordRepBtree@cord_internal@absl@@AAE?AV?$Span@D@3@I@Z
@@ -921,6 +925,7 @@ EXPORTS
     ?Scramble@CRC32@crc_internal@absl@@UBEXPAI@Z
     ?Seek@CordRepBtreeReader@cord_internal@absl@@QAE?AV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@I@Z
     ?SendToLog@LogMessage@log_internal@absl@@AAEXXZ
+    ?SetAndroidNativeTag@absl@@YAXPBD@Z
     ?SetCapacityForTesting@CordRepRing@cord_internal@absl@@QAEXI@Z
     ?SetCrcCordState@Cord@absl@@AAEXVCrcCordState@crc_internal@2@@Z
     ?SetCurrentThreadIdentity@base_internal@absl@@YAXPAUThreadIdentity@12@P6AXPAX@Z@Z

@@ -83,31 +83,6 @@ namespace synchronization_internal {
 
 class FutexImpl {
  public:
-  // Atomically check that `*v == val`, and if it is, then sleep until the
-  // timeout `t` has been reached, or until woken by `Wake()`.
-  static int WaitUntil(std::atomic<int32_t>* v, int32_t val,
-                       KernelTimeout t) {
-    // Monotonic waits are disabled for production builds because go/btm
-    // requires synchronized clocks.
-    // TODO(b/160682823): Find a way to enable this when BTM is not enabled
-    // since production builds don't always run on Borg.
-#if defined(CLOCK_MONOTONIC) && !defined(__GOOGLE_GRTE_VERSION__)
-    constexpr bool kRelativeTimeoutSupported = true;
-#else
-    constexpr bool kRelativeTimeoutSupported = false;
-#endif
-
-    if (!t.has_timeout()) {
-      return Wait(v, val);
-    } else if (kRelativeTimeoutSupported && t.is_relative_timeout()) {
-      auto rel_timespec = t.MakeRelativeTimespec();
-      return WaitRelativeTimeout(v, val, &rel_timespec);
-    } else {
-      auto abs_timespec = t.MakeAbsTimespec();
-      return WaitAbsoluteTimeout(v, val, &abs_timespec);
-    }
-  }
-
   // Atomically check that `*v == val`, and if it is, then sleep until the until
   // woken by `Wake()`.
   static int Wait(std::atomic<int32_t>* v, int32_t val) {

@@ -92,26 +92,42 @@ struct SynchWaitParams;
 //
 // A `Mutex` has two basic operations: `Mutex::Lock()` and `Mutex::Unlock()`.
 // The `Lock()` operation *acquires* a `Mutex` (in a state known as an
-// *exclusive* -- or write -- lock), while the `Unlock()` operation *releases* a
+// *exclusive* -- or *write* -- lock), and the `Unlock()` operation *releases* a
 // Mutex. During the span of time between the Lock() and Unlock() operations,
-// a mutex is said to be *held*. By design all mutexes support exclusive/write
+// a mutex is said to be *held*. By design, all mutexes support exclusive/write
 // locks, as this is the most common way to use a mutex.
+//
+// Mutex operations are only allowed under certain conditions; otherwise an
+// operation is "invalid", and disallowed by the API. The conditions concern
+// both the current state of the mutex and the identity of the threads that
+// are performing the operations.
 //
 // The `Mutex` state machine for basic lock/unlock operations is quite simple:
 //
-// |                | Lock()     | Unlock() |
-// |----------------+------------+----------|
-// | Free           | Exclusive  | invalid  |
-// | Exclusive      | blocks     | Free     |
+// |                | Lock()                 | Unlock() |
+// |----------------+------------------------+----------|
+// | Free           | Exclusive              | invalid  |
+// | Exclusive      | blocks, then exclusive | Free     |
 //
-// Attempts to `Unlock()` must originate from the thread that performed the
-// corresponding `Lock()` operation.
+// The full conditions are as follows.
 //
-// An "invalid" operation is disallowed by the API. The `Mutex` implementation
-// is allowed to do anything on an invalid call, including but not limited to
+// * Calls to `Unlock()` require that the mutex be held, and must be made in the
+//   same thread that performed the corresponding `Lock()` operation which
+//   acquired the mutex; otherwise the call is invalid.
+//
+// * The mutex being non-reentrant (or non-recursive) means that a call to
+//   `Lock()` or `TryLock()` must not be made in a thread that already holds the
+//   mutex; such a call is invalid.
+//
+// * In other words, the state of being "held" has both a temporal component
+//   (from `Lock()` until `Unlock()`) as well as a thread identity component:
+//   the mutex is held *by a particular thread*.
+//
+// An "invalid" operation has undefined behavior. The `Mutex` implementation
+// is allowed to do anything on an invalid call, including, but not limited to,
 // crashing with a useful error message, silently succeeding, or corrupting
-// data structures. In debug mode, the implementation attempts to crash with a
-// useful error message.
+// data structures. In debug mode, the implementation may crash with a useful
+// error message.
 //
 // `Mutex` is not guaranteed to be "fair" in prioritizing waiting threads; it
 // is, however, approximately fair over long periods, and starvation-free for

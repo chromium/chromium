@@ -61,7 +61,9 @@ cc_library(
         "//absl/synchronization:__pkg__",
     ],
     deps = [
+        "//absl/base",
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/time",
     ],
@@ -75,6 +77,7 @@ cc_test(
     deps = [
         ":kernel_timeout_internal",
         "//absl/base:config",
+        "//absl/random",
         "//absl/time",
         "@com_google_googletest//:gtest_main",
     ],
@@ -348,6 +351,8 @@ cc_test(
         ":kernel_timeout_internal",
         ":synchronization",
         ":thread_pool",
+        "//absl/base:config",
+        "//absl/random",
         "//absl/time",
         "@com_google_googletest//:gtest_main",
     ],

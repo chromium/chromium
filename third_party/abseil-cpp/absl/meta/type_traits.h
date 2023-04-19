@@ -229,14 +229,6 @@ template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;
 #endif
 
-namespace type_traits_internal {
-// An implementation of std::is_trivially_copyable was once provided for
-// internal use within absl.
-// TODO(absl-team): Replace absl::type_traits_internal::is_trivially_copyable
-// with std::is_trivially_copyable and delete this using declaration.
-using std::is_trivially_copyable;
-}  // namespace type_traits_internal
-
 // -----------------------------------------------------------------------------
 // C++14 "_t" trait aliases
 // -----------------------------------------------------------------------------

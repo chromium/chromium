@@ -1001,6 +1001,7 @@ cc_test(
         "//absl/random",
         "//absl/strings",
         "//absl/types:compare",
+        "//absl/types:optional",
         "@com_google_googletest//:gtest_main",
     ],
 )

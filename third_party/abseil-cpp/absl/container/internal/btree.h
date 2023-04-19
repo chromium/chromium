@@ -892,6 +892,38 @@ class btree_node {
     }
   }
 
+  // Returns whether key i is ordered correctly with respect to the other keys
+  // in the node. The motivation here is to detect comparators that violate
+  // transitivity. Note: we only do comparisons of keys on this node rather than
+  // the whole tree so that this is constant time.
+  template <typename Compare>
+  bool is_ordered_correctly(field_type i, const Compare &comp) const {
+    if (std::is_base_of<BtreeTestOnlyCheckedCompareOptOutBase,
+                        Compare>::value ||
+        params_type::kIsKeyCompareStringAdapted) {
+      return true;
+    }
+
+    const auto compare = [&](field_type a, field_type b) {
+      const absl::weak_ordering cmp =
+          compare_internal::do_three_way_comparison(comp, key(a), key(b));
+      return cmp < 0 ? -1 : cmp > 0 ? 1 : 0;
+    };
+    int cmp = -1;
+    constexpr bool kCanHaveEquivKeys =
+        params_type::template can_have_multiple_equivalent_keys<key_type>();
+    for (field_type j = start(); j < finish(); ++j) {
+      if (j == i) {
+        if (cmp > 0) return false;
+        continue;
+      }
+      int new_cmp = compare(j, i);
+      if (new_cmp < cmp || (!kCanHaveEquivKeys && new_cmp == 0)) return false;
+      cmp = new_cmp;
+    }
+    return true;
+  }
+
   // Emplaces a value at position i, shifting all existing values and
   // children at positions >= i to the right by 1.
   template <typename... Args>
@@ -2180,7 +2212,7 @@ constexpr bool btree<P>::static_assert_validation() {
                 "Key comparison must be nothrow copy constructible");
   static_assert(std::is_nothrow_copy_constructible<allocator_type>::value,
                 "Allocator must be nothrow copy constructible");
-  static_assert(type_traits_internal::is_trivially_copyable<iterator>::value,
+  static_assert(std::is_trivially_copyable<iterator>::value,
                 "iterator not trivially copyable.");
 
   // Note: We assert that kTargetValues, which is computed from
@@ -2816,6 +2848,13 @@ inline auto btree<P>::internal_emplace(iterator iter, Args &&...args)
   }
   iter.node_->emplace_value(static_cast<field_type>(iter.position_), alloc,
                             std::forward<Args>(args)...);
+  assert(
+      iter.node_->is_ordered_correctly(static_cast<field_type>(iter.position_),
+                                       original_key_compare(key_comp())) &&
+      "If this assert fails, then either (1) the comparator may violate "
+      "transitivity, i.e. comp(a,b) && comp(b,c) -> comp(a,c) (see "
+      "https://en.cppreference.com/w/cpp/named_req/Compare), or (2) a "
+      "key may have been mutated after it was inserted into the tree.");
   ++size_;
   iter.update_generation();
   return iter;

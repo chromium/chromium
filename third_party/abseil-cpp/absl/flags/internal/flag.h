@@ -308,19 +308,20 @@ constexpr int64_t UninitializedFlagValue() {
 }
 
 template <typename T>
-using FlagUseValueAndInitBitStorage = std::integral_constant<
-    bool, absl::type_traits_internal::is_trivially_copyable<T>::value &&
-              std::is_default_constructible<T>::value && (sizeof(T) < 8)>;
+using FlagUseValueAndInitBitStorage =
+    std::integral_constant<bool, std::is_trivially_copyable<T>::value &&
+                                     std::is_default_constructible<T>::value &&
+                                     (sizeof(T) < 8)>;
 
 template <typename T>
-using FlagUseOneWordStorage = std::integral_constant<
-    bool, absl::type_traits_internal::is_trivially_copyable<T>::value &&
-              (sizeof(T) <= 8)>;
+using FlagUseOneWordStorage =
+    std::integral_constant<bool, std::is_trivially_copyable<T>::value &&
+                                     (sizeof(T) <= 8)>;
 
 template <class T>
-using FlagUseSequenceLockStorage = std::integral_constant<
-    bool, absl::type_traits_internal::is_trivially_copyable<T>::value &&
-              (sizeof(T) > 8)>;
+using FlagUseSequenceLockStorage =
+    std::integral_constant<bool, std::is_trivially_copyable<T>::value &&
+                                     (sizeof(T) > 8)>;
 
 enum class FlagValueStorageKind : uint8_t {
   kValueAndInitBit = 0,

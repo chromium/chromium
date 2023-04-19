@@ -50,7 +50,7 @@ bool StdcppWaiter::Wait(KernelTimeout t) {
     if (!t.has_timeout()) {
       cv_.wait(lock);
     } else {
-      auto wait_result = t.is_relative_timeout()
+      auto wait_result = t.SupportsSteadyClock() && t.is_relative_timeout()
                              ? cv_.wait_for(lock, t.ToChronoDuration())
                              : cv_.wait_until(lock, t.ToChronoTimePoint());
       if (wait_result == std::cv_status::timeout) {

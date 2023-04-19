@@ -1497,6 +1497,7 @@ EXPORTS
     ??0GroupSse2Impl@container_internal@absl@@QEAA@PEBW4ctrl_t@12@@Z
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ
     ??0Hex@absl@@AEAA@W4PadSpec@1@_K@Z
+    ??0HiRep@Duration@absl@@QEAA@_J@Z
     ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ??0InlineData@cord_internal@absl@@QEAA@AEBV012@@Z
     ??0InlineData@cord_internal@absl@@QEAA@W4DefaultInitType@012@@Z
@@ -1751,6 +1752,7 @@ EXPORTS
     ??4CordzUpdateTracker@cord_internal@absl@@QEAAAEAV012@AEBV012@@Z
     ??4CrcCordState@crc_internal@absl@@QEAAAEAV012@$$QEAV012@@Z
     ??4CrcCordState@crc_internal@absl@@QEAAAEAV012@AEBV012@@Z
+    ??4HiRep@Duration@absl@@QEAAAEAV012@_J@Z
     ??4InlineData@cord_internal@absl@@QEAAAEAV012@AEBV012@@Z
     ??4InlineRep@Cord@absl@@QEAAAEAV012@$$QEAV012@@Z
     ??4Payload@status_internal@absl@@QEAAAEAU012@$$QEAU012@@Z
@@ -2207,6 +2209,7 @@ EXPORTS
     ?Clear@Cord@absl@@QEAAXXZ
     ?ClearBackingArray@container_internal@absl@@YAXAEAVCommonFields@12@AEBUPolicyFunctions@12@_N@Z
     ?ClearCurrentThreadIdentity@base_internal@absl@@YAXXZ
+    ?ClearLogBacktraceLocation@absl@@YAXXZ
     ?ClearTimeZoneMapTestOnly@Impl@time_zone@cctz@time_internal@absl@@SAXXZ
     ?CodeToInlinedRep@Status@absl@@CA_KW4StatusCode@2@@Z
     ?CombineContiguousImpl@MixingHashState@hash_internal@absl@@CA_K_KPEBE0U?$integral_constant@H$03@Cr@std@@@Z
@@ -2529,6 +2532,7 @@ EXPORTS
     ?Generate@Randen@random_internal@absl@@QEBAXPEAX@Z
     ?Generate@RandenHwAes@random_internal@absl@@SAXPEBXPEAX@Z
     ?Generate@RandenSlow@random_internal@absl@@SAXPEBXPEAX@Z
+    ?Get@HiRep@Duration@absl@@QEBA_JXZ
     ?Get@RefcountAndFlags@cord_internal@absl@@QEBA_KXZ
     ?GetAllocatedCapacity@?$Storage@H$0CP@V?$allocator@H@Cr@std@@@inlined_vector_internal@absl@@QEBA_KXZ
     ?GetAllocatedCapacity@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEBA_KXZ
@@ -2550,6 +2554,7 @@ EXPORTS
     ?GetAllocator@?$Storage@PEAVLogSink@absl@@$0BA@V?$allocator@PEAVLogSink@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAAEAV?$allocator@PEAVLogSink@absl@@@Cr@std@@XZ
     ?GetAllocator@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAAEAV?$allocator@UPayload@status_internal@absl@@@Cr@std@@XZ
     ?GetAllocator@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEBAAEBV?$allocator@UPayload@status_internal@absl@@@Cr@std@@XZ
+    ?GetAndroidNativeTag@log_internal@absl@@YAPEBDXZ
     ?GetAppendBuffer@CordRepBtree@cord_internal@absl@@QEAA?AV?$Span@D@3@_K@Z
     ?GetAppendBuffer@CordRepRing@cord_internal@absl@@QEAA?AV?$Span@D@3@_K@Z
     ?GetAppendBufferSlow@CordRepBtree@cord_internal@absl@@AEAA?AV?$Span@D@3@_K@Z
@@ -3050,6 +3055,7 @@ EXPORTS
     ?SetAllocation@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAXU?$Allocation@V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@23@@Z
     ?SetAllocation@?$Storage@PEAVLogSink@absl@@$0BA@V?$allocator@PEAVLogSink@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAXU?$Allocation@V?$allocator@PEAVLogSink@absl@@@Cr@std@@@23@@Z
     ?SetAllocation@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAXU?$Allocation@V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@23@@Z
+    ?SetAndroidNativeTag@absl@@YAXPEBD@Z
     ?SetCapacityForTesting@CordRepRing@cord_internal@absl@@QEAAX_K@Z
     ?SetConversionChar@FormatConversionSpecImplFriend@str_format_internal@absl@@SAXW4FormatConversionChar@3@PEAVFormatConversionSpecImpl@23@@Z
     ?SetCordRep@CordzInfo@cord_internal@absl@@QEAAXPEAUCordRep@23@@Z

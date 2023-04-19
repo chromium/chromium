@@ -501,6 +501,7 @@ absl_cc_library(
     absl::core_headers
     absl::hash
     absl::log_severity
+    absl::raw_logging_internal
     absl::strings
 )
 

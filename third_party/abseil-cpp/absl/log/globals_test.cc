@@ -15,8 +15,6 @@
 
 #include "absl/log/globals.h"
 
-#include <string>
-
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
@@ -27,6 +25,8 @@
 #include "absl/log/scoped_mock_log.h"
 
 namespace {
+using ::testing::_;
+using ::testing::StrEq;
 
 auto* test_env ABSL_ATTRIBUTE_UNUSED = ::testing::AddGlobalTestEnvironment(
     new absl::log_internal::LogTestEnvironment);
@@ -86,6 +86,19 @@ TEST(TestGlobals, LogPrefix) {
   EXPECT_FALSE(absl::ShouldPrependLogPrefix());
   absl::EnableLogPrefix(true);
   EXPECT_TRUE(absl::ShouldPrependLogPrefix());
+}
+
+TEST(TestGlobals, AndroidLogTag) {
+  // Verify invalid tags result in a check failure.
+  EXPECT_DEATH_IF_SUPPORTED(absl::SetAndroidNativeTag(nullptr), ".*");
+
+  // Verify valid tags applied.
+  EXPECT_THAT(absl::log_internal::GetAndroidNativeTag(), StrEq("native"));
+  absl::SetAndroidNativeTag("test_tag");
+  EXPECT_THAT(absl::log_internal::GetAndroidNativeTag(), StrEq("test_tag"));
+
+  // Verify that additional calls (more than 1) result in a check failure.
+  EXPECT_DEATH_IF_SUPPORTED(absl::SetAndroidNativeTag("test_tag_fail"), ".*");
 }
 
 }  // namespace

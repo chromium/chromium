@@ -92,23 +92,23 @@ TEST_F(LogFlagsTest, PrependLogPrefix) {
 
 TEST_F(LogFlagsTest, EmptyBacktraceAtFlag) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
-  absl::SetFlag(&FLAGS_log_backtrace_at, "");
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at, "");
   LOG(INFO) << "hello world";
 }
 
 TEST_F(LogFlagsTest, BacktraceAtNonsense) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
-  absl::SetFlag(&FLAGS_log_backtrace_at, "gibberish");
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at, "gibberish");
   LOG(INFO) << "hello world";
 }
 
@@ -116,13 +116,13 @@ TEST_F(LogFlagsTest, BacktraceAtWrongFile) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO) << "hello world"; };
-  absl::SetFlag(&FLAGS_log_backtrace_at,
-                absl::StrCat("some_other_file.cc:", log_line));
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at,
+                absl::StrCat("some_other_file.cc:", log_line));
   do_log();
 }
 
@@ -130,13 +130,13 @@ TEST_F(LogFlagsTest, BacktraceAtWrongLine) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO) << "hello world"; };
-  absl::SetFlag(&FLAGS_log_backtrace_at,
-                absl::StrCat("flags_test.cc:", log_line + 1));
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at,
+                absl::StrCat("flags_test.cc:", log_line + 1));
   do_log();
 }
 
@@ -144,12 +144,12 @@ TEST_F(LogFlagsTest, BacktraceAtWholeFilename) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO) << "hello world"; };
-  absl::SetFlag(&FLAGS_log_backtrace_at, absl::StrCat(__FILE__, ":", log_line));
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at, absl::StrCat(__FILE__, ":", log_line));
   do_log();
 }
 
@@ -157,13 +157,13 @@ TEST_F(LogFlagsTest, BacktraceAtNonmatchingSuffix) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO) << "hello world"; };
-  absl::SetFlag(&FLAGS_log_backtrace_at,
-                absl::StrCat("flags_test.cc:", log_line, "gibberish"));
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at,
+                absl::StrCat("flags_test.cc:", log_line, "gibberish"));
   do_log();
 }
 
@@ -171,13 +171,17 @@ TEST_F(LogFlagsTest, LogsBacktrace) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO) << "hello world"; };
-  absl::SetFlag(&FLAGS_log_backtrace_at,
-                absl::StrCat("flags_test.cc:", log_line));
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
+  testing::InSequence seq;
   EXPECT_CALL(test_sink, Send(TextMessage(HasSubstr("(stacktrace:"))));
+  EXPECT_CALL(test_sink, Send(TextMessage(Not(HasSubstr("(stacktrace:")))));
 
   test_sink.StartCapturingLogs();
+  absl::SetFlag(&FLAGS_log_backtrace_at,
+                absl::StrCat("flags_test.cc:", log_line));
+  do_log();
+  absl::SetFlag(&FLAGS_log_backtrace_at, "");
   do_log();
 }
 

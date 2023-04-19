@@ -80,6 +80,7 @@ absl_cc_test(
     absl::counting_allocator
     absl::flags
     absl::hash_testing
+    absl::optional
     absl::random_random
     absl::raw_logging_internal
     absl::strings

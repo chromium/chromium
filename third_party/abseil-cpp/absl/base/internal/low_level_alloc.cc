@@ -42,6 +42,10 @@
 #include <windows.h>
 #endif
 
+#ifdef __linux__
+#include <sys/prctl.h>
+#endif
+
 #include <string.h>
 #include <algorithm>
 #include <atomic>
@@ -570,6 +574,18 @@ static void *DoAllocWithArena(size_t request, LowLevelAlloc::Arena *arena) {
         ABSL_RAW_LOG(FATAL, "mmap error: %d", errno);
       }
 
+#ifdef __linux__
+#if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
+      // Attempt to name the allocated address range in /proc/$PID/smaps on
+      // Linux.
+      //
+      // This invocation of prctl() may fail if the Linux kernel was not
+      // configured with the CONFIG_ANON_VMA_NAME option.  This is OK since
+      // the naming of arenas is primarily a debugging aid.
+      prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, new_pages, new_pages_size,
+            "absl");
+#endif
+#endif  // __linux__
 #endif  // _WIN32
       arena->mu.Lock();
       s = reinterpret_cast<AllocList *>(new_pages);

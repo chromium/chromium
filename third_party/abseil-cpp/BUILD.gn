@@ -191,6 +191,8 @@ if (build_with_chromium) {
         "absl/base:config_test",
         "absl/base:prefetch_test",
         "absl/cleanup:cleanup_test",
+        # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.
+        # "absl/container:btree_test",
         "absl/container:common_policy_traits_test",
         "absl/container:inlined_vector_test",
         "absl/container:node_slot_policy_test",

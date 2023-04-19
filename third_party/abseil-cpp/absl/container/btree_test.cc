@@ -46,6 +46,7 @@
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/compare.h"
+#include "absl/types/optional.h"
 
 ABSL_FLAG(int, test_values, 10000, "The number of values to use for tests");
 
@@ -3136,6 +3137,78 @@ TEST(Btree, InvalidComparatorsCaught) {
     };
     absl::btree_set<int, ThreeWaySumGreaterZeroCmp> set;
     EXPECT_DEATH(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
+  }
+  // Verify that we detect cases of comparators that violate transitivity.
+  // When the comparators below check for the presence of an optional field,
+  // they violate transitivity because instances that have the optional field
+  // compare differently with each other from how they compare with instances
+  // that don't have the optional field.
+  struct ClockTime {
+    absl::optional<int> hour;
+    int minute;
+  };
+  // `comp(a,b) && comp(b,c) && !comp(a,c)` violates transitivity.
+  ClockTime a = {absl::nullopt, 1};
+  ClockTime b = {2, 5};
+  ClockTime c = {6, 0};
+  {
+    struct NonTransitiveTimeCmp {
+      bool operator()(ClockTime lhs, ClockTime rhs) const {
+        if (lhs.hour.has_value() && rhs.hour.has_value() &&
+            *lhs.hour != *rhs.hour) {
+          return *lhs.hour < *rhs.hour;
+        }
+        return lhs.minute < rhs.minute;
+      }
+    };
+    NonTransitiveTimeCmp cmp;
+    ASSERT_TRUE(cmp(a, b) && cmp(b, c) && !cmp(a, c));
+    absl::btree_set<ClockTime, NonTransitiveTimeCmp> set;
+    EXPECT_DEATH(set.insert({a, b, c}), "is_ordered_correctly");
+    absl::btree_multiset<ClockTime, NonTransitiveTimeCmp> mset;
+    EXPECT_DEATH(mset.insert({a, a, b, b, c, c}), "is_ordered_correctly");
+  }
+  {
+    struct ThreeWayNonTransitiveTimeCmp {
+      absl::weak_ordering operator()(ClockTime lhs, ClockTime rhs) const {
+        if (lhs.hour.has_value() && rhs.hour.has_value() &&
+            *lhs.hour != *rhs.hour) {
+          return *lhs.hour < *rhs.hour ? absl::weak_ordering::less
+                                       : absl::weak_ordering::greater;
+        }
+        return lhs.minute < rhs.minute    ? absl::weak_ordering::less
+               : lhs.minute == rhs.minute ? absl::weak_ordering::equivalent
+                                          : absl::weak_ordering::greater;
+      }
+    };
+    ThreeWayNonTransitiveTimeCmp cmp;
+    ASSERT_TRUE(cmp(a, b) < 0 && cmp(b, c) < 0 && cmp(a, c) > 0);
+    absl::btree_set<ClockTime, ThreeWayNonTransitiveTimeCmp> set;
+    EXPECT_DEATH(set.insert({a, b, c}), "is_ordered_correctly");
+    absl::btree_multiset<ClockTime, ThreeWayNonTransitiveTimeCmp> mset;
+    EXPECT_DEATH(mset.insert({a, a, b, b, c, c}), "is_ordered_correctly");
+  }
+}
+
+TEST(Btree, MutatedKeysCaught) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+
+  struct IntPtrCmp {
+    bool operator()(int *lhs, int *rhs) const { return *lhs < *rhs; }
+  };
+  {
+    absl::btree_set<int *, IntPtrCmp> set;
+    int arr[] = {0, 1, 2};
+    set.insert({&arr[0], &arr[1], &arr[2]});
+    arr[0] = 100;
+    EXPECT_DEATH(set.insert(&arr[0]), "is_ordered_correctly");
+  }
+  {
+    absl::btree_multiset<int *, IntPtrCmp> set;
+    int arr[] = {0, 1, 2};
+    set.insert({&arr[0], &arr[0], &arr[1], &arr[1], &arr[2], &arr[2]});
+    arr[0] = 100;
+    EXPECT_DEATH(set.insert(&arr[0]), "is_ordered_correctly");
   }
 }
 
