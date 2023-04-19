@@ -79,6 +79,29 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(ns_window.visible);
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       MaximizedRestoredWindowVisibility) {
+  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+
+  // Verify initial state.
+  ASSERT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(ns_window.visible);
+
+  // Verify maximized state.
+  browser()->window()->Maximize();
+  ASSERT_TRUE(browser()->window()->IsMaximized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(ns_window.visible);
+
+  // Verify restored state.
+  browser()->window()->Restore();
+  ASSERT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(ns_window.visible);
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
   gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
   NSWindow* ns_window = native_window.GetNativeNSWindow();
