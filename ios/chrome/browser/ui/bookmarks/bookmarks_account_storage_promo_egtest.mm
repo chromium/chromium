@@ -9,6 +9,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -59,6 +60,35 @@ using chrome_test_util::SecondarySignInButton;
 }
 
 #pragma mark - BookmarksAccountStoragePromoTestCase Tests
+
+// Tests that the sign-in is re-shown after the user signs-in and then signs-out
+// while the bookmarks screen is still shown.
+// See http://crbug.com/1432611.
+- (void)testPromoReshowAfterSignInAndSignOut {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  // Sign-in with identity1 with the promo.
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that identity1 is signed-in and the promo is hidden.
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  // Sign-out and verify that the promo is shown without the spinner.
+  [SigninEarlGrey signOut];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kSigninPromoActivityIndicatorId),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
 
 // Tests to sign-in with one identity, sign-out, and use the sign-in promo
 // from bookmark to sign-in with a different identity.

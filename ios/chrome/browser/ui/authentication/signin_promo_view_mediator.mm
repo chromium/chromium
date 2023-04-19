@@ -898,8 +898,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                    kEnableBookmarkReadingListAccountStorage
       presentingViewController:_baseViewController];
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
+  __weak __typeof(self) weakSelf = self;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
     if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
+      weakSelf.signinInProgress = NO;
       [weakConsumer signinDidFinish];
     }
   }];

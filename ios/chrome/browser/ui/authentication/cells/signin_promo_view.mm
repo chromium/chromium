@@ -398,6 +398,8 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   _activityIndicatorView = [[UIActivityIndicatorView alloc] init];
   _activityIndicatorView.color = UIColor.whiteColor;
   _activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  _activityIndicatorView.accessibilityIdentifier =
+      kSigninPromoActivityIndicatorId;
   [self addSubview:_activityIndicatorView];
   [NSLayoutConstraint activateConstraints:@[
     [_activityIndicatorView.centerXAnchor

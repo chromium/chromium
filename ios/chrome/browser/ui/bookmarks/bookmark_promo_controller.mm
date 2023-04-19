@@ -157,17 +157,14 @@
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!self.signinPromoViewMediator.signinInProgress) {
-        self.shouldShowSigninPromo = NO;
-      }
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      [self updateShouldShowSigninPromo];
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
+  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+    // The account storage promo is not shown if the user is signed-in, so
+    // events with sign-in consent level should be captured and handled.
+    [self handlePrimaryAccountChange:event
+                        consentLevel:signin::ConsentLevel::kSignin];
+  } else {
+    [self handlePrimaryAccountChange:event
+                        consentLevel:signin::ConsentLevel::kSync];
   }
 }
 
@@ -187,6 +184,26 @@
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   [self updateShouldShowSigninPromo];
+}
+
+#pragma mark - Private methods
+
+// Handles the given primary account change event for the given consent level.
+- (void)handlePrimaryAccountChange:
+            (const signin::PrimaryAccountChangeEvent&)event
+                      consentLevel:(signin::ConsentLevel)consentLevel {
+  switch (event.GetEventTypeFor(consentLevel)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if (!self.signinPromoViewMediator.signinInProgress) {
+        self.shouldShowSigninPromo = NO;
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self updateShouldShowSigninPromo];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 @end
