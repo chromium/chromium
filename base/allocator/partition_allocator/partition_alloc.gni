@@ -14,7 +14,8 @@ if (is_apple) {
 if (is_nacl) {
   # NaCl targets don't use 64-bit pointers.
   has_64_bit_pointers = false
-} else if (current_cpu == "x64" || current_cpu == "arm64") {
+} else if (current_cpu == "x64" || current_cpu == "arm64" ||
+           current_cpu == "loong64") {
   has_64_bit_pointers = true
 } else if (current_cpu == "x86" || current_cpu == "arm") {
   has_64_bit_pointers = false
