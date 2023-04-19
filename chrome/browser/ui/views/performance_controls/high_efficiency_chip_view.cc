@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -104,8 +105,7 @@ void HighEfficiencyChipView::UpdateImpl() {
   if (tab_helper->ShouldChipBeVisible() && is_high_efficiency_mode_enabled_) {
     SetVisible(true);
     if (tab_helper->ShouldIconAnimate()) {
-      // Only animate the chip to the expanded view the first 3 times it is
-      // viewed.
+      // Show an informational message the first 3 times the chip is shown.
       PrefService* const pref_service = browser_->profile()->GetPrefs();
       int times_rendered =
           pref_service->GetInteger(prefs::kHighEfficiencyChipExpandedCount);
@@ -114,6 +114,13 @@ void HighEfficiencyChipView::UpdateImpl() {
         tab_helper->SetWasAnimated();
         pref_service->SetInteger(prefs::kHighEfficiencyChipExpandedCount,
                                  times_rendered + 1);
+      } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper)) {
+        int const memory_savings = tab_helper->GetMemorySavingsInBytes();
+        SetLabel(
+            l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
+                                       {ui::FormatBytes(memory_savings)}));
+        AnimateIn(absl::nullopt);
+        tab_helper->SetWasAnimated();
       }
     } else if (tab_helper->HasChipBeenHidden()) {
       UnpauseAnimation();
@@ -161,6 +168,17 @@ void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   is_high_efficiency_mode_enabled_ = manager->IsHighEfficiencyModeActive();
+}
+
+bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
+    HighEfficiencyChipTabHelper* high_efficiency_tab_helper) {
+  int const memory_savings =
+      high_efficiency_tab_helper->GetMemorySavingsInBytes();
+  return base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kMemorySavingsReportingImprovements) &&
+         memory_savings > performance_manager::features::
+                              kExpandedHighEfficiencyChipThresholdBytes.Get();
 }
 
 BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)
