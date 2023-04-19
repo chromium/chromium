@@ -282,6 +282,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
   html_source->AddBoolean("isViewPpdEnabled", features::IsViewPpdEnabled());
+  html_source->AddBoolean("isPrinterSettingsRevampEnabled",
+                          features::IsPrinterSettingsRevampEnabled());
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {

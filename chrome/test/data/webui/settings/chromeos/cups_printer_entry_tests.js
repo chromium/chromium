@@ -4,6 +4,7 @@
 
 import {PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 /**
  * Helper function to verify that printers in |printerListEntries| that contain
@@ -202,5 +203,18 @@ suite('CupsPrinterEntry', function() {
       printerEntryTestElement.userPrintersAllowed = false;
       assertTrue(actionButton.disabled);
     }
+  });
+
+  // Verify the printer status icons are only visible for saved printers.
+  test('savedPrinterShowPrinterStatusIcons', function() {
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.AUTOMATIC);
+    assertFalse(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
   });
 });

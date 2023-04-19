@@ -24,6 +24,10 @@
             hidden="[[!printerEntry.printerInfo.isManaged]]"
             icon="cr20:domain">
           </iron-icon>
+          <iron-icon id="printerStatusIcon"
+            hidden="[[!showPrinterStatusIcon_(printerEntry.printerType)]]"
+            icon="os-settings:printer-status-grey">
+          </iron-icon>
           [[printerEntry.printerInfo.printerName]]
       </span>
       <div id="printerSubtext" hidden="[[!subtext]]" class="secondary"

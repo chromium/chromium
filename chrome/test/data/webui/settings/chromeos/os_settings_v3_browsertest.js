@@ -250,7 +250,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'DictationChangeLanguageLocaleDialogTest',
    'change_dictation_locale_dialog_test.js',
  ],
- ['CupsPrinterEntry', 'cups_printer_entry_tests.js'],
+ [
+   'CupsPrinterEntry', 'cups_printer_entry_tests.js',
+   {enabled: ['ash::features::kPrinterSettingsRevamp']}
+ ],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.js'],
  ['DateTimePage', 'date_time_page_tests.js'],

@@ -54,6 +54,17 @@ export class SettingsCupsPrintersEntryElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * True when the "printer-settings-revamp" feature flag is enabled.
+       */
+      isPrinterSettingsRevampEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -61,6 +72,7 @@ export class SettingsCupsPrintersEntryElement extends
   savingPrinter: boolean;
   subtext: string;
   userPrintersAllowed: boolean;
+  private isPrinterSettingsRevampEnabled_: boolean;
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of
@@ -124,6 +136,10 @@ export class SettingsCupsPrintersEntryElement extends
     return this.printerEntry.printerType === PrinterType.PRINTSERVER;
   }
 
+  private isSavedPrinter_(): boolean {
+    return this.printerEntry.printerType === PrinterType.SAVED;
+  }
+
   private isConfigureDisabled_(): boolean {
     return !this.userPrintersAllowed || this.savingPrinter;
   }
@@ -136,6 +152,10 @@ export class SettingsCupsPrintersEntryElement extends
   private getSetupButtonAria_(): string {
     return loadTimeData.getStringF(
         'setupPrinterAria', this.printerEntry.printerInfo.printerName);
+  }
+
+  private showPrinterStatusIcon_(): boolean {
+    return this.isSavedPrinter_() && this.isPrinterSettingsRevampEnabled_;
   }
 }
 
