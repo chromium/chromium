@@ -1577,8 +1577,7 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -2032,8 +2031,7 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -2328,9 +2326,7 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.ar.core",
-          "--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
@@ -31746,9 +31742,7 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.ar.core",
-          "--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [

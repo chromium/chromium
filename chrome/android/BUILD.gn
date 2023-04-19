@@ -2830,6 +2830,7 @@ if (current_toolchain == default_toolchain) {
   }
 
   if (enable_vr) {
+    # //chrome/android/javatests/src/org/chromium/chrome/browser/vr/README.md
     chrome_test_apk_tmpl("chrome_public_test_vr_apk") {
       apk_name = "ChromePublicTestVr"
       manifest_package = chrome_public_manifest_package
@@ -2849,6 +2850,9 @@ if (current_toolchain == default_toolchain) {
   }
 
   if (enable_arcore) {
+    # In order to run this test, first run:
+    #   DOWNLOAD_VR_TEST_APKS=1 third_party/arcore-android-sdk/test-apks/update.py
+    # See also: //chrome/android/javatests/src/org/chromium/chrome/browser/vr/README.md
     monochrome_test_apk_tmpl("monochrome_public_test_ar_apk") {
       apk_name = "MonochromePublicTestAr"
       target_sdk_version = android_sdk_version
@@ -2900,6 +2904,13 @@ if (current_toolchain == default_toolchain) {
       }
 
       additional_apks = [ "//net/android:net_test_support_apk" ]
+      extra_args = [
+        "--additional-apk",
+        rebase_path(
+            "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk",
+            root_build_dir),
+        "--remove-system-package=com.google.ar.core",
+      ]
     }
   }
 
