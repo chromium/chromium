@@ -726,14 +726,8 @@ void LocalFrameView::PerformLayout() {
   if (!in_subtree_layout) {
     ClearLayoutSubtreeRootsAndMarkContainingBlocks();
     Node* body = document->body();
-    if (body && body->GetLayoutObject()) {
-      if (IsA<HTMLFrameSetElement>(*body)) {
-        body->GetLayoutObject()->SetChildNeedsLayout();
-      } else if (IsA<HTMLBodyElement>(*body)) {
-        if (!first_layout_ && size_.Height() != GetLayoutSize().height() &&
-            body->GetLayoutObject()->EnclosingBox()->StretchesToViewport())
-          body->GetLayoutObject()->SetChildNeedsLayout();
-      }
+    if (IsA<HTMLFrameSetElement>(body) && body->GetLayoutObject()) {
+      body->GetLayoutObject()->SetChildNeedsLayout();
     }
 
     first_layout_ = false;
@@ -749,23 +743,7 @@ void LocalFrameView::PerformLayout() {
       }
     }
 
-    LayoutSize old_size = size_;
-
     size_ = LayoutSize(GetLayoutSize());
-
-    if (old_size != size_) {
-      LayoutBox* root_layout_object =
-          document->documentElement()
-              ? document->documentElement()->GetLayoutBox()
-              : nullptr;
-      LayoutBox* body_layout_object = root_layout_object && document->body()
-                                          ? document->body()->GetLayoutBox()
-                                          : nullptr;
-      if (body_layout_object && body_layout_object->StretchesToViewport())
-        body_layout_object->SetChildNeedsLayout();
-      else if (root_layout_object && root_layout_object->StretchesToViewport())
-        root_layout_object->SetChildNeedsLayout();
-    }
   }
 
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
