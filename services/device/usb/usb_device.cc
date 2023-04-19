@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/observer_list.h"
+#include "base/uuid.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "services/device/usb/webusb_descriptors.h"
@@ -20,7 +20,7 @@ void UsbDevice::Observer::OnDeviceRemoved(scoped_refptr<UsbDevice> device) {}
 
 UsbDevice::UsbDevice(uint32_t bus_number, uint32_t port_number) {
   device_info_ = mojom::UsbDeviceInfo::New();
-  device_info_->guid = base::GenerateGUID();
+  device_info_->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   device_info_->bus_number = bus_number;
   device_info_->port_number = port_number;
 }
@@ -28,7 +28,7 @@ UsbDevice::UsbDevice(uint32_t bus_number, uint32_t port_number) {
 UsbDevice::UsbDevice(mojom::UsbDeviceInfoPtr device_info)
     : device_info_(std::move(device_info)) {
   DCHECK(device_info_);
-  device_info_->guid = base::GenerateGUID();
+  device_info_->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   ActiveConfigurationChanged(device_info_->active_configuration);
 }
 
@@ -45,7 +45,7 @@ UsbDevice::UsbDevice(uint16_t usb_version,
                      uint32_t bus_number,
                      uint32_t port_number) {
   device_info_ = mojom::UsbDeviceInfo::New();
-  device_info_->guid = base::GenerateGUID();
+  device_info_->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   device_info_->usb_version_major = usb_version >> 8;
   device_info_->usb_version_minor = usb_version >> 4 & 0xf;
   device_info_->usb_version_subminor = usb_version & 0xf;
