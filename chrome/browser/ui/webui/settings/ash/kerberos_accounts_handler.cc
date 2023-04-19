@@ -298,10 +298,6 @@ void KerberosAccountsHandler::HandleAddKerberosAccount(
     const base::Value::List& args) {
   AllowJavascript();
 
-  // TODO(https://crbug.com/961246):
-  //   - Prevent account changes when Kerberos is disabled.
-  //   - Remove all accounts when Kerberos is disabled.
-
   CHECK_EQ(6U, args.size());
   const std::string& callback_id = args[0].GetString();
   const std::string& principal_name = args[1].GetString();

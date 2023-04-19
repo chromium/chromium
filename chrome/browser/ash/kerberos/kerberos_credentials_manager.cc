@@ -478,15 +478,16 @@ void KerberosCredentialsManager::OnAddAccountRunnerDone(
   LogError("AddAccountAndAuthenticate", error);
 
   if (Succeeded(error)) {
-    // Set active account. Be sure not to wipe user selection if the
-    // account was added automatically by policy.
-    // TODO(https://crbug.com/948121): Wait until the files have been saved.
-    // This is important when this code is triggered directly through a page
-    // that requires Kerberos auth.
-    if (!is_managed || GetActivePrincipalName().empty())
+    // Set active account. Be sure not to wipe user selection if the account was
+    // added automatically by policy.
+    // TODO(b/259178114): Wait until the files have been saved. This is
+    // important when this code is triggered directly through a page that
+    // requires Kerberos auth.
+    if (!is_managed || GetActivePrincipalName().empty()) {
       SetActivePrincipalName(updated_principal);
-    else if (GetActivePrincipalName() == updated_principal)
+    } else if (GetActivePrincipalName() == updated_principal) {
       GetKerberosFiles();
+    }
   }
 
   // Bring the merry news to the observers, but only if there is no outstanding
@@ -924,8 +925,6 @@ void KerberosCredentialsManager::NotifyRequiresLoginPassword(
 
 void KerberosCredentialsManager::OnTicketExpiryNotificationClick(
     const std::string& principal_name) {
-  // TODO(https://crbug.com/952245): Right now, the reauth dialog is tied to the
-  // settings. Consider creating a standalone reauth dialog.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       primary_profile_,
       chromeos::settings::mojom::kKerberosAccountsV2SubpagePath +
