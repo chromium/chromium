@@ -634,21 +634,21 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
   EXPECT_EQ(1U, browser_list->size());
 
   // Open a browser window for the first profile.
-  base::test::TestFuture<Profile*> profile1_future;
+  base::test::TestFuture<Browser*> browser1_future;
   profiles::SwitchToProfile(path_profile1, false,
-                            profile1_future.GetCallback());
-  EXPECT_TRUE(profile1_future.Wait());
+                            browser1_future.GetCallback());
+  EXPECT_TRUE(browser1_future.Wait());
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1U, browser_list->size());
-  EXPECT_EQ(path_profile1, profile1_future.Get()->GetPath());
+  EXPECT_EQ(path_profile1, browser1_future.Get()->profile()->GetPath());
   // Open a browser window for the second profile.
-  base::test::TestFuture<Profile*> profile2_future;
+  base::test::TestFuture<Browser*> browser2_future;
   profiles::SwitchToProfile(path_profile2, false,
-                            profile2_future.GetCallback());
-  EXPECT_TRUE(profile2_future.Wait());
+                            browser2_future.GetCallback());
+  EXPECT_TRUE(browser2_future.Wait());
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   ASSERT_EQ(2U, browser_list->size());
-  EXPECT_EQ(path_profile2, profile2_future.Get()->GetPath());
+  EXPECT_EQ(path_profile2, browser2_future.Get()->profile()->GetPath());
 }
 
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, AddMultipleProfiles) {

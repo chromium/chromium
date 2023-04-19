@@ -638,8 +638,13 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void OnProfileCreated(const GURL& link_url, Profile* profile) {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+void OnBrowserCreated(const GURL& link_url, Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+
   NavigateParams nav_params(
       browser, link_url,
       /* |ui::PAGE_TRANSITION_TYPED| is used rather than
@@ -3609,7 +3614,7 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
       profile_path, false,
-      base::BindRepeating(OnProfileCreated, params_.link_url));
+      base::BindRepeating(OnBrowserCreated, params_.link_url));
 }
 
 void RenderViewContextMenu::ExecInspectElement() {

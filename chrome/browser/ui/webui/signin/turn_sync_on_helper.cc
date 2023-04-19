@@ -168,6 +168,11 @@ bool TurnSyncOnHelper::Delegate::
 void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
     Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
   LoginUIServiceFactory::GetForProfile(browser->profile())
       ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
 }

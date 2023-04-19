@@ -158,7 +158,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
                         : CreateGuestBrowser();
       profile_ = new_browser->profile();
     } else {
-        new_browser = CreateIncognitoBrowser(profile_);
+      new_browser = CreateIncognitoBrowser(profile_);
     }
 
     return new_browser;
@@ -328,10 +328,12 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();
   size_t num_browsers = BrowserList::GetInstance()->size();
-  base::test::TestFuture<Profile*> future;
+  base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
-  EXPECT_EQ(profile, future.Get());
+  ASSERT_TRUE(future.Get());
+  EXPECT_NE(browser(), future.Get());
+  EXPECT_EQ(profile, future.Get()->profile());
   EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
@@ -341,11 +343,11 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        OpenTwoBrowserWindowsForProfile) {
   Profile* profile = browser()->profile();
   size_t num_browsers = BrowserList::GetInstance()->size();
-  base::test::TestFuture<Profile*> future;
+  base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
   CreateBrowser(profile);
-  EXPECT_EQ(profile, future.Get());
+  EXPECT_EQ(profile, future.Get()->profile());
   EXPECT_EQ(num_browsers + 2, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
@@ -358,12 +360,10 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   BrowserAddedObserver browser_added_observer(base::BindLambdaForTesting(
       [this](Browser* browser) { this->CloseBrowserAsynchronously(browser); }));
 
-  base::test::TestFuture<Profile*> future;
+  base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
-  base::RunLoop().RunUntilIdle();
-  // `future` is not called because the browser was already destroyed.
-  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(nullptr, future.Get());
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
-  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
+  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)>(),
                                         true, false, false, profile);
   run_loop.Run();
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
@@ -410,7 +410,7 @@ class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
  private:
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
-    AddLibrary(base::FilePath(
-        FILE_PATH_LITERAL("profile_window_browsertest.js")));
+    AddLibrary(
+        base::FilePath(FILE_PATH_LITERAL("profile_window_browsertest.js")));
   }
 };

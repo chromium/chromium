@@ -476,9 +476,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  base::OnceCallback<void(Profile*)> callback =
-      base::BindLambdaForTesting([&other_profile, &loop](Profile* profile) {
-        other_profile = profile;
+  base::OnceCallback<void(Browser*)> callback =
+      base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
+        other_profile = browser->profile();
         loop.Quit();
       });
   profiles::SwitchToProfile(profile_path, /*always_create=*/true,
@@ -1380,9 +1380,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  base::OnceCallback<void(Profile*)> callback =
-      base::BindLambdaForTesting([&other_profile, &loop](Profile* profile) {
-        other_profile = profile;
+  base::OnceCallback<void(Browser*)> callback =
+      base::BindLambdaForTesting([&other_profile, &loop](Browser* browser) {
+        other_profile = browser->profile();
         loop.Quit();
       });
   profiles::SwitchToProfile(profile_path, /*always_create=*/true,

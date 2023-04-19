@@ -21,8 +21,7 @@ using StepSwitchFinishedCallback = base::OnceCallback<void(bool success)>;
 // we opened a browser for the newly set up profile.
 // This callback should not rely on profile management flow instances, as we
 // assume that they are deleted when the host is cleared.
-// The provided `Browser*` should not be `nullptr`. (This assumption is expected
-// to change in the future, see crbug.com/1374315.)
+// The provided `Browser*` may be `nullptr` if the operation failed.
 using PostHostClearedCallback =
     base::StrongAlias<class PostHostClearedCallbackTag,
                       base::OnceCallback<void(Browser*)>>;

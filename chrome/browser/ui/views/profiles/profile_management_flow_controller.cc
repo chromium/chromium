@@ -94,15 +94,20 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
   // if it is already going to be opened.
   PreFinishWithBrowser();
 
-  base::OnceCallback<void(Profile*)> post_browser_open_callback =
-      base::IgnoreArgs<Profile*>(std::move(clear_host_callback_.value()));
-  if (!post_host_cleared_callback->is_null()) {
+  base::OnceCallback<void(Browser*)> post_browser_open_callback;
+  // `clear_host_callback_` and `post_host_cleared_callback` may be run after
+  // the `ProfileManagementFlowController` is deleted.
+  if (post_host_cleared_callback->is_null()) {
     post_browser_open_callback =
-        std::move(post_browser_open_callback)
-            .Then(base::BindOnce(&chrome::FindLastActiveWithProfile,
-                                 // Unretained ok: we'll have a browser window
-                                 // open for `profile`.
-                                 base::Unretained(profile)))
+        base::IgnoreArgs<Browser*>(std::move(clear_host_callback_.value()));
+  } else {
+    post_browser_open_callback =
+        base::BindOnce(
+            [](base::OnceClosure clear_host_closure, Browser* browser) {
+              std::move(clear_host_closure).Run();
+              return browser;
+            },
+            std::move(clear_host_callback_.value()))
             .Then(std::move(post_host_cleared_callback.value()));
   }
 
