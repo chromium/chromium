@@ -21,7 +21,7 @@ class HistoryClustersServiceFactory : public ProfileKeyedServiceFactory {
   static history_clusters::HistoryClustersService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
-  static HistoryClustersServiceFactory& GetInstance();
+  static HistoryClustersServiceFactory* GetInstance();
 
   static void EnsureFactoryBuilt();
 

@@ -1,0 +1,66 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_HISTORY_CLUSTERS_MODULE_SERVICE_H_
+#define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_HISTORY_CLUSTERS_MODULE_SERVICE_H_
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "components/history_clusters/core/history_clusters_types.h"
+#include "components/keyed_service/core/keyed_service.h"
+
+namespace history {
+struct Cluster;
+}  // namespace history
+
+namespace history_clusters {
+class HistoryClustersService;
+class HistoryClustersServiceTask;
+struct QueryClustersContinuationParams;
+}  // namespace history_clusters
+
+class CartService;
+class TemplateURLService;
+
+// Handles requests to get clusters for the History Clusters Module.
+class HistoryClustersModuleService : public KeyedService {
+ public:
+  HistoryClustersModuleService(const HistoryClustersModuleService&) = delete;
+  HistoryClustersModuleService(
+      history_clusters::HistoryClustersService* history_clusters_service,
+      CartService* cart_service,
+      TemplateURLService* template_url_service);
+  ~HistoryClustersModuleService() override;
+
+  using GetClustersCallback =
+      base::OnceCallback<void(std::vector<history::Cluster>)>;
+
+  // Returns the pending task to query clusters and invokes `callback` when
+  // clusters are ready.
+  //
+  // Virtual for testing.
+  virtual std::unique_ptr<history_clusters::HistoryClustersServiceTask>
+  GetClusters(GetClustersCallback callback);
+
+ private:
+  // Callback invoked when `history_clusters_service_` returns queried clusters.
+  void OnGetClusters(
+      GetClustersCallback callback,
+      std::vector<history::Cluster> clusters,
+      history_clusters::QueryClustersContinuationParams continuation_params);
+
+  // The filtering parameters to use for all calls to fetch clusters.
+  history_clusters::QueryClustersFilterParams filter_params_;
+
+  raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_;
+  raw_ptr<CartService> cart_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
+
+  // Weak pointers issued from this factory never get invalidated before the
+  // service is destroyed.
+  base::WeakPtrFactory<HistoryClustersModuleService> weak_ptr_factory_{this};
+};
+
+#endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_HISTORY_CLUSTERS_MODULE_SERVICE_H_

@@ -25,13 +25,13 @@ history_clusters::HistoryClustersService*
 HistoryClustersServiceFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return static_cast<history_clusters::HistoryClustersService*>(
-      GetInstance().GetServiceForBrowserContext(browser_context, true));
+      GetInstance()->GetServiceForBrowserContext(browser_context, true));
 }
 
 // static
-HistoryClustersServiceFactory& HistoryClustersServiceFactory::GetInstance() {
+HistoryClustersServiceFactory* HistoryClustersServiceFactory::GetInstance() {
   static base::NoDestructor<HistoryClustersServiceFactory> instance;
-  return *instance;
+  return instance.get();
 }
 
 HistoryClustersServiceFactory::HistoryClustersServiceFactory()

@@ -21,7 +21,6 @@
 
 class Profile;
 class GURL;
-class CartService;
 class CartProcessor;
 
 namespace content {
@@ -55,24 +54,18 @@ class HistoryClustersPageHandler
 
  private:
   // Forward the most relevant history clusters to the callback if any.
-  void CallbackWithClusterData(
-      GetClustersCallback callback,
-      std::vector<history::Cluster> clusters,
-      history_clusters::QueryClustersContinuationParams continuation_params);
+  void CallbackWithClusterData(GetClustersCallback callback,
+                               std::vector<history::Cluster> clusters);
 
   mojo::Receiver<ntp::history_clusters::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-
-  // The filtering parameters to use for all calls to fetch clusters.
-  history_clusters::QueryClustersFilterParams filter_params_;
 
   // Tracks the current fetch clusters task. Will be `nullptr` or
   // `Done()` will be true if there is no ongoing task.
   std::unique_ptr<history_clusters::HistoryClustersServiceTask>
       fetch_clusters_task_;
   base::CancelableTaskTracker hide_visits_task_tracker_;
-  raw_ptr<CartService> cart_service_;
   std::unique_ptr<CartProcessor> cart_processor_;
 
   base::WeakPtrFactory<HistoryClustersPageHandler> weak_ptr_factory_{this};
