@@ -44,7 +44,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -620,28 +619,17 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
     return;
   }
 
-  std::vector<password_manager::PasswordForm> forms_to_move;
+  std::vector<CredentialUIEntry> credentials_to_move;
+  credentials_to_move.reserve(ids.size());
   for (int id : ids) {
     const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
     if (!entry) {
       continue;
     }
-
-    std::vector<password_manager::PasswordForm> corresponding_forms =
-        saved_passwords_presenter_.GetCorrespondingPasswordForms(*entry);
-    if (corresponding_forms.empty()) {
-      continue;
-    }
-
-    // password_manager::MovePasswordsToAccountStore() takes care of moving the
-    // entire equivalence class, so passing the first element is fine.
-    forms_to_move.push_back(std::move(corresponding_forms[0]));
+    credentials_to_move.push_back(*entry);
   }
 
-  password_manager::MovePasswordsToAccountStore(
-      forms_to_move, client,
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings);
+  saved_passwords_presenter_.MoveCredentialsToAccount(credentials_to_move);
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(

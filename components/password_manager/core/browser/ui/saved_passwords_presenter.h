@@ -150,6 +150,11 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   EditResult EditSavedCredentials(const CredentialUIEntry& original_credential,
                                   const CredentialUIEntry& updated_credential);
 
+  // Moves credential to an account by deleting them from profile password store
+  // and adding them to the account password store.
+  void MoveCredentialsToAccount(
+      const std::vector<CredentialUIEntry>& credentials);
+
   // Returns a list of unique passwords which includes normal credentials,
   // federated credentials and blocked forms. If a same form is present both on
   // account and profile stores it will be represented as a single entity.

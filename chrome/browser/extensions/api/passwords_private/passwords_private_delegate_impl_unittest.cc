@@ -1112,10 +1112,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted",
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
       password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings,
-      2);
+          kExplicitlyTriggeredForMultiplePasswordsInSettings,
+      1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {

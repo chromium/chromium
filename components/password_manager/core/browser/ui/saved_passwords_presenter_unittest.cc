@@ -19,8 +19,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -36,11 +38,13 @@ namespace password_manager {
 
 namespace {
 
+using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 struct MockSavedPasswordsPresenterObserver : SavedPasswordsPresenter::Observer {
@@ -1653,6 +1657,92 @@ TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesAccountStore) {
   EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
   ProcessBackendTasks(profile_store_backend_runner());
   EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+}
+
+namespace {
+
+class SavedPasswordsPresenterMoveToAccountTest : public ::testing::Test {
+ protected:
+  ~SavedPasswordsPresenterMoveToAccountTest() override = default;
+
+  MockPasswordStoreInterface* profile_store() { return profile_store_.get(); }
+  MockPasswordStoreInterface* account_store() { return account_store_.get(); }
+  SavedPasswordsPresenter& presenter() { return presenter_; }
+
+  void RunUntilIdle() { task_env_.RunUntilIdle(); }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<MockPasswordStoreInterface> profile_store_ =
+      base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
+  scoped_refptr<MockPasswordStoreInterface> account_store_ =
+      base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
+  FakeAffiliationService affiliation_service_;
+  SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
+                                     account_store_};
+};
+
+}  // namespace
+
+TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  PasswordForm form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
+
+  std::vector<CredentialUIEntry> credentials;
+  credentials.emplace_back(form_1);
+  credentials.emplace_back(form_2);
+
+  std::vector<std::unique_ptr<PasswordForm>> forms;
+  forms.push_back(std::make_unique<PasswordForm>(form_1));
+  forms.push_back(std::make_unique<PasswordForm>(form_2));
+
+  presenter().Init();
+  static_cast<PasswordStoreConsumer*>(&presenter())
+      ->OnGetPasswordStoreResultsOrErrorFrom(profile_store(), std::move(forms));
+  RunUntilIdle();
+
+  EXPECT_CALL(*account_store(), AddLogin(form_1, _));
+  EXPECT_CALL(*account_store(), AddLogin(form_2, _));
+  EXPECT_CALL(*profile_store(), RemoveLogin(form_1));
+  EXPECT_CALL(*profile_store(), RemoveLogin(form_2));
+
+  presenter().MoveCredentialsToAccount(credentials);
+}
+
+TEST_F(SavedPasswordsPresenterMoveToAccountTest,
+       MovesToAccountSkipsExistingPasswordsOnAccount) {
+  PasswordForm form_profile =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  PasswordForm form_account =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, 1);
+
+  std::vector<CredentialUIEntry> credentials;
+  credentials.emplace_back(
+      std::vector<PasswordForm>{form_profile, form_account});
+
+  std::vector<std::unique_ptr<PasswordForm>> forms_from_profile;
+  forms_from_profile.push_back(std::make_unique<PasswordForm>(form_profile));
+
+  std::vector<std::unique_ptr<PasswordForm>> forms_from_account;
+  forms_from_account.push_back(std::make_unique<PasswordForm>(form_account));
+
+  presenter().Init();
+  static_cast<PasswordStoreConsumer*>(&presenter())
+      ->OnGetPasswordStoreResultsOrErrorFrom(profile_store(),
+                                             std::move(forms_from_profile));
+  RunUntilIdle();
+  static_cast<PasswordStoreConsumer*>(&presenter())
+      ->OnGetPasswordStoreResultsOrErrorFrom(account_store(),
+                                             std::move(forms_from_account));
+  RunUntilIdle();
+
+  EXPECT_CALL(*account_store(), AddLogin).Times(0);
+  EXPECT_CALL(*profile_store(), RemoveLogin(form_profile));
+
+  presenter().MoveCredentialsToAccount(credentials);
 }
 
 }  // namespace password_manager

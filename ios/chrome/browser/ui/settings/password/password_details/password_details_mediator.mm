@@ -15,7 +15,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_features_util.h"
@@ -221,12 +220,7 @@ using base::SysNSStringToUTF16;
   }
 
   it->stored_in = {password_manager::PasswordForm::Store::kAccountStore};
-  MovePasswordsToAccountStore(
-      _manager->GetSavedPasswordsPresenter()->GetCorrespondingPasswordForms(
-          *it),
-      _passwordManagerClientProvider->GetAny(),
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings);
+  _manager->GetSavedPasswordsPresenter()->MoveCredentialsToAccount({*it});
   [self providePasswordsToConsumer];
 }
 

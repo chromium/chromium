@@ -39,13 +39,6 @@ class MovePasswordToAccountStoreHelper : public FormFetcher::Consumer {
   std::unique_ptr<FormFetcher> form_fetcher_;
 };
 
-// Helper functions which moves a batch of passwords and takes care of memory
-// management.
-void MovePasswordsToAccountStore(
-    const std::vector<PasswordForm>& forms,
-    PasswordManagerClient* client,
-    metrics_util::MoveToAccountStoreTrigger trigger);
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOVE_PASSWORD_TO_ACCOUNT_STORE_HELPER_H_

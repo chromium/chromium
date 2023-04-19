@@ -406,7 +406,8 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
   DCHECK(account_store_form_saver_);
 
   base::UmaHistogramEnumeration(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted", trigger);
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      trigger);
 
   // TODO(crbug.com/1032992): Moving credentials upon an update. FormFetch will
   // have an outdated credentials. Fix it if this turns out to be a product
