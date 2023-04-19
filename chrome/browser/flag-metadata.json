@@ -2469,11 +2469,6 @@
     "expiry_milestone": 115
   },
   {
-      "name": "enable-favicon-passwords",
-      "owners": [ "veronguyen", "gambard" ],
-      "expiry_milestone": 105
-  },
-  {
     "name": "enable-feed-ablation",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 118
