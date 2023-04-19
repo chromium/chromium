@@ -493,6 +493,7 @@ def boot_device(target_id: Optional[str],
 
     def _reboot(reboot_cmd, current_state: TargetState):
         reboot_cmd()
+        local_state = None
         # Check that we transition out of current state.
         for _ in range(30):
             try:
