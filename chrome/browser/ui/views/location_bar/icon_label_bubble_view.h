@@ -133,10 +133,13 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void UpdateLabelColors();
 
   // Update the icon label's background if necessary.
-  void UpdateBackground();
+  virtual void UpdateBackground();
 
   // Returns true when the separator should be visible.
   virtual bool ShouldShowSeparator() const;
+
+  // Returns true when the label should be shown on animation ended.
+  virtual bool ShouldShowLabelAfterAnimation() const;
 
   // Gets the current width based on |slide_animation_| and given bounds.
   // Virtual for testing.

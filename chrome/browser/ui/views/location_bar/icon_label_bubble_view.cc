@@ -251,6 +251,10 @@ bool IconLabelBubbleView::ShouldShowSeparator() const {
   return ShouldShowLabel();
 }
 
+bool IconLabelBubbleView::ShouldShowLabelAfterAnimation() const {
+  return ShouldShowSeparator();
+}
+
 int IconLabelBubbleView::GetWidthBetween(int min, int max) const {
   // TODO(https://crbug.com/8944): Disable animations globally instead of having
   // piecemeal opt ins for respecting prefers reduced motion.
@@ -404,9 +408,11 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
     return views::LabelButton::AnimationEnded(animation);
 
   if (!is_animation_paused_) {
-    // If there is no separator to show, then that means we want the text to
-    // disappear after animating.
-    ResetSlideAnimation(/*show_label=*/ShouldShowSeparator());
+    // In some cases we want the text to disappear even after animating.
+    // Subclasses override `ShouldShowLabelAfterAnimation` for custom behavior.
+    // Default behavior is when we do not show separator, the label should
+    // collapse.
+    ResetSlideAnimation(/*show_label=*/ShouldShowLabelAfterAnimation());
     PreferredSizeChanged();
   }
 

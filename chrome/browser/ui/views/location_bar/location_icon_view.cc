@@ -135,6 +135,10 @@ bool LocationIconView::ShouldShowSeparator() const {
   return !OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && ShouldShowLabel();
 }
 
+bool LocationIconView::ShouldShowLabelAfterAnimation() const {
+  return ShouldShowLabel();
+}
+
 bool LocationIconView::ShowBubble(const ui::Event& event) {
   return delegate_->ShowPageInfoDialog();
 }
@@ -313,6 +317,8 @@ void LocationIconView::UpdateBackground() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
+  } else {
+    IconLabelBubbleView::UpdateBackground();
   }
 }
 
