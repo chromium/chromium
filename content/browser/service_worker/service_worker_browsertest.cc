@@ -5157,6 +5157,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_FetchHandler_Fallback) {
+  SetupAndRegisterServiceWorker();
+  // This test works in the following steps.
+  // 1. Start RaceNetworkRequest.
+  // 2. Start service worker, and trigger fetch handler that fallback to
+  //    network.
+  // 3. Cancel RaceNetworkRequest.
+  // 4. Start fallback network request, neither RaceNetworkRequest nor the fetch
+  //    handler is involved.
+  // 5. Get the response from the fallback network request.
+  const GURL slow_url = embedded_test_server()->GetURL(
+      "/service_worker/mock_response?sw_fallback&sw_slow");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), slow_url, 1);
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   // Need to navigate to the page with slow response.
