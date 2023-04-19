@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -517,6 +518,22 @@ public class AutofillUiUtils {
         return R.dimen.settings_page_card_icon_height;
     }
 
+    public static int getCardUnmaskDialogIconWidthId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.card_unmask_dialog_credit_card_icon_width_new;
+        }
+        return R.dimen.card_unmask_dialog_credit_card_icon_width;
+    }
+
+    public static int getCardUnmaskDialogIconHeightId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.card_unmask_dialog_credit_card_icon_height_new;
+        }
+        return R.dimen.card_unmask_dialog_credit_card_icon_height;
+    }
+
     /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
      * @param bitmap to be updated.
@@ -558,5 +575,42 @@ public class AutofillUiUtils {
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
 
         return scaledBitmapWithEnhancements;
+    }
+
+    /**
+     * Adds credit card details in the card details section.
+     * @param context to get the resources.
+     * @param parentView View that contains the card details section.
+     * @param cardName Card's nickname/product name/network name.
+     * @param cardNumber Card's obfuscated last 4 digits.
+     * @param cardExpiration Card's expiration.
+     * @param cardArtUrl URL to fetch custom card art.
+     * @param defaultIconId Resource Id for the default (network) icon if the card art doesn't exist
+     *         or couldn't be retrieved.
+     * @param cardNameAndNumberTextAppearance Text appearance Id for the card name and the card
+     *         number.
+     * @param cardExpirationTextAppearance Text appearance Id for the card expiration.
+     * @param showCustomIcon If true, custom card icon is shown, else, default icon is shown.
+     */
+    public static void addCardDetails(Context context, View parentView, String cardName,
+            String cardNumber, String cardExpiration, GURL cardArtUrl, int defaultIconId,
+            int cardNameAndNumberTextAppearance, int cardExpirationTextAppearance,
+            boolean showCustomIcon) {
+        ImageView cardIconView = parentView.findViewById(R.id.card_icon);
+        cardIconView.setImageDrawable(getCardIcon(context, cardArtUrl, defaultIconId,
+                getCardUnmaskDialogIconWidthId(), getCardUnmaskDialogIconHeightId(),
+                R.dimen.card_art_corner_radius, showCustomIcon));
+
+        TextView cardNameView = parentView.findViewById(R.id.card_name);
+        cardNameView.setText(cardName);
+        cardNameView.setTextAppearance(cardNameAndNumberTextAppearance);
+
+        TextView cardNumberView = parentView.findViewById(R.id.card_number);
+        cardNumberView.setText(cardNumber);
+        cardNumberView.setTextAppearance(cardNameAndNumberTextAppearance);
+
+        TextView cardExpirationView = parentView.findViewById(R.id.card_expiration);
+        cardExpirationView.setText(cardExpiration);
+        cardExpirationView.setTextAppearance(cardExpirationTextAppearance);
     }
 }

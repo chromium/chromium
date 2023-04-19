@@ -232,8 +232,8 @@ public class TouchToFillCreditCardViewTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName =
-                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
+        TextView cardName = mTouchToFillCreditCardView.getContentView().findViewById(
+                R.id.touch_to_fill_card_name);
         assertTrue(cardName.getContentDescription().toString().equals("Best Card visa"));
     }
 
@@ -247,8 +247,8 @@ public class TouchToFillCreditCardViewTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName =
-                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
+        TextView cardName = mTouchToFillCreditCardView.getContentView().findViewById(
+                R.id.touch_to_fill_card_name);
         assertEquals(cardName.getContentDescription(), null);
     }
 
@@ -257,11 +257,11 @@ public class TouchToFillCreditCardViewTest {
     }
 
     private TextView getCreditCardNameAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.card_name);
+        return getCreditCards().getChildAt(index).findViewById(R.id.touch_to_fill_card_name);
     }
 
     private TextView getCreditCardNumberAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.card_number);
+        return getCreditCards().getChildAt(index).findViewById(R.id.touch_to_fill_card_number);
     }
 
     private TextView getCreditCardExpirationAt(int index) {

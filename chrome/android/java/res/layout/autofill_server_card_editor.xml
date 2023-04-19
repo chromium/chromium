@@ -15,7 +15,7 @@ found in the LICENSE file.
         android:layout_marginHorizontal="@dimen/pref_autofill_field_horizontal_margin">
 
         <ImageView
-            android:id="@+id/card_icon"
+            android:id="@+id/settings_page_card_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -30,10 +30,10 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/card_icon">
+            android:layout_toEndOf="@id/settings_page_card_icon">
 
             <TextView
-                android:id="@+id/card_name"
+                android:id="@+id/settings_page_card_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
@@ -52,11 +52,11 @@ found in the LICENSE file.
         </LinearLayout>
 
         <TextView
-            android:id="@+id/card_expiration"
+            android:id="@+id/settings_page_card_expiration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/card_name_and_last_four_container"
-            android:layout_toEndOf="@id/card_icon"
+            android:layout_toEndOf="@id/settings_page_card_icon"
             style="@style/PreferenceSummary" />
     </RelativeLayout>
 

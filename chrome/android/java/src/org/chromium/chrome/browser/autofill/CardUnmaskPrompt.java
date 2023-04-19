@@ -44,7 +44,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -183,18 +182,13 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
-
-            // Populate card details.
-            ChromeImageView cardIconView = (ChromeImageView) mMainView.findViewById(R.id.card_icon);
-            cardIconView.setImageDrawable(AutofillUiUtils.getCardIcon(context, cardArtUrl,
-                    cardIconId, getCardIconWidthId(), getCardIconHeightId(),
-                    R.dimen.card_art_corner_radius,
+            AutofillUiUtils.addCardDetails(context, mMainView, cardName, cardLastFourDigits,
+                    cardExpiration, cardArtUrl, cardIconId,
+                    R.style.TextAppearance_TextLarge_Primary,
+                    R.style.TextAppearance_TextMedium_Secondary,
                     isVirtualCard
                             || ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
-            ((TextView) mMainView.findViewById(R.id.card_name)).setText(cardName);
-            ((TextView) mMainView.findViewById(R.id.card_last_four)).setText(cardLastFourDigits);
-            ((TextView) mMainView.findViewById(R.id.card_expiration)).setText(cardExpiration);
+                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE));
         } else {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         }
@@ -645,21 +639,5 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
     @VisibleForTesting
     public String getErrorMessage() {
         return mErrorMessage.getText().toString();
-    }
-
-    public static int getCardIconWidthId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.card_unmask_dialog_credit_card_icon_width_new;
-        }
-        return R.dimen.card_unmask_dialog_credit_card_icon_width;
-    }
-
-    public static int getCardIconHeightId() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-            return R.dimen.card_unmask_dialog_credit_card_icon_height_new;
-        }
-        return R.dimen.card_unmask_dialog_credit_card_icon_height;
     }
 }

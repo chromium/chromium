@@ -72,7 +72,7 @@ class TouchToFillCreditCardViewBinder {
 
     /** Binds the item view to the model properties. */
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
-        TextView cardName = view.findViewById(R.id.card_name);
+        TextView cardName = view.findViewById(R.id.touch_to_fill_card_name);
         if (propertyKey == CARD_ICON_ID) {
             ImageView icon = view.findViewById(R.id.favicon);
             int iconId = model.get(CARD_ICON_ID);
@@ -89,7 +89,7 @@ class TouchToFillCreditCardViewBinder {
         } else if (propertyKey == CARD_NAME) {
             cardName.setText(model.get(CARD_NAME));
         } else if (propertyKey == CARD_NUMBER) {
-            TextView cardNumber = view.findViewById(R.id.card_number);
+            TextView cardNumber = view.findViewById(R.id.touch_to_fill_card_number);
             cardNumber.setText(model.get(CARD_NUMBER));
         } else if (propertyKey == CARD_EXPIRATION) {
             TextView expirationDate = view.findViewById(R.id.description_line_2);
