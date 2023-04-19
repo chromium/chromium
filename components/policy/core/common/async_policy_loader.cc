@@ -67,8 +67,7 @@ void AsyncPolicyLoader::Reload(bool force) {
   // `management_service_` must be called on the main thread.
   // base::Unretained is okay here since `management_service_` is an instance of
   // PlatformManagementService which is a singleton that outlives this class.
-  if (!platform_management_trustworthiness_.has_value() &&
-      management_service_) {
+  if (NeedManagementBitBeforeLoad()) {
     DCHECK_EQ(management_service_, PlatformManagementService::GetInstance());
     ui_thread_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -123,6 +122,11 @@ void AsyncPolicyLoader::SetPlatformManagementTrustworthinessAndReload(
     ManagementAuthorityTrustworthiness trustworthiness) {
   platform_management_trustworthiness_ = trustworthiness;
   Reload(force);
+}
+
+bool AsyncPolicyLoader::NeedManagementBitBeforeLoad() {
+  return !platform_management_trustworthiness_.has_value() &&
+         management_service_;
 }
 
 PolicyBundle AsyncPolicyLoader::InitialLoad(
