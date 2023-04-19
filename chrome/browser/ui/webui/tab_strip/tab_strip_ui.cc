@@ -30,6 +30,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
@@ -57,6 +58,9 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
 
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
+  html_source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},
