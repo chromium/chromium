@@ -6192,7 +6192,7 @@
   {
     "name": "prefer-constant-frame-rate",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 130
   },
   {
     "name": "prefer-dcheck",
