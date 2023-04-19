@@ -65,6 +65,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       'cancelCombinedFeatureSetup',
       'attemptFeatureSetupConnection',
       'cancelFeatureSetupConnection',
+      'showBrowserSyncSettings',
       'logPhoneHubPermissionSetUpScreenAction',
       'logPhoneHubPermissionOnboardingSetupMode',
       'logPhoneHubPermissionOnboardingSetupResult',
@@ -146,6 +147,10 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
     webUIListenerCallback(
         'settings.updateMultidevicePageContentData',
         Object.assign({}, this.data_));
+  }
+
+  showBrowserSyncSettings() {
+    this.methodCalled('showBrowserSyncSettings');
   }
 
   logPhoneHubPermissionSetUpScreenAction(

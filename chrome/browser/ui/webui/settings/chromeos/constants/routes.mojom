@@ -205,7 +205,7 @@ const string kPeopleSectionPath = "osPeople";
 const string kMyAccountsSubpagePath = "accountManager";
 const string kSyncSubpagePath = "osSync";
 const string kSyncSetupSubpagePath = "osSyncSetup";
-const string kSyncDeprecatedAdvancedSubpagePath = "syncSetup/advanced";
+const string kSyncDeprecatedAdvancedSubpagePath = "osSyncSetup/advanced";
 
 // Device section.
 const string kDeviceSectionPath = "device";

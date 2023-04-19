@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -188,6 +189,10 @@ void MultideviceHandler::RegisterMessages() {
       base::BindRepeating(
           &MultideviceHandler::HandleCancelFeatureSetupConnection,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "showBrowserSyncSettings",
+      base::BindRepeating(&MultideviceHandler::HandleShowBrowserSyncSettings,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "logPhoneHubPermissionSetUpScreenAction",
       base::BindRepeating(
@@ -630,6 +635,14 @@ void MultideviceHandler::HandleCancelFeatureSetupConnection(
   DCHECK(feature_setup_connection_operation_);
 
   feature_setup_connection_operation_.reset();
+}
+
+void MultideviceHandler::HandleShowBrowserSyncSettings(
+    const base::Value::List& args) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL("chrome://settings/syncSetup/advanced"),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction(

@@ -154,6 +154,7 @@ class MultideviceHandler
   void HandleAttemptFeatureSetupConnection(const base::Value::List& args);
   void HandleCancelFeatureSetupConnection(const base::Value::List& args);
   void HandleFinishFeatureSetupConnection(const base::Value::List& args);
+  void HandleShowBrowserSyncSettings(const base::Value::List& args);
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);

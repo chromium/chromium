@@ -92,6 +92,11 @@ export interface MultiDeviceBrowserProxy {
   cancelFeatureSetupConnection(): void;
 
   /**
+   * Open the Chrome Sync settings page in browser settings.
+   */
+  showBrowserSyncSettings(): void;
+
+  /**
    * Log [Cancel] button click event in phone hub combined feature access setup
    * flow.
    */
@@ -198,6 +203,10 @@ export class MultiDeviceBrowserProxyImpl implements MultiDeviceBrowserProxy {
 
   cancelFeatureSetupConnection(): void {
     chrome.send('cancelFeatureSetupConnection');
+  }
+
+  showBrowserSyncSettings(): void {
+    chrome.send('showBrowserSyncSettings');
   }
 
   logPhoneHubPermissionSetUpScreenAction(

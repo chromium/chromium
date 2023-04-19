@@ -20,6 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {getTemplate} from './multidevice_task_continuation_disabled_link.html.js';
 
 const SettingsMultideviceTaskContinuationDisabledLinkElementBase =
@@ -34,6 +35,14 @@ class SettingsMultideviceTaskContinuationDisabledLinkElement extends
 
   static get template() {
     return getTemplate();
+  }
+
+  private browserProxy_: MultiDeviceBrowserProxy;
+
+  constructor() {
+    super();
+
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
   override connectedCallback(): void {
@@ -83,7 +92,7 @@ class SettingsMultideviceTaskContinuationDisabledLinkElement extends
 
   private onChromeSyncLinkClick_(event: Event): void {
     event.preventDefault();
-    window.open('chrome://settings/syncSetup/advanced');
+    this.browserProxy_.showBrowserSyncSettings();
 
     const openedBrowserAdvancedSyncSettingsEvent = new CustomEvent(
         'opened-browser-advanced-sync-settings',
