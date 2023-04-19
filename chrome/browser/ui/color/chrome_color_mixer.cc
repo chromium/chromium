@@ -691,7 +691,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::SetAlpha(kColorToolbarInkDrop, kToolbarInkDropHighlightVisibleAlpha);
   mixer[kColorToolbarInkDropRipple] =
       ui::SetAlpha(kColorToolbarInkDrop, std::ceil(0.06f * 255.0f));
-  mixer[kColorToolbarExtensionSeparatorEnabled] = {kColorToolbarButtonIcon};
+  mixer[kColorToolbarExtensionSeparatorEnabled] = {
+      kColorTabBackgroundInactiveFrameActive};
   mixer[kColorToolbarExtensionSeparatorDisabled] = {
       kColorToolbarButtonIconInactive};
   mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};

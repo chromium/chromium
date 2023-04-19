@@ -1507,7 +1507,7 @@ void LocationBarView::RecordPageInfoMetrics() {
 ui::ImageModel LocationBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
   bool dark_mode = false;
-  if (features::IsChromeRefresh2023()) {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     if (location_icon_view_ && location_icon_view_->GetBackground()) {
       dark_mode = color_utils::IsDark(
           location_icon_view_->GetBackground()->get_color());

@@ -76,8 +76,11 @@ LocationIconView::LocationIconView(
     views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
     views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
+          const auto* color_provider = host->GetColorProvider();
           const SkColor pressed_color =
-              host->GetColorProvider()->GetColor(kColorPageInfoIconPressed);
+              color_provider
+                  ? color_provider->GetColor(kColorPageInfoIconPressed)
+                  : gfx::kPlaceholderColor;
           const float pressed_alpha = SkColorGetA(pressed_color);
 
           return std::make_unique<views::FloodFillInkDropRipple>(
@@ -90,8 +93,10 @@ LocationIconView::LocationIconView(
 
     views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](views::View* host) {
+          const auto* color_provider = host->GetColorProvider();
           const SkColor hover_color =
-              host->GetColorProvider()->GetColor(kColorPageInfoIconHover);
+              color_provider ? color_provider->GetColor(kColorPageInfoIconHover)
+                             : gfx::kPlaceholderColor;
           const float hover_alpha = SkColorGetA(hover_color);
 
           auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
