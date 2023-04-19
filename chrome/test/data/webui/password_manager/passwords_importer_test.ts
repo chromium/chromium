@@ -5,9 +5,11 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {CrDialogElement, PasswordManagerImpl, PasswordsImporterElement} from 'chrome://password-manager/password_manager.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -57,13 +59,26 @@ function assertVisibleTextContent(
   assertEquals(expectedText, element?.textContent!.trim());
 }
 
+function assertButtonShouldCloseDialog(
+    importer: PasswordsImporterElement, dialog: HTMLElement, selector: string) {
+  const button = dialog.querySelector<HTMLElement>(selector);
+  assertTrue(!!button);
+  // Should close the dialog.
+  button.click();
+  flush();
+  assertFalse(!!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+}
+
 suite('PasswordsImporterTest', function() {
   let passwordManager: TestPasswordManagerProxy;
+  let pluralString: TestPluralStringProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    pluralString = new TestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralString);
   });
 
   test('has correct non-syncing initial state', function() {
@@ -128,6 +143,8 @@ suite('PasswordsImporterTest', function() {
     assertVisibleTextContent(
         dialog, '#selectFileButton', importer.i18n('selectFile'));
     assertVisibleTextContent(dialog, '#cancelButton', importer.i18n('cancel'));
+
+    assertButtonShouldCloseDialog(importer, dialog, '#cancelButton');
   });
 
   test('account store user can import passwords to device', async function() {
@@ -161,4 +178,148 @@ suite('PasswordsImporterTest', function() {
     const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
     await triggerImportHelper(importer, passwordManager, expectedStore);
   });
+
+  test('has correct success state with no errors', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(
+        dialog, '#title', importer.i18n('importPasswordsSuccessTitle'));
+
+    assertTrue(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
+    assertFalse(
+        isChildVisible(dialog, '#failuresSummary', /*checkLightDom=*/ true));
+
+    const successTip = dialog.querySelector('#successTip');
+    assertTrue(!!successTip);
+    assertEquals(
+        successTip.innerHTML.toString(),
+        importer
+            .i18nAdvanced(
+                'importPasswordsSuccessTip',
+                {attrs: ['class'], substitutions: ['test.csv']})
+            .toString());
+
+    assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
+
+    assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+  });
+
+  test('has correct success state with failures', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      displayedEntries: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD,
+          username: 'username',
+          url: 'https://google.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL,
+          username: 'username',
+          url: '',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL,
+          username: 'username',
+          url: 'http/google.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.LONG_URL,
+          username: 'username',
+          url: 'https://morethan2048chars.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL,
+          username: 'username',
+          url: 'https://أهلا.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD,
+          username: 'username',
+          url: 'https://google.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME,
+          username: 'morethan1000chars',
+          url: 'https://google.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_PROFILE,
+          username: 'username',
+          url: 'https://google.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT,
+          username: 'username',
+          url: 'https://google.com',
+          password: '',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR,
+          username: '',
+          url: '',
+          password: '',
+          id: 0,
+        },
+      ],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(
+        dialog, '#title', importer.i18n('importPasswordsCompleteTitle'));
+
+    // Success tip should not be visible.
+    assertFalse(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
+
+    assertTrue(
+        isChildVisible(dialog, '#failuresSummary', /*checkLightDom=*/ true));
+
+    assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
+
+    assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+  });
+
 });

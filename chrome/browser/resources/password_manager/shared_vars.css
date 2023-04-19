@@ -22,4 +22,12 @@ html {
   --section-min-height: 48px;
   /* Spacing between a control (e.g. checkbox) and its label. */
   --two-line-section-min-height: 64px;
+
+  --error-color: var(--google-red-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --error-color: var(--google-red-300);
+  }
 }

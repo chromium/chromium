@@ -311,6 +311,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.listeners.accountStorageOptInStateListener = null;
   }
 
+  /**
+   * Sets the value to be returned by importPasswords.
+   */
+  setImportResults(results: chrome.passwordsPrivate.ImportResults) {
+    this.importResults_ = results;
+  }
+
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('importPasswords', toStore);
     return Promise.resolve(this.importResults_);

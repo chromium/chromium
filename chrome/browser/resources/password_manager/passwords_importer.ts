@@ -5,11 +5,14 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './site_favicon.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -24,6 +27,7 @@ export interface PasswordsImporterElement {
 enum DialogState {
   NO_DIALOG,
   STORE_PICKER,
+  SUCCESS,
 }
 
 const PasswordsImporterElementBase = I18nMixin(PolymerElement);
@@ -60,6 +64,16 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
       selectedStoreOption_: String,
 
+      results_: Object,
+      successDescription_: String,
+      failedImportsSummary_: String,
+      rowsWithUnknownErrorsSummary_: String,
+
+      showRowsWithUnknownErrorsSummary_: {
+        type: Boolean,
+        value: false,
+      },
+
       showSelectFileButton_: {
         type: Boolean,
         computed: 'computeShowSelectFileButton_(isAccountStoreUser,' +
@@ -93,6 +107,11 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   private selectedStoreOption_: string;
   private showSelectFileButton_: boolean;
   private bannerDescription_: string;
+  private results_: chrome.passwordsPrivate.ImportResults|null = null;
+  private successDescription_: string;
+  private failedImportsSummary_: string;
+  private rowsWithUnknownErrorsSummary_: string;
+  private showRowsWithUnknownErrorsSummary_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -170,10 +189,112 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     // Close the dialog while import is in progress or the user selects a file.
     this.closeDialog_();
 
-    await this.passwordManager_.importPasswords(destinationStore);
-
-    // TODO(crbug/1432962): Add handler for the results of importPasswords.
+    this.results_ =
+        await this.passwordManager_.importPasswords(destinationStore);
+    await this.processResults_();
     this.inProgress_ = false;
+  }
+
+  private async processResults_() {
+    assert(this.results_);
+    switch (this.results_.status) {
+      case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
+        await this.handleSuccess_();
+        return;
+      case chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS:
+      case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
+      case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
+      case chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED:
+      case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
+      case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
+      case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
+        // TODO(crbug/1432962): Handle each status.
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
+        // Dialog state should not change if a system file picker was dismissed.
+        break;
+      default:
+        assertNotReached();
+    }
+  }
+
+  private getFailedImportsWithKnownErrors_():
+      chrome.passwordsPrivate.ImportEntry[] {
+    assert(this.results_);
+    return this.results_.displayedEntries.filter(
+        (entry) => entry.status !==
+            chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR);
+  }
+
+  private async handleSuccess_() {
+    assert(this.results_);
+    if (this.results_.displayedEntries.length) {
+      const rowsWithUnknownErrorCount =
+          this.results_.displayedEntries
+              .filter(
+                  (entry) => entry.status ===
+                      chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR)
+              .length;
+      this.failedImportsSummary_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsFailuresSummary',
+              this.results_.displayedEntries.length);
+      if (rowsWithUnknownErrorCount) {
+        this.rowsWithUnknownErrorsSummary_ =
+            await PluralStringProxyImpl.getInstance().getPluralString(
+                'importPasswordsBadRowsFormat', rowsWithUnknownErrorCount);
+        this.showRowsWithUnknownErrorsSummary_ = true;
+      }
+    }
+    if (this.passwordsSavedToAccount_) {
+      let descriptionText =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsSuccessSummaryAccount',
+              this.results_.numberImported);
+      descriptionText =
+          descriptionText.replace('$1', this.i18n('localPasswordManager'));
+      this.successDescription_ =
+          descriptionText.replace('$2', this.accountEmail);
+    } else {
+      const descriptionText =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsSuccessSummaryDevice',
+              this.results_.numberImported);
+      this.successDescription_ =
+          descriptionText.replace('$1', this.i18n('localPasswordManager'));
+    }
+
+    this.dialogState_ = DialogState.SUCCESS;
+  }
+
+  private getSuccessDialogTitle_(): string {
+    assert(this.results_);
+    return this.results_.displayedEntries.length ?
+        this.i18n('importPasswordsCompleteTitle') :
+        this.i18n('importPasswordsSuccessTitle');
+  }
+
+  private getSuccessTipHtml_(): TrustedHTML {
+    assert(this.results_);
+    return this.i18nAdvanced(
+        'importPasswordsSuccessTip',
+        {attrs: ['class'], substitutions: [this.results_.fileName]});
+  }
+
+  private shouldHideLinkRowIcon_(): boolean {
+    return this.inProgress_ || this.showSelectFileButton_;
+  }
+
+  private shouldHideTipBox_(): boolean {
+    // Tip box is only shown in "success" state if all passwords were imported.
+    // TODO(crbug/1432962): Also hide when import M2 is enabled.
+    assert(this.results_);
+    return !!this.results_.displayedEntries.length;
+  }
+
+  private shouldHideFailuresSummary_(): boolean {
+    assert(this.results_);
+    return !this.results_.displayedEntries.length;
   }
 
   private getStoreOptionAccountText_(): string {

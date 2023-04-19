@@ -161,6 +161,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"help", IDS_PASSWORD_MANAGER_UI_HELP},
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
+    {"importPasswordsCompleteTitle",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_COMPLETE_TITLE},
+    {"importPasswordsSuccessTitle",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TITLE},
+    {"importPasswordsSuccessTip", IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TIP},
     {"importPasswordsDescriptionAccount",
      IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SYNCING_USERS},
     {"importPasswordsSelectFile",
@@ -363,6 +368,18 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "compromisedPasswords",
       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsFailuresSummary",
+      IDS_PASSWORD_MANAGER_UI_IMPORT_FAILURES_SUMMARY);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsBadRowsFormat",
+      IDS_PASSWORD_MANAGER_UI_IMPORT_BAD_ROWS_FORMAT);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsSuccessSummaryAccount",
+      IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_SUMMARY_ACCOUNT);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsSuccessSummaryDevice",
+      IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_SUMMARY_DEVICE);
   plural_string_handler->AddLocalizedString(
       "numberOfAccounts", IDS_PASSWORD_MANAGER_UI_NUMBER_OF_ACCOUNTS);
   plural_string_handler->AddLocalizedString(
