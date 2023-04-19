@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -41,7 +42,8 @@ public class LauncherShortcutActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String intentAction = getIntent().getAction();
+        Intent intent = getIntent();
+        String intentAction = intent.getAction();
 
         // Exit early if the original intent action isn't for opening a new tab.
         if (!intentAction.equals(ACTION_OPEN_NEW_TAB)
@@ -51,6 +53,15 @@ public class LauncherShortcutActivity extends Activity {
         }
 
         Intent newIntent = getChromeLauncherActivityIntent(this, intentAction);
+        // Retain FLAG_ACTIVITY_MULTIPLE_TASK in the intent if present, to support multi-instance
+        // launch if lesser than the max number of instances is open. If the max number of instances
+        // is open, fall back to default ChromeLauncherActivity behavior for VIEW intents without
+        // this flag set.
+        if ((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0
+                && MultiWindowUtils.getInstanceCount() < MultiWindowUtils.getMaxInstances()) {
+            newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+
         startActivity(newIntent);
         finish();
     }
