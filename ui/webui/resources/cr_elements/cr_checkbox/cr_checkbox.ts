@@ -125,6 +125,10 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   }
 
   private showRipple_() {
+    if (this.noink) {
+      return;
+    }
+
     this.getRipple().showAndHoldDown();
   }
 

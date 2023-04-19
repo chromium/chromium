@@ -86,7 +86,7 @@ cr-checkbox::part(label-container) {
       class="dropdown-item label-first"
       on-click="onOpenInWindowItemClick_"
       hidden="[[!isOpenInWindowHidden_(appInfo)]]"
-      checked="{{appInfo.openInWindow}}">
+      checked="{{appInfo.openInWindow}}" noink>
     $i18n{appWindowOpenLabel}
   </cr-checkbox>
   <cr-checkbox
@@ -95,7 +95,7 @@ cr-checkbox::part(label-container) {
       on-click="onLaunchOnStartupItemClick_"
       hidden="[[isLaunchOnStartupHidden_(appInfo)]]"
       checked="[[isLaunchOnStartUp_(appInfo)]]"
-      disabled="[[isLaunchOnStartupDisabled_(appInfo)]]">
+      disabled="[[isLaunchOnStartupDisabled_(appInfo)]]" noink>
     $i18n{appLaunchAtStartupLabel}
   </cr-checkbox>
   <button id="createShortcut"
