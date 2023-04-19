@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/extensions/api/mdns.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -20,26 +19,11 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 namespace extensions {
 
 namespace mdns = api::mdns;
-
-namespace {
-
-// Allowlisted mDNS service types.
-const char kCastServiceType[] = "_googlecast._tcp.local";
-const char kPrivetServiceType[] = "_privet._tcp.local";
-const char kTestServiceType[] = "_testing._tcp.local";
-
-bool IsServiceTypeAllowlisted(const std::string& service_type) {
-  return service_type == kCastServiceType ||
-         service_type == kPrivetServiceType || service_type == kTestServiceType;
-}
-
-}  // namespace
 
 using DnsSdRegistry = media_router::DnsSdRegistry;
 
@@ -197,21 +181,12 @@ const extensions::EventListenerMap::ListenerList& MDnsAPI::GetEventListeners() {
       .GetEventListenersByName(mdns::OnServiceList::kEventName);
 }
 
-bool MDnsAPI::IsMDnsAllowed(const std::string& extension_id,
-                            const std::string& service_type) const {
+bool MDnsAPI::IsMDnsAllowed(const std::string& extension_id) const {
   const extensions::Extension* extension =
       ExtensionRegistry::Get(browser_context_)
           ->enabled_extensions()
           .GetByID(extension_id);
-  if (!extension) {
-    return false;
-  }
-
-  if (GetCurrentChannel() == version_info::Channel::DEV &&
-      extension->is_extension()) {
-    return true;
-  }
-  return extension->is_platform_app() || IsServiceTypeAllowlisted(service_type);
+  return extension;
 }
 
 void MDnsAPI::GetValidOnServiceListListeners(
@@ -233,9 +208,8 @@ void MDnsAPI::GetValidOnServiceListListeners(
       continue;
     }
 
-    // Don't listen for services associated only with disabled extensions
-    // or non-allowlisted, non-platform-app extensions.
-    if (!IsMDnsAllowed(listener->extension_id(), *service_type)) {
+    // Don't listen for services associated only with disabled extensions.
+    if (!IsMDnsAllowed(listener->extension_id())) {
       continue;
     }
 
