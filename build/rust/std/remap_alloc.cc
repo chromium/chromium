@@ -60,28 +60,37 @@ void __rdl_dealloc(void*);
 void* __rdl_realloc(void*, size_t, size_t, size_t);
 void* __rdl_alloc_zeroed(size_t, size_t);
 
-void* __attribute__((weak)) __rust_alloc(size_t a, size_t b) {
+#ifdef COMPONENT_BUILD
+#define REMAP_ALLOC_ATTRIBUTES \
+  __attribute__((visibility("default"))) __attribute__((weak))
+#else
+#define REMAP_ALLOC_ATTRIBUTES __attribute__((weak))
+#endif  // COMPONENT_BUILD
+
+void* REMAP_ALLOC_ATTRIBUTES __rust_alloc(size_t a, size_t b) {
   return __rdl_alloc(a, b);
 }
 
-void __attribute__((weak)) __rust_dealloc(void* a) {
+void REMAP_ALLOC_ATTRIBUTES __rust_dealloc(void* a) {
   __rdl_dealloc(a);
 }
 
-void* __attribute__((weak))
-__rust_realloc(void* a, size_t b, size_t c, size_t d) {
+void* REMAP_ALLOC_ATTRIBUTES __rust_realloc(void* a,
+                                            size_t b,
+                                            size_t c,
+                                            size_t d) {
   return __rdl_realloc(a, b, c, d);
 }
 
-void* __attribute__((weak)) __rust_alloc_zeroed(size_t a, size_t b) {
+void* REMAP_ALLOC_ATTRIBUTES __rust_alloc_zeroed(size_t a, size_t b) {
   return __rdl_alloc_zeroed(a, b);
 }
 
-void __attribute__((weak)) __rust_alloc_error_handler(size_t a, size_t b) {
+void REMAP_ALLOC_ATTRIBUTES __rust_alloc_error_handler(size_t a, size_t b) {
   IMMEDIATE_CRASH();
 }
 
-extern const unsigned char __attribute__((weak))
-__rust_alloc_error_handler_should_panic = 0;
+extern const unsigned char REMAP_ALLOC_ATTRIBUTES
+    __rust_alloc_error_handler_should_panic = 0;
 
 }  // extern "C"
