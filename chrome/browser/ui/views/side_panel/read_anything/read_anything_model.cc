@@ -272,6 +272,9 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
 // the chosen font does not work for some reason.
 // E.g. User chooses 'Serif', this method returns 'Serif, Arial, 18px'.
 std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
+  // TODO(b/1266555): Instead of appending a string, have two separate methods
+  // ::GetFontVector and ::GetFontSize and use these as inputs into
+  // gfx::FontList instead.
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
   base::StringAppendF(&font_label, "%s",
                       string_constants::kReadAnythingDefaultFontSyle);
