@@ -20,6 +20,9 @@ export class SvgWrapper extends LitElement {
     :host {
       display: block;
     }
+    svg {
+      fill: currentColor;
+    }
   `;
 
   static override properties = {

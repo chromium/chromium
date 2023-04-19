@@ -1557,5 +1557,5 @@ body:not(.video) #settings-video-resolution {
 }
 
 #open-settings {
-  --color: white;
+  color: white;
 }
