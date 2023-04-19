@@ -49,7 +49,7 @@ void MirroringMediaControllerHost::Unfreeze() {
 
 void MirroringMediaControllerHost::OnMediaStatusUpdated(
     media_router::mojom::MediaStatusPtr status) {
-  // TODO(b/271442872): Once freeze info is implemented in MediaStatus, set
+  // TODO(b/271446487): Once freeze info is implemented in MediaStatus, set
   // can_freeze_ and is_frozen_ and update observers.
   for (MirroringMediaControllerHost::Observer& observer : observers_) {
     observer.OnFreezeInfoChanged();

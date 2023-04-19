@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/media_router/browser/issues_observer.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 
@@ -29,7 +30,8 @@ class LoggerImpl;
 class CastToolbarButton : public ToolbarButton,
                           public MediaRouterActionController::Observer,
                           public IssuesObserver,
-                          public MediaRoutesObserver {
+                          public MediaRoutesObserver,
+                          public MirroringMediaControllerHost::Observer {
  public:
   METADATA_HEADER(CastToolbarButton);
 
@@ -56,6 +58,9 @@ class CastToolbarButton : public ToolbarButton,
   void OnRoutesUpdated(
       const std::vector<media_router::MediaRoute>& routes) override;
 
+  // MirroringMediaControllerHost::Observer:
+  void OnFreezeInfoChanged() override;
+
   // ToolbarButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -77,6 +82,8 @@ class CastToolbarButton : public ToolbarButton,
 
   void LogIconChange(const gfx::VectorIcon* icon);
 
+  void StopObservingMirroringMediaControllerHosts();
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
 
@@ -90,6 +97,9 @@ class CastToolbarButton : public ToolbarButton,
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
 
   const raw_ptr<LoggerImpl> logger_;
+
+  // The list of routes we are observing to see if mirroring pauses.
+  std::vector<MediaRoute::Id> tracked_mirroring_routes_;
 };
 
 }  // namespace media_router

@@ -20,8 +20,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/vector_icons/vector_icons.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/theme_provider.h"
@@ -88,11 +90,16 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     Browser::CreateParams browser_params(profile_.get(), true);
     browser_params.window = window_.get();
     browser_ = std::unique_ptr<Browser>(Browser::Create(browser_params));
-    MockMediaRouter* media_router = static_cast<MockMediaRouter*>(
+    media_router_ = static_cast<MockMediaRouter*>(
         MediaRouterFactory::GetApiForBrowserContext(profile_.get()));
     logger_ = std::make_unique<LoggerImpl>();
-    ON_CALL(*media_router, GetLogger())
+    ON_CALL(*media_router_, GetLogger())
         .WillByDefault(testing::Return(logger_.get()));
+    mojo::Remote<media_router::mojom::MediaController> controller_remote;
+    mirroring_controller_host_ = std::make_unique<MirroringMediaControllerHost>(
+        std::move(controller_remote));
+    ON_CALL(*media_router_, GetMirroringMediaControllerHost(_))
+        .WillByDefault(testing::Return(mirroring_controller_host_.get()));
 
     auto context_menu = std::make_unique<MediaRouterContextualMenu>(
         browser_.get(), false, &context_menu_observer_);
@@ -100,7 +107,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     // Button needs to be in a widget to be able to access ColorProvider.
     widget_ = CreateTestWidget();
     button_ = widget_->SetContentsView(std::make_unique<CastToolbarButton>(
-        browser_.get(), media_router, std::move(context_menu)));
+        browser_.get(), media_router_, std::move(context_menu)));
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
     idle_icon_ = gfx::Image(gfx::CreateVectorIcon(
@@ -112,6 +119,13 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveIcon,
         color_provider->GetColor(kColorMediaRouterIconActive)));
+    // Paused icon matches the style of Chrome Refresh icons, so its default
+    // size is 20. However, CastToolbarButton icons with standard colors are
+    // always size ToolbarButton::kDefaultIconSize, so match that size here.
+    paused_icon_ = gfx::Image(gfx::CreateVectorIcon(
+        vector_icons::kMediaRouterPausedIcon,
+        /* ToolbarButton::kDefaultIconSize */ 16,
+        color_provider->GetColor(kColorToolbarButtonIcon)));
   }
 
   void TearDown() override {
@@ -134,10 +148,13 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   MockContextMenuObserver context_menu_observer_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoggerImpl> logger_;
+  raw_ptr<MockMediaRouter> media_router_ = nullptr;
+  std::unique_ptr<MirroringMediaControllerHost> mirroring_controller_host_;
 
   gfx::Image idle_icon_;
   gfx::Image warning_icon_;
   gfx::Image active_icon_;
+  gfx::Image paused_icon_;
 
   const std::vector<MediaRoute> local_display_route_list_ = {
       CreateLocalDisplayRoute()};
@@ -183,6 +200,15 @@ TEST_F(CastToolbarButtonTest, UpdateRoutes) {
 
   button_->OnRoutesUpdated({});
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
+}
+
+TEST_F(CastToolbarButtonTest, PausedIcon) {
+  button_->UpdateIcon();
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
+
+  mirroring_controller_host_.get()->set_is_frozen_for_test(true);
+  button_->OnRoutesUpdated(local_display_route_list_);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(paused_icon_, GetIcon()));
 }
 
 }  // namespace media_router
