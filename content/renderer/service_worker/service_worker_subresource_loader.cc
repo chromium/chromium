@@ -202,6 +202,12 @@ bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
     return false;
   }
 
+  // If the fetch event is restarted for some reason, stop dispatching
+  // RaceNetworkRequest to avoid making the race condition complex.
+  if (fetch_request_restarted_) {
+    return false;
+  }
+
   DCHECK(!race_network_request_loader_client_);
   race_network_request_loader_client_.emplace(resource_request_,
                                               weak_factory_.GetWeakPtr());
@@ -430,6 +436,12 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
   if (fetch_request_restarted_) {
     SettleFetchEventDispatch(
         blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed);
+    // If the fetch request is already handled by RaceNetworkRequest, no need to
+    // call CommitCompleted here.
+    if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
+      return;
+    }
+    set_fetch_response_from(FetchResponseFrom::kServiceWorker);
     CommitCompleted(net::ERR_FAILED, "Disconnected before completed");
     return;
   }
