@@ -47,8 +47,7 @@ class Vp8Decoder : public VideoDecoder {
  private:
   Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-             std::unique_ptr<V4L2Queue> OUTPUT_queue,
-             std::unique_ptr<V4L2Queue> CAPTURE_queue);
+             gfx::Size display_resolution);
   enum ParseResult { kOk, kEOStream, kError };
 
   // Reads next frame from IVF stream into |vp8_frame_header|

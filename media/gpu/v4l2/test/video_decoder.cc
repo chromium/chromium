@@ -135,7 +135,7 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
       << static_cast<uint32_t>(fmt.fmt.pix_mp.num_planes);
 }
 
-void VideoDecoder::Initialize(bool resolution_changed) {
+void VideoDecoder::Initialize() {
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
   NegotiateCAPTUREFormat();
@@ -144,16 +144,9 @@ void VideoDecoder::Initialize(bool resolution_changed) {
                  .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
       << "Display size is not contained within the coded size. DRC?";
 
-  // If there is a dynamic resolution change, the Initialization sequence will
-  // be performed again, minus the allocation of OUTPUT queue buffers.
-  if (resolution_changed) {
-    v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
-                                  number_of_buffers_in_capture_queue_);
-  } else {
-    v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
-    v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
-    v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
-  }
+  v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
+  v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
 
   v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
 
@@ -224,6 +217,10 @@ void VideoDecoder::HandleDynamicResolutionChange(
   v4l2_ioctl_->StreamOff(OUTPUT_queue_->type());
   v4l2_ioctl_->StreamOff(CAPTURE_queue_->type());
 
+  // Store the buffer count before clearing so the amount to reallocate
+  // is known.
+  const uint32_t num_buffers = CAPTURE_queue_->num_buffers();
+
   // Free all CAPTURE buffers from the driver side by calling VIDIOC_REQBUFS()
   // on the CAPTURE queue with a buffer count of zero.
   v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, 0);
@@ -234,9 +231,21 @@ void VideoDecoder::HandleDynamicResolutionChange(
   // Set the new resolution on OUTPUT queue. The driver will then pick up
   // the new resolution to be set on the coded size for CAPTURE queue.
   OUTPUT_queue_->set_resolution(new_resolution);
+  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
-  // Perform the initialization sequence again
-  Initialize(/* resolution_changed*/ true);
+  NegotiateCAPTUREFormat();
+
+  v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, num_buffers);
+  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
+
+  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
+  // CAPTURE buffers will be queued after that.
+  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0)) {
+    LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
+  }
+
+  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
+  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 
 void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
