@@ -13,11 +13,14 @@
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
+#import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -73,8 +76,7 @@ class TabOpenerTest : public PlatformTest {
 
   SceneController* GetSceneController() {
     if (!scene_controller_) {
-      StubBrowserInterface* browser_interface =
-          [[StubBrowserInterface alloc] init];
+      id mock_wrangled_browser = OCMClassMock(WrangledBrowser.class);
 
       sync_preferences::PrefServiceMockFactory factory;
       scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
@@ -85,14 +87,15 @@ class TabOpenerTest : public PlatformTest {
       builder.SetPrefService(factory.CreateSyncable(registry.get()));
       browser_state_ = builder.Build();
 
-      browser_interface.browserState =
-          (ChromeBrowserState*)browser_state_.get();
+      OCMStub([mock_wrangled_browser browserState])
+          .andReturn(browser_state_.get());
 
       SceneController* controller =
           [[SceneController alloc] initWithSceneState:scene_state_];
 
       mockController_ = OCMPartialMock(controller);
-      OCMStub([mockController_ currentInterface]).andReturn(browser_interface);
+      OCMStub([mockController_ currentInterface])
+          .andReturn(mock_wrangled_browser);
 
       scene_controller_ = controller;
     }

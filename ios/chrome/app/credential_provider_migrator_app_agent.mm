@@ -7,9 +7,11 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_migrator.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
@@ -35,7 +37,8 @@
   SceneState* anyScene = self.appState.foregroundScenes.firstObject;
   DCHECK(anyScene);
   ChromeBrowserState* browserState =
-      anyScene.interfaceProvider.mainInterface.browserState;
+      anyScene.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   DCHECK(browserState);
   scoped_refptr<password_manager::PasswordStoreInterface> store =
       IOSChromePasswordStoreFactory::GetForBrowserState(

@@ -13,6 +13,8 @@ source_set("public") {
     "browser_observer.h",
     "browser_observer_bridge.h",
     "browser_observer_bridge.mm",
+    "browser_provider.h",
+    "browser_provider_interface.h",
     "browser_user_data.h",
   ]
   deps = [

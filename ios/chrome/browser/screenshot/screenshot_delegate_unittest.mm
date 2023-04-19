@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface_provider.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -30,20 +30,20 @@ class ScreenshotDelegateTest : public PlatformTest {
   ~ScreenshotDelegateTest() override {}
 
   void SetUp() override {
-    browser_interface_ = [[StubBrowserInterface alloc] init];
-    browser_interface_provider_ = [[StubBrowserInterfaceProvider alloc] init];
+    browser_interface_ = [[StubBrowserProvider alloc] init];
+    browser_interface_provider_ = [[StubBrowserProviderInterface alloc] init];
     screenshot_service_ = OCMClassMock([UIScreenshotService class]);
   }
 
   void createScreenshotDelegate() {
     screenshotDelegate_ = [[ScreenshotDelegate alloc]
-        initWithBrowserInterfaceProvider:browser_interface_provider_];
+        initWithBrowserProviderInterface:browser_interface_provider_];
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  StubBrowserInterface* browser_interface_;
-  StubBrowserInterfaceProvider* browser_interface_provider_;
+  StubBrowserProvider* browser_interface_;
+  StubBrowserProviderInterface* browser_interface_provider_;
   ScreenshotDelegate* screenshotDelegate_;
   id screenshot_service_;
 };
@@ -84,11 +84,11 @@ TEST_F(ScreenshotDelegateTest, ScreenshotService) {
       WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   browser.GetWebStateList()->ActivateWebStateAt(insertion_index);
 
-  // Add the Browser to StubBrowserInterface.
+  // Add the Browser to StubBrowserProvider.
   browser_interface_.browser = &browser;
 
-  // Add the StubBrowserInterface to StubBrowserInterfaceProvider.
-  browser_interface_provider_.currentInterface = browser_interface_;
+  // Add the StubBrowserProvider to StubBrowserProviderInterface.
+  browser_interface_provider_.currentBrowserProvider = browser_interface_;
 
   createScreenshotDelegate();
 
@@ -110,9 +110,9 @@ TEST_F(ScreenshotDelegateTest, ScreenshotService) {
 // Browser screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilBrowser) {
   // Expected: nil NSData.
-  // Add the StubBrowserInterface with no set Browser to
-  // StubBrowserInterfaceProvider.
-  browser_interface_provider_.currentInterface = browser_interface_;
+  // Add the StubBrowserProvider with no set Browser to
+  // StubBrowserProviderInterface.
+  browser_interface_provider_.currentBrowserProvider = browser_interface_;
 
   createScreenshotDelegate();
 
@@ -134,11 +134,11 @@ TEST_F(ScreenshotDelegateTest, NilWebState) {
   // Expected: nil NSData.
   TestBrowser browser(browser_state_.get());
 
-  // Add the empty Browser to StubBrowserInterface.
+  // Add the empty Browser to StubBrowserProvider.
   browser_interface_.browser = &browser;
 
-  // Add the StubBrowserInterface to StubBrowserInterfaceProvider.
-  browser_interface_provider_.currentInterface = browser_interface_;
+  // Add the StubBrowserProvider to StubBrowserProviderInterface.
+  browser_interface_provider_.currentBrowserProvider = browser_interface_;
 
   createScreenshotDelegate();
 

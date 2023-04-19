@@ -7,19 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-@class ScreenshotDelegate;
 // TODO(crbug.com/1045560): Refactor this class to not use
-// BrowserInterfaceProvider when possible.
-@protocol BrowserInterfaceProvider;
+// BrowserProviderInterface when possible.
+@protocol BrowserProviderInterface;
 
 // ScreenshotDelegate provides methods for UIScreenshotServiceDelegate to create
 // PDF content of the captured window scene.
 @interface ScreenshotDelegate : NSObject <UIScreenshotServiceDelegate>
 
-// Init the ScreenshotDelegate and set the `browserInterfaceProvider` to
+// Init the ScreenshotDelegate and set the `browserProviderInterface` to
 // generate PDF screenshots from.
-- (instancetype)initWithBrowserInterfaceProvider:
-    (id<BrowserInterfaceProvider>)browserInterfaceProvider
+- (instancetype)initWithBrowserProviderInterface:
+    (id<BrowserProviderInterface>)browserProviderInterface
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

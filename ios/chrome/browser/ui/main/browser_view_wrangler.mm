@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/main/browser_provider.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
@@ -40,76 +42,6 @@ namespace {
 NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
 }  // namespace
-
-// Internal implementation of BrowserInterface -- for the most part a wrapper
-// around BrowserCoordinator.
-@interface WrangledBrowser : NSObject <BrowserInterface>
-
-@property(nonatomic, weak, readonly) BrowserCoordinator* coordinator;
-
-- (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator;
-
-@end
-
-@implementation WrangledBrowser
-
-@synthesize inactiveBrowser = _inactiveBrowser;
-
-- (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator {
-  if (self = [super init]) {
-    DCHECK(coordinator.browser);
-    _coordinator = coordinator;
-  }
-  return self;
-}
-
-- (UIViewController*)viewController {
-  return self.coordinator.viewController;
-}
-
-- (BrowserViewController*)bvc {
-  return self.coordinator.viewController;
-}
-
-- (id<SyncPresenter>)syncPresenter {
-  return self.coordinator;
-}
-
-- (Browser*)browser {
-  return self.coordinator.browser;
-}
-
-- (ChromeBrowserState*)browserState {
-  return self.browser->GetBrowserState();
-}
-
-- (BOOL)userInteractionEnabled {
-  return self.coordinator.active;
-}
-
-- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
-  self.coordinator.active = userInteractionEnabled;
-}
-
-- (BOOL)incognito {
-  return self.browserState->IsOffTheRecord();
-}
-
-- (BOOL)playingTTS {
-  return self.coordinator.playingTTS;
-}
-
-- (void)setPrimary:(BOOL)primary {
-  [self.coordinator.viewController setPrimary:primary];
-}
-
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  [self.coordinator clearPresentedStateWithCompletion:completion
-                                       dismissOmnibox:dismissOmnibox];
-}
-
-@end
 
 @interface BrowserViewWrangler () {
   ChromeBrowserState* _browserState;
@@ -152,6 +84,7 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 @implementation BrowserViewWrangler
 
 @synthesize currentInterface = _currentInterface;
+@synthesize currentBrowserProvider = _currentBrowserProvider;
 
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                           sceneState:(SceneState*)sceneState
@@ -225,6 +158,20 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   }
 }
 
+#pragma mark - BrowserProviderInterface
+
+- (id<BrowserProvider>)mainBrowserProvider {
+  return self.mainInterface;
+}
+
+- (id<BrowserProvider>)incognitoBrowserProvider {
+  return self.incognitoInterface;
+}
+
+- (BOOL)hasIncognitoBrowserProvider {
+  return [self hasIncognitoInterface];
+}
+
 #pragma mark - BrowserViewInformation property implementations
 
 - (void)setCurrentInterface:(WrangledBrowser*)interface {
@@ -241,14 +188,18 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     [self.currentInterface setPrimary:NO];
   }
 
+  BOOL incognito = self.incognitoInterface == interface;
+
   _currentInterface = interface;
+  _currentBrowserProvider =
+      incognito ? self.incognitoBrowserProvider : self.mainBrowserProvider;
 
   // Update the shared active URL for the new interface.
   DeviceSharingBrowserAgent::FromBrowser(_currentInterface.browser)
       ->UpdateForActiveBrowser();
 }
 
-- (id<BrowserInterface>)incognitoInterface {
+- (WrangledBrowser*)incognitoInterface {
   if (!_mainInterface)
     return nil;
   if (!_incognitoInterface) {

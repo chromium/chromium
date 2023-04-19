@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -122,7 +124,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
@@ -1940,8 +1941,8 @@ enum class ToolbarKind {
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:sceneState.interfaceProvider.mainInterface
-                                     .browser];
+                         browser:sceneState.browserProviderInterface
+                                     .mainBrowserProvider.browser];
   self.passwordSettingsCoordinator.delegate = self;
   [self.passwordSettingsCoordinator start];
 }

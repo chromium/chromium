@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_APP_APPLICATION_DELEGATE_BROWSER_LAUNCHER_H_
 #define IOS_CHROME_APP_APPLICATION_DELEGATE_BROWSER_LAUNCHER_H_
 
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 
 // This protocol defines the startup method for the application.
 @protocol BrowserLauncher<NSObject>
@@ -14,7 +14,8 @@
 @property(nonatomic, retain) NSDictionary* launchOptions;
 
 // Browser view information created during startup.
-@property(nonatomic, readonly) id<BrowserInterfaceProvider> interfaceProvider;
+@property(nonatomic, readonly) id<BrowserProviderInterface>
+    browserProviderInterface;
 
 @end
 

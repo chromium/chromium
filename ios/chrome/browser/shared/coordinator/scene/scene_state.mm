@@ -138,8 +138,8 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   }
 }
 
-- (id<BrowserInterfaceProvider>)interfaceProvider {
-  return self.controller.interfaceProvider;
+- (id<BrowserProviderInterface>)browserProviderInterface {
+  return self.controller.browserProviderInterface;
 }
 
 - (void)setPresentingModalOverlay:(BOOL)presentingModalOverlay {

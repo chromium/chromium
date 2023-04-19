@@ -16,6 +16,7 @@
 #import "base/values.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/settings_test_util.h"
@@ -44,7 +45,8 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 WebStateList* GetCurrentWebStateList() {
   return chrome_test_util::GetMainController()
-      .interfaceProvider.currentInterface.browser->GetWebStateList();
+      .browserProviderInterface.currentBrowserProvider.browser
+      ->GetWebStateList();
 }
 
 web::WebState* GetWebStateWithId(NSString* tab_id) {

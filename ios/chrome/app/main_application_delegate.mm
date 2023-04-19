@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -256,10 +258,11 @@ const int kMainIntentCheckDelay = 1;
     return;
   }
   ChromeBrowserState* browserState =
-      _mainController.interfaceProvider.mainInterface.browserState;
+      _mainController.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   if (!browserState) {
     // TODO(crbug.com/1368617): We should store the completionHandler and wait
-    // for mainInterface creation.
+    // for mainBrowserProvider creation.
     completionHandler();
     return;
   }
@@ -427,7 +430,8 @@ const int kMainIntentCheckDelay = 1;
 // blue dot promo.
 - (void)notifyFETAppStartupFromExternalIntent {
   ChromeBrowserState* browserState =
-      _mainController.interfaceProvider.mainInterface.browserState;
+      _mainController.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
 
   // OTR browsers are ignored because they can sometimes cause a nullptr tracker
   // to be returned from the tracker factory.

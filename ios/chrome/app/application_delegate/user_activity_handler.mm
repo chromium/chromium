@@ -26,11 +26,11 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -418,8 +418,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                connectionInformation:
                    (id<ConnectionInformation>)connectionInformation
                   startupInformation:(id<StartupInformation>)startupInformation
-                   interfaceProvider:
-                       (id<BrowserInterfaceProvider>)interfaceProvider
+                        browserState:(ChromeBrowserState*)browserState
                            initStage:(InitStage)initStage {
   BOOL handledShortcutItem =
       [UserActivityHandler handleShortcutItem:shortcutItem
@@ -432,8 +431,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
         handleStartupParametersWithTabOpener:tabOpener
                        connectionInformation:connectionInformation
                           startupInformation:startupInformation
-                                browserState:interfaceProvider.currentInterface
-                                                 .browserState
+                                browserState:browserState
                                    initStage:initStage];
   }
   if (completionHandler) {

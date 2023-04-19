@@ -8,7 +8,7 @@
 class Browser;
 struct UrlLoadParams;
 @class TabGridCoordinator;
-@protocol BrowserInterface;
+@class WrangledBrowser;
 
 // Methods exposed for testing. This is terrible and should be rewritten.
 @interface SceneController ()
@@ -25,7 +25,7 @@ struct UrlLoadParams;
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
 
-- (id<BrowserInterface>)currentInterface;
+- (WrangledBrowser*)currentInterface;
 
 @end
 

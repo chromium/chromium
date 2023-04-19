@@ -30,15 +30,15 @@
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -238,7 +238,7 @@ class AppStateTest : public BlockCleanupTest {
     app_state_observer_mock_ =
         [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-    interface_provider_ = [[StubBrowserInterfaceProvider alloc] init];
+    interface_provider_ = [[StubBrowserProviderInterface alloc] init];
 
     app_state_observer_to_mock_main_controller_ =
         [AppStateObserverToMockMainController alloc];
@@ -302,7 +302,7 @@ class AppStateTest : public BlockCleanupTest {
     id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
     id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
     id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
-    Browser* browser = interface_provider_.currentInterface.browser;
+    Browser* browser = interface_provider_.currentBrowserProvider.browser;
 
     [[metricsMediator stub] updateMetricsStateBasedOnPrefsUserTriggered:NO];
     [[memoryHelper stub] resetForegroundMemoryWarningCount];
@@ -425,7 +425,7 @@ class AppStateTest : public BlockCleanupTest {
   id getApplicationDelegateMock() { return main_application_delegate_; }
   id getWindowMock() { return window_; }
   id getAppStateObserverMock() { return app_state_observer_mock_; }
-  StubBrowserInterfaceProvider* getInterfaceProvider() {
+  StubBrowserProviderInterface* getInterfaceProvider() {
     return interface_provider_;
   }
   ChromeBrowserState* getBrowserState() { return browser_state_.get(); }
@@ -444,7 +444,7 @@ class AppStateTest : public BlockCleanupTest {
   id main_application_delegate_;
   id window_;
   id app_state_observer_mock_;
-  StubBrowserInterfaceProvider* interface_provider_;
+  StubBrowserProviderInterface* interface_provider_;
   ScenesBlock connected_scenes_swizzle_block_;
   DecisionBlock safe_mode_swizzle_block_;
   HandleStartupParam handle_startup_swizzle_block_;
@@ -607,13 +607,14 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
   std::unique_ptr<Browser> browser =
       std::make_unique<TestBrowser>(browser_state.get());
 
-  StubBrowserInterfaceProvider* interfaceProvider =
-      [[StubBrowserInterfaceProvider alloc] init];
-  interfaceProvider.mainInterface.browser = browser.get();
+  StubBrowserProviderInterface* browserProviderInterface =
+      [[StubBrowserProviderInterface alloc] init];
+  browserProviderInterface.mainBrowserProvider.browser = browser.get();
 
   id browserLauncher =
       [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
-  [[[browserLauncher stub] andReturn:interfaceProvider] interfaceProvider];
+  [[[browserLauncher stub] andReturn:browserProviderInterface]
+      browserProviderInterface];
 
   id applicationDelegate =
       [OCMockObject mockForClass:[MainApplicationDelegate class]];
@@ -687,8 +688,8 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   EXPECT_OCMOCK_VERIFY(startupInformation);
   EXPECT_OCMOCK_VERIFY(application);
   for (SceneState* connectedScene in appState.connectedScenes) {
-    EXPECT_FALSE(
-        connectedScene.interfaceProvider.mainInterface.userInteractionEnabled);
+    EXPECT_FALSE(connectedScene.browserProviderInterface.mainBrowserProvider
+                     .userInteractionEnabled);
   }
   EXPECT_TRUE(ios::provider::test::AreAppDistributionNotificationsCanceled());
 }
@@ -703,14 +704,15 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  StubBrowserInterfaceProvider* interfaceProvider = getInterfaceProvider();
+  StubBrowserProviderInterface* browserProviderInterface =
+      getInterfaceProvider();
   id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
   std::unique_ptr<Browser> browser =
       std::make_unique<TestBrowser>(getBrowserState());
 
-  [[[getBrowserLauncherMock() stub] andReturn:interfaceProvider]
-      interfaceProvider];
-  interfaceProvider.mainInterface.browserState = getBrowserState();
+  [[[getBrowserLauncherMock() stub] andReturn:browserProviderInterface]
+      browserProviderInterface];
+  browserProviderInterface.mainBrowserProvider.browser = browser.get();
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
   [[memoryHelper expect] resetForegroundMemoryWarningCount];
@@ -790,7 +792,7 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundStageBackground) {
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
   id browserLauncher = getBrowserLauncherMock();
 
-  [[[browserLauncher stub] andReturn:nil] interfaceProvider];
+  [[[browserLauncher stub] andReturn:nil] browserProviderInterface];
 
   ASSERT_EQ(NSUInteger(0), [scopedKeyWindow.Get() subviews].count);
 

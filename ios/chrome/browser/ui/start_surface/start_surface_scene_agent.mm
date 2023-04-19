@@ -11,10 +11,11 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
@@ -98,13 +99,15 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
       self.previousActivationLevel > SceneActivationLevelBackground) {
     if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
       // Remove duplicate NTP pages upon background event.
-      if (self.sceneState.interfaceProvider.mainInterface.browser) {
-        [self removeExcessNTPsInBrowser:self.sceneState.interfaceProvider
-                                            .mainInterface.browser];
+      if (self.sceneState.browserProviderInterface.mainBrowserProvider
+              .browser) {
+        [self removeExcessNTPsInBrowser:self.sceneState.browserProviderInterface
+                                            .mainBrowserProvider.browser];
       }
-      if (self.sceneState.interfaceProvider.incognitoInterface.browser) {
-        [self removeExcessNTPsInBrowser:self.sceneState.interfaceProvider
-                                            .incognitoInterface.browser];
+      if (self.sceneState.browserProviderInterface.incognitoBrowserProvider
+              .browser) {
+        [self removeExcessNTPsInBrowser:self.sceneState.browserProviderInterface
+                                            .incognitoBrowserProvider.browser];
       }
     }
   }
@@ -141,14 +144,16 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   // Note that activeWebState could only be nullptr when the Tab grid is active
   // for now.
   web::WebState* activeWebState =
-      self.sceneState.interfaceProvider.mainInterface.browser->GetWebStateList()
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetWebStateList()
           ->GetActiveWebState();
   if (!activeWebState || IsUrlNtp(activeWebState->GetVisibleURL())) {
     return;
   }
 
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
-  Browser* browser = self.sceneState.interfaceProvider.mainInterface.browser;
+  Browser* browser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
 
   // Activate the existing NTP tab for the Start surface.

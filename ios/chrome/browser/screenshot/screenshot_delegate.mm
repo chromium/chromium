@@ -5,7 +5,8 @@
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -15,18 +16,15 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ScreenshotDelegate ()
-@property(nonatomic, strong) id<BrowserInterfaceProvider>
-    browserInterfaceProvider;
-@end
+@implementation ScreenshotDelegate {
+  id<BrowserProviderInterface> _browserProviderInterface;
+}
 
-@implementation ScreenshotDelegate
-
-- (instancetype)initWithBrowserInterfaceProvider:
-    (id<BrowserInterfaceProvider>)browserInterfaceProvider {
+- (instancetype)initWithBrowserProviderInterface:
+    (id<BrowserProviderInterface>)browserProviderInterface {
   self = [super init];
   if (self) {
-    self.browserInterfaceProvider = browserInterfaceProvider;
+    _browserProviderInterface = browserProviderInterface;
   }
   return self;
 }
@@ -40,7 +38,7 @@
     generatePDFRepresentationWithCompletion:
         (void (^)(NSData*, NSInteger, CGRect))completionHandler
     API_AVAILABLE(ios(14.0)) {
-  Browser* browser = [self.browserInterfaceProvider.currentInterface browser];
+  Browser* browser = _browserProviderInterface.currentBrowserProvider.browser;
 
   if (!browser) {
     completionHandler(nil, 0, CGRectZero);

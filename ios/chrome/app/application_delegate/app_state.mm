@@ -38,6 +38,8 @@
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -47,7 +49,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #import "ios/net/cookies/cookie_store_ios.h"
@@ -255,13 +256,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self.startupInformation expireFirstUserActionRecorder];
 
   // Do not save cookies if it is already in progress.
-  id<BrowserInterface> currentInterface =
-      _browserLauncher.interfaceProvider.currentInterface;
-  if (currentInterface.browserState && !_savingCookies) {
+  id<BrowserProvider> currentBrowserProvider =
+      _browserLauncher.browserProviderInterface.currentBrowserProvider;
+  if (currentBrowserProvider.browser->GetBrowserState() && !_savingCookies) {
     // Save cookies to disk. The empty critical closure guarantees that the task
     // will be run before backgrounding.
     scoped_refptr<net::URLRequestContextGetter> getter =
-        currentInterface.browserState->GetRequestContext();
+        currentBrowserProvider.browser->GetBrowserState()->GetRequestContext();
     _savingCookies = YES;
     __weak AppState* weakSelf = self;
 
@@ -389,7 +390,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // provider (and no tabs).
   if (self.initStage >= InitStageBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
-      sceneState.interfaceProvider.currentInterface.userInteractionEnabled = NO;
+      sceneState.browserProviderInterface.currentBrowserProvider
+          .userInteractionEnabled = NO;
     }
   }
 

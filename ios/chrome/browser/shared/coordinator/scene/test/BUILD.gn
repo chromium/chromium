@@ -10,10 +10,10 @@ source_set("test") {
     "fake_connection_information.mm",
     "fake_scene_state.h",
     "fake_scene_state.mm",
-    "stub_browser_interface.h",
-    "stub_browser_interface.mm",
-    "stub_browser_interface_provider.h",
-    "stub_browser_interface_provider.mm",
+    "stub_browser_provider.h",
+    "stub_browser_provider.mm",
+    "stub_browser_provider_interface.h",
+    "stub_browser_provider_interface.mm",
   ]
   deps = [
     "//ios/chrome/browser/browser_state",

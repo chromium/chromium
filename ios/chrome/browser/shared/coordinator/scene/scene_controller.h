@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
+@protocol BrowserProviderInterface;
+
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
                                        ApplicationCommands,
@@ -28,8 +30,8 @@
 @property(nonatomic, weak, readonly) SceneState* sceneState;
 
 // The interface provider for this scene.
-@property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
-    interfaceProvider;
+@property(nonatomic, strong, readonly) id<BrowserProviderInterface>
+    browserProviderInterface;
 
 // YES if incognito mode is forced by enterprise policy.
 @property(nonatomic, readonly, getter=isIncognitoForced) BOOL incognitoForced;

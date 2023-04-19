@@ -9,7 +9,6 @@
 
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 
-@protocol BrowserInterfaceProvider;
 @protocol ConnectionInformation;
 class ChromeBrowserState;
 class PrefService;
@@ -43,8 +42,7 @@ class PrefService;
                connectionInformation:
                    (id<ConnectionInformation>)connectionInformation
                   startupInformation:(id<StartupInformation>)startupInformation
-                   interfaceProvider:
-                       (id<BrowserInterfaceProvider>)interfaceProvider
+                        browserState:(ChromeBrowserState*)browserState
                            initStage:(InitStage)initStage;
 
 // Returns YES if Chrome is passing a Handoff to itself or if it is an opening

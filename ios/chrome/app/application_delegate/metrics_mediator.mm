@@ -30,13 +30,14 @@
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/widget_kit/features.h"
@@ -389,7 +390,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   std::vector<base::TimeDelta> timesSinceCreation;
 
   for (SceneState* scene in scenes) {
-    if (!scene.interfaceProvider) {
+    if (!scene.browserProviderInterface) {
       // The scene might not yet be initiated.
       // TODO(crbug.com/1064611): This will not be an issue when the tabs are
       // counted in sessions instead of scenes.
@@ -397,7 +398,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     }
 
     const WebStateList* webStateList =
-        scene.interfaceProvider.mainInterface.browser->GetWebStateList();
+        scene.browserProviderInterface.mainBrowserProvider.browser
+            ->GetWebStateList();
     numTabs += webStateList->count();
 
     const base::Time now = base::Time::Now();
@@ -478,7 +480,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
     if (activeScene) {
       web::WebState* currentWebState =
-          activeScene.interfaceProvider.currentInterface.browser
+          activeScene.browserProviderInterface.currentBrowserProvider.browser
               ->GetWebStateList()
               ->GetActiveWebState();
       if (currentWebState &&

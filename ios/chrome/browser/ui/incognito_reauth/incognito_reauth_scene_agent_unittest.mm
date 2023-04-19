@@ -8,11 +8,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -65,9 +65,9 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
  protected:
   void SetUpTestObjects(int tab_count, bool enable_pref) {
     // Stub all calls to be able to mock the following:
-    // 1. sceneState.interfaceProvider.incognitoInterface
+    // 1. sceneState.browserProviderInterface.incognitoBrowserProvider
     //            .browser->GetWebStateList()->count()
-    // 2. sceneState.interfaceProvider.hasIncognitoInterface
+    // 2. sceneState.browserProviderInterface.hasIncognitoBrowserProvider
     test_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     for (int i = 0; i < tab_count; ++i) {
       test_browser_->GetWebStateList()->InsertWebState(
@@ -76,11 +76,11 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     }
 
     stub_browser_interface_provider_ =
-        [[StubBrowserInterfaceProvider alloc] init];
-    stub_browser_interface_provider_.incognitoInterface.browser =
+        [[StubBrowserProviderInterface alloc] init];
+    stub_browser_interface_provider_.incognitoBrowserProvider.browser =
         test_browser_.get();
 
-    OCMStub([scene_state_mock_ interfaceProvider])
+    OCMStub([scene_state_mock_ browserProviderInterface])
         .andReturn(stub_browser_interface_provider_);
 
     [IncognitoReauthSceneAgent registerLocalState:pref_service_.registry()];
@@ -105,7 +105,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   StubReauthenticationModule* stub_reauth_module_;
   // The tested agent
   IncognitoReauthSceneAgent* agent_;
-  StubBrowserInterfaceProvider* stub_browser_interface_provider_;
+  StubBrowserProviderInterface* stub_browser_interface_provider_;
   std::unique_ptr<TestBrowser> test_browser_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;

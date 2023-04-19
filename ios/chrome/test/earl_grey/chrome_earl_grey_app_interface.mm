@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/main/browser_provider.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -747,7 +748,8 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)stopAllWebStatesLoading {
   WebStateList* web_state_list =
       chrome_test_util::GetMainController()
-          .interfaceProvider.currentInterface.browser->GetWebStateList();
+          .browserProviderInterface.currentBrowserProvider.browser
+          ->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     if (web_state->IsLoading()) {
@@ -1281,7 +1283,7 @@ NSString* SerializedValue(const base::Value* value) {
 + (NSInteger)registeredKeyCommandCount {
   UIViewController* browserViewController =
       chrome_test_util::GetMainController()
-          .interfaceProvider.mainInterface.viewController;
+          .browserProviderInterface.mainBrowserProvider.viewController;
   // The BVC delegates its key commands to its next responder,
   // KeyCommandsProvider.
   return browserViewController.nextResponder.keyCommands.count;

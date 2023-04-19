@@ -144,7 +144,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/infobars:public",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/lens:coordinator",
-    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
     "//ios/chrome/browser/ui/main_content:main_content_ui",
     "//ios/chrome/browser/ui/main_content:main_content_ui_broadcasting_util",

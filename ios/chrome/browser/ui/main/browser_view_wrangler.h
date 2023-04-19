@@ -8,18 +8,19 @@
 #import <UIKit/UIKit.h>
 
 #include "ios/chrome/app/application_mode.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 
 @protocol ApplicationCommands;
 @protocol BrowsingDataCommands;
 class Browser;
 class ChromeBrowserState;
 @class SceneState;
+@class WrangledBrowser;
 
 // Wrangler (a class in need of further refactoring) for handling the creation
 // and ownership of Browser instances and their associated
 // BrowserViewControllers.
-@interface BrowserViewWrangler : NSObject <BrowserInterfaceProvider>
+@interface BrowserViewWrangler : NSObject <BrowserProviderInterface>
 
 // Initialize a new instance of this class using `browserState` as the primary
 // browser state for the tab models and BVCs.
@@ -37,6 +38,22 @@ class ChromeBrowserState;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// One interface must be designated as being the "current" interface.
+// It's typically an error to assign this an interface which is neither of
+// mainInterface` or `incognitoInterface`. The initial value of
+// `currentInterface` is an implementation decision, but `mainInterface` is
+// typical.
+// Changing this value may or may not trigger actual UI changes, or may just be
+// bookkeeping associated with UI changes handled elsewhere.
+@property(nonatomic, weak) WrangledBrowser* currentInterface;
+// The "main" (meaning non-incognito -- the nomenclature is legacy) interface.
+// This interface's `incognito` property is expected to be NO.
+@property(nonatomic, readonly) WrangledBrowser* mainInterface;
+// The incognito interface. Its `incognito` property must be YES.
+@property(nonatomic, readonly) WrangledBrowser* incognitoInterface;
+// YES iff `incognitoInterface` is already created.
+@property(nonatomic, assign, readonly) BOOL hasIncognitoInterface;
 
 // Creates the main Browser used by the receiver, using the browser state
 // it was configured with.

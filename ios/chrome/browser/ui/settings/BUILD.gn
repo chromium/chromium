@@ -387,6 +387,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/test/app:test_support",

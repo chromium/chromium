@@ -27,7 +27,6 @@ source_set("app_store_rating") {
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
-    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/common",
   ]
@@ -70,7 +69,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/shared/coordinator/scene/test",
-    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

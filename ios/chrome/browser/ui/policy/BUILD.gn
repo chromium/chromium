@@ -33,7 +33,6 @@ source_set("user_policy_scene_agent") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/signin",
-    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/policy/user_policy",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ui/base",

@@ -10,6 +10,8 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
@@ -24,7 +26,6 @@
 #import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -94,7 +95,8 @@
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   // Setup objects that need the browser UI objects before being set.
-  self.mainBrowser = self.sceneState.interfaceProvider.mainInterface.browser;
+  self.mainBrowser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
   [self setupObservers];
 }
 

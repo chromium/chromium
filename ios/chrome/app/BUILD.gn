@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/metrics:metrics",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
@@ -107,6 +108,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/variations:fetcher",
@@ -199,7 +201,6 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/credential_provider",
       "//ios/chrome/browser/passwords:store_factory",
       "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-      "//ios/chrome/browser/ui/main:browser_interface_provider",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
     ]
@@ -335,7 +336,6 @@ source_set("first_run_app_state_agent") {
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/first_run:first_run_provider",
     "//ios/chrome/browser/ui/first_run:utils",
-    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/screen:screen_provider",
   ]
 }

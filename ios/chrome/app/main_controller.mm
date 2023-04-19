@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/main/browser_provider.h"
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/metrics/incognito_usage_app_state_agent.h"
@@ -739,14 +740,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 }
 
-- (id<BrowserInterfaceProvider>)interfaceProvider {
+- (id<BrowserProviderInterface>)browserProviderInterface {
   if (self.appState.foregroundActiveScene) {
-    return self.appState.foregroundActiveScene.interfaceProvider;
+    return self.appState.foregroundActiveScene.browserProviderInterface;
   }
   NSArray<SceneState*>* connectedScenes = self.appState.connectedScenes;
 
-  return connectedScenes.count == 0 ? nil
-                                    : connectedScenes[0].interfaceProvider;
+  return connectedScenes.count == 0
+             ? nil
+             : connectedScenes[0].browserProviderInterface;
 }
 
 - (BOOL)isFirstLaunchAfterUpgrade {
@@ -1233,24 +1235,25 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #pragma mark - Helper methods backed by interfaces.
 
 - (Browser*)mainBrowser {
-  DCHECK(self.interfaceProvider);
-  return self.interfaceProvider.mainInterface.browser;
+  DCHECK(self.browserProviderInterface);
+  return self.browserProviderInterface.mainBrowserProvider.browser;
 }
 
 - (Browser*)otrBrowser {
-  DCHECK(self.interfaceProvider);
-  return self.interfaceProvider.incognitoInterface.browser;
+  DCHECK(self.browserProviderInterface);
+  return self.browserProviderInterface.incognitoBrowserProvider.browser;
 }
 
 - (Browser*)currentBrowser {
-  return self.interfaceProvider.currentInterface.browser;
+  return self.browserProviderInterface.currentBrowserProvider.browser;
 }
 
 - (ChromeBrowserState*)currentBrowserState {
-  if (!self.interfaceProvider.currentInterface.browser) {
+  if (!self.browserProviderInterface.currentBrowserProvider.browser) {
     return nullptr;
   }
-  return self.interfaceProvider.currentInterface.browser->GetBrowserState();
+  return self.browserProviderInterface.currentBrowserProvider.browser
+      ->GetBrowserState();
 }
 
 - (void)cleanupSnapshots {
@@ -1293,15 +1296,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   for (SceneState* sceneState in self.appState.connectedScenes) {
     // Assumes all scenes share `browserState`.
-    id<BrowserInterfaceProvider> sceneInterface = sceneState.interfaceProvider;
+    id<BrowserProviderInterface> browserProviderInterface =
+        sceneState.browserProviderInterface;
     if (willShowActivityIndicator) {
       // Show activity overlay so users know that clear browsing data is in
       // progress.
-      if (sceneInterface.mainInterface.browser) {
+      if (browserProviderInterface.mainBrowserProvider.browser) {
         didShowActivityIndicator = YES;
-        id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-            sceneInterface.mainInterface.browser->GetCommandDispatcher(),
-            BrowserCoordinatorCommands);
+        id<BrowserCoordinatorCommands> handler =
+            HandlerForProtocol(browserProviderInterface.mainBrowserProvider
+                                   .browser->GetCommandDispatcher(),
+                               BrowserCoordinatorCommands);
         [handler showActivityOverlay];
       }
     }
@@ -1313,25 +1318,30 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     DCHECK([NSThread isMainThread]);
     for (SceneState* sceneState in self.appState.connectedScenes) {
       // Assumes all scenes share `browserState`.
-      id<BrowserInterfaceProvider> sceneInterface =
-          sceneState.interfaceProvider;
+      id<BrowserProviderInterface> browserProviderInterface =
+          sceneState.browserProviderInterface;
 
       if (willShowActivityIndicator) {
         // User interaction still needs to be disabled as a way to
         // force reload all the web states and to reset NTPs.
-        sceneInterface.mainInterface.userInteractionEnabled = NO;
-        sceneInterface.incognitoInterface.userInteractionEnabled = NO;
+        browserProviderInterface.mainBrowserProvider.userInteractionEnabled =
+            NO;
+        browserProviderInterface.incognitoBrowserProvider
+            .userInteractionEnabled = NO;
 
-        if (didShowActivityIndicator && sceneInterface.mainInterface.browser) {
-          id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-              sceneInterface.mainInterface.browser->GetCommandDispatcher(),
-              BrowserCoordinatorCommands);
+        if (didShowActivityIndicator &&
+            browserProviderInterface.mainBrowserProvider.browser) {
+          id<BrowserCoordinatorCommands> handler =
+              HandlerForProtocol(browserProviderInterface.mainBrowserProvider
+                                     .browser->GetCommandDispatcher(),
+                                 BrowserCoordinatorCommands);
           [handler hideActivityOverlay];
         }
       }
-      sceneInterface.mainInterface.userInteractionEnabled = YES;
-      sceneInterface.incognitoInterface.userInteractionEnabled = YES;
-      [sceneInterface.currentInterface setPrimary:YES];
+      browserProviderInterface.mainBrowserProvider.userInteractionEnabled = YES;
+      browserProviderInterface.incognitoBrowserProvider.userInteractionEnabled =
+          YES;
+      [browserProviderInterface.currentBrowserProvider setPrimary:YES];
     }
     // `completionBlock` is run once, not once per scene.
     if (completionBlock)

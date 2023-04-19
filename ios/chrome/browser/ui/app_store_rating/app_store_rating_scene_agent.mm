@@ -16,11 +16,12 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -121,9 +122,10 @@
 }
 
 - (BOOL)isCPEEnabled {
-  DCHECK(self.sceneState.interfaceProvider.mainInterface.browser);
+  DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser);
   PrefService* pref_service =
-      self.sceneState.interfaceProvider.mainInterface.browser->GetBrowserState()
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState()
           ->GetPrefs();
   return password_manager_util::IsCredentialProviderEnabledOnStartup(
       pref_service);
