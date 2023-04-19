@@ -42,7 +42,10 @@ class SevenZipDelegate : public seven_zip::Delegate {
     results_->directory_count = 0;
   }
 
-  void OnOpenError(seven_zip::Result result) override { success_ = false; }
+  void OnOpenError(seven_zip::Result result) override {
+    success_ = false;
+    results_->analysis_result = ArchiveAnalysisResult::kFailedToOpen;
+  }
 
   base::File OnTempFileRequest() override { return std::move(temp_file2_); }
 
@@ -186,12 +189,20 @@ void SevenZipAnalyzer::FilePreChecks(base::File temp_file) {
 void SevenZipAnalyzer::AnalyzeSevenZipFile() {
   SevenZipDelegate delegate(results_, std::move(temp_file_),
                             std::move(temp_file2_));
-  seven_zip::Extract(std::move(seven_zip_file_), delegate);
+  std::unique_ptr<seven_zip::SevenZipReader> reader =
+      seven_zip::SevenZipReader::Create(std::move(seven_zip_file_), delegate);
+  if (!reader) {
+    std::move(finished_analysis_callback_).Run();
+    return;
+  }
+
+  reader->Extract();
 
   if (delegate.success()) {
     results_->success = true;
     results_->analysis_result = ArchiveAnalysisResult::kValid;
   }
+
   std::move(finished_analysis_callback_).Run();
 }
 

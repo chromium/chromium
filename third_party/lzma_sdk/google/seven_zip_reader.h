@@ -7,12 +7,18 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <memory>
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 
 namespace seven_zip {
+
+namespace internal {
+class SevenZipReaderImpl;
+}  // namespace internal
 
 struct EntryInfo {
   // The relative path of this entry, within the archive.
@@ -46,7 +52,7 @@ enum class Result {
 };
 
 class Delegate {
-public:
+ public:
   virtual ~Delegate() = default;
 
   // Handles errors that may occur when opening an archive.
@@ -75,8 +81,44 @@ public:
   virtual bool EntryDone(Result result, const EntryInfo &entry) = 0;
 };
 
-// Extracts the 7z archive in `seven_zip_file`.
-void Extract(base::File seven_zip_file, Delegate& delegate);
+// Encapsulates the state of the 7z unpacker. This class supports asynchronous
+// unpacking. `delegate` can stop unpacking at any time and resume it with later
+// calls to `Extract`.
+class SevenZipReader {
+ public:
+  // Create a `SevenZipReader` with the given file and delegate. `delegate` must
+  // outlive this object. Initialization of a `SevenZipReader` can fail, in
+  // which case this function will return nullptr and notify the delegate.
+  static std::unique_ptr<SevenZipReader> Create(base::File seven_zip_file,
+                                                Delegate& delegate);
+
+  ~SevenZipReader();
+
+  SevenZipReader(const SevenZipReader&) = delete;
+  SevenZipReader& operator=(const SevenZipReader&) = delete;
+
+  SevenZipReader(SevenZipReader&&) = delete;
+  SevenZipReader& operator=(SevenZipReader&&) = delete;
+
+  // Begin extracting the archive. This will stop if the delegate requests it,
+  // or once the archive is completely extracted.
+  void Extract();
+
+ private:
+  SevenZipReader(std::unique_ptr<internal::SevenZipReaderImpl> impl,
+                 Delegate& delegate);
+
+  // Helper function for extracting a single entry. Returns `true` if extraction
+  // should continue, and `false` if it should stop.
+  bool ExtractEntry();
+
+  std::unique_ptr<internal::SevenZipReaderImpl> impl_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  Delegate& delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  size_t entry_index_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
 
 // Ensures that the one-time initialization of the LZMA SDK has been performed.
 // This is usually called by `Extract` when needed, but is exposed here for
