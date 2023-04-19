@@ -6698,6 +6698,10 @@ const char kDisableQuickAnswersV2TranslationName[] =
 const char kDisableQuickAnswersV2TranslationDescription[] =
     "Disable translation services of the Quick Answers.";
 
+const char kQuickAnswersRichCardName[] = "Enable Quick Answers Rich Card";
+const char kQuickAnswersRichCardDescription[] =
+    "Enable rich card views of the Quick Answers feature.";
+
 const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";
 const char kSyncChromeOSExplicitPassphraseSharingDescription[] =

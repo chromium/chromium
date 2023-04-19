@@ -3859,6 +3859,9 @@ extern const char kPreinstalledWebAppWindowExperimentDescription[];
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 
+extern const char kQuickAnswersRichCardName[];
+extern const char kQuickAnswersRichCardDescription[];
+
 extern const char kSyncChromeOSExplicitPassphraseSharingName[];
 extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 

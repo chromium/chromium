@@ -6841,6 +6841,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableQuickAnswersV2TranslationDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::features::kDisableQuickAnswersV2Translation)},
+    {"quick-answers-rich-card", flag_descriptions::kQuickAnswersRichCardName,
+     flag_descriptions::kQuickAnswersRichCardDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersRichCard)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

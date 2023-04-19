@@ -6383,6 +6383,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "quick-answers-rich-card",
+    "owners": [ "croissant-eng" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "quick-commands",
     "owners": [ "lgrey" ],
     "expiry_milestone": 120
