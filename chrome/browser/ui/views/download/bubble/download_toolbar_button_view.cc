@@ -336,12 +336,14 @@ void DownloadToolbarButtonView::UpdateIcon() {
   if (icon_info.icon_state == download::DownloadIconState::kProgress ||
       icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
     new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
-                             : &kDownloadInProgressIcon;
+                             : (features::IsChromeRefresh2023()
+                                    ? &kDownloadInProgressChromeRefreshIcon
+                                    : &kDownloadInProgressIcon);
   } else {
     new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
-               : features::IsChromeRefresh2023()
-                   ? &kDownloadToolbarButtonChromeRefreshIcon
-                   : &kDownloadToolbarButtonIcon;
+                             : (features::IsChromeRefresh2023()
+                                    ? &kDownloadToolbarButtonChromeRefreshIcon
+                                    : &kDownloadToolbarButtonIcon);
   }
 
   SetImageModel(ButtonState::STATE_NORMAL,
