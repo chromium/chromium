@@ -35,18 +35,20 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final BottomSheetController mController;
     private final SigninManager mSigninManager;
     private boolean mSetTestToast;
+    private final @SigninAccessPoint int mSigninAccessPoint;
     private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
     private final Runnable mOnSigninSuccessCallback;
 
     public SigninBottomSheetCoordinator(WindowAndroid windowAndroid,
             BottomSheetController controller, Profile profile,
-            @Nullable Runnable onSigninSuccessCallback) {
+            @Nullable Runnable onSigninSuccessCallback, @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mController = controller;
         mProfile = profile;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         mSetTestToast = false;
         mOnSigninSuccessCallback = onSigninSuccessCallback;
+        mSigninAccessPoint = signinAccessPoint;
     }
 
     @Override
@@ -84,7 +86,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
             if (mSigninManager.isSigninAllowed()) {
-                mSigninManager.signin(account, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, callback);
+                mSigninManager.signin(account, mSigninAccessPoint, callback);
             } else {
                 makeSigninNotAllowedToast();
                 mController.hideContent(mController.getCurrentSheetContent(), true);
@@ -103,6 +105,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     }
 
     private void makeSigninNotAllowedToast() {
+        RecordHistogram.recordEnumeratedHistogram("Signin.SigninDisabledNotificationShown",
+                mSigninAccessPoint, SigninAccessPoint.MAX);
         if (mSetTestToast) return;
         Toast.makeText(mWindowAndroid.getActivity().get(),
                      R.string.sign_in_to_chrome_disabled_by_user_summary, Toast.LENGTH_SHORT)

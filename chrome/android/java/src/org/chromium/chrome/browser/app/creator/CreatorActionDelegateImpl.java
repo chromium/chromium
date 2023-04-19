@@ -83,7 +83,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
         SigninBottomSheetCoordinator signinCoordinator =
                 new SigninBottomSheetCoordinator(mWindowAndroid, mBottomSheetController, mProfile,
-                        () -> { showSyncConsentActivity(signinAccessPoint); });
+                        () -> { showSyncConsentActivity(signinAccessPoint); }, signinAccessPoint);
         signinCoordinator.show();
     }
 }
