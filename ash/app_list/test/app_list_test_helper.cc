@@ -30,7 +30,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
