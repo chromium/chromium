@@ -159,6 +159,17 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
+       * True if cryptohome recovery feature is enabled.
+       */
+      cryptohomeRecoveryEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('cryptohomeRecoveryEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
        * State of the recovery toggle. Is |null| iff recovery is not a
        * available.
        */
@@ -225,6 +236,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private numFingerprintDescription_: string;
   private lockScreenNotificationsEnabled_: boolean;
   private lockScreenHideSensitiveNotificationSupported_: boolean;
+  private cryptohomeRecoveryEnabled_: boolean;
   private recovery_: chrome.settingsPrivate.PrefObject|null;
   private recoveryChangeInProcess_: boolean;
   private quickUnlockPinAutosubmitFeatureEnabled_: boolean;
@@ -421,6 +433,10 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    */
   private showConfigurePinButton_(selectedUnlockType: string): boolean {
     return selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD;
+  }
+
+  private showRecoveryWarning_(): boolean {
+    return this.cryptohomeRecoveryEnabled_ && this.recovery_ === null;
   }
 
   private getSetupPinText_(hasPin: boolean): string {

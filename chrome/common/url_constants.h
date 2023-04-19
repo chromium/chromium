@@ -463,6 +463,10 @@ extern const char kNearbyShareManageContactsURL[];
 
 // The URL for the help center article about fingerprint on Chrome OS devices.
 extern const char kFingerprintLearnMoreURL[];
+
+// The URL for the help center article about local data recovery on Chrome OS
+// devices.
+extern const char kRecoveryLearnMoreURL[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

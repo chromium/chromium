@@ -284,6 +284,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_TITLE},
       {"recoveryDisableDialogMessage",
        IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_MESSAGE},
+      {"recoveryNotSupportedMessage",
+       IDS_SETTINGS_PEOPLE_RECOVERY_NOT_SUPPORTED_MESSAGE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -305,6 +307,9 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
                              ui::GetChromeOSDeviceName()));
   html_source->AddString("fingerprintLearnMoreLink",
                          chrome::kFingerprintLearnMoreURL);
+  html_source->AddBoolean("cryptohomeRecoveryEnabled",
+                          features::IsCryptohomeRecoveryEnabled());
+  html_source->AddString("recoveryLearnMoreUrl", chrome::kRecoveryLearnMoreURL);
 }
 
 void AddFingerprintListStrings(content::WebUIDataSource* html_source) {
