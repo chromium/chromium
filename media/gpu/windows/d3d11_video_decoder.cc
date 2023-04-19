@@ -907,11 +907,16 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   base::TimeDelta timestamp = picture_buffer->timestamp_;
 
+  // Prefer the frame color space over what's in the config.
+  gfx::ColorSpace picture_color_space =
+      (picture->get_colorspace().IsSpecified() ? picture->get_colorspace()
+                                               : config_.color_space_info())
+          .ToGfxColorSpace();
+
   MailboxHolderArray mailbox_holders;
   gfx::ColorSpace output_color_space;
   D3D11Status result = picture_buffer->ProcessTexture(
-      picture->get_colorspace().ToGfxColorSpace(), &mailbox_holders,
-      &output_color_space);
+      picture_color_space, &mailbox_holders, &output_color_space);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
