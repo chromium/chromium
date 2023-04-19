@@ -99,7 +99,8 @@ void KeyboardControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       ash::prefs::kLongPressDiacriticsEnabled,
-      ash::kDefaultLongPressDiacriticsEnabled,
+      base::FeatureList::IsEnabled(
+          ash::features::kDiacriticsOnPhysicalKeyboardLongpressDefaultOn),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       ash::prefs::kXkbAutoRepeatEnabled, ash::kDefaultKeyAutoRepeatEnabled,
