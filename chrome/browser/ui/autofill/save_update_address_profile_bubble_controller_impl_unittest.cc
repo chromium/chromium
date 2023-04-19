@@ -215,6 +215,8 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
+  EXPECT_EQ(controller()->GetCancelCallbackValue(),
+            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   EXPECT_TRUE(controller()->GetFooterMessage().empty());
 }
 
@@ -235,6 +237,8 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
+  EXPECT_EQ(controller()->GetCancelCallbackValue(),
+            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   EXPECT_TRUE(controller()->GetFooterMessage().empty());
 }
 
@@ -261,6 +265,8 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest, SavingAccountAddress) {
   EXPECT_EQ(controller()->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
+  EXPECT_EQ(controller()->GetCancelCallbackValue(),
+            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   EXPECT_EQ(
       controller()->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
@@ -290,6 +296,8 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
+  EXPECT_EQ(controller()->GetCancelCallbackValue(),
+            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   EXPECT_EQ(
       controller()->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
@@ -320,6 +328,8 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
+  EXPECT_EQ(controller()->GetCancelCallbackValue(),
+            AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
   EXPECT_TRUE(controller()->GetFooterMessage().empty());
 }
 

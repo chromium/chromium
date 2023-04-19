@@ -32,6 +32,10 @@ class MockSaveUpdateAddressProfileBubbleController
   MOCK_METHOD(std::u16string, GetProfileEmail, (), (const, override));
   MOCK_METHOD(std::u16string, GetProfilePhone, (), (const, override));
   MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
+  MOCK_METHOD(AutofillClient::SaveAddressProfileOfferUserDecision,
+              GetCancelCallbackValue,
+              (),
+              (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
   MOCK_METHOD(const AutofillProfile*,

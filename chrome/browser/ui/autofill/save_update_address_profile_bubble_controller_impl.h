@@ -51,6 +51,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   std::u16string GetProfileEmail() const override;
   std::u16string GetProfilePhone() const override;
   std::u16string GetOkButtonLabel() const override;
+  AutofillClient::SaveAddressProfileOfferUserDecision GetCancelCallbackValue()
+      const override;
   std::u16string GetFooterMessage() const override;
   const AutofillProfile& GetProfileToSave() const override;
   const AutofillProfile* GetOriginalProfile() const override;

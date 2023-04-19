@@ -164,8 +164,7 @@ SaveAddressProfileView::SaveAddressProfileView(
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+      base::Unretained(controller_), controller_->GetCancelCallbackValue()));
 
   SetTitle(controller_->GetWindowTitle());
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());

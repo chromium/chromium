@@ -30,6 +30,8 @@ class SaveUpdateAddressProfileBubbleController {
   virtual std::u16string GetProfileEmail() const = 0;
   virtual std::u16string GetProfilePhone() const = 0;
   virtual std::u16string GetOkButtonLabel() const = 0;
+  virtual AutofillClient::SaveAddressProfileOfferUserDecision
+  GetCancelCallbackValue() const = 0;
   virtual std::u16string GetFooterMessage() const = 0;
   virtual const AutofillProfile& GetProfileToSave() const = 0;
   virtual const AutofillProfile* GetOriginalProfile() const = 0;

@@ -32,6 +32,10 @@ class MockSaveUpdateAddressProfileBubbleController
   MOCK_METHOD(std::u16string, GetProfileEmail, (), (const, override));
   MOCK_METHOD(std::u16string, GetProfilePhone, (), (const, override));
   MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
+  MOCK_METHOD(AutofillClient::SaveAddressProfileOfferUserDecision,
+              GetCancelCallbackValue,
+              (),
+              (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
   MOCK_METHOD(const AutofillProfile*,
@@ -59,6 +63,10 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
     address_profile_to_save_ = test::GetFullProfile();
     test_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    ON_CALL(*mock_controller(), GetCancelCallbackValue)
+        .WillByDefault(::testing::Return(
+            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
   }
 
   void TearDown() override {
