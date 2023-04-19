@@ -21,6 +21,7 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -443,6 +444,18 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
   LeftClickOn(summary_row);
   EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
 
+  // Normally, a layer animation will be performed to fade out the return to app
+  // buttons. However, since we are simulating different stage of the bounds
+  // change animation, we will set visibility right away here to prevent the
+  // layer animation from interfering with the bounds change animation
+  // simulation.
+  auto* first_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
+  auto* second_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
+  first_app_row->SetVisible(false);
+  second_app_row->SetVisible(false);
+
   AnimateToValue(0.5);
 
   auto panel_mid_animation_height = return_to_app_panel->size().height();
@@ -463,6 +476,71 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
   EXPECT_LT(panel_end_animation_height, panel_mid_animation_height);
   EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
             bubble_end_animation_height - bubble_mid_animation_height);
+}
+
+// Verify that the layer animations to show/hide the view are performed with
+// the expected visibility and opacity before and after the animation.
+TEST_F(ReturnToAppPanelTest, LayerAnimations) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+
+  // Expand animation: The return to app buttons should fade in.
+  LeftClickOn(summary_row);
+
+  auto* first_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
+  auto* second_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
+
+  EXPECT_EQ(0, first_app_row->layer()->opacity());
+  EXPECT_EQ(0, second_app_row->layer()->opacity());
+
+  ui::LayerAnimationStoppedWaiter layer_animation_waiter;
+  layer_animation_waiter.Wait(first_app_row->layer());
+  layer_animation_waiter.Wait(second_app_row->layer());
+
+  EXPECT_EQ(1, first_app_row->layer()->opacity());
+  EXPECT_EQ(1, second_app_row->layer()->opacity());
+
+  // End the rest of the animation to test collapse animation.
+  SimulateAnimationEnded();
+  ASSERT_TRUE(summary_row->expanded());
+
+  // Collapse animation: The return to app buttons should fade out and the
+  // summary icons should fade in.
+  LeftClickOn(summary_row);
+  EXPECT_TRUE(GetBoundsChangeAnimation()->is_animating());
+
+  auto* summary_icons = summary_row->icons_container();
+  EXPECT_EQ(0, summary_icons->layer()->opacity());
+
+  EXPECT_TRUE(first_app_row->GetVisible());
+  EXPECT_TRUE(second_app_row->GetVisible());
+
+  layer_animation_waiter.Wait(summary_icons->layer());
+  layer_animation_waiter.Wait(first_app_row->layer());
+  layer_animation_waiter.Wait(second_app_row->layer());
+
+  EXPECT_EQ(1, summary_icons->layer()->opacity());
+  EXPECT_FALSE(first_app_row->GetVisible());
+  EXPECT_FALSE(second_app_row->GetVisible());
 }
 
 }  // namespace ash::video_conference
