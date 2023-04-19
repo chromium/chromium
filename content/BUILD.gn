@@ -96,7 +96,6 @@ grit("content_resources") {
   ]
   deps = [
     "//components/ukm/debug:build_ts",
-    "//content/browser/resources/histograms:build_ts",
     "//gpu/ipc/common:vulkan_interface_js__generator",
   ]
 

@@ -16,7 +16,8 @@
 #include "base/values.h"
 #include "content/browser/metrics/histogram_synchronizer.h"
 #include "content/browser/metrics/histograms_monitor.h"
-#include "content/grit/content_resources.h"
+#include "content/grit/histograms_resources.h"
+#include "content/grit/histograms_resources_map.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -28,8 +29,6 @@
 namespace content {
 namespace {
 
-const char kHistogramsUIJs[] = "histograms_internals.js";
-const char kHistogramsUICss[] = "histograms_internals.css";
 const char kHistogramsUIRequestHistograms[] = "requestHistograms";
 const char kHistogramsUIStartMonitoring[] = "startMonitoring";
 const char kHistogramsUIFetchDiff[] = "fetchDiff";
@@ -45,9 +44,9 @@ void CreateAndAddHistogramsHTMLSource(BrowserContext* browser_context) {
   WebUIDataSource* source =
       WebUIDataSource::CreateAndAdd(browser_context, kChromeUIHistogramHost);
 
-  source->AddResourcePath(kHistogramsUIJs, IDR_HISTOGRAMS_INTERNALS_JS);
-  source->AddResourcePath(kHistogramsUICss, IDR_HISTOGRAMS_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_HISTOGRAMS_INTERNALS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kHistogramsResources, kHistogramsResourcesSize));
+  source->SetDefaultResource(IDR_HISTOGRAMS_HISTOGRAMS_INTERNALS_HTML);
 }
 
 // This class receives javascript messages from the renderer.

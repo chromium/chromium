@@ -514,6 +514,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [2565],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/histograms/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2568],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/indexed_db/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [2570],

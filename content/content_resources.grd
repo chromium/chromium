@@ -24,9 +24,6 @@ Other resources that belong in this file:
       <include name="IDR_DEVTOOLS_PINCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_pinch_cursor_2x.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON" file="browser/resources/devtools/devtools_touch_cursor.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_touch_cursor_2x.png" type="BINDATA" />
-      <include name="IDR_HISTOGRAMS_INTERNALS_HTML" file="browser/resources/histograms/histograms_internals.html" type="BINDATA" />
-      <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/histograms/tsc/histograms_internals.js" resource_path="histograms_internals.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_HISTOGRAMS_INTERNALS_CSS" file="browser/resources/histograms/histograms_internals.css" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_HTML" file="../components/ukm/debug/ukm_internals.html" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_JS" file="${root_gen_dir}/components/ukm/debug/tsc/ukm_internals.js" use_base_dir="false" resource_path="ukm_internals.js" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_CSS" file="../components/ukm/debug/ukm_internals.css" type="BINDATA" />
