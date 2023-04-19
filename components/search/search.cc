@@ -24,13 +24,14 @@ bool DefaultSearchProviderIsGoogle(
     const TemplateURLService* template_url_service) {
   if (!template_url_service)
     return false;
-  const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
-  if (!default_provider)
-    return false;
-  return default_provider->GetEngineType(
-             template_url_service->search_terms_data()) ==
-         SearchEngineType::SEARCH_ENGINE_GOOGLE;
+  return TemplateURLIsGoogle(template_url_service->GetDefaultSearchProvider(),
+                             template_url_service->search_terms_data());
+}
+
+bool TemplateURLIsGoogle(const TemplateURL* template_url,
+                         const SearchTermsData& search_terms_data) {
+  return template_url != nullptr &&
+         template_url->GetEngineType(search_terms_data) == SEARCH_ENGINE_GOOGLE;
 }
 
 }  // namespace search

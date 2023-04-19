@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search/search.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/url_util.h"
@@ -32,18 +33,6 @@
 namespace {
 const int kBaseRelevanceForUrlInput = 99;
 const size_t kMaxRequestId = std::numeric_limits<size_t>::max() - 1;
-
-bool IsDefaultSearchProviderGoogle(
-    const TemplateURLService* template_url_service) {
-  if (!template_url_service)
-    return false;
-
-  const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
-  return default_provider &&
-         default_provider->GetEngineType(
-             template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
-}
 
 int OnDeviceHeadSuggestMaxScoreForNonUrlInput(bool is_incognito) {
   const int kDefaultScore =
@@ -167,7 +156,8 @@ bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     return false;
 
   // Do not proceed if default search provider is not Google.
-  return IsDefaultSearchProviderGoogle(client()->GetTemplateURLService());
+  return search::DefaultSearchProviderIsGoogle(
+      client()->GetTemplateURLService());
 }
 
 void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
@@ -332,7 +322,7 @@ void OnDeviceHeadProvider::SearchDone(
   const TemplateURLService* template_url_service =
       client()->GetTemplateURLService();
 
-  if (IsDefaultSearchProviderGoogle(template_url_service)) {
+  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Omnibox.OnDeviceHeadSuggest.ResultCount",
                                 params->suggestions.size(), 1, 5, 6);
     matches_.clear();

@@ -46,6 +46,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -474,13 +475,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
 
   // Google must be set as default search provider.
   auto* template_url_service = client->GetTemplateURLService();
-  if (template_url_service == nullptr)
-    return false;
-  const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
-  if (default_provider == nullptr ||
-      default_provider->GetEngineType(
-          template_url_service->search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
+  if (!search::DefaultSearchProviderIsGoogle(template_url_service)) {
     return false;
   }
 

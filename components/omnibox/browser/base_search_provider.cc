@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -117,8 +118,10 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.image_url = GURL(suggestion.entity_info().image_url());
   match.entity_id = suggestion.entity_info().entity_id();
 
-  // Attach Actions in Suggest to the newly created match.
-  if constexpr (is_android) {
+  // Attach Actions in Suggest to the newly created match on Android if Google
+  // is the default search engine.
+  if (is_android &&
+      search::TemplateURLIsGoogle(template_url, search_terms_data)) {
     for (const omnibox::ActionInfo& action_info :
          suggestion.entity_info().action_suggestions()) {
       match.actions.emplace_back(
@@ -277,8 +280,9 @@ void BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
     metrics::OmniboxEventProto::PageClassification page_classification,
     TemplateURLRef::SearchTermsArgs* search_terms_args) {
   // Only append the suggest client query param for Google template URL.
-  if (template_url->GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE)
+  if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
     return;
+  }
 
   if (page_classification == metrics::OmniboxEventProto::CHROMEOS_APP_LIST) {
     if (!search_terms_args->additional_query_params.empty())
@@ -320,9 +324,7 @@ bool BaseSearchProvider::CanSendZeroSuggestRequest(
   // Note that currently only the pre-populated Google search provider supports
   // zero-prefix suggestions. If other pre-populated search engines decide to
   // support it, revise this test accordingly.
-  if (template_url == nullptr ||
-      !template_url->SupportsReplacement(search_terms_data) ||
-      template_url->GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE) {
+  if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
     return false;
   }
 

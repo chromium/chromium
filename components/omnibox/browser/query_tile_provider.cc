@@ -9,6 +9,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/query_tiles/tile_service.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_fixer.h"
 
@@ -97,14 +98,10 @@ bool QueryTileProvider::AllowQueryTileSuggestions(
   if (client_->IsOffTheRecord())
     return false;
 
-  TemplateURLService* template_url_service = client_->GetTemplateURLService();
-  const TemplateURL* default_provider = GetDefaultSearchProvider(client_);
-  bool is_search_provider_enabled =
-      default_provider &&
-      default_provider->GetEngineType(
-          template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
-  if (!is_search_provider_enabled)
+  if (!search::DefaultSearchProviderIsGoogle(
+          client_->GetTemplateURLService())) {
     return false;
+  }
 
   // Only show suggestions for NTP or schemes that users recognize.
   const auto& page_url = input.current_url();
