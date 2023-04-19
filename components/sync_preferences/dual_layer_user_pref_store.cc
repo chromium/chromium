@@ -28,9 +28,6 @@ DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
 
 void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
     const std::string& key) {
-  // TODO(crbug.com/1416477): Directly accessing `outer_`'s private members is
-  // icky - consider avoiding this, e.g. by passing in callbacks instead.
-
   // Ignore this notification if it originated from the outer store - in that
   // case, `DualLayerUserPrefStore` itself will send notifications as
   // appropriate. This avoids dual notifications even though there are dual

@@ -595,11 +595,6 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfPrefChangesInUnderlyingStores) {
   store()->GetLocalPrefStore()->RemoveValue(kPref1, 0);
   store()->GetAccountPrefStore()->RemoveValue(kPref2, 0);
 
-  // TODO(crbug.com/1416477): Verify that OnPrefValueChanged() only gets called
-  // when the *effective* value changes, i.e. not when a pref is changed in the
-  // local store that also has a value in the account store. (Though this
-  // shouldn't happen in practice anyway.)
-
   store()->RemoveObserver(&observer);
 }
 
