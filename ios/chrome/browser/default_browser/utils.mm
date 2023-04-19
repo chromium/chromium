@@ -16,6 +16,7 @@
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -130,9 +131,6 @@ constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
 // Maximum time range between first-party app launches to notify the FET.
 constexpr base::TimeDelta kMaximumTimeBetweenFirstPartyAppLaunches =
     base::Days(7);
-
-// Maximum time representing one user session.
-constexpr base::TimeDelta kMaximumTimeOneUserSession = base::Hours(6);
 
 // Maximum time range between valid user URL pastes to notify the FET.
 constexpr base::TimeDelta kMaximumTimeBetweenValidURLPastes = base::Days(7);
@@ -525,12 +523,14 @@ void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
 }
 
 bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
+  const base::TimeDelta max_session_time =
+      base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
+
   if (HasRecordedEventForKeyLessThanDelay(
           kTimestampAppLastOpenedViaFirstPartyIntent,
           kMaximumTimeBetweenFirstPartyAppLaunches)) {
     if (HasRecordedEventForKeyMoreThanDelay(
-            kTimestampAppLastOpenedViaFirstPartyIntent,
-            kMaximumTimeOneUserSession)) {
+            kTimestampAppLastOpenedViaFirstPartyIntent, max_session_time)) {
       SetObjectIntoStorageForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
                                  [NSDate date]);
       return YES;
@@ -556,8 +556,10 @@ bool HasRecentValidURLPastesAndRecordsCurrentPaste() {
 }
 
 bool HasRecentTimestampForKey(NSString* eventKey) {
-  if (HasRecordedEventForKeyLessThanDelay(eventKey,
-                                          kMaximumTimeOneUserSession)) {
+  const base::TimeDelta max_session_time =
+      base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
+
+  if (HasRecordedEventForKeyLessThanDelay(eventKey, max_session_time)) {
     return YES;
   }
 
