@@ -464,8 +464,8 @@ TEST_P(PermissionsDelegationUmaUtilTest, TopLevelFrame) {
   // The histogram values should match with the ones defined in
   // |permission_uma_util.cc|
   std::string kPermissionsPolicyHeaderHistogramName =
-      base::StrCat({"Permissions.Experimental.PageLoad.", permission_string,
-                    ".TopLevelHeaderPolicy"});
+      base::StrCat({"Permissions.Experimental.PrimaryMainNavigationFinished.",
+                    permission_string, ".TopLevelHeaderPolicy"});
 
   base::HistogramTester histograms;
   auto* main_frame = GetMainFrameAndNavigate(kTopLevelUrl);
@@ -486,7 +486,7 @@ TEST_P(PermissionsDelegationUmaUtilTest, TopLevelFrame) {
 
   histograms.ExpectTotalCount(kPermissionsPolicyHeaderHistogramName, 0);
 
-  PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
+  PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnNavigation(
       main_frame);
   EXPECT_THAT(
       histograms.GetAllSamples(kPermissionsPolicyHeaderHistogramName),

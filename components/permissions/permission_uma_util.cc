@@ -1543,7 +1543,7 @@ void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
 }
 
 // static
-void PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
+void PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnNavigation(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
   static constexpr ContentSettingsType kContentSettingsTypesForMetrics[] = {
@@ -1556,7 +1556,7 @@ void PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
     DCHECK(feature.has_value());
     base::UmaHistogramEnumeration(
         base::StrCat(
-            {"Permissions.Experimental.PageLoad.",
+            {"Permissions.Experimental.PrimaryMainNavigationFinished.",
              PermissionUtil::GetPermissionString(content_settings_type),
              ".TopLevelHeaderPolicy"}),
         GetTopLevelPermissionHeaderPolicyForUMA(render_frame_host,

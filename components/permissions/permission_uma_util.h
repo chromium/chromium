@@ -577,7 +577,7 @@ class PermissionUmaUtil {
       PermissionAction action,
       content::RenderFrameHost* render_frame_host);
 
-  static void RecordTopLevelPermissionsHeaderPolicyOnPageLoad(
+  static void RecordTopLevelPermissionsHeaderPolicyOnNavigation(
       content::RenderFrameHost* render_frame_host);
 
   // A scoped class that will check the current resolved content setting on

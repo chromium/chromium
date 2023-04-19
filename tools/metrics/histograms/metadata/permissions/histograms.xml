@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Permissions.Experimental.PageLoad.{PermissionType}.TopLevelHeaderPolicy"
+    name="Permissions.Experimental.PrimaryMainNavigationFinished.{PermissionType}.TopLevelHeaderPolicy"
     enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
