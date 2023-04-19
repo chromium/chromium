@@ -2946,6 +2946,7 @@ if (is_apple) {
     sources = [
       "ios/crb_protocol_observers_unittest.mm",
       "mac/bind_objc_block_unittest_arc.mm",
+      "mac/scoped_nsobject_unittest_arc.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
