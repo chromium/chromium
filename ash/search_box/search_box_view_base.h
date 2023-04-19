@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -205,6 +206,12 @@ class SearchBoxViewBase : public views::View,
 
   // Update search box border based on whether the search box is activated.
   virtual void UpdateSearchBoxBorder() {}
+
+  // Updates the style of the searchbox labels and textfield.
+  void SetPreferredStyleForAutocompleteText(const gfx::FontList& font_list,
+                                            ui::ColorId text_color_id);
+  void SetPreferredStyleForSearchboxText(const gfx::FontList& font_list,
+                                         ui::ColorId text_color_id);
 
  private:
   void OnEnabledChanged();
