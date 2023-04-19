@@ -587,6 +587,10 @@ std::string ReadAnythingAppController::GetHtmlTag(
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
 
+  if (ui::IsTextField(ax_node->GetRole())) {
+    return "div";
+  }
+
   // Replace mark element with bold element for readability
   std::string html_tag =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);

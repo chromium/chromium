@@ -378,6 +378,30 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag) {
   EXPECT_EQ(ul, GetHtmlTag(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_TextFieldReturnsDiv) {
+  std::string span = "span";
+  std::string h1 = "h1";
+  std::string ul = "ul";
+  std::string div = "div";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     span);
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, h1);
+  update.nodes[1].role = ax::mojom::Role::kTextField;
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, ul);
+  update.nodes[2].role = ax::mojom::Role::kTextFieldWithComboBox;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(span, GetHtmlTag(2));
+  EXPECT_EQ(div, GetHtmlTag(3));
+  EXPECT_EQ(div, GetHtmlTag(4));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string text_content = "Hello";
   std::string missing_text_content = "";

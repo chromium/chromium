@@ -217,6 +217,23 @@ TEST_F(ReadAnythingAppModelTest, IsNodeIgnoredForReadAnything) {
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
 }
 
+TEST_F(ReadAnythingAppModelTest,
+       IsNodeIgnoredForReadAnything_TextFieldsNotIgnored) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kTree;
+  update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
+  update.nodes[2].role = ax::mojom::Role::kTextField;
+  AccessibilityEventReceived({update});
+  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
+  EXPECT_EQ(false, IsNodeIgnoredForReadAnything(3));
+  EXPECT_EQ(false, IsNodeIgnoredForReadAnything(4));
+}
+
 TEST_F(ReadAnythingAppModelTest, ModelUpdatesTreeState) {
   // Set up trees.
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();

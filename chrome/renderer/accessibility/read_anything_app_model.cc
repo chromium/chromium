@@ -343,9 +343,9 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  // Ignore interactive elements.
+  // Ignore interactive elements, except for text fields.
   ax::mojom::Role role = ax_node->GetRole();
-  return ui::IsControl(role) || ui::IsSelect(role);
+  return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
 bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
