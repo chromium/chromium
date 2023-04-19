@@ -20,21 +20,23 @@
   const tracingHelper = new TracingHelper(testRunner, session);
   await tracingHelper.invokeAsyncWithTracing(performActions);
 
-  testRunner.log('Frames in TracingStartedInBrowser');
+  const frames = new Map();
+
   const tracingStarted = tracingHelper.findEvent('TracingStartedInBrowser', 'I');
-  for (const frame of tracingStarted.args['data']['frames'] || []) {
-    dumpFrame(frame);
-  }
+  startFrames = tracingStarted.args['data']['frames'] || [];
+  startFrames.forEach(f => frames.set(f.frame, f));
 
-  testRunner.log('Frames in CommitLoad events');
   const commitLoads = tracingHelper.findEvents('CommitLoad', 'X');
-  for (const event of commitLoads) {
-    dumpFrame(event.args['data']);
-  }
-  testRunner.completeTest();
+  commitLoads.forEach(({args: {data: f}}) => frames.set(f.frame, f));
 
-  function dumpFrame(frame) {
-    const url = frame.url.replace(/.*\/(([^/]*\/){2}[^/]*$)/, '$1');
-    testRunner.log(`url: ${url} name: ${frame.name} parent: ${typeof frame.parent} nodeId: ${typeof frame.nodeId}`);
+  const stripUrl = url => url.replace(/.*\/(([^/]*\/){2}[^/]*$)/, '$1');
+  testRunner.log('Frames:');
+  for (const [_id, frame] of frames) {
+    const url = stripUrl(frame.url);
+    const parentUrl =
+        frame.parent ? stripUrl(frames.get(frame.parent).url) : '-';
+    testRunner.log(`  url: ${url} name: ${frame.name} parentUrl: ${parentUrl}`);
   }
+
+  testRunner.completeTest();
 })
