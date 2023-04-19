@@ -246,10 +246,15 @@ void VideoConferenceTrayController::OnInputMuteChanged(
 
   microphone_muted_by_hardware_switch_ =
       method == CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter;
+
+  // Reset the speak-on-mute notification timer when change to mute so user can
+  // get instant speak-on-mute notification when they mute their microphone.
+  if (mute_on) {
+    last_speak_on_mute_notification_time_.reset();
+  }
 }
 
 void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
-  // TODO(b/273374112): Add unit test for this toast.
   const base::TimeTicks current_time = base::TimeTicks::Now();
 
   if (!last_speak_on_mute_notification_time_.has_value() ||
