@@ -30,7 +30,6 @@ class CORE_EXPORT ListMarker {
   static LayoutObject* MarkerFromListItem(const LayoutObject*);
 
   LayoutObject* ListItem(const LayoutObject&) const;
-  LayoutBlockFlow* ListItemBlockFlow(const LayoutObject&) const;
 
   String MarkerTextWithSuffix(const LayoutObject&) const;
   String MarkerTextWithoutSuffix(const LayoutObject&) const;

@@ -61,24 +61,12 @@ LayoutObject* ListMarker::MarkerFromListItem(const LayoutObject* list_item) {
   return nullptr;
 }
 
-// TODO(1229581): Return LayoutNGListItem instead, and get rid of
-// ListItemBlockFlow() and ListItemValue().
 LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* list_item = marker.GetNode()->parentNode()->GetLayoutObject();
   DCHECK(list_item);
   DCHECK(list_item->IsListItemIncludingNG());
   return list_item;
-}
-
-LayoutBlockFlow* ListMarker::ListItemBlockFlow(
-    const LayoutObject& marker) const {
-  DCHECK_EQ(Get(&marker), this);
-  LayoutObject* list_item = ListItem(marker);
-  if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
-    return ng_list_item;
-  NOTREACHED();
-  return nullptr;
 }
 
 int ListMarker::ListItemValue(const LayoutObject& list_item) const {
