@@ -69,7 +69,6 @@ class AutofillAblationStudy;
 class AutofillDriver;
 class AutofillDownloadManager;
 struct AutofillErrorDialogContext;
-class AutofillManager;
 class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillOptimizationGuide;
@@ -652,14 +651,6 @@ class AutofillClient : public RiskDataLoader {
   // when a credit card is scanned successfully. Should be called only if
   // HasCreditCardScanFeature() returns true.
   virtual void ScanCreditCard(CreditCardScanCallback callback) = 0;
-
-  // Returns true if the Fast Checkout feature is both supported by platform and
-  // enabled.
-  // TODO(crbug.com/1379149): Remove once bug is resolved.
-  virtual bool IsFastCheckoutSupported(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillManager& autofill_manager) = 0;
 
   // Returns true if the Touch To Fill feature is both supported by platform and
   // enabled. Should be called before |ShowTouchToFillCreditCard| or

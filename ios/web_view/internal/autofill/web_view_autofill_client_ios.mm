@@ -276,13 +276,6 @@ void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
-bool WebViewAutofillClientIOS::IsFastCheckoutSupported(
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillManager& autofill_manager) {
-  return false;
-}
-
 bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
   return false;
 }

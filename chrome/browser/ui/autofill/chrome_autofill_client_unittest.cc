@@ -152,36 +152,5 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
             client()->GetCurrentFormInteractionsFlowId());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-class ChromeAutofillClientTestForFastCheckout
-    : public ChromeAutofillClientTest {
- protected:
-  MockFastCheckoutClient* fast_checkout_client() {
-    return static_cast<MockFastCheckoutClient*>(
-        client()->GetFastCheckoutClient());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kFastCheckout};
-};
-
-TEST_F(ChromeAutofillClientTestForFastCheckout,
-       IsFastCheckoutSupportedWithDisabledFeature) {
-  FormData form;
-  FormFieldData field;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(::features::kFastCheckout);
-  EXPECT_FALSE(
-      client()->IsFastCheckoutSupported(form, field, *autofill_manager()));
-}
-
-TEST_F(ChromeAutofillClientTestForFastCheckout, IsFastCheckoutSupported) {
-  EXPECT_CALL(*fast_checkout_client(), IsSupported)
-      .WillOnce(testing::Return(true));
-  EXPECT_TRUE(client()->IsFastCheckoutSupported(FormData(), FormFieldData(),
-                                                *autofill_manager()));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 }  // namespace autofill

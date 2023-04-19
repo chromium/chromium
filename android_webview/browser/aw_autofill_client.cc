@@ -237,13 +237,6 @@ void AwAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   NOTIMPLEMENTED();
 }
 
-bool AwAutofillClient::IsFastCheckoutSupported(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    const autofill::AutofillManager& autofill_manager) {
-  return false;
-}
-
 bool AwAutofillClient::IsTouchToFillCreditCardSupported() {
   return false;
 }

@@ -772,18 +772,6 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
-bool ChromeAutofillClient::IsFastCheckoutSupported(
-    const FormData& form,
-    const FormFieldData& field,
-    const AutofillManager& autofill_manager) {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         GetFastCheckoutClient()->IsSupported(form, field, autofill_manager);
-#else
-  return false;
-#endif
-}
-
 bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
