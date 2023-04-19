@@ -241,6 +241,9 @@ enum {
   kWebauthnCablev2Pairings = 100195,
   kDynamicColorColorScheme = 100196,
   kDynamicColorSeedColor = 100197,
+  kAccessibilityColorFiltering = 100200,
+  kAccessibilityColorVisionCorrectionAmount = 100201,
+  kAccessibilityColorVisionDeficiencyType = 100202,
 };
 }  // namespace syncable_prefs_ids
 
@@ -349,6 +352,15 @@ const auto& SyncablePreferences() {
           syncer::OS_PREFERENCES}},
         {ash::prefs::kAccessibilityAutoclickStabilizePosition,
          {syncable_prefs_ids::kAccessibilityAutoclickStabilizePosition,
+          syncer::OS_PREFERENCES}},
+        {ash::prefs::kAccessibilityColorFiltering,
+         {syncable_prefs_ids::kAccessibilityColorFiltering,
+          syncer::OS_PREFERENCES}},
+        {ash::prefs::kAccessibilityColorVisionCorrectionAmount,
+         {syncable_prefs_ids::kAccessibilityColorVisionCorrectionAmount,
+          syncer::OS_PREFERENCES}},
+        {ash::prefs::kAccessibilityColorVisionDeficiencyType,
+         {syncable_prefs_ids::kAccessibilityColorVisionDeficiencyType,
           syncer::OS_PREFERENCES}},
         {ash::prefs::kAccessibilityCursorColor,
          {syncable_prefs_ids::kAccessibilityCursorColor,

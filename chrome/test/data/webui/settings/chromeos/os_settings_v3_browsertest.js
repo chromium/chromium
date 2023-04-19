@@ -278,6 +278,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'DisplayAndMagnificationPage',
    'display_and_magnification_page_tests.js',
+   {enabled: ['features::kExperimentalAccessibilityColorEnhancementSettings']},
  ],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
