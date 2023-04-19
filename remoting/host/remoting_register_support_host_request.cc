@@ -13,6 +13,7 @@
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/host_details.h"
+#include "remoting/proto/remoting/v1/chrome_os_enterprise_options.pb.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -138,6 +139,7 @@ void RemotingRegisterSupportHostRequest::StartRequest(
     SignalStrategy* signal_strategy,
     scoped_refptr<RsaKeyPair> key_pair,
     const std::string& authorized_helper,
+    absl::optional<ChromeOsEnterpriseParams> params,
     RegisterCallback callback) {
   DCHECK_EQ(State::NOT_STARTED, state_);
   DCHECK(signal_strategy);
@@ -146,6 +148,7 @@ void RemotingRegisterSupportHostRequest::StartRequest(
   signal_strategy_ = signal_strategy;
   key_pair_ = key_pair;
   callback_ = std::move(callback);
+  enterprise_params_ = std::move(params);
   authorized_helper_ = authorized_helper;
 
   signal_strategy_->AddListener(this);
@@ -184,6 +187,17 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
   request->set_host_version(STRINGIZE(VERSION));
   request->set_host_os_name(GetHostOperatingSystemName());
   request->set_host_os_version(GetHostOperatingSystemVersion());
+
+  if (enterprise_params_.has_value()) {
+    apis::v1::ChromeOsEnterpriseOptions* enterprise_options =
+        request->mutable_chrome_os_enterprise_options();
+    enterprise_options->set_allow_troubleshooting_tools(
+        enterprise_params_->allow_troubleshooting_tools);
+    enterprise_options->set_allow_reconnections(
+        enterprise_params_->allow_reconnections);
+    enterprise_options->set_allow_file_transfer(
+        enterprise_params_->allow_file_transfer);
+  }
 
   if (!authorized_helper_.empty()) {
     request->set_authorized_helper(authorized_helper_);

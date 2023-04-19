@@ -8,8 +8,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -50,6 +52,7 @@ class RemotingRegisterSupportHostRequest final
   void StartRequest(SignalStrategy* signal_strategy,
                     scoped_refptr<RsaKeyPair> key_pair,
                     const std::string& authorized_helper,
+                    absl::optional<ChromeOsEnterpriseParams> params,
                     RegisterCallback callback) override;
 
  private:
@@ -95,6 +98,7 @@ class RemotingRegisterSupportHostRequest final
   RegisterCallback callback_;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
   std::unique_ptr<RegisterSupportHostClient> register_host_client_;
+  absl::optional<ChromeOsEnterpriseParams> enterprise_params_;
   std::string authorized_helper_;
 
   State state_ = State::NOT_STARTED;

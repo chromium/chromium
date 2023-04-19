@@ -215,11 +215,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   ChromotingHost* GetHost() { return it2me_host_->host_.get(); }
 
   // Configuration values used by StartHost();
-  absl::optional<bool> enable_dialogs_;
-  absl::optional<bool> enable_notifications_;
-  absl::optional<bool> is_enterprise_session_;
-  absl::optional<bool> terminate_upon_input_;
-  absl::optional<bool> enable_curtaining_;
+  absl::optional<ChromeOsEnterpriseParams> enterprise_params_;
   absl::optional<std::string> authorized_helper_;
 
   // Stores the last nat traversal policy value received.
@@ -351,30 +347,10 @@ void It2MeHostTest::StartHost() {
   fake_bot_signal_strategy_->ConnectTo(fake_signal_strategy.get());
 
   it2me_host_ = new It2MeHost();
-  if (enable_dialogs_.has_value()) {
-    // Only ChromeOS supports this method, so tests setting enable_dialogs
+  if (enterprise_params_.has_value()) {
+    // Only ChromeOS supports this method, so tests setting enterprise params
     // should only be run on ChromeOS.
-    it2me_host_->set_enable_dialogs(enable_dialogs_.value());
-  }
-  if (enable_notifications_.has_value()) {
-    // Only ChromeOS supports this method, so tests setting enable_notifications
-    // should only be run on ChromeOS.
-    it2me_host_->set_enable_notifications(enable_notifications_.value());
-  }
-  if (is_enterprise_session_.has_value()) {
-    // Only ChromeOS supports this method, so tests setting
-    // is_enterprise_session should only be run on ChromeOS.
-    it2me_host_->set_is_enterprise_session(is_enterprise_session_.value());
-  }
-  if (terminate_upon_input_.has_value()) {
-    // Only ChromeOS supports this method, so tests setting
-    // terminate_upon_input_ should only be run on ChromeOS.
-    it2me_host_->set_terminate_upon_input(terminate_upon_input_.value());
-  }
-  if (enable_curtaining_.has_value()) {
-    // Only ChromeOS supports this method, so tests setting
-    // curtain_local_user_session should only be run on ChromeOS.
-    it2me_host_->set_enable_curtaining(enable_curtaining_.value());
+    it2me_host_->set_chrome_os_enterprise_params(*enterprise_params_);
   }
   if (authorized_helper_.has_value()) {
     it2me_host_->set_authorized_helper(authorized_helper_.value());
@@ -856,7 +832,7 @@ TEST_F(It2MeHostTest, AllowSupportHostConnectionsPolicyDisabled) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
-  enable_dialogs_ = false;
+  enterprise_params_ = {.suppress_user_dialogs = true};
   StartHost();
   EXPECT_FALSE(dialog_factory_->dialog_created());
   EXPECT_FALSE(
@@ -864,14 +840,14 @@ TEST_F(It2MeHostTest, ConnectRespectsSuppressDialogsParameter) {
 }
 
 TEST_F(It2MeHostTest, ConnectRespectsSuppressNotificationsParameter) {
-  enable_notifications_ = false;
+  enterprise_params_ = {.suppress_notifications = true};
   StartHost();
   EXPECT_FALSE(dialog_factory_->dialog_created());
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_notifications());
 }
 
 TEST_F(It2MeHostTest, ConnectRespectsTerminateUponInputParameter) {
-  terminate_upon_input_ = true;
+  enterprise_params_ = {.terminate_upon_input = true};
   StartHost();
   EXPECT_TRUE(GetHost()->desktop_environment_options().terminate_upon_input());
 }
@@ -882,7 +858,7 @@ TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
 }
 
 TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
-  enable_curtaining_ = true;
+  enterprise_params_ = {.curtain_local_user_session = true};
   StartHost();
   EXPECT_TRUE(GetHost()->desktop_environment_options().enable_curtaining());
 }
@@ -897,7 +873,7 @@ TEST_F(It2MeHostTest,
   SetPolicies({{policy::key::kRemoteAccessHostAllowRemoteSupportConnections,
                 base::Value(false)}});
 
-  is_enterprise_session_ = true;
+  enterprise_params_ = ChromeOsEnterpriseParams();
   StartHost();
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 
@@ -910,7 +886,7 @@ TEST_F(It2MeHostTest, EnterpriseSessionsShouldNotCheckHostDomain) {
   SetPolicies({{policy::key::kRemoteAccessHostDomainList,
                 MakeList({"other-domain.com"})}});
 
-  is_enterprise_session_ = true;
+  enterprise_params_ = ChromeOsEnterpriseParams();
   StartHost();
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 
@@ -926,7 +902,7 @@ TEST_F(
       {{policy::key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
         base::Value(false)}});
 
-  is_enterprise_session_ = true;
+  enterprise_params_ = ChromeOsEnterpriseParams();
   StartHost();
   ASSERT_EQ(It2MeHostState::kError, last_host_state_);
   ASSERT_EQ(ErrorCode::DISALLOWED_BY_POLICY, last_error_code_);
@@ -939,7 +915,7 @@ TEST_F(
       {{policy::key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
         base::Value(false)}});
 
-  is_enterprise_session_ = false;
+  enterprise_params_ = absl::nullopt;
   StartHost();
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 }

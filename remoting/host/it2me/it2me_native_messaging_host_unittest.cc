@@ -247,6 +247,11 @@ class It2MeNativeMessagingHostTest : public testing::Test {
                       bool expect_error_response);
   void TestConnect();
 
+  const absl::optional<ChromeOsEnterpriseParams>
+  get_chrome_os_enterprise_params() {
+    return factory_raw_ptr_->host->chrome_os_enterprise_params_;
+  }
+
   // Raw pointer to host factory (owned by It2MeNativeMessagingHost).
   raw_ptr<MockIt2MeHostFactory> factory_raw_ptr_ = nullptr;
 
@@ -649,13 +654,15 @@ TEST_F(It2MeNativeMessagingHostTest,
        ConnectRespectsSuppressUserDialogsParameterOnChromeOsOnly) {
   int next_id = 1;
   base::Value::Dict connect_message = CreateConnectMessage(next_id);
+  connect_message.Set(kIsEnterpriseAdminUser, true);
   connect_message.Set(kSuppressUserDialogs, true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  EXPECT_FALSE(factory_raw_ptr_->host->enable_dialogs());
+  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
+  ASSERT_TRUE(get_chrome_os_enterprise_params()->suppress_user_dialogs);
 #else
-  EXPECT_TRUE(factory_raw_ptr_->host->enable_dialogs());
+  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
@@ -666,13 +673,15 @@ TEST_F(It2MeNativeMessagingHostTest,
        ConnectRespectsSuppressNotificationsParameterOnChromeOsOnly) {
   int next_id = 1;
   base::Value::Dict connect_message = CreateConnectMessage(next_id);
+  connect_message.Set(kIsEnterpriseAdminUser, true);
   connect_message.Set(kSuppressNotifications, true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  EXPECT_FALSE(factory_raw_ptr_->host->enable_notifications());
+  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
+  ASSERT_TRUE(get_chrome_os_enterprise_params()->suppress_notifications);
 #else
-  EXPECT_TRUE(factory_raw_ptr_->host->enable_notifications());
+  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
@@ -683,13 +692,15 @@ TEST_F(It2MeNativeMessagingHostTest,
        ConnectRespectsTerminateUponInputParameterOnChromeOsOnly) {
   int next_id = 1;
   base::Value::Dict connect_message = CreateConnectMessage(next_id);
+  connect_message.Set(kIsEnterpriseAdminUser, true);
   connect_message.Set(kTerminateUponInput, true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  EXPECT_TRUE(factory_raw_ptr_->host->terminate_upon_input());
+  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
+  ASSERT_TRUE(get_chrome_os_enterprise_params()->terminate_upon_input);
 #else
-  EXPECT_FALSE(factory_raw_ptr_->host->terminate_upon_input());
+  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
@@ -717,13 +728,15 @@ TEST_F(It2MeNativeMessagingHostTest,
        ConnectRespectsCurtainLocalUserSessionParameterOnChromeOsOnly) {
   int next_id = 1;
   base::Value::Dict connect_message = CreateConnectMessage(next_id);
+  connect_message.Set(kIsEnterpriseAdminUser, true);
   connect_message.Set(kCurtainLocalUserSession, true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  EXPECT_TRUE(factory_raw_ptr_->host->enable_curtaining());
+  ASSERT_TRUE(get_chrome_os_enterprise_params().has_value());
+  ASSERT_TRUE(get_chrome_os_enterprise_params()->curtain_local_user_session);
 #else
-  EXPECT_FALSE(factory_raw_ptr_->host->enable_curtaining());
+  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
