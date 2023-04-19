@@ -26,11 +26,6 @@ namespace {
 // Amount of time after which the timestamp is shown instead of "just now".
 constexpr base::TimeDelta kJustCheckedTimeThreshold = base::Minutes(1);
 
-// Helper function to determine if a credential is compromised but not muted.
-bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential) {
-  return IsCompromised(credential) && !credential.IsMuted();
-}
-
 }  // anonymous namespace
 
 namespace password_manager {
@@ -42,6 +37,10 @@ bool operator==(const InsecurePasswordCounts& lhs,
   std::tuple rhs_tuple = std::tie(rhs.compromised_count, rhs.dismissed_count,
                                   rhs.reused_count, rhs.weak_count);
   return lhs_tuple == rhs_tuple;
+}
+
+bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential) {
+  return IsCompromised(credential) && !credential.IsMuted();
 }
 
 WarningType GetWarningOfHighestPriority(

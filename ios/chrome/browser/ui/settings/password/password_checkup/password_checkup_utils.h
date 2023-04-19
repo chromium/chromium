@@ -40,6 +40,9 @@ struct InsecurePasswordCounts {
 bool operator==(const InsecurePasswordCounts& lhs,
                 const InsecurePasswordCounts& rhs);
 
+// Helper function to determine if a credential is compromised but not muted.
+bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential);
+
 // Returns the type of warning with the highest priority, the descending order
 // of priority being:
 //  1. Compromised password warnings
