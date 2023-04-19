@@ -42,13 +42,11 @@ class ResourceClientWalker {
 
  public:
   explicit ResourceClientWalker(
-      const HeapHashCountedSet<WeakMember<ResourceClient>>& set)
+      const HeapHashCountedSet<WeakMember<ResourceClient>,
+                               WTF::MemberHashRecordReplayId<ResourceClient>>&
+          set)
       : client_set_(set) {
     CopyToVector(client_set_, client_vector_);
-
-    // Sort by pointer ID when recording/replaying to ensure a consistent iteration order.
-    std::sort(client_vector_.begin(), client_vector_.end(),
-              recordreplay::CompareMemberByPointerId<Member<ResourceClient>>());
   }
 
   T* Next() {
@@ -64,7 +62,9 @@ class ResourceClientWalker {
   }
 
  private:
-  const HeapHashCountedSet<WeakMember<ResourceClient>>& client_set_;
+  const HeapHashCountedSet<WeakMember<ResourceClient>,
+                           WTF::MemberHashRecordReplayId<ResourceClient>>&
+      client_set_;
   HeapVector<Member<ResourceClient>> client_vector_;
   wtf_size_t index_ = 0;
 };

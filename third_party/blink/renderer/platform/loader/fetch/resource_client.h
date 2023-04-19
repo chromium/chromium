@@ -83,6 +83,10 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
 
   void Trace(Visitor* visitor) const override;
 
+  int RecordReplayId() const {
+    return recordreplay::PointerId(this);
+  }
+
  protected:
   void ClearResource() { SetResource(nullptr, nullptr); }
 

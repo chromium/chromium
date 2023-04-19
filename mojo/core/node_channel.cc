@@ -873,6 +873,11 @@ void NodeChannel::OfferChannelUpgrade() {
 #endif
 }
 
+void NodeChannel::Release() {
+  recordreplay::Assert("[RUN-1050-1766] NodeChannel::Release");
+  base::RefCountedDeleteOnSequence<NodeChannel>::Release();
+}
+
 uint64_t NodeChannel::RemoteCapabilities() const {
   return remote_capabilities_;
 }

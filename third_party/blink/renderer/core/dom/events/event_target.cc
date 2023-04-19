@@ -222,7 +222,11 @@ void EventTargetData::Trace(Visitor* visitor) const {
   visitor->Trace(event_listener_map);
 }
 
-EventTarget::EventTarget() = default;
+EventTarget::EventTarget() {
+  if (recordreplay::AreEventsDisallowed() &&
+      !recordreplay::HasDivergedFromRecording())
+    recordreplay::Warning("[RUN-1735-1764] EventTarget::EventTarget");
+}
 
 EventTarget::~EventTarget() = default;
 

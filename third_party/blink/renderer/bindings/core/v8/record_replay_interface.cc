@@ -79,6 +79,7 @@ using RemoteObjectIdType = WTF::String;
 // Script which defines handlers for recorder commands, and is only loaded while
 // replaying.
 const char* gReplayScript = R""""(
+//js
 (() => {
 
 const EmptyArray = Object.freeze([]); // reduce unnecessary mem churn
@@ -244,7 +245,13 @@ function messageCallback(message) {
       }
     }
   } catch (e) {
-    log(`[RuntimeError] Message callback exception: ${e}`);
+    log(`[RuntimeError] Message callback exception: ${e?.stack || e}`);
+
+    return JSON.stringify({
+      is_error: true,
+      message: e?.message || (e + ''),
+      stack: e?.stack?.split?.("\n") || e?.stack || [],
+    });
   }
 }
 
@@ -254,8 +261,34 @@ function messageCallback(message) {
 
 // Methods for interacting with the record/replay driver.
 
+// Track all current execution contexts so that any scripts that we
+// inject via evaluatePrivilegd can know what contexts are available.
+const gExecutionContexts = new Map();
+const gContextChangeCallbacks = new Set();
+
 initMessages();
 addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
+addEventListener("Runtime.executionContextCreated", ({ context }) => {
+  gExecutionContexts.set(context.id, context);
+  for (const callback of gContextChangeCallbacks) {
+    callback(context, "add");
+  }
+});
+addEventListener("Runtime.executionContextDestroyed", ({ executionContextId }) => {
+  const context = gExecutionContexts.get(executionContextId);
+  for (const callback of gContextChangeCallbacks) {
+    callback(context, "remove");
+  }
+  gExecutionContexts.delete(executionContextId);
+});
+addEventListener("Runtime.executionContextsCleared", () => {
+  for (const context of gExecutionContexts.values()) {
+    for (const callback of gContextChangeCallbacks) {
+      callback(context, "remove");
+    }
+  }
+  gExecutionContexts.clear();
+});
 sendMessage("Runtime.enable");
 
 const CommandCallbacks = {
@@ -598,7 +631,10 @@ function isBlinkObject(x) {
 function isBlinkInstanceOf(x, target) {
   return isBlinkObject(x) &&
     target?.name &&
-    hasInProtoChain(x.constructor, target.name);
+    hasInProtoChain(
+      x.constructor,
+      target.name
+    );
 }
 
 /**
@@ -1260,7 +1296,7 @@ function previewBlinkNode(node) {
   let attributes, pseudoType;
   if (isBlinkInstanceOf(node, Element)) {
     attributes = [];
-    for (const { name, value } of node.attributes) {
+    for (const { name, value } of node.attributes || []) {
       attributes.push({ name, value });
     }
     // TODO: We cannot access pseudo elements using the JS DOM API - https://linear.app/replay/issue/RUN-953/
@@ -1275,7 +1311,11 @@ function previewBlinkNode(node) {
   let parentNode;
   if (node.parentNode) {
     parentNode = registerPlainObject(node.parentNode);
-  } else if (node.defaultView && node.defaultView.parent != node.defaultView && node.defaultView.parent.document) {
+  } else if (
+    node.defaultView &&
+    node.defaultView.parent != node.defaultView &&
+    node.defaultView.parent?.document
+  ) {
     /**
      * Nested documents use the parent element instead of null.
      * 
@@ -1296,7 +1336,7 @@ function previewBlinkNode(node) {
   if (node.nodeName == "IFRAME" && node.contentDocument) {
     // Treat an iframe's content document as one of its child nodes.
     childNodes = [registerPlainObject(node.contentDocument)];
-  } else if (node.childNodes.length) {
+  } else if (node.childNodes?.length) {
     childNodes = [...node.childNodes].map((n) => registerPlainObject(n));
   }
 
@@ -1494,6 +1534,7 @@ const CustomPreviewers = {
   TypeError: ErrorProperties,
   URIError: ErrorProperties,
   Function: [previewFunction],
+  AsyncFunction: [previewFunction],
 };
 
 /**
@@ -2560,7 +2601,7 @@ function shiftRect(rect, offset) {
 // Script which sets a handler for collecting source maps from scripts in the
 // recording. Runs when recording/replaying if source map collection is enabled.
 const char* gSourceMapScript = R""""(
-
+//js
 (() => {
 
 const {
@@ -2779,12 +2820,13 @@ function isValidBaseURL(url) {
 // Script that injects React DevTools "stub" functions to capture 
 // marker annotations while recording, for use in later processing
 const char* gReactDevtoolsScript = R""""(
-
+//js 
 (() => {
 
 const stubFiberRoots = {};
 
 const stubHook = {
+  isStub: true,
   supportsFiber: true,
   inject,
   onCommitFiberUnmount,
@@ -2856,7 +2898,7 @@ function onPostCommitFiberRoot(rendererID, root) {
 // Script that injects Redux DevTools "stub" functions to capture 
 // marker annotations while recording, for use in later processing
 const char* gReduxDevtoolsScript = R""""(
-
+//js
 (() => { // webpackBootstrap
 /******/ 	"use strict";
 var __webpack_exports__ = {};
@@ -3074,6 +3116,120 @@ window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = reduxDevtoolsExtensionCompose;
 
 
 
+// Script that copies the React and Redux DevTools global variables into
+// each iframe that gets added to the page.
+// This is primarily to support React DevTools in Cypress tests, as Cypress
+// runs the user's app in an iframe, but it should be a general solution for
+// other iframe usages in any application as well.
+const char* gDevtoolsIframeSetupScript = R""""(
+//js
+;(() => {
+  // TODO This _shouldn't_ be needed now that we allow cross-domain access at the C++ level
+  function canAccessIframe(iframe) {
+    try {
+      if (!iframe.src || iframe.src === 'about:blank') {
+        return false
+      }
+
+      const url = new URL(iframe.src)
+      const sameHost = url.hostname === window?.location?.hostname
+      const contentDocExists = !!iframe.contentDocument
+      return sameHost && contentDocExists
+    } catch (e) {
+      return false
+    }
+  }
+
+  function watchForIframeSrcChanges(iframe) {
+    let oldSrc = iframe.src
+    const iframeSrcObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (mutation.type === 'attributes') {
+          const changedAttrName = mutation.attributeName
+          // Cypress has changed the blank iframe src to the app url.
+          if (changedAttrName === 'src') {
+            const oldLocation = iframe.contentWindow.location.href
+
+            let counter = 0
+
+            // Once the `src` has changed, it still takes time for the browser
+            // to navigate inside the iframe. We need to mutate the iframe's `window`
+            // _after_ it has navigated to the new page, but _before_ any JS starts running
+            // (such as ReactDOM initializing itself).
+            // This `setTimeout` loop is a brute-force hack, but it appears to work consistently.
+            function checkForLocationChange() {
+              try {
+                const newLocation = iframe.contentWindow.location.href
+                if (newLocation !== oldLocation) {
+                  iframeSrcObserver.disconnect()
+                  addDevtoolsToIframe(iframe)
+                  return
+                }
+              } catch (err) {
+              }
+
+              counter++
+
+              // Arbitrary limit to prevent infinite loops.
+              if (counter < 100) {
+                setTimeout(checkForLocationChange, 0)
+              }
+            }
+
+            setTimeout(checkForLocationChange, 0)
+
+            oldSrc = iframe.src
+          }
+        }
+      })
+    })
+
+    iframeSrcObserver.observe(iframe, {
+      attributes: true,
+    })
+  }
+
+  function addDevtoolsToIframe(iframe) {
+    // React DevTools especially cannot see React code in an iframe by default.
+    // It needs the main window's "global hook" reference to be copied into an iframe.
+    // That way React in the iframe attaches itself correctly, and the extension code
+    // can see the render updates. Redux likely needs the same kind of setup.
+    if (canAccessIframe(iframe)) {
+      iframe.contentWindow.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.__REACT_DEVTOOLS_GLOBAL_HOOK__
+      iframe.contentWindow.__REDUX_DEVTOOLS_EXTENSION__ = window.__REDUX_DEVTOOLS_EXTENSION__
+      iframe.contentWindow.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const initialIframes = document.querySelectorAll('iframe')
+    initialIframes.forEach(function (iframe) {
+      addDevtoolsToIframe(iframe)
+      watchForIframeSrcChanges(iframe)
+    })
+
+    const iframeAddedObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        ;[].filter
+          .call(mutation.addedNodes, function (node) {
+            return node.nodeName === 'IFRAME'
+          })
+          .forEach(function (iframe) {
+            watchForIframeSrcChanges(iframe)
+          })
+      })
+    })
+    iframeAddedObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
+  })
+})()
+
+)"""";
+
+
+
 static v8::Local<v8::String> ToV8String(v8::Isolate* isolate, const char* value) {
   return v8::String::NewFromUtf8(isolate, value,
                                  v8::NewStringType::kInternalized).ToLocalChecked();
@@ -3144,6 +3300,21 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
   v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 1, &arg);
   CHECK(!rv.IsEmpty());
+
+  // If we get back a string from the call, report it as an error to the log (in such a way as it
+  // can be recovered by our error reporting), and then crash.
+  v8::Local<v8::Value> result = rv.ToLocalChecked();
+  CHECK(result->IsUndefined() || result->IsString());
+
+  if (result->IsString()) {
+    v8::String::Utf8Value messageValue(isolate, result);
+    std::string messageStr(*messageValue);
+
+    // TODO: Replace this with an API call to `RecordReplaySetCrashReasonCallback`
+    // See RUN-1562: https://linear.app/replay/issue/RUN-1562
+    recordreplay::Print("ErrorFatal %s:%d %s", "js", 0, messageStr.c_str());
+    IMMEDIATE_CRASH();
+  }
 }
 
 struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
@@ -3256,6 +3427,8 @@ static void WriteToRecordingDirectory(const v8::FunctionCallbackInfo<v8::Value>&
   v8::Isolate* isolate = args.GetIsolate();
   v8::String::Utf8Value filename(isolate, args[0]);
   v8::String::Utf8Value content(isolate, args[1]);
+
+  recordreplay::Assert("[RUN-1670-1764] WriteToRecordingDirectory %s (%zu)", *filename, (size_t)strlen(*content));
 
   std::string path = GetRecordingDirectory() + DirectorySeparator + std::string(*filename);
   std::ofstream stream(path);
@@ -4586,6 +4759,7 @@ void RunInitialRecordReplayScripts(v8::Isolate* isolate) {
     // its frames.
     RunScript(isolate, context, gReactDevtoolsScript, "record-replay-react-devtools");
     RunScript(isolate, context, gReduxDevtoolsScript, "record-replay-redux-devtools");
+    RunScript(isolate, context, gDevtoolsIframeSetupScript, "record-replay-devtools-iframes");
   }
 }
 

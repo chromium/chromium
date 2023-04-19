@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_MAP_H_
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
@@ -22,7 +23,8 @@ class PLATFORM_EXPORT FontFallbackMap : public FontCacheClient,
                                         public FontSelectorClient {
  public:
   explicit FontFallbackMap(FontSelector* font_selector)
-      : font_selector_(font_selector) {}
+      : font_selector_(font_selector),
+        record_replay_id_(recordreplay::NewIdAnyThread("FontFallbackMap")) {}
 
   ~FontFallbackMap() override;
 
@@ -52,6 +54,8 @@ class PLATFORM_EXPORT FontFallbackMap : public FontCacheClient,
   mutable LockForParallelTextShaping lock_;
   HashMap<FontDescription, scoped_refptr<FontFallbackList>>
       fallback_list_for_description_ GUARDED_BY(lock_);
+
+  int record_replay_id_;
 };
 
 }  // namespace blink

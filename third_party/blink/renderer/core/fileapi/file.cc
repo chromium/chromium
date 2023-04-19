@@ -141,6 +141,13 @@ File* File::Create(ExecutionContext* context,
                    normalize_line_endings_to_native);
 
   uint64_t file_size = blob_data->length();
+
+  recordreplay::Assert("[RUN-1533-1733] File::Create %llu %d %zu \"%s\" (%s)",
+                       file_size, normalize_line_endings_to_native,
+                       (size_t)file_bits.size(),
+                       file_name.Utf8().c_str(),
+                       blob_data->ContentType().Utf8().c_str());
+
   return MakeGarbageCollected<File>(
       file_name, last_modified,
       BlobDataHandle::Create(std::move(blob_data), file_size));

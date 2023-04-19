@@ -23,12 +23,12 @@ bool PopulateSkBitmapWithResource(SkBitmap* sk_bitmap, viz::ResourceId resource_
   return false;
 }
 
-void OnCompositorRepainting() {}
-
 void OnPaintFinished(const SkPixmap& pixmap) {}
 
 void OnRepaintFinished() {}
 
 void SetCompositorProxy(cc::ProxyMain* proxy) {}
+
+void CompositorProxyDestroyed(cc::ProxyMain* proxy) {}
 
 } // namespace recordreplay

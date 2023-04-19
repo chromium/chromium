@@ -1003,6 +1003,16 @@ HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
 NamedNodeMap* Element::attributesForBindings() const {
   ElementRareData& rare_data =
       const_cast<Element*>(this)->EnsureElementRareData();
+
+  if (recordreplay::IsInReplayCode() &&
+      !recordreplay::HasDivergedFromRecording()) {
+    if (!rare_data.AttributeMap()) {
+      // [RUN-1764] Do not try to create blink API objects in our Replay-only
+      // scripts, unless explicitly diverged. Creating rare data is fine.
+      return nullptr;
+    }
+  }
+
   if (NamedNodeMap* attribute_map = rare_data.AttributeMap())
     return attribute_map;
 
@@ -3808,14 +3818,22 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   if (ElementAnimations* element_animations = GetElementAnimations())
     element_animations->CssAnimations().ClearPendingUpdate();
 
+  bool has_custom_style_callbacks = HasCustomStyleCallbacks();
+  recordreplay::Assert("[RUN-1219-1708] Element::StyleForLayoutObject %d #0 %d",
+    this->RecordReplayId(),
+    (int) has_custom_style_callbacks);
   scoped_refptr<ComputedStyle> style =
-      HasCustomStyleCallbacks()
+      has_custom_style_callbacks
           ? CustomStyleForLayoutObject(style_recalc_context)
           : OriginalStyleForLayoutObject(style_recalc_context);
   if (!style) {
+    recordreplay::Assert("[RUN-1219-1708] Element::StyleForLayoutObject %d #1",
+      this->RecordReplayId());
     DCHECK(IsPseudoElement());
     return nullptr;
   }
+  recordreplay::Assert("[RUN-1219-1708] Element::StyleForLayoutObject %d #2",
+    this->RecordReplayId());
 
   style->UpdateIsStackingContextWithoutContainment(
       this == GetDocument().documentElement(), IsInTopLayer(),
@@ -4309,7 +4327,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // This is the normal flow through the function; calculates
     // the element's style more or less from scratch (typically
     // ending up calling StyleResolver::ResolveStyle()).
+    recordreplay::Assert("[RUN-1219-1708] Element::RecalcOwnStyle %d StyleForLayoutObject-pre",
+      this->RecordReplayId());
     new_style = StyleForLayoutObject(new_style_recalc_context);
+    recordreplay::Assert("[RUN-1219-1708] Element::RecalcOwnStyle %d StyleForLayoutObject-post",
+      this->RecordReplayId());
   }
   if (new_style && !ShouldStoreComputedStyle(*new_style))
     new_style = nullptr;
@@ -8067,6 +8089,14 @@ void Element::SynchronizeStyleAttributeInternal() const {
 CSSStyleDeclaration* Element::style() {
   if (!IsStyledElement())
     return nullptr;
+
+  if (recordreplay::IsInReplayCode() &&
+      !recordreplay::HasDivergedFromRecording()) {
+    // [RUN-1764] Do not try to create blink API objects in our Replay-only
+    // scripts, unless explicitly diverged.
+    return EnsureElementRareData().GetInlineCSSStyleDeclaration();
+  }
+
   return &EnsureElementRareData().EnsureInlineCSSStyleDeclaration(this);
 }
 
