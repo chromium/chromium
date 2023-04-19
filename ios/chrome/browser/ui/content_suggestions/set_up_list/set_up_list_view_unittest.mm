@@ -198,3 +198,15 @@ TEST_F(SetUpListViewTest, SetUpListItemViewMarkComplete) {
 
   EXPECT_TRUE(item_view.complete);
 }
+
+// Tests that with only 2 items, no expand button is present.
+TEST_F(SetUpListViewTest, NoExpandButton) {
+  NSArray<SetUpListItemViewData*>* first_two_items =
+      [_itemsData subarrayWithRange:NSMakeRange(0, 2)];
+  SetUpListView* view = [[SetUpListView alloc] initWithItems:first_two_items];
+  [_superview addSubview:view];
+
+  SetUpListItemView* expand_button =
+      (SetUpListItemView*)FindSubview(@"kSetUpListExpandButtonID");
+  EXPECT_TRUE(expand_button == nil);
+}

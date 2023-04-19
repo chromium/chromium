@@ -149,8 +149,13 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
     [menuButton.firstBaselineAnchor
         constraintEqualToAnchor:listTitle.firstBaselineAnchor],
   ]];
-  self.accessibilityElements =
-      @[ listTitle, menuButton, _itemsStack, _expandButton ];
+
+  if (_expandButton) {
+    self.accessibilityElements =
+        @[ listTitle, menuButton, _itemsStack, _expandButton ];
+  } else {
+    self.accessibilityElements = @[ listTitle, menuButton, _itemsStack ];
+  }
 }
 
 // Returns an array of SetUpListItemViews based on the itemsDictionary that was
