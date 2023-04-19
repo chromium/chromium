@@ -103,7 +103,8 @@ using autofill_address_profile_infobar_overlays::
            initWithDelegate:self
         personalDataManager:personalDataManager
             autofillProfile:&_autofillProfile
-                countryCode:nil];
+                countryCode:nil
+          isMigrationPrompt:self.config->is_migration_to_account()];
 
     InfobarEditAddressProfileTableViewController* editModalViewController =
         [[InfobarEditAddressProfileTableViewController alloc]

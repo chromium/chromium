@@ -43,6 +43,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // The country code that has been selected.
 @property(nonatomic, strong) NSString* selectedCountryCode;
 
+// YES, when the mediator belongs to the migration prompt.
+@property(nonatomic, assign, readonly) BOOL isMigrationPrompt;
+
 @end
 
 @implementation AutofillProfileEditMediator {
@@ -53,7 +56,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)autofillProfile
-                     countryCode:(NSString*)countryCode {
+                     countryCode:(NSString*)countryCode
+               isMigrationPrompt:(BOOL)isMigrationPrompt {
   self = [super init];
 
   if (self) {
@@ -62,6 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _autofillProfile = autofillProfile;
     _delegate = delegate;
     _selectedCountryCode = countryCode;
+    _isMigrationPrompt = isMigrationPrompt;
 
     [self loadCountries];
   }
@@ -81,8 +86,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self updateRequirementsForCountryCode:self.selectedCountryCode];
   }
 
-  [_consumer setAccountProfile:(_autofillProfile->source() ==
-                                autofill::AutofillProfile::Source::kAccount)];
+  [_consumer setAccountProfile:[self isAccountProfile]];
 }
 
 #pragma mark - Public
@@ -164,6 +168,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // search option.
   for (size_t i = 1; i < countriesVector.size(); ++i) {
     if (countriesVector[i].get()) {
+      if (([self isAccountProfile] || self.isMigrationPrompt) &&
+          !_personalDataManager->IsCountryEligibleForAccountStorage(
+              countriesVector[i]->country_code())) {
+        continue;
+      }
       CountryItem* countryItem =
           [[CountryItem alloc] initWithType:ItemTypeCountry];
       countryItem.text = base::SysUTF16ToNSString(countriesVector[i]->name());
@@ -244,6 +253,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
     }
   }
+}
+
+// Returns YES if `autofillProfile` is an account profile.
+- (BOOL)isAccountProfile {
+  return _autofillProfile->source() ==
+         autofill::AutofillProfile::Source::kAccount;
 }
 
 @end

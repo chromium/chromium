@@ -29,6 +29,7 @@ class PersonalDataManager;
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)profile
                      countryCode:(NSString*)countryCode
+               isMigrationPrompt:(BOOL)isMigrationPrompt
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

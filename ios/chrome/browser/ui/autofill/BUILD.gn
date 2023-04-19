@@ -273,6 +273,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/list_model",

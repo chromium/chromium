@@ -86,7 +86,8 @@
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:&_autofillProfile
-              countryCode:base::SysUTF8ToNSString(countryCode)];
+              countryCode:base::SysUTF8ToNSString(countryCode)
+        isMigrationPrompt:NO];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
