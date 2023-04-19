@@ -541,7 +541,6 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
-  background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
   outline-offset: 8px;
   width: var(--big-icon);
@@ -1554,6 +1553,7 @@ body:not(.video) #settings-video-resolution {
   width: 20px;
 }
 
-#open-settings {
+#open-settings,
+#switch-device {
   color: var(--cros-sys-on_surface);
 }
