@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/cryptohome_pin_engine.h"
+#include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_op.h"
@@ -74,8 +74,9 @@ absl::optional<bool> CryptohomePinEngine::IsCryptohomePinDisabledByPolicy(
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
 
-  if (!profile)
+  if (!profile) {
     return absl::nullopt;
+  }
 
   auto* pref_service = profile->GetPrefs();
 

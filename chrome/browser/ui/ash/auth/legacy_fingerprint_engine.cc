@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/legacy_fingerprint_engine.h"
+#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
@@ -79,12 +79,14 @@ bool LegacyFingerprintEngine::IsFingerprintAvailable(
 
   auto* pref_service = profile->GetPrefs();
 
-  if (!pref_service)
+  if (!pref_service) {
     return false;
+  }
 
   if (profile != ProfileManager::GetPrimaryUserProfile() ||
-      IsFingerprintDisabledByPolicy(*pref_service, purpose))
+      IsFingerprintDisabledByPolicy(*pref_service, purpose)) {
     return false;
+  }
 
   return HasRecord(*pref_service);
 }
