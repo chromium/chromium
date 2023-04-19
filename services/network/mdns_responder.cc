@@ -13,7 +13,6 @@
 
 #include "base/big_endian.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +23,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "net/base/address_family.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
@@ -110,7 +110,9 @@ const base::TimeDelta kMaxRandDelayForSharedResult = base::Milliseconds(120);
 class RandomUuidNameGenerator
     : public network::MdnsResponderManager::NameGenerator {
  public:
-  std::string CreateName() override { return base::GenerateGUID(); }
+  std::string CreateName() override {
+    return base::Uuid::GenerateRandomV4().AsLowercaseString();
+  }
 };
 
 bool QueryTypeAndAddressFamilyAreCompatible(uint16_t qtype,
