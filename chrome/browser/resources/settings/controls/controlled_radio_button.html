@@ -1,4 +1,11 @@
-<style include="cr-radio-button-style">
+<style
+<if expr="not chromeos_ash">
+  include="cr-radio-button-style"
+</if>
+<if expr="chromeos_ash">
+  include="cr-radio-button-style cros-color-overrides"
+</if>
+>
   :host([disabled]) {
     opacity: 1;
   }
