@@ -443,7 +443,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .build();
     }
 
-    protected FirstPartyOption createSaveImageFirstPartyOption() {
+    private FirstPartyOption createSaveImageFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
                 .setIcon(R.drawable.save_to_device, R.string.sharing_save_image)
                 .setFeatureNameForMetrics(USER_ACTION_SAVE_IMAGE_SELECTED)

@@ -12,7 +12,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -177,8 +176,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
 
     @Override
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
-        boolean bypassPreviewDialog =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH);
         return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
                 ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
@@ -187,10 +184,9 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                 .setDisableForMultiWindow(true)
                 .setOnClickCallback((view) -> {
                     mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
-                    LongScreenshotsCoordinator coordinator =
-                            LongScreenshotsCoordinator.create(mActivity, mTabProvider.get(), mUrl,
-                                    mChromeOptionShareCallback, mBottomSheetController,
-                                    mImageEditorModuleProvider, bypassPreviewDialog);
+                    LongScreenshotsCoordinator coordinator = LongScreenshotsCoordinator.create(
+                            mActivity, mTabProvider.get(), mUrl, mChromeOptionShareCallback,
+                            mBottomSheetController, mImageEditorModuleProvider);
                     mBottomSheetController.addObserver(coordinator);
                     mBottomSheetController.hideContent(mBottomSheetContent, true);
                 })

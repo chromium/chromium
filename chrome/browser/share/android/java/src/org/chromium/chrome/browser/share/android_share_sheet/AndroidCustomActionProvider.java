@@ -104,15 +104,9 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             return;
         }
 
-        List<FirstPartyOption> options;
-        if (chromeShareExtras.getDetailedContentType() == DetailedContentType.SCREENSHOT) {
-            options = new ArrayList<>();
-            options.add(createSaveImageFirstPartyOption());
-        } else {
-            options = getFirstPartyOptions(
-                    ShareContentTypeHelper.getContentTypes(params, chromeShareExtras),
-                    chromeShareExtras.getDetailedContentType(), isMultiWindow);
-        }
+        List<FirstPartyOption> options = getFirstPartyOptions(
+                ShareContentTypeHelper.getContentTypes(params, chromeShareExtras),
+                chromeShareExtras.getDetailedContentType(), isMultiWindow);
         assert options.size() <= MAX_ACTION_SUPPORTED;
         for (var option : options) {
             mCustomActions.add(shareActionFromFirstPartyOption(option));
@@ -158,12 +152,9 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 .setDisableForMultiWindow(true)
                 .setOnClickCallback((view) -> {
                     mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
-                    // Share the page URL for long screenshot.
-                    String pageUrl =
-                            mTabProvider.get() == null ? "" : mTabProvider.get().getUrl().getSpec();
-                    LongScreenshotsCoordinator coordinator = LongScreenshotsCoordinator.create(
-                            mActivity, mTabProvider.get(), pageUrl, mChromeOptionShareCallback,
-                            mBottomSheetController, null, /*bypassPreviewDialog*/ true);
+                    LongScreenshotsCoordinator coordinator =
+                            LongScreenshotsCoordinator.create(mActivity, mTabProvider.get(), mUrl,
+                                    mChromeOptionShareCallback, mBottomSheetController, null);
                     coordinator.captureScreenshot();
                 })
                 .build();
