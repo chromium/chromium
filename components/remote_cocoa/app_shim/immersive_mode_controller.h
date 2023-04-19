@@ -72,6 +72,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Stop observing child windows of `window`.
   void StopObservingChildWindows(NSWindow* window);
 
+  // Return true if the child window should trigger OnChildWindowAdded and
+  // OnChildWindowRemoved events, otherwise return false.
+  // Called for browser window children that survive the transition to
+  // fullscreen.
+  virtual bool ShouldObserveChildWindow(NSWindow* child);
+
   NSWindow* browser_window() { return browser_window_; }
   NSWindow* overlay_window() { return overlay_window_; }
   BridgedContentView* overlay_content_view() { return overlay_content_view_; }
@@ -92,9 +98,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   }
 
  private:
-  // Reparent children of `source` to `target`.
-  void ReparentChildWindows(NSWindow* source, NSWindow* target);
-
   bool enabled_ = false;
 
   NSWindow* const browser_window_;

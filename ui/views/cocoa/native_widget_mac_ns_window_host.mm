@@ -218,12 +218,6 @@ class BridgedNativeWidgetHostDummy
     bool was_handled = false;
     std::move(callback).Run(was_handled);
   }
-  void BubbleAnchorViewContainedInWidget(
-      uint64_t widget_id,
-      BubbleAnchorViewContainedInWidgetCallback callback) override {
-    bool contained = false;
-    std::move(callback).Run(contained);
-  }
 };
 
 std::map<uint64_t, NativeWidgetMacNSWindowHost*>& GetIdToWidgetHostImplMap() {
@@ -1400,38 +1394,6 @@ bool NativeWidgetMacNSWindowHost::HandleAccelerator(
   return true;
 }
 
-bool NativeWidgetMacNSWindowHost::BubbleAnchorViewContainedInWidget(
-    uint64_t widget_id,
-    bool* contained) {
-  *contained = false;
-  NativeWidgetMacNSWindowHost* window_host = GetFromId(widget_id);
-  if (!window_host) {
-    return true;
-  }
-  views::Widget* target_widget = window_host->native_widget_mac()->GetWidget();
-  if (!target_widget) {
-    return true;
-  }
-  views::WidgetDelegate* widget_delegate =
-      native_widget_mac()->GetWidget()->widget_delegate();
-  if (!widget_delegate) {
-    return true;
-  }
-  views::BubbleDialogDelegate* bubble_dialog =
-      widget_delegate->AsBubbleDialogDelegate();
-  if (!bubble_dialog) {
-    return true;
-  }
-
-  views::View* anchor_view = bubble_dialog->GetAnchorView();
-  if (anchor_view && target_widget->GetContentsView()->Contains(anchor_view)) {
-    *contained = true;
-    return true;
-  }
-
-  return true;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost,
 // remote_cocoa::mojom::NativeWidgetNSWindowHost synchronous callbacks:
@@ -1603,14 +1565,6 @@ void NativeWidgetMacNSWindowHost::HandleAccelerator(
   bool was_handled = false;
   HandleAccelerator(accelerator, require_priority_handler, &was_handled);
   std::move(callback).Run(was_handled);
-}
-
-void NativeWidgetMacNSWindowHost::BubbleAnchorViewContainedInWidget(
-    uint64_t widget_id,
-    BubbleAnchorViewContainedInWidgetCallback callback) {
-  bool contained = false;
-  BubbleAnchorViewContainedInWidget(widget_id, &contained);
-  std::move(callback).Run(contained);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

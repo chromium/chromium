@@ -261,9 +261,6 @@ ImmersiveModeController::~ImmersiveModeController() {
   if (@available(macOS 11.0, *)) {
     browser_window_.titlebarSeparatorStyle = NSTitlebarSeparatorStyleAutomatic;
   }
-
-  // Move sub-widgets back to the browser widget.
-  ReparentChildWindows(overlay_window_, browser_window_);
 }
 
 void ImmersiveModeController::Enable() {
@@ -288,10 +285,6 @@ void ImmersiveModeController::Enable() {
       constraintEqualToAnchor:overlay_content_view_.superview.centerYAnchor]
       .active = YES;
 
-  // Watch for child windows. When they are added the overlay view will be
-  // revealed as appropriate.
-  ObserveChildWindows(overlay_window_);
-
   thin_titlebar_view_controller_.get().hidden = YES;
   [browser_window_
       addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
@@ -305,10 +298,19 @@ void ImmersiveModeController::FullscreenTransitionCompleted() {
   fullscreen_transition_complete_ = true;
   UpdateToolbarVisibility(last_used_style_);
 
-  // Move sub-widgets from the browser widget to the overlay widget so that
-  // they are rendered above the toolbar. Do this after the fullscreen
-  // transition is complete.
-  ReparentChildWindows(browser_window_, overlay_window_);
+  //  Establish reveal locks for windows that exist before entering fullscreen,
+  //  such as permission popups and the find bar. Do this after the fullscreen
+  //  transition has ended to avoid graphical flashes during the animation.
+  for (NSWindow* child in overlay_window_.childWindows) {
+    if (!ShouldObserveChildWindow(child)) {
+      continue;
+    }
+    OnChildWindowAdded(child);
+  }
+
+  // Watch for child windows. When they are added the overlay view will be
+  // revealed as appropriate.
+  ObserveChildWindows(overlay_window_);
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
@@ -419,6 +421,10 @@ void ImmersiveModeController::StopObservingChildWindows(NSWindow* window) {
   widget_window.childWindowRemovedHandler = nil;
 }
 
+bool ImmersiveModeController::ShouldObserveChildWindow(NSWindow* child) {
+  return true;
+}
+
 void ImmersiveModeController::OnChildWindowAdded(NSWindow* child) {
   // When windows are re-ordered they get removed and re-added triggering
   // OnChildWindowRemoved and OnChildWindowAdded calls.
@@ -435,20 +441,6 @@ void ImmersiveModeController::OnChildWindowRemoved(NSWindow* child) {
   if (base::Contains(window_lock_received_, child)) {
     window_lock_received_.erase(child);
     RevealUnlock();
-  }
-}
-
-void ImmersiveModeController::ReparentChildWindows(NSWindow* source,
-                                                   NSWindow* target) {
-  NativeWidgetNSWindowBridge* source_bridge =
-      NativeWidgetNSWindowBridge::GetFromNativeWindow(source);
-  NativeWidgetNSWindowBridge* target_bridge =
-      NativeWidgetNSWindowBridge::GetFromNativeWindow(target);
-
-  // TODO(kerenzhu): DCHECK(source_bridge && target_bridge)
-  // Only in unittests the associated bridges might not exist.
-  if (source_bridge && target_bridge) {
-    source_bridge->MoveChildrenTo(target_bridge, /*anchored_only=*/true);
   }
 }
 

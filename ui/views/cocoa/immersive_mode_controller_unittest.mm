@@ -256,8 +256,9 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
 // Test ImmersiveModeController toolbar visibility.
 TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
   // Controller under test.
-  auto immersive_mode_controller = std::make_unique<ImmersiveModeController>(
-      browser(), overlay(), base::DoNothing());
+  auto immersive_mode_controller =
+      std::make_unique<ImmersiveModeTabbedController>(
+          browser(), overlay(), tab_overlay(), base::DoNothing());
   immersive_mode_controller->Enable();
 
   // The controller will be hidden until the fullscreen transition is complete.

@@ -298,13 +298,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // update widget and compositor size.
   void UpdateWindowGeometry();
 
-  // Move `child_windows_` to `target`.
-  // Optionally set `anchored_only` to true, which will only move children that
-  // are anchored to the target window. Currently only BubbleWidgets with a
-  // BubbleDialogDelegate are supported.
-  void MoveChildrenTo(NativeWidgetNSWindowBridge* target,
-                      bool anchored_only = false);
-
   // Is immersive fullscreen enabled. True will be returned at the start of the
   // fullscreen transition.
   bool ImmersiveFullscreenIsEnabled();

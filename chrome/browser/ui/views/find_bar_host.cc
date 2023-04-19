@@ -431,6 +431,12 @@ void FindBarHost::UnregisterAccelerators() {
   DropdownBarHost::UnregisterAccelerators();
 }
 
+#if BUILDFLAG(IS_MAC)
+views::Widget* FindBarHost::GetHostWidget() {
+  return host();
+}
+#endif
+
 void FindBarHost::OnVisibilityChanged() {
   // Tell the immersive mode controller about the find bar's bounds. The
   // immersive mode controller uses the bounds to keep the top-of-window views

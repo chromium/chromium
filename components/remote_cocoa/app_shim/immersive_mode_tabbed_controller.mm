@@ -225,6 +225,14 @@ void ImmersiveModeTabbedController::OnChildWindowRemoved(NSWindow* child) {
   ImmersiveModeController::OnChildWindowRemoved(child);
 }
 
+bool ImmersiveModeTabbedController::ShouldObserveChildWindow(NSWindow* child) {
+  // Filter out the `tab_window_`.
+  if (child == tab_window_) {
+    return false;
+  }
+  return ImmersiveModeController::ShouldObserveChildWindow(child);
+}
+
 bool ImmersiveModeTabbedController::IsTabbed() {
   return true;
 }
