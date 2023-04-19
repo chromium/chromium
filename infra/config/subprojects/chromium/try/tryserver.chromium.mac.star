@@ -118,9 +118,7 @@ try_.orchestrator_builder(
         "ci/Mac12 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
-        # TODO(crbug.com/1380184) Once the GPU test capacity situation is
-        # resolved, restore this mirror.
-        # "ci/Mac Retina Release (AMD)",
+        "ci/Mac Retina Release (AMD)",
     ],
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(
