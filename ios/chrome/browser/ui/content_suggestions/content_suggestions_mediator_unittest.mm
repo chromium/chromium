@@ -142,6 +142,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IOSChromeScopedTestingLocalState local_state_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
@@ -281,4 +282,14 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
       IOSContentSuggestionsActionType::kShortcuts, 1);
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
+}
+
+// Tests that the reload logic (e.g. setting the consumer) triggers the correct
+// consumer calls when the Magic Stack feature is enabled.
+TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
+  scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
+  OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
+  OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
+  mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

@@ -220,6 +220,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if (![self shouldHideShortcutsForTileAblation]) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
+  if (IsMagicStackEnabled()) {
+    [self.consumer setMagicStackOrder:@[
+      @(int(ContentSuggestionsModuleType::kShortcuts))
+    ]];
+  }
 }
 
 - (void)blockMostVisitedURL:(GURL)URL {

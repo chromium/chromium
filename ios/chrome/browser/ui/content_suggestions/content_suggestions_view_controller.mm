@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/action_list_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -80,8 +82,8 @@ const float kBottomStackViewPadding = 6.0f;
 // List of all of the Most Visited views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
-// Width Anchor of the Shortcuts container.
-@property(nonatomic, strong) NSLayoutConstraint* shortcutsContainerWidthAnchor;
+// Module Container for the Shortcuts when being shown in Magic Stack.
+@property(nonatomic, strong) ActionListModule* shortcutsModuleContainer;
 // StackView holding all of `shortcutsViews`.
 @property(nonatomic, strong) UIStackView* shortcutsStackView;
 // List of all of the Shortcut views.
@@ -89,7 +91,12 @@ const float kBottomStackViewPadding = 6.0f;
     NSMutableArray<ContentSuggestionsShortcutTileView*>* shortcutsViews;
 @end
 
-@implementation ContentSuggestionsViewController
+@implementation ContentSuggestionsViewController {
+  UIScrollView* _magicStackScrollView;
+  BOOL _shouldShowMagicStack;
+  NSArray<NSNumber*>* _magicStackModuleOrder;
+  NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
+}
 
 - (instancetype)init {
   return [super initWithNibName:nil bundle:nil];
@@ -173,26 +180,8 @@ const float kBottomStackViewPadding = 6.0f;
     [self populateMostVisitedModule];
   }
   if (self.shortcutsViews) {
-    self.shortcutsStackView = [[UIStackView alloc] init];
-    self.shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
-    self.shortcutsStackView.spacing = horizontalSpacing;
-    self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
-    NSUInteger index = 0;
-    for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-      view.accessibilityIdentifier = [NSString
-          stringWithFormat:
-              @"%@%li",
-              kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
-      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(contentSuggestionsElementTapped:)];
-      [view addGestureRecognizer:tapRecognizer];
-      [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-      [self.shortcutsStackView addArrangedSubview:view];
-      index++;
-    }
-
+    self.shortcutsStackView = [self createShortcutsStackView];
+    if (!_shouldShowMagicStack) {
       [self addUIElement:self.shortcutsStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
       CGFloat width =
@@ -205,6 +194,12 @@ const float kBottomStackViewPadding = 6.0f;
         [self.shortcutsStackView.heightAnchor
             constraintGreaterThanOrEqualToConstant:height]
       ]];
+    }
+  }
+
+  if (_shouldShowMagicStack) {
+    CHECK(IsMagicStackEnabled());
+    [self createMagicStack];
   }
 }
 
@@ -384,6 +379,11 @@ const float kBottomStackViewPadding = 6.0f;
   }
 }
 
+- (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
+  _shouldShowMagicStack = YES;
+  _magicStackModuleOrder = order;
+}
+
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
   if ([self.mostVisitedViews count] > 0) {
@@ -392,10 +392,15 @@ const float kBottomStackViewPadding = 6.0f;
                   .height +
               kMostVisitedBottomMargin;
   }
-  if ([self.shortcutsViews count] > 0) {
-    height += MostVisitedCellSize(
-                  UIApplication.sharedApplication.preferredContentSizeCategory)
-                  .height;
+  if (_shouldShowMagicStack) {
+    height += _magicStackScrollView.contentSize.height;
+  } else {
+    if ([self.shortcutsViews count] > 0) {
+      height +=
+          MostVisitedCellSize(
+              UIApplication.sharedApplication.preferredContentSizeCategory)
+              .height;
+    }
   }
   if (self.returnToRecentTabTile) {
     height += ReturnToRecentTabHeight();
@@ -462,6 +467,17 @@ const float kBottomStackViewPadding = 6.0f;
   }
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass) {
+    _magicStackScrollViewWidthAnchor.constant = [MagicStackModuleContainer
+        moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  }
+}
+
 #pragma mark - Private
 
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
@@ -512,6 +528,76 @@ const float kBottomStackViewPadding = 6.0f;
     [self.mostVisitedTapRecognizers addObject:tapRecognizer];
     [self.mostVisitedStackView addArrangedSubview:view];
   }
+}
+
+- (UIStackView*)createShortcutsStackView {
+  UIStackView* shortcutsStackView = [[UIStackView alloc] init];
+  shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
+  shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
+  shortcutsStackView.spacing =
+      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
+  shortcutsStackView.alignment = UIStackViewAlignmentTop;
+  NSUInteger index = 0;
+  for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
+    view.accessibilityIdentifier = [NSString
+        stringWithFormat:
+            @"%@%li", kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
+            index];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(contentSuggestionsElementTapped:)];
+    [view addGestureRecognizer:tapRecognizer];
+    [self.mostVisitedTapRecognizers addObject:tapRecognizer];
+    [shortcutsStackView addArrangedSubview:view];
+    index++;
+  }
+  return shortcutsStackView;
+}
+
+- (void)createMagicStack {
+  CGFloat width = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  _magicStackScrollView = [[UIScrollView alloc] init];
+  [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
+  _magicStackScrollView.clipsToBounds = NO;
+  [self addUIElement:_magicStackScrollView
+      withCustomBottomSpacing:kMostVisitedBottomMargin];
+
+  UIStackView* magicStack = [[UIStackView alloc] init];
+  magicStack.translatesAutoresizingMaskIntoConstraints = NO;
+  magicStack.axis = UILayoutConstraintAxisHorizontal;
+  magicStack.distribution = UIStackViewDistributionEqualSpacing;
+  magicStack.spacing = 10;
+  magicStack.alignment = UIStackViewAlignmentCenter;
+  [_magicStackScrollView addSubview:magicStack];
+
+  // Add Magic Stack modules in order dictated by `_magicStackModuleOrder`.
+  for (NSNumber* moduleType in _magicStackModuleOrder) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[moduleType intValue];
+    switch (type) {
+      case ContentSuggestionsModuleType::kShortcuts:
+        self.shortcutsModuleContainer = [[ActionListModule alloc]
+            initWithContentView:self.shortcutsStackView
+                           type:type];
+        [magicStack addArrangedSubview:self.shortcutsModuleContainer];
+        break;
+      default:
+        break;
+    }
+  }
+  AddSameConstraints(magicStack, _magicStackScrollView);
+  // Define width of ScrollView. Instrinsic content height of the
+  // StackView within the ScrollView will define the height of the
+  // ScrollView.
+  _magicStackScrollViewWidthAnchor =
+      [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
+  [NSLayoutConstraint activateConstraints:@[
+    // Ensures only horizontal scrolling
+    [magicStack.heightAnchor
+        constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
+    _magicStackScrollViewWidthAnchor
+  ]];
 }
 
 @end

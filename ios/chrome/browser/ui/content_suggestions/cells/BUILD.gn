@@ -4,6 +4,8 @@
 
 source_set("cells") {
   sources = [
+    "action_list_module.h",
+    "action_list_module.mm",
     "content_suggestions_gesture_commands.h",
     "content_suggestions_most_visited_action_item.h",
     "content_suggestions_most_visited_action_item.mm",
@@ -24,6 +26,8 @@ source_set("cells") {
     "content_suggestions_tile_layout_util.mm",
     "content_suggestions_tile_view.h",
     "content_suggestions_tile_view.mm",
+    "magic_stack_module_container.h",
+    "magic_stack_module_container.mm",
     "query_suggestion_view.h",
     "query_suggestion_view.mm",
     "suggested_content.h",

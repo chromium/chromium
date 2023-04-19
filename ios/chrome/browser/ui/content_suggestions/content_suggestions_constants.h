@@ -8,11 +8,10 @@
 #import <UIKit/UIKit.h>
 
 // Enum specifying the type of Content Suggestions a module is showing.
-typedef NS_ENUM(int32_t, ContentSuggestionsModuleType) {
-  ContentSuggestionsModuleTypeMostVisited,
-  ContentSuggestionsModuleTypeShortcuts,
-  ContentSuggestionsModuleTypeReturnToRecentTab,
-  ContentSuggestionsModuleTypeTrendingQueries,
+enum class ContentSuggestionsModuleType {
+  kMostVisited,
+  kShortcuts,
+  kReturnToRecentTab,
 };
 
 // Represents the content suggestions collection view.

@@ -45,6 +45,10 @@
 // `config`.
 - (void)updateMostVisitedTileConfig:(ContentSuggestionsMostVisitedItem*)config;
 
+// Indicates to the consumer to set the Magic Stack module order as listed in
+// `order`.
+- (void)setMagicStackOrder:(NSArray<NSNumber*>*)order;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSUMER_H_
