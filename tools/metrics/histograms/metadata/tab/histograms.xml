@@ -39,23 +39,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Inactive" summary="inactive"/>
 </variants>
 
-<variants name="TabCreatedReason">
-  <variant name=".FromExternalApp"
-      summary="This bucket is for any tabs that are created because of custom
-               tabs or intends from other apps. This includes tab creation
-               via intent from other app, creation via homescreen link,
-               creation via custom tab."/>
-  <variant name=".FromManuallyCreated"
-      summary="This bucket is for any tabs that are created manually. This
-               includes new tab creation from toolbar menu, creation from
-               long press open, creation at tab switcher, creation from
-               launcher shortcut menu by long press the Chrome icon."/>
-  <variant name=".FromOthers" summary="This is the default bucket."/>
-  <variant name=".FromTargetBlank"
-      summary="This bucket is for any tabs that were created from a target
-               blank link. e.g. tehchmeme.com will create tabs this way."/>
-</variants>
-
 <variants name="TabDiscardReason">
   <variant name=".External"
       summary="from outside of TabManager (e.g. by an extension)"/>
@@ -2351,46 +2334,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Tasks.AverageTabGroupSize" units="tabs"
-    expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The average tab group size, average number of tabs in a group, on a cold
-    start after all tabs are restored.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.DuplicatedTab.DuplicatedTabCount" units="tabs"
-    expires_after="2020-06-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    During tab restoration, a tab is considered as a duplicated tab when it has
-    an identical url with another restored tab.
-
-    This histogram records the number of duplicated tabs on a cold start after
-    all tabs are restored. The possible range for this number is from 0 to total
-    number of restored tabs minus 1. In other words, this number is equals to
-    total number of restored tabs minus the number of unique URLs.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.DuplicatedTab.DuplicatedTabRatio" units="%"
-    expires_after="2020-06-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    During tab restoration, a tab is considered as a duplicated tab when it has
-    an identical url with another restored tab.
-
-    This histogram records the ratio of duplicated tabs to the total number of
-    tabs on a cold start after all tabs are restored. This ratio will never
-    reach 100%, since the highest possible number of duplicated tabs is total
-    number of restored tabs minus 1.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.Tasks.OrderValidOnStartup" units="boolean"
     expires_after="2023-09-17">
   <owner>ckitagawa@chromium.org</owner>
@@ -2410,68 +2353,6 @@ chromium-metrics-reviews@google.com.
     TabModel would have been added at the correct position if
     TabGroupModelFilter had not interved to move it so it respected group
     position. Recorded each time a tab is added to the TabModel.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabCreated.Count{TabCreatedReason}" units="tabs"
-    expires_after="2020-06-30">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    This recorded value is the number of currently open tabs that were created
-    from a given source. This is recorded when entering the tab switcher mode.
-    {TabCreatedReason}
-  </summary>
-  <token key="TabCreatedReason" variants="TabCreatedReason"/>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabCreated.Percent{TabCreatedReason}" units="%"
-    expires_after="2020-06-30">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    The recorded value is the percentage of the number of currently open tabs
-    that are created from a given source, relative to the total number of
-    currently open tabs. This is recorded when entering the tab switcher mode.
-    {TabCreatedReason}
-  </summary>
-  <token key="TabCreatedReason" variants="TabCreatedReason"/>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabGroupCount" units="groups" expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The number of tab groups on a cold start after all tabs are restored.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabGroupDensity" units="%" expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The tab group density, the ratio of the number of tab groups to the total
-    number of tabs, on a cold start after all tabs are restored.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabsInGroupCount" units="tabs" expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The number of tabs is belonging to a tab group on a cold start after all
-    tabs are restored.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabsInGroupRatio" units="%" expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The ratio of all tabs in tab groups to the total number of tabs on a cold
-    start after all tabs are restored.
   </summary>
 </histogram>
 

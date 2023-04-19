@@ -2641,7 +2641,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             final int layoutTypeToShowFinal = layoutTypeToShow;
             getCompositorViewHolderSupplier().get().hideKeyboard(
                     () -> mLayoutManager.showLayout(layoutTypeToShowFinal, true));
-            TasksUma.recordTabLaunchType(getCurrentTabModel());
         }
     }
 
