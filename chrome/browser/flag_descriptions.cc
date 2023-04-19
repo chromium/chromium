@@ -6641,12 +6641,6 @@ const char kIntentChipSkipsPickerDescription[] =
     "are installed for a URL, the intent picker will still be shown for "
     "disambigation.";
 
-const char kIntentChipAppIconName[] =
-    "Show app icons in the link capturing intent chip";
-const char kIntentChipAppIconDescription[] =
-    "When enabled, the intent chip in the Omnibox will show the app icon for "
-    "the app which can handle the current URL.";
-
 const char kKioskEnableAppServiceName[] = "Enable App Service in Kiosk.";
 const char kKioskEnableAppServiceDescription[] =
     "Uses App Service to install web apps and launch both Chrome apps and web "

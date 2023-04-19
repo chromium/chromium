@@ -9142,10 +9142,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipSkipsPicker)},
 
-    {"intent-chip-app-icon", flag_descriptions::kIntentChipAppIconName,
-     flag_descriptions::kIntentChipAppIconDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(apps::features::kIntentChipAppIcon)},
-
     {"sync-chromeos-explicit-passphrase-sharing",
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingName,
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingDescription,

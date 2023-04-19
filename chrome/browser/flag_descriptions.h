@@ -3827,9 +3827,6 @@ extern const char kDisableOfficeEditingComponentAppDescription[];
 extern const char kIntentChipSkipsPickerName[];
 extern const char kIntentChipSkipsPickerDescription[];
 
-extern const char kIntentChipAppIconName[];
-extern const char kIntentChipAppIconDescription[];
-
 extern const char kKioskEnableAppServiceName[];
 extern const char kKioskEnableAppServiceDescription[];
 
