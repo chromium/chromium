@@ -344,6 +344,9 @@ if (is_android || is_chromeos) {
     android_prebuilt_arch = "android-arm64"
   } else if (current_cpu == "mips64el") {
     android_prebuilt_arch = "android-mips64"
+  } else if (current_cpu == "riscv64") {
+    # Place holder for riscv64 support, not tested.
+    android_prebuilt_arch = "android-riscv64"
   } else {
     assert(false, "Need android libgcc support for your target arch.")
   }
