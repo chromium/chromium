@@ -170,16 +170,19 @@ class NearbyPresenceServerClientImplTest : public testing::Test {
         std::make_unique<FakeNearbyApiCallFlow>();
     api_call_flow_ = api_call_flow.get();
 
-    client_ = std::make_unique<NearbyPresenceServerClientImpl>(
+    client_ = NearbyPresenceServerClientImpl::Factory::Create(
         std::move(api_call_flow), identity_test_environment_.identity_manager(),
         shared_factory_);
   }
 
   const std::string& http_method() { return api_call_flow_->http_method_; }
+
   const GURL& request_url() { return api_call_flow_->request_url_; }
+
   const std::string& serialized_request() {
     return api_call_flow_->serialized_request_;
   }
+
   const NearbyApiCallFlow::QueryParameters& request_as_query_parameters() {
     return api_call_flow_->request_as_query_parameters_;
   }

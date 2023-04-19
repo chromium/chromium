@@ -45,36 +45,30 @@ namespace ash::nearby::presence {
 // will be deleted in favor of this class.
 class NearbyPresenceServerClientImpl : public NearbyPresenceServerClient {
  public:
-  // Implementation of NearbyPresenceServerClientFactory.
-  class FactoryImpl : public NearbyPresenceServerClient::Factory {
+  // Interface for creating NearbyPresenceServerClient instances. Because each
+  // NearbyPresenceServerClient instance can only be used for one API call, a
+  // factory makes it easier to make multiple requests in sequence or in
+  // parallel.
+  class Factory {
    public:
-    // |identity_manager|: Gets the user's access token.
-    //     Not owned, so |identity_manager| needs to outlive this object.
-    // |url_loader_factory|: Used to make the HTTP requests.
-    FactoryImpl(
+    static std::unique_ptr<NearbyPresenceServerClient> Create(
+        std::unique_ptr<NearbyApiCallFlow> api_call_flow,
         signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-    ~FactoryImpl() override;
+    static void SetFactoryForTesting(Factory* test_factory);
 
-    FactoryImpl(FactoryImpl&) = delete;
-    FactoryImpl& operator=(FactoryImpl&) = delete;
-
-    // NearbyPresenceServerClient::Factory:
-    std::unique_ptr<NearbyPresenceServerClient> CreateInstance() override;
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<NearbyPresenceServerClient> CreateInstance(
+        std::unique_ptr<NearbyApiCallFlow> api_call_flow,
+        signin::IdentityManager* identity_manager,
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
 
    private:
-    const raw_ptr<signin::IdentityManager> identity_manager_;
-    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+    static Factory* g_test_factory_;
   };
 
-  // Creates the client using |url_loader_factory| to make the HTTP request
-  // through |api_call_flow|.
-  NearbyPresenceServerClientImpl(
-      std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow,
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~NearbyPresenceServerClientImpl() override;
-
   NearbyPresenceServerClientImpl(NearbyPresenceServerClientImpl&) = delete;
   NearbyPresenceServerClientImpl& operator=(NearbyPresenceServerClientImpl&) =
       delete;
@@ -90,6 +84,13 @@ class NearbyPresenceServerClientImpl : public NearbyPresenceServerClient {
   std::string GetAccessTokenUsed() override;
 
  private:
+  // Creates the client using |url_loader_factory| to make the HTTP request
+  // through |api_call_flow|.
+  NearbyPresenceServerClientImpl(
+      std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   enum class RequestType { kGet, kPost, kPatch };
 
   // Starts a call to the API given by |request_url|. The client first fetches

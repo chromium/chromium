@@ -26,18 +26,6 @@ namespace ash::nearby::presence {
 // instance for each request you make. DO NOT REUSE.
 class NearbyPresenceServerClient {
  public:
-  // Interface for creating NearbyPresenceServerClient instances. Because each
-  // NearbyPresenceServerClient instance can only be used for one API call, a
-  // factory makes it easier to make multiple requests in sequence or in
-  // parallel.
-  class Factory {
-   public:
-    Factory() = default;
-    virtual ~Factory() = default;
-
-    virtual std::unique_ptr<NearbyPresenceServerClient> CreateInstance() = 0;
-  };
-
   using ErrorCallback = base::OnceCallback<void(ash::nearby::NearbyHttpError)>;
   using ListPublicCertificatesCallback = base::OnceCallback<void(
       const ash::nearby::proto::ListPublicCertificatesResponse&)>;

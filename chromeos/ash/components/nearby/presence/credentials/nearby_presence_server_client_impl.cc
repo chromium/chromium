@@ -183,6 +183,35 @@ GetListPublicCertificatesAnnotation() {
 
 namespace ash::nearby::presence {
 
+// static
+NearbyPresenceServerClientImpl::Factory*
+    NearbyPresenceServerClientImpl::Factory::g_test_factory_ = nullptr;
+
+// static
+std::unique_ptr<NearbyPresenceServerClient>
+NearbyPresenceServerClientImpl::Factory::Create(
+    std::unique_ptr<NearbyApiCallFlow> api_call_flow,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  if (g_test_factory_) {
+    return g_test_factory_->CreateInstance(std::move(api_call_flow),
+                                           identity_manager,
+                                           std::move(url_loader_factory));
+  }
+
+  return base::WrapUnique(new NearbyPresenceServerClientImpl(
+      std::move(api_call_flow), identity_manager,
+      std::move(url_loader_factory)));
+}
+
+// static
+void NearbyPresenceServerClientImpl::Factory::SetFactoryForTesting(
+    Factory* test_factory) {
+  g_test_factory_ = test_factory;
+}
+
+NearbyPresenceServerClientImpl::Factory::~Factory() = default;
+
 NearbyPresenceServerClientImpl::NearbyPresenceServerClientImpl(
     std::unique_ptr<NearbyApiCallFlow> api_call_flow,
     signin::IdentityManager* identity_manager,
@@ -324,21 +353,6 @@ void NearbyPresenceServerClientImpl::OnFlowSuccess(
 
 void NearbyPresenceServerClientImpl::OnApiCallFailed(NearbyHttpError error) {
   std::move(error_callback_).Run(error);
-}
-
-NearbyPresenceServerClientImpl::FactoryImpl::FactoryImpl(
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
-
-NearbyPresenceServerClientImpl::FactoryImpl::~FactoryImpl() = default;
-
-std::unique_ptr<NearbyPresenceServerClient>
-NearbyPresenceServerClientImpl::FactoryImpl::CreateInstance() {
-  return std::make_unique<NearbyPresenceServerClientImpl>(
-      std::make_unique<NearbyApiCallFlowImpl>(), identity_manager_,
-      url_loader_factory_);
 }
 
 }  // namespace ash::nearby::presence
