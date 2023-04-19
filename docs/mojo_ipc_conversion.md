@@ -85,9 +85,10 @@ configure some new behavior. The implementation may be inadvertently relying on
 this message arriving *before* some other tangentially related message sent to
 the same frame shortly after the same navigation event.
 
-Mojo does not (and in fact cannot) make any strict ordering guarantees between
-separate message pipes, as message pipes may be freely moved across process
-boundaries and thus cannot necessarily share a common FIFO at all times.
+While Mojo guarantees strict ordering within each message pipe, Mojo does not
+(and in fact cannot) make any strict ordering guarantees between separate
+message pipes, as message pipes may be freely moved across process boundaries
+and thus cannot necessarily share a common FIFO at all times.
 
 If the two messages described above were moved to separate Mojo interfaces on
 separate message pipes, renderer behavior could break as the first message may
