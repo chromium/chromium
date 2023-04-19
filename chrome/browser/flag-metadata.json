@@ -1688,8 +1688,8 @@
   },
   {
     "name": "drop-input-events-before-first-paint",
-    "owners": [ "mehdika", "blink-interactions-team@google.com" ],
-    "expiry_milestone": 114
+    "owners": [ "mustaq", "blink-interactions-team@google.com" ],
+    "expiry_milestone": 117
   },
   {
     "name": "dynamic-color-gamut",
