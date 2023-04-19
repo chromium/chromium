@@ -136,11 +136,6 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
 }
 
 void VideoDecoder::Initialize(bool resolution_changed) {
-  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
-  //   after b/193237015 is resolved.
-  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
-    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
-
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
 
   NegotiateCAPTUREFormat();
@@ -183,12 +178,6 @@ void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, display_resolution_, V4L2_MEMORY_MMAP,
       kNumberOfBuffersInOutputQueue);
   OUTPUT_queue_->set_fourcc(compressed_fourcc);
-
-  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
-  //   after b/193237015 is resolved.
-  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc())) {
-    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
-  }
 
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
   v4l2_ioctl_->ReqBufs(OUTPUT_queue_);

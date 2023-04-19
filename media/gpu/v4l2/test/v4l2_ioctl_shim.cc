@@ -367,6 +367,14 @@ bool V4L2IoctlShim::EnumFrameSizes(uint32_t fourcc) const {
 void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
   struct v4l2_format fmt;
 
+  if (queue->type() == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
+    // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
+    //   after b/193237015 is resolved.
+    if (!EnumFrameSizes(queue->fourcc())) {
+      LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
+    }
+  }
+
   memset(&fmt, 0, sizeof(fmt));
   fmt.type = queue->type();
   fmt.fmt.pix_mp.pixelformat = queue->fourcc();
