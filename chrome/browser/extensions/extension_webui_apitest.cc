@@ -228,10 +228,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, CanEmbedExtensionOptions) {
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 }
 
-// Tests that an <extensionoptions> guest view can access the chrome.storage
-// API, a privileged extension API.
+// Tests that an <extensionoptions> guest view can access appropriate APIs,
+// including chrome.storage (semi-privileged; exposed to trusted contexts and
+// contexts like content scripts and embedded resources in platform apps) and
+// chrome.tabs (privileged; only exposed to trusted contexts).
 IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
-                       ExtensionOptionsCanAccessStorage) {
+                       ExtensionOptionsCanAccessAppropriateAPIs) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("extension_options")
                         .AppendASCII("extension_with_options_page"));
@@ -239,6 +241,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
 
   auto* guest_rfh = OpenExtensionOptions(extension);
 
+  // Check access to the storage API, both for getting/setting values and being
+  // notified of changes.
   const std::string storage_key = "test";
   const int storage_value = 42;
 
@@ -278,6 +282,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
                                      storage_key)));
 
   EXPECT_EQ(storage_value, content::EvalJs(guest_rfh, "onChangedPromise;"));
+
+  // Now check access to the tabs API, which is restricted to
+  // Feature::BLESSED_EXTENSION_CONTEXTs (which this should be).
+  static constexpr char kTabsExecution[] =
+      R"(new Promise(r => {
+           chrome.tabs.create({}, (tab) => {
+             let message;
+             // Sanity check that it looks and smells like a tab.
+             if (tab && tab.index) {
+               message = 'success';
+             } else {
+               message = chrome.runtime.lastError ?
+                             chrome.runtime.lastError.message :
+                             'Unknown error';
+             }
+             r(message);
+           });
+         });)";
+  EXPECT_EQ("success", content::EvalJs(guest_rfh, kTabsExecution));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
