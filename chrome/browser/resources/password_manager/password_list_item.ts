@@ -103,7 +103,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   private getTitle_() {
-    const term = this.searchTerm.trim();
+    const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
       return this.item.name;
     }
