@@ -32,7 +32,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/safe_strerror.h"
@@ -48,6 +47,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -109,7 +109,7 @@ std::string GenerateAbstractAddress() {
   std::string address(kArcVmBootNotificationServerAddressPrefix,
                       sizeof(kArcVmBootNotificationServerAddressPrefix) - 1);
   return address.append("-" +
-                        base::GUID::GenerateRandomV4().AsLowercaseString());
+                        base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 bool HasDiskImage(const vm_tools::concierge::StartArcVmRequest& request,
