@@ -678,20 +678,6 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     // where a RenderFrameHost is swapped in.
     if (!frame_tree_node_->frame_tree().IsHidden())
       render_frame_host_->GetView()->Show();
-
-    // TODO(crbug.com/1434403): For same RenderFrameHost, it isn't clear
-    // whether we should start the new content timer, but to be safe, we start
-    // it here. The TODO here is to remove this call when we can.
-    //
-    // Note that this is only OK to do for non-prerender. For prerendering path,
-    // setting this timeout is incorrect because it causes a clear of graphical
-    // output on prerender activation.
-    if (render_frame_host_->lifecycle_state() !=
-        LifecycleStateImpl::kPrerendering) {
-      static_cast<RenderWidgetHostImpl*>(
-          render_frame_host_->GetView()->GetRenderWidgetHost())
-          ->StartNewContentRenderingTimeout();
-    }
   }
 
   // If we are navigating away from a Page that has a form data associated with
@@ -4200,11 +4186,8 @@ void RenderFrameHostManager::CommitPending(
 
   // Make the new view show the contents of old view until it has something
   // useful to show.
-  bool needs_new_content_timeout = false;
-  if (is_main_frame && old_view && old_view != new_view) {
+  if (is_main_frame && old_view && old_view != new_view)
     new_view->TakeFallbackContentFrom(old_view);
-    needs_new_content_timeout = true;
-  }
 
   // The RenderViewHost keeps track of the main RenderFrameHost routing id.
   // If this is committing a main frame navigation, update it and set the
@@ -4336,11 +4319,6 @@ void RenderFrameHostManager::CommitPending(
         render_frame_host_->SetVisibilityForChildViews(true);
       }
     }
-  }
-
-  if (needs_new_content_timeout) {
-    static_cast<RenderWidgetHostImpl*>(new_view->GetRenderWidgetHost())
-        ->StartNewContentRenderingTimeout();
   }
 
   // The process will no longer try to exit, so we can decrement the count.

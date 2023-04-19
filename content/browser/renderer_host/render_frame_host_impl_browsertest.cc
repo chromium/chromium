@@ -116,15 +116,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "third_party/blink/public/mojom/remote_objects/remote_objects.mojom.h"
-#include "ui/android/delegated_frame_host_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if defined(USE_AURA)
-#include "content/browser/renderer_host/delegated_frame_host.h"
-#include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#endif  // defined(USE_AURA)
 
 namespace content {
 namespace {
@@ -7905,88 +7898,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   RenderFrameHostImpl* activated_rfh = web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(prerender_frame_host, activated_rfh);
   EXPECT_EQ(expected_ftn, activated_rfh->owner_);
-}
-
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
-                       NewContentTimeoutIsNotSetInPrerender) {
-  GURL url_a = embedded_test_server()->GetURL("/title1.html");
-  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-
-  // Load a page in the prerender.
-  int host_id = prerender_helper().AddPrerender(prerender_url);
-  RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
-      prerender_helper().GetPrerenderedMainFrameHost(host_id));
-  EXPECT_TRUE(prerender_frame_host);
-  RenderWidgetHostImpl* prerender_rwhi = RenderWidgetHostImpl::From(
-      prerender_frame_host->GetView()->GetRenderWidgetHost());
-  EXPECT_FALSE(prerender_rwhi->IsContentRenderingTimeoutRunning());
-
-  // Activate the prerendered page.
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-
-  RenderFrameHostImpl* activated_rfh = web_contents()->GetPrimaryMainFrame();
-  RenderWidgetHostImpl* activated_rwhi = RenderWidgetHostImpl::From(
-      activated_rfh->GetView()->GetRenderWidgetHost());
-  EXPECT_EQ(activated_rwhi, prerender_rwhi);
-  EXPECT_TRUE(activated_rwhi->IsContentRenderingTimeoutRunning());
-}
-
-// TODO(vmpstr): Android takes the new timeout timer from the fallback render
-// widget host impl. This causes us to clear the surface on showing it. See
-// crbug.com/1423006 for the investigation.
-#if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
-                       DISABLED_ActivationSurfaceRangeIncludesFallback) {
-#else
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
-                       ActivationSurfaceRangeIncludesFallback) {
-#endif
-  GURL url_a = embedded_test_server()->GetURL("/title1.html");
-  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-
-  // Load a page in the prerender.
-  prerender_helper().AddPrerender(prerender_url);
-
-  RenderWidgetHostViewBase* initial_view =
-      RenderWidgetHostImpl::From(web_contents()
-                                     ->GetPrimaryMainFrame()
-                                     ->GetView()
-                                     ->GetRenderWidgetHost())
-          ->GetView();
-
-  viz::SurfaceId initial_surface_id = initial_view->GetCurrentSurfaceId();
-  EXPECT_TRUE(initial_surface_id.is_valid());
-
-  // Activate the prerendered page.
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-
-  RenderWidgetHostViewBase* activated_view =
-      RenderWidgetHostImpl::From(web_contents()
-                                     ->GetPrimaryMainFrame()
-                                     ->GetView()
-                                     ->GetRenderWidgetHost())
-          ->GetView();
-
-  EXPECT_NE(activated_view, initial_view);
-
-#if defined(USE_AURA)
-  DelegatedFrameHost* activated_dfh =
-      static_cast<RenderWidgetHostViewAura*>(activated_view)
-          ->GetDelegatedFrameHostForTesting();
-  viz::SurfaceId fallback_surface_id =
-      activated_dfh->GetFallbackSurfaceIdForTesting();
-  EXPECT_TRUE(initial_surface_id.IsSameOrNewerThan(fallback_surface_id));
-#elif BUILDFLAG(IS_ANDROID)
-  ui::DelegatedFrameHostAndroid* activated_dfh =
-      static_cast<RenderWidgetHostViewAndroid*>(activated_view)
-          ->delegated_frame_host_for_testing();
-  viz::SurfaceId fallback_surface_id =
-      activated_dfh->GetFallbackSurfaceIdForTesting();
-  EXPECT_TRUE(initial_surface_id.IsSameOrNewerThan(fallback_surface_id))
-      << initial_surface_id.ToString() << " " << fallback_surface_id.ToString();
-#endif
 }
 
 using RenderFrameHostImplDeathTest = RenderFrameHostImplBrowserTest;

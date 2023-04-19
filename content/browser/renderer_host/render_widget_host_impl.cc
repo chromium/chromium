@@ -1452,14 +1452,12 @@ void RenderWidgetHostImpl::DidNavigate() {
   if (view_)
     view_->DidNavigate();
 
-  ClearPendingUserActivation();
-}
-
-void RenderWidgetHostImpl::StartNewContentRenderingTimeout() {
-  if (!new_content_rendering_timeout_) {
+  if (!new_content_rendering_timeout_)
     return;
-  }
+
   new_content_rendering_timeout_->Start(new_content_rendering_delay_);
+
+  ClearPendingUserActivation();
 }
 
 void RenderWidgetHostImpl::ForwardMouseEvent(const WebMouseEvent& mouse_event) {
@@ -2335,9 +2333,6 @@ bool RenderWidgetHostImpl::IsContentRenderingTimeoutRunning() const {
 
 void RenderWidgetHostImpl::GetContentRenderingTimeoutFrom(
     RenderWidgetHostImpl* other) {
-  // TODO(vmpstr): Android is the only caller of this function, and it isn't
-  // clear why we should be taking a timer from the fallback surface's timer.
-  // See crbug.com/1423006 for the investigation.
   if (other->IsContentRenderingTimeoutRunning()) {
     new_content_rendering_timeout_->Start(
         other->new_content_rendering_timeout_->GetCurrentDelay());

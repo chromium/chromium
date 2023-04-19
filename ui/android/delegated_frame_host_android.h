@@ -161,8 +161,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   void SetTopControlsVisibleHeight(float height);
 
-  viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
-
  private:
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
