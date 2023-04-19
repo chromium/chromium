@@ -184,6 +184,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/password/password_details",
     "//ios/chrome/browser/ui/settings/password/password_details:password_details_ui",
     "//ios/chrome/browser/ui/settings/price_notifications",
+    "//ios/chrome/browser/ui/settings/price_notifications:utils",
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/safety_check",

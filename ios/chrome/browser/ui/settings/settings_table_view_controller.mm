@@ -102,6 +102,8 @@
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/notifications_settings_observer.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/notifications_settings_util.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -159,6 +161,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ManageSyncSettingsCoordinatorDelegate,
+    NotificationsSettingsObserverDelegate,
     PasswordCheckObserver,
     PasswordsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
@@ -244,6 +247,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TableViewDetailIconItem* _passwordsDetailItem;
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
+  TableViewDetailIconItem* _priceNotificationsItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -274,6 +278,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
+// An observer that tracks whether push notification permission settings have
+// been modified.
+@property(nonatomic, strong)
+    NotificationsSettingsObserver* notificationsObserver;
 
 @end
 
@@ -379,6 +388,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(prefs::kSigninAllowed,
                                                      &_prefChangeRegistrar);
+    _notificationsObserver =
+        [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
+    _notificationsObserver.delegate = self;
 
     _dispatcher = dispatcher;
 
@@ -452,7 +464,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   if (base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
       IsPriceNotificationsEnabled()) {
-    [model addItem:[self priceNotificationsItem]
+    _priceNotificationsItem = [self priceNotificationsItem];
+    [self updateNotificationsDetailText];
+    [model addItem:_priceNotificationsItem
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   }
   [model addItem:[self voiceSearchDetailItem]
@@ -941,9 +955,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return _safetyCheckItem;
 }
 
-- (TableViewItem*)priceNotificationsItem {
+- (TableViewDetailIconItem*)priceNotificationsItem {
   NSString* title = l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_TITLE);
-
   return [self detailItemWithType:SettingsItemTypePriceNotifications
                              text:title
                        detailText:nil
@@ -1864,6 +1877,34 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
+// Updates the string indicating the push notification state.
+- (void)updateNotificationsDetailText {
+  if (!_priceNotificationsItem) {
+    return;
+  }
+
+  NSString* detailText = nil;
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  id<SystemIdentity> identity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  PrefService* prefService = _browserState->GetPrefs();
+  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+  notifications_settings::ClientPermissionState permission_state =
+      notifications_settings::GetNotificationPermissionState(gaiaID,
+                                                             prefService);
+  if (permission_state ==
+      notifications_settings::ClientPermissionState::ENABLED) {
+    detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
+  } else if (permission_state ==
+             notifications_settings::ClientPermissionState::DISABLED) {
+    detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  }
+
+  _priceNotificationsItem.detailText = detailText;
+  [self reconfigureCellsForItems:@[ _priceNotificationsItem ]];
+}
+
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
@@ -2297,6 +2338,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (NSString*)manageSyncSettingsCoordinatorTitle {
   return l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
+}
+
+#pragma mark - NotificationsSettingsObserverDelegate
+
+- (void)notificationsSettingsDidChangeForClient:
+    (PushNotificationClientId)clientID {
+  [self updateNotificationsDetailText];
 }
 
 @end

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/notifications_settings_util.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_alert_presenter.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_consumer.h"
@@ -94,7 +95,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _mobileNotificationItem.accessibilityIdentifier =
         kSettingsTrackingPriceMobileNotificationsCellId;
     _mobileNotificationItem.on =
-        [self prefValueForClient:PushNotificationClientId::kCommerce];
+        notifications_settings::GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kCommerce,
+            base::SysNSStringToUTF8(_identity.gaiaID));
   }
 
   return _mobileNotificationItem;
@@ -145,8 +148,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (type) {
     case ItemTypeMobileNotifications: {
       [self setPreferenceFor:PushNotificationClientId::kCommerce to:value];
-      self.mobileNotificationItem.on =
-          [self prefValueForClient:PushNotificationClientId::kCommerce];
+      self.mobileNotificationItem.on = notifications_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kCommerce,
+              base::SysNSStringToUTF8(_identity.gaiaID));
       if (!value) {
         break;
       }
@@ -179,19 +184,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
-
-// Returns whether the push notification enabled feature's, `client_id`,
-// permission status is enabled or disabled for the current user.
-- (BOOL)prefValueForClient:(PushNotificationClientId)clientID {
-  PushNotificationService* service =
-      GetApplicationContext()->GetPushNotificationService();
-  PushNotificationAccountContextManager* manager =
-      service->GetAccountContextManager();
-
-  return [manager isPushNotificationEnabledForClient:clientID
-                                          forAccount:base::SysNSStringToUTF8(
-                                                         _identity.gaiaID)];
-}
 
 // Updates the current user's permission preference for the given `client_id`.
 - (void)setPreferenceFor:(PushNotificationClientId)clientID to:(BOOL)enabled {

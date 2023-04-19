@@ -7,7 +7,13 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_view_controller.h"
@@ -28,6 +34,10 @@
 @property(nonatomic, strong) PriceNotificationsMediator* mediator;
 // Coordinator for Tracking Price settings menu.
 @property(nonatomic, strong) TrackingPriceCoordinator* trackingPriceCoordinator;
+// An observer that tracks whether push notification permission settings have
+// been modified.
+@property(nonatomic, strong)
+    NotificationsSettingsObserver* notificationsObserver;
 
 @end
 
@@ -47,12 +57,25 @@
 }
 
 - (void)start {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  id<SystemIdentity> identity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  _notificationsObserver =
+      [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
+
   self.viewController = [[PriceNotificationsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
-  self.mediator = [[PriceNotificationsMediator alloc] init];
+  self.mediator =
+      [[PriceNotificationsMediator alloc] initWithPrefService:prefService
+                                                       gaiaID:gaiaID];
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
+  _notificationsObserver.delegate = self.mediator;
   self.viewController.modelDelegate = self.mediator;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
