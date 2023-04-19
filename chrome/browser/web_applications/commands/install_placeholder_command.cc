@@ -37,7 +37,8 @@ InstallPlaceholderCommand::InstallPlaceholderCommand(
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<AppLock>("InstallPlaceholderCommand"),
       profile_(profile),
-      app_id_(GenerateAppId(/*manifest_id=*/"", install_options.install_url)),
+      app_id_(GenerateAppId(/*manifest_id=*/absl::nullopt,
+                            install_options.install_url)),
       lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_options_(install_options),
       callback_(std::move(callback)),
@@ -189,8 +190,8 @@ void InstallPlaceholderCommand::OnInstallFinalized(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetPrefs(),
       app_id,
-      (ConvertExternalInstallSourceToInstallSource(
-          install_options_.install_source)));
+      ConvertExternalInstallSourceToInstallSource(
+          install_options_.install_source));
 
   RecordAppBanner(web_contents_.get(), install_options_.install_url);
 

@@ -64,10 +64,8 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholder) {
   ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   base::test::TestFuture<const AppId&, webapps::InstallResultCode, bool> future;
-  provider()->scheduler().InstallPlaceholder(
-      options, future.GetCallback(), web_contents()->GetWeakPtr()
-
-  );
+  provider()->scheduler().InstallPlaceholder(options, future.GetCallback(),
+                                             web_contents()->GetWeakPtr());
   EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
   const AppId app_id = future.Get<AppId>();
