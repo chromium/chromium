@@ -111,7 +111,7 @@ class RequestManager {
   };
 
   RequestManager(Profile* profile,
-                 raw_ptr<NotificationManagerInterface> notification_manager);
+                 NotificationManagerInterface* notification_manager);
 
   RequestManager(const RequestManager&) = delete;
   RequestManager& operator=(const RequestManager&) = delete;
@@ -170,7 +170,7 @@ class RequestManager {
   };
 
   RequestManager(Profile* profile,
-                 raw_ptr<NotificationManagerInterface> notification_manager,
+                 NotificationManagerInterface* notification_manager,
                  base::TimeDelta timeout);
 
   // Called when a request with |request_id| timeouts.

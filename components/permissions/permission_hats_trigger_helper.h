@@ -96,13 +96,13 @@ class PermissionHatsTriggerHelper {
       PromptParametersForHaTS prompt_parameters);
 
   static OneTimePermissionPromptsDecidedBucket GetOneTimePromptsDecidedBucket(
-      raw_ptr<PrefService> pref_service);
+      PrefService* pref_service);
 
   // Increments the count representing the one time permission prompts seen by
   // the user.
   static void IncrementOneTimePermissionPromptsDecidedIfApplicable(
       ContentSettingsType type,
-      raw_ptr<PrefService> profile);
+      PrefService* profile);
 
   // Bucketing used to categorize users by how many one time permission they
   // have decided.

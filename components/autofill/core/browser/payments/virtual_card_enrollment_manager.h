@@ -100,9 +100,9 @@ class VirtualCardEnrollmentManager {
 
   using RiskAssessmentFunction = base::OnceCallback<void(
       uint64_t obfuscated_gaia_id,
-      raw_ptr<PrefService> user_prefs,
+      PrefService* user_prefs,
       base::OnceCallback<void(const std::string&)> callback,
-      const raw_ptr<content::WebContents> web_contents,
+      content::WebContents* web_contents,
       gfx::Rect window_bounds)>;
 
   using VirtualCardEnrollmentFieldsLoadedCallback = base::OnceCallback<void(
@@ -132,7 +132,7 @@ class VirtualCardEnrollmentManager {
       // to then be used for loading risk data. Otherwise it will always be
       // nullptr, and we should load risk data through |autofill_client_| as we
       // have access to web contents.
-      const raw_ptr<PrefService> user_prefs = nullptr,
+      PrefService* user_prefs = nullptr,
       // Callback that will be run in the Android settings page use cases. It
       // will take in a |callback|, |obfuscated_gaia_id|, and |user_prefs| that
       // will end up being passed into the overloaded risk_util::LoadRiskData()

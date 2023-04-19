@@ -158,7 +158,7 @@ class MockVirtualCardEnrollmentManager
        absl::optional<
            payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
-       const raw_ptr<PrefService> user_prefs,
+       PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
            risk_assessment_function,
        VirtualCardEnrollmentManager::VirtualCardEnrollmentFieldsLoadedCallback

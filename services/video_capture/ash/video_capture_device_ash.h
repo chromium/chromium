@@ -33,7 +33,7 @@ class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
 
   VideoCaptureDeviceAsh(
       mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> proxy_receiver,
-      raw_ptr<video_capture::mojom::Device> device_remote,
+      video_capture::mojom::Device* device_remote,
       base::OnceClosure cleanup_callback);
 
   VideoCaptureDeviceAsh(const VideoCaptureDeviceAsh&) = delete;

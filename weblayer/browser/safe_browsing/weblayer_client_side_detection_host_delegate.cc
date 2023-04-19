@@ -62,7 +62,7 @@ void WebLayerClientSideDetectionHostDelegate::AddReferrerChain(
     GURL current_url,
     const content::GlobalRenderFrameHostId& current_outermost_main_frame_id) {}
 
-raw_ptr<safe_browsing::VerdictCacheManager>
+safe_browsing::VerdictCacheManager*
 WebLayerClientSideDetectionHostDelegate::GetCacheManager() {
   return VerdictCacheManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());

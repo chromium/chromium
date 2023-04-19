@@ -30,8 +30,7 @@ class UserContext;
 // This implementation is only compatible with AuthSession-based API.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
  public:
-  explicit AuthPerformer(
-      base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client);
+  explicit AuthPerformer(UserDataAuthClient* client);
 
   AuthPerformer(const AuthPerformer&) = delete;
   AuthPerformer& operator=(const AuthPerformer&) = delete;

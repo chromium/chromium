@@ -129,8 +129,7 @@ std::unique_ptr<TabContainer> MakeTabContainer(
     TabDragContext* drag_context) {
   if (base::FeatureList::IsEnabled(features::kSplitTabStrip)) {
     return std::make_unique<CompoundTabContainer>(
-        raw_ref<TabContainerController>::from_ptr(tab_strip),
-        hover_card_controller, drag_context, *tab_strip, tab_strip);
+        *tab_strip, hover_card_controller, drag_context, *tab_strip, tab_strip);
   }
   return std::make_unique<TabContainerImpl>(
       *tab_strip, hover_card_controller, drag_context, *tab_strip, tab_strip);

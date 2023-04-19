@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 class PrefService;
@@ -39,9 +38,9 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
 // empty, respectively. Callers with access to web contents should call the
 // other version of this function above.
 void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
-                        const raw_ptr<PrefService> user_prefs,
+                        PrefService* user_prefs,
                         base::OnceCallback<void(const std::string&)> callback,
-                        const raw_ptr<content::WebContents> web_contents,
+                        content::WebContents* web_contents,
                         gfx::Rect window_bounds);
 
 }  // namespace autofill::risk_util

@@ -310,7 +310,7 @@ void RootView::DeviceScaleFactorChanged(float old_device_scale_factor,
 
 // Accessibility ---------------------------------------------------------------
 
-raw_ptr<AnnounceTextView> RootView::GetOrCreateAnnounceView() {
+AnnounceTextView* RootView::GetOrCreateAnnounceView() {
   if (!announce_view_) {
     announce_view_ = AddChildView(std::make_unique<AnnounceTextView>());
     announce_view_->SetProperty(kViewIgnoredByLayoutKey, true);

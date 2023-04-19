@@ -15,7 +15,7 @@
 namespace crosapi {
 
 VideoCaptureDeviceFactoryAsh::VideoCaptureDeviceFactoryAsh(
-    raw_ptr<video_capture::DeviceFactory> device_factory)
+    video_capture::DeviceFactory* device_factory)
     : device_factory_(device_factory) {}
 
 VideoCaptureDeviceFactoryAsh::~VideoCaptureDeviceFactoryAsh() = default;

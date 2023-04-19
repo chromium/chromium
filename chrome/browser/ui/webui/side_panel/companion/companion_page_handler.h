@@ -33,7 +33,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   CompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
       mojo::PendingRemote<side_panel::mojom::CompanionPage> page,
-      raw_ptr<CompanionSidePanelUntrustedUI> companion_ui);
+      CompanionSidePanelUntrustedUI* companion_ui);
   CompanionPageHandler(const CompanionPageHandler&) = delete;
   CompanionPageHandler& operator=(const CompanionPageHandler&) = delete;
   ~CompanionPageHandler() override;

@@ -93,8 +93,7 @@ ChromeClientSideDetectionHostDelegate::GetClientSideDetectionService() {
   return service ? service->GetWeakPtr() : nullptr;
 }
 
-raw_ptr<VerdictCacheManager>
-ChromeClientSideDetectionHostDelegate::GetCacheManager() {
+VerdictCacheManager* ChromeClientSideDetectionHostDelegate::GetCacheManager() {
   return VerdictCacheManagerFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }

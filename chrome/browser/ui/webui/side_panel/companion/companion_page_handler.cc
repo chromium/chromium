@@ -32,7 +32,7 @@ namespace companion {
 CompanionPageHandler::CompanionPageHandler(
     mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
     mojo::PendingRemote<side_panel::mojom::CompanionPage> page,
-    raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui)
+    CompanionSidePanelUntrustedUI* companion_untrusted_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       companion_untrusted_ui_(companion_untrusted_ui),

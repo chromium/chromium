@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -207,7 +206,7 @@ class ChromeAuthenticatorRequestDelegate
   void OnManageDevicesClicked() override;
 
   // A non-const version of dialog_model().
-  raw_ptr<AuthenticatorRequestDialogModel> GetDialogModelForTesting();
+  AuthenticatorRequestDialogModel* GetDialogModelForTesting();
 
   // SetPassEmptyUsbDeviceManagerForTesting controls whether the
   // `DiscoveryFactory` will be given an empty USB device manager. This is

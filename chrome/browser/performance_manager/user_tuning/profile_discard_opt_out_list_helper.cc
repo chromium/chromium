@@ -59,7 +59,7 @@ class ProfileDiscardOptOutListHelperDelegateImpl
 ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
     ProfileDiscardOptOutTracker(const std::string& browser_context_id,
                                 PrefService* pref_service,
-                                raw_ptr<Delegate> delegate)
+                                Delegate* delegate)
     : browser_context_id_(browser_context_id), delegate_(delegate) {
   pref_change_registrar_.Init(pref_service);
 

@@ -82,7 +82,7 @@ const PIIMap& ScreenshotDataCollector::GetDetectedPII() {
 }
 
 void ScreenshotDataCollector::SetPickerFactoryForTesting(
-    raw_ptr<DesktopMediaPickerFactory> picker_factory_ptr) {
+    DesktopMediaPickerFactory* picker_factory_ptr) {
   picker_factory_for_testing_ = picker_factory_ptr;
 }
 

@@ -57,15 +57,15 @@ ui::ImageModel WebKioskBrowserControllerBase::GetWindowIcon() const {
 }
 
 GURL WebKioskBrowserControllerBase::GetAppStartUrl() const {
-  return registrar()->GetAppStartUrl(app_id());
+  return registrar().GetAppStartUrl(app_id());
 }
 
 bool WebKioskBrowserControllerBase::IsUrlInAppScope(const GURL& url) const {
-  return registrar()->IsUrlInAppScope(url, app_id());
+  return registrar().IsUrlInAppScope(url, app_id());
 }
 
 std::u16string WebKioskBrowserControllerBase::GetAppShortName() const {
-  return base::UTF8ToUTF16(registrar()->GetAppShortName(app_id()));
+  return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
 }
 
 std::u16string WebKioskBrowserControllerBase::GetFormattedUrlOrigin() const {
@@ -77,7 +77,7 @@ bool WebKioskBrowserControllerBase::CanUserUninstall() const {
 }
 
 bool WebKioskBrowserControllerBase::IsInstalled() const {
-  return registrar()->IsInstalled(app_id());
+  return registrar().IsInstalled(app_id());
 }
 
 void WebKioskBrowserControllerBase::OnTabInserted(
@@ -98,9 +98,8 @@ void WebKioskBrowserControllerBase::OnTabRemoved(
   web_app::ClearAppPrefsForWebContents(contents);
 }
 
-const raw_ref<web_app::WebAppRegistrar>
-WebKioskBrowserControllerBase::registrar() const {
-  return raw_ref(provider_->registrar_unsafe());
+web_app::WebAppRegistrar& WebKioskBrowserControllerBase::registrar() const {
+  return provider_->registrar_unsafe();
 }
 
 }  // namespace ash

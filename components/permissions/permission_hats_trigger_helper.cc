@@ -220,7 +220,7 @@ bool PermissionHatsTriggerHelper::ArePromptTriggerCriteriaSatisfied(
 void PermissionHatsTriggerHelper::
     IncrementOneTimePermissionPromptsDecidedIfApplicable(
         ContentSettingsType type,
-        raw_ptr<PrefService> pref_service) {
+        PrefService* pref_service) {
   if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
       PermissionUtil::CanPermissionBeAllowedOnce(type)) {
     pref_service->SetInteger(
@@ -233,7 +233,7 @@ void PermissionHatsTriggerHelper::
 // static
 PermissionHatsTriggerHelper::OneTimePermissionPromptsDecidedBucket
 PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucket(
-    raw_ptr<PrefService> pref_service) {
+    PrefService* pref_service) {
   int count =
       pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount);
   if (count <= 1) {

@@ -555,7 +555,7 @@ void AccessCodeCastIntegrationBrowserTest::ExpectStartRouteCallFromTabMirroring(
                                   _, timeout, false));
 }
 
-raw_ptr<AccessCodeCastPrefUpdater>
+AccessCodeCastPrefUpdater*
 AccessCodeCastIntegrationBrowserTest::GetPrefUpdater() {
   return AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
       ->pref_updater_.get();

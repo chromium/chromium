@@ -62,7 +62,7 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
   void OnTabRemoved(content::WebContents* contents) override;
 
  private:
-  const raw_ref<web_app::WebAppRegistrar> registrar() const;
+  web_app::WebAppRegistrar& registrar() const;
 
   const raw_ref<web_app::WebAppProvider> provider_;
   mutable absl::optional<ui::ImageModel> app_icon_;

@@ -20,7 +20,7 @@ const int kDefaultTimeout = 5;
 
 RequestManager::RequestManager(
     Profile* profile,
-    raw_ptr<NotificationManagerInterface> notification_manager)
+    NotificationManagerInterface* notification_manager)
     : profile_(profile),
       notification_manager_(notification_manager),
       next_id_(1),
@@ -28,7 +28,7 @@ RequestManager::RequestManager(
 
 RequestManager::RequestManager(
     Profile* profile,
-    raw_ptr<NotificationManagerInterface> notification_manager,
+    NotificationManagerInterface* notification_manager,
     base::TimeDelta timeout)
     : profile_(profile),
       notification_manager_(notification_manager),

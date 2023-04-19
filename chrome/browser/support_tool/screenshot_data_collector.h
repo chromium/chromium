@@ -64,7 +64,7 @@ class ScreenshotDataCollector : public DataCollector,
 
   // Sets `picker_factory_for_testing_`. Used only in the browser test.
   void SetPickerFactoryForTesting(
-      raw_ptr<DesktopMediaPickerFactory> picker_factory_ptr);
+      DesktopMediaPickerFactory* picker_factory_ptr);
 
  private:
   // Is called when the user has selected a source to be captured. Performs a

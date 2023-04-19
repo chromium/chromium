@@ -141,7 +141,7 @@ class AccessCodeCastIntegrationBrowserTest
                                ChannelOpenedCallback callback,
                                cast_channel::CastSocketOpenParams open_params);
 
-  raw_ptr<AccessCodeCastPrefUpdater> GetPrefUpdater();
+  AccessCodeCastPrefUpdater* GetPrefUpdater();
 
   void AddScreenplayTag(const std::string& screenplay_tag);
 

@@ -59,7 +59,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
                                   public Recorder::RecorderImpl {
  public:
   explicit StructuredMetricsProvider(
-      base::raw_ptr<metrics::MetricsProvider> system_profile_provider);
+      metrics::MetricsProvider* system_profile_provider);
   ~StructuredMetricsProvider() override;
   StructuredMetricsProvider(const StructuredMetricsProvider&) = delete;
   StructuredMetricsProvider& operator=(const StructuredMetricsProvider&) =
@@ -85,11 +85,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // Should only be used for tests.
   //
   // TODO(crbug/1350322): Use this ctor to replace existing ctor.
-  StructuredMetricsProvider(
-      const base::FilePath& device_key_path,
-      base::TimeDelta write_delay,
-      base::TimeDelta min_independent_metrics_interval,
-      base::raw_ptr<metrics::MetricsProvider> system_profile_provider);
+  StructuredMetricsProvider(const base::FilePath& device_key_path,
+                            base::TimeDelta write_delay,
+                            base::TimeDelta min_independent_metrics_interval,
+                            metrics::MetricsProvider* system_profile_provider);
 
   void OnKeyDataInitialized();
   void OnRead(ReadStatus status);

@@ -84,7 +84,7 @@ class CONTENT_EXPORT BrowsingContextState
   // TODO(crbug.com/1270671): Make |browsing_instance_id| non-optional when the
   // legacy path is removed.
   BrowsingContextState(blink::mojom::FrameReplicationStatePtr replication_state,
-                       raw_ptr<RenderFrameHostImpl> parent,
+                       RenderFrameHostImpl* parent,
                        absl::optional<BrowsingInstanceId> browsing_instance_id);
 
   // Returns a const reference to the map of proxy hosts. The keys are

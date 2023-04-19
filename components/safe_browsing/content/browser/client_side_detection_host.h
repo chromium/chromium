@@ -65,7 +65,7 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
                                   GURL current_url,
                                   const content::GlobalRenderFrameHostId&
                                       current_outermost_main_frame_id) = 0;
-    virtual raw_ptr<VerdictCacheManager> GetCacheManager() = 0;
+    virtual VerdictCacheManager* GetCacheManager() = 0;
     // Returns the management status for current profile.
     virtual ChromeUserPopulation GetUserPopulation() = 0;
   };
