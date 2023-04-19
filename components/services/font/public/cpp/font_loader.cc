@@ -28,7 +28,7 @@ bool FontLoader::matchFamilyName(const char family_name[],
                                  SkString* out_family_name,
                                  SkFontStyle* out_style) {
   TRACE_EVENT1("fonts", "FontServiceThread::MatchFamilyName", "family_name",
-               TRACE_STR_COPY(family_name));
+               TRACE_STR_COPY(family_name ? family_name : "<unspecified>"));
   return thread_->MatchFamilyName(family_name, requested, out_font_identifier,
                                   out_family_name, out_style);
 }
