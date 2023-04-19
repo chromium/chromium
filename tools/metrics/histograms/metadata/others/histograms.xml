@@ -3299,7 +3299,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContextMenu.TimeToSelectShare" units="ms"
     expires_after="2023-02-19">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records how long it takes to press on &quot;Share&quot; from the time
