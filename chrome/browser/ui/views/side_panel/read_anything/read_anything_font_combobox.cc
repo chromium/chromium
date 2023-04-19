@@ -51,6 +51,7 @@ ReadAnythingFontCombobox::ReadAnythingFontCombobox(
 
   SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   SetMenuModel(std::move(new_model));
+  SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
 void ReadAnythingFontCombobox::GetAccessibleNodeData(
