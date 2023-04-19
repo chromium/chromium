@@ -79,7 +79,7 @@ std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
 
 struct BruschettaInstallerImpl::Fds {
   base::ScopedFD boot_disk;
-  base::ScopedFD pflash;
+  absl::optional<base::ScopedFD> pflash;
 };
 
 BruschettaInstallerImpl::BruschettaInstallerImpl(
@@ -309,8 +309,15 @@ void BruschettaInstallerImpl::DownloadPflash() {
   download_guid_ = base::GUID::GenerateRandomV4();
   NotifyObserver(State::kPflashDownload);
 
-  const std::string* url = config_.FindDict(prefs::kPolicyPflashKey)
-                               ->FindString(prefs::kPolicyURLKey);
+  const base::Value::Dict* pflash = config_.FindDict(prefs::kPolicyPflashKey);
+  if (!pflash) {
+    VLOG(2) << "No pflash file set, skipping to OpenFds";
+
+    OpenFds();
+    return;
+  }
+
+  const std::string* url = pflash->FindString(prefs::kPolicyURLKey);
   StartDownload(GURL(*url),
                 base::BindOnce(&BruschettaInstallerImpl::OnPflashDownloaded,
                                weak_ptr_factory_.GetWeakPtr()));
@@ -363,14 +370,24 @@ std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     PLOG(ERROR) << "Failed to open boot disk";
     return nullptr;
   }
-  base::File pflash(pflash_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!pflash.IsValid()) {
-    PLOG(ERROR) << "Failed to open pflash";
-    return nullptr;
+
+  absl::optional<base::ScopedFD> pflash_fd;
+  if (pflash_path.empty()) {
+    pflash_fd = absl::nullopt;
+  } else {
+    base::File pflash(pflash_path,
+                      base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!pflash.IsValid()) {
+      PLOG(ERROR) << "Failed to open pflash";
+      return nullptr;
+    }
+    pflash_fd = base::ScopedFD(pflash.TakePlatformFile());
   }
+
   BruschettaInstallerImpl::Fds fds{
       .boot_disk = base::ScopedFD(boot_disk.TakePlatformFile()),
-      .pflash = base::ScopedFD(pflash.TakePlatformFile())};
+      .pflash = std::move(pflash_fd),
+  };
   return std::make_unique<BruschettaInstallerImpl::Fds>(std::move(fds));
 }
 }  // namespace
@@ -441,6 +458,12 @@ void BruschettaInstallerImpl::InstallPflash() {
   VLOG(2) << "Installing pflash file for VM";
   NotifyObserver(State::kInstallPflash);
 
+  if (!fds_->pflash.has_value()) {
+    VLOG(2) << "No pflash file expected, skipping to StartVm";
+    StartVm();
+    return;
+  }
+
   auto* client = ash::ConciergeClient::Get();
   DCHECK(client) << "This code requires a ConciergeClient";
 
@@ -453,7 +476,7 @@ void BruschettaInstallerImpl::InstallPflash() {
   request.set_vm_name(vm_name_);
 
   client->InstallPflash(
-      std::move(fds_->pflash), request,
+      std::move(*fds_->pflash), request,
       base::BindOnce(&BruschettaInstallerImpl::OnInstallPflash,
                      weak_ptr_factory_.GetWeakPtr()));
 }
