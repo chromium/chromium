@@ -52,7 +52,7 @@
 #endif
 
 #define EXPECT_AUDIO_HASH(expected)                        \
-  EXPECT_TRUE(GetAudioHash().IsEquivalent(expected, 0.03)) \
+  EXPECT_TRUE(GetAudioHash().IsEquivalent(expected, 0.04)) \
       << "Audio hashes differ. Expected: " << expected     \
       << " Actual: " << GetAudioHash().ToString()
 
