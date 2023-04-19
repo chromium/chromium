@@ -2457,6 +2457,8 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
     if (!needs_composited_scrolling) {
       new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
     }
+    DCHECK(!(non_composited_main_thread_scrolling_reasons_ &
+             ~cc::MainThreadScrollingReason::kNonCompositedReasons));
   }
   box->GetMutableForPainting().SetBackgroundPaintLocation(
       new_background_paint_location);
@@ -2506,8 +2508,6 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
     }
   }
 
-  DCHECK(!(non_composited_main_thread_scrolling_reasons_ &
-           ~cc::MainThreadScrollingReason::kNonCompositedReasons));
   return needs_composited_scrolling;
 }
 
