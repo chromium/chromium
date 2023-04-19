@@ -1003,6 +1003,16 @@ HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
 NamedNodeMap* Element::attributesForBindings() const {
   ElementRareData& rare_data =
       const_cast<Element*>(this)->EnsureElementRareData();
+
+  if (recordreplay::IsInReplayCode() &&
+      !recordreplay::HasDivergedFromRecording()) {
+    if (!rare_data.AttributeMap()) {
+      // [RUN-1764] Do not try to create blink API objects in our Replay-only
+      // scripts, unless explicitly diverged. Creating rare data is fine.
+      return nullptr;
+    }
+  }
+
   if (NamedNodeMap* attribute_map = rare_data.AttributeMap())
     return attribute_map;
 
@@ -8079,6 +8089,14 @@ void Element::SynchronizeStyleAttributeInternal() const {
 CSSStyleDeclaration* Element::style() {
   if (!IsStyledElement())
     return nullptr;
+
+  if (recordreplay::IsInReplayCode() &&
+      !recordreplay::HasDivergedFromRecording()) {
+    // [RUN-1764] Do not try to create blink API objects in our Replay-only
+    // scripts, unless explicitly diverged.
+    return EnsureElementRareData().GetInlineCSSStyleDeclaration();
+  }
+
   return &EnsureElementRareData().EnsureInlineCSSStyleDeclaration(this);
 }
 

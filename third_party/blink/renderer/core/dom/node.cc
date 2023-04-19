@@ -329,10 +329,6 @@ Node::Node(TreeScope* tree_scope, ConstructionType type)
   // Document is required for probe sink.
   if (tree_scope_)
     probe::NodeCreated(this);
-
-  if (recordreplay::AreEventsDisallowed()) {
-    recordreplay::Warning("[RUN-1735-1736] Node::Node with AreEventsDisallowed");
-  }
 }
 
 Node::~Node() {

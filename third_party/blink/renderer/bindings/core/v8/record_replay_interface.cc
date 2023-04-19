@@ -631,7 +631,10 @@ function isBlinkObject(x) {
 function isBlinkInstanceOf(x, target) {
   return isBlinkObject(x) &&
     target?.name &&
-    hasInProtoChain(x.constructor, target.name);
+    hasInProtoChain(
+      x.constructor,
+      target.name
+    );
 }
 
 /**
@@ -1293,7 +1296,7 @@ function previewBlinkNode(node) {
   let attributes, pseudoType;
   if (isBlinkInstanceOf(node, Element)) {
     attributes = [];
-    for (const { name, value } of node.attributes) {
+    for (const { name, value } of node.attributes || []) {
       attributes.push({ name, value });
     }
     // TODO: We cannot access pseudo elements using the JS DOM API - https://linear.app/replay/issue/RUN-953/
@@ -1308,7 +1311,11 @@ function previewBlinkNode(node) {
   let parentNode;
   if (node.parentNode) {
     parentNode = registerPlainObject(node.parentNode);
-  } else if (node.defaultView && node.defaultView.parent != node.defaultView && node.defaultView.parent.document) {
+  } else if (
+    node.defaultView &&
+    node.defaultView.parent != node.defaultView &&
+    node.defaultView.parent?.document
+  ) {
     /**
      * Nested documents use the parent element instead of null.
      * 
@@ -1329,7 +1336,7 @@ function previewBlinkNode(node) {
   if (node.nodeName == "IFRAME" && node.contentDocument) {
     // Treat an iframe's content document as one of its child nodes.
     childNodes = [registerPlainObject(node.contentDocument)];
-  } else if (node.childNodes.length) {
+  } else if (node.childNodes?.length) {
     childNodes = [...node.childNodes].map((n) => registerPlainObject(n));
   }
 
@@ -3420,6 +3427,8 @@ static void WriteToRecordingDirectory(const v8::FunctionCallbackInfo<v8::Value>&
   v8::Isolate* isolate = args.GetIsolate();
   v8::String::Utf8Value filename(isolate, args[0]);
   v8::String::Utf8Value content(isolate, args[1]);
+
+  recordreplay::Assert("[RUN-1670-1764] WriteToRecordingDirectory %s (%zu)", *filename, (size_t)strlen(*content));
 
   std::string path = GetRecordingDirectory() + DirectorySeparator + std::string(*filename);
   std::ofstream stream(path);
